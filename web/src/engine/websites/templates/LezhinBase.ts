@@ -1,6 +1,6 @@
 import type { Tag } from '../../Tags';
 import icon from '../Lezhin.webp';
-import { Fetch, FetchCSS, FetchJSON, FetchWindowScript } from '../../platform/FetchProvider';
+import { Fetch, FetchJSON, FetchNextJS, FetchWindowScript } from '../../platform/FetchProvider';
 import { type Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from '../../providers/MangaPlugin';
 import { WebsiteResourceKey as W } from '../../../i18n/ILocale';
 import type { Priority } from '../../taskpool/TaskPool';
@@ -8,6 +8,9 @@ import * as Common from '../decorators/Common';
 import DeScramble from '../../transformers/ImageDescrambler';
 import { Check, Secret, Text } from '../../SettingsManager';
 import { Exception } from '../../Error';
+
+// TODO : Handle Password and login change in plugin config
+// TODO : Update CDN & force language after login attempt
 
 function ChapterExtractor(anchor: HTMLAnchorElement) {
     return {
@@ -24,7 +27,7 @@ function LoginScript(username: string, password: string,): string {
                 else {
                     const form = document.querySelector('form[class^="login"]');
                     const body = JSON.stringify({
-                        email :  '${username}', 
+                        email :  '${username}',
                         password: '${password}',
                         remember: 'false',
                         provider: 'email',
@@ -131,73 +134,8 @@ type AuthData = {
     accessToken: string
 }
 
-/**
- * A basic oAuth token manager with Lezhin specific business logic
- */
-class TokenProvider {
-
-    #token: string = null;
-    #userID: string = null;
-
-    constructor(private readonly clientURI: URL) { }
-
-    /**
-     * Extract the token directly from the website (e.g., after login/logout through manual website interaction)
-     */
-    public async UpdateToken() {
-
-        try {
-            const scripts = await FetchCSS<HTMLScriptElement>(new Request(this.clientURI), 'script:not([src])');
-            const { accessToken, id } = this.ExtractData<AuthData>(scripts, 'accessToken', 'accessToken');
-            this.#token = accessToken;
-            this.#userID = id.toString();
-        }
-
-        catch (error) {
-            console.warn('UpdateToken()', error);
-            this.#token = null;
-        }
-    }
-
-    get UserId() {
-        return this.#userID;
-    }
-
-    public HasToken(): boolean {
-        return !!this.#token;
-    }
-
-    /**
-     * Determine the _Bearer_ extracted from the current token and add it as authorization header to the given {@link init} headers (replacing any existing authorization header).
-     * In case the _Bearer_ could not be extracted from the current token the authorization header will not be added/replaced.
-     */
-    public async ApplyAuthorizationHeader(init: HeadersInit): Promise<HeadersInit> {
-        const headers = new Headers(init);
-        if (this.#token) {
-            headers.set('Authorization', 'Bearer ' + this.#token);
-        }
-        return headers;
-    }
-
-    private ExtractData<T>(scripts: HTMLScriptElement[], scriptMatcher: string, keyName: string, asObject = true): T {
-        const script = scripts.map(script => script.text).find(text => text.includes(scriptMatcher) && text.includes(keyName));
-        const content = JSON.parse(script.substring(script.indexOf(',"') + 1, script.length - 2)) as string;
-        const record = JSON.parse(content.substring(content.indexOf(':') + 1)) as JSONObject;
-
-        return (function FindValueForKeyName(parent: JSONElement): JSONElement {
-            if (parent[keyName]) {
-                return asObject ? parent : parent[keyName];
-            }
-            for (const child of (Object.values(parent) as JSONElement[]).filter(value => value && typeof value === 'object')) {
-                const result = FindValueForKeyName(child);
-                if (result) {
-                    return result;
-                }
-            }
-            return undefined;
-        })(record) as T;
-    }
-
+type LoginResult = {
+    appConfig: AuthData
 }
 
 @Common.ChaptersSinglePageCSS('ul[class*=episodeListContents__list] li a', ChapterExtractor)
@@ -213,7 +151,7 @@ export class LezhinBase extends DecoratableMangaScraper {
         this.Settings.username = new Text('username', W.Plugin_Lezhin_Settings_Username, W.Plugin_Lezhin_Settings_UsernameInfo, '');
         this.Settings.password = new Secret('password', W.Plugin_Lezhin_Settings_Password, W.Plugin_Lezhin_Settings_PasswordInfo, '');
         this.Settings.forceJPEG = new Check('forceJPEG', W.Plugin_Lezhin_Settings_Force_JPEG, W.Plugin_Lezhin_Settings_Force_JPEGInfo, false);
-        this.tokenProvider = new TokenProvider(new URL('./account/', this.URI));
+        this.tokenProvider = new TokenProvider(this.URI);
     }
 
     public override get Icon() {
@@ -221,8 +159,8 @@ export class LezhinBase extends DecoratableMangaScraper {
     }
 
     public override async Initialize(): Promise<void> {
-        await this.LoginAttempt();
-        await this.tokenProvider.UpdateToken();
+        this.tokenProvider.SetCredentials(this.Settings.username.Value as string, this.Settings.password.Value as string, this.languagePath);
+        await this.tokenProvider.Initialize();
         await this.UpdateCDN();
         await this.ForceLanguage();
     }
@@ -266,6 +204,7 @@ export class LezhinBase extends DecoratableMangaScraper {
     }
 
     public async FetchPages(chapter: Chapter): Promise<Page<EpisodeParameters>[]> {
+        await this.tokenProvider.UpdateToken();
 
         const parameters: EpisodeParameters = {
             episodeID: undefined,
@@ -277,13 +216,13 @@ export class LezhinBase extends DecoratableMangaScraper {
         };
 
         //if we are logged check if purchased
-        if (this.tokenProvider.HasToken) {
+        if (this.tokenProvider.IsLogged) {
             const uri = new URL(`https://www.lezhinus.com/lz-api/contents/v3/${chapter.Parent.Identifier.split('/').at(-1)}/episodes/${chapter.Identifier.split('/').at(-1)}`);
             uri.searchParams.set('referrerViewType', 'NORMAL');
             uri.searchParams.set('objectType', 'comic');
             const { data: { episode: { isCollected } } } = await this.FetchAPI<APIEpisode>(uri, {
                 'X-LZ-Adult': '2',
-                Referrer: new URL(chapter.Identifier, this.URI).href
+                Referer: new URL(chapter.Identifier, this.URI).href
             });
             parameters.purchased = !!isCollected;
         }
@@ -348,17 +287,6 @@ export class LezhinBase extends DecoratableMangaScraper {
 
     }
 
-    private async LoginAttempt(): Promise<void> {
-        //if token is defined , or we miss credential infos there is nothing to do.
-        if (this.tokenProvider.HasToken() || !this.Settings.username.Value || !this.Settings.password.Value) {
-            return;
-        }
-        const username = this.Settings.username.Value as string;
-        const password = (this.Settings.password.Value as string).replaceAll("'", "\\'");//Escape password because its injected between single quotes
-
-        await FetchWindowScript(new Request(new URL(`/${this.languagePath}/login`, this.URI)), LoginScript(username, password), 1500);
-    }
-
     private async UpdateCDN(): Promise<void> {
         const script = `(window.__LZ_CONFIG__?.contentsCdnUrl ?? JSON.parse(document.querySelector('#lz-static').dataset.env).CONTENT_CDN_URL)`;
         try {
@@ -370,7 +298,7 @@ export class LezhinBase extends DecoratableMangaScraper {
     }
 
     private async ForceLanguage(): Promise<void> {
-        if (!this.tokenProvider.HasToken) return;
+        if (!this.tokenProvider.IsLogged) return;
         await Fetch(new Request(new URL(`./api/my-preference?userId=${this.tokenProvider.UserId}&lng=${this.languagePath}`, this.URI)));
     }
 
@@ -388,6 +316,88 @@ export class LezhinBase extends DecoratableMangaScraper {
 
 }
 
+/**
+ * A basic oAuth token manager with Lezhin specific business logic
+ */
+class TokenProvider {
+
+    #token: string = null;
+    #userID: string = null;
+
+    #username: string = null;
+    #password: string = null;
+    #language: string = null;
+
+    constructor(private readonly baseUrl: URL) { }
+
+    /**
+     * Extract the token directly from the website (e.g., after login/logout through manual website interaction)
+     */
+    public async UpdateToken() {
+
+        try {
+            const { accessToken, id } = await FetchNextJS<AuthData>(new Request(this.baseUrl), data => 'accessToken' in data);
+            this.#token = accessToken;
+            this.#userID = id.toString();
+        }
+
+        catch (error) {
+            console.warn('UpdateToken()', error);
+            this.#token = undefined;
+            this.#userID = undefined;
+        }
+    }
+
+    get UserId() {
+        return this.#userID;
+    }
+
+    public SetCredentials(username: string, password: string, language: string): void {
+        this.#username = username;
+        this.#password = password;
+        this.#language = language;
+    }
+
+    public IsLogged(): boolean {
+        return !!this.#userID;
+    }
+
+    public async Initialize(): Promise<void> {
+        //try to get infos from website NEXTJS DATA first
+        await this.UpdateToken();
+        if (!this.#userID) await this.LoginAttempt();
+    }
+
+    public async LoginAttempt(): Promise<void> {
+        //if token is defined , or we miss credential infos there is nothing to do.
+        if (this.IsLogged() || !this.#username || !this.#password) {
+            return;
+        }
+        const password = this.#password.replaceAll("'", "\\'");//Escape password because its injected between single quotes
+        const logindata = await FetchWindowScript<LoginResult>(new Request(new URL(`./${this.#language}/login`, this.baseUrl)), LoginScript(this.#username, password), 1500);
+
+        if (logindata?.appConfig) {
+            this.#token = logindata.appConfig.accessToken;
+            this.#userID = logindata.appConfig.id.toString();
+        }
+    }
+
+    /**
+     * Determine the _Bearer_ extracted from the current token and add it as authorization header to the given {@link init} headers (replacing any existing authorization header).
+     * In case the _Bearer_ could not be extracted from the current token the authorization header will not be added/replaced.
+     */
+    public async ApplyAuthorizationHeader(init: HeadersInit): Promise<HeadersInit> {
+        const headers = new Headers(init);
+        if (this.#token) {
+            headers.set('Authorization', 'Bearer ' + this.#token);
+        }
+        return headers;
+    }
+}
+
+/**
+ * Lehzin pictures unscrambling logic
+ */
 class LehzinUnscrambler {
     private state: bigint;
     private scrambleTable: number[];
