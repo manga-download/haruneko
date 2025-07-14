@@ -73,7 +73,7 @@
                     onclick={onHome}
                 />
                 <SideNavLink
-                    text={'Bookmarks'}
+                    text={$Locale.Frontend_FluentCore_BookmarkList_Heading()}
                     icon={Bookmark}
                     onclick={() => {
                         $selectedPlugin = window.HakuNeko.BookmarkPlugin;
@@ -83,7 +83,7 @@
                 />
             {/if}
             <SideNavLink
-                text={'Paste Media URL'}
+                text={$Locale.Frontend_PasteMediaURL()}
                 icon={CopyLink}
                 onclick={() =>
                     document.dispatchEvent(new Event('media-paste-url'))}
@@ -94,7 +94,7 @@
                 onclick={() => (isPluginModalOpen = true)}
             />
             <SideNavLink
-                text="import/export"
+                text={$Locale.Frontend_ImportExport()}
                 icon={ImportExport}
                 onclick={() => (isBookmarksImportModalOpen = true)}
             />
@@ -116,7 +116,7 @@
                     }}
                 />
                 <SideNavLink
-                    text="Viewer"
+                    text={$Locale.Frontend_Classic_Sidenav_Settings_Viewer()}
                     icon={SettingsView}
                     onclick={() => {
                         settingsSelectedTabs = 1;
@@ -134,7 +134,7 @@
             </SideNavMenu>
             <SideNavMenu text={$Locale.Frontend_Help()} icon={Document}>
                 <SideNavLink
-                    text="Documentation"
+                    text={$Locale.Frontend_Documentation()}
                     icon={Doc}
                     class="clik-item"
                     onclick={() =>
@@ -143,14 +143,14 @@
                         )}
                 />
                 <SideNavLink
-                    text="Discord"
+                    text={$Locale.Frontend_Discord()}
                     icon={LogoDiscord}
                     class="clik-item"
                     onclick={() =>
                         window.open('https://discordapp.com/invite/A5d3NDf')}
                 />
                 <SideNavLink
-                    text="Open a ticket"
+                    text={$Locale.Frontend_OpenTicket()}
                     icon={Debug}
                     class="clik-item"
                     onclick={() =>
@@ -159,13 +159,13 @@
                         )}
                 />
                 <SideNavLink
-                    text="Home page"
+                    text={$Locale.Frontend_HomePage()}
                     icon={Home}
                     class="clik-item"
                     onclick={() => window.open('https://hakuneko.download')}
                 />
                 <SideNavLink
-                    text="Show IP and localisation"
+                    text={$Locale.Frontend_ShowIP()}
                     icon={Location}
                     class="clik-item"
                     onclick={() => window.open('https://ipinfo.io/json')}
@@ -173,7 +173,7 @@
             </SideNavMenu>
             <SideNavMenu text={$Locale.Frontend_About()} icon={Information}>
                 <SideNavLink
-                    text="Code source"
+                    text={$Locale.Frontend_CodeSource()}
                     icon={LogoGithub}
                     class="clik-item"
                     onclick={() =>
@@ -182,20 +182,20 @@
                         )}
                 />
                 <SideNavLink
-                    text="Using version X.X.X"
+                    text={$Locale.Frontend_AppVersion()}
                     icon={App}
                     class="clik-item"
                     onclick={() => window.open('https://todo.com')}
                 />
                 <SideNavLink
-                    text="Maintainers"
+                    text={$Locale.Frontend_Maintainers()}
                     icon={Events}
                     class="clik-item"
                     onclick={() =>
                         window.open('https://discordapp.com/invite/A5d3NDf')}
                 />
                 <SideNavLink
-                    text="Contributors"
+                    text={$Locale.Frontend_Contributors()}
                     icon={EventsAlt}
                     class="clik-item"
                     onclick={() =>
@@ -204,7 +204,7 @@
                         )}
                 />
                 <SideNavLink
-                    text="Artwork"
+                    text={$Locale.Frontend_Artwork()}
                     icon={Image}
                     class="clik-item"
                     onclick={() =>

@@ -12,6 +12,8 @@
     import TrashCan from 'carbon-icons-svelte/lib/TrashCan.svelte';
     import { DownloadTask, Status } from '../../../engine/DownloadTask';
     import DownloadManager from './DownloadManager.svelte';
+    import { Locale } from '../stores/Settings';
+
 
     let previousTasks: DownloadTask[] = [];
     let currentDownload: DownloadTask;
@@ -117,20 +119,20 @@
                 kind="secondary"
                 size="small"
                 icon={Clean}
-                iconDescription="Clear finished tasks"
+                iconDescription={$Locale.Frontend_DownloadManager_ClearFinished()}
                 on:click={() => deleteTasks(Status.Completed)}
             />
             <Button
                 size="small"
                 icon={RetryFailed}
-                iconDescription="Retry failed tasks"
+                iconDescription={$Locale.Frontend_DownloadManager_RetryFailed()}
                 on:click={() => retryTasks(Status.Failed)}
             />
             <Button
                 kind="danger-tertiary"
                 size="small"
                 icon={TrashCan}
-                iconDescription="Delete all tasks"
+                iconDescription={$Locale.Frontend_DownloadManager_DeleteAll()}
                 on:click={() => deleteTasks()}
             />
         </div>
@@ -141,14 +143,17 @@
         <div class="label">
             <CloudDownload size={32}></CloudDownload>
             <div class="count">
-                Downloads ({downloadTasks.filter((job) =>
+                {$Locale.Frontend_DownloadManager_Active(
+                    `${downloadTasks.filter((job) =>
                     [
                         Status.Downloading,
                         Status.Processing,
                         Status.Queued,
                     ].includes(job.Status.Value),
-                )?.length})
-            </div>
+                )?.length}`
+            )}
+        </div>
+
         </div>
         <div class="downloads">
             {#if downloadTasks.length > 0}
@@ -157,11 +162,10 @@
                         <ProgressBar
                             value={progress * 100}
                             status={statusmap[status]}
-                            labelText="[{currentDownload.Media.Parent
-                                .Title}] {currentDownload.Media.Title}"
+                            labelText={`${currentDownload.Media.Parent.Title} - ${currentDownload.Media.Title}`}
                         ></ProgressBar>
                     {:else}
-                        <ProgressBar size="sm" value={0} labelText="<no tasks>"
+                        <ProgressBar size="sm" value={0} labelText={$Locale.Frontend_DownloadManager_NoTasks()}
                         ></ProgressBar>
                     {/if}
                 </div>
