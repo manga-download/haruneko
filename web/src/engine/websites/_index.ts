@@ -92,7 +92,6 @@ export { default as ComicZenon } from './ComicZenon';
 export { default as ComicZerosum } from './ComicZerosum';
 export { default as Comikey } from './Comikey';
 export { default as ComikeyArchive } from './ComikeyArchive';
-export { default as ConstellarScans } from './ConstellarScans';
 export { default as CookMana } from './CookMana';
 export { default as CoolMic } from './CoolMic';
 export { default as CoolMicFr } from './CoolMicFr';
