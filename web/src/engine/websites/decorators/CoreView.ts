@@ -163,20 +163,34 @@ export function ChaptersMultiPagesAJAXV2() {
 }
 
 /**
- * A class deocrator for extracting chapters using Coreview API. Use this when endpoint 'pagination_readable_products' is available.
+ * A class decorator for extracting chapters using Coreview API. Use this when endpoint 'pagination_readable_products' is available.
  * @param this - A reference to the {@link MangaScraper} instance which will be used as context for this method
  * @param manga - A reference to the {@link Manga} which shall be assigned as parent for the extracted chapters
  */
 export async function FetchChaptersMultiPagesAJAXV2(this: MangaScraper, manga: Manga): Promise<Chapter[]> {
     const jsonData = (await FetchCSS(new Request(new URL(manga.Identifier, this.URI)), 'script#episode-json')).shift().dataset.value;
-    const { readableProduct: { typeName, series, id } } = JSON.parse(jsonData) as JSONSerie;
+    const serie = JSON.parse(jsonData) as JSONSerie;
+    return [
+        ...await FetchVolumeChapterV2.call(this, serie, manga),
+        ...await FetchVolumeChapterV2.call(this, serie, manga, 'volume'),
+    ];
+}
+
+/**
+ * @param this - A reference to the {@link MangaScraper} instance which will be used as context for this method
+ * @param serie - A reference to a JSONSerie extracted from "manga" page (contains serie infos needed)
+ * @param manga - A reference to the {@link Manga} which shall be assigned as parent for the extracted chapters /volumes
+ * @param type - Type of media we want from the api : 'episode' for chapters, 'volume' for volume (magazine doesnt work)
+*/
+async function FetchVolumeChapterV2(this: MangaScraper, serie: JSONSerie, manga: Manga, type: string = 'episode'): Promise<Chapter[]> {
+    const { readableProduct: { series, id } } = serie;
     const chapterList: Chapter[] = [];
 
     for (let offset = 0, run = true; run;) {
         const url = new URL(`/api/viewer/pagination_readable_products`, this.URI);
         url.search = new URLSearchParams({
             aggregate_id: series?.id ?? id,
-            type: typeName,
+            type,
             sort_order: 'desc',
             offset: offset.toString()
         }).toString();
