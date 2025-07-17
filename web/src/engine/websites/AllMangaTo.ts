@@ -43,16 +43,14 @@ type APIPages = {
 }
 
 type SearchVariables = {
-    search: SearchPayload,
+    search: {
+        isManga: boolean,
+        allowAdult: boolean,
+        allowUnknown: boolean
+    },
     size: number,
     page: number,
     countryOrigin: string
-}
-
-type SearchPayload = {
-    isManga: boolean,
-    allowAdult: boolean,
-    allowUnknown: boolean
 }
 
 type ChapterListVariables = {
@@ -120,7 +118,6 @@ export default class extends DecoratableMangaScraper {
                     edges {
                         _id
                         name
-                        thumbnail
                         englishName
                     }
                 }
