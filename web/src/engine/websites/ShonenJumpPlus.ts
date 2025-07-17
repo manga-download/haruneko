@@ -1,11 +1,12 @@
 import { Tags } from '../Tags';
 import icon from './ShonenJumpPlus.webp';
-import { type Chapter, DecoratableMangaScraper, type Manga } from '../providers/MangaPlugin';
+import { Chapter, DecoratableMangaScraper, type Manga } from '../providers/MangaPlugin';
 import * as CoreView from './decorators/CoreView';
 import * as Common from './decorators/Common';
+import { FetchCSS } from '../platform/FetchProvider';
 
-@Common.MangaCSS(/^{origin}\/(episode|magazine|volume)\/\d+$/, CoreView.queryMangaTitleFromURI)
-@Common.MangasSinglePagesCSS(['/series', '/series/oneshot', '/series/finished'], 'article.series-list-wrapper ul.series-list > li.series-list-item > a', CoreView.DefaultMangaExtractor)
+@Common.MangaCSS(/^{origin}\/(episode|magazine)\/\d+$/, CoreView.queryMangaTitleFromURI)
+@Common.MangasSinglePagesCSS([ '/series', '/series/oneshot', '/series/finished' ], 'article.series-list-wrapper ul.series-list > li.series-list-item > a', CoreView.DefaultMangaExtractor)
 @CoreView.PagesSinglePageJSON()
 @CoreView.ImageAjax()
 export default class extends DecoratableMangaScraper {
@@ -20,9 +21,10 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         if (/^\/magazine\/\d+$/.test(manga.Identifier)) {
-            return CoreView.FetchChaptersMultiPagesAJAXV1.call(this, manga);
+            const data = await FetchCSS(new Request(new URL(manga.Identifier, this.URI)), '.episode-header-title');
+            return [new Chapter(this, manga, manga.Identifier, data[0].textContent.replace(manga.Title, '').trim())];
         } else {
-            return CoreView.FetchChaptersMultiPagesAJAXV2.call(this, manga);
+            return CoreView.FetchChaptersMultiPageAJAXV2.call(this, manga);
         }
     }
 }

@@ -93,8 +93,6 @@ const translations: VariantResource = { // NOTE: Use defaults for missing transl
   Frontend_FluentCore_Menu_ExportBookmarks_Label: "Exportar marcadores…",
   Frontend_FluentCore_Menu_ExportBookmarks_Description: "Exportar todos los marcadores a un archivo (por ejemplo, para la copia de seguridad)",
   //
-  Frontend_FluentCore_Settings_ThemeLuminance_Label: "Luminancia del tema",
-  Frontend_FluentCore_Settings_ThemeLuminance_Description: "Cambiar la luz / oscuridad del tema",
   Frontend_FluentCore_Settings_ShowBookmarksPanel_Label: "Lista de marcadores",
   Frontend_FluentCore_Settings_ShowBookmarksPanel_Description: "Activar/desactivar la visibilidad de la lista de marcadores",
   Frontend_FluentCore_Settings_ShowDownloadsPanel_Label: "Gestor de descargas",
