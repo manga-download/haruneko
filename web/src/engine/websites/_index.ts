@@ -153,6 +153,7 @@ export { default as EternalMangas } from './EternalMangas';
 export { default as EuphoriaScan } from './EuphoriaScan';
 export { default as EvilFlowers } from './EvilFlowers';
 export { default as FalcoScan } from './FalcoScan';
+export { default as FateScans } from './FateScans';
 export { default as FbSquads } from './FbSquads';
 export { default as FeelWeb } from './FeelWeb';
 export { default as FireComics } from './FireComics';
