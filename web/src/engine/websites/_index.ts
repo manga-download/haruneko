@@ -717,7 +717,6 @@ export { default as TuMangaNet } from './TuMangaNet';
 export { default as TuMangaOnline } from './TuMangaOnline';
 export { default as TuMangaOnlineHentai } from './TuMangaOnlineHentai';
 export { default as TurkceMangaOku } from './TurkceMangaOku';
-export { default as TurkManga } from './TurkManga';
 export { default as Turktoon } from './Turktoon';
 export { default as Tuttoanimemanga } from './Tuttoanimemanga';
 export { default as TwoAnimx } from './TwoAnimx';
