@@ -384,6 +384,7 @@ export { default as MangaMovil } from './MangaMovil';
 export { default as MangaNato } from './MangaNato';
 export { default as ManganeloInfo } from './ManganeloInfo';
 export { default as MangaOkuTR } from './MangaOkuTR';
+export { default as MangaOneJp } from './MangaOneJp';
 export { default as MangaOni } from './MangaOni';
 export { default as MangaOnline } from './MangaOnline';
 export { default as MangaOnlineFun } from './MangaOnlineFun';
