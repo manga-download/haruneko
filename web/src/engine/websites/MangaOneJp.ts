@@ -95,7 +95,7 @@ export default class extends DecoratableMangaScraper {
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
         const { dayOfWeekTitleLists } = await FetchProto<WebRensaiListResponse>(new Request(new URL('?rq=rensai', this.apiUrl)), protoTypes, 'MangaOneJp.WebRensaiListResponse');
         return dayOfWeekTitleLists.reduce((accumulator: Manga[], day) => {
-            accumulator.push(...day.titles.map(title => new Manga(this, provider, title.title.titleId.toString(), title.title.titleName)));
+            accumulator.push(...day.titles.map(({ title: { titleId, titleName } }) => new Manga(this, provider, titleId.toString(), titleName)));
             return accumulator;
         }, []);
     }
@@ -155,5 +155,4 @@ export default class extends DecoratableMangaScraper {
         const decrypted = await crypto.subtle.decrypt(algorithm, secretKey, await encrypted.arrayBuffer());
         return Common.GetTypedData(decrypted);
     }
-
 }
