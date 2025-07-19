@@ -1,8 +1,7 @@
 export const pagesScript = `
 	new Promise ( resolve => {
 		resolve( [...document.querySelectorAll('.myImage')].map(image => {
-			 loadImage(image, 1);
-			 return new URL(image.getAttribute('src'), window.location.href).href;
+			 return 'https://image.meowing.org/uploads/'+ image.getAttribute('uid');
 	    }));
 	});
 `;

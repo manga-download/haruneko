@@ -4,24 +4,24 @@ import { FetchCSS, FetchGraphQL } from '../platform/FetchProvider';
 import { Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 
-type APIChapters = {
+type GQLChapters = {
     contentHomeProductList: {
         edges: {
             node: {
                 single: {
-                    productId: number,
+                    productId: number;
                     title: string;
                 };
             };
         }[],
         pageInfo: {
-            hasNextPage: boolean,
+            hasNextPage: boolean;
             endCursor: string;
         };
     };
 };
 
-type APiPages = {
+type GQLPages = {
     viewerInfo: {
         viewerData: {
             imageDownloadData: {
@@ -33,71 +33,11 @@ type APiPages = {
     };
 };
 
-const gqlChapterQuery = `
-    query contentHomeProductList(
-        $after: String
-        $before: String
-        $first: Int
-        $last: Int
-        $seriesId: Long!
-        $boughtOnly: Boolean
-        $sortType: String
-    ) {
-        contentHomeProductList(
-            seriesId: $seriesId
-            after: $after
-            before: $before
-            first: $first
-            last: $last
-            boughtOnly: $boughtOnly
-            sortType: $sortType
-        ) {
-            pageInfo {
-                hasNextPage
-                endCursor
-            }
-            edges {
-                node {
-                    ...SingleListViewItem
-                }
-            }
-        }
-    }
-    fragment SingleListViewItem on SingleListViewItem {
-        single {
-            productId
-            title
-        }
-    }
-`;
-
-const gqlPageQuery = `
-    query viewerInfo($seriesId: Long!, $productId: Long!) {
-        viewerInfo(seriesId: $seriesId, productId: $productId) {
-            viewerData {
-                ...ImageViewerData
-            }
-        }
-    }
-    fragment ImageViewerData on ImageViewerData {
-        imageDownloadData {
-            files {
-                ... {
-                    no
-                    secureUrl
-                }
-            }
-        }
-    }
-`;
-
-// TODO: Check for possible revision (GraphQL)
-
 @Common.MangasNotSupported()
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
-    private readonly apiUrl = 'https://bff-page.kakao.com';
+    private readonly apiURI = new URL('/graphql', 'https://bff-page.kakao.com');
 
     public constructor () {
         super('kakaopage', 'Page Kakao (카카오페이지)', 'https://page.kakao.com', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Korean, Tags.Source.Official);
@@ -119,18 +59,21 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const chapterList: Chapter[] = [];
-        const gqlVariables: JSONObject = {
-            seriesId: parseInt(manga.Identifier),
-            boughtOnly: false,
-            sortType: 'asc',
-            after: <string>undefined,
-        };
-
-        for (let run = true; run;) {
-            const { contentHomeProductList: { edges, pageInfo: { hasNextPage, endCursor } } } = await FetchGraphQL<APIChapters>(this.CreateRequest(), 'contentHomeProductList', gqlChapterQuery, gqlVariables);
+        for (let run = true, cursor: string = undefined; run;) {
+            const { contentHomeProductList: { edges, pageInfo: { hasNextPage, endCursor } } } = await this.FetchGQL<GQLChapters>(`
+                query ($seriesId: Long!, $after: String) {
+                    contentHomeProductList(seriesId: $seriesId, after: $after, boughtOnly: false, sortType: "asc") {
+                        pageInfo { hasNextPage, endCursor }
+                        edges { node { single { productId, title } } }
+                    }
+                }
+            `, {
+                seriesId: parseInt(manga.Identifier),
+                after: cursor,
+            });
             const chapters = edges.map(chapter => new Chapter(this, manga, chapter.node.single.productId.toString(), chapter.node.single.title.replace(manga.Title, '').trim()));
             chapterList.push(...chapters);
-            gqlVariables.after = endCursor;
+            cursor = endCursor;
             run = hasNextPage;
         }
 
@@ -138,19 +81,29 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const gqlVariables: JSONObject = {
+        const { viewerInfo: { viewerData: { imageDownloadData: { files } } } } = await this.FetchGQL<GQLPages>(`
+            query ($seriesId: Long!, $productId: Long!) {
+                viewerInfo(seriesId: $seriesId, productId: $productId) {
+                    viewerData {
+                        ... on ImageViewerData {
+                            imageDownloadData { files {  secureUrl } }
+                        }
+                    }
+                }
+            }
+        `, {
             productId: parseInt(chapter.Identifier),
-            seriesId: parseInt(chapter.Parent.Identifier)
-        };
-        const { viewerInfo: { viewerData: { imageDownloadData: { files } } } } = await FetchGraphQL<APiPages>(this.CreateRequest(), 'viewerInfo', gqlPageQuery, gqlVariables);
+            seriesId: parseInt(chapter.Parent.Identifier),
+        });
         return files.map(page => new Page(this, chapter, new URL(page.secureUrl)));
     }
 
-    private CreateRequest(): Request {
-        return new Request(new URL('/graphql', this.apiUrl), {
+    private FetchGQL<T extends JSONElement>(query: string, variables: JSONObject): Promise<T> {
+        const request = new Request(this.apiURI, {
             headers: {
                 Referer: this.URI.href,
             }
         });
+        return FetchGraphQL<T>(request, undefined, query, variables);
     }
 }
