@@ -119,7 +119,7 @@ export default class extends DecoratableMangaScraper {
             }
             case 'volume': {
                 const { volumeList: { volumeList } } = await FetchProto<WebChapterListForViewerResponse>(new Request(url), protoTypes, 'MangaOneJp.WebChapterListForViewerResponse');
-                return volumeList.map(volume => new Chapter(this, manga, JSON.stringify({ id: volume.volume.id, type: 'volume' }), volume.volume.name));
+                return volumeList.map(({ volume }) => new Chapter(this, manga, JSON.stringify({ id: volume.id, type: 'volume' }), volume.name));
             }
         }
     }
