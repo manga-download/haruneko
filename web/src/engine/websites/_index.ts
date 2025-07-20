@@ -417,6 +417,7 @@ export { default as MangaSehriNet } from './MangaSehriNet';
 export { default as MangasOrigines } from './MangasOrigines';
 export { default as MangasScans } from './MangasScans';
 export { default as MangaStarz } from './MangaStarz';
+export { default as MangaStep } from './MangaStep';
 export { default as MangaSushi } from './MangaSushi';
 export { default as MangaSusuku } from './MangaSusuku';
 export { default as MangaSwat } from './MangaSwat';
