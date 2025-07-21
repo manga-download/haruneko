@@ -9,6 +9,7 @@ import { DRMProvider } from './TencentComic.DRM.js';
 @Common.ChaptersSinglePageCSS('.works-chapter-list.chapter-page-all li span.works-chapter-item a')
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
+
     readonly #drm: DRMProvider = new DRMProvider();
 
     public constructor() {

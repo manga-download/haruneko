@@ -30,7 +30,7 @@ const pageScript = `
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
-    public constructor() {
+    public constructor () {
         super('readcomiconline', `ReadComicOnline`, 'https://readcomiconline.li', Tags.Language.English, Tags.Media.Comic, Tags.Source.Aggregator);
     }
 
@@ -44,5 +44,4 @@ export default class extends DecoratableMangaScraper {
             window.cookieStore.set('rco_quality', 'hq');
         `);
     }
-
 }

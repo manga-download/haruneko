@@ -12,7 +12,7 @@ import { FetchWindowScript } from '../platform/FetchProvider';
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
-    public constructor() {
+    public constructor () {
         super('toonily', 'Toonily', 'https://toonily.com', Tags.Media.Manhwa, Tags.Rating.Pornographic, Tags.Language.English, Tags.Source.Aggregator);
     }
 
@@ -23,5 +23,4 @@ export default class extends DecoratableMangaScraper {
     public override async Initialize(): Promise<void> {
         return FetchWindowScript(new Request(this.URI), `window.cookieStore.set('toonily-mature', '1')`);
     }
-
 }

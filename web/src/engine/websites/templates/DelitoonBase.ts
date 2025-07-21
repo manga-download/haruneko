@@ -9,29 +9,29 @@ import type { Priority } from '../../taskpool/DeferredTask';
 
 type APIResult<T> = {
     error?: {
-        code: string
+        code: string;
     },
     data: T,
-}
+};
 
 type APIManga = {
     id: number,
     alias: string,
     title: string,
     episodes: APIChapter[],
-}
+};
 
 type APIMangas = {
     contents?: APIManga[],
-    content?: APIManga[]
-}
+    content?: APIManga[];
+};
 
 type APIChapter = {
     id: string,
     alias: string,
     title: string,
     subTitle: string,
-}
+};
 
 type APIPages = {
     isScramble: boolean,
@@ -47,28 +47,76 @@ type ImageInfo = {
 
 type APIUser = {
     user?: {
-        accessToken: APISession,
+        accessToken: {
+            token: string,
+            expiredAt: number,
+        };
     },
-};
-
-type APISession = {
-    token: string,
-    expiredAt: number,
 };
 
 type ScrambleParams = {
     scrambleIndex: number[],
     defaultHeight: number,
+};
+
+// TODO: Check for possible revision
+
+export class BalconyDRM {
+
+    readonly #apiURL: URL;
+    readonly #platform = 'WEB';
+    private session: APIUser[ 'user' ][ 'accessToken' ];
+
+    constructor (private readonly webURL: URL, private readonly scope: string /* 'DELITOON_COM' */) {
+        this.#apiURL = new URL('/api/balcony-api-v2/', webURL);
+    }
+
+    #CreateRequest(endpoint: string, body: JSONElement | undefined = undefined): Request {
+        const uri = new URL(endpoint, this.#apiURL);
+        uri.searchParams.set('isNotLoginAdult', 'true');
+        const request = new Request(uri, body ? undefined : {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(body),
+        });
+        request.headers.set('Referer', this.webURL.origin);
+        request.headers.set('X-Balcony-Id', this.scope);
+        request.headers.set('X-Platform', this.#platform);
+        if (this.#HasValidSession) {
+            request.headers.set('Authorization', 'Bearer ' + this.session.token);
+        }
+        return request;
+    }
+
+    get #HasValidSession() {
+        return this.session?.token && this.session.expiredAt > Date.now() + 60_000;
+    }
+
+    private async UpdateSession(force: boolean = false): Promise<void> {
+        if (force || !this.#HasValidSession) {
+            const { user } = await FetchJSON<APIUser>(this.#CreateRequest('/api/auth/session'));
+            this.session = user?.accessToken;
+        }
+    }
+
+    public async FetchBalconyJSON<T extends JSONElement>(endpoint: string, body: JSONElement = undefined): Promise<APIResult<T>> {
+        await this.UpdateSession();
+        return FetchJSON<APIResult<T>>(this.#CreateRequest(endpoint, body));
+    }
 }
 
 export class DelitoonBase extends DecoratableMangaScraper {
 
     private readonly platform: string = 'WEB';
-    private activeUserSession: APISession = undefined;
+    private activeUserSession: APIUser[ 'user' ][ 'accessToken' ] = undefined;
     private readonly apiUrl = new URL('/api/balcony-api-v2/', this.URI);
     protected balconyID: string = 'DELITOON_COM';
     protected pagesEndpoint = './contents/viewer';
     protected mangaSearchVersion = 1;
+
+    protected drm: BalconyDRM;
 
     public override ValidateMangaURL(url: string): boolean {
         return new RegExpSafe(`^${this.URI.origin}/detail/[^/]+$`).test(url);
@@ -83,7 +131,7 @@ export class DelitoonBase extends DecoratableMangaScraper {
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        const url = this.mangaSearchVersion === 1 ? new URL('./contents/search', this.apiUrl) : new URL('/api/balcony-api-v2/search/all', this.URI);
+        const url = this.mangaSearchVersion === 1 ? new URL('./contents/search', this.apiUrl) : new URL('./search/all', this.URI);
         const promises = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').map(character => {
             url.search = new URLSearchParams({
                 searchText: character,
@@ -143,10 +191,10 @@ export class DelitoonBase extends DecoratableMangaScraper {
 
     private async FetchScrambledPages(chapter: Chapter, images: ImageInfo): Promise<Page<ScrambleParams>[]> {
         const endpoint = new URL(`./contents/images/${chapter.Parent.Identifier}/${chapter.Identifier}`, this.apiUrl);
-        const { data } = await this.FetchBalconyJSON<string>(endpoint, { line: images[0].line });
+        const { data } = await this.FetchBalconyJSON<string>(endpoint, { line: images[ 0 ].line });
         const keyData = GetBytesFromUTF8(data);
-        const algorithm = { name: 'AES-CBC', iv: keyData.slice(0, 16) };
-        const key = await crypto.subtle.importKey('raw', keyData, { name: 'AES-CBC', length: 256 }, false, ['decrypt']);
+        const algorithm = { name: 'AES-CBC', iv: keyData.slice(0, 16), length: 256 };
+        const key = await crypto.subtle.importKey('raw', keyData, algorithm, false, [ 'decrypt' ]);
         const promises = images.map(async image => {
             const decrypted = await crypto.subtle.decrypt(algorithm, key, GetBytesFromBase64(image.point));
             const scrambleIndex = JSON.parse(new TextDecoder('utf-8').decode(decrypted)) as number[];

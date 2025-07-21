@@ -19,7 +19,7 @@ const pageScript = `
 
 type JSONPage = {
     path: string;
-}
+};
 
 function ChapterExtractor(anchor: HTMLAnchorElement) {
     return {
@@ -28,13 +28,15 @@ function ChapterExtractor(anchor: HTMLAnchorElement) {
     };
 }
 
+// TODO: Check for possible revision (FetchNextJS)
+
 @Common.MangaCSS(/^{origin}\/manga\/\d+\/[^/]+$/, 'div.content-details h1')
 @Common.MangasMultiPageCSS('/?page={page}', 'div.overflow-hidden.grid.grid-cols-1 > div > a')
 @Common.ChaptersSinglePageCSS('div.list-episode a', ChapterExtractor)
 @Common.ImageAjax(true)
 export default class extends DecoratableMangaScraper {
 
-    public constructor() {
+    public constructor () {
         super('uzaymanga', 'Uzay Manga', 'https://uzaymanga.com', Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Language.Turkish, Tags.Source.Scanlator);
     }
 
@@ -46,9 +48,8 @@ export default class extends DecoratableMangaScraper {
 
         const request = new Request(new URL(chapter.Identifier, this.URI).href);
         const data = await FetchWindowScript<string>(request, pageScript);
-        const jsonString = data.match(/(\[{"path":.*}\])}}/)[1];
+        const jsonString = data.match(/(\[{"path":.*}\])}}/).at(-1);
         const imagesData: JSONPage[] = JSON.parse(jsonString);
-        return imagesData.map(image => new Page(this, chapter, new URL(`https://cdn1.uzaymanga.com/upload/series/${ image.path }`)));
+        return imagesData.map(image => new Page(this, chapter, new URL(`https://cdn1.uzaymanga.com/upload/series/${image.path}`)));
     }
-
 }
