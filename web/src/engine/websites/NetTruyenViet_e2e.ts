@@ -4,7 +4,7 @@ function config(url: string): Config {
     return {
         plugin: {
             id: 'nettruyen#BFBB5C98',
-            title: 'NetTruyen Viet',
+            title: 'NetTruyen Viet/WW',
         },
         container: {
             url: url,
