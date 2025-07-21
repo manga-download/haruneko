@@ -46,7 +46,6 @@ type APIImageTokens = APIResult<{
 }[]>;
 
 type PageParam = {
-    encrypted: boolean,
     index: number
 }
 
@@ -131,19 +130,18 @@ export default class extends DecoratableMangaScraper {
             m1: await this.#drm.GetPublicKey(),
             urls: this.#drm.CreateImageLinks(this.URI.origin, this.imageFormat.Value, images)
         }, false);
-        return data.map(({ complete_url: x, url, token, hit_encrpyt: encrypted }, index) => {
+        return data.map(({ complete_url: x, url, token }, index) => {
             const pageurl = new URL(x ?? `${url}?token=${token}`);
             pageurl.searchParams.set('code', 'DanmakuInfo');
-            return new Page<PageParam>(this, chapter, pageurl, { encrypted, index });
+            return new Page<PageParam>(this, chapter, pageurl, { index });
         });
     }
 
     public override async FetchImage(page: Page<PageParam>, priority: Priority, signal: AbortSignal): Promise<Blob> {
         const chapterUrl = new URL(`/mc${page.Parent.Parent.Identifier}/${page.Parent.Identifier}`, this.URI).href;
         return this.imageTaskPool.Add(async () => {
-            if (!page.Parameters.encrypted) {
-                return (await Fetch(new Request(page.Link))).blob();
-            } else return await Common.GetTypedData(await this.#drm.ExtractImageData(page.Link.href, page.Parameters.index, chapterUrl));
+            const blob = await (await Fetch(new Request(page.Link))).blob();
+            return blob.type.startsWith('image/') ? blob : Common.GetTypedData(await this.#drm.ExtractImageData(page.Link.href, page.Parameters.index, chapterUrl));
         }, priority, signal);
     }
 }
