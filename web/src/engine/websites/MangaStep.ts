@@ -1,5 +1,5 @@
 import { Tags } from '../Tags';
-import icon from './Manga168.webp';
+import icon from './MangaStep.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as MangaStream from './decorators/WordPressMangaStream';
 import * as Common from './decorators/Common';
@@ -12,7 +12,7 @@ import * as Common from './decorators/Common';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('manga168', 'Manga168', 'https://manga1688.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Media.Manga, Tags.Language.Thai, Tags.Source.Aggregator);
+        super('mangastep', 'MangaStep', 'https://mangastep.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Media.Manga, Tags.Language.Thai, Tags.Source.Aggregator);
     }
 
     public override get Icon() {
