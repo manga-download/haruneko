@@ -6,7 +6,7 @@ new TestFixture({
         title: 'KomikCast'
     },
     container: {
-        url: 'https://komikcast02.com/komik/swordmasters-youngest-son/',
+        url: 'https://komikcast.li/komik/swordmasters-youngest-son/',
         id: '/komik/swordmasters-youngest-son/',
         title: 'Swordmaster’s Youngest Son'
     },

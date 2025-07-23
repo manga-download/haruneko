@@ -14,7 +14,7 @@ function PageExtractor(img: HTMLImageElement) {
 @Common.ImageAjax(true)
 export default class extends DecoratableMangaScraper {
 
-    public constructor() {
+    public constructor () {
         super('manhwalatino', 'Manhwa-Latino', 'https://manhwa-latino.com', Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Language.Spanish);
     }
 
@@ -26,5 +26,4 @@ export default class extends DecoratableMangaScraper {
         const chapters = await Madara.FetchChaptersSinglePageCSS.call(this, manga, 'ul li.wp-manga-chapter div.mini-letters a');
         return chapters.map(chapter => new Chapter(this, manga, chapter.Identifier, chapter.Title.replace(manga.Title, '').trim()));
     }
-
 }

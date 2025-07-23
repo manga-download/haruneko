@@ -4,35 +4,29 @@ import { Chapter, DecoratableMangaScraper, type Manga, Page } from '../providers
 import * as Common from './decorators/Common';
 import { FetchGraphQL } from '../platform/FetchProvider';
 
-type APIChapters = {
+type GQLChapters = {
     chapters: {
         id: number,
         name: string,
-        number: number
-    }[]
-}
+        number: number;
+    }[];
+};
 
-type ChapterIdentifier = {
-    id: number,
-    number: number
-}
-
-type APIPages = {
+type GQLPages = {
     chapter: {
         pages: {
-            original: string,
-            colored: string
-        }[]
-    }
-}
+            original: string;
+        }[];
+    };
+};
 
 @Common.MangaCSS(/^{origin}\/[^/]/, 'h2.super-title')
 @Common.MangasSinglePagesCSS([ '/mangas' ], 'div.listing a.no-select', Common.AnchorInfoExtractor(true))
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
-    public constructor() {
-        super('littlegarden', `Little Garden`, 'https://littlexgarden.com', Tags.Language.English, Tags.Language.French, Tags.Media.Manga, Tags.Media.Manhwa, Tags.Source.Scanlator);
+    public constructor () {
+        super('littlegarden', 'Little Garden', 'https://littlexgarden.com', Tags.Language.English, Tags.Language.French, Tags.Media.Manga, Tags.Media.Manhwa, Tags.Source.Scanlator);
     }
 
     public override get Icon() {
@@ -40,62 +34,36 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const slug = manga.Identifier.split('/').at(-1);
-        const query = `
-            query chapters($slug: String, $limit: Float, $skip: Float, $order: Float!, $isAdmin: Boolean!) {
-                chapters(limit: $limit, skip: $skip, where: {
-                    deleted: false, published: $isAdmin, manga: {
-                        slug: $slug, published: $isAdmin, deleted: false
-                    }
-                }, order: [{ field: "number", order: $order }]) {
-                    id
-                    number
-                }
-            }
-        `;
-
-        const variables: JSONObject = {
-            slug: slug,
-            order: -1,
-            skip: 0,
-            limit: 99999,
-            isAdmin: true
-        };
         const request = new Request(new URL('/graphql', this.URI).href);
-        const data = await FetchGraphQL<APIChapters>(request, 'chapters', query, variables);
+        const data = await FetchGraphQL<GQLChapters>(request, undefined, `
+            query ($slug: String, $order: Float!) {
+                chapters(limit: 99999, skip: 0, where: {
+                    deleted: false
+                    published: true
+                    manga: { deleted: false, published: true, slug: $slug }
+                }, order: [{ field: "number", order: -1 }]) { id, number }
+            }
+        `, { slug: manga.Identifier.split('/').at(-1) });
         return data.chapters.map(chapter => {
             const name = chapter.name ? String(chapter.number) + ' : ' + chapter.name.trim() : String(chapter.number);
-            const id = JSON.stringify({ id: chapter.id, number: chapter.number });
-            return new Chapter(this, manga, id, name);
+            return new Chapter(this, manga, `${chapter.number}`, name);
         });
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const mangaSlug = chapter.Parent.Identifier.split('/').at(-1);
-        const chapterid: ChapterIdentifier = JSON.parse(chapter.Identifier);
-        const query = `
-            query chapter($slug: String, $number: Float) {
-                chapter(
-                    where: {
-                        deleted: false
-                        published: true
-                        number: $number
-                        manga: { deleted: false, published: true, slug: $slug }
-                    }
-                )   {
-                        pages {
-                            original
-                        }
-                    }
+        const { chapter: { pages } } = await FetchGraphQL<GQLPages>(new Request(new URL('/graphql', this.URI).href), undefined, `
+            query ($slug: String, $number: Float) {
+                chapter(where: {
+                    deleted: false
+                    published: true
+                    number: $number
+                    manga: { deleted: false, published: true, slug: $slug }
+                }) { pages { original } }
             }
-   `;
-        const variables: JSONObject = {
-            slug: mangaSlug,
-            number: chapterid.number,
-            isAdmin: true
-        };
-        const request = new Request(new URL('/graphql', this.URI).href);
-        const data = await FetchGraphQL<APIPages>(request, 'chapter', query, variables);
-        return data.chapter.pages.map(page => new Page(this, chapter, new URL(`/static/images/${page.original}`, this.URI)));
+        `, {
+            slug: chapter.Parent.Identifier.split('/').at(-1),
+            number: parseFloat(chapter.Identifier),
+        });
+        return pages.map(page => new Page(this, chapter, new URL(`/static/images/${page.original}`, this.URI)));
     }
 }

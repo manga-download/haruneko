@@ -4,7 +4,7 @@ import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Madara from './decorators/WordPressMadara';
 import * as Common from './decorators/Common';
 
-@Madara.MangaCSS(/^{origin}\/mangas\/[^/]+\/$/, 'meta[property="og:title"]:not([content*="Nitro Scans"])')
+@Madara.MangaCSS(/^{origin}\/series\/[^/]+\/$/, 'meta[property="og:title"]:not([content*="Nitro Scans"])')
 @Madara.MangasMultiPageAJAX()
 @Madara.ChaptersSinglePageAJAXv2()
 @Madara.PagesSinglePageCSS()

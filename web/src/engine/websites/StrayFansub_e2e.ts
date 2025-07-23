@@ -1,13 +1,13 @@
-import { TestFixture, type Config } from '../../../test/WebsitesFixture';
+import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config: Config = {
+new TestFixture({
     plugin: {
         id: 'strayfansub',
         title: 'Stray Fansub'
-    },
+    }, /* Need Login
     container: {
         url: 'https://strayfansub.com/manga/dash/',
-        id: JSON.stringify({ post: '40', slug: '/manga/dash/'}),
+        id: JSON.stringify({ post: '40', slug: '/manga/dash/' }),
         title: 'DASH'
     },
     child: {
@@ -18,7 +18,5 @@ const config: Config = {
         index: 1,
         size: 1_368_758,
         type: 'image/jpeg'
-    }
-};
-
-new TestFixture(config).AssertWebsite();
+    }*/
+}).AssertWebsite();

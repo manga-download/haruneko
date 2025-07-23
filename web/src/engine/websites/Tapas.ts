@@ -6,30 +6,30 @@ import { FetchCSS, FetchJSON } from '../platform/FetchProvider';
 
 type APIMangas = {
     data: {
-        items: APIManga[]
-    }
-}
+        items: APIManga[];
+    };
+};
 
 type APISingleManga = {
     data: {
         id: number,
-        title: string
-    }
-}
+        title: string;
+    };
+};
 
 type APIManga = {
     seriesId: number,
-    title: string
-}
+    title: string;
+};
 
 type APIChapters = {
     data: {
         episodes: {
             id: number,
-            title : string
-        }[]
-    }
-}
+            title: string;
+        }[];
+    };
+};
 
 @Common.PagesSinglePageCSS('article.viewer__body img.content__img')
 @Common.ImageAjax()
@@ -37,7 +37,7 @@ export default class extends DecoratableMangaScraper {
 
     private readonly apiUrl = 'https://story-api.tapas.io/cosmos/api/v1/landing/';
 
-    public constructor() {
+    public constructor () {
         super('tapas', `Tapas`, 'https://tapas.io', Tags.Media.Manhwa, Tags.Language.English, Tags.Source.Official, Tags.Accessibility.RegionLocked);
     }
 
@@ -50,7 +50,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
-        const seriesId = (await FetchCSS<HTMLMetaElement>(new Request(url), 'meta[property="al:android:url"]'))[0].content.replace(/\/info$/, '').split('/').at(-1);
+        const seriesId = (await FetchCSS<HTMLMetaElement>(new Request(url), 'meta[property="al:android:url"]')).at(0).content.replace(/\/info$/, '').split('/').at(-1);
         const { data } = await FetchJSON<APISingleManga>(new Request(new URL(`/series/${seriesId}?`, this.URI), {
             headers: {
                 Accept: 'application/json, text/javascript, */*;',
@@ -84,10 +84,9 @@ export default class extends DecoratableMangaScraper {
         return chapterList;
     }
 
-    private async GetChaptersFromPage(manga : Manga, page: number) {
+    private async GetChaptersFromPage(manga: Manga, page: number) {
         const url = new URL(`/series/${manga.Identifier}/episodes?page=${page}`, this.URI);
         const { data: { episodes } } = await FetchJSON<APIChapters>(new Request(url));
         return episodes.map(chapter => new Chapter(this, manga, `/episode/${chapter.id}`, chapter.title.trim()));
     }
-
 }

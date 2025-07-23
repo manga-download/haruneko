@@ -1,8 +1,8 @@
 import { Tags } from '../Tags';
 import icon from './IkigaiMangas.webp';
+import { FetchCSS, FetchWindowScript } from '../platform/FetchProvider';
 import { Chapter, DecoratableMangaScraper, type Manga } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { FetchCSS } from '../platform/FetchProvider';
 
 // TODO: Add Novel support
 function MangaInfoExtractor(anchor: HTMLAnchorElement) {
@@ -18,12 +18,17 @@ function MangaInfoExtractor(anchor: HTMLAnchorElement) {
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
-    public constructor() {
-        super('ikigaimangas', 'Ikigai Mangas', 'https://visorikigai.damilok.xyz', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Spanish, Tags.Source.Aggregator);
+    public constructor () {
+        super('ikigaimangas', 'Ikigai Mangas', 'https://lectorikigai.eltanews.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Spanish, Tags.Source.Aggregator, Tags.Accessibility.DomainRotation);
     }
 
     public override get Icon() {
         return icon;
+    }
+
+    public override async Initialize(): Promise<void> {
+        this.URI.href = await FetchWindowScript(new Request('https://visualikigai.com'), `window.location.origin`, 1500);
+        console.log(`Assigned URL '${this.URI}' to ${this.Title}`);
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
@@ -35,8 +40,8 @@ export default class extends DecoratableMangaScraper {
         return chapterList;
     }
 
-    private async GetChaptersFromPage(manga: Manga, page: number): Promise<Chapter[]>{
+    private async GetChaptersFromPage(manga: Manga, page: number): Promise<Chapter[]> {
         const data = await FetchCSS<HTMLAnchorElement>(new Request(new URL(`${manga.Identifier}?pagina=${page}`, this.URI)), 'ul li.w-full a');
-        return data.map(chapter => new Chapter(this, manga, chapter.pathname, chapter.querySelector('h3.font-semibold').textContent.trim()));
+        return data.map(chapter => new Chapter(this, manga, chapter.pathname, chapter.querySelector<HTMLHeadingElement>('h3.font-semibold').textContent.trim()));
     }
 }

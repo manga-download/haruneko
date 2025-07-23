@@ -39,7 +39,7 @@ function MangaInfoExtractor(anchor: HTMLAnchorElement) {
 @Common.ImageAjax(true)
 export default class extends DecoratableMangaScraper {
 
-    public constructor() {
+    public constructor () {
         super('asurascans', 'Asura Scans', 'https://asuracomic.net', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.English, Tags.Source.Scanlator);
     }
 
@@ -59,5 +59,4 @@ export default class extends DecoratableMangaScraper {
         const manga = await MangaStream.FetchMangaCSS.call(this, provider, url.replace(/-[^-]+$/, '-'), 'title');
         return new Manga(this, provider, manga.Identifier, manga.Title.replace(' - Asura Scans', '').trim());
     }
-
 }

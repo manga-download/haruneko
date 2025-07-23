@@ -1,4 +1,3 @@
-import type { JSONObject } from '../../../../node_modules/websocket-rpc/dist/types';
 export declare class DRMProvider {
     #private;
     GetPublicKey(): Promise<string>;
@@ -7,5 +6,5 @@ export declare class DRMProvider {
         path: string;
     }[]): string;
     ExtractImageData(response: Response): Promise<ArrayBuffer>;
-    FetchTwirp<T extends JSONObject>(uri: URL, path: string, payload: JSONObject): Promise<T>;
+    FetchTwirp<T extends JSONObject>(uri: URL, path: string, payload: JSONObject, payloadWithFingerprint?: boolean): Promise<T>;
 }
