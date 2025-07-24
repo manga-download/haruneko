@@ -131,8 +131,8 @@ export class DelitoonBase extends DecoratableMangaScraper {
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        const url = this.mangaSearchVersion === 1 ? new URL('./contents/search', this.apiUrl) : new URL('./search/all', this.URI);
         const promises = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').map(character => {
+            const url = this.mangaSearchVersion === 1 ? new URL('./contents/search', this.apiUrl) : new URL('./search/all', this.apiUrl);
             url.search = new URLSearchParams({
                 searchText: character,
                 isCheckDevice: 'true',
