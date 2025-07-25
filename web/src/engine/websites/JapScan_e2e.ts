@@ -7,12 +7,12 @@ new TestFixture({
         title: 'JapScan'
     },
     container: {
-        url: 'https://www.japscan.lol/manga/jujutsu-kaisen/',
+        url: 'https://www.japscan.si/manga/jujutsu-kaisen/',
         id: '/manga/jujutsu-kaisen/',
         title: 'Jujutsu Kaisen'
     }, /* Reader is protected by CloudFlare with ~10 minute challenge reset
     child: {
-        id: '/lecture-en-ligne/jujutsu-kaisen/1/',
+        id: '/manga/jujutsu-kaisen/1/',
         title: 'Chapitre 1: Esprit à double-face'
     },
     entry: {
@@ -29,12 +29,12 @@ new TestFixture({
         title: 'JapScan'
     },
     container: {
-        url: 'https://www.japscan.lol/manga/king-game/',
+        url: 'https://www.japscan.si/manga/king-game/',
         id: '/manga/king-game/',
         title: 'King Game'
     }, /* Reader is protected by CloudFlare with ~10 minute challenge reset
     child: {
-        id: '/lecture-en-ligne/king-game/1/',
+        id: '/manga/king-game/1/',
         title: 'Chapitre 1'
     },
     entry: {
