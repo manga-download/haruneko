@@ -54,6 +54,7 @@ export { default as Bomtoon } from './Bomtoon';
 export { default as BomtoonCN } from './BomtoonCN';
 export { default as Bontoon } from './Bontoon';
 export { default as Boomtoon } from './Boomtoon';
+export { default as BoyLoveCC } from './BoyLoveCC';
 export { default as CartelDeManhwas } from './CartelDeManhwas';
 export { default as CarToonMad } from './CarToonMad';
 export { default as CasaComic } from './CasaComic';
