@@ -6,7 +6,7 @@ import * as Common from './decorators/Common';
 @Common.MangaCSS(/^{origin}\/[^/]+$/, 'div.content div.posts h1.titl')
 @Common.MangasMultiPageCSS('/comics-porno/page/{page}', 'div.blog-list-items h2.information a', 1, 1, 0, Common.AnchorInfoExtractor(true))
 @Common.ChaptersUniqueFromManga()
-@Common.PagesSinglePageCSS('div.wp-content p noscript img:not([src*="download.png"])')
+@Common.PagesSinglePageCSS('div.wp-content img[class=""]:not([src*="download.png"])')
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
