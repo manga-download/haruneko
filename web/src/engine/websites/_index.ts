@@ -466,6 +466,7 @@ export { default as Manhwaland } from './Manhwaland';
 export { default as ManhwaLatino } from './ManhwaLatino';
 export { default as ManhwaList } from './ManhwaList';
 export { default as ManhwaRaw } from './ManhwaRaw';
+export { default as ManhwaRead } from './ManhwaRead';
 export { default as ManhwasMen } from './ManhwasMen';
 export { default as ManhwasNet } from './ManhwasNet';
 export { default as ManhwaTop } from './ManhwaTop';
