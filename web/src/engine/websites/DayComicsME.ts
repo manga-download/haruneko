@@ -1,17 +1,17 @@
 import { Tags } from '../Tags';
-import icon from './HotComics.webp';
+import icon from './DayComicsME.webp';
 import { Chapter, DecoratableMangaScraper, type Manga } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import * as Toomics from './decorators/ToomicsBase';
 import { FetchCSS, FetchWindowScript } from '../platform/FetchProvider';
 
-@Toomics.MangaCSS(/^{origin}\/[a-z]+\/[^/]+\/[^/]+\.html$/, 'div.title_content h2.episode-title')
-@Toomics.MangasSinglePageCSS(['en', 'de', 'jp', 'ch', 'tc', 'mx', 'es', 'it', 'por', 'fr', 'ko'], 'div.list-wrap ul li a', '/{language}/ranking/')
+@Common.MangaCSS(/^{origin}\/en\/[^/]+\/[^/]+\.html$/, 'div.title_content h2.episode-title')
+@Common.MangasMultiPageCSS('/en/genres?page={page}', 'div.list-wrap ul li a', 1, 1, 0, Toomics.MangaInfoExtractor(false))
 @Common.PagesSinglePageCSS(Toomics.queryPages, Toomics.PageExtractor)
-@Common.ImageAjax()
+@Common.ImageAjax(true)
 export default class extends DecoratableMangaScraper {
     public constructor() {
-        super('hotcomics', `HotComics`, 'https://hotcomics.me', Tags.Language.Multilingual, Tags.Media.Manhwa, Tags.Source.Official);
+        super('daycomicsme', 'DayComics(.me)', 'https://daycomics.me', Tags.Language.English, Tags.Media.Manhwa, Tags.Source.Official);
     }
 
     public override get Icon() {

@@ -12,7 +12,7 @@ import { FetchWindowScript } from '../platform/FetchProvider';
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
     public constructor() {
-        super('lalatoonko', `Lalatoon (KO)`, 'https://www.lalatoon.com', Tags.Language.Korean, Tags.Media.Manhwa, Tags.Source.Official);
+        super('lalatoonko', 'Lalatoon (KO)', 'https://www.lalatoon.com', Tags.Language.Korean, Tags.Media.Manhwa, Tags.Source.Official);
     }
 
     public override get Icon() {

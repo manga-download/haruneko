@@ -12,11 +12,11 @@ new TestFixture({
     },
     child: {
         id: '/fr/webtoon/detail/code/100571/ep/1/toon/5048',
-        title: '1'
+        title: 'Chase Fortune ép. 1 [fr]'
     },
     entry: {
         index: 0,
-        size: 82_091,
+        size: 81_888,
         type: 'image/jpeg'
     }
 }).AssertWebsite();

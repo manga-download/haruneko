@@ -29,7 +29,7 @@ export default class extends DecoratableMangaScraper {
     private readonly mangaRegex3 = new RegExp(`^${this.URI.origin}/webtoon/bridge/type/\\d+/toon/\\d+$`); //https://www.toomics.com/webtoon/bridge/type/2/toon/76766 => /webtoon/episode/toon/7676
 
     public constructor() {
-        super('toomics-ko', `Toomics (Korean)`, 'https://www.toomics.com', Tags.Language.Korean, Tags.Media.Manhwa, Tags.Source.Official);
+        super('toomics-ko', 'Toomics (Korean)', 'https://www.toomics.com', Tags.Language.Korean, Tags.Media.Manhwa, Tags.Source.Official);
     }
 
     public override get Icon() {

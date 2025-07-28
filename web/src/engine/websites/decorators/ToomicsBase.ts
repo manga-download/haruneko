@@ -6,9 +6,9 @@ export const queryPages = '#viewer-img img';
 
 const defaultMangaPath = '/{language}/webtoon/ranking';
 
-function MangaInfoExtractor(appendLanguage : boolean = true) {
+export function MangaInfoExtractor(appendLanguage : boolean = true) {
     return function (this: MangaScraper, element: HTMLAnchorElement, addLanguage: boolean = appendLanguage) {
-        const language = element.pathname.match(/^\/([a-z]{2,3})\//)[1];
+        const language = element.pathname.match(/^\/([a-z]{2,3})\//).at(1);
         const title = (element.querySelector('h4.title, h4') ?? element).textContent.trim();
         return {
             id: element.pathname,
