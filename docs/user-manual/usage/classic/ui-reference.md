@@ -36,8 +36,8 @@ To close the menu, click the button again or any space in the application other 
    This can either be used to migrate all bookmarks from the previous version of HakuNeko (legacy) or to backup and restore the current list of bookmarks to/from a file.
 6. Sixth provides an entry to open the [Settings](#application-settings) dialog.
    It includes a dropdown menu.
-7. Seventh is for Help. It includes a dropdown menu.
-8. Eight is for About. It includes a dropdown menu.
+7. Seventh is for Help. It includes a dropdown menu. <!--Add shortcut if About section created-->
+8. Eight is for About. It includes a dropdown menu. <!--Add shortcut if About section created-->
 
 ## Bookmark Panel
 
@@ -46,7 +46,7 @@ To close the menu, click the button again or any space in the application other 
 ![](./assets/Media-List.jpg)
 
 1. Paste Media Link Button:
-   Use this button to load the manga links (e.g. *https://mangadex.org/title/31013/eleceed*) currently stored in the clipboard into the manga list.
+   Use this button to load the manga links (e.g. [https://mangadex.org/title/31013/eleceed](https://mangadex.org/title/31013/eleceed)) currently stored in the clipboard into the manga list.
    This is useful to quickly drop manga downloads into HakuNeko while browsing manga websites with your browser.
 2. It is also possible to browse manga lists directly in HakuNeko.
    You can type here the name of your Source from which the manga shall be shown (if the list was updated).
