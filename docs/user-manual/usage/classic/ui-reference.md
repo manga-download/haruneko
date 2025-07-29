@@ -16,7 +16,7 @@ Additional functionalities or configurations can be found in the [Menu](#menu).
 1. The top-left panel contains [system controls](#menu).
 2. The [Manga List](#bookmark-panel) shows all available manga from different sources such as websites, bookmarks, clipboard, …​ 
    Furthermore it provides a simple search to filter the list.
-3. The [Chapter List]() shows all available chapters for the currently selected manga from the manga list. 
+3. The [Chapter List](#item-list) shows all available chapters for the currently selected manga from the manga list. 
    It also supports basic sorting and advanced filtering options.
 4. The [Download Queue](#download-panel) panel shows the status and progress of all chapters that are currently downloading.
 
