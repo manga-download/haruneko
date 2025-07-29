@@ -36,8 +36,8 @@ To close the menu, click the button again or any space in the application other 
    This can either be used to migrate all bookmarks from the previous version of HakuNeko (legacy) or to backup and restore the current list of bookmarks to/from a file.
 6. Sixth provides an entry to open the [Settings](#application-settings) dialog.
    It includes a dropdown menu.
-7. Seventh is for [Help](). It includes a dropdown menu.
-8. Eight is for [About](). It includes a dropdown menu.
+7. Seventh is for Help. It includes a dropdown menu.
+8. Eight is for About. It includes a dropdown menu.
 
 ## Bookmark Panel
 
@@ -196,7 +196,7 @@ This can take up to several minutes for large websites.
 ## Application Settings
 
 ::: tip FOOTNOTES
-[1] Make sure the _Media Directory_ is set correctly after the first launch of HakuNeko to prevent errors and confusion.
+[1] Make sure the *Media Directory* is set correctly after the first launch of HakuNeko to prevent errors and confusion.
 :::
 
 ## Developer Tools
