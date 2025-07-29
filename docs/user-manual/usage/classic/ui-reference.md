@@ -34,7 +34,7 @@ To close the menu, click the button again or any space in the application other 
 4. Forth is to open the [Plugin Panel](#website-selection-panel).
 5. Fifth is to [Import & Export](#import--export) functionality.
    This can either be used to migrate all bookmarks from the previous version of HakuNeko (legacy) or to backup and restore the current list of bookmarks to/from a file.
-6. Sixth provides an entry to open the [Settings](#application-settings) dialog. 
+6. Sixth provides an entry to open the [Settings](#application-settings) dialog.
    It includes a dropdown menu.
 7. Seventh is for [Help](). It includes a dropdown menu.
 8. Eight is for [About](). It includes a dropdown menu.
@@ -45,23 +45,23 @@ To close the menu, click the button again or any space in the application other 
 
 ![](./assets/Media-List.jpg)
 
-1. Paste Media Link Button: 
-   Use this button to load the manga links (e.g. https://mangadex.org/title/31013/eleceed) currently stored in the clipboard into the manga list. 
+1. Paste Media Link Button:
+   Use this button to load the manga links (e.g. https://mangadex.org/title/31013/eleceed) currently stored in the clipboard into the manga list.
    This is useful to quickly drop manga downloads into HakuNeko while browsing manga websites with your browser.
-2. It is also possible to browse manga lists directly in HakuNeko. 
-   You can type here the name of your Source from which the manga shall be shown (if the list was updated). 
+2. It is also possible to browse manga lists directly in HakuNeko.
+   You can type here the name of your Source from which the manga shall be shown (if the list was updated).
    There are also some special sources which are discussed later.
-3. If a website is selected as source, the manga will be shown from a locally cached list. 
+3. If a website is selected as source, the manga will be shown from a locally cached list.
    To update the list use this synchronize button. 
    A refresh logo will appear at the place of the Manga List
-4. Enter a search pattern to filter the manga list. 
-   The pattern requires at least 3 characters to perform a search (or 2 with non-latin characters). 
+4. Enter a search pattern to filter the manga list.
+   The pattern requires at least 3 characters to perform a search (or 2 with non-latin characters).
    You can search by the title of a manga or by the source name.
 5. With the bookmark button (the star) you can add or remove the selected manga from he manga list to the bookmark list.
 6. A *Play* symbol will appear next to a bookmarked manga when there are unread chapters present.
 7. The list of manga that are shown for the selected source and filtered by the search pattern. 
    Select a manga to load its chapters in the Chapter List.
-8. The status bar may show an activity icon when the list is loading or synchronizing. 
+8. The status bar may show an activity icon when the list is loading or synchronizing.
    It also shows the number of filtered manga in the list and the total number of available manga for the selected source.
 
 ### Item List
@@ -71,19 +71,19 @@ The chapter list shows the chapters of the selected manga from the [Media List](
 ![](./assets/Item-List.jpg)
 
 1. Use the sort button to toggle between different ordering of the chapters. The options are original, ascending, descending.
-2. Choose a language to show only chapters of this selected language. 
+2. Choose a language to show only chapters of this selected language.
    If the language option is not available than the site does not have multiple languages or that it was not coded yet (you can make a request on github).
 3. Show only chapters that matches a given search pattern. Regular expressions are also supported.
 4. The list of chapters that are shown for the selected source and filtered by the language and search pattern.
-5. Each chapter has some controls and a title. 
+5. Each chapter has some controls and a title.
    The download button will add the chapter to the download list and save it to the folder that is configured in the Settings. 
-   The button has different appearances reflecting the current state. 
+   The button has different appearances reflecting the current state.
    See the tooltip for additional information. <!--Do the tooltip-->
-   The preview button will show the pages of the chapter in the Preview Panel. 
-   The marker logo keeps track of your last read chapter. 
-   To change the read status of a chapter you will need to right click on the chapter and select the *Flag as* option than the read status of your need. 
+   The preview button will show the pages of the chapter in the Preview Panel.
+   The marker logo keeps track of your last read chapter.
+   To change the read status of a chapter you will need to right click on the chapter and select the *Flag as* option than the read status of your need.
    These features do not work in offline mode. <!--double check if this is still the case-->
-6. The status bar may show an activity icon when the list is loading. 
+6. The status bar may show an activity icon when the list is loading.
    It also shows the number of filtered chapters in the list and the total number of available chapters for the selected manga.
 
 ![](./assets/Itme-List-MoreInfo.jpg)
@@ -104,7 +104,7 @@ Downloaded chapters are shown from the local folder, otherwise the content is st
 
 ![](./assets/Download.jpg)
 
-Whenever a chapter is downloaded, it will be added to the download queue. 
+Whenever a chapter is downloaded, it will be added to the download queue.
 The number in the parenthesis () shows the number of downloads that are queued in the list.
 There will be two download slider present.
 The first one shows how much of the current chapter is downloaded.
@@ -158,12 +158,11 @@ Selecting the Quick Reader Settings will bring up the following settings and inf
    This is useful to remove the gap when reading webtoons.
 8. Increase the space between the pages.
 9. Change the view mode.
-    Paginated or longstrip
-
+   Paginated or longstrip
 
 ## Website Selection Panel
 
-The source selection list can be reached by the corresponding control (number 4) in the [Manga List](#menu). 
+The source selection list can be reached by the corresponding control (number 4) in the [Manga List](#menu).
 
 ![](./assets/Plugin-Select.jpg)
 
@@ -192,7 +191,7 @@ This can take up to several minutes for large websites.
 
 ### Paste Media URL
 
-## Import & Export 
+## Import & Export
 
 ## Application Settings
 
