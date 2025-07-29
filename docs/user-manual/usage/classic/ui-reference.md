@@ -14,7 +14,7 @@ Additional functionalities or configurations can be found in the [Menu](#menu).
 ![](./assets/overview1.1.jpg)
 
 1. The top-left panel contains [system controls](#menu).
-2. The [Manga List](#bookmark-panel) shows all available manga from different sources such as websites, bookmarks, clipboard, …​ 
+2. The [Manga List](#bookmark-panel) shows all available manga from different sources such as websites, bookmarks, clipboard, etc.
    Furthermore it provides a simple search to filter the list.
 3. The [Chapter List](#item-list) shows all available chapters for the currently selected manga from the manga list.
    It also supports basic sorting and advanced filtering options.
@@ -46,20 +46,20 @@ To close the menu, click the button again or any space in the application other 
 ![](./assets/Media-List.jpg)
 
 1. Paste Media Link Button:
-   Use this button to load the manga links (e.g. https://mangadex.org/title/31013/eleceed) currently stored in the clipboard into the manga list.
+   Use this button to load the manga links (e.g. *https://mangadex.org/title/31013/eleceed*) currently stored in the clipboard into the manga list.
    This is useful to quickly drop manga downloads into HakuNeko while browsing manga websites with your browser.
 2. It is also possible to browse manga lists directly in HakuNeko.
    You can type here the name of your Source from which the manga shall be shown (if the list was updated).
    There are also some special sources which are discussed later.
 3. If a website is selected as source, the manga will be shown from a locally cached list.
-   To update the list use this synchronize button. 
+   To update the list use this synchronize button.
    A refresh logo will appear at the place of the Manga List
 4. Enter a search pattern to filter the manga list.
    The pattern requires at least 3 characters to perform a search (or 2 with non-latin characters).
    You can search by the title of a manga or by the source name.
 5. With the bookmark button (the star) you can add or remove the selected manga from he manga list to the bookmark list.
 6. A *Play* symbol will appear next to a bookmarked manga when there are unread chapters present.
-7. The list of manga that are shown for the selected source and filtered by the search pattern. 
+7. The list of manga that are shown for the selected source and filtered by the search pattern.
    Select a manga to load its chapters in the Chapter List.
 8. The status bar may show an activity icon when the list is loading or synchronizing.
    It also shows the number of filtered manga in the list and the total number of available manga for the selected source.
@@ -76,7 +76,7 @@ The chapter list shows the chapters of the selected manga from the [Media List](
 3. Show only chapters that matches a given search pattern. Regular expressions are also supported.
 4. The list of chapters that are shown for the selected source and filtered by the language and search pattern.
 5. Each chapter has some controls and a title.
-   The download button will add the chapter to the download list and save it to the folder that is configured in the Settings. 
+   The download button will add the chapter to the download list and save it to the folder that is configured in the Settings.
    The button has different appearances reflecting the current state.
    See the tooltip for additional information. <!--Do the tooltip-->
    The preview button will show the pages of the chapter in the Preview Panel.
@@ -134,7 +134,7 @@ At the top o the window you will find three buttons in the following order:
 
 ![](./assets/Reader-1.jpg)
 
-To open the reader just click any of the pages from the [Preview Panel](#media-preview). 
+To open the reader just click any of the pages from the [Preview Panel](#media-preview).
 The control panel is at the top right corner and will expand as soon as the cursor enters (hover).
 
 You will found four buttons.
@@ -154,7 +154,7 @@ Selecting the Quick Reader Settings will bring up the following settings and inf
 4. Navigate to the chapter that is above the current chapter in the chapter list without leaving the reader.
 5. Increase the size of the pages.
 6. Decrease the size of the pages.
-7. Decrease the space between the pages. 
+7. Decrease the space between the pages.
    This is useful to remove the gap when reading webtoons.
 8. Increase the space between the pages.
 9. Change the view mode.
