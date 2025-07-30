@@ -6,7 +6,7 @@ new TestFixture({
         title: 'KomikIndoId'
     },
     container: {
-        url: 'https://komikindo.rip/komik/50kg-cinderella/',
+        url: 'https://komikindo.org/komik/50kg-cinderella/',
         id: '/komik/50kg-cinderella/',
         title: '-50kg Cinderella'
     },
