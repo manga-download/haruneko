@@ -1,5 +1,5 @@
 import { Tags } from '../Tags';
-import icon from './YumeKomik.webp';
+import icon from './RokariComics.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as MangaStream from './decorators/WordPressMangaStream';
 import * as Common from './decorators/Common';
@@ -8,11 +8,11 @@ import * as Common from './decorators/Common';
 @MangaStream.MangasSinglePageCSS()
 @MangaStream.ChaptersSinglePageCSS()
 @MangaStream.PagesSinglePageJS()
-@Common.ImageAjax(false, true)
+@Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('yumekomik', 'YumeKomik', 'https://yumekomik.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Media.Manga, Tags.Language.Indonesian, Tags.Source.Aggregator);
+        super('rokaricomics', 'Rokari Comics', 'https://rokaricomics.com', Tags.Media.Manhwa, Tags.Language.English, Tags.Source.Scanlator);
     }
 
     public override get Icon() {

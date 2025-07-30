@@ -1,5 +1,5 @@
 import { Tags } from '../Tags';
-import icon from './DelitoonDE.webp';
+import icon from './LezhinDE.webp';
 import { BalconyDRM, DelitoonBase } from './templates/DelitoonBase';
 
 // TODO: Check for possible revision
@@ -7,10 +7,10 @@ import { BalconyDRM, DelitoonBase } from './templates/DelitoonBase';
 export default class extends DelitoonBase {
 
     public constructor () {
-        super('delitoonde', `Delitoon (German)`, 'https://www.delitoon.de', Tags.Language.German, Tags.Media.Manhwa, Tags.Source.Official);
-        this.balconyID = 'DELITOON_DE';
+        super('delitoonde', 'Lezhin (German)', 'https://www.lezhinde.com', Tags.Language.German, Tags.Media.Manhwa, Tags.Source.Official);
+        this.balconyID = 'LEZHINDE_COM';
         this.mangaSearchVersion = 2;
-        this.drm = new BalconyDRM(this.URI, 'DELITOON_DE');
+        this.drm = new BalconyDRM(this.URI, 'LEZHINDE_COM');
     }
 
     public override get Icon() {

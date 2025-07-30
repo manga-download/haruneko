@@ -3,10 +3,10 @@ import { TestFixture } from '../../../test/WebsitesFixture';
 new TestFixture({
     plugin: {
         id: 'delitoonde',
-        title: 'Delitoon (German)'
+        title: 'Lezhin (German)'
     },
     container: {
-        url: 'https://www.delitoon.de/detail/dad_4100016',
+        url: 'https://www.lezhinde.com/detail/dad_4100016',
         id: 'dad_4100016',
         title: 'Wie werde ich meinen Verlobten los?'
     },

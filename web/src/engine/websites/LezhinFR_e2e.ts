@@ -2,13 +2,13 @@ import { TestFixture } from '../../../test/WebsitesFixture';
 
 new TestFixture({
     plugin: {
-        id: 'delitoonbde',
-        title: 'Delitoon B (German)'
+        id: 'delitoon',
+        title: 'Lezhin (French)'
     },
     container: {
-        url: 'https://www.delitoonb.de/detail/dbd_20396',
-        id: 'dbd_20396',
-        title: 'Spuren der Leere'
+        url: 'https://www.lezhinfr.com/detail/daf_4100032',
+        id: 'daf_4100032',
+        title: `Moriarty's Perfect Crime`
     },
     child: {
         id: '1',
@@ -16,7 +16,7 @@ new TestFixture({
     },
     entry: {
         index: 0,
-        size: 126_700,
+        size: 96_500,
         type: 'image/webp'
     }
 }).AssertWebsite();
