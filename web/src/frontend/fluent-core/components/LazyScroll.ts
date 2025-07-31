@@ -1,6 +1,6 @@
-import { FASTElement, type ViewTemplate, type ElementStyles, customElement, html, css, observable, repeat } from '@microsoft/fast-element';
+import { FASTElement, type ViewTemplate, html, css, observable, repeat } from '@microsoft/fast-element';
 
-const styles: ElementStyles = css`
+const styles = css`
 
     :host {
         display: block;
@@ -9,16 +9,15 @@ const styles: ElementStyles = css`
     }
 `;
 
-const template: ViewTemplate<LazyScroll> = html`
+const template = html<LazyScroll>`
     ${repeat(model => model.visibles, model => model.template)}
 `;
 
-@customElement({ name: 'fluent-lazy-scroll', template, styles })
 export class LazyScroll extends FASTElement {
 
     override connectedCallback(): void {
         super.connectedCallback();
-        this.addEventListener('scroll', this.LoadNext);
+        this.addEventListener('scroll', this.LoadNext, { passive: true });
     }
 
     override disconnectedCallback(): void {
@@ -27,7 +26,7 @@ export class LazyScroll extends FASTElement {
     }
 
     private scrolling = false;
-    @observable template: ViewTemplate;
+    @observable template: ViewTemplate<unknown>;
     @observable visibles: unknown[] = [];
     @observable Items: unknown[];
     ItemsChanged() {
@@ -47,3 +46,5 @@ export class LazyScroll extends FASTElement {
         }
     }.bind(this);
 }
+
+LazyScroll.define({ name: 'fluent-lazy-scroll', template, styles });

@@ -38,6 +38,7 @@ export const legacyWebsiteIdentifierMap = new Map([
     [ 'neteasecomic', 'bilibilimanhua' ],
     [ 'nitroscans', 'nitromanga' ],
     [ 'prismascans', 'demonsect' ],
+    // TODO: 'ravensscans-en' + 'ravenscans-es' => 'ravensscans'
     [ 'reaperscansid', 'shinigamiid' ],
     [ 'scanhentaimenu', 'xmanga' ],
     [ 'shonenmagazine-pocket', 'shonenmagazine' ],
