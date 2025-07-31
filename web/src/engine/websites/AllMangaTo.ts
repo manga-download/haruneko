@@ -42,31 +42,8 @@ type APIPages = {
     }
 }
 
-type SearchVariables = {
-    search: {
-        isManga: boolean,
-        allowAdult: boolean,
-        allowUnknown: boolean
-    },
-    size: number,
-    page: number,
-    countryOrigin: string
-}
-
-type ChapterListVariables = {
-    id: string,
-    chapterNumStart: number,
-    chapterNumEnd: number
-}
-
 type ChapterID = {
     id: string,
-    translationType: string
-}
-
-type PageListVariables = {
-    id: string,
-    chapterNum: string,
     translationType: string
 }
 
@@ -124,7 +101,7 @@ export default class extends DecoratableMangaScraper {
             }        
         `;
 
-        const variables: SearchVariables = {
+        const data = await this.FetchAPI<APIMangas>(query, {
             search: {
                 isManga: true,
                 allowAdult: true,
@@ -133,9 +110,7 @@ export default class extends DecoratableMangaScraper {
             size: 20,
             page: page,
             countryOrigin: 'ALL'
-        };
-
-        const data = await FetchGraphQL<APIMangas>(new Request(new URL(this.apiUrl)), '', query, variables);
+        });
         return data?.mangas?.edges ? data.mangas.edges.map(manga => new Manga(this, provider, manga._id, manga.englishName ?? manga.name)) : [];
 
     }
@@ -155,13 +130,12 @@ export default class extends DecoratableMangaScraper {
             }
         `;
 
-        const variables: ChapterListVariables = {
+        const { episodeInfos } = await this.FetchAPI<APIChapters>(query, {
             id: `manga@${manga.Identifier}`,
             chapterNumStart: 0,
             chapterNumEnd: 9999
-        };
+        });
 
-        const { episodeInfos } = await FetchGraphQL<APIChapters>(new Request(new URL(this.apiUrl)), '', query, variables);
         episodeInfos.sort((a, b) => b.episodeIdNum - a.episodeIdNum);
         return episodeInfos.reduce((accumulator: Chapter[], entry) => {
             const chapters = Object.keys(entry.uploadDates).map(key => {
@@ -194,16 +168,19 @@ export default class extends DecoratableMangaScraper {
             }
         `;
 
-        const variables: PageListVariables = {
+        const { chapterPages: { edges } } = await this.FetchAPI<APIPages>(query, {
             id: chapter.Parent.Identifier,
             chapterNum: chapterId,
             translationType
-        };
-
-        const { chapterPages: { edges } } = await FetchGraphQL<APIPages>(new Request(new URL(this.apiUrl)), '', query, variables);
+        });
         const server = edges.at(0);
         if (!server.pictureUrlHead) server.pictureUrlHead = this.URI.origin;
         const domain = (/^https?:\/\//).test(server.pictureUrlHead) ? server.pictureUrlHead : `https://${server.pictureUrlHead}`;
         return server.pictureUrls.map(picture => new Page(this, chapter, new URL(picture.url, domain)));
     }
+
+    private async FetchAPI<T extends JSONElement>(query: string, variables: JSONObject): Promise<T> {
+        return await FetchGraphQL<T>(new Request(new URL(this.apiUrl)), '', query, variables);
+    }
+
 }

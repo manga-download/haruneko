@@ -1,5 +1,6 @@
 import { TestFixture } from '../../../test/WebsitesFixture';
 
+// CASE : English
 new TestFixture({
     plugin: {
         id: 'allmangato',
@@ -21,6 +22,7 @@ new TestFixture({
     }
 }).AssertWebsite();
 
+// CASE : "raw" (Chinese)
 new TestFixture({
     plugin: {
         id: 'allmangato',
