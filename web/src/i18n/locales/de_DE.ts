@@ -93,8 +93,6 @@ const translations: VariantResource = { // NOTE: Use defaults for missing transl
   Frontend_FluentCore_Menu_ExportBookmarks_Label: "Lesezeichen exportieren…",
   Frontend_FluentCore_Menu_ExportBookmarks_Description: "Exportieren aller Lesezeichen in eine Datei (z.B. als Sicherheitskopie)",
   //
-  Frontend_FluentCore_Settings_ThemeLuminance_Label: "Helligkeit der Benutzeroberfläche",
-  Frontend_FluentCore_Settings_ThemeLuminance_Description: "Ändert die Helligkeit des Motivs für die Benutzeroberfläche",
   Frontend_FluentCore_Settings_ShowBookmarksPanel_Label: "Lesezeichen Ein-/Ausblenden",
   Frontend_FluentCore_Settings_ShowBookmarksPanel_Description: "Schaltet die Sichtbarkeit der Liste mit den Lesezeichen ein/aus",
   Frontend_FluentCore_Settings_ShowDownloadsPanel_Label: "Downloads Ein-/Ausblenden",

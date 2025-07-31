@@ -93,8 +93,6 @@ const translations: VariantResource = { // NOTE: Use defaults for missing transl
   Frontend_FluentCore_Menu_ExportBookmarks_Label: "crwdns1622:0crwdne1622:0",
   Frontend_FluentCore_Menu_ExportBookmarks_Description: "crwdns1624:0crwdne1624:0",
   //
-  Frontend_FluentCore_Settings_ThemeLuminance_Label: "crwdns1305:0crwdne1305:0",
-  Frontend_FluentCore_Settings_ThemeLuminance_Description: "crwdns1307:0crwdne1307:0",
   Frontend_FluentCore_Settings_ShowBookmarksPanel_Label: "crwdns1309:0crwdne1309:0",
   Frontend_FluentCore_Settings_ShowBookmarksPanel_Description: "crwdns1570:0crwdne1570:0",
   Frontend_FluentCore_Settings_ShowDownloadsPanel_Label: "crwdns1313:0crwdne1313:0",

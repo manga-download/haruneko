@@ -1,8 +1,11 @@
-import { FASTElement, type ViewTemplate, type ElementStyles, customElement, html, css, observable } from '@microsoft/fast-element';
-import { IWindowService } from '../services/WindowService';
-import S from '../services/StateService';
+import { FASTElement, html, css, observable } from '@microsoft/fast-element';
+import { WindowManagerRegistration, type IWindowManager } from '../services/WindowManager';
+import { LocalizationProviderRegistration, type ILocalizationProvider } from '../services/LocalizationProvider';
+import { SettingsManagerRegistration, type ISettingsManager, ThemeWebLight, ThemeWebDark } from '../services/SettingsManager';
 
 // See: https://icon-sets.iconify.design/fluent/
+import IconSunlight from '@fluentui/svg-icons/icons/weather_sunny_20_regular.svg?raw';
+import IconMoonlight from '@fluentui/svg-icons/icons/weather_moon_20_regular.svg?raw';
 import IconDownloadManager from '@fluentui/svg-icons/icons/arrow_download_20_regular.svg?raw';
 import IconBookmarkList from '@fluentui/svg-icons/icons/bookmark_multiple_20_regular.svg?raw';
 import IconBookmarksImport from '@fluentui/svg-icons/icons/arrow_import_20_filled.svg?raw';
@@ -25,24 +28,25 @@ import IconMinimize from '@vscode/codicons/src/icons/chrome-minimize.svg?raw';
 import IconMaximize from '@vscode/codicons/src/icons/chrome-maximize.svg?raw';
 import IconRestore from '@vscode/codicons/src/icons/chrome-restore.svg?raw';
 import IconClose from '@vscode/codicons/src/icons/chrome-close.svg?raw';
+import type { MenuItem } from '@fluentui/web-components';
 
-const styles: ElementStyles = css`
+const styles = css`
 
     :host {
         gap: 0;
         display: grid;
         align-items: center;
         grid-template-columns: max-content auto max-content;
-        border-top-left-radius: calc(1px * var(--layer-corner-radius));
-        border-top-right-radius: calc(1px * var(--layer-corner-radius));
-    }
-
-    fluent-button {
-        --neutral-fill-stealth-rest: transparent;
+        border-top-left-radius: var(--borderRadiusXLarge);
+        border-top-right-radius: var(--borderRadiusXLarge);
     }
 
     #menu {
         display: block;
+    }
+
+    #menu-button {
+        min-width: unset !important;
     }
 
     #title {
@@ -55,16 +59,8 @@ const styles: ElementStyles = css`
         display: flex;
     }
 
-    #controls fluent-anchor {
-        --neutral-fill-stealth-rest: transparent;
-    }
-
-    #controls fluent-anchor:hover {
-        background-color: var(--neutral-fill-stealth-hover);
-    }
-
-    fluent-anchor#close:hover {
-        background-color: #FF6060 !important;
+    #controls > fluent-button#close:hover {
+        background-color: var(--colorStatusDangerBackground2) !important;
     }
 
     #menu-overlay {
@@ -77,108 +73,105 @@ const styles: ElementStyles = css`
         z-index: 2147483647;
     }
 
-    #menu-popup {
-        display: none;
-        position: absolute;
-        z-index: 2147483647;
-    }
-
     fluent-menu-item div[slot="start"] {
         display: flex;
     }
 `;
 
-const template: ViewTemplate<TitleBar> = html`
-    <div id="menu">
-        <fluent-button id="menu-button" appearance="stealth" title="${() => S.Locale.Frontend_FluentCore_Menu_Description()}" :innerHTML=${() => IconMenu} @click=${model => model.popup = !model.popup}></fluent-button>
-        <div id="menu-overlay" style="display: ${model => model.popup ? 'block' : 'none'}" @click=${model => model.popup = false}></div>
-        <fluent-menu id="menu-popup" style="display: ${model => model.popup ? 'block' : 'none'}">
-            <fluent-menu-item role="menuitemcheckbox" title="${() => S.Locale.Frontend_FluentCore_Settings_ShowBookmarksPanel_Description()}" :checked=${() => S.SettingPanelBookmarks} @change=${(_, ctx) => S.SettingPanelBookmarks = ctx.event.currentTarget['checked']}>
+const buttonToggleLightMode = html<TitleBar>`
+    <fluent-button icon-only appearance="transparent" :title=${model => model.Localization.Locale.Frontend_FluentCore_Button_ToggleTheme_Description(model.Localization.Get(ThemeWebLight.label))} :innerHTML=${() => IconMoonlight} @click=${model => model.SettingsManager.SettingSelectedTheme = ThemeWebLight}></fluent-button>
+`;
+
+const buttonToggleDarkMode = html<TitleBar>`
+    <fluent-button icon-only appearance="transparent" :title=${model => model.Localization.Locale.Frontend_FluentCore_Button_ToggleTheme_Description(model.Localization.Get(ThemeWebDark.label))} :innerHTML=${() => IconSunlight} @click=${model => model.SettingsManager.SettingSelectedTheme = ThemeWebDark}></fluent-button>
+`;
+
+const template = html<TitleBar>`
+    <fluent-menu id="menu">
+        <fluent-menu-button id="menu-button" slot="trigger" appearance="subtle" title="${model => model.Localization.Locale.Frontend_FluentCore_Menu_Description()}" :innerHTML=${() => IconMenu}></fluent-menu-button>
+        <fluent-menu-list id="menu-popup">
+            <fluent-menu-item role="menuitemcheckbox" title="${model => model.Localization.Locale.Frontend_FluentCore_Settings_ShowBookmarksPanel_Description()}" :checked=${model => model.SettingsManager.SettingPanelBookmarks} @change=${(model, ctx) => model.SettingsManager.SettingPanelBookmarks = ctx.eventTarget<MenuItem>().checked}>
                 <div slot="start" :innerHTML=${() => IconBookmarkList}></div>
-                ${() => S.Locale.Frontend_FluentCore_Settings_ShowBookmarksPanel_Label()}
+                ${model => model.Localization.Locale.Frontend_FluentCore_Settings_ShowBookmarksPanel_Label()}
             </fluent-menu-item>
-            <fluent-menu-item role="menuitemcheckbox" title="${() => S.Locale.Frontend_FluentCore_Settings_ShowDownloadsPanel_Description()}" :checked=${() => S.SettingPanelDownloads} @change=${(_, ctx) => S.SettingPanelDownloads = ctx.event.currentTarget['checked']}>
+            <fluent-menu-item role="menuitemcheckbox" title="${model => model.Localization.Locale.Frontend_FluentCore_Settings_ShowDownloadsPanel_Description()}" :checked=${model => model.SettingsManager.SettingPanelDownloads} @change=${(model, ctx) => model.SettingsManager.SettingPanelDownloads = ctx.eventTarget<MenuItem>().checked}>
                 <div slot="start" :innerHTML=${() => IconDownloadManager}></div>
-                ${() => S.Locale.Frontend_FluentCore_Settings_ShowDownloadsPanel_Label()}
+                ${model => model.Localization.Locale.Frontend_FluentCore_Settings_ShowDownloadsPanel_Label()}
             </fluent-menu-item>
             <fluent-divider></fluent-divider>
-            <fluent-menu-item title="${() => S.Locale.Frontend_FluentCore_Menu_OpenSettings_Description()}" @click=${model => model.ShowGlobalSettingsDialog()}>
+            <fluent-menu-item title="${model => model.Localization.Locale.Frontend_FluentCore_Menu_OpenSettings_Description()}" @click=${model => model.ShowGlobalSettingsDialog()}>
                 <div slot="start" :innerHTML=${() => IconSettings}></div>
-                ${() => S.Locale.Frontend_FluentCore_Menu_OpenSettings_Label()}
+                ${model => model.Localization.Locale.Frontend_FluentCore_Menu_OpenSettings_Label()}
             </fluent-menu-item>
-            <fluent-menu-item title="${() => S.Locale.Frontend_FluentCore_Menu_ImportBookmarks_Description()}" @click=${model => model.ImportBookmarks()}>
+            <fluent-menu-item title="${model => model.Localization.Locale.Frontend_FluentCore_Menu_ImportBookmarks_Description()}" @click=${model => model.ImportBookmarks()}>
                 <div slot="start" :innerHTML=${() => IconBookmarksImport}></div>    
-                ${() => S.Locale.Frontend_FluentCore_Menu_ImportBookmarks_Label()}
+                ${model => model.Localization.Locale.Frontend_FluentCore_Menu_ImportBookmarks_Label()}
             </fluent-menu-item>
-            <fluent-menu-item title="${() => S.Locale.Frontend_FluentCore_Menu_ExportBookmarks_Description()}" @click=${model => model.ExportBookmarks()}>
+            <fluent-menu-item title="${model => model.Localization.Locale.Frontend_FluentCore_Menu_ExportBookmarks_Description()}" @click=${model => model.ExportBookmarks()}>
                 <div slot="start" :innerHTML=${() => IconBookmarksExport}></div>   
-                ${() => S.Locale.Frontend_FluentCore_Menu_ExportBookmarks_Label()}
+                ${model => model.Localization.Locale.Frontend_FluentCore_Menu_ExportBookmarks_Label()}
             </fluent-menu-item>
             <fluent-divider></fluent-divider>
-            <fluent-menu-item title="${() => S.Locale.Settings_FeatureFlags_Description()}">
+            <fluent-menu-item title="${model => model.Localization.Locale.Settings_FeatureFlags_Description()}">
                 <div slot="start" :innerHTML=${() => IconFeatureFlags}></div>
-                ${() => S.Locale.Settings_FeatureFlags_Label()}
-                <fluent-menu>
-                    <fluent-menu-item role="menuitemcheckbox" title="${() => S.Locale[HakuNeko.FeatureFlags.HideSplashScreen.Description]()}" :checked=${() => !HakuNeko.FeatureFlags.HideSplashScreen.Value} @change=${(_, ctx) => HakuNeko.FeatureFlags.HideSplashScreen.Value = !ctx.event.currentTarget['checked']}>
+                ${model => model.Localization.Locale.Settings_FeatureFlags_Label()}
+                <fluent-menu-list slot="submenu">
+                    <fluent-menu-item role="menuitemcheckbox" title="${model => model.Localization.Locale[ HakuNeko.FeatureFlags.HideSplashScreen.Description ]()}" :checked=${() => !HakuNeko.FeatureFlags.HideSplashScreen.Value} @change=${(_, ctx) => HakuNeko.FeatureFlags.HideSplashScreen.Value = !ctx.eventTarget<MenuItem>().checked}>
                         <div slot="start" :innerHTML=${() => IconWindowAd}></div>
-                        ${() => S.Locale[HakuNeko.FeatureFlags.HideSplashScreen.Label]()}
+                        ${model => model.Localization.Locale[ HakuNeko.FeatureFlags.HideSplashScreen.Label ]()}
                     </fluent-menu-item>
-                    <fluent-menu-item role="menuitemcheckbox" title="${() => S.Locale[HakuNeko.FeatureFlags.VerboseFetchWindow.Description]()}" :checked=${() => HakuNeko.FeatureFlags.VerboseFetchWindow.Value} @change=${(_, ctx) => HakuNeko.FeatureFlags.VerboseFetchWindow.Value = ctx.event.currentTarget['checked']}>
+                    <fluent-menu-item role="menuitemcheckbox" title="${model => model.Localization.Locale[ HakuNeko.FeatureFlags.VerboseFetchWindow.Description ]()}" :checked=${() => HakuNeko.FeatureFlags.VerboseFetchWindow.Value} @change=${(_, ctx) => HakuNeko.FeatureFlags.VerboseFetchWindow.Value = ctx.eventTarget<MenuItem>().checked}>
                         <div slot="start" :innerHTML=${() => IconDebugConsole}></div>
-                        ${() => S.Locale[HakuNeko.FeatureFlags.VerboseFetchWindow.Label]()}
+                        ${model => model.Localization.Locale[ HakuNeko.FeatureFlags.VerboseFetchWindow.Label ]()}
                     </fluent-menu-item>
-                    <fluent-menu-item role="menuitemcheckbox" title="${() => S.Locale[HakuNeko.FeatureFlags.CrowdinTranslationMode.Description]()}" :checked=${() => HakuNeko.FeatureFlags.CrowdinTranslationMode.Value} @change=${(_, ctx) => HakuNeko.FeatureFlags.CrowdinTranslationMode.Value = ctx.event.currentTarget['checked']}>
+                    <fluent-menu-item role="menuitemcheckbox" title="${model => model.Localization.Locale[ HakuNeko.FeatureFlags.CrowdinTranslationMode.Description ]()}" :checked=${() => HakuNeko.FeatureFlags.CrowdinTranslationMode.Value} @change=${(_, ctx) => HakuNeko.FeatureFlags.CrowdinTranslationMode.Value = ctx.eventTarget<MenuItem>().checked}>
                         <div slot="start" :innerHTML=${() => IconCrowdinContextTranslation}></div>
-                        ${() => S.Locale[HakuNeko.FeatureFlags.CrowdinTranslationMode.Label]()}
+                        ${model => model.Localization.Locale[ HakuNeko.FeatureFlags.CrowdinTranslationMode.Label ]()}
                     </fluent-menu-item>
-                </fluent-menu>
+                </fluent-menu-list>
             </fluent-menu-item>
-            <fluent-divider></fluent-divider>
-            <fluent-setting-theme-luminance></fluent-setting-theme-luminance>
-        </fluent-menu>
-    </div>
-    <div id="title">${() => S.Locale.Frontend_Product_Title()}</div>
+        </fluent-menu-list>
+    </fluent-menu>
+    <div id="title">${model => model.Localization.Locale.Frontend_Product_Title()}</div>
     <div id="controls">
-        <fluent-anchor appearance="stealth" title="${() => S.Locale.Frontend_FluentCore_Window_ButtonMinimize_Description()}" :innerHTML=${() => IconMinimize} @click="${model => model.window.Minimize()}"></fluent-anchor>
-        <fluent-anchor appearance="stealth" title="${model => model.window.IsMaximized ? S.Locale.Frontend_FluentCore_Window_ButtonRestore_Description() : S.Locale.Frontend_FluentCore_Window_ButtonMaximize_Description()}" :innerHTML=${model => model.window.IsMaximized ? IconRestore : IconMaximize} @click="${model => model.window.IsMaximized ? model.window.Restore() : model.window.Maximize()}"></fluent-anchor>
-        <fluent-anchor id="close" appearance="stealth" title="${() => S.Locale.Frontend_FluentCore_Window_ButtonClose_Description()}" :innerHTML=${() => IconClose} @click=${model => model.window.Close()}></fluent-anchor>
+        ${model => model.SettingsManager.SettingSelectedTheme === ThemeWebLight ? buttonToggleDarkMode : buttonToggleLightMode}
+        <fluent-button icon-only appearance="subtle" title="${model => model.Localization.Locale.Frontend_FluentCore_Window_ButtonMinimize_Description()}" :innerHTML=${() => IconMinimize} @click="${model => model.WindowManager.Minimize()}"></fluent-button>
+        <fluent-button icon-only appearance="subtle" title="${model => model.WindowManager.IsMaximized ? model.Localization.Locale.Frontend_FluentCore_Window_ButtonRestore_Description() : model.Localization.Locale.Frontend_FluentCore_Window_ButtonMaximize_Description()}" :innerHTML=${model => model.WindowManager.IsMaximized ? IconRestore : IconMaximize} @click="${model => model.WindowManager.IsMaximized ? model.WindowManager.Restore() : model.WindowManager.Maximize()}"></fluent-button>
+        <fluent-button icon-only id="close" appearance="subtle" title="${model => model.Localization.Locale.Frontend_FluentCore_Window_ButtonClose_Description()}" :innerHTML=${() => IconClose} @click=${model => model.WindowManager.Close()}></fluent-button>
     </div>
 `;
 
-@customElement({ name: 'fluent-titlebar', template, styles })
 export class TitleBar extends FASTElement {
 
-    @IWindowService window!: IWindowService;
+    @WindowManagerRegistration WindowManager: IWindowManager;
+    @LocalizationProviderRegistration Localization: ILocalizationProvider;
+    @SettingsManagerRegistration SettingsManager: ISettingsManager;
     @observable maximized = false;
     @observable settings = false;
-    @observable popup = false;
 
     public ShowGlobalSettingsDialog() {
-        this.popup = false;
-        S.ShowSettingsDialog(...HakuNeko.SettingsManager.OpenScope());
+        this.SettingsManager.ShowSettingsDialog(...this.SettingsManager.GlobalSettings);
     }
 
-    public async ImportBookmarks()
-    {
+    public async ImportBookmarks() {
         try {
-            this.popup = false;
             const summary = await HakuNeko.BookmarkPlugin.Import();
             console.log(summary);
-        } catch(error) {
+        } catch (error) {
             // TODO: Show error to user
             console.error(error);
         }
     }
 
-    public async ExportBookmarks()
-    {
+    public async ExportBookmarks() {
         try {
-            this.popup = false;
             const summary = await HakuNeko.BookmarkPlugin.Export();
             console.log(summary);
-        } catch(error) {
+        } catch (error) {
             // TODO: Show error to user
             console.error(error);
         }
     }
 }
+
+TitleBar.define({ name: 'fluent-titlebar', template, styles });

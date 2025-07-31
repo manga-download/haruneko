@@ -1,8 +1,8 @@
 import { Tags } from '../Tags';
 import icon from './ComicK.webp';
 import { Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from '../providers/MangaPlugin';
-import { Fetch, FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
-import type { Priority } from '../taskpool/DeferredTask';
+import { FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
+import * as Common from './decorators/Common';
 
 type APIManga = {
     hid: string,
@@ -32,33 +32,30 @@ type APIPage = {
     name: string,
 }
 
-type PageParameters = {
-    mirrors: string[],
-};
-
 const chapterLanguageMap = new Map([
-    [ 'ar', Tags.Language.Arabic ],
-    [ 'en', Tags.Language.English ],
+    ['ar', Tags.Language.Arabic],
+    ['en', Tags.Language.English],
     //[ 'uk', Tags.Language.Ukrainian ],
-    [ 'es', Tags.Language.Spanish ],
-    [ 'es-419', Tags.Language.Spanish ],
-    [ 'ru', Tags.Language.Russian ],
-    [ 'pt-br', Tags.Language.Portuguese ],
-    [ 'pt', Tags.Language.Portuguese ],
-    [ 'th', Tags.Language.Thai ],
-    [ 'it', Tags.Language.Italian ],
-    [ 'id', Tags.Language.Indonesian ],
-    [ 'fr', Tags.Language.French ],
-    [ 'zh', Tags.Language.Chinese ],
-    [ 'zh-hk', Tags.Language.Chinese ],
-    [ 'de', Tags.Language.German ],
-    [ 'tr', Tags.Language.Turkish ],
-    [ 'pl', Tags.Language.Polish ],
-    [ 'vi', Tags.Language.Vietnamese ],
-    [ 'ja', Tags.Language.Japanese ],
+    ['es', Tags.Language.Spanish],
+    ['es-419', Tags.Language.Spanish],
+    ['ru', Tags.Language.Russian],
+    ['pt-br', Tags.Language.Portuguese],
+    ['pt', Tags.Language.Portuguese],
+    ['th', Tags.Language.Thai],
+    ['it', Tags.Language.Italian],
+    ['id', Tags.Language.Indonesian],
+    ['fr', Tags.Language.French],
+    ['zh', Tags.Language.Chinese],
+    ['zh-hk', Tags.Language.Chinese],
+    ['de', Tags.Language.German],
+    ['tr', Tags.Language.Turkish],
+    ['pl', Tags.Language.Polish],
+    ['vi', Tags.Language.Vietnamese],
+    ['ja', Tags.Language.Japanese],
     //[ 'cz', Tags.Language
 ]);
 
+@Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
     private readonly apiUrl = 'https://api.comick.io';
@@ -130,7 +127,7 @@ export default class extends DecoratableMangaScraper {
                 title += ` [${item.group_name.join(', ')}]`;
             }
             return new Chapter(this, manga, item.hid, title,
-                ...chapterLanguageMap.has(item.lang) ? [ chapterLanguageMap.get(item.lang) ] : []
+                ...chapterLanguageMap.has(item.lang) ? [chapterLanguageMap.get(item.lang)] : []
             );
         });
     }
@@ -142,23 +139,6 @@ export default class extends DecoratableMangaScraper {
                 Origin: this.URI.origin
             }
         }));
-        return md_images.map(image => new Page<PageParameters>(this, chapter, new URL(image.b2key, `https://s3.comick.ink/comick/`), {
-            mirrors: [
-                new URL(image.b2key, `https://meo.comick.pictures/`).href,
-            ],
-        }));
-    }
-
-    public override async FetchImage(page: Page<PageParameters>, priority: Priority, signal: AbortSignal): Promise<Blob> {
-        return this.imageTaskPool.Add(async () => {
-            for(const uri of [ page.Link, ...page.Parameters.mirrors ]) {
-                try {
-                    const request = new Request(uri, { signal: signal, headers: { Referer: this.URI.href } });
-                    const response = await Fetch(request);
-                    const blob = await response.blob();
-                    if (blob.type.startsWith('image/')) return blob;
-                } catch {}
-            }
-        }, priority, signal);
+        return md_images.map(image => new Page(this, chapter, new URL(image.b2key, 'https://meo.comick.pictures')));
     }
 }
