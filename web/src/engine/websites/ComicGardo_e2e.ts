@@ -7,8 +7,8 @@ new TestFixture({
         title: 'コミックガルド (Comic Gardo)'
     },
     container: {
-        url: 'https://comic-gardo.com/episode/14079602755108116814',
-        id: '/episode/14079602755108116814',
+        url: 'https://comic-gardo.com/episode/3269754496561191129',
+        id: '/episode/3269754496561191129',
         title: '俺は星間国家の悪徳領主！'
     },
     child: {
