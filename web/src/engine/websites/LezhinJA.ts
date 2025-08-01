@@ -7,18 +7,20 @@ import type { Priority } from '../taskpool/DeferredTask';
 import { Exception } from '../Error';
 import { WebsiteResourceKey as R } from '../../i18n/ILocale';
 
-type APIResult<T> = {
-    status: string,
-    message: string,
+type APIVolumes = {
     results: {
-        data: T
+        data: APIVolume[]
     }
 }
 
-type APIMangaResults = {
+type APIMangas = {
     results: {
         comics: APIComic[]
     }
+}
+
+type APIPages = {
+    results: APIPage[]
 }
 
 type APIComic = {
@@ -35,10 +37,6 @@ type APIVolume = {
     hash_id: string,
     name: string
     chapters: APIChapter[]
-}
-
-type APIPages = {
-    results: APIPage[]
 }
 
 type APIPage = {
@@ -73,7 +71,7 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
         const promises = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').map(character => {
-            return this.FetchAPI<APIMangaResults>(`./search/quick?keyword=${character}`);
+            return this.FetchAPI<APIMangas>(`./search/quick?keyword=${character}`);
         });
 
         const results: Manga[] = (await Promise.all(promises)).reduce((accumulator: Manga[], element) => {
@@ -93,7 +91,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     private async GetEntries(manga: Manga, type: string): Promise<Chapter[]> {
-        const { results: { data } } = await this.FetchAPI< APIResult<APIVolume[]>>(`./comic/${manga.Identifier}/${type}?page_size=9999&page=1`);
+        const { results: { data } } = await this.FetchAPI<APIVolumes>(`./comic/${manga.Identifier}/${type}?page_size=9999&page=1`);
         switch (type) {
             case 'all-chapters': {
                 return data.reduce((accumulator: Chapter[], volume) => {
