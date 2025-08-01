@@ -1,6 +1,6 @@
 ﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'littlegarden',
         title: 'Little Garden'
@@ -11,7 +11,7 @@ const config = {
         title: 'Tokyo Revengers'
     },
     child: {
-        id: JSON.stringify( { id: 3255, number: 5}),
+        id: JSON.stringify({ id: 3255, number: 5 }),
         title: '5'
     },
     entry: {
@@ -19,6 +19,4 @@ const config = {
         size: 3_369_042,
         type: 'image/jpeg'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();
