@@ -5,7 +5,7 @@ import * as CoreView from './decorators/CoreView';
 import * as Common from './decorators/Common';
 import { FetchCSS } from '../platform/FetchProvider';
 
-@Common.MangaCSS(/^{origin}\/(episode|magazine)\/\d+$/, CoreView.queryMangaTitleFromURI)
+@Common.MangaCSS(/^{origin}\/(episode|magazine|volume)\/\d+$/, CoreView.queryMangaTitleFromURI)
 @Common.MangasSinglePagesCSS([ '/series', '/series/oneshot', '/series/finished' ], 'article.series-list-wrapper ul.series-list > li.series-list-item > a', CoreView.DefaultMangaExtractor)
 @CoreView.PagesSinglePageJSON()
 @CoreView.ImageAjax()
@@ -24,7 +24,7 @@ export default class extends DecoratableMangaScraper {
             const data = await FetchCSS(new Request(new URL(manga.Identifier, this.URI)), '.episode-header-title');
             return [new Chapter(this, manga, manga.Identifier, data[0].textContent.replace(manga.Title, '').trim())];
         } else {
-            return CoreView.FetchChaptersMultiPageAJAXV2.call(this, manga);
+            return CoreView.FetchChaptersMultiPagesAJAXV2.call(this, manga);
         }
     }
 }
