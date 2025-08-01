@@ -93,8 +93,6 @@ const translations: VariantResource = { // NOTE: Use defaults for missing transl
   Frontend_FluentCore_Menu_ExportBookmarks_Label: "Exporter les marque-pages…",
   Frontend_FluentCore_Menu_ExportBookmarks_Description: "Exporter les marque-pages vers un fichier (par exemple, pour la sauvegarde)",
   //
-  Frontend_FluentCore_Settings_ThemeLuminance_Label: "Luminosité du thème",
-  Frontend_FluentCore_Settings_ThemeLuminance_Description: "Rendre le thème plus clair/sombre",
   Frontend_FluentCore_Settings_ShowBookmarksPanel_Label: "Liste des favoris",
   Frontend_FluentCore_Settings_ShowBookmarksPanel_Description: "Afficher/masquer la liste des favoris",
   Frontend_FluentCore_Settings_ShowDownloadsPanel_Label: "Gestionnaire des téléchargements",

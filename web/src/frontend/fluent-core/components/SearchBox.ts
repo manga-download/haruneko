@@ -1,23 +1,24 @@
-import { FASTElement, type ViewTemplate, type ElementStyles, customElement, html, css, observable, attr, when, ref } from '@microsoft/fast-element';
-import type { TextField } from '@fluentui/web-components';
-import S from '../services/StateService';
+import { FASTElement, html, css, observable, attr, when, ref } from '@microsoft/fast-element';
+import type { TextInput } from '@fluentui/web-components';
+import { LocalizationProviderRegistration, type ILocalizationProvider } from '../services/LocalizationProvider';
 
 import IconSearch from '@vscode/codicons/src/icons/search.svg?raw';
 import IconClear from '@vscode/codicons/src/icons/trash.svg?raw';
 import IconCase from '@vscode/codicons/src/icons/case-sensitive.svg?raw';
 import IconRegex from '@vscode/codicons/src/icons/regex.svg?raw';
 
-const styles: ElementStyles = css`
+const styles = css`
     :host {
         display: block;
     }
 
     #searchpattern {
         display: block;
+        max-width: unset !important;
     }
 
-    #searchpattern svg {
-        height: 75%;
+    #searchpattern [slot="start"] svg {
+        height: 1em;
     }
 
     #searchpattern [slot="start"] {
@@ -29,36 +30,32 @@ const styles: ElementStyles = css`
         display: flex;
         align-items: center;
     }
-
-    #searchpattern [slot="end"] fluent-button {
-        height: fit-content;
-    }
 `;
 
-const templateCaseSensivity: ViewTemplate<SearchBox> = html`
-    <fluent-button appearance="${model => model.CaseEnabled ? 'outline' : 'stealth'}" title="${() => S.Locale.Frontend_FluentCore_SearchBox_CaseSenstiveToggleButton_Description()}" :innerHTML=${() => IconCase} @click=${model => model.CaseEnabled = !model.CaseEnabled}></fluent-button>
+const templateCaseSensivity = html<SearchBox>`
+    <fluent-button icon-only size="small" appearance="${model => model.CaseEnabled ? 'outline' : 'transparent'}" title="${model => model.Localization.Locale.Frontend_FluentCore_SearchBox_CaseSenstiveToggleButton_Description()}" :innerHTML=${() => IconCase} @click=${model => model.CaseEnabled = !model.CaseEnabled}></fluent-button>
 `;
 
-const templateRegularExpression: ViewTemplate<SearchBox> = html`
-    <fluent-button appearance="${model => model.RegexEnabled ? 'outline' : 'stealth'}" title="${() => S.Locale.Frontend_FluentCore_SearchBox_CaseRegularExpressionToggleButton_Description()}" :innerHTML=${() => IconRegex} @click=${model => model.RegexEnabled = !model.RegexEnabled}></fluent-button>
+const templateRegularExpression = html<SearchBox>`
+    <fluent-button icon-only size="small" appearance="${model => model.RegexEnabled ? 'outline' : 'transparent'}" title="${model => model.Localization.Locale.Frontend_FluentCore_SearchBox_CaseRegularExpressionToggleButton_Description()}" :innerHTML=${() => IconRegex} @click=${model => model.RegexEnabled = !model.RegexEnabled}></fluent-button>
 `;
 
-const template: ViewTemplate<SearchBox> = html`
-    <fluent-text-field id="searchpattern" ${ref('control')} appearance="outline" placeholder="${model => model.placeholder}" :value=${model => model.Needle} @input=${(model, ctx) => model.Needle = ctx.event.currentTarget['value']}>
+const template = html<SearchBox>`
+    <fluent-text-input id="searchpattern" ${ref('searchpattern')} appearance="outline" placeholder="${model => model.placeholder}" :value=${model => model.Needle} @input=${(model, ctx) => model.Needle = ctx.eventTarget<TextInput>().value}>
         <div slot="start" :innerHTML=${() => IconSearch}></div>
         <div slot="end">
-            <fluent-button appearance="stealth" title="${() => S.Locale.Frontend_FluentCore_SearchBox_ClearButton_Description()}" :innerHTML=${() => IconClear} @click=${model => model.Needle = ''}></fluent-button>
+            <fluent-button icon-only size="small" appearance="transparent" title="${model => model.Localization.Locale.Frontend_FluentCore_SearchBox_ClearButton_Description()}" :innerHTML=${() => IconClear} @click=${model => model.Needle = ''}></fluent-button>
             ${when(model => model.AllowCase, templateCaseSensivity)}
             ${when(model => model.AllowRegex, templateRegularExpression)}
         </div>
-    </fluent-text-field>
+    </fluent-text-input>
 `;
 
-@customElement({ name: 'fluent-searchbox', template, styles })
 export class SearchBox extends FASTElement {
 
+    @LocalizationProviderRegistration Localization: ILocalizationProvider;
     private readonly event = 'predicate';
-    readonly control: TextField;
+    readonly searchpattern: FASTElement;
 
     @attr placeholder = '';
 
@@ -85,17 +82,21 @@ export class SearchBox extends FASTElement {
         this.UpdatePredicate();
     }
 
+    public Focus(): void {
+        return this.searchpattern.focus();
+    }
+
     private UpdatePredicate() {
         try {
-            if(!this.Needle) {
+            if (!this.Needle) {
                 this.$emit(this.event, () => true);
             } else {
-                if(this.AllowRegex && this.RegexEnabled) {
+                if (this.AllowRegex && this.RegexEnabled) {
                     // TODO: Prevent ReDoS by input validation or sanitization
-                    const regex = new RegExp(this.Needle, this.AllowCase && this.CaseEnabled ? undefined : 'i');
+                    const regex = new RegExpSafe(this.Needle, this.AllowCase && this.CaseEnabled ? undefined : 'i');
                     this.$emit(this.event, (text: string) => regex.test(text));
                 } else {
-                    if(this.AllowCase && this.CaseEnabled ) {
+                    if (this.AllowCase && this.CaseEnabled) {
                         this.$emit(this.event, (text: string) => text.includes(this.Needle));
                     } else {
                         const lcNeedle = this.Needle.toLocaleLowerCase();
@@ -108,3 +109,5 @@ export class SearchBox extends FASTElement {
         }
     }
 }
+
+SearchBox.define({ name: 'fluent-searchbox', template, styles });
