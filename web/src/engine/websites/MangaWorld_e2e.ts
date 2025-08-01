@@ -1,12 +1,12 @@
-import { TestFixture, type Config } from '../../../test/WebsitesFixture';
+import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config: Config = {
+new TestFixture({
     plugin: {
         id: 'mangaworld',
         title: 'Manga World'
     },
     container: {
-        url: 'https://www.mangaworld.nz/manga/2682/subzero/',
+        url: 'https://www.mangaworld.cx/manga/2682/subzero/',
         id: '/manga/2682/subzero/',
         title: 'SubZero'
     },
@@ -19,6 +19,4 @@ const config: Config = {
         size: 1_908_032,
         type: 'image/jpeg'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();
