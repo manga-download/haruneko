@@ -28,7 +28,7 @@ export class PeachScan extends DecoratableMangaScraper {
         const doc = await FetchHTML(request);
         let files: string[] = [];
 
-        //NOT using script because their anti-adblkock triggers a messagebox and screw up the process
+        //NOT using script because their anti-adblock triggers a messagebox and screw up the process
         const filesZip = doc.documentElement.innerHTML.match(/const\s+urls\s*=\s*\[(.*?)]\s*;/)?.at(1);
         if (filesZip) {
             files = filesZip.split(',').map(element => element.replaceAll("'", '').trim());
