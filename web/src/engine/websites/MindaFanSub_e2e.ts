@@ -6,7 +6,7 @@ new TestFixture({
         title: 'Minda Fansub'
     },
     container: {
-        url: 'https://mindafansub.my/manga/painter-of-the-night-oku-10/',
+        url: 'https://mindafansub.top/manga/painter-of-the-night-oku-10/',
         id: JSON.stringify({ post: '112', slug: '/manga/painter-of-the-night-oku-10/'}),
         title: 'Painter of the Night'
     },
