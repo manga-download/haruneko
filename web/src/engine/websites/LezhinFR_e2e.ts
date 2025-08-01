@@ -3,10 +3,10 @@ import { TestFixture } from '../../../test/WebsitesFixture';
 new TestFixture({
     plugin: {
         id: 'delitoon',
-        title: 'Delitoon'
+        title: 'Lezhin (French)'
     },
     container: {
-        url: 'https://www.delitoon.com/detail/daf_4100032',
+        url: 'https://www.lezhinfr.com/detail/daf_4100032',
         id: 'daf_4100032',
         title: `Moriarty's Perfect Crime`
     },
