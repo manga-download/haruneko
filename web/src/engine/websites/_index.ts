@@ -294,7 +294,6 @@ export { default as LevaScans } from './LevaScans';
 export { default as LewdManhwa } from './LewdManhwa';
 export { default as LezhinEN } from './LezhinEN';
 export { default as LezhinES } from './LezhinES';
-export { default as LezhinJA } from './LezhinJA';
 export { default as LezhinKO } from './LezhinKO';
 export { default as LHTranslation } from './LHTranslation';
 export { default as LianScans } from './LianScans';
