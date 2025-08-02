@@ -141,7 +141,7 @@ export default class extends DecoratableMangaScraper {
         const chapterUrl = new URL(`/mc${page.Parent.Parent.Identifier}/${page.Parent.Identifier}`, this.URI).href;
         return this.imageTaskPool.Add(async () => {
             const blob = await (await Fetch(new Request(page.Link))).blob();
-            return blob.type.startsWith('image/') ? blob : Common.GetTypedData(await this.#drm.ExtractImageData(page.Link.href, page.Parameters.index, chapterUrl));
+            return blob.type.startsWith('image/') ? blob : Common.GetTypedData(await this.#drm.FetchImageData(page.Link.href, page.Parameters.index, chapterUrl));
         }, priority, signal);
     }
 }
