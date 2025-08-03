@@ -689,6 +689,7 @@ export { default as TheBlank } from './TheBlank';
 export { default as ThreeHentai } from './ThreeHentai';
 export { default as ThunderScans } from './ThunderScans';
 export { default as Tibiu } from './Tibiu';
+export { default as TimeNaight } from './TimeNaight';
 export { default as TitanManga } from './TitanManga';
 export { default as TmoManga } from './TmoManga';
 export { default as ToCoronaEx } from './ToCoronaEx';
