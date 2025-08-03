@@ -11,7 +11,7 @@ import * as KeyoApp from './templates/KeyoApp';
 @Common.ImageAjax(true)
 export default class extends DecoratableMangaScraper {
 
-    public constructor() {
+    public constructor () {
         super('meitoon', 'MeiToon', 'https://meitoon.org', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.English, Tags.Source.Scanlator);
     }
 
