@@ -7,12 +7,9 @@ import { GetBytesFromBase64, GetBytesFromUTF8 } from '../../BufferEncoder';
 import DeScramble from '../../transformers/ImageDescrambler';
 import type { Priority } from '../../taskpool/DeferredTask';
 
-type APIResult<T> = {
-    error?: {
-        code: string;
-    },
-    data: T,
-};
+type APIResultSuccess<T> = { data: T; error?: never; };
+type APIResultError = { data?: never; error: { code: string; }; };
+type APIResult<T> = APIResultSuccess<T> | APIResultError;
 
 type APIManga = {
     id: number,
@@ -180,12 +177,13 @@ export class DelitoonBase extends DecoratableMangaScraper {
     public override async FetchPages(chapter: Chapter): Promise<Page<ScrambleParams>[]> {
         const url = new URL(`${this.pagesEndpoint}/${chapter.Parent.Identifier}/${chapter.Identifier}`, this.apiUrl);
         url.searchParams.set('isNotLoginAdult', 'true');
-        const { error, data: { images, isScramble } } = await this.FetchBalconyJSON<APIPages>(url);
+        const { error, data } = await this.FetchBalconyJSON<APIPages>(url);
         switch (error?.code) {
             case 'NOT_LOGIN_USER':
             case 'UNAUTHORIZED_CONTENTS':
                 throw new Exception(R.Plugin_Common_Chapter_UnavailableError);
         }
+        const { images, isScramble } = data;
         return isScramble ? this.FetchScrambledPages(chapter, images) : images.map(image => new Page(this, chapter, new URL(image.imagePath)));
     }
 
