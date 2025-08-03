@@ -15,7 +15,7 @@ new TestFixture({
         title: 'Bölüm 11'
     },
     entry: {
-        index: 0,
+        index: 2,
         size: 114_585,
         type: 'image/jpeg'
     }
