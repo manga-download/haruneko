@@ -9,11 +9,14 @@ type JSONImage = {
     path : string
 }
 
+// TODO: Check for possible revision
+
 @Common.MangaCSS(/^{origin}\/series\/[^/]+$/, 'input#serieTitle', (element) => element.getAttribute('value').trim())
 @Common.MangasSinglePagesCSS([ '/latest' ], 'div.grid a.grid', Common.AnchorInfoExtractor(true))
 @Common.ChaptersSinglePageCSS(KeyoApp.queryChapters, Common.AnchorInfoExtractor(true))
 @Common.ImageAjax(true)
 export default class extends DecoratableMangaScraper {
+
     private readonly mediaUrl = new URL('/storage/', this.URI);
 
     public constructor() {

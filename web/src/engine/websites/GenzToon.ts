@@ -7,11 +7,11 @@ import * as Common from './decorators/Common';
 @Common.MangaCSS(/^{origin}\/series\/[^/]+\/$/, KeyoApp.queryMangaTitle)
 @Common.MangasSinglePagesCSS([ KeyoApp.queryMangaPath ], KeyoApp.queryManga, Common.AnchorInfoExtractor(true))
 @Common.ChaptersSinglePageCSS(KeyoApp.queryChapters, Common.AnchorInfoExtractor(true))
-@Common.PagesSinglePageJS(KeyoApp.pagesScript, 500)
+@Common.PagesSinglePageJS(KeyoApp.PagesScript(), 500)
 @Common.ImageAjax(true)
 export default class extends DecoratableMangaScraper {
 
-    public constructor() {
+    public constructor () {
         super('genztoon', 'GenzToon', 'https://genzupdates.com', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.English, Tags.Source.Aggregator);
     }
 

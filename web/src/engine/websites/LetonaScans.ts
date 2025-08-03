@@ -31,6 +31,8 @@ type APIChapter = {
     number: number
 }
 
+// TODO: Check for possible revision
+
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
     private readonly apiUrl = 'https://letonascans.com/graphql';

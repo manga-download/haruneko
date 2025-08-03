@@ -6,60 +6,53 @@ import { DecoratableMangaScraper, type MangaPlugin, Manga, Chapter, Page } from 
 import * as Common from './decorators/Common';
 
 type APIResult<T> = {
-    data: null | T,
-    resultCode: number
+    data: T;
+    resultCode: number;
 };
 
-type APIManga = {
-    titleId: number,
-    titleName: string,
-}
+type APIManga = APIResult<{
+    titleId: number;
+    titleName: string;
+}>;
 
-type APIMangas = {
-    data: APIMangasOrNull[],
-    resultCode: number
-}
+type APIMangas = APIResult<{
+    titles: APIManga[ 'data' ][];
+}[]>;
 
-type APIMangasOrNull = null | APIMangasEntry
-
-type APIMangasEntry = {
-    titles: APIManga[]
-}
-
-type APIVolume = {
-    chapters: {
-        id: number,
-    }[],
-};
+type APIVolume = APIResult<{
+    chapters: { id: number; }[];
+}>;
 
 type APIMedias = {
-    data: APIMedia[],
-    nextCursor?: number,
-    resultCode: number,
+    data: APIMedia[];
+    nextCursor?: number;
+    resultCode: number;
 };
 
 type APIMedia = {
-    dataType: number,
-    id: number,
-    name: string,
-    subName?: string,
-    stories?: string
-}
-
-type APIPage = {
-    image: string,
-    pageNumber: number,
-    type: string,
+    dataType: number;
+    id: number;
+    name: string;
+    subName?: string;
+    stories?: string;
 };
 
-type APIPages = {
+type APIPage = {
+    image: string;
+    pageNumber: number;
+    type: string;
+};
+
+type APIPages = APIResult<{
     pages: APIPage[]
-}
+}>;
 
 type MediaItem = {
-    id: number,
-    type: number // 1: Chapter, 2: Volume
-}
+    id: number;
+    type: 1 /* Chapter */ | 2 /* Volume */;
+};
+
+// TODO: Check for possible revision
 
 export default class extends DecoratableMangaScraper {
 
@@ -78,7 +71,7 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
         const id = new URL(url).pathname.split('/').at(-1);
-        const { data } = await this.FetchAPI<APIResult<APIManga>>(`./title/detail?titleId=${id}`);
+        const { data } = await this.FetchAPI<APIManga>(`./title/detail?titleId=${id}`);
         return new Manga(this, provider, data.titleId.toString(), data.titleName);
     }
 
@@ -132,7 +125,7 @@ export default class extends DecoratableMangaScraper {
 
     private async FetchChapterPages(chapter: Chapter): Promise<Page[]> {
         const { id }: MediaItem = JSON.parse(chapter.Identifier);
-        const { data: { pages }, resultCode } = await this.FetchAPI<APIResult<APIPages>>(`./chapter/page/list`, {
+        const { data: { pages }, resultCode } = await this.FetchAPI<APIPages>(`./chapter/page/list`, {
             titleId: parseInt(chapter.Parent.Identifier),
             chapterId: id
         });
@@ -141,9 +134,9 @@ export default class extends DecoratableMangaScraper {
 
     private async FetchVolumePages(volume: Chapter): Promise<Page[]> {
         const { id: bookId }: MediaItem = JSON.parse(volume.Identifier);
-        const { data: { chapters } } = await this.FetchAPI<APIResult<APIVolume>>(`./singleBook/detail?singleBookId=${bookId}`);
+        const { data: { chapters } } = await this.FetchAPI<APIVolume>(`./singleBook/detail?singleBookId=${bookId}`);
         return !chapters ? [] : chapters.reduce(async (accumulator: Promise<Page[]>, chapter) => {
-            const { data: { pages }, resultCode } = await this.FetchAPI<APIResult<APIPages>>(`./singleBook/page/list?singleBookId=${bookId}&chapterId=${chapter.id}`);//await FetchJSON<APIResult<APIPages>>(new Request(url));
+            const { data: { pages }, resultCode } = await this.FetchAPI<APIPages>(`./singleBook/page/list?singleBookId=${bookId}&chapterId=${chapter.id}`);//await FetchJSON<APIResult<APIPages>>(new Request(url));
             return resultCode !== 1 ? accumulator : (await accumulator).concat(this.MapPages(volume, pages));
         }, Promise.resolve<Page[]>([]));
     }
@@ -156,7 +149,9 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchImage(page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
         const blob = await Common.FetchImageAjax.call(this, page, priority, signal);
-        if (page.Link.href.includes('/end_page/')) return blob; //https://cycomi.com/title/191 got unencrypted end page
+        if (page.Link.href.includes('/end_page/')) {
+            return blob;
+        }
         const encrypted = await new Response(blob).arrayBuffer();
         const passphrase = page.Link.pathname.split('/').filter(part => /^[0-9a-zA-Z]{32}$/.test(part)).at(0) as string;
         const decrypted = Decrypt(new Uint8Array(encrypted), passphrase);
