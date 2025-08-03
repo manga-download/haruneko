@@ -1,5 +1,5 @@
 import { Tags } from '../Tags';
-import icon from './Meitoon.webp';
+import icon from './MeiToon.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import * as KeyoApp from './templates/KeyoApp';
