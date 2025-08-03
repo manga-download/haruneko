@@ -375,6 +375,7 @@ export { default as MangaKiss } from './MangaKiss';
 export { default as MangaKita } from './MangaKita';
 export { default as MangaKoleji } from './MangaKoleji';
 export { default as Mangakyo } from './Mangakyo';
+export { default as MangaLC } from './MangaLC';
 export { default as Mangalek } from './Mangalek';
 export { default as MangaLib } from './MangaLib';
 export { default as MangaLink } from './MangaLink';
