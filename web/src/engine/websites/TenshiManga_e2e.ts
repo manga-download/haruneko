@@ -1,4 +1,4 @@
-import { TestFixture } from '../../../test/WebsitesFixture';
+ï»¿import { TestFixture } from '../../../test/WebsitesFixture';
 
 new TestFixture({
     plugin: {
@@ -12,7 +12,7 @@ new TestFixture({
     },
     child: {
         id: '/manga/77/999-seviye-goblin/1880/11-bolum',
-        title: 'Bölüm 11'
+        title: 'BÃ¶lÃ¼m 11'
     },
     entry: {
         index: 2,
