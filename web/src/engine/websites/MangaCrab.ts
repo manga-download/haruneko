@@ -1,7 +1,6 @@
 import { Tags } from '../Tags';
 import icon from './MangaCrab.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
-import * as Madara from './decorators/WordPressMadara';
 import * as Common from './decorators/Common';
 
 const chapterScript = `
@@ -18,7 +17,7 @@ const chapterScript = `
 @Common.MangaCSS(/^{origin}\/series\/[^/]+\/$/, 'h1.post-title')
 @Common.MangasMultiPageCSS('/page/{page}/?s&post_type=wp-manga', 'div.post-title h2 > a')
 @Common.ChaptersSinglePageJS(chapterScript, 1500)
-@Madara.PagesSinglePageCSS()
+@Common.PagesSinglePageCSS('div.page-break img:not([src])', image => [...image.attributes].find(attribute => /data-img-/.test(attribute.name)).textContent.trim())
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
