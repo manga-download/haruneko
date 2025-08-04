@@ -5,22 +5,24 @@ import { Fetch, FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
 import type { Priority } from '../taskpool/DeferredTask';
 
 type APIManga = {
-    title: string,
-    slug: string,
-    chapters: APIChapter[]
-}
+    title: string;
+    slug: string;
+};
 
-type APIChapter = {
-    title: string,
-    chapter_number: string,
-    slug: string,
-    full_image_paths: string[]
-}
+type APIChapters = {
+    chapters: {
+        slug: string;
+        chapter_number: string;
+    }[];
+};
+
+type APIPages = {
+    full_image_paths: string[];
+};
 
 export default class extends DecoratableMangaScraper {
-    private readonly apiUrl = 'https://api.saytsu.com/';
 
-    public constructor() {
+    public constructor () {
         super('setsuscans', 'SetsuScans', 'https://manga.saytsu.com', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.English, Tags.Source.Scanlator);
     }
 
@@ -29,7 +31,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async Initialize(): Promise<void> {
-        return FetchWindowScript(new Request(this.URI), `localStorage.setItem('isHuman', JSON.stringify({ valid: true, expiresAt : Date.now() + 7*24*60*60*1000 }));`, 1500);
+        return FetchWindowScript(new Request(this.URI), `localStorage.setItem('isHuman', JSON.stringify({ valid: true, expiresAt: Number.MAX_SAFE_INTEGER }));`);
     }
 
     public override ValidateMangaURL(url: string): boolean {
@@ -37,8 +39,8 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
-        const manga = await this.FetchAPI<APIManga>(`./manga/${url.split('/').at(-1)}`);
-        return new Manga(this, provider, manga.slug, manga.title);
+        const { slug, title } = await this.FetchAPI<APIManga>(`./manga/${url.split('/').at(-1)}`);
+        return new Manga(this, provider, slug, title);
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
@@ -51,35 +53,29 @@ export default class extends DecoratableMangaScraper {
     }
 
     private async GetMangasFromPage(page: number, provider: MangaPlugin): Promise<Manga[]> {
-        const mangas = await this.FetchAPI<APIManga[]>(`./mangaloaded?page=${page}&page_size=100`);
-        return mangas.map(manga => new Manga(this, provider, manga.slug, manga.title));
+        const mangas = await this.FetchAPI<APIManga[]>('/mangaloaded?page_size=100&page=' + page);
+        return mangas.map(({ slug, title }) => new Manga(this, provider, slug, title));
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const { chapters } = await this.FetchAPI<APIManga>(`./manga/${manga.Identifier}`);
-        return chapters.map(chapter => new Chapter(this, manga, chapter.slug, ['Chapter', chapter.chapter_number, chapter.title].join(' ').trim()));
+        const { chapters } = await this.FetchAPI<APIChapters>('/manga/' + manga.Identifier);
+        return chapters.map(({ slug, chapter_number: number }) => new Chapter(this, manga, slug, 'Chapter ' + number));
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const { full_image_paths } = await this.FetchAPI<APIChapter>(`./manga/${chapter.Parent.Identifier}/${chapter.Identifier}`);
+        const { full_image_paths } = await this.FetchAPI<APIPages>(`/manga/${chapter.Parent.Identifier}/${chapter.Identifier}`);
         return full_image_paths.map(page => new Page(this, chapter, new URL(page, this.URI)));
     }
 
     public override async FetchImage(page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
         return this.imageTaskPool.Add(async () => {
-            const request = new Request(page.Link, {
-                signal: signal,
-                headers: {
-                    Accept: 'image/webp, human/ok',
-                    Referer: new URL(`./manga/${page.Parent.Parent.Identifier}/${page.Parent.Identifier}`, this.URI).href
-                }
-            });
+            const request = new Request(page.Link, { signal, headers: { Accept: 'human/ok' } });
             const response = await Fetch(request);
             return response.blob();
         }, priority, signal);
     }
 
     private async FetchAPI<T extends JSONElement>(endpoint: string): Promise<T> {
-        return FetchJSON<T>(new Request(new URL(endpoint, this.apiUrl)));
+        return FetchJSON<T>(new Request('https://api.saytsu.com' + endpoint));
     }
 }
