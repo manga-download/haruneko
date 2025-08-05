@@ -48,7 +48,7 @@ export default class extends DecoratableMangaScraper {
         return icon;
     }
     public override async Initialize(): Promise<void> {
-        const data = await FetchWindowScript<string>(new Request(this.URI), `new Promise( resolve => resolve( decodeURIComponent( document.cookie ).match( /_csrfToken=([^;]+);/ )[1] ) )`);
+        const data = await FetchWindowScript<string>(new Request(this.URI), 'decodeURIComponent(document.cookie.match( /_csrfToken=([^;]+);/ ).at(1));', 500);
         this.token = data;
     }
 
@@ -57,7 +57,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
-        const { comicId, comicName } = await FetchWindowScript<APIComic>(new Request(new URL(url)), 'window.g_data.book.comicInfo');
+        const { comicId, comicName } = await FetchWindowScript<APIComic>(new Request(new URL(url)), 'window.g_data.book.comicInfo', 1500 );
         return new Manga(this, provider, comicId.toString(), comicName);
     }
 
