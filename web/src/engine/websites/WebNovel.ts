@@ -76,13 +76,13 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const uri = new URL(`/go/pcm/comic/getChapterList?_csrfToken=${this.token}&comicId=${manga.Identifier}`, this.URI);
+        const uri = new URL(`./go/pcm/comic/getChapterList?_csrfToken=${this.token}&comicId=${manga.Identifier}`, this.URI);
         const data = await FetchJSON<APIChapterList>(new Request(uri));
         return data.code == 0 ? data.data.comicChapters.map(({ chapterId, chapterIndex, chapterName }) => new Chapter(this, manga, chapterId, chapterIndex + ' : ' + chapterName)) : [];
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const uri = new URL(`/go/pcm/comic/getContent?_csrfToken=${this.token}&comicId=${chapter.Parent.Identifier}&chapterId=${chapter.Identifier}&width=1920`, this.URI);
+        const uri = new URL(`./go/pcm/comic/getContent?_csrfToken=${this.token}&comicId=${chapter.Parent.Identifier}&chapterId=${chapter.Identifier}&width=1920`, this.URI);
         const data = await FetchJSON<APIPageList>(new Request(uri));
         return data.code == 0 ? data.data.chapterInfo.chapterPage.map(({ url }) => new Page(this, chapter, new URL(url))) : [];
     }
