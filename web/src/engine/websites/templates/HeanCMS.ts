@@ -12,19 +12,19 @@ type APIManga = {
     id: number,
     series_type: string,
     series_slug: string,
-}
+};
 
-export type APIResult<T> = {
+type APIResult<T> = {
     data: T
-}
+};
 
-export type APIChapter = {
+type APIChapter = {
     index: string,
     id: number,
     chapter_name: string,
     chapter_title: string,
     chapter_slug: string,
-}
+};
 
 type APIPages = {
     chapter_type: string,
@@ -41,16 +41,16 @@ type APIPages = {
 
         }
     }
-}
+};
 
-export type APIMediaID = {
+type APIMediaID = {
     id: string,
     slug: string
-}
+};
 
-export type PageType = {
+type PageType = {
     type: string;
-}
+};
 
 export class HeanCMS extends DecoratableMangaScraper {
 
@@ -64,10 +64,7 @@ export class HeanCMS extends DecoratableMangaScraper {
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
         const slug = new URL(url).pathname.split('/').at(-1);
         const { title, series_slug, id } = await this.FetchAPI<APIManga>(`./series/${slug}`);
-        return new Manga(this, provider, JSON.stringify({
-            id: id.toString(),
-            slug: series_slug
-        }), title);
+        return new Manga(this, provider, JSON.stringify({ id: id.toString(), slug: series_slug }), title);
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
@@ -127,11 +124,10 @@ export class HeanCMS extends DecoratableMangaScraper {
     }
 
     private async FetchAPI<T extends JSONElement>(endpoint: string): Promise<T> {
-        const request = new Request(new URL(endpoint, this.apiUrl), {
+        return FetchJSON<T>(new Request(new URL(endpoint, this.apiUrl), {
             headers: {
                 Referer: this.URI.href
             }
-        });
-        return await FetchJSON(request) as T;
+        }));
     }
 }
