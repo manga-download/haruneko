@@ -35,7 +35,7 @@ new TestFixture({
     },
     child: {
         id: JSON.stringify({ id: '261', translationType: 'raw' }),
-        title: 'Chapter 261 Appeal for Aid [raw]'
+        title: 'Chapter 261 - Appeal for Aid [raw]'
     },
     entry: {
         index: 0,
