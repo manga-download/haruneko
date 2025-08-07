@@ -98,8 +98,8 @@ export default class extends DecoratableMangaScraper {
         return paths.map(image => new Page(this, chapter, new URL(`./shared/dynamicImage?path=${image.path}`, this.cdnUrl)));
     }
 
-    private async GetCollection<T extends JSONElement>(body: JSONElement): Promise<T> {
-        return this.FetchAPI<T>(new URL('./core/getData', this.dbUrl), body, 'PUT');
+    private async GetCollection<T extends JSONElement>(form: Record<string, string | Blob>): Promise<T> {
+        return this.FetchAPI<T>(new URL('./core/getData', this.dbUrl), form, 'PUT');
     }
 
     private async FetchAPI<T extends JSONElement>(uri: URL, form: Record<string, string | Blob>, method: 'POST' | 'PUT'): Promise<T> {
