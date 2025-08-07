@@ -69,7 +69,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     private async GetMangasFromPage(page: number, provider: MangaPlugin) {
-        const mangas = await this.FetchAPI<APIMangas>('./utils/mangaByIndex', this.apiUrl, { index: page.toString() }, 'POST');
+        const mangas = await this.FetchAPI<APIMangas>('./utils/mangaByIndex', { index: page.toString() }, 'POST', this.apiUrl);
         return mangas.map(manga => new Manga(this, provider, manga.id, manga.name));
     }
 
@@ -99,10 +99,10 @@ export default class extends DecoratableMangaScraper {
     }
 
     private async GetCollection<T extends JSONElement>(body: JSONElement): Promise<T> {
-        return this.FetchAPI<T>('./core/getData', this.dbUrl, body);
+        return this.FetchAPI<T>('./core/getData', body);
     }
 
-    private async FetchAPI<T extends JSONElement>(endpoint: string, baseUrl: string, body: JSONElement, method: string = 'PUT'): Promise<T> {
+    private async FetchAPI<T extends JSONElement>(endpoint: string, body: JSONElement, method: string = 'PUT', baseUrl: string = this.dbUrl): Promise<T> {
         const formData = new FormData();
         Object.keys(body).forEach(key => formData.set(key, body[key]));
         return FetchJSON<T>(new Request(new URL(endpoint, baseUrl), {
