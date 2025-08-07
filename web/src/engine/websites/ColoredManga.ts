@@ -2,8 +2,7 @@ import { Tags } from '../Tags';
 import icon from './ColoredManga.webp';
 import { Chapter, DecoratableMangaScraper, Manga, type MangaPlugin, Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { FetchJSON, Fetch } from '../platform/FetchProvider';
-import type { Priority } from '../taskpool/DeferredTask';
+import { FetchJSON } from '../platform/FetchProvider';
 
 type APIMangas = {
     id: string,
@@ -16,29 +15,26 @@ type APIManga = {
     chapters: APIChapter[],
     volumes: APIVolume[]
     email: string
-}
+};
 
 type APIChapter = {
     _id: string,
     number: string,
     title: string,
-}
+};
 
 type APIVolume = {
     number: string,
     chapters: APIChapter[]
-}
+};
 
 type APIPages = {
     paths: {
         path: string
     }[]
-}
+};
 
-type DynamicPage = {
-    path: string
-}
-
+@Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
     private readonly apiUrl = `${this.URI.origin}/api/`;
@@ -73,12 +69,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     private async GetMangasFromPage(page: number, provider: MangaPlugin) {
-        const body = new FormData();
-        body.set('index', page.toString());
-        const mangas = await FetchJSON<APIMangas>(new Request(new URL('./utils/mangaByIndex', this.apiUrl), {
-            method: 'POST',
-            body
-        }));
+        const mangas = await this.FetchAPI<APIMangas>('./utils/mangaByIndex', { index: page.toString() }, 'POST', this.apiUrl);
         return mangas.map(manga => new Manga(this, provider, manga.id, manga.name));
     }
 
@@ -101,36 +92,22 @@ export default class extends DecoratableMangaScraper {
         }, []);
     }
 
-    public override async FetchPages(chapter: Chapter): Promise<Page<DynamicPage>[]> {
+    public override async FetchPages(chapter: Chapter): Promise<Page[]> {
         const { email } = await this.GetCollection<APIManga>({ collection: 'Manga', data: chapter.Parent.Identifier });
         const { paths } = await this.GetCollection<APIPages>({ collection: 'Chapter', data: `${email}/${chapter.Identifier}` });
-        return paths.map(image => new Page<DynamicPage>(this, chapter, this.URI, { path: image.path }));
-    }
-
-    public override async FetchImage(page: Page<DynamicPage>, priority: Priority, signal: AbortSignal): Promise<Blob> {
-        return await this.imageTaskPool.Add(async () => {
-
-            const request = this.CreateRequest(new URL('./shared/dynamicImage', this.cdnUrl), {
-                path: page.Parameters.path
-            });
-
-            const imageAsB64 = await (await Fetch(request)).text();
-            const response = await fetch(imageAsB64.replaceAll('"', ''));
-            return Common.GetTypedData(await response.arrayBuffer());
-
-        }, priority, signal);
+        return paths.map(image => new Page(this, chapter, new URL(`./shared/dynamicImage?path=${image.path}`, this.cdnUrl)));
     }
 
     private async GetCollection<T extends JSONElement>(body: JSONElement): Promise<T> {
-        return await FetchJSON<T>(this.CreateRequest(new URL('./core/getData', this.dbUrl), body)) as T;
+        return this.FetchAPI<T>('./core/getData', body);
     }
 
-    private CreateRequest(url: URL, body: JSONElement): Request {
+    private async FetchAPI<T extends JSONElement>(endpoint: string, body: JSONElement, method: string = 'PUT', baseUrl: string = this.dbUrl): Promise<T> {
         const formData = new FormData();
         Object.keys(body).forEach(key => formData.set(key, body[key]));
-        return new Request(url, {
-            method: 'PUT',
+        return FetchJSON<T>(new Request(new URL(endpoint, baseUrl), {
+            method,
             body: formData
-        });
+        }));
     }
 }
