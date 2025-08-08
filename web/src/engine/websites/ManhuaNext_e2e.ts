@@ -6,17 +6,17 @@ new TestFixture({
         title: 'ManhuaNext'
     },
     container: {
-        url: 'https://manhuanext.com/manga/the-villain-wants-to-live-one-more-day/',
-        id: JSON.stringify({ post: '89', slug: '/manga/the-villain-wants-to-live-one-more-day/' }),
-        title: 'The Villain Wants to Live One More Day'
+        url: 'https://manhuanext.com/manga/please-slay-the-demon-young-master/',
+        id: JSON.stringify({ post: '1961', slug: '/manga/please-slay-the-demon-young-master/' }),
+        title: 'Please Slay The Demon! Young Master!'
     },
     child: {
-        id: '/manga/the-villain-wants-to-live-one-more-day/chapter-33/',
-        title: 'Chapter 33'
+        id: '/manga/please-slay-the-demon-young-master/chapter-149/',
+        title: 'Chapter 149'
     },
     entry: {
         index: 0,
-        size: 966_724,
-        type: 'image/webp'
+        size: 967_857,
+        type: 'image/jpeg'
     }
 }).AssertWebsite();
