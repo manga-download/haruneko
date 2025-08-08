@@ -696,6 +696,7 @@ export { default as TonariNoYoungJump } from './TonariNoYoungJump';
 export { default as TonizuToon } from './TonizuToon';
 export { default as ToomTam } from './ToomTam';
 export { default as Toondex } from './Toondex';
+export { default as ToonFR } from './ToonFR';
 export { default as ToonGod } from './ToonGod';
 export { default as Toonily } from './Toonily';
 export { default as Toonilyme } from './Toonilyme';
