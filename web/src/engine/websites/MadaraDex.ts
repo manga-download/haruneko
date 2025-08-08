@@ -2,12 +2,13 @@ import { Tags } from '../Tags';
 import icon from './MadaraDex.webp';
 import { type Chapter, DecoratableMangaScraper, Page } from '../providers/MangaPlugin';
 import * as Madara from './decorators/WordPressMadara';
-import { Fetch, FetchCSS } from '../platform/FetchProvider';
-import type { Priority } from '../taskpool/TaskPool';
+import * as Common from './decorators/Common';
+import { FetchCSS } from '../platform/FetchProvider';
 
 @Madara.MangaCSS(/^{origin}\/title\/[^/]+\/$/, 'meta[property="og:title"]:not([content*="Read "])')
 @Madara.MangasMultiPageAJAX()
 @Madara.ChaptersSinglePageAJAXv2()
+@Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
@@ -32,20 +33,5 @@ export default class extends DecoratableMangaScraper {
             return new URL(link.searchParams.get('url') || '');
         }
         return link;
-    }
-
-    public override async FetchImage(page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
-        return this.imageTaskPool.Add(async () => {
-            const request = new Request(page.Link, {
-                signal: signal,
-                headers: {
-                    Referer: page.Parameters.Referer,
-                    'User-Agent': 'Mozilla/5.0 (iPod; CPU iPhone OS 14_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/87.0.4280.163 Mobile/15E148 Safari/604.1'
-                }
-            });
-            const response = await Fetch(request);
-            return response.blob();
-        }, priority, signal);
-
     }
 }
