@@ -22,7 +22,7 @@ type ChapterJSON = {
             }[]
         }
     }
-}
+};
 
 type JSONSerie = {
     readableProduct: {
@@ -32,26 +32,26 @@ type JSONSerie = {
         } | null,
         typeName: string
     }
-}
+};
 
 type APIChaptersHTML = {
     html: string,
     nextUrl: string
-}
+};
 
 type APIChaptersV1 = {
-    chapters : Chapter[],
+    chapters: Chapter[],
     nextUrl: string
-}
+};
 
 type APIChapterV2 = {
     title: string,
     viewer_uri: string
-}
+};
 
 type PageParams = {
     scrambled: boolean
-}
+};
 
 /**
  * Creates an info extractor that will parse the media id from the first found {@link HTMLAnchorElement}
@@ -171,8 +171,8 @@ export async function FetchChaptersMultiPagesAJAXV2(this: MangaScraper, manga: M
     const jsonData = (await FetchCSS(new Request(new URL(manga.Identifier, this.URI)), 'script#episode-json')).shift().dataset.value;
     const serie = JSON.parse(jsonData) as JSONSerie;
     return [
-        ...await FetchVolumeChapterV2.call(this, serie, manga),
-        ...await FetchVolumeChapterV2.call(this, serie, manga, 'volume'),
+        ...await FetchEntries.call(this, serie, manga),
+        ...await FetchEntries.call(this, serie, manga, 'volume'),
     ];
 }
 
@@ -182,12 +182,12 @@ export async function FetchChaptersMultiPagesAJAXV2(this: MangaScraper, manga: M
  * @param manga - A reference to the {@link Manga} which shall be assigned as parent for the extracted chapters /volumes
  * @param type - Type of media we want from the api : 'episode' for chapters, 'volume' for volume (magazine doesnt work)
 */
-async function FetchVolumeChapterV2(this: MangaScraper, serie: JSONSerie, manga: Manga, type: string = 'episode'): Promise<Chapter[]> {
+async function FetchEntries(this: MangaScraper, serie: JSONSerie, manga: Manga, type: string = 'episode'): Promise<Chapter[]> {
     const { readableProduct: { series, id } } = serie;
     const chapterList: Chapter[] = [];
 
     for (let offset = 0, run = true; run;) {
-        const url = new URL(`/api/viewer/pagination_readable_products`, this.URI);
+        const url = new URL(`./api/viewer/pagination_readable_products`, this.URI);
         url.search = new URLSearchParams({
             aggregate_id: series?.id ?? id,
             type,
