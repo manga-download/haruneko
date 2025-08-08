@@ -4,7 +4,6 @@ import { DecoratableMangaScraper, Manga, type MangaPlugin } from '../providers/M
 import * as Common from './decorators/Common';
 import * as SpeedBinb from './decorators/SpeedBinb';
 import { FetchCSS } from '../platform/FetchProvider';
-import { SpeedBindVersion } from './decorators/SpeedBinb';
 
 function MangaExtractor(element: HTMLElement) {
     return {
@@ -21,7 +20,7 @@ function ChapterExtractor(element: HTMLElement) {
 
 @Common.MangasSinglePagesCSS(['/list'], '.box_wrap .box', MangaExtractor)
 @Common.ChaptersSinglePageCSS('#new_story .title, #back_number .title', ChapterExtractor)
-@SpeedBinb.PagesSinglePageAjax(SpeedBindVersion.v016061)
+@SpeedBinb.PagesSinglePageAjax()
 @SpeedBinb.ImageAjax()
 export default class extends DecoratableMangaScraper {
     public constructor() {

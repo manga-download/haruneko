@@ -44,5 +44,4 @@ export default class extends DecoratableMangaScraper {
     public override get Icon() {
         return icon;
     }
-
 }

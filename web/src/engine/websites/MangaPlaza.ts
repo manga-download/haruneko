@@ -11,7 +11,7 @@ type APIChapterResult = {
         html_content: string,
         html_page: string
     }
-}
+};
 
 function MangaExtractor(element: HTMLHeadingElement) {
     return CleanTitle(element.textContent);
@@ -58,7 +58,7 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const chapters: Chapter[] = [];
-        const mangaid = manga.Identifier.match(/title\/(\d+)/)[1];
+        const mangaid = manga.Identifier.match(/title\/(\d+)/).at(1);
         let page = 1;
         let pageMax = 1;
 

@@ -2,7 +2,6 @@
 import { DecoratableMangaScraper } from "../../providers/MangaPlugin";
 import * as Common from '../decorators/Common';
 import * as SpeedBinb from '../decorators/SpeedBinb';
-import { SpeedBindVersion } from '../decorators/SpeedBinb';
 
 function MangaExtractor(element: HTMLDivElement) {
     return {
@@ -21,6 +20,6 @@ function ChapterExtractor(anchor: HTMLAnchorElement) {
 @Common.MangaCSS(/^{origin}\/manga\/[^/]+\/$/, 'ul.manga__title li:first-child')
 @Common.MangasSinglePagesCSS(['/manga/'], 'div.manga_item', MangaExtractor)
 @Common.ChaptersSinglePageCSS('div.read__area div.read__outer a.read__link:not([href*="#"])', ChapterExtractor)
-@SpeedBinb.PagesSinglePageAjax(SpeedBindVersion.v016061)
+@SpeedBinb.PagesSinglePageAjax()
 @SpeedBinb.ImageAjax()
 export class TakeShoboBase extends DecoratableMangaScraper { }

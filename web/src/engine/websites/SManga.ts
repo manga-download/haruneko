@@ -20,7 +20,7 @@ type SSD = {
             item_name: string
         }]
     }
-}
+};
 
 @Common.MangasNotSupported()
 @SpeedBinb.PagesSinglePageAjax(SpeedBindVersion.v016130)
@@ -39,7 +39,7 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
         const { datas } = await FetchWindowScript<SSD>(new Request(url), 'window.ssd', 2000);
-        return new Manga(this, provider, datas[0].series_data.series_id.toString(), datas[0].series_data.series_name.trim());
+        return new Manga(this, provider, datas.at(0).series_data.series_id.toString(), datas.at(0).series_data.series_name.trim());
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {

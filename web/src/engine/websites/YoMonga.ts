@@ -7,8 +7,8 @@ import { SpeedBindVersion } from './decorators/SpeedBinb';
 
 function MangaExtractor(element: HTMLElement) {
     return {
-        id: element.querySelector('a').pathname,
-        title: element.querySelector('div.book-box4-title').textContent.trim()
+        id: element.querySelector<HTMLAnchorElement>('a').pathname,
+        title: element.querySelector<HTMLDivElement>('div.book-box4-title').textContent.trim()
     };
 }
 
@@ -16,7 +16,7 @@ function ChapterExtractor(element: HTMLElement) {
     const anchor = element.querySelector<HTMLAnchorElement>('a');
     return {
         id: anchor.pathname + anchor.search,
-        title: element.querySelector('span').textContent.trim()
+        title: element.querySelector<HTMLSpanElement>('span').textContent.trim()
     };
 }
 

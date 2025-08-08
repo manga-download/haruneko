@@ -10,7 +10,7 @@ type APIMagazine = {
     url: string,
     issue: string,
     number: string
-}
+};
 
 @Common.ChaptersUniqueFromManga()
 @SpeedBinb.PagesSinglePageAjax(SpeedBindVersion.v016201, true)

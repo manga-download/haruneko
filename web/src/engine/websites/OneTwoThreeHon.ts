@@ -3,7 +3,6 @@ import icon from './OneTwoThreeHon.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import * as SpeedBinb from './decorators/SpeedBinb';
-import { SpeedBindVersion } from './decorators/SpeedBinb';
 
 function MangaInfoExtractor(anchor: HTMLAnchorElement) {
     return {
@@ -21,7 +20,7 @@ function ChapterExtractor(element: HTMLLIElement) {
 @Common.MangaCSS(/^{origin}\/[^/]+\/web-comic\/[^/]+\/$/, 'div.title-area h2')
 @Common.MangasSinglePagesCSS(['/polca/web-comic/', '/nova/web-comic/'], 'ul.comic__list > li > a', MangaInfoExtractor)
 @Common.ChaptersSinglePageCSS('div.read-episode li:has(a)', ChapterExtractor)
-@SpeedBinb.PagesSinglePageAjax(SpeedBindVersion.v016061)
+@SpeedBinb.PagesSinglePageAjax()
 @SpeedBinb.ImageAjax()
 export default class extends DecoratableMangaScraper {
 

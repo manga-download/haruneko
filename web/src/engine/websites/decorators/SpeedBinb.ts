@@ -178,9 +178,9 @@ export async function FetchPagesSinglePageAjax(this: MangaScraper, chapter: Chap
 
     //easy mode : pages are just an array of div
     if (version == SpeedBindVersion.v016061) {
-        //ComicBrise, ComicMeteor, ComicPorta, ComicValKyrie, MichiKusa, OneTwoThreeHon, TKSuperheroComics
+        //ComicBrise, Kirapo, ComicPorta, ComicValKyrie, MichiKusa, OneTwoThreeHon, TKSuperheroComics, TakeShoboBase
         const [...imageConfigurations] = SBHtmlElement.querySelectorAll<HTMLDivElement>('div[data-ptimg$="ptimg.json"]');
-        return imageConfigurations.map(element => new Page(this, chapter, getSanitizedURL(viewerUrl.href, element.dataset.ptimg)));
+        return imageConfigurations.map(element => new Page(this, chapter, new URL(element.dataset.ptimg, viewerUrl.href)));
     }
 
     //2 Gather all informations using viewerUrl and SBHtmlElement (cid, sharingkey, dmytime, u0, u1, configuration)
@@ -196,7 +196,7 @@ export async function FetchPagesSinglePageAjax(this: MangaScraper, chapter: Chap
  * @param needCookies - Use browser window to perform first JSON request to get access cookies properly
  */
 
-export function PagesSinglePageAjax(version: SpeedBindVersion, needCookies = false) {
+export function PagesSinglePageAjax(version: SpeedBindVersion = SpeedBindVersion.v016061, needCookies = false) {
     return function DecorateClass<T extends Common.Constructor>(ctor: T, context?: ClassDecoratorContext): T {
         Common.ThrowOnUnsupportedDecoratorContext(context);
 
@@ -224,7 +224,7 @@ async function FetchPagesLinks(this: MangaScraper, params: SpeedBinbParameters, 
     } catch { }
 
     switch (configuration.ServerType as number) {
-        case 0: { //v016130 Booklive , v016452 CMOA
+        case 0: { //v016130 Booklive, ShukanManga , v016452 CMOA
             //Fix for ShukanManga that has only got a path in ContentsServer
             if (!configuration.ContentsServer.startsWith('http')) configuration.ContentsServer = new URL(configuration.ContentsServer, params.viewerUrl).href;
 
