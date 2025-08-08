@@ -43,3 +43,5 @@ new TestFixture({
         type: 'image/jpeg'
     }
 }).AssertWebsite();
+
+// CASE: Unencrypted Image (e.g., https://cycomi.com/title/191)

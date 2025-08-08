@@ -15,6 +15,8 @@ const chapterLanguageMap = new Map([
     ['fr', Tags.Language.French],
 ]);
 
+// TODO: Check for possible revision
+
 @Common.MangaCSS(/^{origin}\/truyen-tranh\/[^/]+$/, 'ol.breadcrumb li:last-of-type a')
 @Common.MangasMultiPageCSS('/truyen-tranh-hay/trang-{page}.html', 'div.story-item h3.title-book a')
 @Common.PagesSinglePageCSS('div.story-see-content img')
