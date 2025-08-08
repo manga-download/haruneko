@@ -129,9 +129,7 @@ export async function FetchChaptersMultiPagesAJAXV1(this: MangaScraper, manga: M
 
     const latestListEndpoint = doc.querySelector<HTMLDivElement>('.js-readable-product-list')?.dataset.latestListEndpoint;
     chaptersList.push(...(await ExtractChaptersV1.call(this, manga, latestListEndpoint, queryChapters, extractor)).chapters);
-
     return chaptersList.distinct();
-
 }
 
 async function ExtractChaptersV1(this: MangaScraper, manga: Manga, endpoint: string, queryChapters: string, extractor: Function): Promise<APIChaptersV1> {
