@@ -119,8 +119,8 @@ export default class extends DecoratableMangaScraper {
         switch (type) {
             case 1: return this.FetchChapterPages(container);
             case 2: return this.FetchVolumePages(container);
+            default: return [];
         }
-        return [];
     }
 
     private async FetchChapterPages(chapter: Chapter): Promise<Page[]> {
@@ -181,7 +181,7 @@ function MakeKey(passphrase: string): Uint8Array {
     return key;
 }
 
-function Decrypt(encrypted: Uint8Array, passphrase: string): Uint8Array {
+function Decrypt(encrypted: Uint8Array, passphrase: string): Uint8Array<ArrayBuffer> {
     const key = MakeKey(passphrase);
     const decrypted = new Uint8Array(encrypted.length);
     for (let index = 0, indexKeySwapSource = 0, indexKeySwapTarget = 0; index < encrypted.length; index++) {
