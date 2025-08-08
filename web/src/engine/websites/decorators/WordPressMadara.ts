@@ -201,7 +201,7 @@ async function FetchChaptersCSS(this: MangaScraper, manga: Manga, request: Reque
     const data = await FetchCSS<HTMLAnchorElement>(request, query);
     return data.map(element => {
         const { id, title } = extract.call(this, element);
-        return new Chapter(this, manga, id, title);
+        return new Chapter(this, manga, id, title.replace(manga.Title, '').trim() || manga.Title);
     });
 }
 
