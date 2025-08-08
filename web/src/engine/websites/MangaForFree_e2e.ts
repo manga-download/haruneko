@@ -1,24 +1,22 @@
 import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'mangaforfree',
         title: 'MangaForFree'
     },
     container: {
-        url: 'https://mangaforfree.com/manga/the-owner-of-a-building-14/',
-        id: JSON.stringify({ post: '351220', slug: '/manga/the-owner-of-a-building-14/' }),
-        title: 'The Owner Of A Building'
+        url: 'https://mangaforfree.com/manga/brothel/',
+        id: JSON.stringify({ post: '359566', slug: '/manga/brothel/' }),
+        title: 'Brothel'
     },
     child: {
-        id: '/manga/the-owner-of-a-building-14/chapter-1-raw/',
-        title: 'Chapter 1 raw'
+        id: '/manga/brothel/chapter-64-raw/',
+        title: 'Chapter 65 raw'
     },
     entry: {
         index: 0,
-        size: 282_702,
+        size: 269_969,
         type: 'image/jpeg'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();
