@@ -1,19 +1,11 @@
 import { Tags } from '../Tags';
 import icon from './ToonFR.webp';
-import { DecoratableMangaScraper } from '../providers/MangaPlugin';
+import { Chapter, DecoratableMangaScraper, type Manga } from '../providers/MangaPlugin';
 import * as Madara from './decorators/WordPressMadara';
 import * as Common from './decorators/Common';
 
-function ChapterInfoExtractor(anchor: HTMLAnchorElement) {
-    return {
-        id: anchor.pathname,
-        title: anchor.text.split('-').slice(0, -1).join('-').trim(),
-    };
-}
-
 @Madara.MangaCSS(/^{origin}\/webtoon\/[^/]+\/$/, 'ol.breadcrumb li:last-of-type a')
 @Madara.MangasMultiPageAJAX()
-@Madara.ChaptersSinglePageAJAXv2(undefined, ChapterInfoExtractor)
 @Madara.PagesSinglePageCSS()
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
@@ -24,5 +16,10 @@ export default class extends DecoratableMangaScraper {
 
     public override get Icon() {
         return icon;
+    }
+
+    public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
+        const chapters = await Madara.FetchChaptersSinglePageAJAXv2.call(this, manga);
+        return chapters.map(chapter => new Chapter(this, manga, chapter.Identifier, chapter.Title.replace(/\s*-\s*$/, '').trim()));
     }
 }
