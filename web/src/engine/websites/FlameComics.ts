@@ -23,8 +23,11 @@ type JSONChapter = {
     }[]
 }
 
+// TODO: Check for possible revision
+
 @Common.ImageAjax(true)
 export default class extends DecoratableMangaScraper {
+
     private readonly cdnURL = 'https://cdn.flamecomics.xyz';
     private readonly apiUrl = 'https://flamecomics.xyz/api/';
 
