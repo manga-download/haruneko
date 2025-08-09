@@ -15,7 +15,7 @@ new TestFixture({
         title: 'Chapter 149'
     },
     entry: {
-        index: 0,
+        index: 2,
         size: 967_857,
         type: 'image/jpeg'
     }

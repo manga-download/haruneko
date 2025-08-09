@@ -7,7 +7,7 @@ new TestFixture({
     },
     container: {
         url: 'https://infrafandub.com/manga/tribu-de-dios/',
-        id: JSON.stringify({ post: '977', slug: '/manga/tribu-de-dios/' }),
+        id: JSON.stringify({ slug: '/manga/tribu-de-dios/' }),
         title: 'Tribu de dios'
     },
     child: {

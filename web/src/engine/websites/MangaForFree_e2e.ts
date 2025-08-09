@@ -11,7 +11,7 @@ new TestFixture({
         title: 'Brothel'
     },
     child: {
-        id: '/manga/brothel/chapter-64-raw/',
+        id: '/manga/brothel/chapter-65-raw/',
         title: 'Chapter 65 raw'
     },
     entry: {
