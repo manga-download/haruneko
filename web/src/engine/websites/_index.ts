@@ -561,7 +561,6 @@ export { default as PixivComics } from './PixivComics';
 export { default as PlatinumScans } from './PlatinumScans';
 export { default as PlotTwistNoFansub } from './PlotTwistNoFansub';
 export { default as PocketComics } from './PocketComics';
-export { default as PojokManga } from './PojokManga';
 export { default as PornComix } from './PornComix';
 export { default as PornComixOnline } from './PornComixOnline';
 export { default as PortalYaoi } from './PortalYaoi';
