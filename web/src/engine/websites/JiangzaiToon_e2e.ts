@@ -13,10 +13,10 @@ new TestFixture({
     child: {
         id: '/manga/19-gun/bolum-353-skec/',
         title: 'Bölüm 353 - Skeç'
-    },
+    }, /* Need login
     entry: {
         index: 1,
         size: 2_803_320,
         type: 'image/jpeg'
-    }
+    }*/
 }).AssertWebsite();
