@@ -11,42 +11,42 @@ type APIVolumes = {
     results: {
         data: APIVolume[]
     }
-}
+};
 
 type APIMangas = {
     results: {
         comics: APIComic[]
     }
-}
+};
 
 type APIPages = {
     results: APIPage[]
-}
+};
 
 type APIComic = {
     id: string,
     name: string
-}
+};
 
 type APIChapter = {
     hash_id: string,
     name: string
-}
+};
 
 type APIVolume = {
     hash_id: string,
     name: string
     chapters: APIChapter[]
-}
+};
 
 type APIPage = {
     image_path: string;
-}
+};
 
 type ChapterID = {
     type: string,
     id: string;
-}
+};
 
 export default class extends DecoratableMangaScraper {
     private readonly apiUrl = 'https://lezhin.jp/api/';
@@ -122,8 +122,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     private async FetchAPI<T extends JSONElement>(endpoint: string): Promise<T> {
-        const request = new Request(new URL(endpoint, this.apiUrl));
-        return FetchJSON<T>(request);
+        return FetchJSON<T>(new Request(new URL(endpoint, this.apiUrl)));
     }
 
     private async DecryptImage(blob: Blob): Promise<Blob> {
