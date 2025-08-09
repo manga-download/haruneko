@@ -22,6 +22,6 @@ export default class extends DecoratableMangaScraper {
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const chapters = await Madara.FetchChaptersSinglePageCSS.call(this, manga);
         const options = await FetchCSS<HTMLOptionElement>(new Request(new URL(chapters.at(0).Identifier, this.URI)), 'select.single-chapter-select option');
-        return options.map(option => new Chapter(this, manga, new URL(option.dataset.redirect).pathname, option.textContent.trim()));
+        return options.map(option => new Chapter(this, manga, new URL(option.dataset.redirect, this.URI).pathname, option.textContent.trim()));
     }
 }
