@@ -562,7 +562,6 @@ export { default as PlatinumScans } from './PlatinumScans';
 export { default as PlotTwistNoFansub } from './PlotTwistNoFansub';
 export { default as PocketComics } from './PocketComics';
 export { default as PornComix } from './PornComix';
-export { default as PornComixOnline } from './PornComixOnline';
 export { default as PortalYaoi } from './PortalYaoi';
 export { default as PoseidonScans } from './PoseidonScans';
 export { default as ProjectSuki } from './ProjectSuki';
