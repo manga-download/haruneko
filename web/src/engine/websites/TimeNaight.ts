@@ -1,5 +1,5 @@
 import { Tags } from '../Tags';
-import icon from './SarcasmScans.webp';
+import icon from './TimeNaight.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Madara from './decorators/WordPressMadara';
 import * as Common from './decorators/Common';
@@ -7,12 +7,12 @@ import * as Common from './decorators/Common';
 @Madara.MangaCSS(/^{origin}\/manga\/[^/]+\/$/, 'ol.breadcrumb li:last-of-type a')
 @Madara.MangasMultiPageAJAX()
 @Madara.ChaptersSinglePageAJAXv2()
-@Madara.PagesSinglePageCSS()
+@Common.PagesSinglePageCSS('div.page-break img', (img: HTMLImageElement) => img.dataset.wpfcOriginalSrc || img.src)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('sarcasmscans', 'Sarcasm Scans', 'https://sarcasmscans.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Turkish, Tags.Source.Scanlator, Tags.Rating.Pornographic);
+        super('timenaight', 'TimeNaight', 'https://timenaight.org', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Turkish, Tags.Source.Aggregator);
     }
 
     public override get Icon() {
