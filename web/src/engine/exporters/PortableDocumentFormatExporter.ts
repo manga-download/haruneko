@@ -37,7 +37,7 @@ export class PortableDocumentFormatExporter extends MangaExporter {
             compress: false,
             margin: 0,
         });
-        pdf.on('data', (bytes: Uint8Array) => stream.write(bytes));
+        pdf.on('data', (bytes: Uint8Array<ArrayBuffer>) => stream.write(bytes));
         pdf.once('error', () => stream.close());
         pdf.once('end', () => stream.close());
 
