@@ -605,6 +605,7 @@ export { default as RitharScans } from './RitharScans';
 export { default as RizzComics } from './RizzComics';
 export { default as RokariComics } from './RokariComics';
 export { default as RokuHentai } from './RokuHentai';
+export { default as RoliaScan } from './RoliaScan';
 export { default as RuManhua } from './RuManhua';
 export { default as RuyaManga } from './RuyaManga';
 export { default as S2Manga } from './S2Manga';
