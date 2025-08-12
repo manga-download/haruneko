@@ -1,6 +1,7 @@
 ﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-const configEN = {
+// CASE : English manga
+new TestFixture({
     plugin: {
         id: 'tappytoon',
         title: 'TappyToon'
@@ -19,11 +20,10 @@ const configEN = {
         size: 529_700,
         type: 'image/jpeg'
     }
-};
+}).AssertWebsite();
 
-new TestFixture(configEN).AssertWebsite();
-
-const configFR = {
+// CASE : French manga
+new TestFixture({
     plugin: {
         id: 'tappytoon',
         title: 'TappyToon'
@@ -42,11 +42,10 @@ const configFR = {
         size: 529_830,
         type: 'image/jpeg'
     }
-};
+}).AssertWebsite();
 
-new TestFixture(configFR).AssertWebsite();
-
-const configDE = {
+// CASE : German manga
+new TestFixture({
     plugin: {
         id: 'tappytoon',
         title: 'TappyToon'
@@ -65,6 +64,4 @@ const configDE = {
         size: 523_689,
         type: 'image/jpeg'
     }
-};
-
-new TestFixture(configDE).AssertWebsite();
+}).AssertWebsite();
