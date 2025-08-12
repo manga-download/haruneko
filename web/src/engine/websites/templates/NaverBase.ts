@@ -4,15 +4,20 @@ import * as Common from '../decorators/Common';
 
 type APIManga = {
     titleName: string,
+    titleId: number,
     webtoonLevelCode: string,
     articleList: APIChapter[]
-}
+};
 
 type APIChapter = {
     no: number,
     subtitle: string,
     charge: boolean
-}
+};
+
+type APIWeekDaysList = {
+    titleListMap: Record<string, APIManga[]>
+};
 
 const mangaTypeMap = new Map([
     ['WEBTOON', 'webtoon'],
@@ -31,8 +36,17 @@ export class NaverBase extends DecoratableMangaScraper {
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
         const titleId = new URL(url).searchParams.get('titleId');
-        const { titleName, webtoonLevelCode } = await FetchJSON<APIManga>(new Request(new URL(`./article/list/info?titleId=${titleId}`, this.apiUrl)));
+        const { titleName, webtoonLevelCode } = await this.FetchAPI<APIManga>(`./article/list/info?titleId=${titleId}`);
         return new Manga(this, provider, `/${mangaTypeMap.get(webtoonLevelCode)}/list?titleId=${titleId}`, titleName);
+    }
+
+    public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
+        const { titleListMap } = await this.FetchAPI<APIWeekDaysList>(`./webtoon/titlelist/weekday`);
+        return Object.values(titleListMap).reduce((accumulator: Manga[], dailyMangas) => {
+            const mangas = dailyMangas.map(manga => new Manga(this, provider, `/webtoon/list?titleId=${manga.titleId}`, manga.titleName));
+            accumulator.push(...mangas);
+            return accumulator;
+        }, []);
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
@@ -46,8 +60,12 @@ export class NaverBase extends DecoratableMangaScraper {
 
     private async GetChaptersFromPage(manga: Manga, page: number): Promise<Chapter[]> {
         const titleId = new URL(manga.Identifier, this.URI).searchParams.get('titleId');
-        const { articleList, webtoonLevelCode } = await FetchJSON<APIManga>(new Request(new URL(`./article/list?titleId=${titleId}&page=${page}`, this.apiUrl)));
+        const { articleList, webtoonLevelCode } = await this.FetchAPI<APIManga>(`./article/list?titleId=${titleId}&page=${page}`);
         return articleList.filter(chapter => !chapter.charge)
             .map(chapter => new Chapter(this, manga, `/${mangaTypeMap.get(webtoonLevelCode)}/detail?titleId=${titleId}&no=${chapter.no}`, chapter.subtitle));
+    }
+
+    private async FetchAPI<T extends JSONElement>(endpoint: string): Promise<T> {
+        return FetchJSON<T>(new Request(new URL(endpoint, this.apiUrl)));
     }
 }

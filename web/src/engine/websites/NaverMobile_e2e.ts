@@ -1,7 +1,6 @@
 ﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
 // CASE: webtoon
-
 new TestFixture({
     plugin: {
         id: 'navermobile',
@@ -24,7 +23,6 @@ new TestFixture({
 }).AssertWebsite();
 
 // CASE: challenge
-
 new TestFixture({
     plugin: {
         id: 'navermobile',
