@@ -7,7 +7,7 @@ import { FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
 type MangaID = {
     id: string,
     language: string
-}
+};
 
 type NextData = {
     props: {
@@ -25,14 +25,14 @@ type NextData = {
             }
         }
     }
-}
+};
 
 type APIManga = {
     id: number,
     title: string,
     isSuperHighQualitySupported: boolean,
     locale: string
-}
+};
 
 type APIChapter = {
     id: number,
@@ -41,13 +41,13 @@ type APIChapter = {
     isFree: boolean,
     isUserUnlocked: boolean,
     isUserRented: boolean,
-}
+};
 
 type APIPages = {
     files: {
         url: string
     }[]
-}
+};
 
 const mangaLanguageMap = new Map([
     ['en', Tags.Language.English],
@@ -88,7 +88,7 @@ export default class extends DecoratableMangaScraper {
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
         const mangaList: Manga[] = [];
         for (const language of mangaLanguageMap.keys()) {
-            const mangas = await FetchJSON<APIManga[]>(this.CreateRequest(new URL(`/comics?locale=${language}`, this.apiUrl), language));
+            const mangas = await this.FetchAPI<APIManga[]>(`./comics?locale=${language}`, language);
             mangaList.push(...mangas.map(manga => {
                 const id = JSON.stringify({ id: manga.id.toString(), language });
                 return new Manga(this, provider, id, manga.title.trim(), mangaLanguageMap.get(manga.locale) ?? Tags.Language.English);
@@ -99,28 +99,24 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const { language, id } = JSON.parse(manga.Identifier) as MangaID;
-        const chapters = await FetchJSON<APIChapter[]>(this.CreateRequest(new URL(`/comics/${id}/chapters?limit=9999&skipAgeRestriction=true&locale=${language}`, this.apiUrl), language));
+        const chapters = await this.FetchAPI<APIChapter[]>(`./comics/${id}/chapters?limit=9999&skipAgeRestriction=true&locale=${language}`, language);
         return chapters.filter(chapter => chapter.isAccessible && (chapter.isFree || chapter.isUserUnlocked || chapter.isUserRented))
             .map(chapter => new Chapter(this, manga, chapter.id.toString(), chapter.title));
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
         const { language, id } = JSON.parse(chapter.Parent.Identifier) as MangaID;
-        const { isSuperHighQualitySupported } = await FetchJSON<APIManga>(this.CreateRequest(new URL(`/comics/${id}&locale=${language}`, this.apiUrl), language));
-        const url = new URL(`/content-delivery/contents/manifest?chapterId=${chapter.Identifier}`, this.apiUrl);
-        url.searchParams.set('variant', isSuperHighQualitySupported ? 'super_high' : 'high');
-        url.searchParams.set('canAcceptSignedCookie', 'true');
-        url.searchParams.set('locale', language);
-        const { files } = await FetchJSON<APIPages>(this.CreateRequest(url, language));
+        const { isSuperHighQualitySupported } = await this.FetchAPI<APIManga>(`./comics/${id}?locale=${language}`, language);
+        const { files } = await this.FetchAPI<APIPages>(`./content-delivery/contents/manifest?chapterId=${chapter.Identifier}&canAcceptSignedCookie=true&locale=${language}&variant=${isSuperHighQualitySupported ? 'super_high' : 'high'}`, language);
         return files.map(page => new Page(this, chapter, new URL(page.url)));
     }
 
-    private async GetNextData(url: URL, language: string = 'en'): Promise<NextData> {
-        return await FetchWindowScript<NextData>(this.CreateRequest(url, language), '__NEXT_DATA__', 2000);
+    private async GetNextData(url: URL): Promise<NextData> {
+        return FetchWindowScript<NextData>(new Request(url), '__NEXT_DATA__', 2000);
     }
 
-    private CreateRequest(url: URL, language: string): Request {
-        return new Request(url, {
+    private async FetchAPI<T extends JSONElement>(endpoint, language: string): Promise<T> {
+        return FetchJSON<T>(new Request(new URL(endpoint, this.apiUrl), {
             headers: {
                 Referer: this.URI.href,
                 Origin: this.URI.origin,
@@ -128,6 +124,6 @@ export default class extends DecoratableMangaScraper {
                 Authorization: this.bearer,
                 'X-Device-Uuid': this.deviceId
             }
-        });
+        }));
     }
 }
