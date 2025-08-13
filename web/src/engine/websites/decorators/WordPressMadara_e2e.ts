@@ -155,6 +155,7 @@ import '../S2Manga_e2e';
 import '../SamuraiScan_e2e';
 import '../SapphireScan_e2e';
 import '../ShinigamiID_e2e';
+import '../ShinobiScans_e2e';
 import '../ShootingStarScans_e2e';
 import '../SpiderScans_e2e';
 import '../StickHorse_e2e';
