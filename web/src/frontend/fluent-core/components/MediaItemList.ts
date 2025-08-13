@@ -145,7 +145,7 @@ const template = html<MediaItemList>`
     <div id="searchcontrol">
         <fluent-searchbox allowcase allowregex @predicate=${(model, ctx) => model.Match = (ctx.event as CustomEvent<(text: string) => boolean>).detail}></fluent-searchbox>
     </div>
-    <fluent-lazy-scroll id="entries" :Items=${model => model.filtered} :template=${model => CreateItemTemplate(model)}></fluent-lazy-scroll>
+    <fluent-lazy-scroll id="entries" :Items=${model => model.filtered} :Pagination=${250} :template=${model => CreateItemTemplate(model)}></fluent-lazy-scroll>
 `;
 
 export class MediaItemList extends FASTElement {
