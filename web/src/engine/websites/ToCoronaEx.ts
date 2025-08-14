@@ -33,13 +33,15 @@ type APIPages = {
 };
 
 type PageParameters = {
-    drm_hash : string
-}
+    drmHash: string
+};
 
 export default class extends DecoratableMangaScraper {
 
-    private readonly apiUrl = 'https://api.to-corona-ex.com/';
-    private readonly apiKey= 'K4FWy7Iqott9mrw37hDKfZ2gcLOwO-kiLHTwXT8ad1E=';
+    private readonly api = {
+        url: 'https://api.to-corona-ex.com/',
+        key: 'K4FWy7Iqott9mrw37hDKfZ2gcLOwO-kiLHTwXT8ad1E='
+    };
 
     public constructor() {
         super('to-corona-ex', 'コロナ (to-corona-ex)', 'https://to-corona-ex.com', Tags.Language.Japanese, Tags.Media.Manga, Tags.Source.Official);
@@ -93,16 +95,16 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchPages(chapter: Chapter): Promise<Page<PageParameters>[]> {
         const { pages } = await this.FetchAPI<APIPages>(`./episodes/${chapter.Identifier}/begin_reading`);
-        return pages.map(page => new Page(this, chapter, new URL(page.page_image_url), { drm_hash: page.drm_hash }));
+        return pages.map(page => new Page(this, chapter, new URL(page.page_image_url), { drmHash: page.drm_hash }));
     }
 
     public override async FetchImage(page: Page<PageParameters>, priority: Priority, signal: AbortSignal): Promise<Blob> {
         const data: Blob = await Common.FetchImageAjax.call(this, page, priority, signal);
-        if (!page.Parameters.drm_hash) return data;
-        const { drm_hash } = page.Parameters;
+        if (!page.Parameters.drmHash) return data;
+        const { drmHash } = page.Parameters;
 
         return DeScramble(data, async (image, ctx) => {
-            const scrambleData = GetBytesFromBase64(drm_hash);
+            const scrambleData = GetBytesFromBase64(drmHash);
             const numCol = scrambleData.at(0);
             const numRow = scrambleData.at(1);
             const key = scrambleData.slice(2);
@@ -124,9 +126,9 @@ export default class extends DecoratableMangaScraper {
     }
 
     private async FetchAPI<T extends JSONElement>(endpoint: string): Promise<T> {
-        return FetchJSON<T>(new Request(new URL(endpoint, this.apiUrl), {
+        return FetchJSON<T>(new Request(new URL(endpoint, this.api.url), {
             headers: {
-                'X-API-Environment-Key': this.apiKey
+                'X-API-Environment-Key': this.api.key
             }
         }));
     }
