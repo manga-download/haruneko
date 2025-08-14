@@ -327,7 +327,7 @@ export function ChaptersSinglePageAJAXv2(query = queryChapterListLinks, extract 
  * @param query - A CSS query to locate the elements from which the chapter identifier and title shall be extracted
  * @param throttle - A delay [ms] for each request (only required for rate-limited websites)
   */
-export async function FetchChaptersMultiPageAJAX(this: MangaScraper, manga: Manga, query: string = queryChapterListLinks, throttle: number = 0, extract = DefaultInfoExtractor): Promise<Chapter[]> {
+async function FetchChaptersMultiPageAJAX(this: MangaScraper, manga: Manga, query: string = queryChapterListLinks, throttle: number = 0, extract = DefaultInfoExtractor): Promise<Chapter[]> {
     const chapterList: Chapter[] = [];
     const { slug } = JSON.parse(manga.Identifier) as MangaID;
     const uri = new URL(`${slug}/ajax/chapters/`.replace(/\/+/g, '/'), this.URI);
