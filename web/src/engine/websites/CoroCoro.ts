@@ -35,8 +35,8 @@ type APIChapter = {
 
 type ViewerView = {
     pages?: APIImage[],
-    aesKey: string,
-    aesIv: string
+    aesKey?: string,
+    aesIv?: string
 };
 
 type APIImage = {
