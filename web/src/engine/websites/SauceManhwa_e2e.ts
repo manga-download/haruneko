@@ -7,7 +7,7 @@ new TestFixture({
     },
     container: {
         url: 'https://saucemanhwa.org/the-chairmans-wife',
-        id: 'the-chairmans-wife',
+        id: '/the-chairmans-wife',
         title: 'The Chairman’s Wife'
     },
     child: {

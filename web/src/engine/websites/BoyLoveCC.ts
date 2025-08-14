@@ -43,6 +43,8 @@ const pageScript = `
     });
 `;
 
+// TODO: Check for possible revision
+
 @Common.MangaCSS(/^{origin}\/home\/book\/index\/id\/\d+$/, 'div.stui-content__detail div.title h1')
 @Common.ChaptersSinglePageJS(chapterScript, 1500)
 export default class extends DecoratableMangaScraper {
