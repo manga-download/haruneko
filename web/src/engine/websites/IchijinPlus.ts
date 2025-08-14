@@ -13,7 +13,7 @@ function MangaExtractor(anchor: HTMLAnchorElement) {
 
 @Common.MangaCSS(/^{origin}\/episode\/\d+$/, CoreView.queryMangaTitleFromURI)
 @Common.MangasSinglePagesCSS(['/series'], 'div[class*="Series_series"] a[data-gtm="series-series-thumbnail"]', MangaExtractor)
-@CoreView.ChaptersMultiPagesAJAXV2()
+@CoreView.ChaptersMultiPageAJAXV2()
 @CoreView.PagesSinglePageJSON()
 @CoreView.ImageAjax()
 export default class extends DecoratableMangaScraper {

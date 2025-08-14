@@ -149,12 +149,12 @@ async function ExtractChaptersV1(this: MangaScraper, manga: Manga, endpoint: str
 /**
  * An extension method for extracting chapters using Coreview API. Use this when endpoint 'pagination_readable_products' is available.
  */
-export function ChaptersMultiPagesAJAXV2() {
+export function ChaptersMultiPageAJAXV2() {
     return function DecorateClass<T extends Common.Constructor>(ctor: T, context?: ClassDecoratorContext): T {
         Common.ThrowOnUnsupportedDecoratorContext(context);
         return class extends ctor {
             public async FetchChapters(this: MangaScraper, manga: Manga): Promise<Chapter[]> {
-                return FetchChaptersMultiPagesAJAXV2.call(this, manga);
+                return FetchChaptersMultiPageAJAXV2.call(this, manga);
             }
         };
     };
@@ -165,7 +165,7 @@ export function ChaptersMultiPagesAJAXV2() {
  * @param this - A reference to the {@link MangaScraper} instance which will be used as context for this method
  * @param manga - A reference to the {@link Manga} which shall be assigned as parent for the extracted chapters
  */
-export async function FetchChaptersMultiPagesAJAXV2(this: MangaScraper, manga: Manga): Promise<Chapter[]> {
+export async function FetchChaptersMultiPageAJAXV2(this: MangaScraper, manga: Manga): Promise<Chapter[]> {
     const jsonData = (await FetchCSS(new Request(new URL(manga.Identifier, this.URI)), 'script#episode-json')).shift().dataset.value;
     const serie = JSON.parse(jsonData) as JSONSerie;
     return [

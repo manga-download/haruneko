@@ -42,7 +42,7 @@ export default class extends DecoratableMangaScraper {
         if (/^\/magazine\/\d+$/.test(manga.Identifier)) {
             return CoreView.FetchChaptersMultiPagesAJAXV1.call(this, manga);
         } else {
-            return CoreView.FetchChaptersMultiPagesAJAXV2.call(this, manga);
+            return CoreView.FetchChaptersMultiPageAJAXV2.call(this, manga);
         }
     }
 }
