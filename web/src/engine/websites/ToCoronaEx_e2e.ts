@@ -15,8 +15,8 @@ new TestFixture({
         title: '第1話'
     },
     entry: {
-        index: 0,
-        size: 3_867_212,
+        index: 4,
+        size: 1_974_099,
         type: 'image/png'
     }
 }).AssertWebsite();

@@ -17,9 +17,11 @@ function MangaExtractor(anchor: HTMLAnchorElement) {
 @CoreView.PagesSinglePageJSON()
 @CoreView.ImageAjax()
 export default class extends DecoratableMangaScraper {
+
     public constructor() {
         super('ichijin-plus', '一迅プラス (Ichijin Plus)', 'https://ichicomi.com', Tags.Media.Manga, Tags.Language.Japanese, Tags.Source.Official);
     }
+
     public override get Icon() {
         return icon;
     }
