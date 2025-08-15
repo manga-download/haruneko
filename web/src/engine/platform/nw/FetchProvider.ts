@@ -14,24 +14,18 @@ const fetchApiForbiddenHeaders = [
 ];
 
 async function UpdateCookieHeader(url: string, headers: Headers) {
-    // TODO: Skip cookie assignment in browser window?
+    // TODO: Skip cookie assignment in browser window e.g., when `sec-fetch-dest: empty`?
     const cookieHeaderName = fetchApiSupportedPrefix + 'Cookie';
     const headerCookies = headers.get(cookieHeaderName)?.split(';').filter(cookie => cookie.includes('=')).map(cookie => cookie.trim()) ?? [];
-    const browserCookies = await chrome.cookies.getAll({ url, partitionKey: {} }); // Include empty partition filter since the chrome bug-fix does not work: https://issues.chromium.org/issues/323924496
-    for(const browserCookie of browserCookies) {
-        if(headerCookies.none(cookie => cookie.startsWith(browserCookie.name + '='))) {
-            headerCookies.push(`${browserCookie.name}=${browserCookie.value}`);
-        }
-    }
-    if(headerCookies.length > 0) {
+    if (headerCookies.length > 0) {
         headers.set(cookieHeaderName, headerCookies.join('; '));
     }
 }
 
 function ConcealHeaders(init: HeadersInit): Headers {
     const headers = new Headers(init);
-    for(const name of fetchApiForbiddenHeaders) {
-        if(headers.has(name)) {
+    for (const name of fetchApiForbiddenHeaders) {
+        if (headers.has(name)) {
             headers.set(fetchApiSupportedPrefix + name, headers.get(name));
             headers.delete(name);
         }
@@ -45,7 +39,7 @@ function RevealHeaders(headers: chrome.webRequest.HttpHeader[]): chrome.webReque
         return headers.some(header => header.name.toLowerCase() === prefixed);
     }
     headers = headers.filter(header => !ContainsPrefixed(headers, header));
-    for(const header of headers) {
+    for (const header of headers) {
         header.name = header.name.replace(new RegExp('^' + fetchApiSupportedPrefix, 'i'), '');
     }
     return headers;
@@ -73,11 +67,13 @@ function ModifyResponseHeaders(details: chrome.webRequest.OnHeadersReceivedDetai
 }
 
 class FetchRequest extends Request {
-    constructor(input: URL | RequestInfo, init?: RequestInit) {
-        if(init?.headers) {
+    constructor (input: URL | RequestInfo, init?: RequestInit) {
+        if (init?.headers) {
             init.headers = ConcealHeaders(init.headers);
         }
-        super(input, init);
+        // NOTE: Since all website requests made from the app-domain are cross-origin, the `same-origin` default would strip the cookies and authorization header.
+        //       => Always use `include` when no other credentials are provided to keep the cookies and authorization header for requests made from the app-domain.
+        super(input, { credentials: 'include', ...init });
     }
 }
 
@@ -92,7 +88,7 @@ export default class extends FetchProvider {
         super.Initialize(featureFlags);
 
         // Abuse the global Request type to check if system is already initialized
-        if(globalThis.Request === FetchRequest) {
+        if (globalThis.Request === FetchRequest) {
             return;
         }
 
@@ -101,7 +97,7 @@ export default class extends FetchProvider {
 
         // Forward compatibility for future chrome versions (MV3 - Manifest v3)
         const nativeChromeCookiesGetAll = chrome.cookies.getAll;
-        chrome.cookies.getAll = function(details: chrome.cookies.GetAllDetails): Promise<chrome.cookies.Cookie[]> {
+        chrome.cookies.getAll = function (details: chrome.cookies.GetAllDetails): Promise<chrome.cookies.Cookie[]> {
             return new Promise<chrome.cookies.Cookie[]>(resolve => nativeChromeCookiesGetAll(details, resolve));
         };
 
@@ -109,7 +105,7 @@ export default class extends FetchProvider {
         //       'blocking'       => sync request required for header modification
         //       'requestHeaders' => allow change request headers
         //       'extraHeaders'   => allow change 'referer', 'origin', 'cookie'
-        if(!chrome.webRequest.onBeforeSendHeaders.hasListener(ModifyRequestHeaders)) {
+        if (!chrome.webRequest.onBeforeSendHeaders.hasListener(ModifyRequestHeaders)) {
             chrome.webRequest.onBeforeSendHeaders.addListener(ModifyRequestHeaders, { urls: [ '<all_urls>' ] }, [ 'blocking', 'requestHeaders', 'extraHeaders' ]);
         }
 
@@ -117,7 +113,7 @@ export default class extends FetchProvider {
         //       'blocking'        => sync request required for header modification
         //       'responseHeaders' => allow change response headers
         //       'extraHeaders'    => allow change 'referer', 'origin', 'cookie'
-        if(!chrome.webRequest.onHeadersReceived.hasListener(ModifyResponseHeaders)) {
+        if (!chrome.webRequest.onHeadersReceived.hasListener(ModifyResponseHeaders)) {
             chrome.webRequest.onHeadersReceived.addListener(ModifyResponseHeaders, { urls: [ '<all_urls>' ] }, [ 'blocking', 'responseHeaders', 'extraHeaders' ]);
         }
 
