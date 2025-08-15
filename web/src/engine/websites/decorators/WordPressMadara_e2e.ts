@@ -113,6 +113,7 @@ import '../ManHastro_e2e';
 import '../ManHatic_e2e';
 import '../ManhuaFast_e2e';
 import '../ManhuaFastNet_e2e';
+import '../Manhuaga_e2e';
 import '../ManhuaHot_e2e';
 import '../ManhuaNext_e2e';
 import '../ManhuaRead_e2e';
