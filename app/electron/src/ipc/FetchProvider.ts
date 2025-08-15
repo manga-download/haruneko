@@ -36,13 +36,7 @@ export class FetchProvider {
         // TODO: Skip cookie assignment in browser window e.g., when `sec-fetch-dest: empty`?
         const normalizedCookieHeaderName = (this.fetchApiSupportedPrefix + 'Cookie').toLowerCase();
         const originalCookieHeaderName = Object.keys(headers).find(header => header.toLowerCase() === normalizedCookieHeaderName) ?? normalizedCookieHeaderName;
-        const headerCookies = headers[originalCookieHeaderName]?.split(';').filter(cookie => cookie.includes('=')).map(cookie => cookie.trim()) ?? [];
-        const browserCookies = await this.webContents.session.cookies.get({ url/*, partitionKey: {}*/ }); // TODO: When filter by URL partioned cookies may not be found (e.g., cf_clearance)
-        for(const browserCookie of browserCookies) {
-            if(!headerCookies.some(cookie => cookie.startsWith(browserCookie.name + '='))) {
-                headerCookies.push(`${browserCookie.name}=${browserCookie.value}`);
-            }
-        }
+        const headerCookies = headers[ originalCookieHeaderName ]?.split(';').filter(cookie => cookie.includes('=')).map(cookie => cookie.trim()) ?? [];
         if(headerCookies.length > 0) {
             headers[originalCookieHeaderName] = headerCookies.join('; ');
         }

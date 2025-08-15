@@ -17,8 +17,8 @@ const fetchApiForbiddenHeaders = [
 
 function ConcealHeaders(init: HeadersInit): Headers {
     const headers = new Headers(init);
-    for(const name of fetchApiForbiddenHeaders) {
-        if(headers.has(name)) {
+    for (const name of fetchApiForbiddenHeaders) {
+        if (headers.has(name)) {
             headers.set(fetchApiSupportedPrefix + name, headers.get(name));
             headers.delete(name);
         }
@@ -27,17 +27,19 @@ function ConcealHeaders(init: HeadersInit): Headers {
 }
 
 class FetchRequest extends Request {
-    constructor(input: URL | RequestInfo, init?: RequestInit) {
-        if(init?.headers) {
+    constructor (input: URL | RequestInfo, init?: RequestInit) {
+        if (init?.headers) {
             init.headers = ConcealHeaders(init.headers);
         }
-        super(input, init);
+        // NOTE: Since all website requests made from the app-domain are cross-origin, the `same-origin` default would strip the cookies and authorization header.
+        //       => Always use `include` when no other credentials are provided to keep the cookies and authorization header for requests made from the app-domain.
+        super(input, { credentials: 'include', ...init });
     }
 }
 
 export default class extends FetchProvider {
 
-    constructor(private readonly ipc: IPC<Channels.App, Channels.Web>) {
+    constructor (private readonly ipc: IPC<Channels.App, Channels.Web>) {
         super();
     }
 
@@ -46,7 +48,7 @@ export default class extends FetchProvider {
         super.Initialize(featureFlags);
 
         // Abuse the global Request type to check if system is already initialized
-        if(globalThis.Request === FetchRequest) {
+        if (globalThis.Request === FetchRequest) {
             return;
         }
 
