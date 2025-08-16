@@ -1,23 +1,23 @@
 import { Tags } from '../Tags';
 import icon from './MechaComic.webp';
-import { Chapter, DecoratableMangaScraper, Page, type Manga } from '../providers/MangaPlugin';
-import * as Common from './decorators/Common';
-import { Fetch, FetchCSS, FetchJSON } from '../platform/FetchProvider';
-import type { Priority } from '../taskpool/DeferredTask';
 import { GetBytesFromHex } from '../BufferEncoder';
+import type { Priority } from '../taskpool/DeferredTask';
+import { Fetch, FetchCSS, FetchJSON } from '../platform/FetchProvider';
+import { DecoratableMangaScraper, type Manga, Chapter, Page } from '../providers/MangaPlugin';
+import * as Common from './decorators/Common';
 
 type ContentData = {
     images: Record<string, ImageData[]>;
-}
+};
 
 type ImageData = {
-    src: string,
-    format : string
-}
+    src: string;
+    format: string;
+};
 
 type PageParameters = {
-    keyData : string
-}
+    keyData: string;
+};
 
 @Common.MangaCSS(/^{origin}\/books\/\d+$/, 'div.p-bookInfo_title h1')
 @Common.MangasMultiPageCSS('/free/list?page={page}', 'div.p-book_detail dt.p-book_title a')
@@ -77,17 +77,16 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchImage(page: Page<PageParameters>, priority: Priority, signal: AbortSignal): Promise<Blob> {
-        const blob = await Common.FetchImageAjax.call(this, page, priority, signal);
+        const response = await this.imageTaskPool.Add(() => Fetch(new Request(page.Link, { signal })), priority, signal);
         const keyData = page.Parameters.keyData;
-        return keyData ? await DecryptImage(blob, keyData) : blob;
+        return keyData ? this.DecryptImage(await response.arrayBuffer(), keyData) : response.blob();
     }
-}
 
-async function DecryptImage(blob: Blob, keyData: string): Promise<Blob> {
-    const data = new Uint8Array(await blob.arrayBuffer());
-    const algorithm = { name: 'AES-CBC', iv: data.slice(0, 16) };
-    const key = await crypto.subtle.importKey('raw', GetBytesFromHex(keyData), algorithm, false, [ 'decrypt' ]);
-    const decrypted = await crypto.subtle.decrypt(algorithm, key, data.slice(16));
-
-    return Common.GetTypedData(decrypted);
+    private async DecryptImage(encrypted: ArrayBuffer, keyData: string): Promise<Blob> {
+        const data = new Uint8Array(encrypted);
+        const algorithm = { name: 'AES-CBC', iv: data.slice(0, 16) };
+        const key = await crypto.subtle.importKey('raw', GetBytesFromHex(keyData), algorithm, false, [ 'decrypt' ]);
+        const decrypted = await crypto.subtle.decrypt(algorithm, key, data.slice(16));
+        return Common.GetTypedData(decrypted);
+    }
 }
