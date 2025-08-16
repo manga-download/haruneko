@@ -283,6 +283,7 @@ export { default as LectorJPG } from './LectorJPG';
 export { default as LectorMangaLat } from './LectorMangaLat';
 export { default as LeerCapitulo } from './LeerCapitulo';
 export { default as LegacyScans } from './LegacyScans';
+export { default as LegionScans } from './LegionScans';
 export { default as LELManga } from './LELManga';
 export { default as LELScan } from './LELScan';
 export { default as LELScanVF } from './LELScanVF';
