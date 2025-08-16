@@ -1,12 +1,12 @@
 ﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'lilyumfansub',
         title: 'Lilyum Fansub'
     },
     container: {
-        url: 'https://lilyumfansub.com.tr/manga/uchiha-sasukenin-sharingan-magarasi/',
+        url: 'https://lilyumfansub.com/manga/uchiha-sasukenin-sharingan-magarasi/',
         id: JSON.stringify({ post: '391', slug: '/manga/uchiha-sasukenin-sharingan-magarasi/' }),
         title: `Uchiha Sasuke'nin Sharingan Mağarası`
     },
@@ -19,6 +19,4 @@ const config = {
         size: 360_571,
         type: 'image/jpeg'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

@@ -11,7 +11,7 @@ import * as Common from './decorators/Common';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('fastestmanga', 'Fastest Manga', 'https://www.fastestmanga.com', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Multilingual, Tags.Source.Aggregator);
+        super('fastestmanga', 'Fastest Manga', 'https://www.fastestmanga.com', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.English, Tags.Language.Turkish, Tags.Language.Arabic, Tags.Source.Aggregator);
     }
 
     public override get Icon() {

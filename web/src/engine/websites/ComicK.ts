@@ -5,55 +5,56 @@ import { FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
 import * as Common from './decorators/Common';
 
 type APIManga = {
-    hid: string,
-    title: string
-}
+    hid: string;
+    title: string;
+};
 
-type APIChapters = {
+type APIChapter = {
+    hid: string;
+    title: string;
+    vol: number;
+    chap: number;
+    group_name: string[];
+    lang: string;
+    md_images: APIPage[];
+};
+
+type APIMultiChapters = {
     chapters: APIChapter[]
-}
+};
 
 type APISingleChapter = {
     chapter: APIChapter
-}
-
-type APIChapter = {
-    hid: string,
-    title: string,
-    vol: number,
-    chap: number,
-    group_name: string[],
-    lang: string,
-    md_images: APIPage[]
-}
+};
 
 type APIPage = {
-    b2key: string,
-    name: string,
-}
+    b2key: string;
+};
 
 const chapterLanguageMap = new Map([
-    ['ar', Tags.Language.Arabic],
-    ['en', Tags.Language.English],
-    //[ 'uk', Tags.Language.Ukrainian ],
-    ['es', Tags.Language.Spanish],
-    ['es-419', Tags.Language.Spanish],
-    ['ru', Tags.Language.Russian],
-    ['pt-br', Tags.Language.Portuguese],
-    ['pt', Tags.Language.Portuguese],
-    ['th', Tags.Language.Thai],
-    ['it', Tags.Language.Italian],
-    ['id', Tags.Language.Indonesian],
-    ['fr', Tags.Language.French],
-    ['zh', Tags.Language.Chinese],
-    ['zh-hk', Tags.Language.Chinese],
-    ['de', Tags.Language.German],
-    ['tr', Tags.Language.Turkish],
-    ['pl', Tags.Language.Polish],
-    ['vi', Tags.Language.Vietnamese],
-    ['ja', Tags.Language.Japanese],
-    //[ 'cz', Tags.Language
+    [ 'ar', Tags.Language.Arabic ],
+    // [ 'cz', Tags.Language
+    [ 'de', Tags.Language.German ],
+    [ 'en', Tags.Language.English ],
+    [ 'es', Tags.Language.Spanish ],
+    [ 'es-419', Tags.Language.Spanish ],
+    [ 'fr', Tags.Language.French ],
+    [ 'id', Tags.Language.Indonesian ],
+    [ 'it', Tags.Language.Italian ],
+    [ 'ja', Tags.Language.Japanese ],
+    [ 'pl', Tags.Language.Polish ],
+    [ 'pt', Tags.Language.Portuguese ],
+    [ 'pt-br', Tags.Language.Portuguese ],
+    [ 'ru', Tags.Language.Russian ],
+    [ 'th', Tags.Language.Thai ],
+    [ 'tr', Tags.Language.Turkish ],
+    // [ 'uk', Tags.Language.Ukrainian ],
+    [ 'vi', Tags.Language.Vietnamese ],
+    [ 'zh', Tags.Language.Chinese ],
+    [ 'zh-hk', Tags.Language.Chinese ],
 ]);
+
+// TODO: Check for possible revision
 
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
@@ -105,7 +106,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     private async GetChaptersFromPage(manga: Manga, page: number): Promise<Chapter[]> {
-        const { chapters: entries } = await FetchJSON<APIChapters>(new Request(new URL(`/comic/${manga.Identifier}/chapters?page=${page}`, this.apiUrl), {
+        const { chapters: entries } = await FetchJSON<APIMultiChapters>(new Request(new URL(`/comic/${manga.Identifier}/chapters?page=${page}`, this.apiUrl), {
             headers: {
                 Referer: this.URI.href,
                 Origin: this.URI.origin
