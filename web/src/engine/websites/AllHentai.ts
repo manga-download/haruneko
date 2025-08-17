@@ -12,7 +12,7 @@ import { FetchWindowScript } from '../platform/FetchProvider';
 @Grouple.ImageAjaxWithMirrors()
 export default class extends DecoratableMangaScraper {
     public constructor() {
-        super('allhentai', 'AllHentai', 'https://z.allhen.online', Tags.Language.Russian, Tags.Media.Manga, Tags.Rating.Pornographic, Tags.Source.Aggregator, Tags.Accessibility.DomainRotation);
+        super('allhentai', 'AllHentai', 'https://20.allhen.online', Tags.Language.Russian, Tags.Media.Manga, Tags.Rating.Pornographic, Tags.Source.Aggregator, Tags.Accessibility.DomainRotation);
     }
 
     public override get Icon() {
