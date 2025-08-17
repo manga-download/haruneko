@@ -323,7 +323,7 @@ export default class extends DecoratableMangaScraper {
     }
 }
 
-function XORDecrypt(encrypted: Uint8Array, key: string) {
+function XORDecrypt(encrypted: Uint8Array<ArrayBuffer>, key: string) {
     if (key) {
         const t = new Uint8Array(key.match(/.{1,2}/g).map(e => parseInt(e, 16)));
         const s = new Uint8Array(encrypted);
