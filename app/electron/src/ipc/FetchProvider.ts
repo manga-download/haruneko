@@ -32,7 +32,7 @@ export class FetchProvider {
         }
     }
 
-    private async UpdateCookieHeader(url: string, headers: Record<string, string>) {
+    private async UpdateCookieHeader(headers: Record<string, string>) {
         // TODO: Skip cookie assignment in browser window e.g., when `sec-fetch-dest: empty`?
         const normalizedCookieHeaderName = (this.fetchApiSupportedPrefix + 'Cookie').toLowerCase();
         const originalCookieHeaderName = Object.keys(headers).find(header => header.toLowerCase() === normalizedCookieHeaderName) ?? normalizedCookieHeaderName;
@@ -42,35 +42,50 @@ export class FetchProvider {
         }
     }
 
+    private UpsertCookieHeader(headers: Headers, cookies: string) {
+        // TODO: Skip cookie assignment in browser window e.g., when `sec-fetch-dest: empty`?
+        const value = ((headers.get('cookie') ?? '') + ';' + cookies).split(';')
+            .filter(cookie => cookie.includes('='))
+            .map(cookie => cookie.trim())
+            // TODO: remove duplicate cookie names ...
+            .join('; ');
+        headers.set('cookie', value);
+    }
+
+    private RevealHeaders(headers: Record<string, string>): Headers {
+        const result = new Headers();
+        const patternConcealedHeaderName = new RegExp('^' + this.fetchApiSupportedPrefix, 'i');
+        const IsHeaderNameConcealed = (name: string) => patternConcealedHeaderName.test(name);
+        const GetRevealedHeaderName = (name: string) => name.replace(patternConcealedHeaderName, '');
+
+        Object.entries(headers)
+            .filter(([ name, value ]) => name && value && !IsHeaderNameConcealed(name))
+            .forEach(([ name, value ]) => result.append(name, value));
+
+        Object.entries(headers)
+            .filter(([ name, value ]) => name && value && IsHeaderNameConcealed(name))
+            .forEach(([ name, value ]) => {
+                name = GetRevealedHeaderName(name);
+                return /^cookie$/.test(name) ? this.UpsertCookieHeader(result, value) : result.set(name, value);
+            });
+
+        return result;
+    }
+
     private async ModifyRequestHeaders(details: OnBeforeSendHeadersListenerDetails): Promise<BeforeSendResponse> {
         const uri = new URL(details.url);
-        await this.UpdateCookieHeader(uri.href, details.requestHeaders);
-        const updatedHeaders: typeof details.requestHeaders = {
-            //origin: uri.origin,
-            //referer: uri.href,
-        };
-
-        for (const originalHeaderName in details.requestHeaders) {
-            const normalizedHeaderName = originalHeaderName.toLowerCase();
-            const originalHeaderValue = details.requestHeaders[originalHeaderName];
-            if (normalizedHeaderName.startsWith(this.fetchApiSupportedPrefix)) {
-                const revealedHeaderName = normalizedHeaderName.replace(this.fetchApiSupportedPrefix, '');
-                updatedHeaders[revealedHeaderName] = originalHeaderValue;
-            } else {
-                updatedHeaders[normalizedHeaderName] = updatedHeaders[normalizedHeaderName] ?? originalHeaderValue;
-            }
-        }
+        const headers = this.RevealHeaders(details.requestHeaders ?? {});
 
         // Prevent leaking HakuNeko's host in certain headers
-        [ 'origin', 'referer' ].forEach(key => {
-            if(key in updatedHeaders && this.IsMatchingAppHost(updatedHeaders[key])) {
-                updatedHeaders[key] = uri.origin;
+        [ 'origin', 'referer' ].forEach(name => {
+            if (headers.get(name)?.startsWith(window.location.origin)) {
+                headers.set(name, uri.origin);
             }
         });
 
         return {
             cancel: false,
-            requestHeaders: updatedHeaders,
+            requestHeaders: Object.fromEntries(headers.entries()),
         };
     }
 

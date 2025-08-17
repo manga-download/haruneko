@@ -5,21 +5,22 @@ import type { FeatureFlags } from '../../FeatureFlags';
 const fetchApiSupportedPrefix = 'X-FetchAPI-';
 const fetchApiForbiddenHeaders = [
     'User-Agent',
-    'Referer',
     'Cookie',
+    'Referer',
     'Origin',
     'Host',
     'Sec-Fetch-Mode',
     'Sec-Fetch-Dest',
 ];
 
-async function UpdateCookieHeader(url: string, headers: Headers) {
+function UpsertCookieHeader(headers: Headers, cookies: string) {
     // TODO: Skip cookie assignment in browser window e.g., when `sec-fetch-dest: empty`?
-    const cookieHeaderName = fetchApiSupportedPrefix + 'Cookie';
-    const headerCookies = headers.get(cookieHeaderName)?.split(';').filter(cookie => cookie.includes('=')).map(cookie => cookie.trim()) ?? [];
-    if (headerCookies.length > 0) {
-        headers.set(cookieHeaderName, headerCookies.join('; '));
-    }
+    const value = ((headers.get('cookie') ?? '') + ';' + cookies).split(';')
+        .filter(cookie => cookie.includes('='))
+        .map(cookie => cookie.trim())
+        // TODO: remove duplicate cookie names ...
+        .join('; ');
+    headers.set('cookie', value);
 }
 
 function ConcealHeaders(init: HeadersInit): Headers {
@@ -33,28 +34,40 @@ function ConcealHeaders(init: HeadersInit): Headers {
     return headers;
 }
 
-function RevealHeaders(headers: chrome.webRequest.HttpHeader[]): chrome.webRequest.HttpHeader[] {
-    function ContainsPrefixed(headers: chrome.webRequest.HttpHeader[], header: chrome.webRequest.HttpHeader): boolean {
-        const prefixed = (fetchApiSupportedPrefix + header.name).toLowerCase();
-        return headers.some(header => header.name.toLowerCase() === prefixed);
-    }
-    headers = headers.filter(header => !ContainsPrefixed(headers, header));
-    for (const header of headers) {
-        header.name = header.name.replace(new RegExp('^' + fetchApiSupportedPrefix, 'i'), '');
-    }
-    return headers;
+function RevealHeaders(headers: chrome.webRequest.HttpHeader[]): Headers {
+    const result = new Headers();
+    const patternConcealedHeaderName = new RegExp('^' + fetchApiSupportedPrefix, 'i');
+    const IsHeaderNameConcealed = (name: string) => patternConcealedHeaderName.test(name);
+    const GetRevealedHeaderName = (name: string) => name.replace(patternConcealedHeaderName, '');
+
+    headers
+        .filter(({ name, value }) => name && value && !IsHeaderNameConcealed(name))
+        .forEach(({ name, value }) => result.append(name, value));
+
+    headers
+        .filter(({ name, value }) => name && value && IsHeaderNameConcealed(name))
+        .forEach(({ name, value }) => {
+            name = GetRevealedHeaderName(name);
+            return /^cookie$/.test(name) ? UpsertCookieHeader(result, value) : result.set(name, value);
+        });
+
+    return result;
 }
 
 function ModifyRequestHeaders(details: chrome.webRequest.OnBeforeSendHeadersDetails): chrome.webRequest.BlockingResponse {
+    const uri = new URL(details.url);
+    const headers = RevealHeaders(details.requestHeaders ?? []);
 
-    let headers = RevealHeaders(details.requestHeaders ?? []);
-
-    headers = headers.filter(header => {
-        return header.name.toLowerCase() !== 'referer' || !header.value?.startsWith(window.location.origin);
+    // Prevent leaking HakuNeko's host in certain headers
+    [ 'origin', 'referer' ].forEach(name => {
+        if (headers.get(name)?.startsWith(window.location.origin)) {
+            headers.set(name, uri.origin);
+        }
     });
 
     return {
-        requestHeaders: headers
+        cancel: false,
+        requestHeaders: [ ...headers.entries().map(([ name, value ]) => ({ name, value })) ],
     };
 }
 
@@ -96,10 +109,12 @@ export default class extends FetchProvider {
         globalThis.Request = FetchRequest;
 
         // Forward compatibility for future chrome versions (MV3 - Manifest v3)
+        /*
         const nativeChromeCookiesGetAll = chrome.cookies.getAll;
         chrome.cookies.getAll = function (details: chrome.cookies.GetAllDetails): Promise<chrome.cookies.Cookie[]> {
             return new Promise<chrome.cookies.Cookie[]>(resolve => nativeChromeCookiesGetAll(details, resolve));
         };
+        */
 
         // NOTE: parameter extraInfoSpec:
         //       'blocking'       => sync request required for header modification
@@ -125,7 +140,6 @@ export default class extends FetchProvider {
 
     public async Fetch(request: Request): Promise<Response> {
         // Fetch API defaults => https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch
-        await UpdateCookieHeader(request.url, request.headers);
         const response = await fetch(request);
         await super.ValidateResponse(response);
         return response;
