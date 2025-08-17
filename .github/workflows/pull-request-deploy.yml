@@ -32,7 +32,8 @@ jobs:
         with:
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          command: pages deploy ./web/build --project-name=hakuneko --commit-dirty=true
+          wranglerVersion: 4
+          command: deploy --assets=./web/build --name=hakuneko-app --compatibility-date=2000-01-01
       - name: Build Documentation
         run: npm run build --workspace=docs
       - name: Deploy Docs to CloudFlare
@@ -41,7 +42,8 @@ jobs:
         with:
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          command: pages deploy ./docs/.vitepress/dist --project-name=hakuneko-docs --commit-dirty=true
+          wranglerVersion: 4
+          command: deploy --assets=./docs/.vitepress/dist --name=hakuneko-docs --compatibility-date=2000-01-01
       - name: Comment Deployment
         uses: actions/github-script@v7
         with:
