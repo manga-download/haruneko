@@ -33,7 +33,8 @@ jobs:
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           wranglerVersion: 4
-          command: deploy --assets=./web/build --name=hakuneko-app --route=*-hakuneko-docs.hakuneko.workers.dev --latest=true
+          preCommands: echo "workers_dev=true" > wrangler.toml
+          command: deploy --assets=./web/build --name=hakuneko-app --latest=true
       - name: Build Documentation
         run: npm run build --workspace=docs
       - name: Deploy Docs to CloudFlare
@@ -43,7 +44,8 @@ jobs:
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           wranglerVersion: 4
-          command: deploy --assets=./docs/.vitepress/dist --name=hakuneko-docs --route=*-hakuneko-docs.hakuneko.workers.dev --latest=true
+          preCommands: echo "workers_dev=true" > wrangler.toml
+          command: deploy --assets=./docs/.vitepress/dist --name=hakuneko-docs --latest=true
       - name: Comment Deployment
         uses: actions/github-script@v7
         with:
