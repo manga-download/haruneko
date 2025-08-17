@@ -28,6 +28,8 @@ jobs:
         run: npm run build --workspace=web
       - name: Deploy App to CloudFlare
         id: deployWebApp
+        # Skipped until figured out how to workers can correctly deploy previews
+        if: false
         uses: cloudflare/wrangler-action@v3
         with:
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
@@ -39,6 +41,8 @@ jobs:
         run: npm run build --workspace=docs
       - name: Deploy Docs to CloudFlare
         id: deployDocs
+        # Skipped until figured out how to workers can correctly deploy previews
+        if: false
         uses: cloudflare/wrangler-action@v3
         with:
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
