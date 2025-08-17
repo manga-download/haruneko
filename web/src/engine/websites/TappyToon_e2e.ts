@@ -1,13 +1,14 @@
 ﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-const configEN = {
+// CASE : English manga
+new TestFixture({
     plugin: {
         id: 'tappytoon',
         title: 'TappyToon'
     },
     container: {
         url: 'https://www.tappytoon.com/en/book/the-duchess-who-sees-ghosts',
-        id: JSON.stringify({ id: '345', language: 'en' }),
+        id: '345',
         title: 'The Duchess Who Sees Ghosts'
     },
     child: {
@@ -19,18 +20,17 @@ const configEN = {
         size: 529_700,
         type: 'image/jpeg'
     }
-};
+}).AssertWebsite();
 
-new TestFixture(configEN).AssertWebsite();
-
-const configFR = {
+// CASE : French manga
+new TestFixture({
     plugin: {
         id: 'tappytoon',
         title: 'TappyToon'
     },
     container: {
         url: 'https://www.tappytoon.com/fr/book/the-duchess-who-sees-ghosts-fr',
-        id: JSON.stringify({ id: '10345', language: 'fr' }),
+        id: '10345',
         title: 'The Duchess Who Sees Ghosts [FR]'
     },
     child: {
@@ -42,18 +42,17 @@ const configFR = {
         size: 529_830,
         type: 'image/jpeg'
     }
-};
+}).AssertWebsite();
 
-new TestFixture(configFR).AssertWebsite();
-
-const configDE = {
+// CASE : German manga
+new TestFixture({
     plugin: {
         id: 'tappytoon',
         title: 'TappyToon'
     },
     container: {
         url: 'https://www.tappytoon.com/de/book/the-duchess-who-sees-ghosts-de',
-        id: JSON.stringify({ id: '20345', language: 'de' }),
+        id: '20345',
         title: 'The Duchess Who Sees Ghosts [DE]'
     },
     child: {
@@ -65,6 +64,4 @@ const configDE = {
         size: 523_689,
         type: 'image/jpeg'
     }
-};
-
-new TestFixture(configDE).AssertWebsite();
+}).AssertWebsite();

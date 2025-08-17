@@ -1,6 +1,6 @@
 import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'zinmanganet',
         title: 'ZinManga(.net)'
@@ -8,7 +8,7 @@ const config = {
     container: {
         url: 'https://www.zinmanga.net/manga/meet-in-the-middle',
         id: JSON.stringify({ post: '3914', slug: '/manga/meet-in-the-middle' }),
-        title: 'Meet In The Middle'
+        title: 'Meet in The Middle'
     },
     child: {
         id: '/manga/meet-in-the-middle/chapter-50',
@@ -16,9 +16,7 @@ const config = {
     },
     entry: {
         index: 0,
-        size: 779_490,
-        type: 'image/jpeg'
+        size: 458_424,
+        type: 'image/webp'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

@@ -17,7 +17,7 @@ function MangaLabelExtractor(element: HTMLElement) {
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('komiku', `Komiku`, 'https://komiku.id', Tags.Language.Indonesian, Tags.Media.Manga, Tags.Source.Aggregator);
+        super('komiku', `Komiku`, 'https://komiku.org', Tags.Language.Indonesian, Tags.Media.Manga, Tags.Source.Aggregator);
     }
 
     public override get Icon() {

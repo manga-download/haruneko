@@ -1,12 +1,12 @@
 ﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'miauscan',
         title: 'Miau Scan'
     },
     container: {
-        url: 'https://zonamiau.com/manga/685-dias/',
+        url: 'https://leemiau.com/manga/685-dias/',
         id: '/manga/685-dias/',
         title: '685 días'
     },
@@ -19,6 +19,4 @@ const config = {
         size: 246_995,
         type: 'image/jpeg'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

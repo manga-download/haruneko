@@ -1,6 +1,6 @@
 import { Tags } from '../Tags';
 import icon from './SpoilerPlus.webp';
-import {type Chapter, DecoratableMangaScraper, Page } from '../providers/MangaPlugin';
+import { type Chapter, DecoratableMangaScraper, Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import { FetchWindowScript } from '../platform/FetchProvider';
 import type { Priority } from '../taskpool/DeferredTask';
@@ -55,34 +55,34 @@ const pageScript = `
             resolve({images , scrambleArray });
         }
     });
-
 `;
 
 type PageData = {
     scrambleArray: number[],
-    images: string[]
-}
+    images: string[];
+};
 
 type TDimension = {
     height: number,
-    width: number
-}
+    width: number;
+};
 
 type TPiece = {
     height: number,
     left: number,
     top: number,
-    width: number
-}
+    width: number;
+};
 
 type TPuzzleData = {
     from: TPiece,
-    to: TPiece
-}
+    to: TPiece;
+};
 
 export function MangaLabelExtractor(element: HTMLElement): string {
     return StripCrap(element.textContent);
 }
+
 export function MangaInfoExtractor(anchor: HTMLAnchorElement) {
     return {
         id: anchor.pathname,
@@ -94,9 +94,10 @@ export function MangaInfoExtractor(anchor: HTMLAnchorElement) {
 @Common.MangasMultiPageCSS('/page/{page}/', 'article.item div.image > a', 1, 1, 0, MangaInfoExtractor)
 @Common.ChaptersSinglePageCSS('div.list-chapter ul li a')
 export default class extends DecoratableMangaScraper {
+
     private readonly queryPages: string = '';
 
-    public constructor(id = 'spoilerplus', label = 'SpoilerPlus', url = 'https://spoilerplus.tv', queryPages = 'div#post-comic div[data-z]', tags = [Tags.Media.Manga, Tags.Language.Japanese, Tags.Source.Aggregator, Tags.Accessibility.RegionLocked]) {
+    public constructor (id = 'spoilerplus', label = 'SpoilerPlus', url = 'https://spoilerplus.tv', queryPages = 'div#post-comic div[data-z]', tags = [ Tags.Media.Manga, Tags.Language.Japanese, Tags.Source.Aggregator, Tags.Accessibility.RegionLocked ]) {
         super(id, label, url, ...tags);
         this.queryPages = queryPages;
     }
@@ -129,46 +130,6 @@ export default class extends DecoratableMangaScraper {
                 });
             }
 
-            function COMPUTEPIECE(dimensions: TDimension, numColAndRow: number, pieceindex: number): TPiece {
-                var c, d, e, f, g, h, i, k, l, m, n, o, p, q, r, s, t, numpieces;
-                numpieces = numColAndRow * numColAndRow;
-                return pieceindex < numpieces
-                    ? (o = numColAndRow,
-                    p = pieceindex,
-                    q = (n = dimensions).width,
-                    r = n.height,
-                    s = Math.floor(q / o),
-                    t = Math.floor(r / o),
-                    {
-                        left: p % o * s,
-                        top: Math.floor(p / o) * t,
-                        width: s,
-                        height: t,
-                    })
-                    : pieceindex === numpieces
-                        ? (i = numColAndRow,
-                        k = (h = dimensions).width,
-                        l = h.height,
-                        0 == (m = k % i)
-                            ? null
-                            : {
-                                left: k - m,
-                                top: 0,
-                                width: m,
-                                height: l,
-                            })
-                        : (d = numColAndRow,
-                        e = (c = dimensions).width,
-                        0 == (g = (f = c.height) % d)
-                            ? null
-                            : {
-                                left: 0,
-                                top: f - g,
-                                width: e - e % d,
-                                height: g,
-                            });
-            }
-
             const scrambleData = COMPUTEPIECES(scrambleArray, image);
             scrambleData.forEach(piece => {
                 let source = piece.from,
@@ -179,9 +140,29 @@ export default class extends DecoratableMangaScraper {
             });
         });
     }
-
 }
 
 function StripCrap(text: string): string {
     return text.trim().replace(/Raw Free/i, '').trim();
+}
+
+function COMPUTEPIECE(dimensions: TDimension, numColAndRow: number, pieceindex: number): TPiece {
+    let c, d, e, f, g, h, i, k, l, m, n, o, p, q, r, s, t, numpieces;
+    numpieces = numColAndRow * numColAndRow;
+    return pieceindex < numpieces ? (o = numColAndRow, p = pieceindex, q = (n = dimensions).width, r = n.height, s = Math.floor(q / o), t = Math.floor(r / o), {
+        left: p % o * s,
+        top: Math.floor(p / o) * t,
+        width: s,
+        height: t,
+    }) : pieceindex === numpieces ? (i = numColAndRow, k = (h = dimensions).width, l = h.height, 0 == (m = k % i) ? null : {
+        left: k - m,
+        top: 0,
+        width: m,
+        height: l,
+    }) : (d = numColAndRow, e = (c = dimensions).width, 0 == (g = (f = c.height) % d) ? null : {
+        left: 0,
+        top: f - g,
+        width: e - e % d,
+        height: g,
+    });
 }

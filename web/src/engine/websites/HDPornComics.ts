@@ -5,7 +5,7 @@ import * as Common from './decorators/Common';
 import { FetchCSS, FetchWindowScript } from '../platform/FetchProvider';
 
 function MangaLabelExtractor(element: HTMLMetaElement): string {
-    return element.content.split('|')[0].trim().replace(/comic porn$/i, '').trim();
+    return element.content.split('|').at(0).trim().replace(/comic porn$/i, '').trim();
 }
 function PageExtractor(element: HTMLAnchorElement): string {
     return element.href;
@@ -17,7 +17,7 @@ function PageExtractor(element: HTMLAnchorElement): string {
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
-    public constructor() {
+    public constructor () {
         super('hdporncomics', 'HDPornComics', 'https://hdporncomics.com', Tags.Media.Manga, Tags.Media.Comic, Tags.Language.English, Tags.Source.Aggregator, Tags.Rating.Pornographic);
     }
 
@@ -27,7 +27,7 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
         const nonce = await FetchWindowScript<string>(new Request(this.URI), 'misha_loadmore_params.nonce', 500);
-        const mangaList : Manga[]= [];
+        const mangaList: Manga[] = [];
         for (let page = 1, run = true; run; page++) {
             const mangas = await this.GetMangasFromPage(page, provider, nonce);
             mangas.length > 0 ? mangaList.push(...mangas) : run = false;
@@ -56,5 +56,4 @@ export default class extends DecoratableMangaScraper {
         const data = await FetchCSS<HTMLAnchorElement>(request, 'a[class]');
         return data.map(item => new Manga(this, provider, item.pathname, item.querySelector('h2').textContent.trim().replace(/comic porn$/i, '').trim()));
     }
-
 }

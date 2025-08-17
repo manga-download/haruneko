@@ -1,6 +1,8 @@
-import { FASTElement, type ViewTemplate, type ElementStyles, customElement, html, css, observable } from '@microsoft/fast-element';
+import { FASTElement, html, css, observable } from '@microsoft/fast-element';
 import type { StoreableMediaContainer, MediaContainer, MediaItem } from '../../../engine/providers/MediaPlugin';
-import S from '../services/StateService';
+import { LocalizationProviderRegistration, type ILocalizationProvider } from '../services/LocalizationProvider';
+import { SettingsManagerRegistration, type ISettingsManager } from '../services/SettingsManager';
+import type { LazyScroll } from './LazyScroll';
 
 //import IconSortNone from '@fluentui/svg-icons/icons/arrow_sort_20_regular.svg?raw';
 //import IconSortAscending from '@fluentui/svg-icons/icons/text_sort_ascending_20_regular.svg?raw';
@@ -16,9 +18,9 @@ import IconDownload from '@fluentui/svg-icons/icons/arrow_circle_down_20_regular
 
 // #entries .entry
 const styleEntry = [
-    'padding: calc(var(--design-unit) * 1px);',
-    'border-top: calc(var(--stroke-width) * 1px) solid var(--neutral-stroke-divider-rest);',
-    'gap: calc(var(--design-unit) * 1px);',
+    'padding: var(--spacingHorizontalXS);',
+    'border-top: var(--strokeWidthThin) solid var(--colorNeutralStrokeSubtle);',
+    'gap: var(--spacingHorizontalXS);',
     'display: grid;',
     'align-items: center;',
     'grid-template-rows: min-content;',
@@ -40,7 +42,7 @@ const styleControls = [
     'visibility: hidden;',
 ].join(' ');
 
-const styles: ElementStyles = css`
+const styles = css`
 
     :host {
         display: grid;
@@ -49,8 +51,8 @@ const styles: ElementStyles = css`
     }
 
     #header {
-        padding: calc(var(--base-height-multiplier) * 1px);
-        background-color: var(--neutral-layer-2);
+        padding: var(--spacingHorizontalS);
+        background-color: var(--colorNeutralBackground4);
         display: grid;
         align-items: center;
         grid-template-rows: auto;
@@ -71,16 +73,16 @@ const styles: ElementStyles = css`
     }
 
     #controls .hint {
-        color: var(--neutral-foreground-hint);
-        margin-left: calc(var(--design-unit) * 1px);
-        margin-right: calc(var(--design-unit) * 1px);
+        color: var(--colorNeutralForeground4);
+        margin-left: var(--spacingHorizontalXS);
+        margin-right: var(--spacingHorizontalXS);
     }
 
     #searchcontrol {
-        padding: calc(var(--base-height-multiplier) * 1px);
-        border-top: calc(var(--stroke-width) * 1px) solid var(--neutral-stroke-divider-rest);
-        border-bottom: calc(var(--stroke-width) * 1px) solid var(--neutral-stroke-divider-rest);
-        background-color: var(--neutral-layer-2);
+        padding: var(--spacingHorizontalS);
+        border-top: var(--strokeWidthThin) solid var(--colorNeutralStrokeSubtle);
+        border-bottom: var(--strokeWidthThin) solid var(--colorNeutralStrokeSubtle);
+        background-color: var(--colorNeutralBackground4);
     }
 
     #button-update-entries.updating svg {
@@ -96,70 +98,44 @@ const styles: ElementStyles = css`
         padding: 0;
         margin: 0;
     }
-
-    /*
-    #entries .entry {
-        padding: calc(var(--design-unit) * 1px);
-        border-top: calc(var(--stroke-width) * 1px) solid var(--neutral-stroke-divider-rest);
-        gap: calc(var(--design-unit) * 1px);
-        display: grid;
-        align-items: center;
-        grid-template-rows: min-content;
-        grid-template-columns: min-content 1fr min-content;
-    }
-
-    #entries .entry > div {
-        overflow: hidden;
-        white-space: nowrap;
-        text-overflow: ellipsis;
-    }
-
-    #entries .entry .controls {
-        visibility: hidden;
-        display: flex;
-    }
-
-    #entries .entry:hover {
-        background-color: var(--neutral-fill-hover);
-    }
-
-    #entries .entry:hover .controls {
-        visibility: visible;
-    }
-    */
 `;
 
-const listitem: ViewTemplate<StoreableMediaContainer<MediaItem>> = html`
-    <div class="entry" style="${styleEntry}" onmouseover="this.querySelector('div.controls').style.visibility = 'visible'" onmouseout="this.querySelector('div.controls').style.visibility = 'hidden'">
-        <div style="${styleTrim}"><!-- <fluent-checkbox></fluent-checkbox> --></div>
-        <div style="${styleTrim}">${model => model.Title}</div>
-        <div class="controls" style="${styleControls}">
-            <fluent-button
-                appearance="stealth"
-                title="${() => S.Locale.Frontend_FluentCore_MediaItemList_PreviewButton_Description()}"
-                :innerHTML=${() => IconPreview}
-                @click=${(model, ctx) => ctx.parent.parentNode.host.ShowPreview(model)}>
-            </fluent-button>
-            <fluent-button
-                appearance="stealth"
-                title="${() => S.Locale.Frontend_FluentCore_MediaItemList_DownloadButton_Description()}"
-                :innerHTML=${() => IconDownload}
-                @click=${(model, ctx) => ctx.parent.parentNode.host.Download(model)}>
-            </fluent-button>
+function CreateItemTemplate(container: MediaItemList) {
+    return html<StoreableMediaContainer<MediaItem>, LazyScroll>`
+        <div class="entry" style="${styleEntry}" onmouseover="this.querySelector('div.controls').style.visibility = 'visible'" onmouseout="this.querySelector('div.controls').style.visibility = 'hidden'">
+            <div style="${styleTrim}"><!-- <fluent-checkbox></fluent-checkbox> --></div>
+            <div style="${styleTrim}">${model => model.Title}</div>
+            <div class="controls" style="${styleControls}">
+                <fluent-button
+                    icon-only
+                    appearance="transparent"
+                    title="${() => container.Localization.Locale.Frontend_FluentCore_MediaItemList_PreviewButton_Description()}"
+                    :innerHTML=${() => IconPreview}
+                    @click=${model => container.ShowPreview(model)}>
+                </fluent-button>
+                <fluent-button
+                    icon-only
+                    appearance="transparent"
+                    title="${() => container.Localization.Locale.Frontend_FluentCore_MediaItemList_DownloadButton_Description()}"
+                    :innerHTML=${() => IconDownload}
+                    @click=${model => container.Download(model)}>
+                </fluent-button>
+            </div>
         </div>
-    </div>
-`;
+    `;
+}
 
-const template: ViewTemplate<MediaItemList> = html`
+const template = html<MediaItemList>`
     <div id="header">
-        <div id="title">${() => S.Locale.Frontend_FluentCore_MediaItemList_Heading()}</div>
+        <div id="title">${model => model.Localization.Locale.Frontend_FluentCore_MediaItemList_Heading()}</div>
         <div id="controls">
             <div class="hint">${model => model.filtered?.length ?? '┄'}／${model => model.Entries?.length ?? '┄'}</div>
             <fluent-button
+                icon-only
                 id="button-update-entries"
-                appearance="stealth"
+                appearance="transparent"
                 class="${model => model.updating.includes(model.Container?.Identifier) ? 'updating' : ''}"
-                title="${() => S.Locale.Frontend_FluentCore_MediaTitleSelect_UpdateEntriesButton_Description()}"
+                title="${model => model.Localization.Locale.Frontend_FluentCore_MediaTitleSelect_UpdateEntriesButton_Description()}"
                 ?disabled=${model => !model.Container || model.updating.includes(model.Container?.Identifier)}
                 :innerHTML=${() => IconSynchronize}
                 @click=${(model, ctx) => model.UpdateEntries(ctx.event)}>
@@ -169,11 +145,13 @@ const template: ViewTemplate<MediaItemList> = html`
     <div id="searchcontrol">
         <fluent-searchbox allowcase allowregex @predicate=${(model, ctx) => model.Match = (ctx.event as CustomEvent<(text: string) => boolean>).detail}></fluent-searchbox>
     </div>
-    <fluent-lazy-scroll id="entries" :Items=${model => model.filtered} :template=${listitem}></fluent-lazy-scroll>
+    <fluent-lazy-scroll id="entries" :Items=${model => model.filtered} :template=${model => CreateItemTemplate(model)}></fluent-lazy-scroll>
 `;
 
-@customElement({ name: 'fluent-media-item-list', template, styles })
 export class MediaItemList extends FASTElement {
+
+    @LocalizationProviderRegistration Localization: ILocalizationProvider;
+    @SettingsManagerRegistration SettingsManager: ISettingsManager;
 
     @observable Container?: MediaContainer<StoreableMediaContainer<MediaItem>>;
     ContainerChanged() {
@@ -199,12 +177,12 @@ export class MediaItemList extends FASTElement {
         event.stopPropagation();
         const container = this.Container;
         try {
-            if(!this.updating.includes(container.Identifier)) {
+            if (!this.updating.includes(container.Identifier)) {
                 this.updating = [ ...this.updating, container.Identifier ];
                 await container?.Update();
                 this.ContainerChanged();
             }
-        } catch(error) {
+        } catch (error) {
             console.warn(error);
         } finally {
             this.updating = this.updating.filter(id => id !== container.Identifier);
@@ -216,6 +194,14 @@ export class MediaItemList extends FASTElement {
     }
 
     public async Download(entry: StoreableMediaContainer<MediaItem>) {
-        HakuNeko.DownloadManager.Enqueue(entry);
+        try {
+            await this.SettingsManager.SettingMediaDirectory.EnsureAccess();
+        } catch (error) {
+            // TODO: Introduce generic UI component to show errors
+            return alert(error.message ?? error);
+        }
+        await HakuNeko.DownloadManager.Enqueue(entry);
     }
 }
+
+MediaItemList.define({ name: 'fluent-media-item-list', template, styles });

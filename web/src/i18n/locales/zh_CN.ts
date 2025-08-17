@@ -93,8 +93,6 @@ const translations: VariantResource = { // NOTE: Use defaults for missing transl
   Frontend_FluentCore_Menu_ExportBookmarks_Label: "导出书签…",
   Frontend_FluentCore_Menu_ExportBookmarks_Description: "导出所有书签到一个文件(例如备份)",
   //
-  Frontend_FluentCore_Settings_ThemeLuminance_Label: "主题亮度",
-  Frontend_FluentCore_Settings_ThemeLuminance_Description: "改变主题的光线/暗度",
   Frontend_FluentCore_Settings_ShowBookmarksPanel_Label: "书签列表",
   Frontend_FluentCore_Settings_ShowBookmarksPanel_Description: "切换书签列表开/关的可见性",
   Frontend_FluentCore_Settings_ShowDownloadsPanel_Label: "下载管理器",

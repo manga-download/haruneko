@@ -11,7 +11,7 @@ import * as Common from './decorators/Common';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('henchan', `Хентай-тян! (Hentai-chan)`, 'https://x.henchan.pro', Tags.Language.Russian, Tags.Source.Aggregator, Tags.Rating.Pornographic, Tags.Media.Manga);
+        super('henchan', `Хентай-тян! (Hentai-chan)`, 'https://hentaichan.live', Tags.Language.Russian, Tags.Source.Aggregator, Tags.Rating.Pornographic, Tags.Media.Manga);
     }
 
     public override get Icon() {

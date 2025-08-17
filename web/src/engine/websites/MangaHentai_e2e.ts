@@ -1,6 +1,6 @@
 ﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'mangahentai',
         title: 'Manga Hentai'
@@ -15,10 +15,8 @@ const config = {
         title: 'Chapter 1'
     },
     entry: {
-        index: 1,
-        size: 14_291,
+        index: 2,
+        size: 55_488,
         type: 'image/jpeg'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

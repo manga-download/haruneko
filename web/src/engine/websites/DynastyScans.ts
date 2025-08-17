@@ -16,7 +16,7 @@ type APIMangas = {
 }
 
 type APIChapters = {
-    taggings: [{ title: string, permalink: string }]
+    taggings: [{ title: string, permalink: string, header?: JSONElement }]
 };
 
 type APIPages = {
@@ -28,7 +28,7 @@ type APIPages = {
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('dynasty-scans', `DynastyScans`, 'https://dynasty-scans.com', Tags.Language.English, Tags.Media.Manga, Tags.Source.Scanlator);
+        super('dynasty-scans', `Dynasty Reader`, 'https://dynasty-scans.com', Tags.Language.English, Tags.Media.Manga, Tags.Source.Scanlator);
     }
 
     public override get Icon() {
@@ -37,7 +37,7 @@ export default class extends DecoratableMangaScraper {
 
     public async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
         const mangalist: Manga[] = [];
-        const categories = ['/series', '/anthologies', '/issues', '/doujins'];
+        const categories = [ '/series', '/anthologies', '/issues', '/doujins' ];
         for (const category of categories) {
             const mangas = await this.GetMangasFromCategory(provider, category);
             mangas.length > 0 ? mangalist.push(...mangas) : false;
@@ -65,18 +65,15 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const json = await FetchJSON<APIChapters>(new Request(new URL(`${manga.Identifier}.json`, this.URI).href));
-        let chapterList = json.taggings.filter(chapter => !('header' in chapter)).map(chapter => {
-            return new Chapter(this, manga, `/chapters/${chapter.permalink}`, chapter.title.trim());
-        });
-
-        //making sure chapters are unique, as written in original code its apparently needed
-        chapterList = [...new Map(chapterList.map(item => [item['Identifier'], item])).values()];
-        return chapterList;
+        const { taggings } = await FetchJSON<APIChapters>(new Request(new URL(`${manga.Identifier}.json`, this.URI).href));
+        return taggings
+            .filter(chapter => !chapter.header)
+            .map(chapter => new Chapter(this, manga, `/chapters/${chapter.permalink}`, chapter.title.trim()))
+            .distinct();
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const json = await FetchJSON<APIPages>(new Request(new URL(`${chapter.Identifier}.json`, this.URI).href));
-        return json.pages.map(page => new Page(this, chapter, new URL(page.url, this.URI)));
+        const { pages } = await FetchJSON<APIPages>(new Request(new URL(`${chapter.Identifier}.json`, this.URI).href));
+        return pages.map(page => new Page(this, chapter, new URL(page.url, this.URI)));
     }
 }

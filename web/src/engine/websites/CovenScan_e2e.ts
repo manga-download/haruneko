@@ -1,24 +1,22 @@
 ﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'covenscan',
         title: 'CovenScan'
     },
     container: {
-        url: 'https://cvnscan.com/manga/a-predadora/',
-        id: JSON.stringify({ slug: '/manga/a-predadora/' }),
-        title: 'Predadora'
+        url: 'https://covendasbruxonas.com/manga/still-it-rains/',
+        id: JSON.stringify({ post: '1015', slug: '/manga/still-it-rains/' }),
+        title: 'Still, It Rains'
     },
     child: {
-        id: '/manga/a-predadora/capitulo-01',
+        id: '/manga/still-it-rains/capitulo-01/',
         title: 'Capítulo 01'
     },
     entry: {
-        index: 1,
-        size: 1_229_902,
-        type: 'image/webp'
+        index: 7,
+        size: 802_942,
+        type: 'image/jpeg'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

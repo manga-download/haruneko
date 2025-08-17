@@ -1,12 +1,12 @@
-import { TestFixture, type Config } from '../../../test/WebsitesFixture';
+import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config: Config = {
+new TestFixture({
     plugin: {
         id: 'manhwaindo',
         title: 'ManhwaIndo'
     },
     container: {
-        url: 'https://manhwaindo.one/series/9th-class-sword-master/',
+        url: 'https://manhwaindo.com/series/9th-class-sword-master/',
         id: '/series/9th-class-sword-master/',
         title: '9th Class Sword Master'
     },
@@ -19,6 +19,4 @@ const config: Config = {
         size: 84_843,
         type: 'image/jpeg'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

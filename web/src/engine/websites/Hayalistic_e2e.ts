@@ -1,6 +1,6 @@
 import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'hayalistic',
         title: 'Hayalistic'
@@ -12,13 +12,11 @@ const config = {
     },
     child: {
         id: '/manga/gorunus/bolum-1/',
-        title: 'Bölüm 1 -  Hyung Suk’un İki Bedeni Var (1)'
+        title: 'Bölüm 1 - Hyung Suk’un İki Bedeni Var (1)'
     },
     entry: {
         index: 0,
         size: 492_090,
         type: 'image/jpeg'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

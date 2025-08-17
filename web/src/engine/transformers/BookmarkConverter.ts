@@ -7,15 +7,14 @@ import type { BookmarkSerialized } from '../providers/Bookmark';
  * @remarks Only exported for testing
  */
 export const legacyWebsiteIdentifierMap = new Map([
+    [ 'allanimesite', 'allmanga' ],
     [ 'azoramanga', 'azoraworld' ],
     [ 'apolltoons', 'mundomanhwa' ],
     [ 'bacamangaorg', 'bacamanga' ],
     [ 'bananascan', 'harmonyscan' ],
-    [ 'blogtruyen', 'blogtruyenmoi' ],
     [ 'cocomanhua', 'colamanga' ],
     [ 'comicbushi', 'comicgrowl' ],
     [ 'comicwalker', 'kadocomi' ],
-    [ 'evascans', 'manwe' ],
     [ 'firescans', 'firecomics' ],
     [ 'firstkiss', 'likemanga' ],
     [ 'flamescans-org', 'flamecomics' ],
@@ -29,6 +28,7 @@ export const legacyWebsiteIdentifierMap = new Map([
     [ 'kumascans', 'retsu' ],
     [ 'lovehug', 'welovemanga' ],
     [ 'lyrascans', 'quantumscans' ],
+    [ 'mangacross', 'championcross' ],
     [ 'mangamx', 'mangaoni' ],
     [ 'manganel', 'manganato' ],
     [ 'mangaproz', 'mangapro' ],
@@ -38,6 +38,7 @@ export const legacyWebsiteIdentifierMap = new Map([
     [ 'neteasecomic', 'bilibilimanhua' ],
     [ 'nitroscans', 'nitromanga' ],
     [ 'prismascans', 'demonsect' ],
+    // TODO: 'ravensscans-en' + 'ravenscans-es' => 'ravensscans'
     [ 'reaperscansid', 'shinigamiid' ],
     [ 'scanhentaimenu', 'xmanga' ],
     [ 'shonenmagazine-pocket', 'shonenmagazine' ],

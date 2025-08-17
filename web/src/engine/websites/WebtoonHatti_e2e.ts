@@ -6,7 +6,7 @@ new TestFixture({
         title: 'Webtoon Hatti'
     },
     container: {
-        url: 'https://webtoonhatti.me/webtoon/suikascinin-kanunlari/',
+        url: 'https://webtoonhatti.club/webtoon/suikascinin-kanunlari/',
         id: JSON.stringify({ post: '22986', slug: '/webtoon/suikascinin-kanunlari/' }),
         title: 'Suikasçının Kanunları'
     },

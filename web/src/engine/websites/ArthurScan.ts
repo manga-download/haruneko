@@ -7,7 +7,7 @@ import * as Common from './decorators/Common';
 @Madara.MangaCSS(/^{origin}\/manga\/[^/]+\/$/, 'meta[property="og:title"]:not([content*="Arthur Scan"])')
 @Madara.MangasMultiPageAJAX()
 @Madara.ChaptersSinglePageAJAXv2()
-@Madara.PagesSinglePageCSS()
+@Madara.PagesSinglePageCSS('div.page-break img:not([src^="data"])')
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 

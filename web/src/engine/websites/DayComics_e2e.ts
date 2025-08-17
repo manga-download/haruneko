@@ -1,6 +1,6 @@
 ﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'daycomics',
         title: 'DayComics'
@@ -13,12 +13,10 @@ const config = {
     child: {
         id: '/content/101023/113522',
         title: 'Episode 1: Why is she in my house?'
-    },
+    }, /* Content is now behind login
     entry: {
         index: 0,
         size: 356_854,
         type: 'image/webp'
-    }
-};
-
-new TestFixture(config).AssertWebsite();
+    }*/
+}).AssertWebsite();

@@ -5,27 +5,28 @@ import * as Common from './decorators/Common';
 import { FetchCSS, FetchJSON } from '../platform/FetchProvider';
 
 type APIResponse<T> = {
-    data: T | string
-}
+    data: T | string;
+};
 
 type APIManga = {
     id: string,
-    bookName: string
-}
+    bookName: string;
+};
 
 type APIChapter = {
     chapterid: string,
-    chaptername: string
-}
+    chaptername: string;
+};
 
 const pagesScript = `[... document.querySelectorAll('div.chapter-img-box img')].map(image=> image.dataset.src || image.src);`;
 
 @Common.PagesSinglePageJS(pagesScript, 1500)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
+
     protected queryManga = 'div.book-name h1.name';
 
-    public constructor(id = 'rumanhua', label = 'RuManhua', url = 'https://rumanhua1.com', tags = [Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Chinese, Tags.Source.Aggregator]) {
+    public constructor (id = 'rumanhua', label = 'RuManhua', url = 'https://rumanhua1.com', tags = [ Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Chinese, Tags.Source.Aggregator ]) {
         super(id, label, url, ...tags);
     }
 
@@ -83,5 +84,4 @@ export default class extends DecoratableMangaScraper {
         }
         return chapterList;
     }
-
 }

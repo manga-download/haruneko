@@ -1,26 +1,24 @@
 ﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'argosscan',
         title: 'Argos Scan'
     },
     container: {
-        url: 'https://argoscomic.com/manga/apocalipse-implacavel/',
-        id: '/manga/apocalipse-implacavel/',
-        title: 'Apocalipse Implacavel',
+        url: 'https://argoscomic.com/manga/o-apocalipse-chegou/',
+        id: '/manga/o-apocalipse-chegou/',
+        title: 'O Apocalipse Chegou',
         timeout: 10000
 
     },
     child: {
-        id: '/manga/apocalipse-implacavel/1a-temporada/capitulo-01/',
-        title: 'Capítulo 01',
+        id: '/manga/o-apocalipse-chegou/1a-temporada/capitulo-09/',
+        title: 'Capítulo 09',
     },
     entry: {
         index: 1,
-        size: 190_316,
+        size: 271_682,
         type: 'image/webp'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

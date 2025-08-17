@@ -14,12 +14,11 @@ function PageLinkExtractor(anchor: HTMLAnchorElement) {
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
-    public constructor() {
+    public constructor () {
         super('porncomix', `PornComix`, 'https://bestporncomix.com', Tags.Language.English, Tags.Media.Manga, Tags.Media.Comic, Tags.Rating.Pornographic, Tags.Source.Aggregator);
     }
 
     public override get Icon() {
         return icon;
     }
-
 }

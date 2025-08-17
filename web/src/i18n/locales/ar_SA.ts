@@ -93,8 +93,6 @@ const translations: VariantResource = { // NOTE: Use defaults for missing transl
   Frontend_FluentCore_Menu_ExportBookmarks_Label: "تصدير الإشارات المرجعية…",
   Frontend_FluentCore_Menu_ExportBookmarks_Description: "تصدير جميع الإشارات المرجعية إلى ملف (على سبيل المثال للنسخ الاحتياطي)",
   //
-  Frontend_FluentCore_Settings_ThemeLuminance_Label: "تمزيق السمة",
-  Frontend_FluentCore_Settings_ThemeLuminance_Description: "تغيير الضوء/الظلام للموضوع",
   Frontend_FluentCore_Settings_ShowBookmarksPanel_Label: "قائمة الإشارات المرجعية",
   Frontend_FluentCore_Settings_ShowBookmarksPanel_Description: "تبديل رؤية قائمة الإشارات المرجعية تشغيل/إيقاف تشغيلها",
   Frontend_FluentCore_Settings_ShowDownloadsPanel_Label: "إدارة التنزيل",

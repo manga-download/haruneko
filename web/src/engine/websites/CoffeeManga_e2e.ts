@@ -1,17 +1,17 @@
 ﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'coffeemanga',
         title: 'CoffeeManga'
     },
     container: {
-        url: 'https://coffeemanga.io/manga/savage-castle/',
-        id: JSON.stringify({ post: '23019', slug: '/manga/savage-castle/' }),
+        url: 'https://coffeemanga.io/manga/savage-castle-0/',
+        id: JSON.stringify({ post: '23019', slug: '/manga/savage-castle-0/' }),
         title: 'Savage Castle'
     },
     child: {
-        id: '/manga/savage-castle/chapter-1/',
+        id: '/manga/savage-castle-0/chapter-1/',
         title: 'Chapter 1'
     },
     entry: {
@@ -19,6 +19,4 @@ const config = {
         size: 119_934,
         type: 'image/webp'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

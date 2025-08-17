@@ -1,6 +1,6 @@
 import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'to-corona-ex',
         title: 'コロナ (to-corona-ex)'
@@ -15,10 +15,8 @@ const config = {
         title: '第1話'
     },
     entry: {
-        index: 0,
-        size: 3_867_212,
+        index: 4,
+        size: 1_974_099,
         type: 'image/png'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

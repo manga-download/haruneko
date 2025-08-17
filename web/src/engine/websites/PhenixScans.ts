@@ -7,9 +7,9 @@ import { FetchJSON } from '../platform/FetchProvider';
 type APIMangas = {
     mangas: {
         title: string,
-        slug: string
-    }[]
-}
+        slug: string;
+    }[];
+};
 
 function ChapterExtractor(anchor: HTMLAnchorElement) {
     return {
@@ -23,9 +23,9 @@ function ChapterExtractor(anchor: HTMLAnchorElement) {
 @Common.PagesSinglePageCSS('img.chapter-image')
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
-    private apiUrl = 'https://api.phenix-scans.com/front/';
+    private apiUrl = 'https://phenix-scans.com/api/front/';
 
-    public constructor() {
+    public constructor () {
         super('phenixscans', 'Phenix Scans', 'https://phenix-scans.com', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.French, Tags.Source.Scanlator);
     }
 
@@ -37,5 +37,4 @@ export default class extends DecoratableMangaScraper {
         const { mangas } = await FetchJSON<APIMangas>(new Request(new URL('./manga?page=1&limit=99999&sort=updatedAt', this.apiUrl)));
         return mangas.map(manga => new Manga(this, provider, `/manga/${manga.slug}`, manga.title));
     }
-
 }

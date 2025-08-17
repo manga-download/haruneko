@@ -1,6 +1,6 @@
-import { TestFixture, type Config } from '../../../test/WebsitesFixture';
+import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config: Config = {
+new TestFixture({
     plugin: {
         id: 'manhwaclub',
         title: 'ManhwaClub'
@@ -11,14 +11,12 @@ const config: Config = {
         title: 'Is It Your Mother or Sister?'
     },
     child: {
-        id: '/manga/is-it-your-mother-or-sister-04/chapter-36-raw/',
-        title: 'Chapter 36 raw'
+        id: '/manga/is-it-your-mother-or-sister-04/chapter-36/',
+        title: 'Chapter 36'
     },
     entry: {
-        index: 0,
-        size: 222_228,
+        index: 1,
+        size: 396_450,
         type: 'image/jpeg'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

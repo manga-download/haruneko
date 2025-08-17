@@ -1,11 +1,10 @@
-/* NW.js crash on website initialize => CloudFlare
 import { TestFixture, type Config } from '../../../test/WebsitesFixture';
 
-function config(_url: string): Config {
+function config(url: string): Config {
     return {
         plugin: {
             id: 'nettruyen#BFBB5C98',
-            title: 'NetTruyen Viet',
+            title: 'NetTruyen Viet/WW',
         },
         container: {
             url: url,
@@ -24,6 +23,5 @@ function config(_url: string): Config {
     };
 }
 
-new TestFixture(config('https://nettruyenvio.com/truyen-tranh/ta-co-90-ty-tien-liem-cau')).AssertWebsite();
+new TestFixture(config('https://nettruyenvia.com/truyen-tranh/ta-co-90-ty-tien-liem-cau')).AssertWebsite();
 new TestFixture(config('https://nettruyenrr.com/truyen-tranh/ta-co-90-ty-tien-liem-cau-16581')).AssertWebsite();
-*/

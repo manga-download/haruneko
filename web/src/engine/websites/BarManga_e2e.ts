@@ -6,7 +6,7 @@ new TestFixture({
         title: 'BarManga'
     },
     container: {
-        url: 'https://archiviumbar.com/manga/aprendiz-por-favor-perdoname/',
+        url: 'https://libribar.com/manga/aprendiz-por-favor-perdoname/',
         id: JSON.stringify({ post: '834', slug: '/manga/aprendiz-por-favor-perdoname/' }),
         title: '¡Aprendiz! ¡Por favor perdóname!'
     },

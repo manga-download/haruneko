@@ -62,9 +62,8 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
-        const workCode = new URL(url).pathname.match(/\/detail\/([^/]+)/)[1]; //strip search
-        const apiCallUrl = new URL(`contents/details/work?workCode=${workCode}`, this.apiURL);
-        const { work } = await FetchJSON<APIMangaDetails>(new Request(apiCallUrl));
+        const workCode = new URL(url).pathname.match(/\/detail\/([^/]+)/).at(1); //strip search
+        const { work } = await FetchJSON<APIMangaDetails>(new Request(new URL(`./contents/details/work?workCode=${workCode}`, this.apiURL)));
         return new Manga(this, provider, workCode, work.title.trim());
     }
 
@@ -78,15 +77,14 @@ export default class extends DecoratableMangaScraper {
     }
 
     private async GetMangasFromPage(page: number, provider: MangaPlugin): Promise<Manga[]> {
-        const url = new URL(`search/keywords?keywords=&limit=100&offset=${page * 100}`, this.apiURL);
+        const url = new URL(`./search/keywords?keywords=&limit=100&offset=${page * 100}`, this.apiURL);
         const { result } = await FetchJSON<APIResult<APIManga>>(new Request(url));
         return result.map(manga => new Manga(this, provider, manga.code, manga.title.trim()));
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const chapterList: Chapter[] = [];
-        const apiCallUrl = new URL(`contents/details/work?workCode=${manga.Identifier}`, this.apiURL);
-        const data = await FetchJSON<APIMangaDetails>(new Request(apiCallUrl));
+        const data = await FetchJSON<APIMangaDetails>(new Request(new URL(`./contents/details/work?workCode=${manga.Identifier}`, this.apiURL)));
 
         for (const list of [data.firstEpisodes, data.latestEpisodes]) {
             chapterList.push(...this.GetChapters(manga, list));
@@ -106,8 +104,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const apiCallUrl = new URL(`contents/viewer?episodeId=${chapter.Identifier}&imageSizeType=width:1284`, this.apiURL);
-        const { manuscripts } = await FetchJSON<APIPages>(new Request(apiCallUrl));
+        const { manuscripts } = await FetchJSON<APIPages>(new Request(new URL(`./contents/viewer?episodeId=${chapter.Identifier}&imageSizeType=width:1284`, this.apiURL)));
         return manuscripts.map(page => new Page<APIPage>(this, chapter, new URL(page.drmImageUrl), { ...page }));
     }
 
@@ -127,8 +124,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     private async DecryptXor(encrypted: Uint8Array, passphrase: string): Promise<Blob> {
-        const key = this.GenerateKey(passphrase);
-        return Common.GetTypedData(this.Xor(encrypted, key));
+        return Common.GetTypedData(this.Xor(encrypted, this.GenerateKey(passphrase)));
     }
 
     private GenerateKey(t: string): Uint8Array {
@@ -140,13 +136,10 @@ export default class extends DecoratableMangaScraper {
         throw new Error("failed generate key.");
     }
 
-    private Xor(t: Uint8Array, e: Uint8Array) {
-        const r = t.length;
-        const i = e.length;
-        const o = new Uint8Array(r);
-
-        for (let a = 0; a < r; a += 1)
-            o[a] = t[a] ^ e[a % i];
-        return o.buffer;
+    private Xor(sourceArray: Uint8Array, keyArray: Uint8Array) {
+        const result = new Uint8Array(sourceArray.length);
+        for (let index = 0; index < sourceArray.length; index++)
+            result[index] = sourceArray[index] ^ keyArray[index % keyArray.length];
+        return result.buffer;
     }
 }

@@ -1,18 +1,18 @@
 import { Tags } from '../Tags';
 import icon from './Manhuaga.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
-import * as MangaStream from './decorators/WordPressMangaStream';
+import * as Madara from './decorators/WordPressMadara';
 import * as Common from './decorators/Common';
 
-@MangaStream.MangaCSS(/^{origin}\/manga\/[^/]+\/$/)
-@MangaStream.MangasSinglePageCSS()
-@MangaStream.ChaptersSinglePageCSS()
-@MangaStream.PagesSinglePageJS()
-@Common.ImageAjax()
+@Madara.MangaCSS(/^{origin}\/manga\/[^/]+\/$/, 'ol.breadcrumb li:last-of-type a')
+@Madara.MangasMultiPageAJAX()
+@Madara.ChaptersSinglePageAJAXv2()
+@Madara.PagesSinglePageCSS()
+@Common.ImageAjax(true)
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('manhuaga', 'Manhuaga', 'https://manhuaga.com', Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Language.English);
+        super('manhuaga', 'Manhuaga', 'https://manhua-ga.org', Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Language.English, Tags.Source.Aggregator);
     }
 
     public override get Icon() {

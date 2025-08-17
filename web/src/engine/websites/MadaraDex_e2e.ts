@@ -1,24 +1,22 @@
 ﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'madaradex',
         title: 'MadaraDex'
     },
     container: {
         url: 'https://madaradex.org/title/eleceed/',
-        id: JSON.stringify({ post: '942', slug: '/title/eleceed/' }),
+        id: JSON.stringify({ post: '513', slug: '/title/eleceed/' }),
         title: 'Eleceed'
     },
     child: {
-        id: '/title/eleceed/chapter-1/',
-        title: 'Chapter 1'
+        id: '/title/eleceed/chapter-350/',
+        title: 'Chapter 350'
     },
     entry: {
-        index: 2,
-        size: 87_884,
-        type: 'image/jpeg'
+        index: 0,
+        size: 508_874,
+        type: 'image/webp'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

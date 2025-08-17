@@ -1,5 +1,4 @@
-﻿/* NW.js crash on website initialize => CloudFlare
-import { TestFixture } from '../../../test/WebsitesFixture';
+﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
 new TestFixture({
     plugin: {
@@ -7,13 +6,13 @@ new TestFixture({
         title: 'AGR (Animated Glitched Comics)'
     },
     container: {
-        url: 'https://agrcomics.com/series/a4126222129/',
-        id: '/series/a4126222129/',
+        url: 'https://agrcomics.org/series/reincarnated-as-the-mastermind-of-the-story',
+        id: JSON.stringify({ slug: 'reincarnated-as-the-mastermind-of-the-story', id: 109 }),
         title: 'Reincarnated as the Mastermind of the Story'
     },
     child: {
-        id: '/chapter/a4126222129-cb8dddee90e/',
-        title: 'Chapter 23'
+        id: '/series/reincarnated-as-the-mastermind-of-the-story/chapter-23',
+        title: '23'
     },
     entry: {
         index: 1,
@@ -21,4 +20,3 @@ new TestFixture({
         type: 'image/jpeg'
     }
 }).AssertWebsite();
-*/

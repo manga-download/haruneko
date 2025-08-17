@@ -6,7 +6,7 @@ new TestFixture({
         title: 'Kedi Manga'
     },
     container: {
-        url: 'https://kedi.to/manga/blue-lock/',
+        url: 'https://kedimanga.com/manga/blue-lock/',
         id: '/manga/blue-lock/',
         title: 'Blue Lock'
     },

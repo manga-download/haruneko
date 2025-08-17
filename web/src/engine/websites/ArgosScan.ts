@@ -22,12 +22,11 @@ const chapterScript = `
 @Common.ImageAjax(true)
 export default class extends DecoratableMangaScraper {
 
-    public constructor() {
+    public constructor () {
         super('argosscan', `Argos Scan`, 'https://argoscomic.com', Tags.Language.Portuguese, Tags.Source.Scanlator, Tags.Media.Manhwa, Tags.Media.Manga);
     }
 
     public override get Icon() {
         return icon;
     }
-
 }

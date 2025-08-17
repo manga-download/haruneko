@@ -93,8 +93,6 @@ const translations: VariantResource = { // NOTE: Use defaults for missing transl
   Frontend_FluentCore_Menu_ExportBookmarks_Label: "ブックマークをエクスポート...",
   Frontend_FluentCore_Menu_ExportBookmarks_Description: "すべてのブックマークをファイルに保存（例：バックアップ用）",
   //
-  Frontend_FluentCore_Settings_ThemeLuminance_Label: "テーマの明るさ",
-  Frontend_FluentCore_Settings_ThemeLuminance_Description: "テーマの明るさ/暗さを変更",
   Frontend_FluentCore_Settings_ShowBookmarksPanel_Label: "ブックマークリスト",
   Frontend_FluentCore_Settings_ShowBookmarksPanel_Description: "ブックマークリストの表示/非表示を切り替える",
   Frontend_FluentCore_Settings_ShowDownloadsPanel_Label: "ダウンロードマネージャー",

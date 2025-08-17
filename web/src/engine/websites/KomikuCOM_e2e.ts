@@ -1,4 +1,3 @@
-/* NW.js crash on website initialize => CloudFlare
 import { TestFixture } from '../../../test/WebsitesFixture';
 
 new TestFixture({
@@ -7,7 +6,7 @@ new TestFixture({
         title: 'Komiku.COM'
     },
     container: {
-        url: 'https://komiku.one/manga/my-wife-and-i-dominate-the-three-realms/',
+        url: 'https://01.komiku.asia/manga/my-wife-and-i-dominate-the-three-realms/',
         id: '/manga/my-wife-and-i-dominate-the-three-realms/',
         title: 'My Wife and I Dominate the Three Realms'
     },
@@ -21,4 +20,3 @@ new TestFixture({
         type: 'image/jpeg'
     }
 }).AssertWebsite();
-*/

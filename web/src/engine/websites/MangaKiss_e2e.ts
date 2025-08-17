@@ -1,17 +1,17 @@
 import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'mangakiss',
         title: 'Mangakiss'
     },
     container: {
-        url: 'https://mangakiss.org/manga/one-more-chance-for-love/',
-        id: JSON.stringify({ post: '52', slug: '/manga/one-more-chance-for-love/' }),
+        url: 'https://mangakiss.org/manga/onesmorechanceso1/',
+        id: JSON.stringify({ post: '52', slug: '/manga/onesmorechanceso1/' }),
         title: 'One More Chance For Love'
     },
     child: {
-        id: '/manga/one-more-chance-for-love/chapter-0/',
+        id: '/manga/onesmorechanceso1/chapter-0/',
         title: 'Chapter 0'
     },
     entry: {
@@ -19,6 +19,4 @@ const config = {
         size: 195_293,
         type: 'image/jpeg'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

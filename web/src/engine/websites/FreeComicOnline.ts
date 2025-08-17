@@ -1,18 +1,15 @@
 import { Tags } from '../Tags';
 import icon from './FreeComicOnline.webp';
-import { DecoratableMangaScraper } from '../providers/MangaPlugin';
-import * as Madara from './decorators/WordPressMadara';
-import * as Common from './decorators/Common';
+import ManhwaHentaiMe from './ManhwaHentaiMe';
 
-@Madara.MangaCSS(/^{origin}\/comic\/[^/]+\/$/, 'meta[property="og:title"]:not([content*="for free"])')
-@Madara.MangasMultiPageAJAX()
-@Madara.ChaptersSinglePageAJAXv1()
-@Madara.PagesSinglePageCSS()
-@Common.ImageAjax()
-export default class extends DecoratableMangaScraper {
+export default class extends ManhwaHentaiMe {
 
     public constructor() {
-        super('freecomiconline', 'Free Comic Online', 'https://freecomiconline.me', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.English, Tags.Rating.Erotica);
+        super('freecomiconline', 'Free Comic Online', 'https://freecomiconline.me', [Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.English, Tags.Rating.Erotica]);
+    }
+
+    public override ValidateMangaURL(url: string): boolean {
+        return new RegExpSafe(`^${this.URI.origin}/comic/[^/]+\/$`).test(url);
     }
 
     public override get Icon() {

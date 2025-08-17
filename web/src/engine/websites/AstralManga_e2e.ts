@@ -1,24 +1,22 @@
 ﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'astralmanga',
         title: 'AstralManga'
     },
     container: {
-        url: 'https://astral-manga.fr/manga/swordmasters-youngest-son/',
-        id: JSON.stringify({ post: '2621', slug: '/manga/swordmasters-youngest-son/' }),
-        title: 'Swordmaster’s Youngest Son'
+        url: 'https://astral-manga.fr/manga/01-wind-breaker/',
+        id: JSON.stringify({ post: '4138', slug: '/manga/01-wind-breaker/' }),
+        title: 'Wind Breaker'
     },
     child: {
-        id: '/manga/swordmasters-youngest-son/chapitre-80/',
-        title: 'Chapitre 80'
+        id: '/manga/01-wind-breaker/chapitre-66/',
+        title: 'Chapitre 66 - Épisode spécial'
     },
     entry: {
         index: 1,
-        size: 4_220_684,
+        size: 4_317_123,
         type: 'image/jpeg'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

@@ -1,12 +1,12 @@
-import { TestFixture, type Config } from '../../../test/WebsitesFixture';
+import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config: Config = {
+new TestFixture({
     plugin: {
         id: 'maidscan',
         title: 'Maid Scan'
     },
     container: {
-        url: 'https://empreguetes.site/manga/deus-tigre-de-jangsan/',
+        url: 'https://novo.empreguetes.site/manga/deus-tigre-de-jangsan/',
         id: JSON.stringify({ post: '1243', slug: '/manga/deus-tigre-de-jangsan/'}),
         title: 'Deus tigre de Jangsan'
     },
@@ -19,6 +19,4 @@ const config: Config = {
         size: 507_912,
         type: 'image/webp'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

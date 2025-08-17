@@ -22,12 +22,11 @@ function ChapterInfoExtractor(anchor: HTMLAnchorElement) {
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
-    public constructor() {
+    public constructor () {
         super('mangatepesi', `MangaTepesi`, 'https://mangatepesi.com', Tags.Language.Turkish, Tags.Source.Scanlator, Tags.Media.Manga, Tags.Media.Manhwa);
     }
 
     public override get Icon() {
         return icon;
     }
-
 }

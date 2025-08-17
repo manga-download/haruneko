@@ -8,33 +8,33 @@ import { AddAntiScrapingDetection, FetchRedirection } from '../platform/AntiScra
 type APIResult<T> = {
     success: boolean,
     data: T,
-}
+};
 
 type APIManga = {
     title: string,
     slug: string,
-    chpFormat: string
-}
+    chpFormat: string;
+};
 
 type APIChapters = {
     manga: APIManga,
-    chapters: APIChapter[]
-}
+    chapters: APIChapter[];
+};
 
 type APIChapter = {
     id: number,
     number: number,
     subNumber: number,
-    name: string
-}
+    name: string;
+};
 
 type APIPages = {
     chapter: {
         pages: {
-            url: string
-        }[]
-    }
-}
+            url: string;
+        }[];
+    };
+};
 
 const mangaScript = 'window.laravel.route.data.manga.manga';
 const chapterScript = 'window.laravel.route.data.manga';
@@ -46,9 +46,10 @@ AddAntiScrapingDetection(async (invoke) => {
 
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
+
     private readonly apiUrl = new URL('/api/manga/', this.URI);
 
-    public constructor() {
+    public constructor () {
         super('mangatube', `MangaTube`, 'https://manga-tube.me', Tags.Language.German, Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Source.Aggregator);
     }
 
@@ -66,7 +67,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        const mangaList: Manga[]= [];
+        const mangaList: Manga[] = [];
         for (let page = 1, run = true; run; page++) {
             const mangas = await this.GetMangasFromPage(page, provider);
             mangas.length > 0 ? mangaList.push(...mangas) : run = false;
@@ -97,5 +98,4 @@ export default class extends DecoratableMangaScraper {
         const { data: { chapter: { pages } } } = await FetchJSON<APIResult<APIPages>>(new Request(new URL(`${chapter.Parent.Identifier}/chapter/${chapter.Identifier}`, this.apiUrl)));
         return pages.map(item => new Page(this, chapter, new URL(item.url)));
     }
-
 }

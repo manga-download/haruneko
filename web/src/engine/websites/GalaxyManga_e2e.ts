@@ -1,24 +1,22 @@
-﻿import { TestFixture, type Config } from '../../../test/WebsitesFixture';
+﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config: Config = {
+new TestFixture({
     plugin: {
         id: 'galaxymanga',
         title: 'Galaxy Manga'
     },
     container: {
-        url: 'https://gxcomic.xyz/series/53488-850-berserk',
-        id: '/series/53488-850-berserk',
-        title: 'Berserk'
+        url: 'https://galaxymanga.to/manga/you-awakened-while-i-was-dead/',
+        id: '/manga/you-awakened-while-i-was-dead/',
+        title: 'You Awakened while I Was Dead'
     },
     child: {
-        id: '/read/webtoon/53488-30402-chapter-1',
-        title: 'فصل 1'
+        id: '/you-awakened-while-i-was-dead-chapter-73/',
+        title: 'Chapter 73'
     },
     entry: {
-        index: 4,
-        size: 588_994,
+        index: 0,
+        size: 119_984,
         type: 'image/webp'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

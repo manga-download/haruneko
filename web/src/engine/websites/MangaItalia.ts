@@ -8,7 +8,7 @@ import { FetchCSS } from '../platform/FetchProvider';
 function ChapterExtractor(element: HTMLElement) {
     return {
         id: element.querySelector<HTMLAnchorElement>('a').pathname,
-        title: element.querySelector('h5').textContent.trim().split('\n')[0]
+        title: element.querySelector('h5').textContent.trim().split('\n').at(0),
     };
 }
 function MangaLabelExtractor(element: HTMLTitleElement) {
@@ -21,7 +21,7 @@ function MangaLabelExtractor(element: HTMLTitleElement) {
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
-    public constructor() {
+    public constructor () {
         super('manga-italia', 'Manga Italia', 'https://mangaita.io', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Media.Manga, Tags.Language.Italian, Tags.Source.Scanlator);
     }
 
@@ -37,5 +37,4 @@ export default class extends DecoratableMangaScraper {
         }
         return pageList;
     }
-
 }

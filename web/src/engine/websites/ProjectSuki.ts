@@ -31,10 +31,10 @@ const pageScript = `
 `;
 
 type APIManga = {
-    [id: number]: {
-        value: string
-    }
-}
+    [ id: number ]: {
+        value: string;
+    };
+};
 
 @Common.MangaCSS(/^{origin}\/book\/\d+$/, 'h2[itemprop="title"]')
 @Common.ChaptersSinglePageCSS('table tr td a[href*="/read/"]')
@@ -42,7 +42,7 @@ type APIManga = {
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
-    public constructor() {
+    public constructor () {
         super('projectsuki', 'Project Suki', 'https://projectsuki.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Media.Manga, Tags.Language.English, Tags.Source.Aggregator);
     }
 
@@ -52,7 +52,6 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
         const data = await FetchWindowScript<APIManga>(new Request(new URL('/browse', this.URI)), 'titles');
-        return Object.entries(data).map(([key, value]) => new Manga(this, provider, `/book/${key}`, value.value));
+        return Object.entries(data).map(([ key, value ]) => new Manga(this, provider, `/book/${key}`, value.value));
     }
-
 }

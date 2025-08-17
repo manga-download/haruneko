@@ -10,12 +10,11 @@ import * as Common from './decorators/Common';
 @Madara.PagesSinglePageCSS()
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
-    public constructor() {
+    public constructor () {
         super('hunterscan', 'Hunters Scan', 'https://readhunters.xyz', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Portuguese, Tags.Accessibility.RegionLocked);
     }
 
     public override get Icon() {
         return icon;
     }
-
 }

@@ -2,21 +2,21 @@ import { Tags } from '../Tags';
 import icon from './MangaUpJapan.webp';
 import { Chapter, DecoratableMangaScraper, type Manga, Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { FetchCSS } from '../platform/FetchProvider';
+import { FetchNextJS } from '../platform/FetchProvider';
 
-type JSONChapters = {
-    id: number,
-    name: string,
-    subName: string
-}[];
+type HydratedChapters = {
+    chapters:{
+        id: number,
+        name: string,
+        subName: string,
+    }[]
+};
 
-type JSONPages = {
-    content: {
-        value: {
-            imageUrl: string,
-        }
-    }
-}[];
+type HydratedPages = {
+    pages: {
+        content: { value: { imageUrl?: string } }
+    }[]
+};
 
 const mangasEndpoints = [
     'mon',
@@ -50,30 +50,17 @@ export default class extends DecoratableMangaScraper {
         return icon;
     }
 
-    private ExtractNextJsPayloadData(element: HTMLScriptElement): string {
-        const data = element.innerHTML.match(/^self\.__next_f\.push\(\[\d+,"(.*)"\]\)$/)?.at(1);
-        return data?.replace(/\\{1,2}"/g, '"').replace(/\\{2,3}n/g, '\\n');
-    }
-
-    private async FetchNextJsData<T>(pathname: string, pattern: RegExp): Promise<T> {
-        const request = new Request(new URL(pathname, this.URI));
-        const elements = await FetchCSS<HTMLScriptElement>(request, 'script:not([src])');
-        for (const element of elements) {
-            const match = this.ExtractNextJsPayloadData(element)?.match(pattern);
-            if (match) return JSON.parse(match.at(-1));
-        }
-    }
-
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const chapters = await this.FetchNextJsData<JSONChapters>(manga.Identifier, /"chapters":(\[{.*?}\]),/);
+        const request = new Request(new URL(manga.Identifier, this.URI));
+        const { chapters } = await FetchNextJS<HydratedChapters>(request, data => 'chapters' in data);
         return chapters.map(({ id, name, subName }) => new Chapter(this, manga, `${manga.Identifier}/chapters/${id}`, `${subName} ${name}`.replace(/\s+/g, ' ').trim()));
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const pages = await this.FetchNextJsData<JSONPages>(chapter.Identifier, /(\[{"content":.*?}}}\]),/);
+        const request = new Request(new URL(chapter.Identifier, this.URI));
+        const { pages } = await FetchNextJS<HydratedPages>(request, data => 'pages' in data);
         return pages
-            .map(page => page.content.value.imageUrl)
-            .filter(imageUrl => imageUrl)
-            .map(imageUrl => new Page(this, chapter, new URL(imageUrl)));
+            .filter(page => page.content.value.imageUrl)
+            .map(page => new Page(this, chapter, new URL(page.content.value.imageUrl, this.URI)));
     }
 }

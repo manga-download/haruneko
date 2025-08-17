@@ -1,24 +1,22 @@
 ﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'carteldemanhwas',
         title: 'Cartel De Manhwas'
     },
     container: {
-        url: 'https://carteldemanhwas.com/series/la-esposa-de-reemplazo-del-billeton/',
-        id: '/series/la-esposa-de-reemplazo-del-billeton/',
-        title: 'La Esposa de reemplazo del billetón (Descensurado)'
+        url: 'https://carteldemanhwas.net/proyectos/alejate-de-mi-hijo/',
+        id: '/proyectos/alejate-de-mi-hijo/',
+        title: 'Aléjate de mi hijo'
     },
     child: {
-        id: '/la-esposa-de-reemplazo-del-billeton-capitulo-0/',
-        title: 'Chapter 0'
+        id: '/alejate-de-mi-hijo-capitulo-1/',
+        title: 'Chapter 1 - Un reencuentro no deseado'
     },
     entry: {
-        index: 0,
-        size: 127_144,
-        type: 'image/jpeg'
+        index: 1,
+        size: 357_404,
+        type: 'image/png'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

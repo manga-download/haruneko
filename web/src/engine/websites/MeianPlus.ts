@@ -63,7 +63,7 @@ class TokenProvider {
      */
     public async UpdateToken() {
         try {
-            this.#token = JSON.parse(decodeURIComponent(await FetchWindowScript<string>(new Request(this.clientURI), `(async () => (await cookieStore.get('token_meian_plusc'))?.value ?? null)();`)));
+            this.#token = JSON.parse(decodeURIComponent(await FetchWindowScript<string>(new Request(this.clientURI), `(async () => (await cookieStore.get('token_meian_plus'))?.value ?? null)();`)));
         } catch (error) {
             console.warn('UpdateToken()', error);
             this.#token = null;

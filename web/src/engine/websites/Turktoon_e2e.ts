@@ -1,24 +1,22 @@
-﻿import { TestFixture, type Config } from '../../../test/WebsitesFixture';
+﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config: Config = {
+new TestFixture({
     plugin: {
         id: 'turktoon',
         title: 'Turktoon'
     },
     container: {
-        url: 'https://turktoon.com/manga/martial-peak/',
-        id: '/manga/martial-peak/',
-        title: 'Martial Peak'
+        url: 'https://www.turktoon.com/2025/04/i-am-evil-god-manhua.html',
+        id: '/2025/04/i-am-evil-god-manhua.html',
+        title: 'I am an Evil God'
     },
     child: {
-        id: '/martial-peak-1/',
-        title: 'Bölüm 1 -'
+        id: '/2025/05/i-am-evil-god-bolum-130.html',
+        title: 'Bölüm 130'
     },
     entry: {
-        index: 0,
-        size: 401_710,
-        type: 'image/jpeg'
+        index: 2,
+        size: 101_330,
+        type: 'image/webp'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

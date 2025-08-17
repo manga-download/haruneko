@@ -1,6 +1,6 @@
-import { TestFixture, type Config } from '../../../test/WebsitesFixture';
+import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config: Config = {
+new TestFixture({
     plugin: {
         id: 'flamecomics',
         title: 'Flame Comics',
@@ -8,7 +8,8 @@ const config: Config = {
     container: {
         url: 'https://flamecomics.xyz/series/44',
         id: '44',
-        title: 'Solo Necromancy'
+        title: 'Solo Necromancy',
+        timeout: 15_000
     },
     child: {
         id: '503e0f7071083096',
@@ -19,6 +20,4 @@ const config: Config = {
         size: 947_020,
         type: 'image/jpeg'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

@@ -6,7 +6,7 @@ new TestFixture({
         title: 'Hive Scans'
     },
     container: {
-        url: 'https://hivecomic.com/series/maybe-meant-to-be',
+        url: 'https://hivetoons.org/series/maybe-meant-to-be',
         id: JSON.stringify({ slug: 'maybe-meant-to-be', id: 27 }),
         title: 'Maybe Meant to Be'
     },

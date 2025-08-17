@@ -39,7 +39,7 @@ export function ElementLabelExtractor(queryBloat: string = undefined) {
                 }
             }
         }
-        return element instanceof HTMLMetaElement ? element.content : element.innerText.trim();
+        return element instanceof HTMLMetaElement ? element.content.trim() : element.innerText.trim();
     };
 }
 

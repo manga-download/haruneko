@@ -67,6 +67,10 @@ type APIComicFromLibrary = {
     title: string
 }
 
+type APIComicFromClipboard = APIResult<{
+    comic: APIComic
+}>
+
 type APIComic = {
     comicId: number,
     information: {
@@ -74,12 +78,7 @@ type APIComic = {
     }
 }
 
-type APIComicList = Record<string, APIComic[]>
-
-type NextDataComic = {
-    comicTitle: string,
-    comicId: number
-}
+type APIComicList = APIResult<Record<string, APIComic[]>>
 
 @Common.ChaptersSinglePageJS(chapterScript, 2500)
 @Common.PagesSinglePageJS(pageScript, 2500)
@@ -104,8 +103,9 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
-        const { comicTitle, comicId } = await FetchWindowScript<NextDataComic>(new Request(url), '__NEXT_DATA__.props.pageProps', 2500);
-        return new Manga(this, provider, `/content/${comicId}`, comicTitle);
+        const id = url.split('/').at(-1);
+        const { data: { comic: { comicId, information: { title } } } } = await FetchJSON<APIComicFromClipboard>(new Request(new URL(`./v1/page/episode?comicId=${id}`, this.apiUrl)));
+        return new Manga(this, provider, `/content/${comicId}`, title);
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
@@ -118,7 +118,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     private async GetMangas(provider: MangaPlugin, path: string): Promise<Manga[]> {
-        const { data } = await FetchJSON<APIResult<APIComicList>>(new Request(new URL(path, this.apiUrl)));
+        const { data } = await FetchJSON<APIComicList>(new Request(new URL(path, this.apiUrl)));
         const comics = data[path.split('/').at(-1)];
         return comics.map(comic => new Manga(this, provider, `/content/${comic.comicId}`, comic.information.title));
     }

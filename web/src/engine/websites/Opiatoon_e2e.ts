@@ -1,12 +1,12 @@
 ﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'opiatoon',
         title: 'Opiatoon (Opia&Shipperland)'
     },
     container: {
-        url: 'https://opiatoon.pro/manga/lit-a-light/',
+        url: 'https://opiatoon.lol/manga/lit-a-light/',
         id: JSON.stringify({ post: '20752', slug: '/manga/lit-a-light/' }),
         title: 'Lit a Light'
     },
@@ -19,6 +19,4 @@ const config = {
         size: 600_410,
         type: 'image/jpeg'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

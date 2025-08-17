@@ -7,7 +7,7 @@ const config: Config = {
     },
     /* CloudFlare
     container: {
-        url: 'https://neumanga.xyz/series/cultivation-return-on-campus/',
+        url: 'https://neumanga.id/series/cultivation-return-on-campus/',
         id: '/series/cultivation-return-on-campus/',
         title: 'Cultivation Return on Campus'
     },

@@ -39,7 +39,7 @@ type Seed = {
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('18comic', '18comic', 'https://18comic.org', Tags.Media.Manga, Tags.Language.Chinese, Tags.Source.Aggregator, Tags.Rating.Pornographic);
+        super('18comic', '18comic', 'https://18comic.vip', Tags.Media.Manga, Tags.Language.Chinese, Tags.Source.Aggregator, Tags.Rating.Pornographic);
     }
 
     public override get Icon() {

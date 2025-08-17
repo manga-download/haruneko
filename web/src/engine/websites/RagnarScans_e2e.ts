@@ -1,24 +1,22 @@
-﻿import { TestFixture, type Config } from '../../../test/WebsitesFixture';
+﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config: Config = {
+new TestFixture({
     plugin: {
         id: 'ragnarscans',
         title: 'Ragnar Scans',
     },
     container: {
-        url: 'https://ragnarscans.com/manga/gosu/',
-        id: JSON.stringify({ post: '6377', slug: '/manga/gosu/'}),
-        title: 'Gosu',
+        url: 'https://ragnarscans.com/manga/deli-iblisin-donusu/',
+        id: JSON.stringify({ post: '15261', slug: '/manga/deli-iblisin-donusu/'}),
+        title: 'Deli İblisin Dönüşü',
     },
     child: {
-        id: '/manga/gosu/bolum-231/',
-        title: 'Bölüm 231',
+        id: '/manga/deli-iblisin-donusu/bolum-1/',
+        title: 'Bölüm 1',
     },
     entry: {
         index: 2,
-        size: 132_826,
+        size: 124_964,
         type: 'image/jpeg'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

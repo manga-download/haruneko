@@ -6,13 +6,13 @@ new TestFixture({
         title: 'LectorJPG'
     },
     container: {
-        url: 'https://lectorjpg.com/serie/killer-beat/',
-        id: '/serie/killer-beat/',
+        url: 'https://lectorjpg.com/series/killer-beat',
+        id: '/series/killer-beat',
         title: 'Killer Beat'
     },
     child: {
-        id: '/serie/killer-beat/capitulo-01/',
-        title: 'Capítulo 01'
+        id: '/read/killer-beat/12039',
+        title: 'Capitulo 1'
     },
     entry: {
         index: 0,

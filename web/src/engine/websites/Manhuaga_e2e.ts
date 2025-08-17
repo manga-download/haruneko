@@ -6,17 +6,17 @@ new TestFixture({
         title: 'Manhuaga'
     },
     container: {
-        url: 'https://manhuaga.com/manga/from-goblin-to-goblin-god/',
-        id: '/manga/from-goblin-to-goblin-god/',
-        title: 'From Goblin to Goblin God'
+        url: 'https://manhua-ga.org/manga/klpsl/',
+        id: JSON.stringify({ post: '1844', slug: '/manga/klpsl/' }),
+        title: 'Keep a Low Profile, Sect Leader'
     },
     child: {
-        id: '/from-goblin-to-goblin-god-chapter-45/',
-        title: 'Chapter 45'
+        id: '/manga/klpsl/chapter-465/',
+        title: 'Chapter 465'
     },
     entry: {
-        index: 0,
-        size: 1_529_140,
-        type: 'image/webp'
+        index: 3,
+        size: 596_887,
+        type: 'image/jpeg'
     }
 }).AssertWebsite();

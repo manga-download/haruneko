@@ -6,17 +6,17 @@ new TestFixture({
         title: 'MangaTR (.Net)'
     },
     container: {
-        url: 'https://mangatr.app/manga/king-of-the-mound',
-        id: JSON.stringify({ post: '1804', slug: '/manga/king-of-the-mound' }),
-        title: 'King of the Mound'
+        url: 'https://mangatr.app/manga/sami-plays-the-game/',
+        id: JSON.stringify({ post: '12358', slug: '/manga/sami-plays-the-game/' }),
+        title: 'Sami Plays the Game'
     },
     child: {
-        id: '/manga/king-of-the-mound/bolum-59',
-        title: 'Bölüm 59'
+        id: '/manga/sami-plays-the-game/bolum-44/',
+        title: 'Bölüm 44'
     },
     entry: {
-        index: 0,
-        size: 354_298,
+        index: 1,
+        size: 173_218,
         type: 'image/webp'
     }
 }).AssertWebsite();

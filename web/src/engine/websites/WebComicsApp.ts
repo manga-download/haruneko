@@ -14,8 +14,8 @@ type APIChapters = {
             index: number,
             chapter_id: string,
             name: string,
-        }[]
-    }
+        }[];
+    };
 };
 
 type APIPages = {
@@ -23,13 +23,13 @@ type APIPages = {
     msg: string,
     data: {
         pages: {
-            src: string
-        }[]
-    }
+            src: string;
+        }[];
+    };
 };
 
 function MangaInfoExtractor(anchor: HTMLAnchorElement) {
-    const id = anchor.pathname.split('/comic/')[1].split('/')[1]; //need to strip everything but last part for api
+    const id = anchor.pathname.split('/comic/').at(1).split('/').at(1); //need to strip everything but last part for api
     const title = anchor.querySelector<HTMLHeadingElement>('div.item-info h2.info-title').textContent.trim();
     return { id, title };
 }
@@ -38,7 +38,7 @@ function MangaInfoExtractor(anchor: HTMLAnchorElement) {
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
-    public constructor() {
+    public constructor () {
         super('webcomicsapp', `WebComicsApp`, 'https://www.webcomicsapp.com', Tags.Language.English, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Source.Official);
     }
 
@@ -51,13 +51,12 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
-        const id = url.split('/comic/')[1].split('/')[1];
+        const id = url.split('/comic/').at(1).split('/').at(1);
         const elements = await FetchCSS<HTMLHeadingElement>(new Request(url), 'div.book-info div.card-info div.info h5');
         const title = elements.at(-1).textContent.trim();
         return new Manga(this, provider, id, title);
     }
 
-    //using chapter.index as identifier because api calls need manga.identifier and chapter.index
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const url = new URL(`/api/chapter/list?manga_id=${manga.Identifier}`, apiUrl).href;
         const request = new Request(url);
@@ -71,5 +70,4 @@ export default class extends DecoratableMangaScraper {
         const data = await FetchJSON<APIPages>(request);
         return data.code == 1000 ? data.data.pages.map(element => new Page(this, chapter, new URL(element.src))) : [];
     }
-
 }

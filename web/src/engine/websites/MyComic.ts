@@ -6,8 +6,8 @@ import { FetchRegex } from '../platform/FetchProvider';
 
 type JSONChapter = {
     id: string,
-    title: string
-}
+    title: string;
+};
 
 function MangaExtractor(element: HTMLDivElement) {
     return {
@@ -22,7 +22,7 @@ function MangaExtractor(element: HTMLDivElement) {
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
-    public constructor() {
+    public constructor () {
         super('mycomic', 'MyComic', 'https://mycomic.com', Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Media.Comic, Tags.Language.Chinese, Tags.Source.Aggregator);
     }
 
@@ -39,5 +39,4 @@ export default class extends DecoratableMangaScraper {
         }
         return result;
     }
-
 }

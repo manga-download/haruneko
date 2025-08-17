@@ -93,8 +93,6 @@ const translations: VariantResource = { // NOTE: Use defaults for missing transl
   Frontend_FluentCore_Menu_ExportBookmarks_Label: 'Export Bookmarks…',
   Frontend_FluentCore_Menu_ExportBookmarks_Description: 'Export all bookmarks to a file (e.g., for backup)',
   //
-  Frontend_FluentCore_Settings_ThemeLuminance_Label: 'Theme Luminance',
-  Frontend_FluentCore_Settings_ThemeLuminance_Description: 'Change the lightness/darkness of the theme',
   Frontend_FluentCore_Settings_ShowBookmarksPanel_Label: 'Bookmark List',
   Frontend_FluentCore_Settings_ShowBookmarksPanel_Description: 'Toggle the visibility of the bookmark list on/off',
   Frontend_FluentCore_Settings_ShowDownloadsPanel_Label: "Kompayahin ang tagapamahala",

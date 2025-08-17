@@ -8,7 +8,7 @@ import { DecoratableMangaScraper } from '../../providers/MangaPlugin';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('lezhin-ja', `Lezhin (japanese)`, 'https://www.lezhin.jp/ja' /*, Tags.Language.English, Tags ... */);
+        super('lezhin-ja', `Lezhin (japanese)`, 'https://lezhin.jp' /*, Tags.Language.English, Tags ... */);
     }
 
     public override get Icon() {

@@ -15,7 +15,7 @@ type APIComic = {
         title: string,
         comicsListUrl: string,
     },
-}
+};
 
 function ChapterExtractor(anchor: HTMLAnchorElement) {
     const id = `/comic/ep_view/${anchor.dataset.comicId}/${anchor.dataset.episodeId}`;
@@ -30,7 +30,7 @@ function ChapterExtractor(anchor: HTMLAnchorElement) {
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
-    public constructor() {
+    public constructor () {
         super('toptoon', `TOPTOON (탑툰)`, 'https://toptoon.com', Tags.Language.Korean, Tags.Media.Manhwa, Tags.Source.Official);
     }
 
@@ -48,5 +48,4 @@ export default class extends DecoratableMangaScraper {
         await FetchWindowScript(new Request(this.URI), clearMangaLimitScript); //clear free chapter limit
         return Common.FetchPagesSinglePageCSS.call(this, chapter, 'div#viewerContentsWrap img.document_img');
     }
-
 }

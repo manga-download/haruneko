@@ -1,24 +1,22 @@
-import { TestFixture, type Config } from '../../../test/WebsitesFixture';
+import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config: Config = {
+new TestFixture({
     plugin: {
         id: 'retsu',
         title: 'Retsu'
     },
     container: {
-        url: 'https://retsu.org/manga/hajimete-no-gal/',
-        id: JSON.stringify({ post: '2485', slug: '/manga/hajimete-no-gal/'}),
-        title: 'Hajimete no Gal'
+        url: 'https://retsu.org/manga/ano-hi-chikyuu-ni-dungeon-ga-shutsugen-shita/',
+        id: JSON.stringify({ post: '10938', slug: '/manga/ano-hi-chikyuu-ni-dungeon-ga-shutsugen-shita/'}),
+        title: 'Ano Hi Chikyuu ni Dungeon ga Shutsugen Shita'
     },
     child: {
-        id: '/manga/hajimete-no-gal/vol-01/ch-001/',
-        title: 'Ch.001 - The First Prostrate'
+        id: '/manga/ano-hi-chikyuu-ni-dungeon-ga-shutsugen-shita/chapter-2-2/',
+        title: 'Chapter 2.2'
     },
     entry: {
-        index: 0,
-        size: 215_936,
+        index: 1,
+        size: 291_864,
         type: 'image/jpeg'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

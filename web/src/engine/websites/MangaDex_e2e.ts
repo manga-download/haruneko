@@ -6,17 +6,17 @@ new TestFixture({
         title: 'MangaDex'
     },
     container: {
-        url: 'https://mangadex.org/title/43dec29e-821c-459b-983b-315ca12f2c02/ev',
-        id: '43dec29e-821c-459b-983b-315ca12f2c02',
-        title: 'eV'
+        url: 'https://mangadex.org/title/3878b229-f6c2-4ce5-b169-483f2568d7ec/oko-sama-box',
+        id: '3878b229-f6c2-4ce5-b169-483f2568d7ec',
+        title: 'Oko-sama Box'
     },
     child: {
-        id: '6b095fee-c6fb-49f8-972d-8df4c54fbc24',
-        title: 'Vol.01 Ch.0001 (en) [INKR Comics]'
+        id: '5871af5e-4cb2-4dc1-ae7e-89124823a031',
+        title: 'Vol.01 Ch.0005.5 - Extra (en) [Madam el LePoo Scanlations]'
     },
     entry: {
         index: 0,
-        size: 290_930,
-        type: 'image/jpeg'
+        size: 877_439,
+        type: 'image/png'
     }
 }).AssertWebsite();

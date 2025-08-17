@@ -1,6 +1,6 @@
 import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture ({
     plugin: {
         id: 'freemanga',
         title: 'Free Manga'
@@ -19,6 +19,4 @@ const config = {
         size: 269_197,
         type: 'image/jpeg'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

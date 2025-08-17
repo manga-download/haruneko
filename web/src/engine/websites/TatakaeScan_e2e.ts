@@ -1,6 +1,6 @@
 ﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'tatakaescan',
         title: 'Tatakae Scan'
@@ -8,7 +8,7 @@ const config = {
     container: {
         url: 'https://tatakaescan.com/manga/martial-inverse/',
         id: JSON.stringify({ post: '50', slug: '/manga/martial-inverse/' }),
-        title: 'Martial Inverse'
+        title: 'Marcial Inverso'
     },
     child: {
         id: '/manga/martial-inverse/capitulo-00/',
@@ -19,6 +19,4 @@ const config = {
         size: 958_350,
         type: 'image/jpeg'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

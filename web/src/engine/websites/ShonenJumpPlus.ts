@@ -24,7 +24,7 @@ export default class extends DecoratableMangaScraper {
             const data = await FetchCSS(new Request(new URL(manga.Identifier, this.URI)), '.episode-header-title');
             return [new Chapter(this, manga, manga.Identifier, data[0].textContent.replace(manga.Title, '').trim())];
         } else {
-            return CoreView.FetchChaptersSinglePageAJAXV1.call(this, manga);
+            return CoreView.FetchChaptersMultiPageAJAXV2.call(this, manga);
         }
     }
 }

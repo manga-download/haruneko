@@ -1,153 +1,111 @@
-import { FASTElement, type ViewTemplate, type ElementStyles, customElement, html, css, observable, when, repeat } from '@microsoft/fast-element';
+import { FASTElement, type ExecutionContext, html, css, ref, observable, when, repeat } from '@microsoft/fast-element';
+import type { TextInput, Checkbox, Dropdown, Dialog } from '@fluentui/web-components';
+import type { FluentNumberField } from './FluentNumberField';
 import { type ISetting, Text, Secret, Numeric, Check, Choice, Directory } from '../../../engine/SettingsManager';
-import type { InteractiveFileContentProvider } from '../../../engine/InteractiveFileContentProvider';
-import { InteractiveFileContentProviderService } from '../services/InteractiveFileContentProviderService';
-import S from '../services/StateService';
+import { InteractiveFileContentProviderRegistration, type IInteractiveFileContentProvider } from '../services/InteractiveFileContentProvider';
+import { LocalizationProviderRegistration, type ILocalizationProvider } from '../services/LocalizationProvider';
+import { SettingsManagerRegistration, type ISettingsManager } from '../services/SettingsManager';
 
 import IconFolder from '@vscode/codicons/src/icons/folder-opened.svg?raw';
 
-const styles: ElementStyles = css`
-
-    :host {
-        z-index: 2147483647;
-    }
-
-    #dialog {
-        height: 100%;
-        box-sizing: border-box;
-        padding: calc(var(--base-height-multiplier) * 1px);
-        gap: calc(var(--base-height-multiplier) * 1px);
-        display: grid;
-        align-items: center;
-        grid-template-columns: auto;
-        grid-template-rows: max-content minmax(0, 1fr) max-content;
-    }
-
-    #header {
-        text-align: center;
-        font-weight: bold;
-        font-size: large;
-    }
-
-    #content {
-        align-self: stretch;
-        overflow-x: hidden;
-        overlow-y: auto;
-    }
+const styles = css`
 
     #settings {
-        gap: calc(var(--base-height-multiplier) * 1px);
-        padding-top: calc(var(--base-height-multiplier) * 1px);
-        padding-bottom: calc(var(--base-height-multiplier) * 1px);
         display: grid;
         align-items: center;
         grid-template-columns: max-content max-content;
-        align-items: center;
-        align-content: center;
-        justify-content: space-evenly;
-        border-top: calc(var(--stroke-width) * 1px) solid var(--neutral-stroke-divider-rest);
-        border-bottom: calc(var(--stroke-width) * 1px) solid var(--neutral-stroke-divider-rest);
-    }
-
-    #content .input > * {
-        display: block;
-    }
-
-    #footer {
-        text-align: center;
-    }
-
-    fluent-select::part(listbox) {
-        max-height: 200px;
+        gap: var(--spacingHorizontalS);
     }
 `;
 
-const templateText: ViewTemplate<Text> = html`
-    <fluent-text-field :value=${model => model.Value} @change=${(model, ctx) => model.Value = ctx.event.currentTarget['value']}></fluent-text-field>
+const templateText = html<Text>`
+    <fluent-text-input type="text" value=${model => model.Value} @change=${(model, ctx) => model.Value = ctx.eventTarget<TextInput>().value}></fluent-text-input>
 `;
 
-const templateSecret: ViewTemplate<Secret> = html`
-    <fluent-text-field type="password" :value=${model => model.Value} @change=${(model, ctx) => model.Value = ctx.event.currentTarget['value']}></fluent-text-field>
+const templateSecret = html<Secret>`
+    <fluent-text-input type="password" value=${model => model.Value} @change=${(model, ctx) => model.Value = ctx.eventTarget<TextInput>().value}></fluent-text-input>
 `;
 
-const templateNumeric: ViewTemplate<Numeric> = html`
-    <fluent-number-field :min=${model => model.Min} :max=${model => model.Max} :valueAsNumber=${model => model.Value} @change=${(model, ctx) => model.Value = ctx.event.currentTarget['valueAsNumber']}></fluent-number-field>
+// TODO: Migrate to real fluent-number-field as soon as available
+const templateNumeric = html<Numeric>`
+    <fluent-number-field min=${model => model.Min} max=${model => model.Max} value=${model => model.Value} @change=${(model, ctx) => model.Value = ctx.eventTarget<FluentNumberField>().value}></input>
 `;
 
-const templateCheck: ViewTemplate<Check> = html`
-    <fluent-checkbox style="display: inline-block;" :checked=${model => model.Value} @change=${(model, ctx) => model.Value = ctx.event.currentTarget['checked']}></fluent-checkbox>
+const templateCheck = html<Check>`
+    <fluent-checkbox style="display: inline-block;" :checked=${model => model.Value} @change=${(model, ctx) => model.Value = ctx.eventTarget<Checkbox>().checked}></fluent-checkbox>
 `;
 
-const templateChoiceOption: ViewTemplate<{key: string, label: string}> = html`
-    <fluent-option value="${model => model.key}">${model => S.Locale[model.label]()}</fluent-option>
+function CreateChoiceOptionTemplate(container: SettingsDialog, model: Choice) {
+    return html<{ key: string, label: string; }>`
+        <fluent-option value=${item => item.key} selected=${item => item.key === model.Value}>${item => container.Localization.Get(item.label)}</fluent-option>
+    `;
+}
+
+function CreateChoiceTemplate(container: SettingsDialog/*, model: Choice*/) {
+    return html<Choice>`
+        <fluent-dropdown type="dropdown" id=${model => model.ID} @change=${(model, ctx) => model.Value = ctx.eventTarget<Dropdown>().value}>
+            <fluent-listbox>
+                ${repeat<Choice>(model => model.Options, model => CreateChoiceOptionTemplate(container, model))}
+            </fluent-listbox>
+        </fluent-dropdown>
+    `;
+}
+
+const templateDirectory = html<Directory>`
+    <fluent-text-input type="text" readonly id=${model => model.ID} value=${model => model.Value?.name}>
+        <fluent-button slot="end" icon-only size="small" appearance="transparent" :innerHTML=${() => IconFolder} @click=${(model, ctx: ExecutionContext<SettingsDialog>) => ctx.parent.SelectDirectory(model)}></fluent-button>
+    </fluent-text-input>
 `;
 
-const templateChoice: ViewTemplate<Choice> = html`
-    <fluent-select :value=${model => model.Value} @change=${(model, ctx) => model.Value = ctx.event.currentTarget['value']}>
-        ${repeat(model => model.Options, templateChoiceOption)}
-    </fluent-select>
-`;
-
-const templateDirectory: ViewTemplate<Directory> = html`
-    <fluent-text-field readonly id="${model => model.ID}" :value=${model => model.Value?.name}>
-    <div slot="end" style="display: flex; align-items: center;">
-        <fluent-button appearance="stealth" style="height: fit-content;" :innerHTML=${() => IconFolder} @click=${(model, ctx) => (ctx.parent as SettingsDialog).SelectDirectory(model)}></fluent-button>
-    </div>
-    </fluent-text-field>
-`;
-
-const templateSettingRow: ViewTemplate<ISetting> = html`
-    <div title="${model => S.Locale[model.Description]()}">
-        ${model => S.Locale[model.Label]()}
-    </div>
-    <div class="input">
+function CreateSettingTemplate(container: SettingsDialog) {
+    return html<ISetting>`
+        <div title=${model => container.Localization.Locale[ model.Description ]()}>${model => container.Localization.Get(model.Label)}</div>
         ${when(model => model instanceof Text, templateText)}
         ${when(model => model instanceof Secret, templateSecret)}
         ${when(model => model instanceof Numeric, templateNumeric)}
         ${when(model => model instanceof Check, templateCheck)}
-        ${when(model => model instanceof Choice, templateChoice)}
+        ${when(model => model instanceof Choice, CreateChoiceTemplate(container))}
         ${when(model => model instanceof Directory, templateDirectory)}
-    </div>
-`;
+    `;
+}
 
-const template: ViewTemplate<SettingsDialog> = html`
-    <fluent-dialog trap-focus modal ?hidden=${model => model.hidden}>
-        <div id="dialog">
-            <div id="header">${() => S.Locale.Frontend_FluentCore_SettingsDialog_Title()}</div>
-            <div id="content">
-                <div id="settings">
-                    ${repeat(model => model.settings, templateSettingRow)}
-                </div>
+const template = html<SettingsDialog>`
+    <fluent-dialog type="modal" ${ref('dialog')}>
+        <fluent-dialog-body>
+            <div slot="title">${model => model.Localization.Locale.Frontend_FluentCore_SettingsDialog_Title()}</div>
+            <div id="settings">
+                ${repeat(model => model.Settings, CreateSettingTemplate)}
             </div>
-            <div id="footer">
-                <fluent-button id="settings-close-button" appearance="accent" @click=${model => model.hidden = true}>${() => S.Locale.Frontend_FluentCore_SettingsDialog_CloseButton_Label()}</fluent-button>
-            </div>
-        </div>
+            <fluent-button slot="action" appearance="accent" @click=${(model: SettingsDialog) => model.dialog.hide()}>
+                ${model => model.Localization.Locale.Frontend_FluentCore_SettingsDialog_CloseButton_Label()}
+            </fluent-button>
+        </fluent-dialog-body>
     </fluent-dialog>
 `;
 
-@customElement({ name: 'fluent-settings-dialog', template, styles })
 export class SettingsDialog extends FASTElement {
 
-    constructor() {
-        super();
-        S.ShowSettingsDialog = (...settings: ISetting[]) => {
-            this.settings = settings;
-            this.hidden = false;
+    readonly dialog: Dialog;
+    @InteractiveFileContentProviderRegistration InteractiveFileContentProvider: IInteractiveFileContentProvider;
+    @LocalizationProviderRegistration Localization: ILocalizationProvider;
+    @SettingsManagerRegistration SettingsManager: ISettingsManager;
+    @observable Settings: ISetting[] = [];
+
+    override connectedCallback(): void {
+        super.connectedCallback();
+        this.SettingsManager.ShowSettingsDialog = (...settings: ISetting[]) => {
+            this.Settings = settings;
+            this.dialog.show();
         };
     }
 
-    @observable hidden = true;
-    @observable settings: ISetting[] = [];
-    @InteractiveFileContentProviderService fileIO: InteractiveFileContentProvider;
-
     public async SelectDirectory(directory: Directory): Promise<void> {
         try {
-            const folder = await this.fileIO.PickDirectory(directory.Value ?? 'documents') ?? directory.Value;
+            const folder = await this.InteractiveFileContentProvider.PickDirectory(directory.Value ?? 'documents') ?? directory.Value;
             this.shadowRoot.querySelector<HTMLInputElement>('#' + directory.ID).value = folder.name;
             directory.Value = folder;
-        } catch(error) {
-            if(this.fileIO.IsAbortError(error)) {
+        } catch (error) {
+            if (this.InteractiveFileContentProvider.IsAbortError(error)) {
                 return;
             } else {
                 throw error;
@@ -155,3 +113,5 @@ export class SettingsDialog extends FASTElement {
         }
     }
 }
+
+SettingsDialog.define({ name: 'fluent-settings-dialog', template, styles });

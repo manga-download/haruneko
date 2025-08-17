@@ -42,7 +42,12 @@ type APIImageTokens = APIResult<{
     url: string,
     token: string,
     complete_url: string,
+    hit_encrpyt: boolean
 }[]>;
+
+type PageParam = {
+    index: number
+}
 
 export default class extends DecoratableMangaScraper {
 
@@ -60,6 +65,7 @@ export default class extends DecoratableMangaScraper {
     public constructor() {
         super('bilibilimanhua', `哔哩哔哩 漫画 (Bilibili Manhua)`, 'https://manga.bilibili.com', Tags.Language.Chinese, Tags.Media.Manga, Tags.Source.Official);
         this.Settings.imageFormat = this.imageFormat;
+        this.imageTaskPool.RateLimit = new RateLimit(1, 1);
     }
 
     public override get Icon() {
@@ -117,22 +123,25 @@ export default class extends DecoratableMangaScraper {
             .map(entry => new Chapter(this, manga, entry.id.toString(), [entry.short_title, entry.title].join(' - ').trim()));
     }
 
-    public override async FetchPages(chapter: Chapter): Promise<Page[]> {
+    public override async FetchPages(chapter: Chapter): Promise<Page<PageParam>[]> {
         const chapterUrl = new URL(`/detail/mc${chapter.Parent.Identifier}/${chapter.Identifier}`, this.URI);
         const { data: { images } } = await this.#drm.FetchTwirp<APIPages>(chapterUrl, 'GetImageIndex', { ep_id: chapter.Identifier });
         const { data } = await this.#drm.FetchTwirp<APIImageTokens>(chapterUrl, 'ImageToken', {
             m1: await this.#drm.GetPublicKey(),
             urls: this.#drm.CreateImageLinks(this.URI.origin, this.imageFormat.Value, images)
         }, false);
-        return data.map(({ complete_url: x, url, token }) => {
+        return data.map(({ complete_url: x, url, token }, index) => {
             const pageurl = new URL(x ?? `${url}?token=${token}`);
-            pageurl.searchParams.set('code', 'HeartRepo');
-            return new Page(this, chapter, pageurl);
+            pageurl.searchParams.set('code', 'DanmakuInfo');
+            return new Page<PageParam>(this, chapter, pageurl, { index });
         });
     }
 
-    public override async FetchImage(page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
-        const response = await this.imageTaskPool.Add(() => Fetch(new Request(page.Link)), priority, signal);
-        return response.headers.get('Content-Type').startsWith('image/') ? response.blob() : Common.GetTypedData(await this.#drm.ExtractImageData(response));
+    public override async FetchImage(page: Page<PageParam>, priority: Priority, signal: AbortSignal): Promise<Blob> {
+        const chapterUrl = new URL(`/mc${page.Parent.Parent.Identifier}/${page.Parent.Identifier}`, this.URI).href;
+        return this.imageTaskPool.Add(async () => {
+            const blob = await (await Fetch(new Request(page.Link))).blob();
+            return blob.type.startsWith('image/') ? blob : Common.GetTypedData(await this.#drm.FetchImageData(page.Link.href, page.Parameters.index, chapterUrl));
+        }, priority, signal);
     }
 }

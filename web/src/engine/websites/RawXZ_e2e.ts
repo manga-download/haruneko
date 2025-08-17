@@ -7,7 +7,7 @@ new TestFixture({
         title: 'RawXZ'
     },
     container: {
-        url: 'https://rawxz.asia/manga/俺だけレベルアップな件-raw-free/',
+        url: 'https://rawxjp.com/manga/俺だけレベルアップな件-raw-free/',
         id: JSON.stringify({ post: '34868', slug: mangaID }),
         title: '俺だけレベルアップな件',
     },
