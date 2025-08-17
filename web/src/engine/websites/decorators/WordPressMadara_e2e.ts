@@ -101,6 +101,7 @@ import '../MangaRose_e2e';
 import '../MangaScantrad_e2e';
 import '../MangaSehri_e2e';
 import '../MangaSehriNet_e2e';
+import '../MangasNoSekai_e2e';
 import '../MangasOrigines_e2e';
 import '../MangaSpark_e2e';
 import '../MangaStarz_e2e';
