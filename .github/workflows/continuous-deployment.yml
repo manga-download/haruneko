@@ -44,5 +44,6 @@ jobs:
         with:
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          wranglerVersion: 4
           command: |
-            pages deploy ./docs/.vitepress/dist --project-name=hakuneko-docs --commit-dirty=true
+            deploy --assets=./docs/.vitepress/dist --name=hakuneko-docs --compatibility-date=2000-01-01
