@@ -44,7 +44,7 @@ class TokenProvider {
      */
     public async UpdateToken() {
         try {
-            this.#token = await FetchWindowScript<string>(new Request(this.clientURI), `localStorage.getItem('auth') || null);`) ?? null;
+            this.#token = await FetchWindowScript<string>(new Request(this.clientURI), `localStorage.getItem('token') || null);`) ?? null;
         } catch (error) {
             console.warn('UpdateToken()', error);
             this.#token = null;
