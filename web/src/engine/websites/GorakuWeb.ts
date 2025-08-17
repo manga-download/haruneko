@@ -1,10 +1,10 @@
 import { Tags } from '../Tags';
 import icon from './GorakuWeb.webp';
-import { Chapter, DecoratableMangaScraper, type Manga, Page } from '../providers/MangaPlugin';
-import * as Common from './decorators/Common';
-import { FetchNextJS } from '../platform/FetchProvider';
 import { GetBytesFromHex } from '../BufferEncoder';
 import type { Priority } from '../taskpool/DeferredTask';
+import { Fetch, FetchNextJS } from '../platform/FetchProvider';
+import { DecoratableMangaScraper, type Manga, Chapter, Page } from '../providers/MangaPlugin';
+import * as Common from './decorators/Common';
 
 type HydratedChapters = {
     episodeList: {
@@ -55,14 +55,18 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchImage(page: Page<PageParams>, priority: Priority, signal: AbortSignal): Promise<Blob> {
-        const data = await Common.FetchImageAjax.call(this, page, priority, signal, true);
-        return page.Parameters.keyData ? this.DecryptImage(data, page.Parameters) : data;
+        const bytes = await this.imageTaskPool.Add(async () => {
+            const response = await Fetch(new Request(page.Link, { signal }));
+            return response.arrayBuffer();
+        }, priority, signal);
+        const { keyData, iv } = page.Parameters;
+        return keyData && iv ? this.DecryptImage(bytes, keyData, iv) : Common.GetTypedData(bytes);
     }
 
-    private async DecryptImage(encrypted: Blob, page: PageParams): Promise<Blob> {
-        const algorithm = { name: 'AES-CBC', iv: GetBytesFromHex(page.iv) };
-        const key = await crypto.subtle.importKey('raw', GetBytesFromHex(page.keyData), algorithm, false, [ 'decrypt' ]);
-        const decrypted = await crypto.subtle.decrypt(algorithm, key, await encrypted.arrayBuffer());
+    private async DecryptImage(encrypted: ArrayBuffer, keyData: string, iv: string): Promise<Blob> {
+        const algorithm = { name: 'AES-CBC', iv: GetBytesFromHex(iv) };
+        const key = await crypto.subtle.importKey('raw', GetBytesFromHex(keyData), algorithm, false, [ 'decrypt' ]);
+        const decrypted = await crypto.subtle.decrypt(algorithm, key, encrypted);
         return Common.GetTypedData(decrypted);
     }
 }
