@@ -32,7 +32,8 @@ jobs:
         with:
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          command: pages deploy ./web/build --project-name=hakuneko --commit-dirty=true
+          wranglerVersion: 4
+          command: deploy --assets=./web/build --name=hakuneko-app --compatibility-date=2000-01-01
       - name: Build Documentation
         run: npm run build --workspace=docs
       - name: Deploy Docs to CloudFlare
