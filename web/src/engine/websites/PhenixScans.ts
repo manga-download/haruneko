@@ -23,7 +23,6 @@ function ChapterExtractor(anchor: HTMLAnchorElement) {
 @Common.PagesSinglePageCSS('img.chapter-image')
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
-
     private apiUrl = 'https://phenix-scans.com/api/front/';
 
     public constructor () {
