@@ -6,17 +6,17 @@ new TestFixture({
         title: 'Manga Gezgini'
     },
     container: {
-        url: 'https://mangagezgini.love/manga/limit-breaker/',
-        id: JSON.stringify({ post: '873', slug: '/manga/limit-breaker/' }),
-        title: 'Limit Breaker'
+        url: 'https://mangagezgini.love/manga/tower-of-god/',
+        id: JSON.stringify({ post: '3087', slug: '/manga/tower-of-god/' }),
+        title: 'Tower of God'
     },
     child: {
-        id: '/manga/limit-breaker/limit-breaker-blm-79978c98a1f18c581632860ef90900709a/',
-        title: 'Bölüm 79'
+        id: '/manga/tower-of-god/tower-of-god-bolum-609/',
+        title: 'Bölüm 609'
     },
     entry: {
-        index: 1,
-        size: 748_849,
+        index: 0,
+        size: 94_412,
         type: 'image/jpeg'
     }
 }).AssertWebsite();
