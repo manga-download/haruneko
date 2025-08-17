@@ -1,24 +1,22 @@
 ﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'arcanescans',
         title: 'ArcaneScans'
     },
     container: {
-        url: 'https://arcanescans.com/manga/serving-the-heavens-is-my-destiny/',
-        id: JSON.stringify({ post: '2503', slug: '/manga/serving-the-heavens-is-my-destiny/'}),
+        url: 'https://arcanescans.com/manga/99-wooden-stick/',
+        id: '/manga/99-wooden-stick/',
         title: 'Serving the Heavens is my Destiny'
     },
     child: {
-        id: '/manga/serving-the-heavens-is-my-destiny/chapter-1/',
+        id: '/99-wooden-stick-chapter-1/',
         title: 'Chapter 1'
     },
     entry: {
-        index: 0,
-        size: 3_039_876,
-        type: 'image/webp'
+        index: 2,
+        size: 298_021,
+        type: 'image/jpeg'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

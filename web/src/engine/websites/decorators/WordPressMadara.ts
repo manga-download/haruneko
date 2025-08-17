@@ -32,7 +32,7 @@ const queryPageListSelector = [
 ].join(', ');
 const queryPageListLinks = 'div.page-break img';
 
-const DefaultInfoExtractor = Common.AnchorInfoExtractor(false, queryChapterListBloat);
+export const DefaultInfoExtractor = Common.AnchorInfoExtractor(false, queryChapterListBloat);
 
 export const WPMangaProtectorPagesExtractorScript = `
     new Promise((resolve, reject) => {
@@ -201,7 +201,7 @@ async function FetchChaptersCSS(this: MangaScraper, manga: Manga, request: Reque
     const data = await FetchCSS<HTMLAnchorElement>(request, query);
     return data.map(element => {
         const { id, title } = extract.call(this, element);
-        return new Chapter(this, manga, id, title);
+        return new Chapter(this, manga, id, title.replace(manga.Title, '').trim() || manga.Title);
     });
 }
 
@@ -314,6 +314,49 @@ export function ChaptersSinglePageAJAXv2(query = queryChapterListLinks, extract 
         return class extends ctor {
             public async FetchChapters(this: MangaScraper, manga: Manga): Promise<Chapter[]> {
                 return FetchChaptersSinglePageAJAXv2.call(this, manga, query, extract);
+            }
+        };
+    };
+}
+
+/**
+ * An extension method for extracting all chapters for the given {@link manga} using the given CSS {@link query}.
+ * This method utilizes the HTML pages provided by the **WordPress Chapter MULTIPAGED AJAX endpoint** to extract the chapters.
+ * @param this - A reference to the {@link MangaScraper} instance which will be used as context for this method
+ * @param manga - A reference to the {@link Manga} which shall be assigned as parent for the extracted chapters
+ * @param query - A CSS query to locate the elements from which the chapter identifier and title shall be extracted
+ * @param throttle - A delay [ms] for each request (only required for rate-limited websites)
+  */
+async function FetchChaptersMultiPageAJAX(this: MangaScraper, manga: Manga, query: string = queryChapterListLinks, throttle: number = 0, extract = DefaultInfoExtractor): Promise<Chapter[]> {
+    const chapterList: Chapter[] = [];
+    const { slug } = JSON.parse(manga.Identifier) as MangaID;
+    const uri = new URL(`${slug}/ajax/chapters/`.replace(/\/+/g, '/'), this.URI);
+    for (let page = 1, run = true; run; page++) {
+        uri.searchParams.set('t', page.toString());
+        const request = new Request(uri, {
+            method: 'POST',
+            headers: {
+                'Referer': this.URI.href
+            }
+        });
+        const chapters: Chapter[] = await FetchChaptersCSS.call(this, manga, request, query, extract);
+        chapters.length > 0 ? chapterList.push(...chapters) : run = false;
+        await Delay(throttle);
+    }
+    return chapterList;
+}
+
+/**
+ * A class decorator that adds the ability to extract all chapters for a given manga from this website using the given CSS {@link query}.
+ * This method utilizes the HTML pages provided by the **WordPress Chapter MULTIPAGED AJAX endpoint** to extract the chapters.
+ * @param query - A CSS query to locate the elements from which the chapter identifier and title shall be extracted
+ */
+export function ChaptersMultiPageAJAX(query = queryChapterListLinks, throttle = 0, extract = DefaultInfoExtractor) {
+    return function DecorateClass<T extends Common.Constructor>(ctor: T, context?: ClassDecoratorContext): T {
+        Common.ThrowOnUnsupportedDecoratorContext(context);
+        return class extends ctor {
+            public async FetchChapters(this: MangaScraper, manga: Manga): Promise<Chapter[]> {
+                return FetchChaptersMultiPageAJAX.call(this, manga, query, throttle, extract);
             }
         };
     };
