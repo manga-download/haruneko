@@ -1,20 +1,20 @@
 import { Tags } from '../Tags';
-import icon from './MaidScan.webp';
+import icon from './ShinobiScans.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Madara from './decorators/WordPressMadara';
 import * as Common from './decorators/Common';
 
-// TODO : Rewrite to use SussyToon API
+// TODO : Novel Support
 
-@Madara.MangaCSS(/^{origin}\/manga\/[^/]+\/$/, 'ol.breadcrumb li:last-of-type a')
+@Madara.MangaCSS(/^{origin}\/manga\/[^/]+\/$/, 'ol.breadcrumb li:last-of-type')
 @Madara.MangasMultiPageAJAX()
 @Madara.ChaptersSinglePageAJAXv2()
 @Madara.PagesSinglePageCSS()
-@Common.ImageAjax(true)
+@Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('maidscan', 'Maid Scan', 'https://empreguetes.xyz', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Portuguese, Tags.Source.Scanlator);
+        super('shinobiscans', 'ShinobiScans', 'https://shinobiscans.com', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Novel, Tags.Language.Italian, Tags.Source.Scanlator);
     }
 
     public override get Icon() {
