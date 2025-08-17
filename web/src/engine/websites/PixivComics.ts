@@ -171,7 +171,7 @@ export default class extends DecoratableMangaScraper {
         });
     }
 
-    private async DescrambleData(scrambledData: Uint8ClampedArray, t: number, width: number, height: number, colSize: number, rowSize: number, salt: string, key: string, reverse: boolean): Promise<Uint8ClampedArray> {
+    private async DescrambleData(scrambledData: Uint8ClampedArray, t: number, width: number, height: number, colSize: number, rowSize: number, salt: string, key: string, reverse: boolean): Promise<Uint8ClampedArray<ArrayBuffer>> {
         const d = Math.ceil(height / rowSize),
             c = Math.floor(width / colSize),
             u = Array(d).fill(null).map(() => Array.from(Array(c).keys()));

@@ -1,10 +1,12 @@
 import { Tags } from '../Tags';
-import icon from './SarcasmScans.webp';
+import icon from './ShinobiScans.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Madara from './decorators/WordPressMadara';
 import * as Common from './decorators/Common';
 
-@Madara.MangaCSS(/^{origin}\/manga\/[^/]+\/$/, 'ol.breadcrumb li:last-of-type a')
+// TODO : Novel Support
+
+@Madara.MangaCSS(/^{origin}\/manga\/[^/]+\/$/, 'ol.breadcrumb li:last-of-type')
 @Madara.MangasMultiPageAJAX()
 @Madara.ChaptersSinglePageAJAXv2()
 @Madara.PagesSinglePageCSS()
@@ -12,7 +14,7 @@ import * as Common from './decorators/Common';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('sarcasmscans', 'Sarcasm Scans', 'https://sarcasmscans.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Turkish, Tags.Source.Scanlator, Tags.Rating.Pornographic);
+        super('shinobiscans', 'ShinobiScans', 'https://shinobiscans.com', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Novel, Tags.Language.Italian, Tags.Source.Scanlator);
     }
 
     public override get Icon() {

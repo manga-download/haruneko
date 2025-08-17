@@ -1,24 +1,22 @@
 import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'ichijin-plus',
         title: '一迅プラス (Ichijin Plus)'
     },
     container: {
-        url: 'https://ichijin-plus.com/comics/2408795783205',
-        id: '2408795783205',
+        url: 'https://ichicomi.com/episode/2550912965923203895',
+        id: '/episode/2550912965923203895',
         title: '大室家'
     },
     child: {
-        id: '2886942130261',
+        id: '/episode/2550912965923203895',
         title: '第1話'
     },
     entry: {
         index: 0,
-        size: 775_530,
+        size: 1_170_104,
         type: 'image/png'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();
