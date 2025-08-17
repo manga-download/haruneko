@@ -36,7 +36,7 @@ jobs:
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           wranglerVersion: 4
-          command: deploy --assets=./web/build --name=hakuneko-app --compatibility-date=2000-01-01
+          command: deploy --assets=./web/build --name=hakuneko-app --latest=true
       - name: Build Documentation
         run: npm run build --workspace=docs
       - name: Deploy Docs to CloudFlare
@@ -45,4 +45,4 @@ jobs:
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           wranglerVersion: 4
-          command: deploy --assets=./docs/.vitepress/dist --name=hakuneko-docs --compatibility-date=2000-01-01
+          command: deploy --assets=./docs/.vitepress/dist --name=hakuneko-docs --latest=true
