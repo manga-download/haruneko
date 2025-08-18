@@ -10,8 +10,6 @@ export default class extends TAADBase {
         super('taadd', `TAADD`, 'https://www.taadd.com', Tags.Language.English, Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Source.Aggregator);
         this.queryChapters = 'div.chapter_list table tr td:first-of-type a';
         this.queryImages = 'img#comicpic';
-        this.forcedWebpCookieValue = undefined;
-
     }
     public override get Icon() {
         return icon;

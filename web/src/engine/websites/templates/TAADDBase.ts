@@ -1,4 +1,4 @@
-﻿import { Fetch, FetchCSS, FetchWindowScript } from '../../platform/FetchProvider';
+﻿import { Fetch, FetchCSS } from '../../platform/FetchProvider';
 import { type Manga, Chapter, Page, DecoratableMangaScraper } from '../../providers/MangaPlugin';
 import type { Priority } from '../../taskpool/DeferredTask';
 import * as Common from '../decorators/Common';
@@ -34,7 +34,6 @@ export class TAADBase extends DecoratableMangaScraper {
     protected queryChapters: string = 'div.chapterbox ul li a.chapter_list_a';
     protected queryImages: string = 'img.manga_pic';
     protected queryPages: string = 'select#page option';
-    protected forcedWebpCookieValue: boolean = true;
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const url = new URL(manga.Identifier, this.URI);
@@ -50,15 +49,7 @@ export class TAADBase extends DecoratableMangaScraper {
         });
     }
 
-    private async SetWebpCookie(): Promise<void>{
-        if (this.forcedWebpCookieValue === undefined) return;
-        try {
-            await FetchWindowScript(new Request(this.URI), `setCookie('ninemanga_webp_valid', ${this.forcedWebpCookieValue});`, 1500);
-        } catch { }
-    };
-
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        await this.SetWebpCookie();
         const chapterUrl = new URL(chapter.Identifier, this.URI);
         const data = await FetchCSS<HTMLElement>(this.CreateRequest(chapterUrl), this.queryPages);
         //There may be MORE than one page list element on the page, we need only one ! In case of direct picture links, doesnt matter

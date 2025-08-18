@@ -5,7 +5,6 @@ import { TAADBase } from './templates/TAADDBase';
 export default class extends TAADBase {
     public constructor() {
         super('ninemanga-de', `NineMangaDE`, 'https://de.ninemanga.com', Tags.Language.German, Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Source.Aggregator);
-        this.forcedWebpCookieValue = false;
     }
     public override get Icon() {
         return icon;
