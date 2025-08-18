@@ -11,7 +11,6 @@ export default class extends TAADBase {
         super('tenmanga', `TenManga`, 'https://www.tenmanga.com', Tags.Language.English, Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Source.Aggregator);
         this.queryChapters = 'div.chp-item a';
         this.queryPages = 'div.option-list.chp-selection-list[option_name="page_head"] div[option_val]';
-        this.forcedWebpCookieValue = undefined;
     }
     public override get Icon() {
         return icon;
