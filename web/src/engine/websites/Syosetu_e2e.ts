@@ -2,21 +2,21 @@
 
 new TestFixture({
     plugin: {
-        id: 'rawlazy',
-        title: 'RawLazy'
+        id: 'syosetu',
+        title: 'Syosetu'
     },
     container: {
-        url: 'https://rawlazy.io/manga-lazy/彼女-お借りします-raw-free/',
-        id: encodeURI('/manga-lazy/彼女-お借りします-raw-free/'),
-        title: '彼女、お借りします'
+        url: 'https://syosetu.ec/manga/どれが恋かがわからない-raw-free/',
+        id: encodeURI('/manga/どれが恋かがわからない-raw-free/'),
+        title: 'どれが恋かがわからない'
     },
     child: {
-        id: encodeURI('/manga-chapter/彼女、お借りします-raw-【第340話】/').toLowerCase(),
-        title: '第340話'
+        id: encodeURI('/manga/どれが恋かがわからない-raw-free/chapter-17/').toLowerCase(),
+        title: '【第17話】'
     },
     entry: {
-        index: 0,
-        size: 276_488,
-        type: 'image/webp'
+        index: 2,
+        size: 179_624,
+        type: 'image/jpeg'
     }
 }).AssertWebsite();
