@@ -217,6 +217,7 @@ export { default as HiveScans } from './HiveScans';
 export { default as HniScanTrad } from './HniScanTrad';
 export { default as HoiFansub } from './HoiFansub';
 export { default as HolyManga } from './HolyManga';
+export { default as HolyScans } from './HolyScans';
 export { default as HorrorFC } from './HorrorFC';
 export { default as HqNow } from './HqNow';
 export { default as HunterScan } from './HunterScan';
