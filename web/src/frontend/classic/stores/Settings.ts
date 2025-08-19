@@ -55,7 +55,7 @@ export const Theme= CreateSettingStore<string, Choice>(new Choice(
     R.Frontend_Classic_Settings_Theme,
     R.Frontend_Classic_Settings_ThemeInfo,
     Key.Theme_HaruNeko,
-    { key: Key.Theme_HaruNeko, label: R.Frontend_Classic_Settings_Theme_HaruNeko },
+    { key: Key.Theme_HaruNeko, label: R.Frontend_Classic_Settings_Theme_HakuNeko },
     { key: Key.Theme_White, label: R.Frontend_Classic_Settings_Theme_CarbonWhite },
     { key: Key.Theme_Gray10, label: R.Frontend_Classic_Settings_Theme_CarbonG10 },
     { key: Key.Theme_Gray90, label: R.Frontend_Classic_Settings_Theme_CarbonG90 },

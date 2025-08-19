@@ -52,7 +52,7 @@ const translations: VariantResource = { // NOTE: Use defaults for missing transl
   Frontend_Classic_Settings_FuzzySearchInfo: "crwdns1235:0crwdne1235:0",
   Frontend_Classic_Settings_Theme: "crwdns1237:0crwdne1237:0",
   Frontend_Classic_Settings_ThemeInfo: "crwdns1239:0crwdne1239:0",
-  Frontend_Classic_Settings_Theme_HaruNeko: "crwdns1241:0crwdne1241:0",
+  Frontend_Classic_Settings_Theme_HakuNeko: "crwdns1241:0crwdne1241:0",
   Frontend_Classic_Settings_Theme_CarbonWhite: "crwdns1243:0crwdne1243:0",
   Frontend_Classic_Settings_Theme_CarbonG10: "crwdns1245:0crwdne1245:0",
   Frontend_Classic_Settings_Theme_CarbonG90: "crwdns1247:0crwdne1247:0",

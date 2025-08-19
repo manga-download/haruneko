@@ -94,67 +94,67 @@ describe('Localization', () => {
 
         it('Should provide current resource', async () => {
             expect(GetLocale()).toBeInstanceOf(Object);
-            expect(GetLocale().Frontend_Product_Title()).toBe('HaruNeko');
+            expect(GetLocale().Frontend_Product_Title()).toBe('HakuNeko');
         });
 
         it('Should provide correct resource for ar_SA', async () => {
             expect(GetLocale(LocaleID.Locale_arSA)).toBeInstanceOf(Object);
-            expect(GetLocale(LocaleID.Locale_arSA).Frontend_Product_Title()).toBe('HaruNeko');
+            expect(GetLocale(LocaleID.Locale_arSA).Frontend_Product_Title()).toBe('HakuNeko');
         });
 
         it('Should provide correct resource for de_DE', async () => {
             expect(GetLocale(LocaleID.Locale_deDE)).toBeInstanceOf(Object);
-            expect(GetLocale(LocaleID.Locale_deDE).Frontend_Product_Title()).toBe('HaruNeko');
+            expect(GetLocale(LocaleID.Locale_deDE).Frontend_Product_Title()).toBe('HakuNeko');
         });
 
         it('Should provide correct resource for en_US', async () => {
             expect(GetLocale(LocaleID.Locale_enUS)).toBeInstanceOf(Object);
-            expect(GetLocale(LocaleID.Locale_enUS).Frontend_Product_Title()).toBe('HaruNeko');
+            expect(GetLocale(LocaleID.Locale_enUS).Frontend_Product_Title()).toBe('HakuNeko');
         });
 
         it('Should provide correct resource for es_ES', async () => {
             expect(GetLocale(LocaleID.Locale_esES)).toBeInstanceOf(Object);
-            expect(GetLocale(LocaleID.Locale_esES).Frontend_Product_Title()).toBe('HaruNeko');
+            expect(GetLocale(LocaleID.Locale_esES).Frontend_Product_Title()).toBe('HakuNeko');
         });
 
         it('Should provide correct resource for fil_PH', async () => {
             expect(GetLocale(LocaleID.Locale_filPH)).toBeInstanceOf(Object);
-            expect(GetLocale(LocaleID.Locale_filPH).Frontend_Product_Title()).toBe('HaruNeko');
+            expect(GetLocale(LocaleID.Locale_filPH).Frontend_Product_Title()).toBe('HakuNeko');
         });
 
         it('Should provide correct resource for fr_FR', async () => {
             expect(GetLocale(LocaleID.Locale_frFR)).toBeInstanceOf(Object);
-            expect(GetLocale(LocaleID.Locale_frFR).Frontend_Product_Title()).toBe('HaruNeko');
+            expect(GetLocale(LocaleID.Locale_frFR).Frontend_Product_Title()).toBe('HakuNeko');
         });
 
         it('Should provide correct resource for hi_IN', async () => {
             expect(GetLocale(LocaleID.Locale_hiIN)).toBeInstanceOf(Object);
-            expect(GetLocale(LocaleID.Locale_hiIN).Frontend_Product_Title()).toBe('HaruNeko');
+            expect(GetLocale(LocaleID.Locale_hiIN).Frontend_Product_Title()).toBe('HakuNeko');
         });
 
         it('Should provide correct resource for id_ID', async () => {
             expect(GetLocale(LocaleID.Locale_idID)).toBeInstanceOf(Object);
-            expect(GetLocale(LocaleID.Locale_idID).Frontend_Product_Title()).toBe('HaruNeko');
+            expect(GetLocale(LocaleID.Locale_idID).Frontend_Product_Title()).toBe('HakuNeko');
         });
 
         it('Should provide correct resource for pt_PT', async () => {
             expect(GetLocale(LocaleID.Locale_ptPT)).toBeInstanceOf(Object);
-            expect(GetLocale(LocaleID.Locale_ptPT).Frontend_Product_Title()).toBe('HaruNeko');
+            expect(GetLocale(LocaleID.Locale_ptPT).Frontend_Product_Title()).toBe('HakuNeko');
         });
 
         it('Should provide correct resource for th_TH', async () => {
             expect(GetLocale(LocaleID.Locale_thTH)).toBeInstanceOf(Object);
-            expect(GetLocale(LocaleID.Locale_thTH).Frontend_Product_Title()).toBe('HaruNeko');
+            expect(GetLocale(LocaleID.Locale_thTH).Frontend_Product_Title()).toBe('HakuNeko');
         });
 
         it('Should provide correct resource for tr_TR', async () => {
             expect(GetLocale(LocaleID.Locale_trTR)).toBeInstanceOf(Object);
-            expect(GetLocale(LocaleID.Locale_trTR).Frontend_Product_Title()).toBe('HaruNeko');
+            expect(GetLocale(LocaleID.Locale_trTR).Frontend_Product_Title()).toBe('HakuNeko');
         });
 
         it('Should provide correct resource for zh_CN', async () => {
             expect(GetLocale(LocaleID.Locale_zhCN)).toBeInstanceOf(Object);
-            expect(GetLocale(LocaleID.Locale_zhCN).Frontend_Product_Title()).toBe('HaruNeko');
+            expect(GetLocale(LocaleID.Locale_zhCN).Frontend_Product_Title()).toBe('HakuNeko');
         });
 
         it('Should not be defined for invalid langauge code', async () => {
