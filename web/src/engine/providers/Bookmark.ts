@@ -141,7 +141,7 @@ export class Bookmark extends MediaContainer<MediaChild> {
      * determine which entries have unflagged items
      */
     public async GetUnflaggedContent() {
-        return await HakuNeko.ItemflagManager.GetUnFlaggedItems(this as MediaContainer<MediaContainer<MediaChild>>);
+        return await HaruNeko.ItemflagManager.GetUnFlaggedItems(this as MediaContainer<MediaContainer<MediaChild>>);
     }
 }
 

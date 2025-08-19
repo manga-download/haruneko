@@ -30,7 +30,7 @@
         selectedItem,
     } from '../stores/Stores';
     import { FuzzySearch } from '../stores/Settings';
-    // Hakuneko Engine
+    // Haruneko Engine
     import type {
         MediaContainer,
         MediaChild,
@@ -54,7 +54,7 @@
         value: MediaContainer<MediaChild>;
         isFavorite: boolean;
     }
-    const orderedPlugins: MediaContainer<MediaChild>[] = HakuNeko.PluginController.WebsitePlugins.toSorted((a, b) => {
+    const orderedPlugins: MediaContainer<MediaChild>[] = HaruNeko.PluginController.WebsitePlugins.toSorted((a, b) => {
             return (
                 // sort by favorite
                 (pluginsFavorites.includes(a.Identifier) ? 0 : 1) -
@@ -65,9 +65,9 @@
         });
     const pluginsCombo: ComboBoxItemWithValue[] = [
         {
-            id: HakuNeko.BookmarkPlugin.Identifier,
-            text: HakuNeko.BookmarkPlugin.Title,
-            value : HakuNeko.BookmarkPlugin,
+            id: HaruNeko.BookmarkPlugin.Identifier,
+            text: HaruNeko.BookmarkPlugin.Title,
+            value : HaruNeko.BookmarkPlugin,
             isFavorite: true
         },
         ...orderedPlugins.map((plugin) => {
@@ -167,7 +167,7 @@
     async function onMediaPasteURL(_event: Event) {
         try {
             const link = new URL(await navigator.clipboard.readText()).href;
-            for (const website of HakuNeko.PluginController.WebsitePlugins) {
+            for (const website of HaruNeko.PluginController.WebsitePlugins) {
                 const media = await website.TryGetEntry(link);
                 if (media) {
                     $selectedItem = undefined;
@@ -191,7 +191,7 @@
     }
 
     async function selectPlugin(id: ComboBoxItemId) {
-        $selectedPlugin = [HakuNeko.BookmarkPlugin, ...orderedPlugins].find(
+        $selectedPlugin = [HaruNeko.BookmarkPlugin, ...orderedPlugins].find(
             (plugin) => plugin.Identifier === id,
         );
     }
@@ -236,7 +236,7 @@
             let:item
         >
             {@const plugin = item as ComboBoxItemWithValue}
-            {#if plugin.value.IsSameAs(HakuNeko.BookmarkPlugin)}
+            {#if plugin.value.IsSameAs(HaruNeko.BookmarkPlugin)}
             <BookmarkFilled class="dropdown icon bookmarks" size={32} />
                 <div class="dropdown title favorite">{plugin.value.Title}</div>
                 <div>Your bookmarked medias</div>

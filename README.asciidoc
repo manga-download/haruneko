@@ -1,4 +1,4 @@
-# HakuNeko
+# HaruNeko
 :toc:
 :toc-placement!:
 :numbered:

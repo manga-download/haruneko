@@ -28,7 +28,7 @@
     // UI : Stores
     import { Locale } from '../stores/Settings';
     import { selectedPlugin } from '../stores/Stores';
-    // Hakuneko Engine
+    // Haruneko Engine
     import { TagCategoryResourceKey as R } from '../../../i18n/ILocale';
 
     function createDataRow(item: MediaContainer<MediaChild>) {
@@ -68,7 +68,7 @@
     }
 
     let filterFavorites = $state(false);
-    let filteredPluginlist: ReturnType<typeof createDataRow>[] = $derived(HakuNeko.PluginController.WebsitePlugins.filter(
+    let filteredPluginlist: ReturnType<typeof createDataRow>[] = $derived(HaruNeko.PluginController.WebsitePlugins.filter(
             (plugin) => {
                 let rejectconditions: Array<boolean> = [];
                 if (

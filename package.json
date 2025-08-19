@@ -1,9 +1,9 @@
 {
-    "name": "hakuneko",
-    "title": "HakuNeko",
+    "name": "haruneko",
+    "title": "HaruNeko",
     "description": "Manga, Anime & Novel Downloader",
     "license": "Unlicense",
-    "homepage": "https://git.io/hakuneko",
+    "homepage": "https://github.com/manga-download/haruneko",
     "type": "module",
     "workspaces": [
         "web",

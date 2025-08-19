@@ -15,7 +15,7 @@ import { CreateRemoteProcedureCallContract } from './platform/RemoteProcedureCal
 import type { IFrontendInfo } from '../frontend/IFrontend';
 import { Observable } from './Observable';
 
-export class HakuNeko {
+export class HaruNeko {
 
     readonly #storageController: StorageController;
     readonly #settingsManager: SettingsManager;

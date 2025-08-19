@@ -1,6 +1,6 @@
 {
-    "name": "hakuneko-nw",
-    "title": "HakuNeko",
+    "name": "haruneko-nw",
+    "title": "HaruNeko",
     "description": "Manga, Anime & Novel Downloader (NodeWebkit based desktop client)",
     "type": "module",
     "main": "app.js",

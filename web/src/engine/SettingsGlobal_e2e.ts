@@ -9,7 +9,7 @@ export class TestFixture extends PuppeteerFixture {
 
     public async GetRemoteGlobalSettings(): Promise<JSHandle<ISettings>> {
         return this.EvaluateHandle(async () => {
-            return window.HakuNeko.SettingsManager.OpenScope();
+            return window.HaruNeko.SettingsManager.OpenScope();
         });
     }
 }

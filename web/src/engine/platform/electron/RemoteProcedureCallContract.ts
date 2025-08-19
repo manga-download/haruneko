@@ -10,7 +10,7 @@ export default class RemoteProcedureCallContract implements IRemoteProcedureCall
 
     public async LoadMediaContainerFromURL(url: string): Promise<void> {
         try {
-            globalThis.HakuNeko.PastedClipboardURL.Value = new URL(url);
+            globalThis.HaruNeko.PastedClipboardURL.Value = new URL(url);
         } catch(error) {
             console.warn(error);
         }

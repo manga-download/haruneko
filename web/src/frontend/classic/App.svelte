@@ -1,7 +1,7 @@
 <script lang="ts">
     // UI : Carbon
     import 'carbon-components-svelte/css/all.css';
-    import './theme/hakuneko.css';
+    import './theme/haruneko.css';
     import './theme/global.css';
     import { Content } from 'carbon-components-svelte';
     // Svelte
@@ -46,7 +46,7 @@
         }}
     />
     <Content
-        id="hakunekoapp"
+        id="harunekoapp"
         class={$ContentPanel ? 'ui-mode-content' : 'ui-mode-download'}
     >
         <MediaSelect />
@@ -77,7 +77,7 @@
         background: var(--cds-active-ui); /* Scroll marker */
         border-radius: 2em; /* So marker has rounded edges */
     }
-    :global(#hakunekoapp) {
+    :global(#harunekoapp) {
         height: calc(100vh - 3.5em);
         max-height: calc(100vh - 3.5em);
         display: grid;

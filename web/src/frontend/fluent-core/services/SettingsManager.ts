@@ -32,8 +32,8 @@ export const Themes = new Map<string, typeof ThemeWebLight>([
 
 export class SettingsManager {
 
-    readonly #globalSettings = HakuNeko.SettingsManager.OpenScope();
-    readonly #frontendSettings = HakuNeko.SettingsManager.OpenScope(FrontendSettingKeys.Scope);
+    readonly #globalSettings = HaruNeko.SettingsManager.OpenScope();
+    readonly #frontendSettings = HaruNeko.SettingsManager.OpenScope(FrontendSettingKeys.Scope);
 
     constructor () {
         this.SettingLanguage = this.#globalSettings.Get<Choice>(GlobalKey.Language);

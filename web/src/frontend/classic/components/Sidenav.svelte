@@ -76,7 +76,7 @@
                     text={'Bookmarks'}
                     icon={Bookmark}
                     onclick={() => {
-                        $selectedPlugin = window.HakuNeko.BookmarkPlugin;
+                        $selectedPlugin = window.HaruNeko.BookmarkPlugin;
                         $selectedMedia = undefined;
                         $selectedItem = undefined;
                     }}

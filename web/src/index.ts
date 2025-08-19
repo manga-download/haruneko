@@ -1,17 +1,17 @@
 import { CreateAppWindow } from './engine/platform/AppWindow';
 import { FeatureFlags } from './engine/FeatureFlags';
-import type { HakuNeko } from './engine/HakuNeko';
+import type { HaruNeko } from './engine/HaruNeko';
 import './engine/ArrayExtensions';
 import './engine/RegExpSafe';
 
 const appHook = '#app';
-const noticeHook = '#hakuneko-notice';
+const noticeHook = '#haruneko-notice';
 const splashPath = '/splash.html';
 
 declare global {
-    var HakuNeko: HakuNeko;
+    var HaruNeko: HaruNeko;
     interface Window {
-        HakuNeko: HakuNeko;
+        HaruNeko: HaruNeko;
     }
 }
 
@@ -56,16 +56,16 @@ function ShowErrorNotice(root: HTMLElement, error?: Error) {
         }
 
         // Use dynamic instead of static import for these large modules to improve start-up performance
-        const { HakuNeko } = await import('./engine/HakuNeko');
+        const { HaruNeko } = await import('./engine/HaruNeko');
         const { FrontendController, FrontendList } = await import('./frontend/FrontendController');
 
-        window.HakuNeko = new HakuNeko();
-        await window.HakuNeko.Initialze(FrontendList);
-        if(window.HakuNeko.FeatureFlags.CrowdinTranslationMode.Value) {
+        window.HaruNeko = new HaruNeko();
+        await window.HaruNeko.Initialze(FrontendList);
+        if(window.HaruNeko.FeatureFlags.CrowdinTranslationMode.Value) {
             document.head.querySelector<HTMLScriptElement>('#crowdin').src = 'https://cdn.crowdin.com/jipt/jipt.js';
         }
 
-        const frontend = new FrontendController(document.querySelector(appHook), window.HakuNeko.SettingsManager.OpenScope(), appWindow);
+        const frontend = new FrontendController(document.querySelector(appHook), window.HaruNeko.SettingsManager.OpenScope(), appWindow);
 
         if(FeatureFlags.ShowSplashScreen) {
             await Promise.race([

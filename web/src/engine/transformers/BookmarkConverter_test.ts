@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import { mock } from 'vitest-mock-extended';
 import { describe, it, expect } from 'vitest';
-import type { HakuNeko } from '../../engine/HakuNeko';
+import type { HaruNeko } from '../HaruNeko';
 import type { Choice, ISettings, SettingsManager } from '../SettingsManager';
 import * as testee from './BookmarkConverter';
 import { LocaleID } from '../../i18n/ILocale';
@@ -61,7 +61,7 @@ const legacyWebsiteIdentifierMapTestCases = [
     const mockSettingsManager = mock<SettingsManager>();
     mockSettingsManager.OpenScope.mockReturnValue(mockSettigns);
 
-    window.HakuNeko = mock<HakuNeko>({ SettingsManager: mockSettingsManager });
+    window.HaruNeko = mock<HaruNeko>({ SettingsManager: mockSettingsManager });
 }
 
 describe('BookmarkConverter', () => {

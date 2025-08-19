@@ -13,7 +13,7 @@
     //export let onlyNewContent = false;
 
     async function selectBookmark(bookmark: Bookmark) {
-        $selectedPlugin = HakuNeko.BookmarkPlugin;
+        $selectedPlugin = HaruNeko.BookmarkPlugin;
         $selectedMedia = bookmark;
         $selectedItem = undefined;
     }
@@ -21,7 +21,7 @@
 
 <div id="bookmarkspage" in:fade>
     <Tile id="bookmarks" class="border">
-        {#each window.HakuNeko.BookmarkPlugin.Entries.Value as bookmark (bookmark)}
+        {#each window.HaruNeko.BookmarkPlugin.Entries.Value as bookmark (bookmark)}
             <ClickableTile
                 class="suggesttile"
                 light

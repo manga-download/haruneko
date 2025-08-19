@@ -32,11 +32,11 @@
     }
     function onNextItem() {
         currentImageIndex = -1;
-        if (wide && !$selectedItemNext) HakuNeko.ItemflagManager.FlagItem(item, FlagType.Current);
+        if (wide && !$selectedItemNext) HaruNeko.ItemflagManager.FlagItem(item, FlagType.Current);
         $selectedItem = $selectedItemNext;
     }
     function onClose() {
-        HakuNeko.ItemflagManager.FlagItem(item, FlagType.Current);
+        HaruNeko.ItemflagManager.FlagItem(item, FlagType.Current);
     }
 
     let wide = false;

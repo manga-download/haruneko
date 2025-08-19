@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import { mock } from 'vitest-mock-extended';
 import { describe, it, expect } from 'vitest';
-import type { HakuNeko } from '../engine/HakuNeko';
+import type { HaruNeko } from './HaruNeko';
 import { Exception, InternalError, NotImplementedError } from './Error';
 import type { Choice, ISettings, SettingsManager } from './SettingsManager';
 import { LocaleID, EngineResourceKey } from '../i18n/ILocale';
@@ -17,7 +17,7 @@ import { Key } from './SettingsGlobal';
     const mockSettingsManager = mock<SettingsManager>();
     mockSettingsManager.OpenScope.mockReturnValue(mockSettigns);
 
-    window.HakuNeko = mock<HakuNeko>({ SettingsManager: mockSettingsManager });
+    window.HaruNeko = mock<HaruNeko>({ SettingsManager: mockSettingsManager });
 }
 
 describe('Error', () => {

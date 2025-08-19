@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import { mock, mockClear } from 'vitest-mock-extended';
 import { vi, describe, it, expect } from 'vitest';
-import type { HakuNeko } from './HakuNeko';
+import type { HaruNeko } from './HaruNeko';
 import { LocaleID, type EngineResourceKey } from '../i18n/ILocale';
 import { Check, Text, Secret, Numeric, Choice, SettingsManager, Directory, type ISettings } from './SettingsManager';
 import { type StorageController, Store } from './StorageController';
@@ -22,7 +22,7 @@ global.btoa = (decoded: string) => Buffer.from(decoded, 'utf-8').toString('base6
     const mockSettingsManager = mock<SettingsManager>();
     mockSettingsManager.OpenScope.mockReturnValue(mockSettigns);
 
-    window.HakuNeko = mock<HakuNeko>({ SettingsManager: mockSettingsManager });
+    window.HaruNeko = mock<HaruNeko>({ SettingsManager: mockSettingsManager });
 }
 
 describe('SettingsManager', () => {

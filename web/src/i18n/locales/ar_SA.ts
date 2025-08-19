@@ -23,7 +23,7 @@ const translations: VariantResource = { // NOTE: Use defaults for missing transl
   // [SECTION]: FrontendController
   FrontendController_Reload_ConfirmNotice: "يُلزم إعادة التشغيل لتطبيق التعديلات المطلوبة.\nأي تعديلات غير محفوظة ستُفقد والعمليات النشطة (مثلًا، التنزيلات) لن تتم!\n\nهل تريد أن تعمل إعادة تشغيل الآن؟",
   // [SECTION]: Frontend (Common/Shared)
-  Frontend_Product_Title: 'HakuNeko',
+  Frontend_Product_Title: 'HaruNeko',
   Frontend_Product_Description: "أداة تنزيل مانغا، وأنمي، وروايات",
   Frontend_Setting: "الإعداد",
   Frontend_Settings: "الاعدادات",
@@ -52,7 +52,7 @@ const translations: VariantResource = { // NOTE: Use defaults for missing transl
   Frontend_Classic_Settings_FuzzySearchInfo: "تمكين البحث الغامض على عوامل التصفية (المطابقة التقريبية)",
   Frontend_Classic_Settings_Theme: "السمة",
   Frontend_Classic_Settings_ThemeInfo: "حدد سمة اللون لواجهة المستخدم",
-  Frontend_Classic_Settings_Theme_HakuNeko: 'HakuNeko',
+  Frontend_Classic_Settings_Theme_HaruNeko: 'HaruNeko',
   Frontend_Classic_Settings_Theme_CarbonWhite: "أبيض كربون",
   Frontend_Classic_Settings_Theme_CarbonG10: "كربون ج10 (خفيف)",
   Frontend_Classic_Settings_Theme_CarbonG90: "كربون ج90 (داكن)",
@@ -147,7 +147,7 @@ const translations: VariantResource = { // NOTE: Use defaults for missing transl
   Settings_Global_MediaDirectory_UnsetError: "لم يتم تحديد دليل التحميل في إعدادات هاكونيكو!",
   Settings_Global_MediaDirectory_PermissionError: "الصلاحية غير كافية للحصول على دليل التحميل!",
   Settings_Global_WebsiteSubDirectory: "استخدام الدلائل الفرعية",
-  Settings_Global_WebsiteSubDirectoryInfo: "تعيين HakuNeko يقوم بتخزين الوسائط مباشرة في الدليل، أو استخدام الدلائل الفرعية لكل موقع",
+  Settings_Global_WebsiteSubDirectoryInfo: "تعيين HaruNeko يقوم بتخزين الوسائط مباشرة في الدليل، أو استخدام الدلائل الفرعية لكل موقع",
   Settings_Global_MangaExportFormat: 'Manga/Comic Download Format',
   Settings_Global_MangaExportFormatInfo: 'The container format to store the downloaded content for mangas/comics',
   Settings_Global_MangaExportFormat_FolderWithImages: 'Folder with Images',
@@ -181,7 +181,7 @@ const translations: VariantResource = { // NOTE: Use defaults for missing transl
   Settings_Global_RPCSecretInfo: "عبارة السر المطلوبة من الطلبات المتوافقة مع الطرف الثالث للتفاعل مع نموذج هاكونيكو (مثلا مساعد هاكونيكو)",
   //
   Settings_FeatureFlags_Label: "أعلام الميزة",
-  Settings_FeatureFlags_Description: "خيارات متقدمة/تجريبية خاصة لمطوري HakuNeko والمساهمين ومستخدمي الطاقة",
+  Settings_FeatureFlags_Description: "خيارات متقدمة/تجريبية خاصة لمطوري HaruNeko والمساهمين ومستخدمي الطاقة",
   Settings_FeatureFlags_ShowSplashScreen_Label: "إظهار شاشة البدء",
   Settings_FeatureFlags_ShowSplashScreen_Description: "تبديل شاشة وميض أثناء بدء تشغيل التطبيق / إيقاف تشغيله",
   Settings_FeatureFlags_ShowFetchBrowserWindows_Label: "إظهار ويندوز متصفح FetchBrowser",
@@ -196,7 +196,7 @@ const translations: VariantResource = { // NOTE: Use defaults for missing transl
   FetchProvider_FetchWindow_TimeoutError: "لا يمكن تلبية الطلب في غضون المهلة المحددة!",
   FetchProvider_FetchWindow_CloudFlareError: "فشل الطلب بسبب خطأ CloudFlare التالي: \"{0}\"",
   FetchProvider_FetchWindow_AlertCaptcha: "يرجى حل كلمة التحقق ثم الانتظار حتى يستمر التطبيق (لا تغلق الموقع بعد حل كلمة التحقق)!",
-  FetchProvider_Fetch_CloudFlareChallenge: "تم رفض طلب \"{0}\" من قبل الكشف المضاد للبوت لـ CloudFlare.\nتأكد من تجاوز CloudFlare قبل الوصول إلى محتوى هذا الموقع (على سبيل المثال مع امتداد متصفح HakuNeko المساعد).",
+  FetchProvider_Fetch_CloudFlareChallenge: "تم رفض طلب \"{0}\" من قبل الكشف المضاد للبوت لـ CloudFlare.\nتأكد من تجاوز CloudFlare قبل الوصول إلى محتوى هذا الموقع (على سبيل المثال مع امتداد متصفح HaruNeko المساعد).",
   FetchProvider_Fetch_VercelChallenge: 'The request to "{0}" was rejected by Vercel Attack Challenge Mode.\nMake sure to bypass Vercel before accessing the content of this website.',
   FetchProvider_Fetch_Forbidden: "تم رفض الوصول إلى \"{0}\".\nتأكد من أن الموقع متاح ويمكن الوصول إليه (e. .، VPN لتجاوز قفل المنطقة ، تسجيل الدخول اليدوي عبر رابط الموقع).",
   //

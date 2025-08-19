@@ -8,13 +8,13 @@ export class RemoteFixture extends PuppeteerFixture {
 
     public async GetRemotePluginController(): Promise<JSHandle<PluginController>> {
         return this.EvaluateHandle(async () => {
-            return window.HakuNeko.PluginController;
+            return window.HaruNeko.PluginController;
         });
     }
 
     public async GetRemoteWebsitePlugins(): Promise<JSHandle<ReadonlyArray<MediaContainer<MediaContainer<MediaChild>>>>> {
         return this.EvaluateHandle(async () => {
-            return window.HakuNeko.PluginController.WebsitePlugins;
+            return window.HaruNeko.PluginController.WebsitePlugins;
         });
     }
 }

@@ -9,7 +9,7 @@ export default async function DeScramble(scrambled: ImageBitmapSource, draw: Dra
         const canvas = new OffscreenCanvas(bitmap.width, bitmap.height);
         await draw(bitmap, canvas.getContext('2d'));
 
-        const settings = HakuNeko.SettingsManager.OpenScope();
+        const settings = HaruNeko.SettingsManager.OpenScope();
         const options = {
             type: settings.Get<Text>(GlobalKey.DescramblingFormat).Value,
             quality: settings.Get<Numeric>(GlobalKey.DescramblingQuality).Value / 100

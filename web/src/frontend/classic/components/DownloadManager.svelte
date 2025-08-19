@@ -7,9 +7,9 @@
     import DownloadManagerTask from './DownloadManagerTask.svelte';
 
     let taskerror: DownloadTask;
-    let downloadTasks: DownloadTask[] = HakuNeko.DownloadManager.Queue.Value;
+    let downloadTasks: DownloadTask[] = HaruNeko.DownloadManager.Queue.Value;
 
-    HakuNeko.DownloadManager.Queue.Subscribe((tasks) => {
+    HaruNeko.DownloadManager.Queue.Subscribe((tasks) => {
         downloadTasks = tasks;
     });
 

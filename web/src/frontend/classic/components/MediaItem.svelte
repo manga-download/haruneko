@@ -68,21 +68,21 @@
         if (flagData.Entry === item) {
             flag = flagData.Kind;
         } else if (flagData.Kind === FlagType.Current) {
-            flag = await HakuNeko.ItemflagManager.GetItemFlagType(item);
+            flag = await HaruNeko.ItemflagManager.GetItemFlagType(item);
         }
     }
-    HakuNeko.ItemflagManager.EntryFlagEventChannel.Subscribe(
+    HaruNeko.ItemflagManager.EntryFlagEventChannel.Subscribe(
         OnFlagChangedCallback,
     );
     onMount(async () => {
-        flag = await HakuNeko.ItemflagManager.GetItemFlagType(item);
+        flag = await HaruNeko.ItemflagManager.GetItemFlagType(item);
     });
     onDestroy(() => {
-        HakuNeko.ItemflagManager.EntryFlagEventChannel.Unsubscribe(
+        HaruNeko.ItemflagManager.EntryFlagEventChannel.Unsubscribe(
             OnFlagChangedCallback,
         );
         downloadTask?.Status.Unsubscribe(refreshDownloadStatus);
-        HakuNeko.DownloadManager.Queue.Unsubscribe(taskQueueChanged);
+        HaruNeko.DownloadManager.Queue.Unsubscribe(taskQueueChanged);
     });
 
     let downloadTask: DownloadTask = $state();
@@ -93,24 +93,24 @@
         downloadTask = tasks.find((task) => task.Media.IsSameAs(item));
         downloadTask?.Status.Subscribe(refreshDownloadStatus);
     }
-    HakuNeko.DownloadManager.Queue.Subscribe(taskQueueChanged);
+    HaruNeko.DownloadManager.Queue.Subscribe(taskQueueChanged);
     async function refreshDownloadStatus(newstatus: Status, _task: DownloadTask) {
         downloadTaskStatus = newstatus;
     }
 
     async function addDownload(item: StoreableMediaContainer<MediaItem>) {
         try {
-            await HakuNeko.SettingsManager.OpenScope().Get<Directory>(GlobalKey.MediaDirectory).EnsureAccess();
+            await HaruNeko.SettingsManager.OpenScope().Get<Directory>(GlobalKey.MediaDirectory).EnsureAccess();
         } catch(error) {
             // TODO: Use appropriate error visualization ...
             alert(error?.message ?? error);
             return;
         }
-        await window.HakuNeko.DownloadManager.Enqueue(item);
+        await window.HaruNeko.DownloadManager.Enqueue(item);
     }
 
     async function removeDownload(task: DownloadTask) {
-        await window.HakuNeko.DownloadManager.Dequeue(task)
+        await window.HaruNeko.DownloadManager.Dequeue(task)
     }
 
     // TODO: download complete button should open file explorer

@@ -1,5 +1,5 @@
 {
-  "name": "hakuneko-docs",
+  "name": "haruneko-docs",
   "type": "module",
   "devDependencies": {
     "vitepress": "1.6.4"

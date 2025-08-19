@@ -52,16 +52,16 @@ if (process.platform === 'darwin') {
 if (process.platform === 'win32') {
     const portable = await import('./bundle-app-zip.mjs');
     //const setup = await import('./bundle-app-iss.mjs');
-    dirTemp = await redist(electronVersion, process.platform, 'ia32');
-    await portable.bundle(dirApp, dirRes, dirTemp, dirOut);
+    // dirTemp = await redist(electronVersion, process.platform, 'ia32');
+    // await portable.bundle(dirApp, dirRes, dirTemp, dirOut);
     //dirTemp = await redist(electronVersion, process.platform, 'ia32');
     //await setup.bundle(dirApp, dirTemp);
     dirTemp = await redist(electronVersion, process.platform, 'x64');
     await portable.bundle(dirApp, dirRes, dirTemp, dirOut);
     //dirTemp = await redist(electronVersion, process.platform, 'x64');
     //await setup.bundle(dirApp, dirTemp);
-    dirTemp = await redist(electronVersion, process.platform, 'arm64');
-    await portable.bundle(dirApp, dirRes, dirTemp, dirOut);
+    // dirTemp = await redist(electronVersion, process.platform, 'arm64');
+    // await portable.bundle(dirApp, dirRes, dirTemp, dirOut);
     //dirTemp = await redist(electronVersion, process.platform, 'arm64');
     //await setup.bundle(dirApp, dirTemp);
 }

@@ -10,9 +10,9 @@ import {
 } from './AutomationEvasions';
 
 export const AppURL = 'https://localhost:5000/';
-export const AppSelector = 'body #app main#hakunekoapp';
+export const AppSelector = 'body #app main#harunekoapp';
 const viteExe = path.normalize(path.resolve('node_modules', '.bin', process.platform === 'win32' ? 'vite.cmd' : 'vite'));
-const tempDir = path.normalize(path.resolve(os.tmpdir(), 'hakuneko-test', Date.now().toString(32)));
+const tempDir = path.normalize(path.resolve(os.tmpdir(), 'haruneko-test', Date.now().toString(32)));
 const userDir = path.normalize(path.resolve(tempDir, 'user-data'));
 
 let server: ReturnType<typeof spawn> | null;

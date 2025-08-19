@@ -80,7 +80,7 @@ const template = html<DownloadManagerTask>`
     <div class="controls">
         <fluent-progress-bar min="0" max="1" :paused=${() => false} :value=${model => model.progress}></fluent-progress-bar>
         <div class="status ${model => model.status}" :innerHTML=${model => StatusIcons[ model.status ]} @click=${model => model.ShowErrors()}></div>
-        <fluent-button icon-only size="small" appearance="transparent" title="${model => model.Localization.Locale.Frontend_FluentCore_DownloadManagerTask_RemoveButton_Description()}" :innerHTML=${() => IconRemove} @click=${model => HakuNeko.DownloadManager.Dequeue(model.Entry)}></fluent-button>
+        <fluent-button icon-only size="small" appearance="transparent" title="${model => model.Localization.Locale.Frontend_FluentCore_DownloadManagerTask_RemoveButton_Description()}" :innerHTML=${() => IconRemove} @click=${model => HaruNeko.DownloadManager.Dequeue(model.Entry)}></fluent-button>
     </div>
 `;
 

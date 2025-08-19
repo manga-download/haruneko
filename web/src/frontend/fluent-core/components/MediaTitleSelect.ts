@@ -194,15 +194,15 @@ export class MediaTitleSelect extends FASTElement {
 
     override connectedCallback(): void {
         super.connectedCallback();
-        HakuNeko.BookmarkPlugin.Entries.Subscribe(this.BookmarksChanged);
-        HakuNeko.PastedClipboardURL.Subscribe(this.PastedClipboardUrlChanged);
+        HaruNeko.BookmarkPlugin.Entries.Subscribe(this.BookmarksChanged);
+        HaruNeko.PastedClipboardURL.Subscribe(this.PastedClipboardUrlChanged);
         this.FilterEntries();
     }
 
     override disconnectedCallback(): void {
         super.disconnectedCallback();
-        HakuNeko.BookmarkPlugin.Entries.Unsubscribe(this.BookmarksChanged);
-        HakuNeko.PastedClipboardURL.Unsubscribe(this.PastedClipboardUrlChanged);
+        HaruNeko.BookmarkPlugin.Entries.Unsubscribe(this.BookmarksChanged);
+        HaruNeko.PastedClipboardURL.Unsubscribe(this.PastedClipboardUrlChanged);
     }
 
     readonly dropdown: HTMLDivElement;
@@ -222,7 +222,7 @@ export class MediaTitleSelect extends FASTElement {
     @observable Selected: MediaContainer<MediaChild>;
     SelectedChanged(previous: MediaContainer<MediaChild>, current: MediaContainer<MediaChild>) {
         if (current !== previous) {
-            this.BookmarksChanged(HakuNeko.BookmarkPlugin.Entries.Value, HakuNeko.BookmarkPlugin);
+            this.BookmarksChanged(HaruNeko.BookmarkPlugin.Entries.Value, HaruNeko.BookmarkPlugin);
             this.$emit('selectedChanged', this.Selected);
         }
     }
@@ -268,15 +268,15 @@ export class MediaTitleSelect extends FASTElement {
     public async AddBookmark(event: Event) {
         event.stopPropagation();
         if (this.Selected) {
-            await HakuNeko.BookmarkPlugin.Add(this.Selected as MediaContainer<MediaContainer<MediaChild>>);
+            await HaruNeko.BookmarkPlugin.Add(this.Selected as MediaContainer<MediaContainer<MediaChild>>);
         }
     }
 
     public async RemoveBookmark(event: Event) {
         event.stopPropagation();
-        if (this.Selected && HakuNeko.BookmarkPlugin.IsBookmarked(this.Selected)) {
-            const bookmark = HakuNeko.BookmarkPlugin.Find(this.Selected);
-            await HakuNeko.BookmarkPlugin.Remove(bookmark);
+        if (this.Selected && HaruNeko.BookmarkPlugin.IsBookmarked(this.Selected)) {
+            const bookmark = HaruNeko.BookmarkPlugin.Find(this.Selected);
+            await HaruNeko.BookmarkPlugin.Remove(bookmark);
         }
     }
 
@@ -287,10 +287,10 @@ export class MediaTitleSelect extends FASTElement {
     private PastedClipboardUrlChanged = async function (this: MediaTitleSelect, uri: URL) {
         try {
             this.pasting = true;
-            for (const website of HakuNeko.PluginController.WebsitePlugins) {
+            for (const website of HaruNeko.PluginController.WebsitePlugins) {
                 let media = await website.TryGetEntry(uri.href);
                 if (media) {
-                    media = HakuNeko.BookmarkPlugin.Entries.Value.find(entry => entry.IsSameAs(media)) ?? media;
+                    media = HaruNeko.BookmarkPlugin.Entries.Value.find(entry => entry.IsSameAs(media)) ?? media;
                     await media.Update();
                     if (!this.Selected || !this.Selected.IsSameAs(media)) {
                         this.Selected = media;
@@ -311,7 +311,7 @@ export class MediaTitleSelect extends FASTElement {
         event.stopPropagation();
         const content = await navigator.clipboard.readText();
         try {
-            HakuNeko.PastedClipboardURL.Value = new URL(content);
+            HaruNeko.PastedClipboardURL.Value = new URL(content);
         } catch (error) {
             console.warn(error);
         }

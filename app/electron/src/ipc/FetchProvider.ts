@@ -67,7 +67,7 @@ export class FetchProvider {
             }
         }
 
-        // Prevent leaking HakuNeko's host in certain headers
+        // Prevent leaking HaruNeko's host in certain headers
         [ 'origin', 'referer' ].forEach(key => {
             if(key in updatedHeaders && this.IsMatchingAppHost(updatedHeaders[key])) {
                 updatedHeaders[key] = uri.origin;

@@ -36,11 +36,11 @@
     let isMediaOrphanedBookmark = $state(true);
     $effect(() => {
         if(!media) return;
-        isBookmarked = HakuNeko.BookmarkPlugin.IsBookmarked(media);
+        isBookmarked = HaruNeko.BookmarkPlugin.IsBookmarked(media);
         isMediaOrphanedBookmark = media instanceof Bookmark && media.IsOrphaned;
     });
     async function toggleBookmark() {
-        isBookmarked = await window.HakuNeko.BookmarkPlugin.Toggle(media as MediaContainer2);
+        isBookmarked = await window.HaruNeko.BookmarkPlugin.Toggle(media as MediaContainer2);
     }
     //Context menu
     let mediadiv: HTMLElement = $state();
@@ -54,10 +54,10 @@
         if (!updatedmedia.IsSameAs(media)) return;
         
         unFlaggedItems = [];
-        const delay = !$selectedMedia || $selectedMedia?.IsSameAs(HakuNeko.BookmarkPlugin) ? 0 : 800;
+        const delay = !$selectedMedia || $selectedMedia?.IsSameAs(HaruNeko.BookmarkPlugin) ? 0 : 800;
         delayedContentCheck = setTimeout(
         async () => {
-            unFlaggedItems = (await HakuNeko.ItemflagManager.GetUnFlaggedItems(
+            unFlaggedItems = (await HaruNeko.ItemflagManager.GetUnFlaggedItems(
                 media as MediaContainer2,
             )) as MediaContainer<MediaChild>[];
         },delay);
@@ -65,13 +65,13 @@
     findMediaUnFlaggedContent(media);
 
     onMount(() => {
-        HakuNeko.ItemflagManager.ContainerFlagsEventChannel.Subscribe(findMediaUnFlaggedContent);
+        HaruNeko.ItemflagManager.ContainerFlagsEventChannel.Subscribe(findMediaUnFlaggedContent);
        
     });
 
     onDestroy(() => {
         clearTimeout(delayedContentCheck);
-        HakuNeko.ItemflagManager.ContainerFlagsEventChannel.Unsubscribe(findMediaUnFlaggedContent);
+        HaruNeko.ItemflagManager.ContainerFlagsEventChannel.Unsubscribe(findMediaUnFlaggedContent);
         document.removeEventListener('contextmenu', outsideClickListener);
     });
 

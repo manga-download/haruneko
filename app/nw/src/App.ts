@@ -38,19 +38,19 @@ function GetDefaultURL(): string | undefined {
 async function OpenWindow() {
     const argv = ParseCLI();
     const ipc = new IPC();
-    const rpc = new RPCServer('/hakuneko', new RemoteProcedureCallContract(ipc));
+    const rpc = new RPCServer('/haruneko', new RemoteProcedureCallContract(ipc));
     new RemoteProcedureCallManager(rpc, ipc);
 
     const url = argv.origin ?? GetDefaultURL() ?? 'about:blank';
     const win = await new Promise<NWJS_Helpers.win>((resolve, reject) => nw.Window.open(url, {
-        id: 'hakuneko',
+        id: 'haruneko',
         show: url ? false : true,
         frame: url ? false : true,
         transparent: url ? true : false,
         width: 1280,
         height: 720,
         position: 'center',
-        //title: 'HakuNeko',
+        //title: 'HaruNeko',
     }, win => win ? resolve(win) : reject()));
 
     if(!url) {

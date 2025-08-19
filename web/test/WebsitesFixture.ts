@@ -40,7 +40,7 @@ export class TestFixture<TWebsitePlugin extends MediaContainer<MediaChild>, TCon
 
     private async GetRemotePlugin(pluginID: string, settings?: Record<string, IValue>): Promise<JSHandle<TWebsitePlugin>> {
         return this.EvaluateHandle(async (id: string, setup: Record<string, IValue>) => {
-            const plugin = window.HakuNeko.PluginController.WebsitePlugins.find(website => website.Identifier === id);
+            const plugin = window.HaruNeko.PluginController.WebsitePlugins.find(website => website.Identifier === id);
             for (const key in setup) {
                 plugin.Settings.Get(key).Value = setup[key];
             }

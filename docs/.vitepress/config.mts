@@ -7,7 +7,7 @@ const dev = '/development-guide';
 const devtutorials = `${dev}/tutorials`
 
 export default defineConfig({
-    title: 'HakuNeko',
+    title: 'HaruNeko',
     description: 'Manga, Anime & Novel Downloader',
     head: [
         [ 'link', { rel: 'shortcut icon', href: '/assets/favicon.ico' } ],

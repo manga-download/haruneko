@@ -84,7 +84,7 @@ const templateWidgets: ViewTemplate<App> = html`
         ${when(model => model.SettingsManager.SettingPanelBookmarks || model.SettingsManager.SettingPanelDownloads, templateSidePanel)}
         <div id="mainpanel">
             <fluent-card>
-                <fluent-website-select id="website-select" :Entries=${() => HakuNeko.PluginController.WebsitePlugins} :Selected=${model => model.selectedWebsite}
+                <fluent-website-select id="website-select" :Entries=${() => HaruNeko.PluginController.WebsitePlugins} :Selected=${model => model.selectedWebsite}
                     @selectedChanged=${(model, ctx) => model.SelectedWebsiteChanged(ctx.event as CustomEvent<MediaContainer<MediaChild>>)}>
                 </fluent-website-select>
             </fluent-card>

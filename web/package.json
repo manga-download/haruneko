@@ -1,5 +1,5 @@
 {
-    "name": "hakuneko-web",
+    "name": "haruneko-web",
     "type": "module",
     "engines": {
         "node": ">=22.13.0",

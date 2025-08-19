@@ -96,11 +96,11 @@ async function OpenWindow(): Promise<void> {
         const argv = ParseCLI();
         const manifest = await LoadManifest();
         await SetupUserDataDirectory(manifest);
-        app.userAgentFallback = manifest['user-agent'] ?? app.userAgentFallback.split(/\s+/).filter(segment => !/(hakuneko|electron)/i.test(segment)).join(' ');
+        app.userAgentFallback = manifest['user-agent'] ?? app.userAgentFallback.split(/\s+/).filter(segment => !/(haruneko|electron)/i.test(segment)).join(' ');
         await app.whenReady();
         const win = await CreateApplicationWindow();
         const ipc = new IPC(win.webContents);
-        const rpc = new RPCServer('/hakuneko', new RemoteProcedureCallContract(ipc, win.webContents));
+        const rpc = new RPCServer('/haruneko', new RemoteProcedureCallContract(ipc, win.webContents));
         const uri = new URL(argv.origin ?? manifest.url ?? 'about:blank');
         UpdatePermissions(win.webContents.session, uri);
         new RemoteProcedureCallManager(rpc, ipc);

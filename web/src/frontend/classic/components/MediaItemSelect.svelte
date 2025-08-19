@@ -223,13 +223,13 @@
 
     async function downloadItems(items: MediaContainer<MediaItem>[]) {
         try {
-            await HakuNeko.SettingsManager.OpenScope().Get<Directory>(GlobalKey.MediaDirectory).EnsureAccess();
+            await HaruNeko.SettingsManager.OpenScope().Get<Directory>(GlobalKey.MediaDirectory).EnsureAccess();
         } catch(error) {
             // TODO: Use appropriate error visualization ...
             alert(error?.message ?? error);
             return;
         }
-        items.forEach(item => window.HakuNeko.DownloadManager.Enqueue(item as StoreableMediaContainer<MediaItem>));
+        items.forEach(item => window.HaruNeko.DownloadManager.Enqueue(item as StoreableMediaContainer<MediaItem>));
     }
 
     function reverseSort() {
@@ -271,13 +271,13 @@
                 <ContextMenuOption
                     labelText="Not viewed"
                     onclick={async () => {
-                        window.HakuNeko.ItemflagManager.UnflagItem(contextItem);
+                        window.HaruNeko.ItemflagManager.UnflagItem(contextItem);
                     }}
                 />
                 <ContextMenuOption
                     labelText="Viewed"
                     onclick={async () => {
-                        window.HakuNeko.ItemflagManager.FlagItem(
+                        window.HaruNeko.ItemflagManager.FlagItem(
                             contextItem,
                             FlagType.Viewed,
                         );
@@ -286,7 +286,7 @@
                 <ContextMenuOption
                     labelText="Current"
                     onclick={async () => {
-                        window.HakuNeko.ItemflagManager.FlagItem(
+                        window.HaruNeko.ItemflagManager.FlagItem(
                             contextItem,
                             FlagType.Current,
                         );

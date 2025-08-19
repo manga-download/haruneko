@@ -158,7 +158,7 @@ export class Chapter extends StoreableMediaContainer<Page> {
 
     public async Store(resources: Map<number, string>): Promise<void> {
         // TODO: Inject settings manager and global scope identifier?
-        const settings = HakuNeko.SettingsManager.OpenScope(Scope);
+        const settings = HaruNeko.SettingsManager.OpenScope(Scope);
         const directory = settings.Get<Directory>(Key.MediaDirectory);
         await directory.EnsureAccess();
         let output = directory.Value;

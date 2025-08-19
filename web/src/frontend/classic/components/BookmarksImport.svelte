@@ -13,11 +13,11 @@
         switch (event.detail.text) {
             case importButtonInfo.text:
                 pressedButton = importButtonInfo;
-                importResult = window.HakuNeko.BookmarkPlugin.Import();
+                importResult = window.HaruNeko.BookmarkPlugin.Import();
                 return;
             case exportButtonInfo.text:
                 pressedButton = exportButtonInfo;
-                exportResult = window.HakuNeko.BookmarkPlugin.Export();
+                exportResult = window.HaruNeko.BookmarkPlugin.Export();
                 return;
         }
     }

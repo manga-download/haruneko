@@ -200,7 +200,7 @@ export class MediaItemList extends FASTElement {
             // TODO: Introduce generic UI component to show errors
             return alert(error.message ?? error);
         }
-        await HakuNeko.DownloadManager.Enqueue(entry);
+        await HaruNeko.DownloadManager.Enqueue(entry);
     }
 }
 

@@ -68,9 +68,9 @@ export function GetLocale(code?: LocaleID): ILocale {
     if(code) {
         return resources[code];
     }
-    if(HakuNeko?.FeatureFlags?.CrowdinTranslationMode?.Value) {
+    if(HaruNeko?.FeatureFlags?.CrowdinTranslationMode?.Value) {
         return crowdinPseudoResource;
     }
-    const active = HakuNeko.SettingsManager.OpenScope(Scope).Get<Choice>(Key.Language).Value as LocaleID;
+    const active = HaruNeko.SettingsManager.OpenScope(Scope).Get<Choice>(Key.Language).Value as LocaleID;
     return resources[active];
 }

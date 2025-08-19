@@ -84,7 +84,7 @@
                 tooltipPosition="bottom"
                 tooltipAlignment="center"
                 on:click={() => {
-                    $selectedPlugin = window.HakuNeko.BookmarkPlugin;
+                    $selectedPlugin = window.HaruNeko.BookmarkPlugin;
                     $selectedMedia = undefined;
                     $selectedItem = undefined;
                 }}

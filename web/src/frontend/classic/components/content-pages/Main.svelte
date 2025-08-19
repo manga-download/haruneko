@@ -10,12 +10,12 @@
     <Tile class="border" style="margin-bottom:1em;">
         <p>
             <img
-                alt="hakuneko logo"
+                alt="haruneko logo"
                 class="logo"
                 src={Logo}
                 style="height:3em;"
             />
-            <strong>HakuNeko</strong> was made to help users who download media
+            <strong>HaruNeko</strong> was made to help users who download media
             for circumstances that requires offline usage. <br />
             The philosophy is <u>ad-hoc consumption</u>, get it when you want to
             read/watch it.

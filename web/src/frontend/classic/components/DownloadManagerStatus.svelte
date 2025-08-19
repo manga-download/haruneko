@@ -21,7 +21,7 @@
     let progress: number;
     let status: Status;
     let isModalOpen = false;
-    let downloadTasks: DownloadTask[] = HakuNeko.DownloadManager.Queue.Value;
+    let downloadTasks: DownloadTask[] = HaruNeko.DownloadManager.Queue.Value;
 
     function refreshCounts() {
         completed = downloadTasks.filter(
@@ -53,7 +53,7 @@
         }
     }
 
-    HakuNeko.DownloadManager.Queue.Subscribe((tasks) => {
+    HaruNeko.DownloadManager.Queue.Subscribe((tasks) => {
         const removed = previousTasks.filter((task) => !tasks.includes(task));
         const added = tasks.filter((task) => !previousTasks.includes(task));
         removed.forEach((job) => job.Status.Unsubscribe(refreshStatus));
@@ -94,7 +94,7 @@
 
     async function deleteTasks(statusFilter?:Status) {
         downloadTasks.forEach((task) => {
-            if(!statusFilter || statusFilter === task.Status.Value) window.HakuNeko.DownloadManager.Dequeue(task);
+            if(!statusFilter || statusFilter === task.Status.Value) window.HaruNeko.DownloadManager.Dequeue(task);
         });
         refreshStatus();
     }

@@ -1,4 +1,4 @@
-# HakuNeko Documentation
+# HaruNeko Documentation
 
 Redirecting ...
 

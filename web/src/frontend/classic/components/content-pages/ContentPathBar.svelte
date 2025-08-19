@@ -11,7 +11,7 @@
             isCurrentPage={$contentscreen === '/'}
             on:click={() => ($contentscreen = '/')}
         >
-            Hakuneko
+            Haruneko
         </BreadcrumbItem>
         {#if $contentscreen !== '/'}
             {@const steps = $contentscreen.split('/').slice(1)}

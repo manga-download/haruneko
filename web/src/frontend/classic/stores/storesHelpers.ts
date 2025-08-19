@@ -3,7 +3,7 @@ import type { IValue, ISetting} from '../../../engine/SettingsManager';
 import type { Key } from '../../../engine/SettingsGlobal';
 import { InternalError } from '../../../engine/Error';
 
-const globalsettings = HakuNeko.SettingsManager.OpenScope();
+const globalsettings = HaruNeko.SettingsManager.OpenScope();
 
 interface SettingStore<V extends IValue, S extends ISetting<V>> extends Writable<V> {
     setting: S,

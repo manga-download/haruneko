@@ -16,7 +16,7 @@ export const Scope_Viewer = 'frontend.classic.viewer';
 export const enum Key {
     //
     Theme = 'theme',
-    Theme_HakuNeko = 'hakuneko',
+    Theme_HaruNeko = 'haruneko',
     Theme_White = 'white',
     Theme_Gray10 = 'g10',
     Theme_Gray90 = 'g90',
@@ -39,10 +39,10 @@ export const enum Key {
 }
 
 export async function Initialize(): Promise<void> {
-    const settings = HakuNeko.SettingsManager.OpenScope(Scope);
+    const settings = HaruNeko.SettingsManager.OpenScope(Scope);
     await settings.Initialize(Theme.setting, ContentPanel.setting, SidenavTrail.setting, SidenavIconsOnTop.setting, FuzzySearch.setting);
-    HakuNeko.SettingsManager.OpenScope().Get<Choice>(GlobalKey.Language).Subscribe(() => Locale.set(GetLocale()));
-    const settingsViewer = HakuNeko.SettingsManager.OpenScope(Scope_Viewer);
+    HaruNeko.SettingsManager.OpenScope().Get<Choice>(GlobalKey.Language).Subscribe(() => Locale.set(GetLocale()));
+    const settingsViewer = HaruNeko.SettingsManager.OpenScope(Scope_Viewer);
     await settingsViewer.Initialize(ViewerMode.setting, ViewerReverseDirection.setting, ViewerDoublePage.setting);
 }
 
@@ -54,8 +54,8 @@ export const Theme= CreateSettingStore<string, Choice>(new Choice(
     Key.Theme,
     R.Frontend_Classic_Settings_Theme,
     R.Frontend_Classic_Settings_ThemeInfo,
-    Key.Theme_HakuNeko,
-    { key: Key.Theme_HakuNeko, label: R.Frontend_Classic_Settings_Theme_HakuNeko },
+    Key.Theme_HaruNeko,
+    { key: Key.Theme_HaruNeko, label: R.Frontend_Classic_Settings_Theme_HaruNeko },
     { key: Key.Theme_White, label: R.Frontend_Classic_Settings_Theme_CarbonWhite },
     { key: Key.Theme_Gray10, label: R.Frontend_Classic_Settings_Theme_CarbonG10 },
     { key: Key.Theme_Gray90, label: R.Frontend_Classic_Settings_Theme_CarbonG90 },

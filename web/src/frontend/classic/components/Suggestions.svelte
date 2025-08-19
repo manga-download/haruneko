@@ -22,7 +22,7 @@
         MediaItem,
     } from '../../../engine/providers/MediaPlugin';
 
-    const setting = HakuNeko.SettingsManager.OpenScope().Get<Check>(GlobalKey.CheckNewContent);
+    const setting = HaruNeko.SettingsManager.OpenScope().Get<Check>(GlobalKey.CheckNewContent);
     let checkNewContent = setting.Value;
     setting.Subscribe(value => {
         if(value) refreshSuggestions();
@@ -35,17 +35,17 @@
         if (isRefreshing) return;
         isRefreshing = true;
         await new Promise((resolve) => setTimeout(resolve, 1000));
-        suggestions = await HakuNeko.BookmarkPlugin.GetEntriesWithUnflaggedContent();
+        suggestions = await HaruNeko.BookmarkPlugin.GetEntriesWithUnflaggedContent();
         isRefreshing = false;
     }
     refreshSuggestions();
 
-    HakuNeko.BookmarkPlugin.Entries.Subscribe(() => refreshSuggestions());
-    HakuNeko.ItemflagManager.ContainerFlagsEventChannel.Subscribe(() => refreshSuggestions());
+    HaruNeko.BookmarkPlugin.Entries.Subscribe(() => refreshSuggestions());
+    HaruNeko.ItemflagManager.ContainerFlagsEventChannel.Subscribe(() => refreshSuggestions());
 
     async function selectBookmark(bookmark: Bookmark) {
         let unFlaggedContent = await bookmark.GetUnflaggedContent();
-        $selectedPlugin = HakuNeko.BookmarkPlugin;
+        $selectedPlugin = HaruNeko.BookmarkPlugin;
         $selectedMedia = bookmark;
         $selectedItem = unFlaggedContent[
             unFlaggedContent.length - 1

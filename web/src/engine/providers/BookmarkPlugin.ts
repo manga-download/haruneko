@@ -63,7 +63,7 @@ export class BookmarkPlugin extends MediaContainer<Bookmark> {
     public async RefreshAllFlags() {
         for (const media of super.Entries.Value) {
             await media.Update();
-            HakuNeko.ItemflagManager.LoadContainerFlags(media);
+            HaruNeko.ItemflagManager.LoadContainerFlags(media);
         }
     }
 

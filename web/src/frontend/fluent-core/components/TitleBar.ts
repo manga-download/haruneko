@@ -116,17 +116,17 @@ const template = html<TitleBar>`
                 <div slot="start" :innerHTML=${() => IconFeatureFlags}></div>
                 ${model => model.Localization.Locale.Settings_FeatureFlags_Label()}
                 <fluent-menu-list slot="submenu">
-                    <fluent-menu-item role="menuitemcheckbox" title="${model => model.Localization.Locale[ HakuNeko.FeatureFlags.HideSplashScreen.Description ]()}" :checked=${() => !HakuNeko.FeatureFlags.HideSplashScreen.Value} @change=${(_, ctx) => HakuNeko.FeatureFlags.HideSplashScreen.Value = !ctx.eventTarget<MenuItem>().checked}>
+                    <fluent-menu-item role="menuitemcheckbox" title="${model => model.Localization.Locale[ HaruNeko.FeatureFlags.HideSplashScreen.Description ]()}" :checked=${() => !HaruNeko.FeatureFlags.HideSplashScreen.Value} @change=${(_, ctx) => HaruNeko.FeatureFlags.HideSplashScreen.Value = !ctx.eventTarget<MenuItem>().checked}>
                         <div slot="start" :innerHTML=${() => IconWindowAd}></div>
-                        ${model => model.Localization.Locale[ HakuNeko.FeatureFlags.HideSplashScreen.Label ]()}
+                        ${model => model.Localization.Locale[ HaruNeko.FeatureFlags.HideSplashScreen.Label ]()}
                     </fluent-menu-item>
-                    <fluent-menu-item role="menuitemcheckbox" title="${model => model.Localization.Locale[ HakuNeko.FeatureFlags.VerboseFetchWindow.Description ]()}" :checked=${() => HakuNeko.FeatureFlags.VerboseFetchWindow.Value} @change=${(_, ctx) => HakuNeko.FeatureFlags.VerboseFetchWindow.Value = ctx.eventTarget<MenuItem>().checked}>
+                    <fluent-menu-item role="menuitemcheckbox" title="${model => model.Localization.Locale[ HaruNeko.FeatureFlags.VerboseFetchWindow.Description ]()}" :checked=${() => HaruNeko.FeatureFlags.VerboseFetchWindow.Value} @change=${(_, ctx) => HaruNeko.FeatureFlags.VerboseFetchWindow.Value = ctx.eventTarget<MenuItem>().checked}>
                         <div slot="start" :innerHTML=${() => IconDebugConsole}></div>
-                        ${model => model.Localization.Locale[ HakuNeko.FeatureFlags.VerboseFetchWindow.Label ]()}
+                        ${model => model.Localization.Locale[ HaruNeko.FeatureFlags.VerboseFetchWindow.Label ]()}
                     </fluent-menu-item>
-                    <fluent-menu-item role="menuitemcheckbox" title="${model => model.Localization.Locale[ HakuNeko.FeatureFlags.CrowdinTranslationMode.Description ]()}" :checked=${() => HakuNeko.FeatureFlags.CrowdinTranslationMode.Value} @change=${(_, ctx) => HakuNeko.FeatureFlags.CrowdinTranslationMode.Value = ctx.eventTarget<MenuItem>().checked}>
+                    <fluent-menu-item role="menuitemcheckbox" title="${model => model.Localization.Locale[ HaruNeko.FeatureFlags.CrowdinTranslationMode.Description ]()}" :checked=${() => HaruNeko.FeatureFlags.CrowdinTranslationMode.Value} @change=${(_, ctx) => HaruNeko.FeatureFlags.CrowdinTranslationMode.Value = ctx.eventTarget<MenuItem>().checked}>
                         <div slot="start" :innerHTML=${() => IconCrowdinContextTranslation}></div>
-                        ${model => model.Localization.Locale[ HakuNeko.FeatureFlags.CrowdinTranslationMode.Label ]()}
+                        ${model => model.Localization.Locale[ HaruNeko.FeatureFlags.CrowdinTranslationMode.Label ]()}
                     </fluent-menu-item>
                 </fluent-menu-list>
             </fluent-menu-item>
@@ -155,7 +155,7 @@ export class TitleBar extends FASTElement {
 
     public async ImportBookmarks() {
         try {
-            const summary = await HakuNeko.BookmarkPlugin.Import();
+            const summary = await HaruNeko.BookmarkPlugin.Import();
             console.log(summary);
         } catch (error) {
             // TODO: Show error to user
@@ -165,7 +165,7 @@ export class TitleBar extends FASTElement {
 
     public async ExportBookmarks() {
         try {
-            const summary = await HakuNeko.BookmarkPlugin.Export();
+            const summary = await HaruNeko.BookmarkPlugin.Export();
             console.log(summary);
         } catch (error) {
             // TODO: Show error to user

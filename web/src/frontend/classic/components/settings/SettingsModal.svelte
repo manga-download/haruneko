@@ -42,7 +42,7 @@
             >
                 <SettingsViewer
                     settings={[
-                        ...window.HakuNeko.SettingsManager.OpenScope(Global_Scope),
+                        ...window.HaruNeko.SettingsManager.OpenScope(Global_Scope),
                     ]}
                 />
             </TabContent>
@@ -51,7 +51,7 @@
             >
                 <SettingsViewer
                     settings={[
-                        ...window.HakuNeko.SettingsManager.OpenScope(UI_Classic_Scope),
+                        ...window.HaruNeko.SettingsManager.OpenScope(UI_Classic_Scope),
                     ]}
                 />
             </TabContent>
@@ -60,7 +60,7 @@
             >
                 <SettingsViewer
                     settings={[
-                        ...window.HakuNeko.SettingsManager.OpenScope(UI_Classic_Scope_Viewer),
+                        ...window.HaruNeko.SettingsManager.OpenScope(UI_Classic_Scope_Viewer),
                     ]}
                 />
             </TabContent>
@@ -72,7 +72,7 @@
                     title="Not implemented"
                     subtitle="Trackers are currently not used (yet)"
                 />
-                {#each [...window.HakuNeko.PluginController.InfoTrackers].filter((tracker) => [...tracker.Settings].length > 0) as tracker}
+                {#each [...window.HaruNeko.PluginController.InfoTrackers].filter((tracker) => [...tracker.Settings].length > 0) as tracker}
                     <h4>{tracker.Title}</h4>
                     <SettingsViewer settings={[...tracker.Settings]} />
                 {/each}
