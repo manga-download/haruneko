@@ -21,10 +21,10 @@ jobs:
       - name: Setup Snapcraft
         if: startsWith(matrix.os, 'ubuntu')
         run: |
-          apt update
-          apt install -y snapd
-          systemctl start snapd
-          snap install snapcraft
+          sudo apt update
+          sudo apt install -y snapd
+          sudo systemctl start snapd
+          sudo snap install snapcraft
       - name: Install NodeJS
         uses: actions/setup-node@v4
         with:
