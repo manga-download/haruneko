@@ -35,9 +35,9 @@ async function createSnapImage(blinkDeploymentTemporaryDirectory, blinkDeploymen
         await fs.unlink(artifact);
     } catch { }
     await createSnapcraftYaml(blinkDeploymentTemporaryDirectory, blinkDeploymentOutputDirectory);
-    await run('snapcraft pack --destructive-mode', blinkDeploymentOutputDirectory);
-    await run(`mv ${pkgConfig.name}*.snap ${snapfile}`, blinkDeploymentOutputDirectory);
-    await run('snapcraft upload *.snap --release=edge', blinkDeploymentOutputDirectory);
+    await run('sudo snapcraft pack --destructive-mode', blinkDeploymentOutputDirectory);
+    await run(`sudo mv ${pkgConfig.name}*.snap ${snapfile}`, blinkDeploymentOutputDirectory);
+    await run('sudo snapcraft upload *.snap --release=edge', blinkDeploymentOutputDirectory);
 }
 
 async function createSnapcraftYaml(blinkDeploymentTemporaryDirectory, blinkDeploymentOutputDirectory) {
