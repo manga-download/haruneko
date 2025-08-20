@@ -98,7 +98,7 @@ export { default as CoolMic } from './CoolMic';
 export { default as CoolMicFr } from './CoolMicFr';
 export { default as CopyManga } from './CopyManga';
 export { default as CoroCoro } from './CoroCoro';
-export { default as CosmicScansID } from './CosmicScansID';
+export { default as CosmicScansIndonesia } from './CosmicScansIndonesia';
 export { default as CovenScan } from './CovenScan';
 export { default as CrunchyScan } from './CrunchyScan';
 export { default as CulturedWorks } from './CulturedWorks';

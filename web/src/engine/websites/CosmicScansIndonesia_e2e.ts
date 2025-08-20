@@ -3,7 +3,7 @@
 new TestFixture({
     plugin: {
         id: 'cosmicscansid',
-        title: 'Cosmic Scans'
+        title: 'Cosmic Scans Indonesia'
     },
     container: {
         url: 'https://lc3.cosmicscans.asia/manga/eleceed/',
