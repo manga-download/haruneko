@@ -6,9 +6,9 @@ import { FetchCSS, FetchJSON } from '../platform/FetchProvider';
 
 type APIChapters = {
     chapters: {
-        chapter_slug: string,
-        title: string,
-        subtitle: string
+        chapter_slug: string;
+        title: string;
+        subtitle: string;
     }[]
 };
 
@@ -27,7 +27,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const token = (await FetchCSS<HTMLMetaElement>(new Request(this.URI), 'meta[name="csrf-token"]')).at(0).content;
+        const [ { content: token } ] = await FetchCSS<HTMLMetaElement>(new Request(this.URI), 'meta[name="csrf-token"]');
         const chapterList: Chapter[] = [];
         for (let page = 1, run = true; run; page++) {
             const chapters = await this.GetChaptersFromPage(manga, page, token);
@@ -38,11 +38,8 @@ export default class extends DecoratableMangaScraper {
 
     private async GetChaptersFromPage(manga: Manga, page: number, token: string): Promise<Chapter[]> {
         const { chapters } = await FetchJSON<APIChapters>(new Request(new URL(`/load-more-chapters/${manga.Identifier.split('/').at(-1)}?page=${page}`, this.URI), {
-            headers: {
-                'X-Requested-With': 'XMLHttpRequest',
-                'X-CSRF-TOKEN': token
-            }
+            headers: { 'X-CSRF-TOKEN': token }
         }));
-        return chapters.map(({ chapter_slug: slug, title, subtitle }) => new Chapter(this, manga, `${manga.Identifier}/${slug}`, [title, subtitle].join(' ').trim()));
+        return chapters.map(({ chapter_slug: slug, title, subtitle }) => new Chapter(this, manga, [ manga.Identifier, slug ].join('/'), [ title, subtitle ].join(' ').trim()));
     }
 }
