@@ -14,6 +14,7 @@ import pt_PT from './locales/pt_PT';
 import th_TH from './locales/th_TH';
 import tr_TR from './locales/tr_TR';
 import zh_CN from './locales/zh_CN';
+import ja_JP from './locales/ja_JP';
 import crowdinPseudoLanguage from './locales/zu_ZA';
 
 /**
@@ -33,6 +34,7 @@ const resources: Record<LocaleID, ILocale> = {
     Locale_thTH: CreateLocale(th_TH),
     Locale_trTR: CreateLocale(tr_TR),
     Locale_zhCN: CreateLocale(zh_CN),
+    Locale_jaJP: CreateLocale(ja_JP),
 };
 
 const crowdinPseudoResource = CreateLocale(crowdinPseudoLanguage);
