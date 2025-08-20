@@ -4,6 +4,7 @@ import '../COMICMeDu_e2e';
 import '../ComicGrowl_e2e';
 import '../ComicPash_e2e';
 import '../ComicRide_e2e';
+import '../JEnta_e2e';
 import '../MagKan_e2e';
 import '../MangaBANG_e2e';
 import '../RimacomiPlus_e2e';

@@ -237,6 +237,7 @@ export { default as InmortalScan } from './InmortalScan';
 export { default as iqiyi } from './iqiyi';
 export { default as IrisScanlator } from './IrisScanlator';
 export { default as JapScan } from './JapScan';
+export { default as JEnta } from './JEnta';
 export { default as JiangzaiToon } from './JiangzaiToon';
 export { default as JManga } from './JManga';
 export { default as JuinJutsuTeam } from './JuinJutsuTeam';
