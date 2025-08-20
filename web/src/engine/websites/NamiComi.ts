@@ -6,7 +6,6 @@ import { DecoratableMangaScraper, type MangaPlugin, Manga, Chapter } from '../pr
 import * as Common from './decorators/Common';
 
 type APIResult<T> = {
-    result: string,
     data: T
 };
 
@@ -18,7 +17,7 @@ type APIManga = {
             [lang: string]: string
         }
     }
-}
+};
 
 type APIChapter = {
     id: string,
@@ -28,7 +27,7 @@ type APIChapter = {
         name: null | string,
         translatedLanguage: string
     }
-}
+};
 
 type APIPages = {
     baseUrl: string,
@@ -36,7 +35,7 @@ type APIPages = {
     high: {
         filename: string
     }[]
-}
+};
 
 const chapterLanguageMap = new Map([
     ['ar', Tags.Language.Arabic],
@@ -60,8 +59,7 @@ const chapterLanguageMap = new Map([
 
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
-
-    private readonly apiUrl = 'https://api.namicomi.com';
+    private readonly apiUrl = 'https://api.namicomi.com/';
 
     public constructor() {
         super('namicomi', `NamiComi`, 'https://namicomi.com', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Comic, Tags.Language.Multilingual, Tags.Source.Official);
@@ -76,38 +74,38 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
-        const id = url.split('/').at(-2);
-        const { data } = await FetchJSON<APIResult<APIManga>>(new Request(new URL(`/title/${id}`, this.apiUrl)));
-        const title = (data.attributes.title[data.attributes.originalLanguage] || data.attributes.title.en || Object.values(data.attributes.title).shift()).trim();
-        return new Manga(this, provider, data.id, title);
+        const mangaData = await this.FetchAPI<APIManga>(`./title/${url.split('/').at(-2)}`);
+        return this.ExtractManga(mangaData, provider);
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        const { data } = await FetchJSON<APIResult<APIManga[]>>(new Request(new URL(`/title/search?limit=9999&offset=0`, this.apiUrl)));
-        return data.map(item => {
-            const title = (item.attributes.title[item.attributes.originalLanguage] || item.attributes.title.en || Object.values(item.attributes.title).shift()).trim();
-            return new Manga(this, provider, item.id, title);
-        });
+        const mangasData = await this.FetchAPI<APIManga[]>(`./title/search?limit=9999&offset=0`);
+        return mangasData.map(item => this.ExtractManga(item, provider));
+    }
+
+    private ExtractManga(mangaData: APIManga, provider: MangaPlugin): Manga {
+        const { id, attributes: { title, originalLanguage } } = mangaData;
+        return new Manga(this, provider, id, title[originalLanguage] || title['en'] || Object.values(title).shift().trim());
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const { data } = await FetchJSON<APIResult<APIChapter[]>>(new Request(new URL(`/chapter?titleId=${manga.Identifier}&limit=9999&offset=0`, this.apiUrl)));
-        return data.map(item => {
-            let title = item.attributes.volume ? `Volume ${item.attributes.volume} ` : '';
-            title += item.attributes.chapter ? `Chapter ${item.attributes.chapter} ` : '';
-            title += item.attributes.name ? `${item.attributes.name} ` : '';
+        const chapters = await this.FetchAPI<APIChapter[]>(`./chapter?titleId=${manga.Identifier}&limit=9999&offset=0`);
+        return chapters.map(({ id, attributes: { name, translatedLanguage, chapter, volume } }) => {
+            let title = volume ? `Volume ${volume} ` : '';
+            title += chapter ? `Chapter ${chapter} ` : '';
+            title += name ? `${name} ` : '';
             title = title.trim() || 'Oneshot';
-            title = [title, `[${item.attributes.translatedLanguage}]`].join(' ').trim();
-            return new Chapter(this, manga, item.id, title,
-                ...chapterLanguageMap.has(item.attributes.translatedLanguage) ? [chapterLanguageMap.get(item.attributes.translatedLanguage)] : []);
+            title = [title, `[${translatedLanguage}]`].join(' ').trim();
+            return new Chapter(this, manga, id, title, ...chapterLanguageMap.has(translatedLanguage) ? [chapterLanguageMap.get(translatedLanguage)] : []);
         });
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const { data } = await FetchJSON<APIResult<APIPages>>(new Request(new URL(`/images/chapter/${chapter.Identifier}?newQualities=true`, this.apiUrl)));
-        return data.high.map(item => {
-            const url = new URL(`/chapter/${chapter.Identifier}/${data.hash}/high/${item.filename}`, data.baseUrl);
-            return new Page(this, chapter, url);
-        });
+        const { high, hash, baseUrl } = await this.FetchAPI<APIPages>(`./images/chapter/${chapter.Identifier}?newQualities=true`);
+        return high.map(item => new Page(this, chapter, new URL(`/chapter/${chapter.Identifier}/${hash}/high/${item.filename}`, baseUrl)));
+    }
+
+    private async FetchAPI<T extends JSONElement>(endpoint: string): Promise<T> {
+        return (await FetchJSON<APIResult<T>>(new Request(new URL(endpoint, this.apiUrl)))).data as T;
     }
 }
