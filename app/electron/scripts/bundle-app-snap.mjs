@@ -34,14 +34,19 @@ async function createSnapImage(blinkDeploymentTemporaryDirectory, blinkDeploymen
         const artifact = path.join(blinkDeploymentOutputDirectory, snapfile);
         await fs.unlink(artifact);
     } catch { }
-    await createSnapcraftYaml(blinkDeploymentTemporaryDirectory, blinkDeploymentOutputDirectory);
-    await run('sudo snapcraft pack --destructive-mode', blinkDeploymentOutputDirectory);
-    await run(`sudo mv ${pkgConfig.name}*.snap ${snapfile}`, blinkDeploymentOutputDirectory);
-    await run('snapcraft upload *.snap --release=edge', blinkDeploymentOutputDirectory);
+    const yaml = await createSnapcraftYaml(blinkDeploymentTemporaryDirectory, blinkDeploymentOutputDirectory);
+    try {
+        await run('sudo snapcraft pack --destructive-mode', blinkDeploymentOutputDirectory);
+        await run(`sudo mv ${pkgConfig.name}*.snap ${snapfile}`, blinkDeploymentOutputDirectory);
+        await run('snapcraft upload *.snap --release=edge', blinkDeploymentOutputDirectory);
+    } finally {
+        fs.unlink(yaml);
+    }
 }
 
 async function createSnapcraftYaml(blinkDeploymentTemporaryDirectory, blinkDeploymentOutputDirectory) {
-    await fs.writeFile(path.join(blinkDeploymentOutputDirectory, 'snapcraft.yaml'), `
+    const file = path.join(blinkDeploymentOutputDirectory, 'snapcraft.yaml');
+    await fs.writeFile(file, `
 name: ${pkgConfig.name}
 version: ${pkgConfig.devDependencies.electron}
 summary: ${pkgConfig.title}
@@ -82,4 +87,5 @@ parts:
     - libnss3
     - libnspr4
 `);
+    return file;
 }
