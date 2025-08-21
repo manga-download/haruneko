@@ -126,7 +126,7 @@ export default class extends FetchProvider {
         return result;
     }
 
-    private ModifyRequestHeaders(details: chrome.webRequest.OnBeforeSendHeadersDetails): chrome.webRequest.BlockingResponse {
+    private ModifyRequestHeaders = function (details: chrome.webRequest.OnBeforeSendHeadersDetails): chrome.webRequest.BlockingResponse {
         const uri = new URL(details.url);
         const headers = this.RevealHeaders(details.requestHeaders ?? []);
 
@@ -141,13 +141,13 @@ export default class extends FetchProvider {
             cancel: false,
             requestHeaders: [ ...headers.entries().map(([ name, value ]) => ({ name, value })) ],
         };
-    }
+    }.bind(this);
 
-    private ModifyResponseHeaders(details: chrome.webRequest.OnHeadersReceivedDetails): chrome.webRequest.BlockingResponse {
+    private ModifyResponseHeaders = function (details: chrome.webRequest.OnHeadersReceivedDetails): chrome.webRequest.BlockingResponse {
         return {
             // remove the `link` header to prevent prefetch/preload and a corresponding warning about 'resource preloaded but not used',
             // especially when scraping with headless requests (see: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Link)
             responseHeaders: details.responseHeaders.filter(header => header.name.toLocaleLowerCase() !== 'link')
         };
-    }
+    }.bind(this);
 }
