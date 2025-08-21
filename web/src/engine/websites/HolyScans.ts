@@ -1,5 +1,5 @@
 import { Tags } from '../Tags';
-import icon from './DragonTranslation.webp';
+import icon from './HolyScans.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Madara from './decorators/WordPressMadara';
 import * as Common from './decorators/Common';
@@ -12,7 +12,7 @@ import * as Common from './decorators/Common';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('dragontranslation', 'DragonTranslation', 'https://dragontranslation.org', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Spanish, Tags.Rating.Pornographic);
+        super('holyscans', 'HolyScans', 'https://holyscans.com.tr', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Language.Turkish, Tags.Source.Scanlator);
     }
 
     public override get Icon() {
