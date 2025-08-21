@@ -283,7 +283,6 @@ const translations: VariantResource = { // NOTE: Use defaults for missing transl
   Plugin_Common_MangaIndex_NotSupported: "crwdns1606:0crwdne1606:0",
   Plugin_Common_Chapter_UnavailableError: "crwdns1608:0crwdne1608:0",
   Plugin_Common_Chapter_InvalidError: "crwdns1610:0crwdne1610:0",
-  Plugin_Common_Image_MirroredDownloadError: "crwdns2188:0{0}crwdne2188:0",
   Plugin_Common_Preferred_Language: "crwdns2102:0crwdne2102:0",
   Plugin_Common_Preferred_LanguageInfo: "crwdns2104:0crwdne2104:0",
   Plugin_MissingWebsite_UpdateError: "crwdns1612:0crwdne1612:0",
