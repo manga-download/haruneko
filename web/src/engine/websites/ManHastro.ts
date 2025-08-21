@@ -5,7 +5,6 @@ import * as Common from './decorators/Common';
 import { FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
 
 type APIResult<T> = {
-    success: string,
     data: T
 };
 
@@ -103,7 +102,7 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
         const { data: { chapter: { baseUrl, data, hash } } } = await this.FetchAPI<APIPages>(`./paginas/${chapter.Identifier}`);
-        return data.map(page => new Page(this, chapter, new URL(`${baseUrl}/${hash}/${page}`)));
+        return data.map(page => new Page(this, chapter, new URL([baseUrl, hash, page].join('/'))));
     }
 
     private async GetAllMangas(provider: MangaPlugin): Promise<Manga[]> {
@@ -112,9 +111,8 @@ export default class extends DecoratableMangaScraper {
     }
 
     private async FetchAPI<T extends JSONElement>(endpoint: string) {
-        const request = new Request(new URL(endpoint, this.apiUrl), {
+        return FetchJSON<T>(new Request(new URL(endpoint, this.apiUrl), {
             headers: await this.tokenProvider.ApplyAuthorizationHeader({}),
-        });
-        return FetchJSON<T>(request);
+        }));
     }
 }
