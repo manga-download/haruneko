@@ -49,7 +49,7 @@ export default class extends DecoratableMangaScraper {
                 } else if (origurl.includes("/viewer")) {
                     url = "https://image.mangaplanet.com/viewer/" + chapid;
                 }
-                chapters.push(new Chapter(this, manga, url, title + chapter.querySelector('span').innerText.trim()));
+                chapters.push(new Chapter(this, manga, url, title + chapter.querySelector<HTMLSpanElement>('h3 span').innerText.trim()));
             }
         }
         return chapters;
