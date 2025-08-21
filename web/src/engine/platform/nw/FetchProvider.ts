@@ -37,7 +37,7 @@ class FetchRequest extends Request {
     }
 }
 
-export default class extends FetchProvider {
+export default class FetchProviderNW extends FetchProvider {
 
     /**
      * Configure various system globals to bypass FetchAPI limitations.
@@ -126,14 +126,13 @@ export default class extends FetchProvider {
         return result;
     }
 
-    private ModifyRequestHeaders = function ModifyRequestHeaders(details: chrome.webRequest.OnBeforeSendHeadersDetails): chrome.webRequest.BlockingResponse {
-        const uri = new URL(details.url);
+    private ModifyRequestHeaders = function ModifyRequestHeaders(this: FetchProviderNW, details: chrome.webRequest.OnBeforeSendHeadersDetails): chrome.webRequest.BlockingResponse {
         const headers = this.RevealHeaders(details.requestHeaders ?? []);
 
         // Prevent leaking HakuNeko's host in certain headers
         [ 'origin', 'referer' ].forEach(name => {
             if (headers.get(name)?.startsWith(window.location.origin)) {
-                headers.set(name, uri.origin);
+                headers.delete(name);
             }
         });
 
@@ -143,7 +142,7 @@ export default class extends FetchProvider {
         };
     }.bind(this);
 
-    private ModifyResponseHeaders = function ModifyResponseHeaders(details: chrome.webRequest.OnHeadersReceivedDetails): chrome.webRequest.BlockingResponse {
+    private ModifyResponseHeaders = function ModifyResponseHeaders(this: FetchProviderNW, details: chrome.webRequest.OnHeadersReceivedDetails): chrome.webRequest.BlockingResponse {
         return {
             // remove the `link` header to prevent prefetch/preload and a corresponding warning about 'resource preloaded but not used',
             // especially when scraping with headless requests (see: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Link)

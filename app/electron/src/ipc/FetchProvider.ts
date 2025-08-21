@@ -58,13 +58,12 @@ export class FetchProvider {
     }
 
     private async ModifyRequestHeaders(details: OnBeforeSendHeadersListenerDetails): Promise<BeforeSendResponse> {
-        const uri = new URL(details.url);
         const headers = this.RevealHeaders(details.requestHeaders ?? {});
 
         // Prevent leaking HakuNeko's host in certain headers
         [ 'origin', 'referer' ].forEach(name => {
             if (headers.get(name)?.startsWith(window.location.origin)) {
-                headers.set(name, uri.origin);
+                headers.delete(name);
             }
         });
 

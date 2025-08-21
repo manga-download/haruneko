@@ -62,19 +62,18 @@ describe('FetchProvider', () => {
 
             window.location = { origin: 'http://localhost' } as string & Location;
             const details = {
-                url: 'http://web.site',
                 requestHeaders: [
                     { name: 'Referer', value: 'http://localhost/' }, // should remove referer for current origin
-                    { name: 'X-FetchAPI-Origin', value: '😈' }, // should remove prefix
-                    { name: 'Host', value: '😇' }, // should keep as is
+                    { name: 'X-FetchAPI-Origin', value: '+' }, // should remove prefix
+                    { name: 'Host', value: '-' }, // should keep as is
                 ]
             } as chrome.webRequest.OnBeforeSendHeadersDetails;
             const actual = testee(details) as chrome.webRequest.BlockingResponse;
 
             expect(testee.name).toBe('bound ModifyRequestHeaders');
             expect(actual.requestHeaders).toStrictEqual([
-                { name: 'Origin', value: '😈' },
-                { name: 'Host', value: '😇' },
+                { name: 'host', value: '-' },
+                { name: 'origin', value: '+' },
             ]);
         });
 
