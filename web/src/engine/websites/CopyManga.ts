@@ -32,7 +32,7 @@ const patternAliasDomains = [
     '2025copy.com',
 ].join('|').replaceAll('.', '\\.');
 
-@Common.MangaCSS(new RegExpSafe(`^https://(www\.)?${patternAliasDomains}/comic/[^/]+$/`), 'h6[title]', element => element.title.trim())
+@Common.MangaCSS(new RegExp(`^https://(www\.)?${patternAliasDomains}/comic/[^/]+$/`), 'h6[title]', element => element.title.trim())
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
