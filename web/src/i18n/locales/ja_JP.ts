@@ -278,7 +278,6 @@ const translations: VariantResource = { // NOTE: Use defaults for missing transl
   Plugin_Common_MangaIndex_NotSupported: "このウェブサイトではコンテンツインデックスを作成できません。特定のURLに直接アクセスするにはコピー&ペースト機能を使用してください！",
   Plugin_Common_Chapter_UnavailableError: "このチャプターは利用できません（未購入/未開放/非公開）！",
   Plugin_Common_Chapter_InvalidError: "チャプターのコンテンツからページを抽出できませんでした！",
-  Plugin_Common_Image_MirroredDownloadError: "複数のサーバーから画像をダウンロードできませんでした：{0}",
   Plugin_Common_Preferred_Language: "ウェブサイトの優先言語",
   Plugin_Common_Preferred_LanguageInfo: "ウェブサイトコンテンツの優先言語を指定します。",
   Plugin_MissingWebsite_UpdateError: "存在しないウェブサイトのコンテンツインデックスの更新に失敗しました！",
