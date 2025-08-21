@@ -283,7 +283,6 @@ const translations: VariantResource = { // NOTE: Use defaults for missing transl
   Plugin_Common_MangaIndex_NotSupported: "Impossible de créer un index de contenu pour ce site web. Utiliser la fonctionnalité Copier-Coller pour accéder directement au contenu d'une URL spécifique !",
   Plugin_Common_Chapter_UnavailableError: "Le chapitre n'est pas disponible (non acheté/déverrouillé/public) !",
   Plugin_Common_Chapter_InvalidError: "Échec de l'extraction des pages du contenu du chapitre !",
-  Plugin_Common_Image_MirroredDownloadError: "Impossible de télécharger l'image à partir de plusieurs serveurs : {0}",
   Plugin_Common_Preferred_Language: "Langue préférée pour le site web",
   Plugin_Common_Preferred_LanguageInfo: "Langue préférée pour le contenu du site Web.",
   Plugin_MissingWebsite_UpdateError: "Échec de la mise à jour de l'index de contenu pour un site Web inexistant !",
