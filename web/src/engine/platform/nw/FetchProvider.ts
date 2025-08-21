@@ -11,6 +11,7 @@ const fetchApiForbiddenHeaders = [
     'Host',
     'Sec-Fetch-Mode',
     'Sec-Fetch-Dest',
+    'Sec-Fetch-Site'
 ];
 
 function UpsertCookieHeader(headers: Headers, cookies: string) {

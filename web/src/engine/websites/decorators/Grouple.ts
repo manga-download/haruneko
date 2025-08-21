@@ -1,22 +1,21 @@
-//Glouple.co russian website family : AllHentai, SelfManga, Seimanga, Usagi, ReadManga
-import { Exception } from '../../Error';
+// Grouple.co russian website family
 import { Fetch, FetchWindowScript } from '../../platform/FetchProvider';
 import { type MangaScraper, type Chapter, Page } from '../../providers/MangaPlugin';
 import { type Priority } from '../../taskpool/DeferredTask';
 import * as Common from './Common';
-import { WebsiteResourceKey as R } from '../../../i18n/ILocale';
 
-const pagesWithServersScript = `
-    new Promise(resolve => {
-        const servers =  rm_h.servers.map(server => server.path.replace(/^\\/\\//, 'https://'));
-        const mainserver = servers.shift();
-        resolve( rm_h.pics.map(pic => {
-            const picUrl = new URL(rm_h.reader.preparePicUrl(pic.url).replace(/^\\/\\//, 'https://'));
-            const mirrors = servers.map(server => new URL(picUrl.pathname + picUrl.search, server).href);
-            return { url : new URL(picUrl.pathname + picUrl.search, mainserver).href, mirrors };
-        }));
-    });
-`;
+type MirroredPage = Page<{
+    mirrors: string[];
+}>;
+
+export const queryMangas = 'div.tile div.desc h3 a';
+export const queryMangaTitle = 'meta[itemprop = "name"]';
+export const pathMangas = '/list?offset={page}';
+export const pageMangaOffset = 50;
+export const queryPages = [
+    'div#all img.img-responsive',
+    'div.text-center img[loading="lazy"]'
+].join(',');
 
 export const chapterScript = `
     new Promise(resolve => {
@@ -36,23 +35,17 @@ export const chapterScript = `
     });
 `;
 
-export const queryMangas = 'div.tile div.desc h3 a';
-export const queryMangaTitle = 'meta[itemprop = "name"]';
-export const pathMangas = '/list?offset={page}';
-export const pageMangaOffset = 50;
-export const queryPages = [
-    'div#all img.img-responsive',
-    'div.text-center img[loading="lazy"]'
-].join(',');
-
-export type ImagesData = {
-    url: string,
-    mirrors: string[]
-}
-
-export type PageMirrored = {
-    mirrors: string[]
-};
+const pageScript = `
+    new Promise(resolve => {
+        const servers =  rm_h.servers.map(server => server.path.replace(/^\\/\\//, 'https://'));
+        const mainserver = servers.shift();
+        resolve( rm_h.pics.map(pic => {
+            const picUrl = new URL(rm_h.reader.preparePicUrl(pic.url).replace(/^\\/\\//, 'https://'));
+            const mirrors = servers.map(server => new URL(picUrl.pathname + picUrl.search, server).href);
+            return { url : new URL(picUrl.pathname + picUrl.search, mainserver).href, mirrors };
+        }));
+    });
+`;
 
 /*************************************************
  ******** Pages Extraction Methods ********
@@ -64,46 +57,51 @@ export type PageMirrored = {
  * @param script - A script to extract the pages as `{`url: string, mirrors: string[] `}`[]
  * @param delay - An initial delay [ms] before the {@link script} is executed
  */
-export function PagesSinglePageJS(script = pagesWithServersScript, delay = 0) {
+export function PagesSinglePageJS(script = pageScript, delay = 0) {
     return function DecorateClass<T extends Common.Constructor>(ctor: T, context?: ClassDecoratorContext): T {
         Common.ThrowOnUnsupportedDecoratorContext(context);
         return class extends ctor {
-            public async FetchPages(this: MangaScraper, chapter: Chapter): Promise<Page[]> {
-                const images = await FetchWindowScript<ImagesData[]>(new Request(new URL(chapter.Identifier, this.URI)), script, delay);
-                return images.map(image => new Page<PageMirrored>(this, chapter, new URL(image.url), { mirrors: image.mirrors }));
+            public async FetchPages(this: MangaScraper, chapter: Chapter): Promise<MirroredPage[]> {
+                const request = new Request(new URL(chapter.Identifier, this.URI));
+                const images = await FetchWindowScript<{ url: string, mirrors: string[]; }[]>(request, script, delay);
+                return images.map(({ url, mirrors }) => new Page(this, chapter, new URL(url), { Referer: request.url, mirrors }));
             }
         };
     };
+}
+
+/***********************************************
+ ******** Image Data Extraction Methods ********
+ ***********************************************/
+
+async function FetchImageWithMirrors(this: MangaScraper, page: MirroredPage, priority: Priority, signal: AbortSignal): Promise<Blob> {
+    return this.imageTaskPool.Add(async () => {
+        const errors: Error[] = [];
+        for (const uri of [ page.Link, ...page.Parameters.mirrors ]) {
+            //if (signal.aborted) throw new DOMException(undefined, 'AbortError');
+            try {
+                const response = await Fetch(new Request(uri, { signal: signal, headers: { Referer: page.Parameters.Referer } }));
+                const blob = await response.blob();
+                if (!blob.type.startsWith('image/')) throw new TypeError(blob.type);
+                return blob;
+            } catch (error) {
+                errors.push(error);
+            }
+        }
+        throw new AggregateError(errors);
+    }, priority, signal);
 }
 
 /**
  * A class decorator that adds the ability to get the image data for a given page by loading the source asynchronous with the `Fetch API`.
- * This method fetch pages by trying different urls. Parameters must have `{`mirrors: string[]`}`
  */
-export function ImageAjaxWithMirrors() {
+export function ImageWithMirrors() {
     return function DecorateClass<T extends Common.Constructor>(ctor: T, context?: ClassDecoratorContext): T {
         Common.ThrowOnUnsupportedDecoratorContext(context);
         return class extends ctor {
-            public async FetchImage(this: MangaScraper, page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
-                return FetchMirroredImage.call(this, page, priority, signal);
+            public async FetchImage(this: MangaScraper, page: MirroredPage, priority: Priority, signal: AbortSignal): Promise<Blob> {
+                return FetchImageWithMirrors.call(this, page, priority, signal);
             };
         };
     };
-}
-
-async function FetchMirroredImage(this: MangaScraper, page: Page<PageMirrored>, priority: Priority, signal: AbortSignal): Promise<Blob> {
-    return this.imageTaskPool.Add(async () => {
-        const cumulatedExceptionsMessages: string[]= [];
-        for (const uri of [page.Link, ...page.Parameters.mirrors]) {
-            try {
-                const request = new Request(uri, { signal: signal, headers: { Referer: this.URI.href } });
-                const response = await Fetch(request);
-                const blob = await response.blob();
-                if (blob.type.startsWith('image/')) return blob;
-            } catch (error) {
-                cumulatedExceptionsMessages.push(error.message);
-            }
-        }
-        throw new Exception(R.Plugin_Common_Image_MirroredDownloadError, cumulatedExceptionsMessages.toString());
-    }, priority, signal);
 }

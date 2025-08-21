@@ -278,7 +278,6 @@ const translations: VariantResource = { // NOTE: Use defaults for missing transl
   Plugin_Common_MangaIndex_NotSupported: "无法创建此网站的内容索引。使用复制和粘贴功能直接访问特定网址的内容！",
   Plugin_Common_Chapter_UnavailableError: "章节不可用(无法购买/解锁/公开) ！",
   Plugin_Common_Chapter_InvalidError: "从章节内容中提取页面失败！",
-  Plugin_Common_Image_MirroredDownloadError: 'Unable to download image from multiple servers : {0}',
   Plugin_Common_Preferred_Language: "网站首选语言",
   Plugin_Common_Preferred_LanguageInfo: "网站内容首选语言。",
   Plugin_MissingWebsite_UpdateError: "更新非现有网站的内容索引失败！",
