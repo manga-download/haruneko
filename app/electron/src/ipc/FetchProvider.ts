@@ -23,33 +23,18 @@ export class FetchProvider {
         this.Initialize = () => Promise.resolve();
     }
 
-    private IsMatchingAppHost(url: string) {
-        try {
-            const uri = new URL(this.webContents.getURL());
-            return new URL(url).hostname === uri.hostname;
-        } catch {
-            return false;
-        }
-    }
-
-    private async UpdateCookieHeader(headers: Record<string, string>) {
+    private MergeCookies(sessionCookies?: string, customCookies?: string): string {
         // TODO: Skip cookie assignment in browser window e.g., when `sec-fetch-dest: empty`?
-        const normalizedCookieHeaderName = (this.fetchApiSupportedPrefix + 'Cookie').toLowerCase();
-        const originalCookieHeaderName = Object.keys(headers).find(header => header.toLowerCase() === normalizedCookieHeaderName) ?? normalizedCookieHeaderName;
-        const headerCookies = headers[ originalCookieHeaderName ]?.split(';').filter(cookie => cookie.includes('=')).map(cookie => cookie.trim()) ?? [];
-        if(headerCookies.length > 0) {
-            headers[originalCookieHeaderName] = headerCookies.join('; ');
-        }
-    }
-
-    private UpsertCookieHeader(headers: Headers, cookies: string) {
-        // TODO: Skip cookie assignment in browser window e.g., when `sec-fetch-dest: empty`?
-        const value = ((headers.get('cookie') ?? '') + ';' + cookies).split(';')
-            .filter(cookie => cookie.includes('='))
-            .map(cookie => cookie.trim())
-            // TODO: remove duplicate cookie names ...
+        const cookies = new Map<string, string>();
+        ((sessionCookies ?? '') + ';' + (customCookies ?? ''))
+            .split(';')
+            .map(cookie => cookie.split('='))
+            .filter(cookie => cookie.length === 2)
+            .forEach(([ name, value ]) => cookies.set(name.trim(), value.trim()));
+        return cookies
+            .entries()
+            .reduce((accumulator: string[], [ name, value ]) => accumulator.concat(name + '=' + value), [])
             .join('; ');
-        headers.set('cookie', value);
     }
 
     private RevealHeaders(headers: Record<string, string>): Headers {
@@ -66,7 +51,7 @@ export class FetchProvider {
             .filter(([ name, value ]) => name && value && IsHeaderNameConcealed(name))
             .forEach(([ name, value ]) => {
                 name = GetRevealedHeaderName(name);
-                return /^cookie$/.test(name) ? this.UpsertCookieHeader(result, value) : result.set(name, value);
+                result.set(name, /^cookie$/.test(name) ? this.MergeCookies(result.get(name), value) : value);
             });
 
         return result;
