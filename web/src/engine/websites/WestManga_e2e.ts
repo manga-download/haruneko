@@ -12,7 +12,7 @@ new TestFixture({
     },
     child: {
         id: 'henkyou-gurashi-no-maou-tensei-shite-saikyou-no-majutsushi-ni-naru-〜aisarenagara-nariagaru-moto-mao-wa-ningen-o-shiritai〜-chapter-1-1-bahasa-indonesia',
-        title: 'Chapter 1.1'
+        title: '1.1'
     },
     entry: {
         index: 1,
