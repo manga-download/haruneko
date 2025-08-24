@@ -73,7 +73,11 @@ describe('FetchProvider', () => {
             const fixture = new TestFixture();
             fixture.CreatTestee();
             fixture.InvokeInitialize();
-            const actual = await fixture.InvokeOnBeforeSendHeaders({ requestHeaders: { 'X-MyTest': '123' } });
+            const actual = await fixture.InvokeOnBeforeSendHeaders({
+                requestHeaders: {
+                    'X-MyTest': '123',
+                }
+            });
             console.log('+++ ACTUAL:', actual);
         });
     });
@@ -84,7 +88,11 @@ describe('FetchProvider', () => {
             const fixture = new TestFixture();
             fixture.CreatTestee();
             fixture.InvokeInitialize();
-            const actual = await fixture.InvokeOnHeadersReceived({ responseHeaders: { 'X-MyTest': [ '123' ] } });
+            const actual = await fixture.InvokeOnHeadersReceived({
+                responseHeaders: {
+                    'X-MyTest': [ '123' ],
+                }
+            });
             console.log('+++ ACTUAL:', actual);
         });
     });
