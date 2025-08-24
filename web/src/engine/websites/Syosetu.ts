@@ -1,5 +1,5 @@
 ﻿import { Tags } from '../Tags';
-import icon from './KLMangash.webp';
+import icon from './Syosetu.webp';
 import { type Chapter, DecoratableMangaScraper, Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import { Fetch, FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
@@ -26,29 +26,22 @@ function MangaLabelExtractor(element: HTMLHeadingElement): string {
     return CleanTitle(element.textContent);
 }
 
-function MangaExtractor(anchor: HTMLAnchorElement) {
+function MediaExtractor(anchor: HTMLAnchorElement) {
     return {
         id: anchor.pathname,
         title: CleanTitle(anchor.text)
     };
 }
 
-function ChapterExtractor(anchor: HTMLAnchorElement) {
-    return {
-        id: anchor.pathname,
-        title: CleanTitle(anchor.querySelector<HTMLSpanElement>('span').textContent)
-    };
-}
-
-@Common.MangaCSS(/^{origin}\/manga-raw\/[^/]+\/$/, 'div.container div.z-single-mg h1.name', MangaLabelExtractor)
-@Common.MangasMultiPageCSS('/page/{page}/', 'div.grid-of-mangas h2.name a', 1, 1, 0, MangaExtractor)
-@Common.ChaptersSinglePageCSS('div.chapter-box a', ChapterExtractor)
+@Common.MangaCSS(/^{origin}\/manga\/[^/]+\/$/, 'div.container div.row h1.name', MangaLabelExtractor)
+@Common.MangasMultiPageCSS('/page/{page}/', 'div.grid-of-mangas h2.name a', 1, 1, 0, MediaExtractor)
+@Common.ChaptersSinglePageCSS('div.chapter-box a', MediaExtractor)
 export default class extends DecoratableMangaScraper {
 
     private zingParams: ZingParams;
 
     public constructor () {
-        super('klmangash', 'KLManga(.sh)', 'https://klmanga.fo', Tags.Media.Manga, Tags.Language.Japanese, Tags.Source.Aggregator);
+        super('syosetu', 'Syosetu', 'https://syosetu.ec', Tags.Media.Manga, Tags.Language.Japanese, Tags.Source.Aggregator);
     }
 
     public override get Icon() {
@@ -56,7 +49,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async Initialize(): Promise<void> {
-        this.zingParams = await FetchWindowScript(new Request(this.URI), `new Promise(resolve => resolve({ nonce: zing.nonce_a, apiURL: zing.ajax_url }));`, 500);
+        this.zingParams = await FetchWindowScript(new Request(this.URI), 'new Promise(resolve => resolve({ nonce: zing.nonce, apiURL: zing.ajax_url }));', 500);
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page<PageParameters>[]> {
@@ -65,7 +58,6 @@ export default class extends DecoratableMangaScraper {
         const chapterID = data.match(/chapter_id\s*:\s*['"]([^'"]+)/).at(-1);
         const possibleLinks = new Array(256).fill(0).map((_, imageIndex) => new Page<PageParameters>(this, chapter, this.URI, { sp, chapterID, imageIndex }));
         return possibleLinks.takeUntil(async page => this.FetchZingPage(page.Parameters).then(data => data.includes('<img')));
-        // TODO: After running E2E test for specific chapter, the website will only provide the last 2 images (could this be a flagged IP address?)
     }
 
     public override async FetchImage(page: Page<PageParameters>, priority: Priority, signal: AbortSignal): Promise<Blob> {
@@ -82,7 +74,7 @@ export default class extends DecoratableMangaScraper {
             body: new URLSearchParams({
                 nonce_a: this.zingParams.nonce,
                 action: 'z_do_ajax',
-                _action: 'decode_images_g',
+                _action: 'decode_images_100',
                 p: params.sp,
                 img_index: `${params.imageIndex}`,
                 chapter_id: params.chapterID,
