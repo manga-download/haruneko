@@ -16,11 +16,11 @@ export class FetchProvider {
         this.ipc.Listen(Channels.App.Initialize, this.Initialize.bind(this));
     }
 
-    private async Initialize(fetchApiSupportedPrefix: string): Promise<void> {
+    private Initialize(fetchApiSupportedPrefix: string): void {
         this.fetchApiSupportedPrefix = fetchApiSupportedPrefix.toLowerCase();
-        this.webContents.session.webRequest.onBeforeSendHeaders(async (details, callback) => callback(await this.ModifyRequestHeaders(details)));
+        this.webContents.session.webRequest.onBeforeSendHeaders((details, callback) => this.ModifyRequestHeaders(details).then(callback));
         this.webContents.session.webRequest.onHeadersReceived((details, callback) => callback(this.ModifyResponseHeaders(details)));
-        this.Initialize = () => Promise.resolve();
+        this.Initialize = () => { };
     }
 
     private MergeCookies(sessionCookies?: string, customCookies?: string): string {
