@@ -145,7 +145,7 @@ class DRMProvider {
      * Decrypt Image data from image blob using provider key (in base64)
      */
     public async DecrypImage(blob: Blob, base64KeyData: string): Promise<Blob>{
-        const aesParamsData = await this.Decrypt(GetBytesFromBase64(base64KeyData), this.#aesParams.key, this.#aesParams.iv);
+        const aesParamsData = await this.Decrypt(GetBytesFromBase64(base64KeyData).buffer, this.#aesParams.key, this.#aesParams.iv);
         const [imageKey, imageIv] = aesParamsData.split(':');
         const decryptedBase64ImageData = await this.Decrypt(await blob.arrayBuffer(), imageKey, imageIv);
         return (await fetch(decryptedBase64ImageData)).blob();
