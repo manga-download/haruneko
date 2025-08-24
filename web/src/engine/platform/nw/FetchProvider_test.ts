@@ -33,9 +33,18 @@ class TestFixture {
     }
 
     public CreateTestee(performInitialize: boolean) {
-        const testee = new FetchProvider();
+        const testee = {
+            instance: null as FetchProvider,
+            onHeadersReceivedListener: null as (details: chrome.webRequest.OnHeadersReceivedDetails) => chrome.webRequest.BlockingResponse | void,
+            onBeforeSendHeadersListener: null as (details: chrome.webRequest.OnBeforeSendHeadersDetails) => chrome.webRequest.BlockingResponse | void,
+        };
+        this.chromeFake.webRequest.onHeadersReceived.hasListener.mockReturnValue(false);
+        this.chromeFake.webRequest.onHeadersReceived.addListener.mockImplementation(listener => testee.onHeadersReceivedListener = listener);
+        this.chromeFake.webRequest.onBeforeSendHeaders.hasListener.mockReturnValue(false);
+        this.chromeFake.webRequest.onBeforeSendHeaders.addListener.mockImplementation(listener => testee.onBeforeSendHeadersListener = listener);
+        testee.instance = new FetchProvider();
         if (performInitialize) {
-            testee.Initialize(this.mockFeatureFlags);
+            testee.instance.Initialize(this.mockFeatureFlags);
         }
         return testee;
     }
@@ -47,7 +56,7 @@ describe('FetchProvider', () => {
 
         it('Should replace global Request type', () => {
             const fixture = new TestFixture();
-            const testee = fixture.CreateTestee(false);
+            const { instance: testee } = fixture.CreateTestee(false);
             expect(globalThis.Request).toBeNull();
             testee.Initialize(fixture.mockFeatureFlags);
             expect(globalThis.Request.name).toBe('FetchRequest');
@@ -55,10 +64,7 @@ describe('FetchProvider', () => {
 
         it('Should register onBeforeSendHeaders modifier', () => {
             const fixture = new TestFixture();
-            let testee: (details: chrome.webRequest.OnBeforeSendHeadersDetails) => chrome.webRequest.BlockingResponse | void;
-            fixture.chromeFake.webRequest.onBeforeSendHeaders.hasListener.mockReturnValue(false);
-            fixture.chromeFake.webRequest.onBeforeSendHeaders.addListener.mockImplementation((callback) => testee = callback);
-            fixture.CreateTestee(true);
+            const { onBeforeSendHeadersListener } = fixture.CreateTestee(true);
 
             window.location = { origin: 'http://localhost' } as string & Location;
             const details = {
@@ -68,9 +74,9 @@ describe('FetchProvider', () => {
                     { name: 'Host', value: '-' }, // should keep as is
                 ]
             } as chrome.webRequest.OnBeforeSendHeadersDetails;
-            const actual = testee(details) as chrome.webRequest.BlockingResponse;
+            const actual = onBeforeSendHeadersListener(details) as chrome.webRequest.BlockingResponse;
 
-            expect(testee.name).toBe('bound ModifyRequestHeaders');
+            expect(onBeforeSendHeadersListener.name).toBe('bound ModifyRequestHeaders');
             expect(actual.requestHeaders).toStrictEqual([
                 { name: 'host', value: '-' },
                 { name: 'origin', value: '+' },
@@ -79,10 +85,7 @@ describe('FetchProvider', () => {
 
         it('Should register onHeadersReceived modifier', () => {
             const fixture = new TestFixture();
-            let testee: (details: chrome.webRequest.OnHeadersReceivedDetails) => chrome.webRequest.BlockingResponse | void;
-            fixture.chromeFake.webRequest.onHeadersReceived.hasListener.mockReturnValue(false);
-            fixture.chromeFake.webRequest.onHeadersReceived.addListener.mockImplementation((callback) => testee = callback);
-            fixture.CreateTestee(true);
+            const { onHeadersReceivedListener } = fixture.CreateTestee(true);
 
             const details = {
                 responseHeaders: [
@@ -91,9 +94,9 @@ describe('FetchProvider', () => {
                     { name: 'Host', value: '😇' }, // should keep as is
                 ]
             } as chrome.webRequest.OnHeadersReceivedDetails;
-            const actual = testee(details) as chrome.webRequest.BlockingResponse;
+            const actual = onHeadersReceivedListener(details) as chrome.webRequest.BlockingResponse;
 
-            expect(testee.name).toBe('bound ModifyResponseHeaders');
+            expect(onHeadersReceivedListener.name).toBe('bound ModifyResponseHeaders');
             expect(actual.responseHeaders).toStrictEqual([
                 { name: 'X-FetchAPI-Origin', value: '😈' },
                 { name: 'Host', value: '😇' },
@@ -135,7 +138,7 @@ describe('FetchProvider', () => {
 
         it('Should passthru GET to native fetch', async () => {
             const fixture = new TestFixture();
-            const testee = fixture.CreateTestee(true);
+            const { instance: testee } = fixture.CreateTestee(true);
             const request = new Request('https://postman-echo.com/get', {
                 headers: {
                     'User-Agent': 'HakuNeko',
@@ -150,7 +153,7 @@ describe('FetchProvider', () => {
 
         it('Should passthru POST to native fetch', async () => {
             const fixture = new TestFixture();
-            const testee = fixture.CreateTestee(true);
+            const { instance: testee } = fixture.CreateTestee(true);
             const request = new Request('https://postman-echo.com/post', {
                 method: 'POST',
                 body: JSON.stringify({ a: 1, b: 2 }),
@@ -173,7 +176,7 @@ describe('FetchProvider', () => {
             [ 'b=3; c=4', 'a=1; b=2', 'a=1; b=2; c=4' ],
         ])(`Should merge request and browser cookies '%s' + '%s' => '%s'`, async (browserCookies: string, requestCookies: string, expectedCookies: string) => {
             const fixture = new TestFixture(browserCookies);
-            const testee = fixture.CreateTestee(true);
+            const { instance: testee } = fixture.CreateTestee(true);
             const request = new Request('http://hakuneko.app/', {
                 headers: { 'Cookie': requestCookies }
             });
