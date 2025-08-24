@@ -6,15 +6,15 @@ import { FetchProvider as Channels } from '../../../src/ipc/Channels';
 
 class TestFixture {
 
-    public PrefixHeader(name: string = '') {
+    public static PrefixHeader(name: string = '') {
         return 'X-FetchAPI-' + name;
     }
 
     public readonly mockIPC = {
         Listen: vi.fn(),
-    } as unknown as IPC<never, never>;
+    };
 
-    private readonly mockWebContents = {
+    public readonly mockWebContents = {
         getURL: vi.fn(),
         session: {
             webRequest: {
@@ -22,41 +22,38 @@ class TestFixture {
                 onBeforeSendHeaders: vi.fn(),
             }
         }
-    } as unknown as WebContents;
+    };
 
-    public CreatTestee(url: string) {
-        vi.mocked(this.mockWebContents.getURL).mockReturnValue(url);
-        vi.mocked(this.mockIPC.Listen).mockImplementationOnce((_, init) => this.#initialize = init);
-        vi.mocked(this.mockWebContents.session.webRequest.onHeadersReceived).mockImplementationOnce(listener => this.#onHeadersReceivedListener = listener);
-        vi.mocked(this.mockWebContents.session.webRequest.onBeforeSendHeaders).mockImplementationOnce(listener => this.#onBeforeSendHeadersListener = listener);
-        return new FetchProvider(this.mockIPC, this.mockWebContents);
+    public CreateTestee(url: string, performInitialize: boolean) {
+        const testee = {
+            instance: null as FetchProvider,
+            onHeadersReceivedListener: null as Parameters<Electron.WebRequest[ 'onHeadersReceived' ]>[ 0 ],
+            onBeforeSendHeadersListener: null as Parameters<Electron.WebRequest[ 'onBeforeSendHeaders' ]>[ 0 ],
+        };
+        this.mockWebContents.getURL.mockReturnValue(url);
+        let initialize: (fetchApiSupportedPrefix: string) => void;
+        this.mockIPC.Listen.mockImplementationOnce((_, init) => initialize = init);
+        this.mockWebContents.session.webRequest.onHeadersReceived.mockImplementation(listener => testee.onHeadersReceivedListener = listener);
+        this.mockWebContents.session.webRequest.onBeforeSendHeaders.mockImplementation(listener => testee.onBeforeSendHeadersListener = listener);
+        testee.instance = new FetchProvider(this.mockIPC as unknown as IPC<never, never>, this.mockWebContents as unknown as WebContents);
+        if (performInitialize) {
+            initialize(TestFixture.PrefixHeader());
+        }
+        return testee;
     }
 
-    #initialize: (fetchApiSupportedPrefix: string) => Promise<void>;
-    /**
-     * Invoke the `Initialize` method of the current testee
-     * @remarks ⚠️ A testee must be created (with {@link CreatTestee}) in order to use this method
-     */
-    public InvokeInitialize(): void {
-        this.#initialize(this.PrefixHeader());
+    public static async InvokeOnHeadersReceived(
+        listener: Parameters<Electron.WebRequest[ 'onHeadersReceived' ]>[ 0 ],
+        details: Partial<Electron.OnHeadersReceivedListenerDetails>
+    ): Promise<Electron.HeadersReceivedResponse> {
+        return new Promise(resolve => listener(details as Electron.OnHeadersReceivedListenerDetails, resolve));
     }
 
-    #onHeadersReceivedListener: Parameters<Electron.WebRequest[ 'onHeadersReceived' ]>[ 0 ];
-    /**
-     * Invoke the listener for the `onHeadersReceived` event which was registered by the current testee
-     * @remarks ⚠️ The current testee must be initialized (with {@link InvokeInitialize}) to register the listener
-     */
-    public async InvokeOnHeadersReceived(details: Partial<Electron.OnHeadersReceivedListenerDetails>): Promise<Electron.HeadersReceivedResponse> {
-        return new Promise(resolve => this.#onHeadersReceivedListener(details as Electron.OnHeadersReceivedListenerDetails, resolve));
-    }
-
-    #onBeforeSendHeadersListener: Parameters<Electron.WebRequest[ 'onBeforeSendHeaders' ]>[ 0 ];
-    /**
-     * Invoke the listener for the `onBeforeSendHeaders` event which was registered by the current testee
-     * @remarks ⚠️ The current testee must be initialized (with {@link InvokeInitialize}) to register the listener
-     */
-    public async InvokeOnBeforeSendHeaders(details: Partial<Electron.OnBeforeSendHeadersListenerDetails>): Promise<Electron.BeforeSendResponse> {
-        return new Promise(resolve => this.#onBeforeSendHeadersListener(details as Electron.OnBeforeSendHeadersListenerDetails, resolve));
+    public static async InvokeOnBeforeSendHeaders(
+        listener: Parameters<Electron.WebRequest[ 'onBeforeSendHeaders' ]>[ 0 ],
+        details: Partial<Electron.OnBeforeSendHeadersListenerDetails>
+    ): Promise<Electron.BeforeSendResponse> {
+        return new Promise(resolve => listener(details as Electron.OnBeforeSendHeadersListenerDetails, resolve));
     }
 }
 
@@ -66,7 +63,7 @@ describe('FetchProvider', () => {
 
         it('Should subscribe to IPC events', () => {
             const fixture = new TestFixture();
-            const testee = fixture.CreatTestee('http://local.host/-');
+            const testee = fixture.CreateTestee('http://local.host/-', false);
             expect(testee).toBeDefined();
             expect(fixture.mockIPC.Listen).toHaveBeenCalledTimes(1);
             expect(fixture.mockIPC.Listen).toHaveBeenCalledWith(Channels.App.Initialize, expect.anything());
@@ -76,10 +73,8 @@ describe('FetchProvider', () => {
     describe('OnBeforeSendHeaders', () => {
 
         it(`Should remove certain headers containing the application's hostname`, async () => {
-            const fixture = new TestFixture();
-            fixture.CreatTestee('http://local.host/-');
-            fixture.InvokeInitialize();
-            const actual = await fixture.InvokeOnBeforeSendHeaders({
+            const { onBeforeSendHeadersListener } = new TestFixture().CreateTestee('http://local.host/-', true);
+            const actual = await TestFixture.InvokeOnBeforeSendHeaders(onBeforeSendHeadersListener, {
                 requestHeaders: {
                     'Origin': 'https://local.host/~',
                     'Referer': 'https://local.host/~',
@@ -95,19 +90,17 @@ describe('FetchProvider', () => {
         });
 
         it('Should apply prefixed headers', async () => {
-            const fixture = new TestFixture();
-            fixture.CreatTestee('http://local.host/-');
-            fixture.InvokeInitialize();
-            const actual = await fixture.InvokeOnBeforeSendHeaders({
+            const { onBeforeSendHeadersListener } = new TestFixture().CreateTestee('http://local.host/-', true);
+            const actual = await TestFixture.InvokeOnBeforeSendHeaders(onBeforeSendHeadersListener, {
                 requestHeaders: {
                     'Test-Keep-Header': '===',
                     'Origin': 'http://local.host/-',
-                    [ fixture.PrefixHeader('Origin') ]: 'https://manga.web/-',
-                    [ fixture.PrefixHeader('Referer') ]: 'https://manga.net/-',
+                    [ TestFixture.PrefixHeader('Origin') ]: 'https://manga.web/-',
+                    [ TestFixture.PrefixHeader('Referer') ]: 'https://manga.net/-',
                     'Referer': 'http://local.host/-',
-                    [ fixture.PrefixHeader('Test-Replace-Header') ]: '***',
+                    [ TestFixture.PrefixHeader('Test-Replace-Header') ]: '***',
                     'Test-Replace-Header': '-',
-                    [ fixture.PrefixHeader('Test-Add-Header') ]: '+++',
+                    [ TestFixture.PrefixHeader('Test-Add-Header') ]: '+++',
                 }
             });
             expect(actual).toStrictEqual({
@@ -126,10 +119,8 @@ describe('FetchProvider', () => {
     describe('OnHeadersReceived', () => {
 
         it('Should remove certain headers', async () => {
-            const fixture = new TestFixture();
-            fixture.CreatTestee('http://local.host/-');
-            fixture.InvokeInitialize();
-            const actual = await fixture.InvokeOnHeadersReceived({
+            const { onHeadersReceivedListener } = new TestFixture().CreateTestee('http://local.host/-', true);
+            const actual = await TestFixture.InvokeOnHeadersReceived(onHeadersReceivedListener, {
                 responseHeaders: {
                     'X-Link': [ '=' ],
                     'Link': [ '-' ],
