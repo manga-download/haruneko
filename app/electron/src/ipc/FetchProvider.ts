@@ -62,6 +62,7 @@ export class FetchProvider {
 
         // Prevent leaking HakuNeko's host in certain headers
         [ 'origin', 'referer' ].forEach(name => {
+            // FIXME: Use `new URL(win.webContents.getURL()).origin` since `window` is not available in main process
             if (headers.get(name)?.startsWith(window.location.origin)) {
                 headers.delete(name);
             }
