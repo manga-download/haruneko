@@ -10,9 +10,11 @@ import { FetchProvider as Channels } from '../../../src/ipc/Channels';
 
 export class FetchProvider {
 
-    private fetchApiSupportedPrefix = 'X-FetchAPI-'.toLowerCase();
+    private readonly appHostname: string;
+    private fetchApiSupportedPrefix: string;
 
     constructor(private readonly ipc: IPC<Channels.Web, Channels.App>, private readonly webContents: WebContents) {
+        this.appHostname = new URL(webContents.getURL()).hostname;
         this.ipc.Listen(Channels.App.Initialize, this.Initialize.bind(this));
     }
 
@@ -62,8 +64,7 @@ export class FetchProvider {
 
         // Prevent leaking HakuNeko's host in certain headers
         [ 'origin', 'referer' ].forEach(name => {
-            // FIXME: Use `new URL(win.webContents.getURL()).origin` since `window` is not available in main process
-            if (headers.get(name)?.startsWith(window.location.origin)) {
+            if (headers.get(name)?.includes(this.appHostname)) {
                 headers.delete(name);
             }
         });
@@ -78,17 +79,20 @@ export class FetchProvider {
         const responseHeaders: typeof details.responseHeaders = {};
         for (const originalHeader in details.responseHeaders) {
             const normalizedHeader = originalHeader.toLowerCase();
-            // remove the `link` header to prevent prefetch/preload and a corresponding warning about 'resource preloaded but not used',
+
+            // Remove the `link` header to prevent prefetch/preload and a corresponding warning about 'resource preloaded but not used',
             // especially when scraping with headless requests (see: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Link)
             if (normalizedHeader === 'link') {
                 continue;
             }
+
             // Currently electron des not include partitioned cookies when filtering with `session.cookies.get({ url })`
             // => Workaround: Remove the partitioned flag from the server response
             if(normalizedHeader === 'set-cookie') {
-                details.responseHeaders[originalHeader] = details.responseHeaders[originalHeader].map(cookie => cookie.replace(/partitioned/gi, ''));
+                details.responseHeaders[ normalizedHeader ] = details.responseHeaders[ originalHeader ].map(cookie => cookie.replace(/partitioned/gi, ''));
             }
-            responseHeaders[originalHeader] = details.responseHeaders[originalHeader];
+
+            responseHeaders[ normalizedHeader ] = details.responseHeaders[ originalHeader ];
         }
 
         /*

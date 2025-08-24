@@ -39,6 +39,8 @@ class FetchRequest extends Request {
 
 export default class FetchProviderNW extends FetchProvider {
 
+    private readonly appHostname = window.location.hostname;
+
     /**
      * Configure various system globals to bypass FetchAPI limitations.
      * This method can only be run once for all instances.
@@ -131,7 +133,7 @@ export default class FetchProviderNW extends FetchProvider {
 
         // Prevent leaking HakuNeko's host in certain headers
         [ 'origin', 'referer' ].forEach(name => {
-            if (headers.get(name)?.startsWith(window.location.origin)) {
+            if (headers.get(name)?.includes(this.appHostname)) {
                 headers.delete(name);
             }
         });

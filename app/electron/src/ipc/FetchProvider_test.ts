@@ -6,11 +6,16 @@ import { FetchProvider as Channels } from '../../../src/ipc/Channels';
 
 class TestFixture {
 
+    public PrefixHeader(name: string = '') {
+        return 'X-FetchAPI-' + name;
+    }
+
     public readonly mockIPC = {
         Listen: vi.fn(),
     } as unknown as IPC<never, never>;
 
     private readonly mockWebContents = {
+        getURL: vi.fn(),
         session: {
             webRequest: {
                 onHeadersReceived: vi.fn(),
@@ -19,7 +24,8 @@ class TestFixture {
         }
     } as unknown as WebContents;
 
-    public CreatTestee() {
+    public CreatTestee(url: string) {
+        vi.mocked(this.mockWebContents.getURL).mockReturnValue(url);
         vi.mocked(this.mockIPC.Listen).mockImplementationOnce((_, init) => this.#initialize = init);
         vi.mocked(this.mockWebContents.session.webRequest.onHeadersReceived).mockImplementationOnce(listener => this.#onHeadersReceivedListener = listener);
         vi.mocked(this.mockWebContents.session.webRequest.onBeforeSendHeaders).mockImplementationOnce(listener => this.#onBeforeSendHeadersListener = listener);
@@ -32,7 +38,7 @@ class TestFixture {
      * @remarks ⚠️ A testee must be created (with {@link CreatTestee}) in order to use this method
      */
     public InvokeInitialize(): void {
-        this.#initialize('X-FetchAPI-');
+        this.#initialize(this.PrefixHeader());
     }
 
     #onHeadersReceivedListener: Parameters<Electron.WebRequest[ 'onHeadersReceived' ]>[ 0 ];
@@ -60,7 +66,7 @@ describe('FetchProvider', () => {
 
         it('Should subscribe to IPC events', () => {
             const fixture = new TestFixture();
-            const testee = fixture.CreatTestee();
+            const testee = fixture.CreatTestee('http://local.host/-');
             expect(testee).toBeDefined();
             expect(fixture.mockIPC.Listen).toHaveBeenCalledTimes(1);
             expect(fixture.mockIPC.Listen).toHaveBeenCalledWith(Channels.App.Initialize, expect.anything());
@@ -69,31 +75,74 @@ describe('FetchProvider', () => {
 
     describe('OnBeforeSendHeaders', () => {
 
-        it('Should ...', async () => {
+        it(`Should remove certain headers containing the application's hostname`, async () => {
             const fixture = new TestFixture();
-            fixture.CreatTestee();
+            fixture.CreatTestee('http://local.host/-');
             fixture.InvokeInitialize();
             const actual = await fixture.InvokeOnBeforeSendHeaders({
                 requestHeaders: {
-                    'X-MyTest': '123',
+                    'Origin': 'https://local.host/~',
+                    'Referer': 'https://local.host/~',
+                    'Test-Keep-Header': 'http://local.host/-',
                 }
             });
-            console.log('+++ ACTUAL:', actual);
+            expect(actual).toStrictEqual({
+                cancel: false,
+                requestHeaders: {
+                    'test-keep-header': 'http://local.host/-',
+                },
+            });
+        });
+
+        it('Should apply prefixed headers', async () => {
+            const fixture = new TestFixture();
+            fixture.CreatTestee('http://local.host/-');
+            fixture.InvokeInitialize();
+            const actual = await fixture.InvokeOnBeforeSendHeaders({
+                requestHeaders: {
+                    'Test-Keep-Header': '===',
+                    'Origin': 'http://local.host/-',
+                    [ fixture.PrefixHeader('Origin') ]: 'https://manga.web/-',
+                    [ fixture.PrefixHeader('Referer') ]: 'https://manga.net/-',
+                    'Referer': 'http://local.host/-',
+                    [ fixture.PrefixHeader('Test-Replace-Header') ]: '***',
+                    'Test-Replace-Header': '-',
+                    [ fixture.PrefixHeader('Test-Add-Header') ]: '+++',
+                }
+            });
+            expect(actual).toStrictEqual({
+                cancel: false,
+                requestHeaders: {
+                    'test-keep-header': '===',
+                    'origin': 'https://manga.web/-',
+                    'referer': 'https://manga.net/-',
+                    'test-replace-header': '***',
+                    'test-add-header': '+++',
+                },
+            });
         });
     });
 
     describe('OnHeadersReceived', () => {
 
-        it('Should ...', async () => {
+        it('Should remove certain headers', async () => {
             const fixture = new TestFixture();
-            fixture.CreatTestee();
+            fixture.CreatTestee('http://local.host/-');
             fixture.InvokeInitialize();
             const actual = await fixture.InvokeOnHeadersReceived({
                 responseHeaders: {
-                    'X-MyTest': [ '123' ],
+                    'X-Link': [ '=' ],
+                    'Link': [ '-' ],
+                    'Test-Keep-Header': [ '===' ],
                 }
             });
-            console.log('+++ ACTUAL:', actual);
+            expect(actual).toStrictEqual({
+                cancel: false,
+                responseHeaders: {
+                    'x-link': [ '=' ],
+                    'test-keep-header': [ '===' ],
+                },
+            });
         });
     });
 });
