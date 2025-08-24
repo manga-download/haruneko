@@ -4,21 +4,21 @@ import { Chapter, DecoratableMangaScraper, Manga, type MangaPlugin, Page } from 
 import * as Common from './decorators/Common';
 import { FetchJSON } from '../platform/FetchProvider';
 
-type APIMangas = {
-    series: APIManga[]
-};
-
 type APIManga = {
-    _id: string,
-    title: string,
-    slug: string,
+    _id: string;
+    slug: string;
+    title: string;
 };
 
-type APIChapter = {
-    _id: string,
-    title: string,
-    number: string
+type APIMangas = {
+    series: APIManga[];
 };
+
+type APIChapters = {
+    _id: string;
+    number: string;
+    title: string;
+}[];
 
 type APIPages = {
     chapter: {
@@ -30,6 +30,7 @@ type APIPages = {
 
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
+
     private readonly apiUrl = 'https://alucardscans.com/api/';
 
     public constructor() {
@@ -46,23 +47,22 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
         const slug = url.split('/').at(-1);
-        const { series } = await FetchJSON<APIMangas>(new Request(new URL(`./series?search=${slug}&limit=8`, this.apiUrl)));
-        const { _id, title } = series.find(serie => serie.slug === slug);
+        const { series: [ { _id, title } ] } = await FetchJSON<APIMangas>(new Request(new URL('./series?search=' + slug, this.apiUrl)));
         return new Manga(this, provider, _id, title);
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        const { series } = await FetchJSON<APIMangas>(new Request(new URL('./series?page=1&limit=9999', this.apiUrl)));
+        const { series } = await FetchJSON<APIMangas>(new Request(new URL('./series?limit=9999', this.apiUrl)));
         return series.map(({ _id, title }) => new Manga(this, provider, _id, title));
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const chapters = await FetchJSON<APIChapter[]>(new Request(new URL(`./series/${manga.Identifier}/chapters`, this.apiUrl)));
-        return chapters.map(({ _id, title, number }) => new Chapter(this, manga, _id, ['Bölüm', number, title].join(' ').trim()));
+        const chapters = await FetchJSON<APIChapters>(new Request(new URL(`./series/${manga.Identifier}/chapters`, this.apiUrl)));
+        return chapters.map(({ _id, number, title }) => new Chapter(this, manga, _id, [ 'Bölüm', number, title ].join(' ').trim()));
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const { chapter: { pages } } = await FetchJSON<APIPages>(new Request(new URL(`./chapters/${chapter.Identifier}`, this.apiUrl)));
+        const { chapter: { pages } } = await FetchJSON<APIPages>(new Request(new URL('./chapters/' + chapter.Identifier, this.apiUrl)));
         return pages.map(({ url }) => new Page(this, chapter, new URL(url, this.URI)));
     }
 }
