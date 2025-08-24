@@ -29,6 +29,7 @@ const patterns = [
     '*://*.doubleclick.net/*',
     '*://*.google-analytics.com/*',
     '*://*.googlesyndication.com/*',
+    '*://itchyshavecommand.com/*',
     '*://*.magsrv.com/*',
     '*://*.mgid.com/*',
     '*://*.onesignal.com/*',

@@ -3,10 +3,10 @@
 new TestFixture({
     plugin: {
         id: 'boomtoon',
-        title: 'Boomtoon'
+        title: 'Lezhin (Thai)'
     },
     container: {
-        url: 'https://www.boomtoon.com/detail/stupid_cupid',
+        url: 'https://www.lezhinth.com/detail/stupid_cupid',
         id: 'stupid_cupid',
         title: 'รุ่นพี่จอมบื้อกับรุ่นน้องตัวแสบ'
     },
