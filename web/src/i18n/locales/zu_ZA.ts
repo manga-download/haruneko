@@ -93,8 +93,6 @@ const translations: VariantResource = { // NOTE: Use defaults for missing transl
   Frontend_FluentCore_Menu_ExportBookmarks_Label: "crwdns1622:0crwdne1622:0",
   Frontend_FluentCore_Menu_ExportBookmarks_Description: "crwdns1624:0crwdne1624:0",
   //
-  Frontend_FluentCore_Settings_ThemeLuminance_Label: "crwdns1305:0crwdne1305:0",
-  Frontend_FluentCore_Settings_ThemeLuminance_Description: "crwdns1307:0crwdne1307:0",
   Frontend_FluentCore_Settings_ShowBookmarksPanel_Label: "crwdns1309:0crwdne1309:0",
   Frontend_FluentCore_Settings_ShowBookmarksPanel_Description: "crwdns1570:0crwdne1570:0",
   Frontend_FluentCore_Settings_ShowDownloadsPanel_Label: "crwdns1313:0crwdne1313:0",
@@ -280,7 +278,6 @@ const translations: VariantResource = { // NOTE: Use defaults for missing transl
   Plugin_Common_MangaIndex_NotSupported: "crwdns1606:0crwdne1606:0",
   Plugin_Common_Chapter_UnavailableError: "crwdns1608:0crwdne1608:0",
   Plugin_Common_Chapter_InvalidError: "crwdns1610:0crwdne1610:0",
-  Plugin_Common_Image_MirroredDownloadError: "crwdns2188:0{0}crwdne2188:0",
   Plugin_Common_Preferred_Language: "crwdns2102:0crwdne2102:0",
   Plugin_Common_Preferred_LanguageInfo: "crwdns2104:0crwdne2104:0",
   Plugin_MissingWebsite_UpdateError: "crwdns1612:0crwdne1612:0",

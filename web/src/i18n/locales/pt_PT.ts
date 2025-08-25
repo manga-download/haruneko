@@ -93,8 +93,6 @@ const translations: VariantResource = { // NOTE: Use defaults for missing transl
   Frontend_FluentCore_Menu_ExportBookmarks_Label: "Exportar favoritos…",
   Frontend_FluentCore_Menu_ExportBookmarks_Description: "Exportar todos os favoritos para um arquivo (por exemplo, para backup)",
   //
-  Frontend_FluentCore_Settings_ThemeLuminance_Label: "Luminosidade do Tema",
-  Frontend_FluentCore_Settings_ThemeLuminance_Description: "Mudar a luz/escuridão do tema",
   Frontend_FluentCore_Settings_ShowBookmarksPanel_Label: "Lista de Marcadores",
   Frontend_FluentCore_Settings_ShowBookmarksPanel_Description: "Liga/desliga a visibilidade da lista de favoritos",
   Frontend_FluentCore_Settings_ShowDownloadsPanel_Label: "Gestor de Transferências",
@@ -280,7 +278,6 @@ const translations: VariantResource = { // NOTE: Use defaults for missing transl
   Plugin_Common_MangaIndex_NotSupported: "Não é possível criar o índice de conteúdo para este site. Use o recurso Copiar e Colar para acessar diretamente o conteúdo de uma URL específica!",
   Plugin_Common_Chapter_UnavailableError: "O capítulo não está disponível (não comprado/desbloqueado/público)!",
   Plugin_Common_Chapter_InvalidError: "Falha ao extrair as páginas do conteúdo do capítulo!",
-  Plugin_Common_Image_MirroredDownloadError: 'Unable to download image from multiple servers : {0}',
   Plugin_Common_Preferred_Language: "Idioma preferencial para o site",
   Plugin_Common_Preferred_LanguageInfo: "Idioma preferido para o conteúdo do site.",
   Plugin_MissingWebsite_UpdateError: "Falha ao atualizar o índice de conteúdo para um site inexistente!",

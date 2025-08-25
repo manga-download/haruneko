@@ -2,23 +2,12 @@ import { Tags } from '../Tags';
 import icon from './UzayManga.webp';
 import { type Chapter, DecoratableMangaScraper, Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { FetchWindowScript } from '../platform/FetchProvider';
+import { FetchNextJS } from '../platform/FetchProvider';
 
-const pageScript = `
-    new Promise(resolve => {
-        let element = undefined;
-        for (const el of __next_f) {
-            if (el[1] && el[1].includes('[{"path":')) {
-                element = el[1];
-                break;
-            }
-        }
-        element ? resolve(element): reject();
-    });
-`;
-
-type JSONPage = {
-    path: string;
+type HydratedPages = {
+    series_items: {
+        path: string;
+    }[];
 };
 
 function ChapterExtractor(anchor: HTMLAnchorElement) {
@@ -33,10 +22,12 @@ function ChapterExtractor(anchor: HTMLAnchorElement) {
 @Common.MangaCSS(/^{origin}\/manga\/\d+\/[^/]+$/, 'div.content-details h1')
 @Common.MangasMultiPageCSS('/?page={page}', 'div.overflow-hidden.grid.grid-cols-1 > div > a')
 @Common.ChaptersSinglePageCSS('div.list-episode a', ChapterExtractor)
-@Common.ImageAjax(true)
+@Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
-    public constructor () {
+    private readonly cdnUrl = 'https://manga2.efsaneler.can.re';
+
+    public constructor() {
         super('uzaymanga', 'Uzay Manga', 'https://uzaymanga.com', Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Language.Turkish, Tags.Source.Scanlator);
     }
 
@@ -45,11 +36,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-
-        const request = new Request(new URL(chapter.Identifier, this.URI).href);
-        const data = await FetchWindowScript<string>(request, pageScript);
-        const jsonString = data.match(/(\[{"path":.*}\])}}/).at(-1);
-        const imagesData: JSONPage[] = JSON.parse(jsonString);
-        return imagesData.map(image => new Page(this, chapter, new URL(`https://cdn1.uzaymanga.com/upload/series/${image.path}`)));
+        const { series_items } = await FetchNextJS<HydratedPages>(new Request(new URL(chapter.Identifier, this.URI)), data => 'series_items' in data);
+        return series_items.map(({ path }) => new Page(this, chapter, new URL(path, this.cdnUrl), { Referer: this.URI.href }));
     }
 }

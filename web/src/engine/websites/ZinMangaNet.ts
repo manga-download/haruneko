@@ -6,7 +6,7 @@ import * as Common from './decorators/Common';
 
 @Madara.MangaCSS(/^{origin}\/manga\/[^/]+$/, 'div.post-title h1')
 @Madara.MangasMultiPageCSS()
-@Madara.ChaptersSinglePageCSS()
+@Madara.ChaptersSinglePageCSS('div.wp-manga-chapter a')
 @Common.ImageAjax(true, true)
 export default class extends DecoratableMangaScraper {
 

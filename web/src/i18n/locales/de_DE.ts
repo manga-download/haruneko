@@ -93,8 +93,6 @@ const translations: VariantResource = { // NOTE: Use defaults for missing transl
   Frontend_FluentCore_Menu_ExportBookmarks_Label: "Lesezeichen exportieren…",
   Frontend_FluentCore_Menu_ExportBookmarks_Description: "Exportieren aller Lesezeichen in eine Datei (z.B. als Sicherheitskopie)",
   //
-  Frontend_FluentCore_Settings_ThemeLuminance_Label: "Helligkeit der Benutzeroberfläche",
-  Frontend_FluentCore_Settings_ThemeLuminance_Description: "Ändert die Helligkeit des Motivs für die Benutzeroberfläche",
   Frontend_FluentCore_Settings_ShowBookmarksPanel_Label: "Lesezeichen Ein-/Ausblenden",
   Frontend_FluentCore_Settings_ShowBookmarksPanel_Description: "Schaltet die Sichtbarkeit der Liste mit den Lesezeichen ein/aus",
   Frontend_FluentCore_Settings_ShowDownloadsPanel_Label: "Downloads Ein-/Ausblenden",
@@ -280,7 +278,6 @@ const translations: VariantResource = { // NOTE: Use defaults for missing transl
   Plugin_Common_MangaIndex_NotSupported: "Ein Inhaltsverzeichnis kann für diese Webseite nicht erstellt werden. Benutze die Kopieren & Einfügen Funktionalität um direkt auf den Inhalt einer URL zuzugreifen!",
   Plugin_Common_Chapter_UnavailableError: "Das Kapitel ist nicht verfügbar (gekauft/freigeschaltet/öffentlich)!",
   Plugin_Common_Chapter_InvalidError: "Fehler beim extrahieren der einzelnen Seiten aus dem Kapitel!",
-  Plugin_Common_Image_MirroredDownloadError: 'Unable to download image from multiple servers : {0}',
   Plugin_Common_Preferred_Language: "Bevorzugte Sprache für Inhalte",
   Plugin_Common_Preferred_LanguageInfo: "Die bevorzugte Sprache für die Inhalte dieser Webseite festlegen",
   Plugin_MissingWebsite_UpdateError: "Fehler bei der Aktualisierung des Inhaltsverzeichnis für eine nicht-existierende Webseite!",

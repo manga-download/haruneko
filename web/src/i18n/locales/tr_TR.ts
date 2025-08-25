@@ -93,8 +93,6 @@ const translations: VariantResource = { // NOTE: Use defaults for missing transl
   Frontend_FluentCore_Menu_ExportBookmarks_Label: "Yer İmlerini Dışa Aktar…",
   Frontend_FluentCore_Menu_ExportBookmarks_Description: "Tüm yer imlerini bir dosyaya aktarma ( örn. yedekleme için)",
   //
-  Frontend_FluentCore_Settings_ThemeLuminance_Label: "Tema Parlaklığı",
-  Frontend_FluentCore_Settings_ThemeLuminance_Description: "Temanın açıklığını/koyuluğunu değiştirin",
   Frontend_FluentCore_Settings_ShowBookmarksPanel_Label: "Yer İmi Listesi",
   Frontend_FluentCore_Settings_ShowBookmarksPanel_Description: "Yer imi listesinin görünürlüğünü aç/kapat",
   Frontend_FluentCore_Settings_ShowDownloadsPanel_Label: "İndirme Yöneticisi",
@@ -280,7 +278,6 @@ const translations: VariantResource = { // NOTE: Use defaults for missing transl
   Plugin_Common_MangaIndex_NotSupported: "Bu web sitesi için içerik dizini oluşturulamıyor. Belirli bir URL'nin içeriğine doğrudan erişmek için Kopyala ve Yapıştır özelliğini kullanın!",
   Plugin_Common_Chapter_UnavailableError: "Bölüm mevcut değil (satın alınmadı/kilidi açılmadı/halka açık değil)!",
   Plugin_Common_Chapter_InvalidError: "Sayfalar bölüm içeriğinden ayıklanamadı!",
-  Plugin_Common_Image_MirroredDownloadError: "Birden fazla sunucudan görüntü indirilemiyor : {0}",
   Plugin_Common_Preferred_Language: "Web Sitesi için Tercih Edilen Dil",
   Plugin_Common_Preferred_LanguageInfo: "Web site içeriği için tercih edilen dil.",
   Plugin_MissingWebsite_UpdateError: "Var olmayan bir web sitesi için içerik dizini güncellenemedi!",

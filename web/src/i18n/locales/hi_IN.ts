@@ -93,8 +93,6 @@ const translations: VariantResource = { // NOTE: Use defaults for missing transl
   Frontend_FluentCore_Menu_ExportBookmarks_Label: 'Export Bookmarks…',
   Frontend_FluentCore_Menu_ExportBookmarks_Description: 'Export all bookmarks to a file (e.g., for backup)',
   //
-  Frontend_FluentCore_Settings_ThemeLuminance_Label: 'Theme Luminance',
-  Frontend_FluentCore_Settings_ThemeLuminance_Description: 'Change the lightness/darkness of the theme',
   Frontend_FluentCore_Settings_ShowBookmarksPanel_Label: 'Bookmark List',
   Frontend_FluentCore_Settings_ShowBookmarksPanel_Description: 'Toggle the visibility of the bookmark list on/off',
   Frontend_FluentCore_Settings_ShowDownloadsPanel_Label: 'Download Manager',
@@ -280,7 +278,6 @@ const translations: VariantResource = { // NOTE: Use defaults for missing transl
   Plugin_Common_MangaIndex_NotSupported: 'Unable to create the content index for this website. Use the Copy & Paste feature to directly access the content of a specific URL!',
   Plugin_Common_Chapter_UnavailableError: 'The chapter is not available (not purchased/unlocked/public)!',
   Plugin_Common_Chapter_InvalidError: 'Failed to extract the pages from the chapter content!',
-  Plugin_Common_Image_MirroredDownloadError: 'Unable to download image from multiple servers : {0}',
   Plugin_Common_Preferred_Language: 'Preferred Language for the website',
   Plugin_Common_Preferred_LanguageInfo: 'Preferred language for website content.',
   Plugin_MissingWebsite_UpdateError: 'Failed to update the content index for a non-existing website!',

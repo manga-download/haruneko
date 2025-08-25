@@ -93,8 +93,6 @@ const translations: VariantResource = { // NOTE: Use defaults for missing transl
   Frontend_FluentCore_Menu_ExportBookmarks_Label: "تصدير الإشارات المرجعية…",
   Frontend_FluentCore_Menu_ExportBookmarks_Description: "تصدير جميع الإشارات المرجعية إلى ملف (على سبيل المثال للنسخ الاحتياطي)",
   //
-  Frontend_FluentCore_Settings_ThemeLuminance_Label: "تمزيق السمة",
-  Frontend_FluentCore_Settings_ThemeLuminance_Description: "تغيير الضوء/الظلام للموضوع",
   Frontend_FluentCore_Settings_ShowBookmarksPanel_Label: "قائمة الإشارات المرجعية",
   Frontend_FluentCore_Settings_ShowBookmarksPanel_Description: "تبديل رؤية قائمة الإشارات المرجعية تشغيل/إيقاف تشغيلها",
   Frontend_FluentCore_Settings_ShowDownloadsPanel_Label: "إدارة التنزيل",
@@ -280,7 +278,6 @@ const translations: VariantResource = { // NOTE: Use defaults for missing transl
   Plugin_Common_MangaIndex_NotSupported: "غير قادر على إنشاء فهرس المحتوى لهذا الموقع. استخدم ميزة النسخ والصق للوصول مباشرة إلى محتوى عنوان URL محدد!",
   Plugin_Common_Chapter_UnavailableError: "الفصل غير متوفر (غير مشتري/غير مقفل/عام)!",
   Plugin_Common_Chapter_InvalidError: "فشل في استخراج الصفحات من محتوى الفصل!",
-  Plugin_Common_Image_MirroredDownloadError: 'Unable to download image from multiple servers : {0}',
   Plugin_Common_Preferred_Language: "اللغة المفضلة للموقع",
   Plugin_Common_Preferred_LanguageInfo: "اللغة المفضلة لمحتوى الموقع.",
   Plugin_MissingWebsite_UpdateError: "فشل تحديث فهرس المحتوى لموقع غير موجود!",

@@ -7,12 +7,12 @@ new TestFixture({
     },
     container: {
         url: 'https://agrcomics.org/series/reincarnated-as-the-mastermind-of-the-story',
-        id: JSON.stringify({ slug: 'reincarnated-as-the-mastermind-of-the-story', id: 109 }),
+        id: '109',
         title: 'Reincarnated as the Mastermind of the Story'
     },
     child: {
         id: '/series/reincarnated-as-the-mastermind-of-the-story/chapter-23',
-        title: '23'
+        title: 'Chapter 23'
     },
     entry: {
         index: 1,

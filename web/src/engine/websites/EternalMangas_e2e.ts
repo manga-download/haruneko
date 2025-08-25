@@ -6,13 +6,13 @@ new TestFixture({
         title: 'Eternal Mangas'
     },
     container: {
-        url: 'https://eternalmangas.com/ver/lo-siento-por-ser-una-tonta',
-        id: '/ver/lo-siento-por-ser-una-tonta',
+        url: 'https://eternalmangas.org/series/lo-siento-por-ser-una-tonta',
+        id: '1582',
         title: 'Lo siento por ser una tonta'
     },
     child: {
-        id: '/ver/lo-siento-por-ser-una-tonta/capitulo-14',
-        title: 'Capítulo 14'
+        id: '/series/lo-siento-por-ser-una-tonta/capitulo-14',
+        title: 'Chapter 14'
     },
     entry: {
         index: 0,
