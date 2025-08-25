@@ -1,7 +1,6 @@
-import { FetchWindowScript } from '../../platform/FetchProvider';
-import { type Chapter, DecoratableMangaScraper, Page } from "../../providers/MangaPlugin";
+import { Chapter, DecoratableMangaScraper, Page } from '../../providers/MangaPlugin';
+import type { Priority } from '../../taskpool/DeferredTask';
 import * as Common from '../decorators/Common';
-import * as Grouple from '../decorators/Grouple';
 
 const pageScript = `
     new Promise(resolve => {
@@ -16,12 +15,18 @@ const pageScript = `
 
 @Common.MangaCSS(/^{origin}\/manga\/[^/]+$/, 'ul.manga-info-text li h1')
 @Common.MangasMultiPageCSS('/manga-list/latest-manga?page={page}', 'div.truyen-list div.list-truyen-item-wrap h3 a', 1, 1, 500)
-@Common.ChaptersSinglePageCSS('div.chapter-list div.row span a')
-    @Grouple.ImageWithMirrors()
+    @Common.ChaptersSinglePageCSS('div.chapter-list div.row span a')
 export class MangaNel extends DecoratableMangaScraper {
 
-    public override async FetchPages(chapter: Chapter): Promise<Page<any>[]> {
-        const data = await FetchWindowScript<any[]>(new Request(new URL(chapter.Identifier, this.URI)), pageScript, 1000);
-        return data.map(element => new Page(this, chapter, new URL(element.url), { Referer: this.URI.href, mirrors: element.mirrors }));
+    // TODO: Download Pages with Mirror Links ...
+    // => See: Grouple.PagesSinglePageJS(pageScript)
+    public override async FetchPages(_chapter: Chapter): Promise<Page[]> {
+        return [];
+    }
+
+    // TODO: Fetch Images from Mirror Links ...
+    // => See: Grouple.ImageAjaxWithMirrors()
+    public override async FetchImage(_page: Page, _priority: Priority, _signal: AbortSignal): Promise<Blob> {
+        return null;
     }
 }
