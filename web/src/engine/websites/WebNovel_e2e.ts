@@ -12,7 +12,7 @@ new TestFixture({
     },
     child: {
         id: '40207390380972711',
-        title: '1 : 001 A Second Chance'
+        title: '001 A Second Chance'
     },
     entry: {
         index: 0,
