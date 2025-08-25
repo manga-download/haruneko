@@ -209,6 +209,7 @@ export { default as HentaiXYuri } from './HentaiXYuri';
 export { default as HentaiZone } from './HentaiZone';
 export { default as HerosWeb } from './HerosWeb';
 export { default as HeroTruyen } from './HeroTruyen';
+export { default as HijalaScans } from './HijalaScans';
 export { default as HiperCool } from './HiperCool';
 export { default as Hiperdex } from './Hiperdex';
 export { default as Hitomi } from './Hitomi';
