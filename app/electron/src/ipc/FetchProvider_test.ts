@@ -114,6 +114,52 @@ describe('FetchProvider', () => {
                 },
             });
         });
+
+        it('Should keep cookies from original header', async () => {
+            const { onBeforeSendHeadersListener } = new TestFixture().CreateTestee('http://local.host/-', true);
+            const actual = await TestFixture.InvokeOnBeforeSendHeaders(onBeforeSendHeadersListener, {
+                requestHeaders: {
+                    'Cookie': 'x=3; o=7',
+                }
+            });
+            expect(actual).toStrictEqual({
+                cancel: false,
+                requestHeaders: {
+                    'cookie': 'x=3; o=7',
+                },
+            });
+        });
+
+        it('Should apply cookies from prefixed header', async () => {
+            const { onBeforeSendHeadersListener } = new TestFixture().CreateTestee('http://local.host/-', true);
+            const actual = await TestFixture.InvokeOnBeforeSendHeaders(onBeforeSendHeadersListener, {
+                requestHeaders: {
+                    'X-FetchAPI-Cookie': 'x=3; o=7',
+                }
+            });
+            expect(actual).toStrictEqual({
+                cancel: false,
+                requestHeaders: {
+                    'cookie': 'x=3; o=7',
+                },
+            });
+        });
+
+        it('Should merge cookies from original and prefixed header', async () => {
+            const { onBeforeSendHeadersListener } = new TestFixture().CreateTestee('http://local.host/-', true);
+            const actual = await TestFixture.InvokeOnBeforeSendHeaders(onBeforeSendHeadersListener, {
+                requestHeaders: {
+                    'Cookie': 'x=3; o=7;',
+                    'X-FetchAPI-Cookie': 'o=11; _=0',
+                }
+            });
+            expect(actual).toStrictEqual({
+                cancel: false,
+                requestHeaders: {
+                    'cookie': 'x=3; o=7; o=11; _=0',
+                },
+            });
+        });
     });
 
     describe('OnHeadersReceived', () => {
