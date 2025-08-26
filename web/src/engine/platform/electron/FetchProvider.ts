@@ -38,7 +38,7 @@ class FetchRequest extends Request {
     }
 }
 
-export default class extends FetchProvider {
+export default class FetchProviderElectron extends FetchProvider {
 
     constructor (private readonly ipc: IPC<Channels.App, Channels.Web>) {
         super();
