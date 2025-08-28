@@ -1,6 +1,6 @@
 import { TestFixture } from '../../../test/WebsitesFixture';
 
-// CASE: ShonenJump : correct pages number
+// CASE: ShonenJump : correct page number
 new TestFixture({
     plugin: {
         id: 'vizshonenjump',
