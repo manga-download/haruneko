@@ -19,7 +19,6 @@ export const legacyWebsiteIdentifierMap = new Map([
     [ 'firstkiss', 'likemanga' ],
     [ 'flamescans-org', 'flamecomics' ],
     [ 'galaxyaction', 'galaxymanga' ],
-    [ 'gateanimemanga', 'gatemanga' ],
     [ 'imperioscans', 'neroxus' ],
     [ 'instamanhwa', 'xmanhwa' ],
     [ 'kissaway', 'klmanga' ],
