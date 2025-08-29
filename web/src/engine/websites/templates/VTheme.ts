@@ -12,7 +12,7 @@ type APIManga = {
 };
 
 type APIMangas = {
-    posts: APIManga[ 'post' ][];
+    posts: APIManga['post'][];
 };
 
 type APIChapters = {
@@ -31,12 +31,14 @@ type APIChapters = {
 
 type HydratedPages = {
     images: {
-        url: string
+        url: string;
+        order: number;
     }[]
 };
 
 @Common.ImageAjax()
 export class VTheme extends DecoratableMangaScraper {
+    protected useAlternativeSorting: boolean = false;
 
     private readonly apiUrl = (() => {
         const uri = new URL(this.URI);
@@ -87,8 +89,23 @@ export class VTheme extends DecoratableMangaScraper {
             });
     }
 
+    private ToNumber(text: string): number {
+        return /(\d+)/.test(text) ? parseInt(text.match(/(\d+)/).at(1)) : Number.POSITIVE_INFINITY;
+    }
+
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
         const { images } = await FetchNextJS<HydratedPages>(new Request(new URL(chapter.Identifier, this.URI)), data => 'images' in data);
+        if (this.useAlternativeSorting) {
+            images.sort((self, other) => {
+                const selfEnd = self.url.split('/')?.at(-1) ?? '';
+                const otherEnd = other.url.split('/')?.at(-1) ?? '';
+                const selfOrder = this.ToNumber(selfEnd);
+                const otherfOrder = this.ToNumber(otherEnd);
+                return selfOrder !== otherfOrder ? selfOrder - otherfOrder : selfEnd.localeCompare(otherEnd);
+            });
+        } else {
+            images.sort((self, other) => (self.order || 0) - (other.order || 0));
+        }
         return images.map(({ url }) => new Page(this, chapter, new URL(url)));
     }
 }
