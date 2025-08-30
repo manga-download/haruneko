@@ -23,19 +23,9 @@ export class FetchProvider {
         this.Initialize = () => { };
     }
 
-    private MergeCookies(sessionCookies?: string, customCookies?: string): string {
-        // TODO: Skip cookie assignment in browser window e.g., when `sec-fetch-dest: empty`?
-        const cookies = new Map<string, string>();
-        // TODO: Include cookies from target website which are not allowed by CORS (e.g., Access-Control-Allow-Credentials missing, SameOrigin restriction)
-        ((sessionCookies ?? '') + ';' + (customCookies ?? ''))
-            .split(';')
-            .map(cookie => cookie.split('='))
-            .filter(cookie => cookie.length === 2)
-            .forEach(([ name, value ]) => cookies.set(name.trim(), value.trim()));
-        return cookies
-            .entries()
-            .reduce((accumulator: string[], [ name, value ]) => accumulator.concat(name + '=' + value), [])
-            .join('; ');
+    private async GetSessionCookies(url: string): Promise<string> {
+        const sessionCookies = await this.webContents.session.cookies.get({ url, /* partitionKey: {} */ }); // TODO: When filter by URL partioned cookies may not be found (e.g., cf_clearance)
+        return sessionCookies.map(cookie => `${cookie.name}=${cookie.value}`).join(';'); // TODO: Maybe use `encodeURIComponent(cookie.value)`
     }
 
     private RevealHeaders(headers: Record<string, string>): Headers {
@@ -47,28 +37,25 @@ export class FetchProvider {
         Object.entries(headers)
             .filter(([ name, value ]) => name && value && !IsHeaderNameConcealed(name))
             .forEach(([ name, value ]) => result.append(name, value));
-        console.log('+++', result);
 
         Object.entries(headers)
             .filter(([ name, value ]) => name && value && IsHeaderNameConcealed(name))
-            .forEach(([ name, value ]) => {
-                name = GetRevealedHeaderName(name);
-                result.set(name, /^cookie$/.test(name) ? this.MergeCookies(result.get(name), value) : value);
-            });
-        console.log('+++', result);
+            .forEach(([ name, value ]) => result.set(GetRevealedHeaderName(name), value));
+
         return result;
     }
 
     private async ModifyRequestHeaders(details: OnBeforeSendHeadersListenerDetails): Promise<BeforeSendResponse> {
+        details.requestHeaders = details.requestHeaders ?? {};
+        details.requestHeaders.cookie = await this.GetSessionCookies(details.url);
         const headers = this.RevealHeaders(details.requestHeaders ?? {});
+
+        // Remove certain headers when empty
+        [ 'cookie' ].forEach(name => headers.has(name) && !headers.get(name)?.trim() ? headers.delete(name) : null);
 
         // Prevent leaking HakuNeko's host in certain headers
         const appHostname = new URL(this.webContents.getURL()).hostname;
-        [ 'origin', 'referer' ].forEach(name => {
-            if (headers.get(name)?.includes(appHostname)) {
-                headers.delete(name);
-            }
-        });
+        [ 'origin', 'referer' ].forEach(name => headers.get(name)?.includes(appHostname) ? headers.delete(name) : null);
 
         return {
             cancel: false,
