@@ -4,10 +4,10 @@ import { DecoratableMangaScraper, Manga, type MangaPlugin } from '../providers/M
 import * as Common from './decorators/Common';
 import { FetchWindowScript } from '../platform/FetchProvider';
 
-type JSONMangas = Array<{
+type JSONMangas = {
+    id: string;
     title: string;
-    permalink: string;
-}>;
+}[];
 
 @Common.MangaCSS(/^{origin}\/manga\/[^/]+\/$/, 'h1.project-title')
 @Common.ChaptersSinglePageCSS('div.chapter-item a')
@@ -24,7 +24,13 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        const mangas = await FetchWindowScript<JSONMangas>(new Request(new URL('/projets', this.URI)), 'mangaData.mangas');
-        return mangas.map(({ permalink, title }) => new Manga(this, provider, new URL(permalink, this.URI).pathname, new DOMParser().parseFromString(title, 'text/html').body.innerText.trim()));
+        const script = `
+            mangaData.mangas.map(({ title, permalink }) => ({
+                id: new URL(permalink, window.location).pathname,
+                title: new DOMParser().parseFromString(title, 'text/html').body.innerText.trim(),
+            }));
+        `;
+        const mangas = await FetchWindowScript<JSONMangas>(new Request(new URL('/projets', this.URI)), script);
+        return mangas.map(({ id, title }) => new Manga(this, provider, id, title));
     }
 }
