@@ -1,7 +1,7 @@
 // VTheme theme by V DEV : https://discord.com/invite/yz3UN72qPd
 
-import { FetchJSON, FetchNextJS } from '../../platform/FetchProvider';
-import { Chapter, DecoratableMangaScraper, type MangaPlugin, Manga, Page } from '../../providers/MangaPlugin';
+import { FetchJSON } from '../../platform/FetchProvider';
+import { Chapter, DecoratableMangaScraper, type MangaPlugin, Manga } from '../../providers/MangaPlugin';
 import * as Common from '../decorators/Common';
 
 type APIManga = {
@@ -29,13 +29,7 @@ type APIChapters = {
     };
 };
 
-type HydratedPages = {
-    images: {
-        url: string;
-        order: number;
-    }[]
-};
-
+@Common.PagesSinglePageCSS('.image-container img[data-image-index]')
 @Common.ImageAjax()
 export class VTheme extends DecoratableMangaScraper {
     protected useAlternativeSorting: boolean = false;
@@ -87,25 +81,5 @@ export class VTheme extends DecoratableMangaScraper {
                 title = 'Chapter ' + number + (title ? ` - ${title}` : '');
                 return new Chapter(this, manga, `/series/${mangaSlug}/${chapterSlug}`, title);
             });
-    }
-
-    private ToNumber(text: string): number {
-        return /(\d+)/.test(text) ? parseInt(text.match(/(\d+)/).at(1)) : Number.POSITIVE_INFINITY;
-    }
-
-    public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const { images } = await FetchNextJS<HydratedPages>(new Request(new URL(chapter.Identifier, this.URI)), data => 'images' in data);
-        if (this.useAlternativeSorting) {
-            images.sort((self, other) => {
-                const selfEnd = self.url.split('/')?.at(-1) ?? '';
-                const otherEnd = other.url.split('/')?.at(-1) ?? '';
-                const selfOrder = this.ToNumber(selfEnd);
-                const otherfOrder = this.ToNumber(otherEnd);
-                return selfOrder !== otherfOrder ? selfOrder - otherfOrder : selfEnd.localeCompare(otherEnd);
-            });
-        } else {
-            images.sort((self, other) => (self.order || 0) - (other.order || 0));
-        }
-        return images.map(({ url }) => new Page(this, chapter, new URL(url)));
     }
 }
