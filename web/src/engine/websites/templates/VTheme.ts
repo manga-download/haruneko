@@ -1,7 +1,7 @@
 // VTheme theme by V DEV : https://discord.com/invite/yz3UN72qPd
 
-import { FetchJSON, FetchNextJS } from '../../platform/FetchProvider';
-import { Chapter, DecoratableMangaScraper, type MangaPlugin, Manga, Page } from '../../providers/MangaPlugin';
+import { FetchJSON } from '../../platform/FetchProvider';
+import { Chapter, DecoratableMangaScraper, type MangaPlugin, Manga } from '../../providers/MangaPlugin';
 import * as Common from '../decorators/Common';
 
 type APIManga = {
@@ -12,7 +12,7 @@ type APIManga = {
 };
 
 type APIMangas = {
-    posts: APIManga[ 'post' ][];
+    posts: APIManga['post'][];
 };
 
 type APIChapters = {
@@ -29,14 +29,10 @@ type APIChapters = {
     };
 };
 
-type HydratedPages = {
-    images: {
-        url: string
-    }[]
-};
-
+@Common.PagesSinglePageCSS('.image-container img[data-image-index]')
 @Common.ImageAjax()
 export class VTheme extends DecoratableMangaScraper {
+    protected useAlternativeSorting: boolean = false;
 
     private readonly apiUrl = (() => {
         const uri = new URL(this.URI);
@@ -85,10 +81,5 @@ export class VTheme extends DecoratableMangaScraper {
                 title = 'Chapter ' + number + (title ? ` - ${title}` : '');
                 return new Chapter(this, manga, `/series/${mangaSlug}/${chapterSlug}`, title);
             });
-    }
-
-    public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const { images } = await FetchNextJS<HydratedPages>(new Request(new URL(chapter.Identifier, this.URI)), data => 'images' in data);
-        return images.map(({ url }) => new Page(this, chapter, new URL(url)));
     }
 }
