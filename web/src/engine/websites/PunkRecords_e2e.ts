@@ -3,20 +3,20 @@
 new TestFixture({
     plugin: {
         id: 'littlegarden',
-        title: 'Little Garden'
+        title: 'Punk Records'
     },
     container: {
-        url: 'https://littlexgarden.com/tokyo-revengers',
-        id: '/tokyo-revengers',
+        url: 'https://punkrecordz.com/mangas/tokyo-revengers',
+        id: 'tokyo-revengers',
         title: 'Tokyo Revengers'
     },
     child: {
-        id: JSON.stringify({ id: 3255, number: 5 }),
+        id: '5',
         title: '5'
     },
     entry: {
         index: 0,
-        size: 3_369_042,
-        type: 'image/jpeg'
+        size: 361_980,
+        type: 'image/webp'
     }
 }).AssertWebsite();
