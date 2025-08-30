@@ -4,7 +4,7 @@ import { ComiciViewer } from'./templates/ComiciViewer';
 
 export default class extends ComiciViewer {
     public constructor() {
-        super('kimicomi', `Kimi Comi`, 'https://comicride.jp', Tags.Media.Manga, Tags.Language.Japanese, Tags.Source.Official);
+        super('kimicomi', `Kimi Comi`, 'https://kimicomi.com', Tags.Media.Manga, Tags.Language.Japanese, Tags.Source.Official);
     }
 
     public override get Icon() {
