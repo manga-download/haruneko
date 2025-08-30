@@ -6,13 +6,13 @@ new TestFixture({
         title: 'WestManga'
     },
     container: {
-        url: 'https://westmanga.me/manga/henkyou-gurashi-no-maou-tensei-shite-saikyou-no-majutsushi-ni-naru-%e3%80%9caisarenagara-nariagaru-moto-mao-wa-ningen-o-shiritai%e3%80%9c/',
-        id: '/manga/henkyou-gurashi-no-maou-tensei-shite-saikyou-no-majutsushi-ni-naru-%e3%80%9caisarenagara-nariagaru-moto-mao-wa-ningen-o-shiritai%e3%80%9c/',
+        url: 'https://westmanga.me/comic/henkyou-gurashi-no-maou-tensei-shite-saikyou-no-majutsushi-ni-naru-〜aisarenagara-nariagaru-moto-mao-wa-ningen-o-shiritai〜',
+        id: 'henkyou-gurashi-no-maou-tensei-shite-saikyou-no-majutsushi-ni-naru-〜aisarenagara-nariagaru-moto-mao-wa-ningen-o-shiritai〜',
         title: 'Henkyou Gurashi no Maou, Tensei Shite Saikyou no Majutsushi ni naru 〜Aisarenagara Nariagaru Moto Maō wa, Ningen o Shiritai〜'
     },
     child: {
-        id: '/henkyou-gurashi-no-maou-tensei-shite-saikyou-no-majutsushi-ni-naru-%e3%80%9caisarenagara-nariagaru-moto-mao-wa-ningen-o-shiritai%e3%80%9c-chapter-1-1-bahasa-indonesia/',
-        title: 'Chapter 1.1'
+        id: 'henkyou-gurashi-no-maou-tensei-shite-saikyou-no-majutsushi-ni-naru-〜aisarenagara-nariagaru-moto-mao-wa-ningen-o-shiritai〜-chapter-1-1-bahasa-indonesia',
+        title: '1.1'
     },
     entry: {
         index: 1,

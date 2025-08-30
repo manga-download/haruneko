@@ -12,7 +12,7 @@ import { FetchWindowScript } from '../platform/FetchProvider';
 @Common.ImageAjax(undefined, true)
 export default class extends DecoratableMangaScraper {
 
-    public constructor() {
+    public constructor () {
         super('spiderscans', 'Spider Scans', 'https://spiderscans.xyz', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.English, Tags.Source.Scanlator);
     }
 
@@ -23,5 +23,4 @@ export default class extends DecoratableMangaScraper {
     public override async Initialize(): Promise<void> {
         return FetchWindowScript(new Request(new URL(this.URI)), `window.cookieStore.set('wpmanga-adult', '1')`);
     }
-
 }

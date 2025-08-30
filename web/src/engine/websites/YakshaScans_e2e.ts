@@ -1,24 +1,22 @@
 ﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'yakshascans',
         title: 'YakshaScans'
     },
     container: {
-        url: 'https://yakshascans.com/manga/454/',
-        id: JSON.stringify({ post: '454', slug: '/manga/454/' }),
-        title: 'I have 90 billion licking gold coins'
+        url: 'https://yakshascans.me/manga/ill-twist-the-neck-of-a-sweet-dog/',
+        id: JSON.stringify({ post: '4956', slug: '/manga/ill-twist-the-neck-of-a-sweet-dog/' }),
+        title: `I'll Twist the Neck of a Sweet Dog`
     },
     child: {
-        id: '/manga/454/chapter-225/',
-        title: 'Chapter 225'
+        id: '/manga/ill-twist-the-neck-of-a-sweet-dog/chapter-143/',
+        title: 'Chapter 143'
     },
     entry: {
-        index: 1,
-        size: 1_972_248,
+        index: 0,
+        size: 317_652,
         type: 'image/jpeg',
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

@@ -13,8 +13,8 @@ class TestFixture {
             getAll: vi.fn(),
         },
         webRequest: {
-            onBeforeSendHeaders: mock<chrome.webRequest.WebRequestHeadersEvent>(),
-            onHeadersReceived: mock<chrome.webRequest.WebResponseHeadersEvent>(),
+            onBeforeSendHeaders: mock<typeof chrome.webRequest.onBeforeSendHeaders>(),
+            onHeadersReceived: mock<typeof chrome.webRequest.onHeadersReceived>(),
         }
     };
 
@@ -55,7 +55,7 @@ describe('FetchProvider', () => {
 
         it('Should register onBeforeSendHeaders modifier', () => {
             const fixture = new TestFixture();
-            let testee: (details: chrome.webRequest.WebRequestHeadersDetails) => chrome.webRequest.BlockingResponse | void;
+            let testee: (details: chrome.webRequest.OnBeforeSendHeadersDetails) => chrome.webRequest.BlockingResponse | void;
             fixture.chromeFake.webRequest.onBeforeSendHeaders.hasListener.mockReturnValue(false);
             fixture.chromeFake.webRequest.onBeforeSendHeaders.addListener.mockImplementation((callback) => testee = callback);
             fixture.CreateTestee(true);
@@ -67,7 +67,7 @@ describe('FetchProvider', () => {
                     { name: 'X-FetchAPI-Origin', value: '😈' }, // should remove prefix
                     { name: 'Host', value: '😇' }, // should keep as is
                 ]
-            } as chrome.webRequest.WebRequestHeadersDetails;
+            } as chrome.webRequest.OnBeforeSendHeadersDetails;
             const actual = testee(details) as chrome.webRequest.BlockingResponse;
 
             expect(testee.name).toBe('ModifyRequestHeaders');
@@ -79,7 +79,7 @@ describe('FetchProvider', () => {
 
         it('Should register onHeadersReceived modifier', () => {
             const fixture = new TestFixture();
-            let testee: (details: chrome.webRequest.WebResponseHeadersDetails) => chrome.webRequest.BlockingResponse | void;
+            let testee: (details: chrome.webRequest.OnHeadersReceivedDetails) => chrome.webRequest.BlockingResponse | void;
             fixture.chromeFake.webRequest.onHeadersReceived.hasListener.mockReturnValue(false);
             fixture.chromeFake.webRequest.onHeadersReceived.addListener.mockImplementation((callback) => testee = callback);
             fixture.CreateTestee(true);
@@ -90,7 +90,7 @@ describe('FetchProvider', () => {
                     { name: 'X-FetchAPI-Origin', value: '😈' }, // should keep as is
                     { name: 'Host', value: '😇' }, // should keep as is
                 ]
-            } as chrome.webRequest.WebResponseHeadersDetails;
+            } as chrome.webRequest.OnHeadersReceivedDetails;
             const actual = testee(details) as chrome.webRequest.BlockingResponse;
 
             expect(testee.name).toBe('ModifyResponseHeaders');

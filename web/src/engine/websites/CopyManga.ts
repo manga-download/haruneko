@@ -1,69 +1,49 @@
 import { Tags } from '../Tags';
 import icon from './CopyManga.webp';
-import { Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from '../providers/MangaPlugin';
-import * as Common from './decorators/Common';
-import { FetchCSS, FetchJSON } from '../platform/FetchProvider';
 import { GetBytesFromHex, GetBytesFromUTF8 } from '../BufferEncoder';
+import { FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
+import { DecoratableMangaScraper, type MangaPlugin, Manga, Chapter, Page } from '../providers/MangaPlugin';
+import * as Common from './decorators/Common';
 
-type APIResponse<T> = {
-    code: number,
-    message: string,
-    results: T
-}
+type EncryptedChapters = { results: string; };
 
-type APISingleComic = {
-    comic: APIComic
-}
-
-type APIComic = {
-    path_word: string,
-    name: string
-}
-
-type APIResultList<T> = {
-    list: T[]
-}
+type JSONMangas = {
+    path_word: string;
+    name: string;
+}[];
 
 type APIChapters = {
     groups: {
         default: {
             chapters: {
-                name: string,
-                id: string
+                name: string;
+                id: string;
             }[]
         }
     }
-}
+};
 
-type APIPage = {
-    url :string
-}
+type APIPages = { url: string; }[];
 
+const uri = new URL('https://copy20.com');
+const patternAliasDomains = [
+    uri.hostname,
+    'mangacopy.com',
+    '2025copy.com',
+].join('|').replaceAll('.', '\\.');
+
+@Common.MangaCSS(new RegExp(`^https://(www\.)?${patternAliasDomains}/comic/[^/]+$/`), 'h6[title]', element => element.title.trim())
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
-    private readonly defaultKey = 'xxxmanga.woo.key';
+    private readonly keyData = GetBytesFromUTF8('oppzzivv.nzm.oip');
 
     public constructor() {
-        super('copymanga', 'CopyManga', 'https://www.copy20.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Media.Manga, Tags.Language.Chinese, Tags.Source.Aggregator);
-
-        //this.Settings.url = new Text('urloverride', W.Plugin_Settings_UrlOverride, W.Plugin_Settings_UrlOverrideInfo, this.URI.href);
-        //(this.Settings.url as Text).Subscribe(value => this.URI.href = value);
-        //this.URI.href = this.Settings.url.Value as string;
+        super('copymanga', 'CopyManga', uri.origin, Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Chinese, Tags.Source.Aggregator);
     }
 
     public override get Icon() {
         return icon;
-    }
-
-    public override ValidateMangaURL(url: string): boolean {
-        return new RegExpSafe(`^${this.URI.origin}/comic/[^/]+$`).test(url) || /^https:\/\/www\.mangacopy\.com\/comic\/[^/]+$/.test(url);
-    }
-
-    public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
-        const id = new URL(url).pathname.split('/').at(-1);
-        const { results: { comic } } = await FetchJSON<APIResponse<APISingleComic>>(this.CreateApiRequest(`/api/v3/comic2/${id}`));
-        return new Manga(this, provider, comic.path_word, comic.name.trim());
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
@@ -77,49 +57,32 @@ export default class extends DecoratableMangaScraper {
 
     private async GetMangasFromPage(page: number, provider: MangaPlugin): Promise<Manga[]> {
         try {
-            const request = this.CreateApiRequest(`/api/v3/comics?ordering=-datetime_updated&limit=50&offset=${page * 50}`);
-            const data = await FetchJSON<APIResponse<APIResultList<APIComic>>>(request);
-            return data.results.list.map(item => new Manga(this, provider, item.path_word, item.name.trim()));
-        } catch { // TODO: Do not return empty list for generic errors
-            return [];
+            const request = new Request(new URL('/comics?ordering=-datetime_updated&limit=50&offset=' + 50 * page, this.URI));
+            const data = await FetchWindowScript<JSONMangas>(request, 'free_list');
+            return data.map(({ name, path_word: path }) => new Manga(this, provider, '/comic/' + path, name.trim()));
+        } catch {
+            return []; // TODO: Do not return empty list for generic errors
         }
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const { results } = await FetchJSON<APIResponse<string>>(this.CreateApiRequest(`/comicdetail/${manga.Identifier}/chapters`));
+        const uri = new URL(`./comicdetail/${manga.Identifier.split('/').at(-1)}/chapters`, this.URI);
+        const { results } = await FetchJSON<EncryptedChapters>(new Request(uri, { headers: { 'DNTS': '1' } }));
         const { groups: { default: { chapters } } } = await this.Decrypt<APIChapters>(results);
-        return chapters.map(chapter => new Chapter(this, manga, chapter.id, chapter.name.trim()));
+        return chapters.map(chapter => new Chapter(this, manga, manga.Identifier + '/chapter/' + chapter.id, chapter.name.trim()));
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const [dataElement] = await FetchCSS<HTMLDivElement>(new Request(new URL(`/comic/${chapter.Parent.Identifier}/chapter/${chapter.Identifier}`, this.URI)), '.imageData');
-        const imageData = dataElement.getAttribute('contentKey');
-        const images = await this.Decrypt<APIPage[]>(imageData);
+        const imageData = await FetchWindowScript<string>(new Request(new URL(chapter.Identifier, this.URI)), 'contentKey', 500);
+        const images = await this.Decrypt<APIPages>(imageData);
         return images.map(image => new Page(this, chapter, new URL(image.url)));
     }
 
     private async Decrypt<T>(encryptedData: string): Promise<T> {
-        const key = GetBytesFromUTF8(this.defaultKey);
-        const iv = GetBytesFromUTF8(encryptedData.substring(0, 16));
-        const cipher = GetBytesFromHex(encryptedData.substring(16, encryptedData.length));
-        const secretKey = await crypto.subtle.importKey('raw', key, {
-            name: 'AES-CBC',
-            length: 128
-        }, true, ['decrypt']);
-
-        const data = await crypto.subtle.decrypt({
-            name: 'AES-CBC',
-            iv: iv
-        }, secretKey, cipher);
-
-        return JSON.parse(new TextDecoder().decode(data)) as T;
-    }
-
-    private CreateApiRequest(pathname: string): Request {
-        return new Request(new URL(pathname, this.URI), {
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
-            }
-        });
+        const encrypted = GetBytesFromHex(encryptedData.slice(16, encryptedData.length));
+        const algorithm = { name: 'AES-CBC', iv: GetBytesFromUTF8(encryptedData.slice(0, 16)) };
+        const key = await crypto.subtle.importKey('raw', this.keyData, algorithm, false, [ 'decrypt' ]);
+        const decrypted = await crypto.subtle.decrypt(algorithm, key, encrypted);
+        return JSON.parse(new TextDecoder('utf-8').decode(decrypted)) as T;
     }
 }

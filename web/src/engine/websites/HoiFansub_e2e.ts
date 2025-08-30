@@ -1,17 +1,17 @@
-import { TestFixture, type Config } from '../../../test/WebsitesFixture';
+import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config: Config = {
+new TestFixture({
     plugin: {
         id: 'hoifansub',
         title: 'Hoi Fansub'
     },
     container: {
-        url: 'https://hoifansub.com/manga/love-strongly-surprise/',
-        id: JSON.stringify({ post: '609', slug: '/manga/love-strongly-surprise/' }),
+        url: 'https://hoifansub.com/manga/love-strongly/',
+        id: JSON.stringify({ post: '609', slug: '/manga/love-strongly/' }),
         title: 'Love Strongly, Surprise!'
     },
     child: {
-        id: '/manga/love-strongly-surprise/bolum-12/',
+        id: '/manga/love-strongly/bolum-12/',
         title: 'Bölüm 12'
     }, /*
     entry: {    //Login needed
@@ -19,6 +19,4 @@ const config: Config = {
         size: -1,
         type: 'image/jpeg'
     }*/
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

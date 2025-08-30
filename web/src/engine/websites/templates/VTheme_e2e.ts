@@ -1,4 +1,6 @@
 import '../AuroraScans_e2e';
+import '../EternalMangas_e2e';
+import '../HijalaScans_e2e';
 import '../HiveScans_e2e';
 import '../MagusManga_e2e';
 import '../MangaPro_e2e';

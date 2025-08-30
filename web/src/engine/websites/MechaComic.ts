@@ -1,23 +1,23 @@
 import { Tags } from '../Tags';
 import icon from './MechaComic.webp';
-import { Chapter, DecoratableMangaScraper, Page, type Manga } from '../providers/MangaPlugin';
-import * as Common from './decorators/Common';
-import { Fetch, FetchCSS, FetchJSON } from '../platform/FetchProvider';
-import type { Priority } from '../taskpool/DeferredTask';
 import { GetBytesFromHex } from '../BufferEncoder';
+import type { Priority } from '../taskpool/DeferredTask';
+import { Fetch, FetchCSS, FetchJSON } from '../platform/FetchProvider';
+import { DecoratableMangaScraper, type Manga, Chapter, Page } from '../providers/MangaPlugin';
+import * as Common from './decorators/Common';
 
 type ContentData = {
     images: Record<string, ImageData[]>;
-}
+};
 
 type ImageData = {
-    src: string,
-    format : string
-}
+    src: string;
+    format: string;
+};
 
-type CryptoKey = {
-    cryptoKey : string
-}
+type PageParameters = {
+    keyData: string;
+};
 
 @Common.MangaCSS(/^{origin}\/books\/\d+$/, 'div.p-bookInfo_title h1')
 @Common.MangasMultiPageCSS('/free/list?page={page}', 'div.p-book_detail dt.p-book_title a')
@@ -64,7 +64,7 @@ export default class extends DecoratableMangaScraper {
         const baseUrl = url.searchParams.get('directory');
         const ver = url.searchParams.get('ver');
 
-        const cryptoKey = cryptokeyURL ? await (await Fetch(new Request(new URL(cryptokeyURL, this.URI)))).text() : '';
+        const keyData = cryptokeyURL ? await (await Fetch(new Request(new URL(cryptokeyURL, this.URI)))).text() : '';
 
         const contentUrl = new URL(rasterScriptURL || verticalScriptURL || pageScriptURL, chapterUrl);
         contentUrl.searchParams.set('ver', ver);
@@ -72,26 +72,21 @@ export default class extends DecoratableMangaScraper {
         return Object.values(images).map(page => {
             const url = new URL(page.shift().src, baseUrl);
             url.searchParams.set('ver', ver);
-            return new Page<CryptoKey>(this, chapter, url, { cryptoKey });
+            return new Page<PageParameters>(this, chapter, url, { keyData });
         });
     }
 
-    public override async FetchImage(page: Page<CryptoKey>, priority: Priority, signal: AbortSignal): Promise<Blob> {
-        const blob = await Common.FetchImageAjax.call(this, page, priority, signal);
-        const cryptoKey = page.Parameters.cryptoKey;
-        return cryptoKey ? await DecryptImage(blob, cryptoKey) : blob;
+    public override async FetchImage(page: Page<PageParameters>, priority: Priority, signal: AbortSignal): Promise<Blob> {
+        const response = await this.imageTaskPool.Add(() => Fetch(new Request(page.Link, { signal })), priority, signal);
+        const keyData = page.Parameters.keyData;
+        return keyData ? this.DecryptImage(await response.arrayBuffer(), keyData) : response.blob();
     }
-}
 
-async function DecryptImage(blob: Blob, cryptoKey: string): Promise<Blob> {
-    const data = new Uint8Array(await blob.arrayBuffer());
-    const cipherText = data.slice(16);
-    const iv = data.slice(0, 16);
-    const aesKey = await crypto.subtle.importKey('raw', GetBytesFromHex(cryptoKey), 'AES-CBC', false, ['decrypt']);
-    const decrypted = await crypto.subtle.decrypt({
-        name: 'AES-CBC',
-        iv: iv
-    }, aesKey, cipherText);
-
-    return Common.GetTypedData(decrypted);
+    private async DecryptImage(encrypted: ArrayBuffer, keyData: string): Promise<Blob> {
+        const data = new Uint8Array(encrypted);
+        const algorithm = { name: 'AES-CBC', iv: data.slice(0, 16) };
+        const key = await crypto.subtle.importKey('raw', GetBytesFromHex(keyData), algorithm, false, [ 'decrypt' ]);
+        const decrypted = await crypto.subtle.decrypt(algorithm, key, data.slice(16));
+        return Common.GetTypedData(decrypted);
+    }
 }

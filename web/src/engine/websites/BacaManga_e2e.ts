@@ -6,7 +6,7 @@ new TestFixture({
         title: 'BacaManga'
     },
     container: {
-        url: 'https://komikindo.bz/komik/martial-peak/',
+        url: 'https://komikindo.ch/komik/martial-peak/',
         id: '/komik/martial-peak/',
         title: 'Martial Peak'
     },

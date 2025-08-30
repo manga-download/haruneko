@@ -5,14 +5,14 @@ import * as Madara from './decorators/WordPressMadara';
 import * as Common from './decorators/Common';
 import { FetchWindowScript } from '../platform/FetchProvider';
 
-@Madara.MangaCSS(/^{origin}\/webtoon\/[^/]+\/$/, 'ol.breadcrumb li:last-of-type a')
+@Madara.MangaCSS(/^{origin}\/serie\/[^/]+\/$/, 'ol.breadcrumb li:last-of-type a')
 @Madara.MangasMultiPageCSS()
 @Madara.ChaptersSinglePageCSS()
 @Madara.PagesSinglePageCSS()
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
-    public constructor() {
+    public constructor () {
         super('toonily', 'Toonily', 'https://toonily.com', Tags.Media.Manhwa, Tags.Rating.Pornographic, Tags.Language.English, Tags.Source.Aggregator);
     }
 
@@ -23,5 +23,4 @@ export default class extends DecoratableMangaScraper {
     public override async Initialize(): Promise<void> {
         return FetchWindowScript(new Request(this.URI), `window.cookieStore.set('toonily-mature', '1')`);
     }
-
 }

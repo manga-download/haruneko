@@ -6,7 +6,7 @@ new TestFixture({
         title: 'ComicVn'
     },
     container: {
-        url: 'https://comicvn14.net/mau-do-long-son-67a1f438e6885976e14a3bb2.html',
+        url: 'https://comicvn16.net/mau-do-long-son-67a1f438e6885976e14a3bb2.html',
         id: '/mau-do-long-son-67a1f438e6885976e14a3bb2.html',
         title: 'Máu đỏ lòng son'
     },

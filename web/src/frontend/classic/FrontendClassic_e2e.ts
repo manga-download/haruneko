@@ -13,8 +13,9 @@ describe('Front-End (Classic)', { concurrent: false, timeout: 60_000 }, () => {
 
             await fixture.SetWebsiteFilter('Dex');
             await fixture.SelectWebsite('mangadex');
-            await fixture.UpdateWebsiteMediaTitles();
+            await fixture.UpdateWebsiteMediaTitles(7500);
             await fixture.SetMediaTitleFilter('Apple');
+            await fixture.Delay(250);
             await fixture.BookmarkMediaTitle('Apple Collection');
 
             await fixture.SetWebsiteFilter('Bookmarks');

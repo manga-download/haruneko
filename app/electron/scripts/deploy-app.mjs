@@ -16,7 +16,6 @@ const electronVersion = pkgConfig.devDependencies.electron;
  * Download a redistributable archive of Electron for the given parameters to the temp directory of the operating system.
  * Extract the content to the build directory which should be bundled for redistribution.
  * @param electronVersion ...
- * @param nwBuildType ...
  * @param electronPlatform ...
  * @param electronArchitecture ...
  */
@@ -67,18 +66,7 @@ if (process.platform === 'win32') {
 }
 
 if (process.platform === 'linux') {
-    /*
-    dirTemp = await redist(electronVersion, 'linux', 'ia32');
-    await (await import('./bundle-app-deb.mjs')).bundle(dirApp, dirTemp);
-    dirTemp = await redist(electronVersion, 'linux', 'ia32');
-    await (await import('./bundle-app-rpm.mjs')).bundle(dirApp, dirTemp);
-    dirTemp = await redist(electronVersion, 'linux', 'ia32');
-    await (await import('./bundle-app-tgz.mjs')).bundle(dirApp, dirTemp);
-    dirTemp = await redist(electronVersion, 'linux', 'x64');
-    await (await import('./bundle-app-deb.mjs')).bundle(dirApp, dirTemp);
-    dirTemp = await redist(electronVersion, 'linux', 'x64');
-    await (await import('./bundle-app-rpm.mjs')).bundle(dirApp, dirTemp);
-    dirTemp = await redist(electronVersion, 'linux', 'x64');
-    await (await import('./bundle-app-tgz.mjs')).bundle(dirApp, dirTemp);
-    */
+    const snap = await import('./bundle-app-snap.mjs');
+    dirTemp = await redist(electronVersion, process.platform, 'x64');
+    await snap.bundle(dirApp, dirRes, dirTemp, dirOut);
 }

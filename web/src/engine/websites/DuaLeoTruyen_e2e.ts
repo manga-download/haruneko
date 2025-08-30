@@ -6,7 +6,7 @@ new TestFixture({
         title: 'DuaLeoTruyen'
     },
     container: {
-        url: 'https://dualeotruyeno.com/truyen-tranh/list-truyenss-ngan-chit-chit.html',
+        url: 'https://dualeotruyeng.com/truyen-tranh/list-truyenss-ngan-chit-chit.html',
         id: '/truyen-tranh/list-truyenss-ngan-chit-chit.html',
         title: 'LIST TRUYỆN NGẮN CHỊT CHỊT'
     },
