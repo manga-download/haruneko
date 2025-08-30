@@ -10,11 +10,9 @@ import { FetchProvider as Channels } from '../../../src/ipc/Channels';
 
 export class FetchProvider {
 
-    private readonly appHostname: string;
     private fetchApiSupportedPrefix: string;
 
-    constructor(private readonly ipc: IPC<Channels.Web, Channels.App>, private readonly webContents: WebContents) {
-        this.appHostname = new URL(webContents.getURL()).hostname;
+    constructor (private readonly ipc: IPC<Channels.Web, Channels.App>, private readonly webContents: WebContents) {
         this.ipc.Listen(Channels.App.Initialize, this.Initialize.bind(this));
     }
 
@@ -28,6 +26,7 @@ export class FetchProvider {
     private MergeCookies(sessionCookies?: string, customCookies?: string): string {
         // TODO: Skip cookie assignment in browser window e.g., when `sec-fetch-dest: empty`?
         const cookies = new Map<string, string>();
+        // TODO: Include cookies from target website which are not allowed by CORS (e.g., Access-Control-Allow-Credentials missing, SameOrigin restriction)
         ((sessionCookies ?? '') + ';' + (customCookies ?? ''))
             .split(';')
             .map(cookie => cookie.split('='))
@@ -48,6 +47,7 @@ export class FetchProvider {
         Object.entries(headers)
             .filter(([ name, value ]) => name && value && !IsHeaderNameConcealed(name))
             .forEach(([ name, value ]) => result.append(name, value));
+        console.log('+++', result);
 
         Object.entries(headers)
             .filter(([ name, value ]) => name && value && IsHeaderNameConcealed(name))
@@ -55,7 +55,7 @@ export class FetchProvider {
                 name = GetRevealedHeaderName(name);
                 result.set(name, /^cookie$/.test(name) ? this.MergeCookies(result.get(name), value) : value);
             });
-
+        console.log('+++', result);
         return result;
     }
 
@@ -63,8 +63,9 @@ export class FetchProvider {
         const headers = this.RevealHeaders(details.requestHeaders ?? {});
 
         // Prevent leaking HakuNeko's host in certain headers
+        const appHostname = new URL(this.webContents.getURL()).hostname;
         [ 'origin', 'referer' ].forEach(name => {
-            if (headers.get(name)?.includes(this.appHostname)) {
+            if (headers.get(name)?.includes(appHostname)) {
                 headers.delete(name);
             }
         });
@@ -100,6 +101,7 @@ export class FetchProvider {
             responseHeaders['Access-Control-Allow-Origin'] = [ '*' ];
             responseHeaders['Access-Control-Allow-Methods'] = [ '*' ];
             responseHeaders['Access-Control-Allow-Headers'] = [ '*' ];
+            responseHeaders['Access-Control-Allow-Credentials'] = [ 'true' ];
         }
         */
 
