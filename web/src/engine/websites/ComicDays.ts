@@ -1,6 +1,6 @@
 import { Tags } from '../Tags';
 import icon from './ComicDays.webp';
-import { Chapter, DecoratableMangaScraper, Manga, type MangaPlugin } from '../providers/MangaPlugin';
+import { type Chapter, DecoratableMangaScraper, Manga, type MangaPlugin } from '../providers/MangaPlugin';
 import * as CoreView from './decorators/CoreView';
 import * as Common from './decorators/Common';
 import { FetchCSS } from '../platform/FetchProvider';
@@ -12,7 +12,7 @@ function MangaExtractor(anchor: HTMLAnchorElement) {
     };
 }
 
-@Common.MangaCSS(/^{origin}\/episode\/\d+$/, CoreView.queryMangaTitleFromURI)
+@Common.MangaCSS(/^{origin}\/(episode|magazine|volume)\/\d+$/, CoreView.queryMangaTitleFromURI)
 @CoreView.PagesSinglePageJSON()
 @CoreView.ImageAjax()
 export default class extends DecoratableMangaScraper {
@@ -35,13 +35,12 @@ export default class extends DecoratableMangaScraper {
     }
     private async GetMangaListFromPages(provider: MangaPlugin, path: string, query: string, queryimg: string): Promise<Manga[]> {
         const data = await FetchCSS<HTMLAnchorElement>(new Request(new URL(path, this.URI)), query);
-        return data.map(element => new Manga(this, provider, element.pathname, element.querySelector(queryimg).getAttribute('alt').trim()));
+        return data.map(element => new Manga(this, provider, element.pathname, element.querySelector<HTMLImageElement>(queryimg).alt.trim()));
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         if (/^\/magazine\/\d+$/.test(manga.Identifier)) {
-            const [data] = await FetchCSS(new Request(new URL(manga.Identifier, this.URI)), '.episode-header-title');
-            return [new Chapter(this, manga, manga.Identifier, data.textContent.replace(manga.Title, '').trim())];
+            return CoreView.FetchChaptersMultiPagesAJAXV1.call(this, manga);
         } else {
             return CoreView.FetchChaptersMultiPageAJAXV2.call(this, manga);
         }
