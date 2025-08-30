@@ -241,41 +241,41 @@
     <ContextMenu bind:open={contextMenuOpen} target={[itemsdiv]}>
         {#if contextItem}
             <ContextMenuOption
-                labelText="Download - {contextItem?.Title}"
+                labelText={$Locale.Frontend_ContextMenu_DownloadSingle(contextItem?.Title)}
                 shortcutText="⌘D"
                 onclick={() => downloadItems([contextItem])}
             />
         {/if}
         {#if selectedItems.length > 1}
             <ContextMenuOption
-                labelText="Download {selectedItems.length} selecteds"
+                labelText={$Locale.Frontend_ContextMenu_DownloadMultiple(String(selectedItems.length))}
                 shortcutText="⌘S"
                 onclick={() => downloadItems(selectedItems.toReversed())}
             />
         {/if}
         <ContextMenuOption
-            labelText="Download all"
+            labelText={$Locale.Frontend_ContextMenu_DownloadAll()}
             shortcutText="⌘A"
             onclick={() => downloadItems(filteredItems.toReversed())}
         />
         {#if contextItem}
             <ContextMenuDivider />
             <ContextMenuOption
-                labelText="View"
+                labelText={$Locale.Frontend_ContextMenu_View()}
                 shortcutText="⌘V"
                 onclick={() => {
                     $selectedItem = contextItem;
                 }}
             />
-            <ContextMenuOption labelText="Flag as">
+            <ContextMenuOption labelText={$Locale.Frontend_ContextMenu_FlagAs()}>
                 <ContextMenuOption
-                    labelText="Not viewed"
+                    labelText={$Locale.Annotations_ViewProgress_NoneDescription()}
                     onclick={async () => {
                         window.HakuNeko.ItemflagManager.UnflagItem(contextItem);
                     }}
                 />
                 <ContextMenuOption
-                    labelText="Viewed"
+                    labelText={$Locale.Annotations_ViewProgress_ViewedDescription()}
                     onclick={async () => {
                         window.HakuNeko.ItemflagManager.FlagItem(
                             contextItem,
@@ -284,7 +284,7 @@
                     }}
                 />
                 <ContextMenuOption
-                    labelText="Current"
+                    labelText={$Locale.Annotations_ViewProgress_CurrentDescription()}
                     onclick={async () => {
                         window.HakuNeko.ItemflagManager.FlagItem(
                             contextItem,
@@ -293,16 +293,16 @@
                     }}
                 />
             </ContextMenuOption>
-            <ContextMenuOption labelText="Copy">
-                <ContextMenuGroup labelText="Copy options">
+            <ContextMenuOption labelText={$Locale.Frontend_ContextMenu_Copy()}>
+                <ContextMenuGroup labelText={$Locale.Frontend_ContextMenu_CopyOptions()}>
                     <ContextMenuOption
                         id="url"
-                        labelText="URL"
+                        labelText={$Locale.Frontend_ContextMenu_CopyURL()}
                         shortcutText="⌘C"
                     />
                     <ContextMenuOption
                         id="name"
-                        labelText="name"
+                        labelText={$Locale.Frontend_ContextMenu_CopyName()}
                         shortcutText="⌘N"
                     />
                 </ContextMenuGroup>
@@ -313,7 +313,7 @@
 
 <div id="Item" transition:fade>
     <div id="ItemTitle">
-        <h5>Item List</h5>
+        <h5>{$Locale.Frontend_MediaItemList_Heading()}</h5>
     </div>
     <div id="LanguageFilter">
         <Button
@@ -339,7 +339,7 @@
         {#await loadItem}
             <div class="loading center">
                 <div><Loading withOverlay={false} /></div>
-                <div>... items</div>
+                <div>{$Locale.Frontend_Loading_Items()}</div>
             </div>
         {:then}
             {#each showItems as item (item)}
