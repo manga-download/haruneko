@@ -92,7 +92,12 @@ const translations: VariantResource = { // NOTE: Use defaults for missing transl
   Frontend_FluentCore_Menu_ImportBookmarks_Description: "Importieren aller Lesezeichen aus einer Datei (vorhandene Lesezeichen bleiben bestehen)",
   Frontend_FluentCore_Menu_ExportBookmarks_Label: "Lesezeichen exportieren…",
   Frontend_FluentCore_Menu_ExportBookmarks_Description: "Exportieren aller Lesezeichen in eine Datei (z.B. als Sicherheitskopie)",
+  Frontend_FluentCore_Button_ToggleTheme_Description: "Farbschema auf {0} umschalten",
   //
+  Frontend_FluentCore_Settings_ThemeMode_Label: "Farbschema",
+  Frontend_FluentCore_Settings_ThemeMode_Description: "Wählen Sie das Farbschema für die Benutzeroberfläche",
+  Frontend_FluentCore_Settings_ThemeMode_WebDark: "Dunkel (Web)",
+  Frontend_FluentCore_Settings_ThemeMode_WebLight: "Hell (Web)",
   Frontend_FluentCore_Settings_ShowBookmarksPanel_Label: "Lesezeichen Ein-/Ausblenden",
   Frontend_FluentCore_Settings_ShowBookmarksPanel_Description: "Schaltet die Sichtbarkeit der Liste mit den Lesezeichen ein/aus",
   Frontend_FluentCore_Settings_ShowDownloadsPanel_Label: "Downloads Ein-/Ausblenden",
