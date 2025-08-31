@@ -16,25 +16,31 @@ const fetchApiForbiddenHeaders = [
     'Sec-Fetch-Site',
 ];
 
-function ConcealHeaders(init: HeadersInit): Headers {
-    const headers = new Headers(init);
-    for (const name of fetchApiForbiddenHeaders) {
-        if (headers.has(name)) {
-            headers.set(fetchApiSupportedPrefix + name, headers.get(name));
-            headers.delete(name);
-        }
-    }
-    return headers;
-}
-
 class FetchRequest extends Request {
+
     constructor (input: URL | RequestInfo, init?: RequestInit) {
         if (init?.headers) {
-            init.headers = ConcealHeaders(init.headers);
+            init.headers = FetchRequest.#ConcealHeaders(init.headers, init.credentials);
         }
-        // NOTE: Since all website requests made from the app-domain are cross-origin, the `same-origin` default would strip the cookies and authorization header.
-        //       => Always use `include` when no other credentials are provided to keep the cookies and authorization header for requests made from the app-domain.
-        super(input, { credentials: 'include', ...init });
+        super(input, init);
+    }
+
+    static #ConcealHeaders(init: HeadersInit, credentials?: RequestCredentials): Headers {
+        const headers = new Headers(init);
+
+        for (const name of fetchApiForbiddenHeaders) {
+            if (headers.has(name)) {
+                headers.set(fetchApiSupportedPrefix + name, headers.get(name));
+                headers.delete(name);
+            }
+        }
+
+        if (credentials?.toLowerCase() === 'omit') {
+            headers.set(fetchApiSupportedPrefix + 'Cookie', '');
+            headers.set('Authorization', '');
+        }
+
+        return headers;
     }
 }
 

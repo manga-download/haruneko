@@ -2,7 +2,7 @@ import { FetchProvider } from '../FetchProviderCommon';
 import type { FeatureFlags } from '../../FeatureFlags';
 
 // See: https://developer.mozilla.org/en-US/docs/Glossary/Forbidden_header_name
-const fetchApiSupportedPrefix = 'X-FetchAPI-'.toLowerCase();
+const fetchApiSupportedPrefix = 'X-FetchAPI-';
 const fetchApiForbiddenHeaders = [
     'User-Agent',
     'Cookie',
@@ -18,21 +18,26 @@ class FetchRequest extends Request {
 
     constructor (input: URL | RequestInfo, init?: RequestInit) {
         if (init?.headers) {
-            init.headers = FetchRequest.ConcealHeaders(init.headers);
+            init.headers = FetchRequest.#ConcealHeaders(init.headers, init.credentials);
         }
-        // NOTE: Since all website requests made from the app-domain are cross-origin, the `same-origin` default would strip the cookies and authorization header.
-        //       => Always use `include` when no other credentials are provided to keep the cookies and authorization header for requests made from the app-domain.
-        super(input, { credentials: 'include', ...init });
+        super(input, init);
     }
 
-    private static ConcealHeaders(init: HeadersInit): Headers {
+    static #ConcealHeaders(init: HeadersInit, credentials?: RequestCredentials): Headers {
         const headers = new Headers(init);
+
         for (const name of fetchApiForbiddenHeaders) {
             if (headers.has(name)) {
                 headers.set(fetchApiSupportedPrefix + name, headers.get(name));
                 headers.delete(name);
             }
         }
+
+        if (credentials?.toLowerCase() === 'omit') {
+            headers.set(fetchApiSupportedPrefix + 'Cookie', '');
+            headers.set('Authorization', '');
+        }
+
         return headers;
     }
 }
@@ -94,18 +99,9 @@ export default class FetchProviderNW extends FetchProvider {
         return response;
     }
 
-    private MergeCookies(sessionCookies?: string, customCookies?: string): string {
-        // TODO: Skip cookie assignment in browser window e.g., when `sec-fetch-dest: empty`?
-        const cookies = new Map<string, string>();
-        ((sessionCookies ?? '') + ';' + (customCookies ?? ''))
-            .split(';')
-            .map(cookie => cookie.split('='))
-            .filter(cookie => cookie.length === 2)
-            .forEach(([ name, value ]) => cookies.set(name.trim(), value.trim()));
-        return cookies
-            .entries()
-            .reduce((accumulator: string[], [ name, value ]) => accumulator.concat(name + '=' + value), [])
-            .join('; ');
+    private async GetSessionCookies(url: string): Promise<string> {
+        const sessionCookies = await chrome.cookies.getAll({ url, partitionKey: {} }); // Include empty partition filter since the chrome bug-fix does not work: https://issues.chromium.org/issues/323924496
+        return sessionCookies.map(({ name, value }) => `${name}=${value}`).join(';'); // TODO: Maybe use `encodeURIComponent(cookie.value)`
     }
 
     private RevealHeaders(headers: chrome.webRequest.HttpHeader[]): Headers {
@@ -120,23 +116,21 @@ export default class FetchProviderNW extends FetchProvider {
 
         headers
             .filter(({ name, value }) => name && value && IsHeaderNameConcealed(name))
-            .forEach(({ name, value }) => {
-                name = GetRevealedHeaderName(name);
-                result.set(name, /^cookie$/.test(name) ? this.MergeCookies(result.get(name), value) : value);
-            });
+            .forEach(({ name, value }) => result.set(GetRevealedHeaderName(name), value));
 
         return result;
     }
 
-    private ModifyRequestHeaders = function ModifyRequestHeaders(this: FetchProviderNW, details: chrome.webRequest.OnBeforeSendHeadersDetails): chrome.webRequest.BlockingResponse {
-        const headers = this.RevealHeaders(details.requestHeaders ?? []);
+    private readonly ModifyRequestHeaders = function ModifyRequestHeaders(this: FetchProviderNW, details: chrome.webRequest.OnBeforeSendHeadersDetails): chrome.webRequest.BlockingResponse {
+        const requestHeaders = new Headers(details.requestHeaders?.map(h => [ h.name, h.value ]) ?? []);
+        requestHeaders.set('cookie', await this.GetSessionCookies(details.url));
+        const headers = this.RevealHeaders(details.requestHeaders);
+
+        // Remove certain headers when empty
+        [ 'cookie' ].forEach(name => headers.has(name) && !headers.get(name)?.trim() ? headers.delete(name) : null);
 
         // Prevent leaking HakuNeko's host in certain headers
-        [ 'origin', 'referer' ].forEach(name => {
-            if (headers.get(name)?.includes(this.appHostname)) {
-                headers.delete(name);
-            }
-        });
+        [ 'origin', 'referer' ].forEach(name => headers.get(name)?.includes(this.appHostname) ? headers.delete(name) : null);
 
         return {
             cancel: false,
@@ -144,7 +138,7 @@ export default class FetchProviderNW extends FetchProvider {
         };
     }.bind(this);
 
-    private ModifyResponseHeaders = function ModifyResponseHeaders(this: FetchProviderNW, details: chrome.webRequest.OnHeadersReceivedDetails): chrome.webRequest.BlockingResponse {
+    private readonly ModifyResponseHeaders = function ModifyResponseHeaders(this: FetchProviderNW, details: chrome.webRequest.OnHeadersReceivedDetails): chrome.webRequest.BlockingResponse {
         return {
             // remove the `link` header to prevent prefetch/preload and a corresponding warning about 'resource preloaded but not used',
             // especially when scraping with headless requests (see: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Link)

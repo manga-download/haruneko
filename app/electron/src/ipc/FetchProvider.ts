@@ -10,6 +10,7 @@ import { FetchProvider as Channels } from '../../../src/ipc/Channels';
 
 export class FetchProvider {
 
+    private appHostname = '';
     private fetchApiSupportedPrefix: string;
 
     constructor (private readonly ipc: IPC<Channels.Web, Channels.App>, private readonly webContents: WebContents) {
@@ -17,7 +18,8 @@ export class FetchProvider {
     }
 
     private Initialize(fetchApiSupportedPrefix: string): void {
-        this.fetchApiSupportedPrefix = fetchApiSupportedPrefix.toLowerCase();
+        this.fetchApiSupportedPrefix = fetchApiSupportedPrefix;
+        this.appHostname = new URL(this.webContents.getURL()).hostname;
         this.webContents.session.webRequest.onBeforeSendHeaders((details, callback) => this.ModifyRequestHeaders(details).then(callback));
         this.webContents.session.webRequest.onHeadersReceived((details, callback) => callback(this.ModifyResponseHeaders(details)));
         this.Initialize = () => { };
@@ -25,10 +27,10 @@ export class FetchProvider {
 
     private async GetSessionCookies(url: string): Promise<string> {
         const sessionCookies = await this.webContents.session.cookies.get({ url, /* partitionKey: {} */ }); // TODO: When filter by URL partioned cookies may not be found (e.g., cf_clearance)
-        return sessionCookies.map(cookie => `${cookie.name}=${cookie.value}`).join(';'); // TODO: Maybe use `encodeURIComponent(cookie.value)`
+        return sessionCookies.map(({ name, value }) => `${name}=${value}`).join(';'); // TODO: Maybe use `encodeURIComponent(cookie.value)`
     }
 
-    private RevealHeaders(headers: Record<string, string>): Headers {
+    private RevealHeaders(headers: Headers): Headers {
         const result = new Headers();
         const patternConcealedHeaderName = new RegExp('^' + this.fetchApiSupportedPrefix, 'i');
         const IsHeaderNameConcealed = (name: string) => patternConcealedHeaderName.test(name);
@@ -46,16 +48,15 @@ export class FetchProvider {
     }
 
     private async ModifyRequestHeaders(details: OnBeforeSendHeadersListenerDetails): Promise<BeforeSendResponse> {
-        details.requestHeaders = details.requestHeaders ?? {};
-        details.requestHeaders.cookie = await this.GetSessionCookies(details.url);
-        const headers = this.RevealHeaders(details.requestHeaders ?? {});
+        const requestHeaders = new Headers(details.requestHeaders ?? {});
+        requestHeaders.set('cookie', await this.GetSessionCookies(details.url));
+        const headers = this.RevealHeaders(requestHeaders);
 
         // Remove certain headers when empty
         [ 'cookie' ].forEach(name => headers.has(name) && !headers.get(name)?.trim() ? headers.delete(name) : null);
 
         // Prevent leaking HakuNeko's host in certain headers
-        const appHostname = new URL(this.webContents.getURL()).hostname;
-        [ 'origin', 'referer' ].forEach(name => headers.get(name)?.includes(appHostname) ? headers.delete(name) : null);
+        [ 'origin', 'referer' ].forEach(name => headers.get(name)?.includes(this.appHostname) ? headers.delete(name) : null);
 
         return {
             cancel: false,
