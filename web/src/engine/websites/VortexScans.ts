@@ -1,15 +1,22 @@
 import { Tags } from '../Tags';
+import { FetchNextJS } from '../platform/FetchProvider';
+import { type Chapter, Page, type DecoratableMangaScraper } from '../providers/MangaPlugin';
 import icon from './VortexScans.webp';
 import { VTheme } from './templates/VTheme';
-import * as Common from './decorators/Common';
 
-@Common.PagesSinglePageJS(` [ ...document.querySelectorAll('.image-container img[data-image-index]') ].map(img => img.src)
-    new Promise(resolve => {
-        const images = [ ...document.querySelectorAll('.image-container img[data-image-index]') ];
-        images.forEach(img => img.scrollIntoView());
-        setTimeout(() => resolve(images.map(img => img.src)), 500);
-    });
-`)
+type HydratedPages = {
+    images: {
+        url: string;
+        order: number;
+    }[]
+};
+
+export async function FetchPages(this: DecoratableMangaScraper, chapter: Chapter): Promise < Page[] > {
+    const { images } = await FetchNextJS<HydratedPages>(new Request(new URL(chapter.Identifier, this.URI)), data => 'images' in data);
+    return images.sort((self, other) => (self.order || 0) - (other.order || 0))
+        .map(({ url }) => new Page(this, chapter, new URL(url)));
+}
+
 export default class extends VTheme {
 
     public constructor() {
@@ -18,5 +25,9 @@ export default class extends VTheme {
 
     public override get Icon() {
         return icon;
+    }
+
+    public override async FetchPages(chapter: Chapter): Promise<Page[]> {
+        return FetchPages.call(this, chapter);
     }
 }

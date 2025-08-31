@@ -1,15 +1,9 @@
 import { Tags } from '../Tags';
+import type { Chapter, Page } from '../providers/MangaPlugin';
 import icon from './NyxScans.webp';
 import { VTheme } from './templates/VTheme';
-import * as Common from './decorators/Common';
+import { FetchPages } from './VortexScans';
 
-@Common.PagesSinglePageJS(` [ ...document.querySelectorAll('.image-container img[data-image-index]') ].map(img => img.src)
-    new Promise(resolve => {
-        const images = [ ...document.querySelectorAll('.image-container img[data-image-index]') ];
-        images.forEach(img => img.scrollIntoView());
-        setTimeout(() => resolve(images.map(img => img.src)), 500);
-    });
-`)
 export default class extends VTheme {
 
     public constructor() {
@@ -18,5 +12,9 @@ export default class extends VTheme {
 
     public override get Icon() {
         return icon;
+    }
+
+    public override async FetchPages(chapter: Chapter): Promise<Page[]> {
+        return await FetchPages.call(this, chapter);
     }
 }
