@@ -571,7 +571,6 @@ export { default as PunkRecords } from './PunkRecords';
 export { default as Pururin } from './Pururin';
 export { default as Pzykosis666HFansub } from './Pzykosis666HFansub';
 export { default as Qimeitj } from './Qimeitj';
-export { default as QuantumScans } from './QuantumScans';
 export { default as Rackus } from './Rackus';
 export { default as RadiantScans } from './RadiantScans';
 export { default as RagnarScans } from './RagnarScans';
