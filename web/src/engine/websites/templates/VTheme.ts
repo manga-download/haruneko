@@ -22,6 +22,7 @@ type APIChapters = {
             number: number;
             title: string;
             isLocked: boolean;
+            chapterPurchased: boolean;
             mangaPost: {
                 slug: string;
             };
@@ -30,11 +31,10 @@ type APIChapters = {
 };
 
 @Common.PagesSinglePageCSS('.image-container img[data-image-index]')
-@Common.ImageAjax()
+@Common.ImageAjax(true)
 export class VTheme extends DecoratableMangaScraper {
-    protected useAlternativeSorting: boolean = false;
 
-    private readonly apiUrl = (() => {
+    protected apiUrl = (() => {
         const uri = new URL(this.URI);
         uri.hostname = 'api.' + uri.hostname;
         uri.pathname = '/api/';
@@ -76,7 +76,7 @@ export class VTheme extends DecoratableMangaScraper {
     private async GetChaptersFromPage(page: number, manga: Manga): Promise<Chapter[]> {
         const { post: { chapters } } = await FetchJSON<APIChapters>(new Request(new URL(`./chapters?take=999&skip=${page * 999}&postId=${manga.Identifier}`, this.apiUrl)));
         return chapters
-            .filter(({ isLocked }) => !isLocked)
+            .filter(({ isLocked, chapterPurchased }) => !isLocked || chapterPurchased)
             .map(({ number, title, slug: chapterSlug, mangaPost: { slug: mangaSlug } }) => {
                 title = 'Chapter ' + number + (title ? ` - ${title}` : '');
                 return new Chapter(this, manga, `/series/${mangaSlug}/${chapterSlug}`, title);
