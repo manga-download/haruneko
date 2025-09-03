@@ -13,14 +13,14 @@ export class FetchProvider {
     private appHostname = '';
     private fetchApiSupportedPrefix: string;
 
-    constructor (private readonly ipc: IPC<Channels.Web, Channels.App>, private readonly webContents: WebContents) {
+    constructor (private readonly ipc: IPC<Channels.Web>, private readonly webContents: WebContents) {
         this.ipc.Listen(Channels.App.Initialize, this.Initialize.bind(this));
     }
 
     private Initialize(fetchApiSupportedPrefix: string): void {
         this.fetchApiSupportedPrefix = fetchApiSupportedPrefix;
         this.appHostname = new URL(this.webContents.getURL()).hostname;
-        this.webContents.session.webRequest.onBeforeSendHeaders((details, callback) => this.ModifyRequestHeaders(details).then(callback));
+        this.webContents.session.webRequest.onBeforeSendHeaders(async (details, callback) => this.ipc.Send(Channels.Web.OnBeforeSendHeaders, details.url, details.requestHeaders));
         this.webContents.session.webRequest.onHeadersReceived((details, callback) => callback(this.ModifyResponseHeaders(details)));
         this.Initialize = () => { };
     }
@@ -47,6 +47,7 @@ export class FetchProvider {
         return result;
     }
 
+    // TODO: Invoke via IPC in WEB
     private async ModifyRequestHeaders(details: OnBeforeSendHeadersListenerDetails): Promise<BeforeSendResponse> {
         const requestHeaders = new Headers(details.requestHeaders ?? {});
         requestHeaders.set('cookie', await this.GetSessionCookies(details.url));
@@ -64,6 +65,7 @@ export class FetchProvider {
         };
     }
 
+    // TODO: Invoke via IPC in WEB
     private ModifyResponseHeaders(details: OnHeadersReceivedListenerDetails): HeadersReceivedResponse {
         const responseHeaders: typeof details.responseHeaders = {};
         for (const originalHeader in details.responseHeaders) {

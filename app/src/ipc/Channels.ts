@@ -31,12 +31,19 @@ export namespace ApplicationWindow {
 export namespace FetchProvider {
 
     /** Send from the Main process and received/processsed in the Render process. */
-    export type Web = never;
+    export enum Web {
+        /** Channel for IPC callback with signature: `(details: Electron.OnBeforeSendHeadersListenerDetails) => Promise<Electron.BeforeSendResponse>` */
+        OnBeforeSendHeaders = 'FetchProvider::OnBeforeSendHeaders',
+        /** Channel for IPC callback with signature: `(details: Electron.OnBeforeSendHeadersListenerDetails) => Promise<Electron.BeforeSendResponse>` */
+        OnHeadersReceived = 'FetchProvider::OnHeadersReceived',
+    }
 
     /** Send from the Render process and received/processsed in the Main process. */
     export enum App {
         /** Channel for IPC callback with signature: `(fetchApiSupportedPrefix: string) => Promise<void>` */
         Initialize = 'FetchProvider::Initialize',
+        /** Channel for IPC callback with signature: `(filter: Electron.CookiesGetFilter) => Promise<Electron.Cookie[]>` */
+        GetSessionCookies = 'FetchProvider::GetSessionCookies'
     };
 }
 

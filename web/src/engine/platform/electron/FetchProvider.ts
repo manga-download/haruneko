@@ -63,11 +63,34 @@ export default class FetchProviderElectron extends FetchProvider {
         globalThis.Request = FetchRequest;
 
         this.ipc.Send(Channels.App.Initialize, fetchApiSupportedPrefix);
+
+        // Register IPC callback for:
+        // => main.ipc.Send(Channels.Web.OnBeforeSendHeaders, details))
+        // webContents.session.webRequest.onBeforeSendHeaders((details, callback) => this.ModifyRequestHeaders(details).then(callback));
+
+        // => main.ipc.Send(Channels.Web.OnHeadersReceived, details))
+        // webContents.session.webRequest.onHeadersReceived((details, callback) => callback(this.ModifyResponseHeaders(details)));
     }
 
     async Fetch(request: Request): Promise<Response> {
+        // Fetch API defaults => https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch
+        // Update cookies in request.headers.set('...')
         const response = await fetch(request);
         await super.ValidateResponse(response);
         return response;
+    }
+
+    private async GetSessionCookies(url: string): Promise<string> {
+        const sessionCookies = await this.ipc.Send(Channels.App.GetSessionCookies, { url, filter: {} });
+        return sessionCookies.map(({ name, value }) => `${name}=${value}`).join(';'); // TODO: Maybe use `encodeURIComponent(cookie.value)`
+    }
+
+    private RevealHeaders(headers: Headers): Headers {
+    }
+
+    private async ModifyRequestHeaders(details: OnBeforeSendHeadersListenerDetails): Promise<BeforeSendResponse> {
+    }
+
+    private ModifyResponseHeaders(details: OnHeadersReceivedListenerDetails): HeadersReceivedResponse {
     }
 }

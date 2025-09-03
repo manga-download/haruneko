@@ -26,16 +26,16 @@ class FetchRequest extends Request {
     static #ConcealHeaders(init: HeadersInit, credentials?: RequestCredentials): Headers {
         const headers = new Headers(init);
 
+        if (credentials?.toLowerCase() === 'omit') {
+            headers.delete('Authorization');
+            headers.delete('Cookie');
+        }
+
         for (const name of fetchApiForbiddenHeaders) {
             if (headers.has(name)) {
                 headers.set(fetchApiSupportedPrefix + name, headers.get(name));
                 headers.delete(name);
             }
-        }
-
-        if (credentials?.toLowerCase() === 'omit') {
-            headers.set(fetchApiSupportedPrefix + 'Cookie', '');
-            headers.set('Authorization', '');
         }
 
         return headers;
@@ -92,8 +92,12 @@ export default class FetchProviderNW extends FetchProvider {
         //       chrome.declarativeWebRequest.onRequest.addListener(...);
     }
 
+    // Fetch API defaults => https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch
     public async Fetch(request: Request): Promise<Response> {
-        // Fetch API defaults => https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch
+        const concealedCookieHeaderName = fetchApiSupportedPrefix + 'Cookie';
+        if (request.credentials !== 'omit' && !request.headers.has(concealedCookieHeaderName)) {
+            request.headers.set(concealedCookieHeaderName, await this.GetSessionCookies(request.url));
+        }
         const response = await fetch(request);
         await super.ValidateResponse(response);
         return response;
@@ -124,6 +128,7 @@ export default class FetchProviderNW extends FetchProvider {
     private readonly ModifyRequestHeaders = function ModifyRequestHeaders(this: FetchProviderNW, details: chrome.webRequest.OnBeforeSendHeadersDetails): chrome.webRequest.BlockingResponse {
         const requestHeaders = new Headers(details.requestHeaders?.map(h => [ h.name, h.value ]) ?? []);
         requestHeaders.set('cookie', await this.GetSessionCookies(details.url));
+        // NOTE: Previously this was assigned directly to `X-FetchAPI-Cookie` in `Fetch` call
         const headers = this.RevealHeaders(details.requestHeaders);
 
         // Remove certain headers when empty
