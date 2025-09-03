@@ -13,13 +13,13 @@ export class FetchProvider {
     private fetchApiSupportedPrefix: string;
 
     constructor (private readonly ipc: IPC, private readonly webContents: WebContents) {
-        this.ipc.Listen(Channels.FetchProvider.WebToApp.Initialize, this.Initialize.bind(this));
+        this.ipc.Listen(Channels.FetchProvider.Initialize, this.Initialize.bind(this));
     }
 
     private Initialize(fetchApiSupportedPrefix: string): void {
         this.fetchApiSupportedPrefix = fetchApiSupportedPrefix;
         this.appHostname = new URL(this.webContents.getURL()).hostname;
-        this.webContents.session.webRequest.onBeforeSendHeaders(async (details, callback) => callback(await this.ipc.Send(Channels.AppToWeb.OnBeforeSendHeaders, details.url, details.requestHeaders)));
+        this.webContents.session.webRequest.onBeforeSendHeaders(async (details, callback) => callback(await this.ipc.Send(Channels.FetchProvider.OnBeforeSendHeaders, details.url, details.requestHeaders)));
         this.webContents.session.webRequest.onHeadersReceived((details, callback) => callback(this.ModifyResponseHeaders(details)));
         this.Initialize = () => { };
     }

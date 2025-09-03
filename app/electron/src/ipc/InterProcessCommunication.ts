@@ -1,172 +1,160 @@
 import { ipcMain } from 'electron';
-//import type * as Channels from '../../../src/ipc/Channels';
-
-// This file contains all channel definitions used by app(s) and web
 
 export namespace Channels {
 
-    /** Supported IPC Channels for interacting with the main application window. */
-    export namespace ApplicationWindow {
+    export const enum Reply {
+        FromRender = 'Reply::FromRender',
+    };
 
-        /** Send from the Main process and received in the Render process. */
-        export type Web = never;
+    /**
+     * Supported IPC Channels for interacting with the main application window.
+     */
+    export const enum ApplicationWindow {
+        ShowWindow = 'ApplicationWindow::ShowWindow',
+        HideWindow = 'ApplicationWindow::HideWindow',
+        Minimize = 'ApplicationWindow::Minimize',
+        Maximize = 'ApplicationWindow::Maximize',
+        Restore = 'ApplicationWindow::Restore',
+        Close = 'ApplicationWindow::Close',
+        OpenSplash = 'ApplicationWindow::OpenSplash',
+        CloseSplash = 'ApplicationWindow::CloseSplash',
+    };
 
-        /** Send from the Render process and received in the Main process. */
-        export enum App {
-            /** Channel for IPC callback with signature: `() => Promise<void>` */
-            ShowWindow = 'ApplicationWindow::ShowWindow',
-            /** Channel for IPC callback with signature: `() => Promise<void>` */
-            HideWindow = 'ApplicationWindow::HideWindow',
-            /** Channel for IPC callback with signature: `() => Promise<void>` */
-            Minimize = 'ApplicationWindow::Minimize',
-            /** Channel for IPC callback with signature: `() => Promise<void>` */
-            Maximize = 'ApplicationWindow::Maximize',
-            /** Channel for IPC callback with signature: `() => Promise<void>` */
-            Restore = 'ApplicationWindow::Restore',
-            /** Channel for IPC callback with signature: `() => Promise<void>` */
-            Close = 'ApplicationWindow::Close',
-            /** Channel for IPC callback with signature: `(url: string) => Promise<void>` */
-            OpenSplash = 'ApplicationWindow::OpenSplash',
-            /** Channel for IPC callback with signature: `() => Promise<void>` */
-            CloseSplash = 'ApplicationWindow::CloseSplash',
-        };
-    }
+    /**
+     * ...
+     */
+    export const enum BloatGuard {
+        Initialize = 'BloatGuard::Initialize',
+    };
 
-    /** Supported IPC Channels for interacting with the fetch provider. */
-    export namespace FetchProvider {
+    /**
+     * Supported IPC Channels for interacting with the fetch provider.
+     */
+    export const enum FetchProvider {
+        OnBeforeSendHeaders = 'FetchProvider::OnBeforeSendHeaders',
+        OnHeadersReceived = 'FetchProvider::OnHeadersReceived',
+        Initialize = 'FetchProvider::Initialize',
+        GetSessionCookies = 'FetchProvider::GetSessionCookies',
+    };
 
-        /** Send from the Main process and received/processsed in the Render process. */
-        export enum AppToWeb {
-            /** Channel for IPC callback with signature: `(details: Electron.OnBeforeSendHeadersListenerDetails) => Promise<Electron.BeforeSendResponse>` */
-            OnBeforeSendHeaders = 'FetchProvider::OnBeforeSendHeaders',
-            /** Channel for IPC callback with signature: `(details: Electron.OnBeforeSendHeadersListenerDetails) => Promise<Electron.BeforeSendResponse>` */
-            OnHeadersReceived = 'FetchProvider::OnHeadersReceived',
-        }
+    /**
+     * Supported IPC Channels for interacting with browser windows.
+     */
+    export const enum RemoteBrowserWindowController {
+        OnDomReady = 'RemoteBrowserWindowController::OnDomReady',
+        OnBeforeNavigate = 'RemoteBrowserWindowController::OnBeforeNavigate',
+        OpenWindow = 'RemoteBrowserWindowController::OpenWindow',
+        CloseWindow = 'RemoteBrowserWindowController::CloseWindow',
+        SetVisibility = 'RemoteBrowserWindowController::SetVisibility',
+        ExecuteScript = 'RemoteBrowserWindowController::ExecuteScript',
+        SendDebugCommand = 'RemoteBrowserWindowController::SendDebugCommand',
+        LoadURL = 'RemoteBrowserWindowController::LoadURL',
+    };
 
-        /** Send from the Render process and received/processsed in the Main process. */
-        export enum WebToApp {
-            /** Channel for IPC callback with signature: `(fetchApiSupportedPrefix: string) => Promise<void>` */
-            Initialize = 'FetchProvider::Initialize',
-            /** Channel for IPC callback with signature: `(filter: Electron.CookiesGetFilter) => Promise<Electron.Cookie[]>` */
-            GetSessionCookies = 'FetchProvider::GetSessionCookies'
-        };
-    }
+    /**
+     * Supported IPC Channels for interacting with the RPC manager.
+     */
+    export const enum RemoteProcedureCallManager {
+        Stop = 'RemoteProcedureCallManager::Stop',
+        Restart = 'RemoteProcedureCallManager::Restart',
+    };
 
-    /** Supported IPC Channels for interacting with browser windows. */
-    export namespace RemoteBrowserWindowController {
-
-        /** Send from the Main process and received in the Render process. */
-        export enum Web {
-            /** Channel for IPC callback with signature: `(windowID: number) => Promise<void>` */
-            OnDomReady = 'RemoteBrowserWindowController::OnDomReady',
-            /** Channel for IPC callback with signature: `(windowID: number, url: string, isMainFrame: boolean, isSameDocument: boolean) => Promise<void>` */
-            OnBeforeNavigate = 'RemoteBrowserWindowController::OnBeforeNavigate',
-        };
-
-        /** Send from the Render process and received in the Main process. */
-        export enum App {
-            /** Channel for IPC callback with signature: `(options: string) => Promise<number>` */
-            OpenWindow = 'RemoteBrowserWindowController::OpenWindow',
-            /** Channel for IPC callback with signature: `(windowID: number) => Promise<void>` */
-            CloseWindow = 'RemoteBrowserWindowController::CloseWindow',
-            /** Channel for IPC callback with signature: `(windowID: number, show: boolean) => Promise<void>` */
-            SetVisibility = 'RemoteBrowserWindowController::SetVisibility',
-            /** Channel for IPC callback with signature: `<T extends JSONElement>(windowID: number, script: string) => Promise<T>` */
-            ExecuteScript = 'RemoteBrowserWindowController::ExecuteScript',
-            /** Channel for IPC callback with signature: `<T extends void | JSONElement>(windowID: number, method: string, parameters?: JSONObject) => Promise<T>` */
-            SendDebugCommand = 'RemoteBrowserWindowController::SendDebugCommand',
-            /** Channel for IPC callback with signature: `(windowID: number, url: string, options: string) => Promise<void>` */
-            LoadURL = 'RemoteBrowserWindowController::LoadURL',
-        };
-    }
-
-    /** Supported IPC Channels for interacting with the RPC manager. */
-    export namespace RemoteProcedureCallManager {
-
-        /**
-         * Send from the Main process and received/processed in the Render process.
-         * Send from the Background script and received/processsed in the Content script.
-         */
-        export type Web = never;
-
-        /**
-         * Send from the Render process and received/processed in the Main process.
-         * Send from the Content script and received/processed in the Background script.
-         */
-        export const enum App {
-            /** Channel for IPC callback with signature: `() => Promise<void>` */
-            Stop = 'RemoteProcedureCallManager::Stop',
-            /** Channel for IPC callback with signature: `(port: number, secret: string) => Promise<void>` */
-            Restart = 'RemoteProcedureCallManager::Restart',
-        };
-    }
-
-    /** Supported IPC Channels for interacting with the RPC contract callbacks. */
-    export namespace RemoteProcedureCallContract {
-
-        /**
-         * Send from the Main process and received/processed in the Render process.
-         * Send from the Background script and received/processed in the Content script.
-         */
-        export const enum Web {
-            /** Channel for IPC callback with signature: `(url: string) => Promise<void>` */
-            LoadMediaContainerFromURL = 'RemoteProcedureCallContract::LoadMediaContainerFromURL',
-        };
-
-        /**
-         * Send from the Render process and received/processed in the Main process.
-         * Send from the Content script and received/procesed in the Background script.
-         */
-        export type App = never;
-    }
-
-    export namespace BloatGuard {
-
-        /**
-         * Send from the Main process and received/processed in the Render process.
-         * Send from the Background script and received/processed in the Content script.
-         */
-        export type Web = never;
-
-        /**
-         * Send from the Render process and received/processed in the Main process.
-         * Send from the Content script and received/procesed in the Background script.
-         */
-        export const enum App {
-            /** Channel for IPC callback with signature: `(patterns: string[]) => Promise<void>` */
-            Initialize = 'BloatGuard::Initialize',
-        }
-    }
+    /**
+     * Supported IPC Channels for interacting with the RPC contract callbacks.
+     */
+    export const enum RemoteProcedureCallContract {
+        LoadMediaContainerFromURL = 'RemoteProcedureCallContract::LoadMediaContainerFromURL',
+    };
 }
 
 export class IPC {
 
-    constructor(private readonly webContents: Electron.WebContents) {}
+    #replyResolvers = new Map<string, (value: void | JSONElement) => void>();
 
-    // TODO: Signature declarations for `Send`
-    Send(method: Channels.FetchProvider.Web.OnBeforeSendHeaders, url: string, requestHeaders: Electron.OnBeforeSendHeadersListenerDetails[ 'requestHeaders' ]): void;
-
-    public Send(method: string, ...parameters: JSONArray): void {
-        this.webContents.send(method, ...parameters);
+    constructor (private readonly webContents: Electron.WebContents) {
+        this.On(Channels.Reply.FromRender, this.#ResolveReply.bind(this));
     }
 
-    // TODO: Signature declarations for `Listen`
+    #ResolveReply(nonce: string, value: void | JSONElement): void {
+        try {
+            this.#replyResolvers.get(nonce)?.call(this, value);
+        } finally {
+            this.#replyResolvers.delete(nonce);
+        }
+    }
 
-    Listen(method: Channels.ApplicationWindow.App.ShowWindow, callback: () => Promise<void>): void;
-    Listen(method: Channels.ApplicationWindow.App.HideWindow, callback: () => Promise<void>): void;
-    Listen(method: Channels.ApplicationWindow.App.Minimize, callback: () => Promise<void>): void;
-    Listen(method: Channels.ApplicationWindow.App.Maximize, callback: () => Promise<void>): void;
-    Listen(method: Channels.ApplicationWindow.App.Restore, callback: () => Promise<void>): void;
-    Listen(method: Channels.ApplicationWindow.App.Close, callback: () => Promise<void>): void;
-    Listen(method: Channels.ApplicationWindow.App.OpenSplash, callback: () => Promise<void>): void;
-    Listen(method: Channels.ApplicationWindow.App.CloseSplash, callback: () => Promise<void>): void;
+    /**
+     * Handle a sent event from the Render process in the Main process
+     * @description This handler is triggered by `ipcRender.send(...)`
+     * @param channel - ...
+     * @param callback - ...
+     */
+    public On<TParameters extends JSONArray>(channel: string, callback: (...parameters: TParameters) => void): void {
+        //
+        ipcMain.on(channel, (_, ...parameters: TParameters) => callback(...parameters));
+    }
 
-    Listen(method: Channels.BloatGuard.App.Initialize, callback: (patterns: string[]) => Promise<void>): void;
+    Listen(channel: Channels.Reply.FromRender, callback: (nonce: string, result: JSONElement) => void): void;
+    Listen(channel: Channels.ApplicationWindow.ShowWindow, callback: () => Promise<void>): void;
+    Listen(channel: Channels.ApplicationWindow.HideWindow, callback: () => Promise<void>): void;
+    Listen(channel: Channels.ApplicationWindow.Minimize, callback: () => Promise<void>): void;
+    Listen(channel: Channels.ApplicationWindow.Maximize, callback: () => Promise<void>): void;
+    Listen(channel: Channels.ApplicationWindow.Restore, callback: () => Promise<void>): void;
+    Listen(channel: Channels.ApplicationWindow.Close, callback: () => Promise<void>): void;
+    Listen(channel: Channels.ApplicationWindow.OpenSplash, callback: (url: string) => Promise<void>): void;
+    Listen(channel: Channels.ApplicationWindow.CloseSplash, callback: () => Promise<void>): void;
+    Listen(channel: Channels.BloatGuard.Initialize, callback: (patterns: string[]) => Promise<void>): void;
+    Listen(channel: Channels.FetchProvider.Initialize, callback: (fetchApiSupportedPrefix: string) => Promise<void>): void;
+    Listen(channel: Channels.FetchProvider.GetSessionCookies, callback: (filter: Electron.CookiesGetFilter) => PromiseLike<Electron.Cookie[]>): void;
+    Listen(channel: Channels.RemoteBrowserWindowController.OpenWindow, callback: (options: string) => Promise<number>): void;
+    Listen(channel: Channels.RemoteBrowserWindowController.CloseWindow, callback: (windowID: number) => Promise<void>): void;
+    Listen(channel: Channels.RemoteBrowserWindowController.SetVisibility, callback: (windowID: number, show: boolean) => Promise<void>): void;
+    Listen(channel: Channels.RemoteBrowserWindowController.ExecuteScript, callback: <T extends JSONElement>(windowID: number, script: string) => Promise<T>): void;
+    Listen(channel: Channels.RemoteBrowserWindowController.SendDebugCommand, callback: <T extends void | JSONElement>(windowID: number, channel: string, parameters?: JSONObject) => Promise<T>): void;
+    Listen(channel: Channels.RemoteBrowserWindowController.LoadURL, callback: (windowID: number, url: string, options: string) => Promise<void>): void;
+    Listen(channel: Channels.RemoteProcedureCallManager.Stop, callback: () => Promise<void>): void;
+    Listen(channel: Channels.RemoteProcedureCallManager.Restart, callback: (port: number, secret: string) => Promise<void>): void;
 
-    Listen(method: Channels.FetchProvider.App.Initialize, callback: (fetchApiSupportedPrefix: string) => Promise<void>): void;
-    Listen(method: Channels.FetchProvider.App.GetSessionCookies, callback: (filter: Electron.CookiesGetFilter) => PromiseLike<Electron.Cookie[]>): void;
+    /**
+     * Handle an invocation from the Render process in the Main process and reply with a corresponding response
+     * @description This handler is triggered by `ipcRender.invoke(...)`
+     * @param channel ...
+     * @param callback ...
+     */
+    public Listen<TParameters extends JSONArray, TReturn extends void | JSONElement>(channel: string, callback: (...parameters: TParameters) => PromiseLike<TReturn>): void {
+        ipcMain.handle(channel, (_, ...parameters: TParameters) => callback(...parameters));
+    }
 
-    public Listen<TParameters extends JSONArray, TReturn extends void | JSONElement>(method: string, callback: (...parameters: TParameters) => PromiseLike<TReturn>): void {
-        ipcMain.handle(method, (_, ...parameters: TParameters) => callback(...parameters));
+    Send(channel: Channels.RemoteBrowserWindowController.OnDomReady, windowID: number): void;
+    Send(channel: Channels.RemoteBrowserWindowController.OnBeforeNavigate, windowID: number, url: string, isMainFrame: boolean, isSameDocument: boolean): void;
+    Send(channel: Channels.RemoteProcedureCallContract.LoadMediaContainerFromURL, url: string): void;
+
+    /**
+     * Send an event from the Main process to the Render process
+     * @description This message will trigger `ipcRender.on(...)`
+     * @param channel ...
+     * @param parameters ...
+     * @returns ...
+     */
+    public Send(channel: string, ...parameters: JSONArray): void {
+        this.webContents.send(channel, ...parameters);
+    }
+
+    Invoke(channel: Channels.FetchProvider.OnBeforeSendHeaders, url: string, requestHeaders: Electron.OnBeforeSendHeadersListenerDetails[ 'requestHeaders' ]): Promise<Electron.BeforeSendResponse>;
+    Invoke(channel: Channels.FetchProvider.OnHeadersReceived, url: string, responseHeaders: Electron.OnHeadersReceivedListenerDetails[ 'responseHeaders' ]): Promise<Electron.HeadersReceivedResponse>;
+
+    /**
+     * Invoke a method in the Render process from the Main process
+     * @param channel ...
+     * @param parameters ...
+     * @returns ...
+     */
+    public Invoke<T extends JSONElement>(channel: string, ...parameters: JSONArray): Promise<T> {
+        // TODO: Implement mechanism to receive a response ...
+        const nonce = Date.now() + '' + Math.random();
+        return new Promise<T>(resolve => {
+            this.#replyResolvers.set(nonce, (value: T) => resolve(value));
+            this.webContents.send(channel, nonce, ...parameters);
+        });
     }
 }

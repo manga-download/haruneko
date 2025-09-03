@@ -3,11 +3,12 @@ import { PlatformInstanceActivator } from './PlatformInstanceActivator';
 import NodeWebkitIPC from './nw/InterProcessCommunication';
 import ElectronIPC from './electron/InterProcessCommunication';
 
-export type Callback = (...parameters: JSONArray) => Promise<void>;
+export type Callback = (...parameters: JSONArray) => PromiseLike<void | JSONElement>;
 
 export interface IPC {
     Listen(channel: string, callback: Callback): void;
-    Send<T extends void | JSONElement>(channel: string, ...parameters: JSONArray): Promise<T>;
+    Send(channel: string, ...parameters: JSONArray): void;
+    Invoke<T extends JSONElement>(channel: string, ...parameters: JSONArray): Promise<T>;
 }
 
 let instance: IPC;
