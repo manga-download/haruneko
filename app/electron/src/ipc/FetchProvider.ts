@@ -13,7 +13,7 @@ export class FetchProvider {
     private appHostname = '';
     private fetchApiSupportedPrefix: string;
 
-    constructor (private readonly ipc: IPC<Channels.Web>, private readonly webContents: WebContents) {
+    constructor (private readonly ipc: IPC, private readonly webContents: WebContents) {
         this.ipc.Listen(Channels.App.Initialize, this.Initialize.bind(this));
     }
 
