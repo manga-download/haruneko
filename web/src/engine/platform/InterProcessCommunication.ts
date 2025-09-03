@@ -5,16 +5,16 @@ import ElectronIPC from './electron/InterProcessCommunication';
 
 export type Callback = (...parameters: JSONArray) => Promise<void>;
 
-export interface IPC<TChannelsOut extends string, TChannelsIn extends string> {
-    Listen(channel: TChannelsIn, callback: Callback): void;
-    Send<T extends void | JSONElement>(channel: TChannelsOut, ...parameters: JSONArray): Promise<T>;
+export interface IPC {
+    Listen(channel: string, callback: Callback): void;
+    Send<T extends void | JSONElement>(channel: string, ...parameters: JSONArray): Promise<T>;
 }
 
-let instance: IPC<string, string>;
+let instance: IPC;
 
 export default function GetIPC() {
     if(!instance) {
-        instance = new PlatformInstanceActivator<IPC<string, string>>()
+        instance = new PlatformInstanceActivator<IPC>()
             .Configure(Runtime.NodeWebkit, () => new NodeWebkitIPC())
             .Configure(Runtime.Electron, () => new ElectronIPC())
             .Create();

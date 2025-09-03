@@ -5,12 +5,14 @@ export class IPC {
 
     constructor(private readonly webContents: Electron.WebContents) {}
 
-    Send(method: Channels.FetchProvider.Web.OnBeforeSendHeaders, details: Pick<Electron.OnBeforeSendHeadersListenerDetails, 'url' | 'requestHeaders'>): void;
+    // TODO: Signature declarations for `Send`
+    Send(method: Channels.FetchProvider.Web.OnBeforeSendHeaders, url: string, requestHeaders: Electron.OnBeforeSendHeadersListenerDetails[ 'requestHeaders' ]): void;
 
     public Send(method: string, ...parameters: JSONArray): void {
         this.webContents.send(method, ...parameters);
     }
 
+    // TODO: Signature declarations for `Listen`
     Listen(method: Channels.FetchProvider.App.Initialize, callback: (fetchApiSupportedPrefix: string) => Promise<void>): void;
     Listen(method: Channels.FetchProvider.App.GetSessionCookies, callback: (filter: Electron.CookiesGetFilter) => PromiseLike<Electron.Cookie[]>): void;
 

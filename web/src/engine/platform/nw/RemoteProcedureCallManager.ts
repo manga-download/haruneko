@@ -1,4 +1,4 @@
-import type { IPC } from '../InterProcessCommunication';
+import type { IPC } from './InterProcessCommunication';
 import { Key as GlobalKey } from '../../SettingsGlobal';
 import type { Numeric, Text, Check, SettingsManager } from '../../SettingsManager';
 import type { IRemoteProcedureCallManager } from '../RemoteProcedureCallManager';

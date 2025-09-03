@@ -5,7 +5,7 @@ type Message = {
 
 type Callback = (...parameters: JSONArray) => Promise<void>;
 
-export class IPC<TChannelsOut extends string, TChannelsIn extends string> {
+export class IPC {
 
     private readonly subscriptions = new Map<string, Callback[]>;
 
@@ -23,7 +23,9 @@ export class IPC<TChannelsOut extends string, TChannelsIn extends string> {
         }
     }
 
-    public Listen(channel: TChannelsIn, callback: Callback) {
+    // TODO: Signature declarations for `Listen`
+
+    public Listen(channel: string, callback: Callback) {
         if(!this.subscriptions.has(channel)) {
             this.subscriptions.set(channel, []);
         }
@@ -33,7 +35,9 @@ export class IPC<TChannelsOut extends string, TChannelsIn extends string> {
         }
     }
 
-    public async Send(channel: TChannelsOut, ...parameters: JSONArray): Promise<void> {
+    // TODO: Signature declarations for `Send`
+
+    public async Send(channel: string, ...parameters: JSONArray): Promise<void> {
         // TODO: improve query filter e.g., windowID or tabID
         const tabs = await new Promise<chrome.tabs.Tab[]>(resolve => chrome.tabs.query({ active: true }, resolve));
         const tab = tabs.length > 0 ? tabs.at(0) : undefined;

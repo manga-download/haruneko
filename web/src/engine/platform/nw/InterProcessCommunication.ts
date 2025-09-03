@@ -5,7 +5,7 @@ type Message = {
     parameters: JSONArray,
 }
 
-export default class implements IPC<string, string> {
+export default class implements IPC {
 
     private readonly subscriptions = new Map<string, Callback[]>;
 
