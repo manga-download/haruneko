@@ -1,4 +1,5 @@
 import type { IPC, Callback } from '../InterProcessCommunication';
+import { Channels } from '../../../../../app/nw/src/ipc/InterProcessCommunication';
 
 type Message = {
     channel: string,
@@ -23,7 +24,9 @@ export default class implements IPC {
         }
     }
 
-    public Listen(channel: string, callback: Callback): void {
+    Listen(channel: Channels.RemoteProcedureCallContract.Web.LoadMediaContainerFromURL, callback: (url: string) => Promise<void>): void;
+
+    public Listen(channel: string, callback: (...parameters: JSONArray) => Promise<void>): void {
         if(!this.subscriptions.has(channel)) {
             this.subscriptions.set(channel, []);
         }
@@ -33,7 +36,10 @@ export default class implements IPC {
         }
     }
 
-    public async Send<T extends void | JSONElement>(channel: string, ...parameters: JSONArray): Promise<T> {
+    Send(channel: Channels.RemoteProcedureCallManager.App.Stop): Promise<void>;
+    Send(channel: Channels.RemoteProcedureCallManager.App.Restart, port: number, secret: string): Promise<void>;
+
+    public Send<T extends void | JSONElement>(channel: string, ...parameters: JSONArray): Promise<T> {
         return new Promise<T>(resolve => chrome.runtime.sendMessage<Message, T>({ channel, parameters }, resolve));
     }
 }

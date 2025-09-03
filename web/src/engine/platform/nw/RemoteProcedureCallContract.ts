@@ -1,11 +1,11 @@
-import type { IPC } from '../InterProcessCommunication';
+import type IPC from './InterProcessCommunication';
 import type { IRemoteProcedureCallContract } from '../RemoteProcedureCallContract';
-import { RemoteProcedureCallContract as Channels } from '../../../../../app/src/ipc/Channels';
+import { Channels } from '../../../../../app/nw/src/ipc/InterProcessCommunication';
 
 export default class RemoteProcedureCallContract implements IRemoteProcedureCallContract {
 
-    constructor(private readonly ipc: IPC<Channels.App, Channels.Web>) {
-        this.ipc.Listen(Channels.Web.LoadMediaContainerFromURL, this.LoadMediaContainerFromURL.bind(this));
+    constructor (private readonly ipc: IPC) {
+        this.ipc.Listen(Channels.RemoteProcedureCallContract.Web.LoadMediaContainerFromURL, this.LoadMediaContainerFromURL.bind(this));
     }
 
     public async LoadMediaContainerFromURL(url: string): Promise<void> {

@@ -1,6 +1,6 @@
 import type { IPC, Callback } from '../InterProcessCommunication';
 
-export default class implements IPC<string, string> {
+export default class implements IPC {
 
     public Listen(channel: string, callback: Callback): void {
         globalThis.ipcRenderer.on(channel, (_, ...parameters: JSONArray) => callback(...parameters));

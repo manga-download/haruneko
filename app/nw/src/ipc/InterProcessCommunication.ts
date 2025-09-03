@@ -5,6 +5,42 @@ type Message = {
 
 type Callback = (...parameters: JSONArray) => Promise<void>;
 
+export namespace Channels {
+
+    /** Supported IPC Channels for interacting with the RPC manager. */
+    export namespace RemoteProcedureCallManager {
+
+        /**
+         * Send from the Background script and received/processsed in the Content script.
+         */
+        export type Web = never;
+
+        /**
+         * Send from the Content script and received/processed in the Background script.
+         */
+        export const enum App {
+            Stop = 'RemoteProcedureCallManager::Stop',
+            Restart = 'RemoteProcedureCallManager::Restart',
+        };
+    }
+
+    /** Supported IPC Channels for interacting with the RPC contract callbacks. */
+    export namespace RemoteProcedureCallContract {
+
+        /**
+         * Send from the Background script and received/processed in the Content script.
+         */
+        export const enum Web {
+            LoadMediaContainerFromURL = 'RemoteProcedureCallContract::LoadMediaContainerFromURL',
+        };
+
+        /**
+         * Send from the Content script and received/procesed in the Background script.
+         */
+        export type App = never;
+    }
+}
+
 export class IPC {
 
     private readonly subscriptions = new Map<string, Callback[]>;
@@ -25,7 +61,10 @@ export class IPC {
 
     // TODO: Signature declarations for `Listen`
 
-    public Listen(channel: string, callback: Callback) {
+    Listen(channel: Channels.RemoteProcedureCallManager.App.Stop, callback: () => Promise<void>): void;
+    //Listen(channel: Channels.RemoteProcedureCallManager.App.Restart, callback: (port: number, secret: string) => Promise<void>): void;
+
+    public Listen(channel: string, callback: Callback): void {
         if(!this.subscriptions.has(channel)) {
             this.subscriptions.set(channel, []);
         }
@@ -36,6 +75,7 @@ export class IPC {
     }
 
     // TODO: Signature declarations for `Send`
+    Send(channel: Channels.RemoteProcedureCallContract.Web.LoadMediaContainerFromURL, url: string): Promise<void>;
 
     public async Send(channel: string, ...parameters: JSONArray): Promise<void> {
         // TODO: improve query filter e.g., windowID or tabID

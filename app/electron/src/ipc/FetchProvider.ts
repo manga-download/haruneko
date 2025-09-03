@@ -5,8 +5,7 @@ import type {
     OnBeforeSendHeadersListenerDetails,
     OnHeadersReceivedListenerDetails,
 } from 'electron';
-import type { IPC } from './InterProcessCommunication';
-import { FetchProvider as Channels } from '../../../src/ipc/Channels';
+import { type IPC, Channels } from './InterProcessCommunication';
 
 export class FetchProvider {
 
@@ -14,13 +13,13 @@ export class FetchProvider {
     private fetchApiSupportedPrefix: string;
 
     constructor (private readonly ipc: IPC, private readonly webContents: WebContents) {
-        this.ipc.Listen(Channels.App.Initialize, this.Initialize.bind(this));
+        this.ipc.Listen(Channels.FetchProvider.WebToApp.Initialize, this.Initialize.bind(this));
     }
 
     private Initialize(fetchApiSupportedPrefix: string): void {
         this.fetchApiSupportedPrefix = fetchApiSupportedPrefix;
         this.appHostname = new URL(this.webContents.getURL()).hostname;
-        this.webContents.session.webRequest.onBeforeSendHeaders(async (details, callback) => callback(await this.ipc.Send(Channels.Web.OnBeforeSendHeaders, details.url, details.requestHeaders)));
+        this.webContents.session.webRequest.onBeforeSendHeaders(async (details, callback) => callback(await this.ipc.Send(Channels.AppToWeb.OnBeforeSendHeaders, details.url, details.requestHeaders)));
         this.webContents.session.webRequest.onHeadersReceived((details, callback) => callback(this.ModifyResponseHeaders(details)));
         this.Initialize = () => { };
     }
