@@ -3,19 +3,21 @@ import type { Channels } from '../../../../../app/electron/src/ipc/InterProcessC
 
 export default class implements IPC {
 
-    Listen(channel: Channels.FetchProvider.OnBeforeSendHeaders, callback: (url: string, requestHeaders: Electron.OnBeforeSendHeadersListenerDetails[ 'requestHeaders' ]) => Electron.BeforeSendResponse): void;
-    Listen(channel: Channels.FetchProvider.OnHeadersReceived, callback: (url: string, responseHeaders: Electron.OnHeadersReceivedListenerDetails[ 'responseHeaders' ]) => Electron.HeadersReceivedResponse): void;
 
-    Listen(channel: Channels.RemoteBrowserWindowController.OnDomReady, callback: (windowID: number) => Promise<void>): void;
-    Listen(channel: Channels.RemoteBrowserWindowController.OnBeforeNavigate, callback: (windowID: number, url: string, isMainFrame: boolean, isSameDocument: boolean) => Promise<void>): void;
-    Listen(channel: Channels.RemoteProcedureCallContract.LoadMediaContainerFromURL, callback: (url: string) => Promise<void>): void;
+
+    On(channel: Channels.FetchProvider.OnBeforeSendHeaders, callback: (url: string, requestHeaders: Electron.OnBeforeSendHeadersListenerDetails[ 'requestHeaders' ]) => Electron.BeforeSendResponse): void;
+    On(channel: Channels.FetchProvider.OnHeadersReceived, callback: (url: string, responseHeaders: Electron.OnHeadersReceivedListenerDetails[ 'responseHeaders' ]) => Electron.HeadersReceivedResponse): void;
+
+    On(channel: Channels.RemoteBrowserWindowController.OnDomReady, callback: (windowID: number) => Promise<void>): void;
+    On(channel: Channels.RemoteBrowserWindowController.OnBeforeNavigate, callback: (windowID: number, url: string, isMainFrame: boolean, isSameDocument: boolean) => Promise<void>): void;
+    On(channel: Channels.RemoteProcedureCallContract.LoadMediaContainerFromURL, callback: (url: string) => Promise<void>): void;
 
     /**
-     * 
+     * ...
      * @param channel - ...
      * @param callback - ...
      */
-    public Listen(channel: string, callback: Callback): void {
+    public On<TParameters extends JSONArray>(channel: string, callback: (...parameters: TParameters) => void): void {
         // TODO: Implement mechanism to receive a response ...
         globalThis.ipcRenderer.on(channel, (_, ...parameters: JSONArray) => callback(...parameters));
     }

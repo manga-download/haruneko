@@ -85,7 +85,7 @@ export class IPC {
 
     /**
      * Handle a sent event from the Render process in the Main process
-     * @description This handler is triggered by `ipcRender.send(...)`
+     * @description This listener is triggered by `ipcRender.send(channel, ...args)`
      * @param channel - ...
      * @param callback - ...
      */
@@ -94,34 +94,34 @@ export class IPC {
         ipcMain.on(channel, (_, ...parameters: TParameters) => callback(...parameters));
     }
 
-    Listen(channel: Channels.Reply.FromRender, callback: (nonce: string, result: JSONElement) => void): void;
-    Listen(channel: Channels.ApplicationWindow.ShowWindow, callback: () => Promise<void>): void;
-    Listen(channel: Channels.ApplicationWindow.HideWindow, callback: () => Promise<void>): void;
-    Listen(channel: Channels.ApplicationWindow.Minimize, callback: () => Promise<void>): void;
-    Listen(channel: Channels.ApplicationWindow.Maximize, callback: () => Promise<void>): void;
-    Listen(channel: Channels.ApplicationWindow.Restore, callback: () => Promise<void>): void;
-    Listen(channel: Channels.ApplicationWindow.Close, callback: () => Promise<void>): void;
-    Listen(channel: Channels.ApplicationWindow.OpenSplash, callback: (url: string) => Promise<void>): void;
-    Listen(channel: Channels.ApplicationWindow.CloseSplash, callback: () => Promise<void>): void;
-    Listen(channel: Channels.BloatGuard.Initialize, callback: (patterns: string[]) => Promise<void>): void;
-    Listen(channel: Channels.FetchProvider.Initialize, callback: (fetchApiSupportedPrefix: string) => Promise<void>): void;
-    Listen(channel: Channels.FetchProvider.GetSessionCookies, callback: (filter: Electron.CookiesGetFilter) => PromiseLike<Electron.Cookie[]>): void;
-    Listen(channel: Channels.RemoteBrowserWindowController.OpenWindow, callback: (options: string) => Promise<number>): void;
-    Listen(channel: Channels.RemoteBrowserWindowController.CloseWindow, callback: (windowID: number) => Promise<void>): void;
-    Listen(channel: Channels.RemoteBrowserWindowController.SetVisibility, callback: (windowID: number, show: boolean) => Promise<void>): void;
-    Listen(channel: Channels.RemoteBrowserWindowController.ExecuteScript, callback: <T extends JSONElement>(windowID: number, script: string) => Promise<T>): void;
-    Listen(channel: Channels.RemoteBrowserWindowController.SendDebugCommand, callback: <T extends void | JSONElement>(windowID: number, channel: string, parameters?: JSONObject) => Promise<T>): void;
-    Listen(channel: Channels.RemoteBrowserWindowController.LoadURL, callback: (windowID: number, url: string, options: string) => Promise<void>): void;
-    Listen(channel: Channels.RemoteProcedureCallManager.Stop, callback: () => Promise<void>): void;
-    Listen(channel: Channels.RemoteProcedureCallManager.Restart, callback: (port: number, secret: string) => Promise<void>): void;
+    Handle(channel: Channels.Reply.FromRender, callback: (nonce: string, result: JSONElement) => void): void;
+    Handle(channel: Channels.ApplicationWindow.ShowWindow, callback: () => Promise<void>): void;
+    Handle(channel: Channels.ApplicationWindow.HideWindow, callback: () => Promise<void>): void;
+    Handle(channel: Channels.ApplicationWindow.Minimize, callback: () => Promise<void>): void;
+    Handle(channel: Channels.ApplicationWindow.Maximize, callback: () => Promise<void>): void;
+    Handle(channel: Channels.ApplicationWindow.Restore, callback: () => Promise<void>): void;
+    Handle(channel: Channels.ApplicationWindow.Close, callback: () => Promise<void>): void;
+    Handle(channel: Channels.ApplicationWindow.OpenSplash, callback: (url: string) => Promise<void>): void;
+    Handle(channel: Channels.ApplicationWindow.CloseSplash, callback: () => Promise<void>): void;
+    Handle(channel: Channels.BloatGuard.Initialize, callback: (patterns: string[]) => Promise<void>): void;
+    Handle(channel: Channels.FetchProvider.Initialize, callback: (fetchApiSupportedPrefix: string) => Promise<void>): void;
+    Handle(channel: Channels.FetchProvider.GetSessionCookies, callback: (filter: Electron.CookiesGetFilter) => PromiseLike<Electron.Cookie[]>): void;
+    Handle(channel: Channels.RemoteBrowserWindowController.OpenWindow, callback: (options: string) => Promise<number>): void;
+    Handle(channel: Channels.RemoteBrowserWindowController.CloseWindow, callback: (windowID: number) => Promise<void>): void;
+    Handle(channel: Channels.RemoteBrowserWindowController.SetVisibility, callback: (windowID: number, show: boolean) => Promise<void>): void;
+    Handle(channel: Channels.RemoteBrowserWindowController.ExecuteScript, callback: <T extends JSONElement>(windowID: number, script: string) => Promise<T>): void;
+    Handle(channel: Channels.RemoteBrowserWindowController.SendDebugCommand, callback: <T extends void | JSONElement>(windowID: number, channel: string, parameters?: JSONObject) => Promise<T>): void;
+    Handle(channel: Channels.RemoteBrowserWindowController.LoadURL, callback: (windowID: number, url: string, options: string) => Promise<void>): void;
+    Handle(channel: Channels.RemoteProcedureCallManager.Stop, callback: () => Promise<void>): void;
+    Handle(channel: Channels.RemoteProcedureCallManager.Restart, callback: (port: number, secret: string) => Promise<void>): void;
 
     /**
      * Handle an invocation from the Render process in the Main process and reply with a corresponding response
-     * @description This handler is triggered by `ipcRender.invoke(...)`
+     * @description This handler is triggered by `ipcRender.invoke(channel, ...args)`
      * @param channel ...
      * @param callback ...
      */
-    public Listen<TParameters extends JSONArray, TReturn extends void | JSONElement>(channel: string, callback: (...parameters: TParameters) => PromiseLike<TReturn>): void {
+    public Handle<TParameters extends JSONArray, TReturn extends void | JSONElement>(channel: string, callback: (...parameters: TParameters) => PromiseLike<TReturn>): void {
         ipcMain.handle(channel, (_, ...parameters: TParameters) => callback(...parameters));
     }
 
@@ -131,7 +131,7 @@ export class IPC {
 
     /**
      * Send an event from the Main process to the Render process
-     * @description This message will trigger `ipcRender.on(...)`
+     * @description This message will trigger `ipcRender.on(channel, ...args)`
      * @param channel ...
      * @param parameters ...
      * @returns ...
@@ -145,6 +145,7 @@ export class IPC {
 
     /**
      * Invoke a method in the Render process from the Main process
+     * @description This message will trigger `ipcRender.handle(channel, ...args)`
      * @param channel ...
      * @param parameters ...
      * @returns ...

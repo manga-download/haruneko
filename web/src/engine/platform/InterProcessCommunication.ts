@@ -11,6 +11,7 @@ export interface IPC {
     Invoke<T extends JSONElement>(channel: string, ...parameters: JSONArray): Promise<T>;
 }
 
+// TODO: If this is only to be used in platform specific dependencies, maybe it can be removed and the dependencies can get their instance without the generic activator
 let instance: IPC;
 
 export default function GetIPC() {
