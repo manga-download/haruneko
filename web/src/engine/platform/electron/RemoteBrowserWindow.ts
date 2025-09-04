@@ -2,12 +2,14 @@ import type { BrowserWindowConstructorOptions, LoadURLOptions } from 'electron';
 import { Observable, type IObservable } from '../../Observable';
 import type { IRemoteBrowserWindow } from '../RemoteBrowserWindow';
 import type { ScriptInjection } from '../FetchProviderCommon';
-import type { IPC } from '../InterProcessCommunication';
-import { RemoteBrowserWindowController as Channels } from '../../../../../app/src/ipc/Channels';
+import { GetIPC } from './InterProcessCommunication';
+import { Channels } from '../../../../../app/electron/src/ipc/InterProcessCommunication';
 
 export default class RemoteBrowserWindow implements IRemoteBrowserWindow {
 
     private windowID = Number.NaN;
+
+    private readonly ipc = GetIPC();
 
     private readonly domReady = new Observable<void, RemoteBrowserWindow>(null, this);
     public get DOMReady(): IObservable<void, RemoteBrowserWindow> {
@@ -24,9 +26,9 @@ export default class RemoteBrowserWindow implements IRemoteBrowserWindow {
         return this.beforeFrameNavigate;
     };
 
-    constructor(private readonly ipc: IPC<Channels.App, Channels.Web>) {
-        this.ipc.Listen(Channels.Web.OnDomReady, this.OnDomReady.bind(this));
-        this.ipc.Listen(Channels.Web.OnBeforeNavigate, this.OnBeforeNavigate.bind(this));
+    constructor () {
+        this.ipc.Listen(Channels.RemoteBrowserWindowController.OnDomReady, this.OnDomReady.bind(this));
+        this.ipc.Listen(Channels.RemoteBrowserWindowController.OnBeforeNavigate, this.OnBeforeNavigate.bind(this));
     }
 
     private async OnDomReady(windowID: number): Promise<void> {
@@ -64,7 +66,7 @@ export default class RemoteBrowserWindow implements IRemoteBrowserWindow {
             }
         };
 
-        this.windowID = await this.ipc.Send<number>(Channels.App.OpenWindow, JSON.stringify(openOptions));
+        this.windowID = await this.ipc.Send<number>(Channels.RemoteBrowserWindowController.OpenWindow, JSON.stringify(openOptions));
 
         /*
         if(isNaN(this.windowID)) {
@@ -77,28 +79,28 @@ export default class RemoteBrowserWindow implements IRemoteBrowserWindow {
             httpReferrer: request.headers.get('Referer') ?? request.referrer ?? request.url,
         };
 
-        await this.ipc.Send<void>(Channels.App.LoadURL, this.windowID, request.url, JSON.stringify(loadOptions));
+        await this.ipc.Send<void>(Channels.RemoteBrowserWindowController.LoadURL, this.windowID, request.url, JSON.stringify(loadOptions));
     }
 
     public async Close(): Promise<void> {
         if(!isNaN(this.windowID)) {
-            return this.ipc.Send<void>(Channels.App.CloseWindow, this.windowID);
+            return this.ipc.Send<void>(Channels.RemoteBrowserWindowController.CloseWindow, this.windowID);
         }
     }
 
     public async Show(): Promise<void> {
-        return this.ipc.Send<void>(Channels.App.SetVisibility, this.windowID, true);
+        return this.ipc.Send<void>(Channels.RemoteBrowserWindowController.SetVisibility, this.windowID, true);
     }
 
     public async Hide(): Promise<void> {
-        return this.ipc.Send<void>(Channels.App.SetVisibility, this.windowID, false);
+        return this.ipc.Send<void>(Channels.RemoteBrowserWindowController.SetVisibility, this.windowID, false);
     }
 
     public async ExecuteScript<T extends void | JSONElement>(script: ScriptInjection<T> = ''): Promise<T> {
-        return this.ipc.Send<T>(Channels.App.ExecuteScript, this.windowID, script instanceof Function ? `(${script})()` : script);
+        return this.ipc.Send<T>(Channels.RemoteBrowserWindowController.ExecuteScript, this.windowID, script instanceof Function ? `(${script})()` : script);
     }
 
     public async SendDebugCommand<T extends void | JSONElement>(method: string, parameters?: JSONObject): Promise<T> {
-        return this.ipc.Send<T>(Channels.App.SendDebugCommand, this.windowID, method, parameters);
+        return this.ipc.Send<T>(Channels.RemoteBrowserWindowController.SendDebugCommand, this.windowID, method, parameters);
     }
 }

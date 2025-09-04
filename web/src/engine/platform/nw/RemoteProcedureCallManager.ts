@@ -1,16 +1,18 @@
+import { GetIPC } from './InterProcessCommunication';
 import { Key as GlobalKey } from '../../SettingsGlobal';
 import type { Numeric, Text, Check, SettingsManager } from '../../SettingsManager';
 import type { IRemoteProcedureCallManager } from '../RemoteProcedureCallManager';
 import { Channels } from '../../../../../app/nw/src/ipc/InterProcessCommunication';
-import type IPC from './InterProcessCommunication';
 
 export default class RemoteProcedureCallManager implements IRemoteProcedureCallManager {
+
+    private readonly ipc = GetIPC();
 
     private readonly rpcEnabled: Check;
     private readonly rpcPort: Numeric;
     private readonly rpcSecret: Text;
 
-    constructor (private readonly ipc: IPC, settingsManager: SettingsManager) {
+    constructor (settingsManager: SettingsManager) {
         const settings = settingsManager.OpenScope();
         this.rpcEnabled = settings.Get<Check>(GlobalKey.RPCEnabled);
         this.rpcPort = settings.Get<Numeric>(GlobalKey.RPCPort);

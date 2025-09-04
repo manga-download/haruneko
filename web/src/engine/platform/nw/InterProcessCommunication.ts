@@ -1,4 +1,4 @@
-import type { IPC, Callback } from '../InterProcessCommunication';
+import type { Callback } from '../InterProcessCommunication';
 import { Channels } from '../../../../../app/nw/src/ipc/InterProcessCommunication';
 
 type Message = {
@@ -6,7 +6,7 @@ type Message = {
     parameters: JSONArray,
 }
 
-export default class implements IPC {
+class IPC {
 
     private readonly subscriptions = new Map<string, Callback[]>;
 
@@ -42,4 +42,13 @@ export default class implements IPC {
     public Send<T extends void | JSONElement>(channel: string, ...parameters: JSONArray): Promise<T> {
         return new Promise<T>(resolve => chrome.runtime.sendMessage<Message, T>({ channel, parameters }, resolve));
     }
+}
+
+let instance: IPC = undefined;
+
+export function GetIPC() {
+    if (!instance) {
+        instance = new IPC();
+    }
+    return instance;
 }

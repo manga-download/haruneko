@@ -1,6 +1,6 @@
 import { FetchProvider } from '../FetchProviderCommon';
 import type { FeatureFlags } from '../../FeatureFlags';
-import type IPC from './InterProcessCommunication';
+import { GetIPC } from './InterProcessCommunication';
 import { Channels } from '../../../../../app/electron/src/ipc/InterProcessCommunication';
 
 // See: https://developer.mozilla.org/en-US/docs/Glossary/Forbidden_header_name
@@ -46,7 +46,9 @@ class FetchRequest extends Request {
 
 export default class FetchProviderElectron extends FetchProvider {
 
-    constructor (private readonly ipc: IPC) {
+    private readonly ipc = GetIPC();
+
+    constructor () {
         super();
     }
 
@@ -62,7 +64,7 @@ export default class FetchProviderElectron extends FetchProvider {
         // NOTE: Monkey patching of the browser's native functionality to allow forbidden headers
         globalThis.Request = FetchRequest;
 
-        this.ipc.Send(Channels.FetchProvider.WebToApp.Initialize, fetchApiSupportedPrefix);
+        this.ipc.Send(Channels.FetchProvider.Initialize, fetchApiSupportedPrefix);
 
         // Register IPC callback for:
         // => main.ipc.Send(Channels.Web.OnBeforeSendHeaders, details))
@@ -81,7 +83,7 @@ export default class FetchProviderElectron extends FetchProvider {
     }
 
     private async GetSessionCookies(url: string): Promise<string> {
-        const sessionCookies = await this.ipc.Send(Channels.FetchProvider.WebToApp.GetSessionCookies, { url, filter: {} });
+        const sessionCookies = await this.ipc.Send(Channels.FetchProvider.GetSessionCookies, { url, filter: {} });
         return sessionCookies.map(({ name, value }) => `${name}=${value}`).join(';'); // TODO: Maybe use `encodeURIComponent(cookie.value)`
     }
 

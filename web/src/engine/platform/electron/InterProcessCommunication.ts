@@ -1,9 +1,6 @@
-import type { IPC, Callback } from '../InterProcessCommunication';
 import type { Channels } from '../../../../../app/electron/src/ipc/InterProcessCommunication';
 
-export default class implements IPC {
-
-
+class IPC {
 
     On(channel: Channels.FetchProvider.OnBeforeSendHeaders, callback: (url: string, requestHeaders: Electron.OnBeforeSendHeadersListenerDetails[ 'requestHeaders' ]) => Electron.BeforeSendResponse): void;
     On(channel: Channels.FetchProvider.OnHeadersReceived, callback: (url: string, responseHeaders: Electron.OnHeadersReceivedListenerDetails[ 'responseHeaders' ]) => Electron.HeadersReceivedResponse): void;
@@ -52,4 +49,13 @@ export default class implements IPC {
     public Invoke<T extends JSONElement>(channel: string, ...parameters: JSONArray): Promise<T> {
         return globalThis.ipcRenderer.invoke(channel, ...parameters);
     }
+}
+
+let instance: IPC = undefined;
+
+export function GetIPC() {
+    if (!instance) {
+        instance = new IPC();
+    }
+    return instance;
 }
