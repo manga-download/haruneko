@@ -29,21 +29,26 @@ jobs:
       - name: Deploy App to CloudFlare
         id: deployWebApp
         uses: cloudflare/wrangler-action@v3
+        env:
+          WRANGLER_SEND_METRICS: false
         with:
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           wranglerVersion: 4
-          command: deploy --assets=./web/build --name=hakuneko-app --compatibility-date=2000-01-01
+          preCommands: echo "workers_dev=true" > ./wrangler.toml
+          command: versions upload --assets=./web/build --name=hakuneko-app --latest=true
       - name: Build Documentation
         run: npm run build --workspace=docs
       - name: Deploy Docs to CloudFlare
         id: deployDocs
         uses: cloudflare/wrangler-action@v3
+        env:
+          WRANGLER_SEND_METRICS: false
         with:
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           wranglerVersion: 4
-          command: deploy --assets=./docs/.vitepress/dist --name=hakuneko-docs --compatibility-date=2000-01-01
+          command: versions upload --assets=./docs/.vitepress/dist --name=hakuneko-docs --latest=true
       - name: Comment Deployment
         uses: actions/github-script@v7
         with:
