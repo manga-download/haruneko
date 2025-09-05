@@ -11,14 +11,14 @@ export class ApplicationWindow extends BrowserWindow {
 
     public async RegisterChannels(ipc: IPC) {
         // TODO: Prevent duplicate registrations
-        ipc.Listen(Channels.ApplicationWindow.App.ShowWindow, super.show.bind(this));
-        ipc.Listen(Channels.ApplicationWindow.App.HideWindow, super.hide.bind(this));
-        ipc.Listen(Channels.ApplicationWindow.App.Minimize, super.minimize.bind(this));
-        ipc.Listen(Channels.ApplicationWindow.App.Maximize, super.maximize.bind(this));
-        ipc.Listen(Channels.ApplicationWindow.App.Restore, super.restore.bind(this));
-        ipc.Listen(Channels.ApplicationWindow.App.Close, super.close.bind(this));
-        ipc.Listen(Channels.ApplicationWindow.App.OpenSplash, this.OpenSplash.bind(this));
-        ipc.Listen(Channels.ApplicationWindow.App.CloseSplash, this.CloseSplash.bind(this));
+        ipc.Handle(Channels.ApplicationWindow.ShowWindow, super.show.bind(this));
+        ipc.Handle(Channels.ApplicationWindow.HideWindow, super.hide.bind(this));
+        ipc.Handle(Channels.ApplicationWindow.Minimize, super.minimize.bind(this));
+        ipc.Handle(Channels.ApplicationWindow.Maximize, super.maximize.bind(this));
+        ipc.Handle(Channels.ApplicationWindow.Restore, super.restore.bind(this));
+        ipc.Handle(Channels.ApplicationWindow.Close, super.close.bind(this));
+        ipc.Handle(Channels.ApplicationWindow.OpenSplash, this.OpenSplash.bind(this));
+        ipc.Handle(Channels.ApplicationWindow.CloseSplash, this.CloseSplash.bind(this));
     }
 
     private async OpenSplash(url: string) {

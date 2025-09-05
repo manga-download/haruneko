@@ -10,7 +10,8 @@ class IPC {
     On(channel: Channels.RemoteProcedureCallContract.LoadMediaContainerFromURL, callback: (url: string) => Promise<void>): void;
 
     /**
-     * ...
+     * Handle an event received from the Main process in the Render process
+     * @remarks This listener is triggered by `ipcMAin.send(channel, ...args)`
      * @param channel - ...
      * @param callback - ...
      */
@@ -20,7 +21,7 @@ class IPC {
     }
 
     /*
-    public Listen(channel: string, callback: Callback): void {
+    public Handle(channel: string, callback: Callback): void {
         // TODO: Implement mechanism to receive a response ...
         globalThis.ipcRenderer.on(channel, (_, ...parameters: JSONArray) => callback(...parameters));
     }
@@ -28,7 +29,7 @@ class IPC {
 
     /**
      * Send an event from the Render process to the Main process
-     * @description This message will trigger `ipcMain.on(...)`
+     * @remarks This message will trigger `ipcMain.on(channel, listener)`
      * @param channel - ...
      * @param parameters - ...
      * @returns ...
@@ -41,7 +42,7 @@ class IPC {
 
     /**
      * Invoke a method in the Main process from the Render process
-     * @description This message will trigger `ipcMain.handle(...)`
+     * @remarks This message will trigger `ipcMain.handle(channel, listener)`
      * @param channel - ...
      * @param parameters - ...
      * @returns ...

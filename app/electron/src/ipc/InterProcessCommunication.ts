@@ -83,9 +83,11 @@ export class IPC {
         }
     }
 
+    On(channel: Channels.Reply.FromRender, callback: (nonce: string, result: JSONElement) => void): void;
+
     /**
-     * Handle a sent event from the Render process in the Main process
-     * @description This listener is triggered by `ipcRender.send(channel, ...args)`
+     * Handle an event received from the Render process in the Main process
+     * @remarks This listener is triggered by `ipcRender.send(channel, ...args)`
      * @param channel - ...
      * @param callback - ...
      */
@@ -94,24 +96,28 @@ export class IPC {
         ipcMain.on(channel, (_, ...parameters: TParameters) => callback(...parameters));
     }
 
-    Handle(channel: Channels.Reply.FromRender, callback: (nonce: string, result: JSONElement) => void): void;
-    Handle(channel: Channels.ApplicationWindow.ShowWindow, callback: () => Promise<void>): void;
-    Handle(channel: Channels.ApplicationWindow.HideWindow, callback: () => Promise<void>): void;
-    Handle(channel: Channels.ApplicationWindow.Minimize, callback: () => Promise<void>): void;
-    Handle(channel: Channels.ApplicationWindow.Maximize, callback: () => Promise<void>): void;
-    Handle(channel: Channels.ApplicationWindow.Restore, callback: () => Promise<void>): void;
-    Handle(channel: Channels.ApplicationWindow.Close, callback: () => Promise<void>): void;
+    // ApplicationWindow
+    Handle(channel: Channels.ApplicationWindow.ShowWindow, callback: () => void): void;
+    Handle(channel: Channels.ApplicationWindow.HideWindow, callback: () => void): void;
+    Handle(channel: Channels.ApplicationWindow.Minimize, callback: () => void): void;
+    Handle(channel: Channels.ApplicationWindow.Maximize, callback: () => void): void;
+    Handle(channel: Channels.ApplicationWindow.Restore, callback: () => void): void;
+    Handle(channel: Channels.ApplicationWindow.Close, callback: () => void): void;
     Handle(channel: Channels.ApplicationWindow.OpenSplash, callback: (url: string) => Promise<void>): void;
     Handle(channel: Channels.ApplicationWindow.CloseSplash, callback: () => Promise<void>): void;
+    // BloatGuard
     Handle(channel: Channels.BloatGuard.Initialize, callback: (patterns: string[]) => Promise<void>): void;
+    // ...
     Handle(channel: Channels.FetchProvider.Initialize, callback: (fetchApiSupportedPrefix: string) => Promise<void>): void;
     Handle(channel: Channels.FetchProvider.GetSessionCookies, callback: (filter: Electron.CookiesGetFilter) => PromiseLike<Electron.Cookie[]>): void;
+
     Handle(channel: Channels.RemoteBrowserWindowController.OpenWindow, callback: (options: string) => Promise<number>): void;
     Handle(channel: Channels.RemoteBrowserWindowController.CloseWindow, callback: (windowID: number) => Promise<void>): void;
     Handle(channel: Channels.RemoteBrowserWindowController.SetVisibility, callback: (windowID: number, show: boolean) => Promise<void>): void;
     Handle(channel: Channels.RemoteBrowserWindowController.ExecuteScript, callback: <T extends JSONElement>(windowID: number, script: string) => Promise<T>): void;
     Handle(channel: Channels.RemoteBrowserWindowController.SendDebugCommand, callback: <T extends void | JSONElement>(windowID: number, channel: string, parameters?: JSONObject) => Promise<T>): void;
     Handle(channel: Channels.RemoteBrowserWindowController.LoadURL, callback: (windowID: number, url: string, options: string) => Promise<void>): void;
+
     Handle(channel: Channels.RemoteProcedureCallManager.Stop, callback: () => Promise<void>): void;
     Handle(channel: Channels.RemoteProcedureCallManager.Restart, callback: (port: number, secret: string) => Promise<void>): void;
 
@@ -131,7 +137,7 @@ export class IPC {
 
     /**
      * Send an event from the Main process to the Render process
-     * @description This message will trigger `ipcRender.on(channel, ...args)`
+     * @remarks This message will trigger `ipcRender.on(channel, ...args)`
      * @param channel ...
      * @param parameters ...
      * @returns ...
@@ -145,7 +151,7 @@ export class IPC {
 
     /**
      * Invoke a method in the Render process from the Main process
-     * @description This message will trigger `ipcRender.handle(channel, ...args)`
+     * @remarks This message will trigger `ipcRender.handle(channel, ...args)`
      * @param channel ...
      * @param parameters ...
      * @returns ...
