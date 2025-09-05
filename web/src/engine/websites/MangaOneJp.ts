@@ -13,63 +13,63 @@ type WebRensaiListResponse = {
     dayOfWeekTitleLists: {
         titles: APITitle[]
     }[]
-}
+};
 
 type APITitle = {
     title: {
-        titleId: number,
-        titleName: string
+        titleId: number;
+        titleName: string;
     }
-}
+};
 
 type WebChapterListForViewerResponse = {
-    chapterList: WebChapterListUsedByPaging,
-    volumeList: WebVolumeListUsedByPaging
-}
+    chapterList: WebChapterListUsedByPaging;
+    volumeList: WebVolumeListUsedByPaging;
+};
 
 type WebChapterListUsedByPaging = {
     chapterList: ChapterProto[]
-}
+};
 
 type WebVolumeListUsedByPaging = {
     volumeList: Volume[]
-}
+};
 
 type ChapterProto = {
-    chapterId: number,
-    chapterName: string,
-    description: string
-}
+    chapterId: number;
+    chapterName: string;
+    description: string;
+};
 
 type Volume = {
     volume: {
-        id: number,
-        name: string
+        id: number;
+        name: string;
     }
-}
+};
 
 type ItemID = {
-    id: number
-    type: 'chapter' | 'volume',
-}
+    id: number;
+    type: 'chapter' | 'volume';
+};
 
 type WebViewerResponse = {
-    aesIv: string,
-    aesKey: string,
-    currentTitle: APITitle,
-    pages: PageProto[]
-}
+    aesIv: string;
+    aesKey: string;
+    currentTitle: APITitle;
+    pages: PageProto[];
+};
 
 type PageProto = {
     image?: {
         imageUrl: string
     }
-}
+};
 
 type PageParameters = {
-    key: string,
-    iv: string
-}
+    key: string;
+    iv: string;
+};
 
 export default class extends DecoratableMangaScraper {
     private readonly apiUrl = 'https://manga-one.com/api/client';
