@@ -7,12 +7,12 @@ new TestFixture({
     },
     container: {
         url: 'https://promanga.net/series/i-eat-soft-rice-in-another-world',
-        id: JSON.stringify({ slug: 'i-eat-soft-rice-in-another-world', id: 327 }),
+        id: '327',
         title: 'I Eat Soft Rice In Another World'
     },
     child: {
         id: '/series/i-eat-soft-rice-in-another-world/chapter-0',
-        title: '0',
+        title: 'Chapter 0',
     },
     entry: {
         index: 0,
