@@ -4,6 +4,7 @@ import { DecoratableMangaScraper, Manga, type MangaPlugin } from '../providers/M
 import * as Common from './decorators/Common';
 import { FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
 
+// TODO : make a Zing92 template
 function MangaLabelExtractor(element: HTMLElement) {
     const text = element instanceof HTMLAnchorElement ? element.text : element.textContent.split('|')[0].trim();
     return text.replace(/\(Raw.*Free\)/i, '').trim();
