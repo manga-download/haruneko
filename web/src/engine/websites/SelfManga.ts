@@ -8,9 +8,10 @@ import * as Grouple from './decorators/Grouple';
 @Common.MangasMultiPageCSS(Grouple.pathMangas, Grouple.queryMangas, 0, Grouple.pageMangaOffset, 0, Common.AnchorInfoExtractor(true))
 @Common.ChaptersSinglePageJS(Grouple.chapterScript, 500)
 @Grouple.PagesSinglePageJS()
-@Grouple.ImageAjaxWithMirrors()
+@Grouple.ImageWithMirrors()
 export default class extends DecoratableMangaScraper {
-    public constructor() {
+
+    public constructor () {
         super('selfmanga', `SelfManga`, 'https://1.selfmanga.live', Tags.Language.Russian, Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Source.Aggregator);
     }
 

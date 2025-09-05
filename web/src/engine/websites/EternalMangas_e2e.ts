@@ -7,12 +7,12 @@ new TestFixture({
     },
     container: {
         url: 'https://eternalmangas.org/series/lo-siento-por-ser-una-tonta',
-        id: JSON.stringify({ slug: 'lo-siento-por-ser-una-tonta', id: 1582}),
+        id: '1582',
         title: 'Lo siento por ser una tonta'
     },
     child: {
         id: '/series/lo-siento-por-ser-una-tonta/capitulo-14',
-        title: '14'
+        title: 'Chapter 14'
     },
     entry: {
         index: 0,

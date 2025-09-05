@@ -7,12 +7,12 @@ new TestFixture({
     },
     container: {
         url: 'https://aurorascans.com/series/youve-got-the-wrong-girl',
-        id: JSON.stringify({ slug: 'youve-got-the-wrong-girl', id: 6}),
+        id: '6',
         title: `You've Got the Wrong Girl`
     },
     child: {
         id: '/series/youve-got-the-wrong-girl/chapter-77',
-        title: '77'
+        title: 'Chapter 77'
     },
     entry: {
         index: 7,

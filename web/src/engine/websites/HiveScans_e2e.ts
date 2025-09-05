@@ -7,12 +7,12 @@ new TestFixture({
     },
     container: {
         url: 'https://hivetoons.org/series/maybe-meant-to-be',
-        id: JSON.stringify({ slug: 'maybe-meant-to-be', id: 27 }),
+        id: '27',
         title: 'Maybe Meant to Be'
     },
     child: {
         id: '/series/maybe-meant-to-be/chapter-93',
-        title: '93'
+        title: 'Chapter 93'
     },
     entry: {
         index: 0,

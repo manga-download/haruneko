@@ -36,7 +36,7 @@ export default class extends DecoratableMangaScraper {
     private readonly apiUrl = `${this.URI.origin}/api/`;
 
     public constructor() {
-        super('cmangax', 'CMangax', 'https://cmangax3.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Vietnamese, Tags.Source.Aggregator);
+        super('cmangax', 'CMangax', 'https://cmangax4.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Vietnamese, Tags.Source.Aggregator);
     }
 
     public override get Icon() {

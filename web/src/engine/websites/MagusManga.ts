@@ -6,7 +6,6 @@ export default class extends VTheme {
 
     public constructor() {
         super('magusmanga', 'MagusManga', 'https://magustoon.org', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Media.Manga, Tags.Language.English, Tags.Source.Aggregator);
-        this.apiUrl = new URL('https://api.magustoon.org/api/');
     }
 
     public override get Icon() {

@@ -9,7 +9,7 @@ import { FetchWindowScript } from '../platform/FetchProvider';
 @Common.MangasMultiPageCSS(Grouple.pathMangas, Grouple.queryMangas, 0, Grouple.pageMangaOffset, 0, Common.AnchorInfoExtractor(true))
 @Common.ChaptersSinglePageJS(Grouple.chapterScript, 500)
 @Grouple.PagesSinglePageJS()
-@Grouple.ImageAjaxWithMirrors()
+@Grouple.ImageWithMirrors()
 export default class extends DecoratableMangaScraper {
 
     public constructor () {

@@ -6,7 +6,7 @@ new TestFixture({
         title: 'Eros Scans'
     },
     container: {
-        url: 'https://erossun.xyz/manga/absolute-sword-sense/',
+        url: 'https://eros-sun.xyz/manga/absolute-sword-sense/',
         id: '/manga/absolute-sword-sense/',
         title: 'Absolute Sword Sense'
     },

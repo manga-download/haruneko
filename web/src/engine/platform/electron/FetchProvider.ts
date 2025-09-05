@@ -13,6 +13,7 @@ const fetchApiForbiddenHeaders = [
     'Host',
     'Sec-Fetch-Mode',
     'Sec-Fetch-Dest',
+    'Sec-Fetch-Site',
 ];
 
 function ConcealHeaders(init: HeadersInit): Headers {

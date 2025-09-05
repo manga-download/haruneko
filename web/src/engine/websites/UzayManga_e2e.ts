@@ -1,6 +1,6 @@
 ﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'uzaymanga',
         title: 'Uzay Manga'
@@ -11,14 +11,12 @@ const config = {
         title: 'Ölümsüzün Yolu'
     },
     child: {
-        id: '/manga/52/olumsuzun-yolu/2793/1-bolum',
-        title: 'Bölüm 1'
+        id: '/manga/52/olumsuzun-yolu/6249/118-bolum',
+        title: 'Bölüm 118'
     },
     entry: {
-        index: 1,
-        size: 1_264_702,
+        index: 0,
+        size: 766_697,
         type: 'image/jpeg'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

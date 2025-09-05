@@ -6,7 +6,7 @@ import { GetBytesFromUTF8, GetHexFromBytes } from '../BufferEncoder';
 import { FetchJSON } from '../platform/FetchProvider';
 
 type APIResult<T> = {
-    data: T;
+    data: T | null;
 };
 
 type APIManga = {
@@ -16,7 +16,7 @@ type APIManga = {
 };
 
 type APIChapter = {
-    title: string,
+    number: string,
     slug: string;
 };
 
@@ -34,7 +34,7 @@ function CleanTitle(title: string): string {
 export default class extends DecoratableMangaScraper {
 
     private readonly api = {
-        url: 'https://westmanga.me/api/',
+        url: 'https://data.westmanga.me/api/',
         nonce: 'wm-api-request',
         accessKey: 'WM_WEB_FRONT_END',
         secretKey: 'xxxoidj',
@@ -53,8 +53,8 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
-        const { data } = await this.FetchAPI<APIManga>(`./comic/${url.split('/').at(-1)}`);
-        return new Manga(this, provider, data.slug, CleanTitle(data.title));
+        const { data: { slug, title} } = await this.FetchAPI<APIManga>(`./comic/${url.split('/').at(-1)}`);
+        return new Manga(this, provider, slug, CleanTitle(title));
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
@@ -68,15 +68,12 @@ export default class extends DecoratableMangaScraper {
 
     private async GetMangasFromPage(provider: MangaPlugin, page: number): Promise<Manga[]> {
         const { data } = await this.FetchAPI<APIManga[]>(`./contents?page=${page}`);
-        return data.map(manga => new Manga(this, provider, manga.slug, CleanTitle(manga.title)));
+        return data ? data.map(({ slug, title}) => new Manga(this, provider, slug, CleanTitle(title))) : [];
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const { data: { chapters } } = await this.FetchAPI<APIManga>(`./comic/${manga.Identifier}`);
-        return chapters.map(chapter => {
-            const title = CleanTitle(chapter.title.replace(manga.Title, ''));
-            return new Chapter(this, manga, chapter.slug, title);
-        });
+        return chapters.map(({slug, number }) => new Chapter(this, manga, slug, number));
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
