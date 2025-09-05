@@ -4,31 +4,29 @@ import { FetchJSON, FetchNextJS } from '../../platform/FetchProvider';
 import { Chapter, DecoratableMangaScraper, type MangaPlugin, Manga, Page } from '../../providers/MangaPlugin';
 import * as Common from '../decorators/Common';
 
-type APIMangas = {
-    posts: APIManga[];
-};
-
-type APISingleManga = {
-    post: APIManga;
-};
-
 type APIManga = {
-    id: number,
-    slug: string,
-    postTitle: string,
-    chapters?: APIChapter[];
+    post: {
+        id: number;
+        postTitle: string;
+    };
 };
 
-type APIChapter = {
-    slug: string,
-    number: number,
-    title: string,
-    isLocked: boolean;
+type APIMangas = {
+    posts: APIManga[ 'post' ][];
 };
 
-type MangaID = {
-    id: string,
-    slug: string,
+type APIChapters = {
+    post: {
+        chapters: {
+            slug: string;
+            number: number;
+            title: string;
+            isLocked: boolean;
+            mangaPost: {
+                slug: string;
+            };
+        }[];
+    };
 };
 
 type HydratedPages = {
@@ -37,20 +35,23 @@ type HydratedPages = {
     }[]
 };
 
-// TODO: Check for possible revision
-
 @Common.ImageAjax()
 export class VTheme extends DecoratableMangaScraper {
 
-    protected apiUrl = this.URI.origin.replace('://', '://api.') + '/api/';
+    private readonly apiUrl = (() => {
+        const uri = new URL(this.URI);
+        uri.hostname = 'api.' + uri.hostname;
+        uri.pathname = '/api/';
+        return uri;
+    })();
 
     public override ValidateMangaURL(url: string): boolean {
         return new RegExpSafe(`^${this.URI.origin}/series/[^/]+$`).test(url);
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
-        const { post: { id, slug, postTitle } } = await FetchJSON<APISingleManga>(new Request(new URL(`./post?postSlug=${url.split('/').pop()}`, this.apiUrl)));
-        return new Manga(this, provider, JSON.stringify({ slug, id }), postTitle);
+        const { post: { id, postTitle } } = await FetchJSON<APIManga>(new Request(new URL('./post?postSlug=' + url.split('/').at(-1), this.apiUrl)));
+        return new Manga(this, provider, `${id}`, postTitle);
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
@@ -63,27 +64,27 @@ export class VTheme extends DecoratableMangaScraper {
     }
 
     private async GetMangasFromPage(page: number, provider: MangaPlugin): Promise<Manga[]> {
-        const { posts } = await FetchJSON<APIMangas>(new Request(new URL(`./query?page=${page}&perPage=9999`, this.apiUrl)));
-        return posts.map(({ slug, id, postTitle }) => new Manga(this, provider, JSON.stringify({ slug, id }), postTitle));
+        const { posts } = await FetchJSON<APIMangas>(new Request(new URL('./query?perPage=9999&page=' + page, this.apiUrl)));
+        return posts.map(({ id, postTitle }) => new Manga(this, provider, `${id}`, postTitle));
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const chapterlist: Chapter[] = [];
+        const chapterList: Chapter[] = [];
         for (let page = 0, run = true; run; page++) {
             const chapters = await this.GetChaptersFromPage(page, manga);
-            chapters.length > 0 ? chapterlist.push(...chapters) : run = false;
+            chapters.length > 0 ? chapterList.push(...chapters) : run = false;
         }
-        return chapterlist;
+        return chapterList;
     }
 
     private async GetChaptersFromPage(page: number, manga: Manga): Promise<Chapter[]> {
-        const { id, slug: mangaSlug } = JSON.parse(manga.Identifier) as MangaID;
-        const { post: { chapters } } = await FetchJSON<APISingleManga>(new Request(new URL(`./chapters?postId=${id}&skip=${page * 999}&take=999`, this.apiUrl)));
-        return chapters ? chapters.filter(({ isLocked }) => !isLocked)
-            .map(({ number, title: chapterTitle, slug}) => {
-                const title = number + (chapterTitle ? ` : ${chapterTitle}` : '');
-                return new Chapter(this, manga, `/series/${mangaSlug}/${slug}`, title);
-            }) : [];
+        const { post: { chapters } } = await FetchJSON<APIChapters>(new Request(new URL(`./chapters?take=999&skip=${page * 999}&postId=${manga.Identifier}`, this.apiUrl)));
+        return chapters
+            .filter(({ isLocked }) => !isLocked)
+            .map(({ number, title, slug: chapterSlug, mangaPost: { slug: mangaSlug } }) => {
+                title = 'Chapter ' + number + (title ? ` - ${title}` : '');
+                return new Chapter(this, manga, `/series/${mangaSlug}/${chapterSlug}`, title);
+            });
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {

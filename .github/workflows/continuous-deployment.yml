@@ -32,6 +32,8 @@ jobs:
         run: npm run build --workspace=web
       - name: Deploy App to CloudFlare
         uses: cloudflare/wrangler-action@v3
+        env:
+          WRANGLER_SEND_METRICS: false
         with:
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
@@ -41,6 +43,8 @@ jobs:
         run: npm run build --workspace=docs
       - name: Deploy Docs to CloudFlare
         uses: cloudflare/wrangler-action@v3
+        env:
+          WRANGLER_SEND_METRICS: false
         with:
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}

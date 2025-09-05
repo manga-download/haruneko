@@ -6,7 +6,7 @@ new TestFixture({
         title: 'YakshaScans'
     },
     container: {
-        url: 'https://yakshascans.com/manga/ill-twist-the-neck-of-a-sweet-dog/',
+        url: 'https://yakshascans.me/manga/ill-twist-the-neck-of-a-sweet-dog/',
         id: JSON.stringify({ post: '4956', slug: '/manga/ill-twist-the-neck-of-a-sweet-dog/' }),
         title: `I'll Twist the Neck of a Sweet Dog`
     },
