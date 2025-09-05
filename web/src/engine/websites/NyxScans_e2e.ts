@@ -7,12 +7,12 @@ new TestFixture({
     },
     container: {
         url: 'https://nyxscans.com/series/maybe-meant-to-be',
-        id: JSON.stringify({ slug: 'maybe-meant-to-be', id: 1}),
+        id: '1',
         title: 'Maybe Meant to Be'
     },
     child: {
         id: '/series/maybe-meant-to-be/chapter-98',
-        title: '98'
+        title: 'Chapter 98'
     },
     entry: {
         index: 0,
