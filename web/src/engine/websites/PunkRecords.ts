@@ -34,7 +34,8 @@ function MangaExtractor(anchor: HTMLAnchorElement) {
 @Common.MangasSinglePagesCSS(['/mangas'], 'ul li a[href*="/mangas/"]', MangaExtractor)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
-    private readonly apiUrl = 'https://api.punkrecordz.com/graphql';
+
+    private readonly apiURL = new URL('https://api.punkrecordz.com/graphql');
 
     public constructor() {
         super('littlegarden', 'Punk Records', 'https://punkrecordz.com', Tags.Language.English, Tags.Language.French, Tags.Media.Manga, Tags.Media.Manhwa, Tags.Source.Scanlator);
@@ -50,92 +51,60 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
         const slug = url.split('/').at(-1);
-        const query = `
-            query manga(
-              $slug: String
-            ) {
-              manga(
-                where: {
-                  slug: $slug
-                }
-              ) {
-                name
-              }
+        const { manga: { name } } = await this.FetchAPI<GQLManga>(`
+            query ($slug: String) {
+                manga(where: { slug: $slug }) { name }
             }
-        `;
-        const { manga: { name } } = await this.FetchAPI<GQLManga>('manga', query, { slug });
+        `, { slug });
         return new Manga(this, provider, slug, name);
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const chapterList: Chapter[] = [];
-        for (let page = 0, run = true; run; page++) {
-            const chapters = await this.GetChaptersFromPage(manga, page);
+        for (let skip = 0, run = true; run; skip += 100) {
+            const chapters = await this.GetChaptersFromPage(manga, skip);
             chapters.length > 0 ? chapterList.push(...chapters) : run = false;
         }
         return chapterList;
     }
 
-    private async GetChaptersFromPage(manga: Manga, page: number): Promise<Chapter[]> {
-        const chaptersPerPage = 100;
-        const query = `
-            query chapters(
-              $slug: String
-              $limit: Int = 18
-              $skip: Int = 0
-              $order: Float = -1
-            ) {
-              chapters(
-                limit: $limit
-                skip: $skip
-                where: {
-                  deleted: false
-                  published: true
-                  manga: { slug: $slug, published: true, deleted: false }
+    private async GetChaptersFromPage(manga: Manga, skip: number): Promise<Chapter[]> {
+        const { chapters } = await this.FetchAPI<GQLChapters>(`
+            query ($slug: String, $skip: Int) {
+                chapters(skip: $skip, limit: 100, where: {
+                    deleted: false
+                    published: true
+                    manga: { slug: $slug }
+                }, order: [{ field: "number", order: -1 }]) {
+                    number
+                    name
                 }
-                order: [{ field: "number", order: $order }]
-              ) {
-                number
-                name
-              }
             }
-        `;
-        const { chapters } = await this.FetchAPI<GQLChapters>('chapters', query, {
-            limit: chaptersPerPage,
-            order: -1,
-            skip: page * chaptersPerPage,
-            slug: manga.Identifier
-        });
+        `, { slug: manga.Identifier, skip });
 
         return chapters.map(({ number }) => new Chapter(this, manga, number.toString(), number.toString()));
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const query = `
-            query chapter($slug: String, $number: Float) {
-              chapter(
-                where: {
-                  deleted: false
-                  published: true
-                  number: $number
-                  manga: { deleted: false, published: true, slug: $slug }
+        const { chapter: { pages } } = await this.FetchAPI<GQLPages>(`
+            query ($slug: String, $number: Float) {
+                chapter(where: {
+                    deleted: false
+                    published: true
+                    number: $number
+                    manga: { slug: $slug }
+                }) {
+                    pages { original }
                 }
-              ) {
-                pages {
-                  original
-                }
-              }
             }
-        `;
-
-        const { chapter: { pages } } = await this.FetchAPI<GQLPages>('chapter', query, {
+        `, {
             slug: chapter.Parent.Identifier,
             number: parseFloat(chapter.Identifier)
         });
         return pages.map(({ original }) => new Page(this, chapter, new URL(original)));
     }
 
-    private async FetchAPI<T extends JSONElement>(operationName: string, query: string, variables: JSONObject): Promise<T> {
-        return FetchGraphQL<T>(new Request(new URL(this.apiUrl)), operationName, query, variables);
+    private async FetchAPI<T extends JSONElement>(query: string, variables: JSONObject): Promise<T> {
+        return FetchGraphQL<T>(new Request(this.apiURL), undefined, query, variables);
     }
 }
