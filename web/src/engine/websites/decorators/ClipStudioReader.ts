@@ -9,25 +9,25 @@ import DeScramble from "../../transformers/ImageDescrambler";
 import * as Common from "./Common";
 
 type PageData = {
-    width: number,
-    height: number,
+    width: number;
+    height: number;
     scramble: {
-        width: number,
-        height: number
+        width: number;
+        height: number;
     }
-}
+};
 
 type PartData = {
-    number: number,
-    scramble: boolean,
-    type: PartType
-}
+    number: number;
+    scramble: boolean;
+    type: PartType;
+};
 
 type ImagePart = {
-    binaryArray?: Uint8Array,
-    image?: HTMLImageElement,
-    scramble: boolean
-}
+    binaryArray?: Uint8Array;
+    image?: HTMLImageElement;
+    scramble: boolean;
+};
 
 enum PartType {
     DATA_TYPE_LESIA = 10,
@@ -35,8 +35,8 @@ enum PartType {
     DATA_TYPE_JPEG = 1,
     DATA_TYPE_GIF = 2,
     DATA_TYPE_PNG = 3,
-
 };
+
 enum Modes {
     MODE_DL_XML = '0',
     MODE_DL_JPEG = '1',
@@ -44,11 +44,11 @@ enum Modes {
     MODE_DL_PNG = '3',
     MODE_DL_FACE_XML = '7',
     MODE_DL_PAGE_XML = '8'
-}
+};
 
 enum RequestType {
     REQUEST_TYPE_FILE = '0',
-}
+};
 
 /**********************************************
  ******** Page List Extraction Methods ********

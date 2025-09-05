@@ -14,15 +14,14 @@ type APIResponse = {
     redirect: string
 }
 function ChapterExtractor(element: HTMLElement) {
-    const form = element.querySelector('form[data-Api="reader"]');
-    const result = {
+    const form = element.querySelector<HTMLFormElement>('form[data-Api="reader"]');
+    return {
         id: JSON.stringify({
             token: form.querySelector<HTMLInputElement>('input[name="_token"]').value,
             id: form.querySelector<HTMLInputElement>('input[name="ebook_id"]').value,
         }),
-        title: element.querySelector('span.shop-item-info-name').textContent.trim()
+        title: element.querySelector<HTMLSpanElement>('span.shop-item-info-name').textContent.trim()
     };
-    return result;
 }
 
 @Common.MangaCSS(/^{origin}\/ebook\/series\/\d+$/, 'div.ebook-series-grid-left h1.ebook-series-title')
@@ -42,7 +41,6 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-
         const chapterID: ChapterID = JSON.parse(chapter.Identifier);
         const { redirect } = await FetchJSON<APIResponse>(new Request(new URL('reader', this.apiUrl), {
             method: 'POST',
