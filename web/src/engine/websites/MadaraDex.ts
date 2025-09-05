@@ -19,31 +19,24 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const data = await FetchCSS<HTMLImageElement>(new Request(new URL(chapter.Identifier, this.URI)), 'div.page-break img');
-        return data.map(element => {
-            const url = new URL(element.dataset?.src || element.dataset?.lazySrc || element.srcset || element.getAttribute('src'));
-            const referer = url.searchParams.get('domain') ? new URL(url.searchParams.get('domain')).href : new URL(chapter.Identifier, this.URI).href;
-            return new Page(this, chapter, this.DeProxify(url), { Referer: referer });
+        const uri = new URL(chapter.Identifier, this.URI);
+        uri.searchParams.set('style', 'list');
+        const data = await FetchCSS<HTMLImageElement>(new Request(uri), 'div.page-break img');
+        return data.map(img => {
+            const uri = new URL(img.dataset?.src || img.dataset?.lazySrc || img.srcset || img.getAttribute('src'));
+            return new Page(this, chapter, new URL(uri.searchParams.get('url') || uri), {
+                Referer: new URL(uri.searchParams.get('domain') || chapter.Identifier, this.URI).href,
+            });
         });
-    }
-
-    private DeProxify(link: URL): URL {
-        if (/cdn\.madaradex\.org\/proxy/.test(link.href)) {//they have proxy, proxy_v1, probably more
-            return new URL(link.searchParams.get('url') || '');
-        }
-        return link;
     }
 
     public override async FetchImage(page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
         return this.imageTaskPool.Add(async () => {
             const headers = {
                 'Referer': page.Parameters.Referer,
-                'Accept': 'image/avif,image/webp,image/apng,image/svg+xml,image/*;q=0.8,**;q=0.5',
-                'Sec-Fetch-Mode': 'no-cors',
-                'Sec-Fetch-Dest': 'image',
                 'Sec-Fetch-Site': 'same-site',
             };
-            let response = await Fetch(new Request(page.Link, { signal, headers }));
+            const response = await Fetch(new Request(page.Link, { signal, headers }));
             return response.blob();
         }, priority, signal);
     };

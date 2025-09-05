@@ -1,5 +1,5 @@
 import { Tags } from '../Tags';
-import icon from './Haremu18.webp';
+import icon from './Raw18.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 
@@ -11,7 +11,7 @@ import * as Common from './decorators/Common';
 export default class extends DecoratableMangaScraper {
 
     public constructor () {
-        super('haremu18', 'Haremu18', 'https://toon18.cc', Tags.Media.Manhwa, Tags.Media.Manga, Tags.Language.Japanese, Tags.Source.Aggregator, Tags.Rating.Pornographic);
+        super('haremu18', 'Raw18', 'https://raw18.art', Tags.Media.Manhwa, Tags.Media.Manga, Tags.Language.Japanese, Tags.Source.Aggregator, Tags.Rating.Pornographic);
     }
 
     public override get Icon() {

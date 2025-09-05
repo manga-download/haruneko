@@ -1,5 +1,5 @@
 import { Tags } from '../Tags';
-import icon from './Futari.webp';
+import icon from './UchuujinProjects.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as MangaStream from './decorators/WordPressMangaStream';
 import * as Common from './decorators/Common';
@@ -12,7 +12,7 @@ import * as Common from './decorators/Common';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('futari', 'Futari', 'https://futari.info', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Media.Manga, Tags.Language.Indonesian);
+        super('uchuujinprojects', 'Uchuujin Projects', 'https://uchuujinmangas.com', Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Language.Spanish, Tags.Source.Scanlator);
     }
 
     public override get Icon() {
