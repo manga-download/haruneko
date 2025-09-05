@@ -3,10 +3,10 @@
 new TestFixture({
     plugin: {
         id: 'haremu18',
-        title: 'Haremu18'
+        title: 'Raw18'
     },
     container: {
-        url: 'https://toon18.cc/manga/te-shu-bodeigado',
+        url: 'https://raw18.art/manga/te-shu-bodeigado',
         id: '/manga/te-shu-bodeigado',
         title: '特殊ボディガード'
     },
