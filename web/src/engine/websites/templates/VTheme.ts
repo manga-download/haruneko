@@ -1,7 +1,7 @@
 // VTheme theme by V DEV : https://discord.com/invite/yz3UN72qPd
 
-import { FetchJSON, FetchNextJS } from '../../platform/FetchProvider';
-import { Chapter, DecoratableMangaScraper, type MangaPlugin, Manga, Page } from '../../providers/MangaPlugin';
+import { FetchJSON } from '../../platform/FetchProvider';
+import { Chapter, DecoratableMangaScraper, type MangaPlugin, Manga } from '../../providers/MangaPlugin';
 import * as Common from '../decorators/Common';
 
 type APIManga = {
@@ -12,7 +12,7 @@ type APIManga = {
 };
 
 type APIMangas = {
-    posts: APIManga[ 'post' ][];
+    posts: APIManga['post'][];
 };
 
 type APIChapters = {
@@ -22,6 +22,7 @@ type APIChapters = {
             number: number;
             title: string;
             isLocked: boolean;
+            chapterPurchased: boolean;
             mangaPost: {
                 slug: string;
             };
@@ -29,16 +30,11 @@ type APIChapters = {
     };
 };
 
-type HydratedPages = {
-    images: {
-        url: string
-    }[]
-};
-
-@Common.ImageAjax()
+@Common.PagesSinglePageCSS('.image-container img[data-image-index]')
+@Common.ImageAjax(true)
 export class VTheme extends DecoratableMangaScraper {
 
-    private readonly apiUrl = (() => {
+    protected apiUrl = (() => {
         const uri = new URL(this.URI);
         uri.hostname = 'api.' + uri.hostname;
         uri.pathname = '/api/';
@@ -80,15 +76,10 @@ export class VTheme extends DecoratableMangaScraper {
     private async GetChaptersFromPage(page: number, manga: Manga): Promise<Chapter[]> {
         const { post: { chapters } } = await FetchJSON<APIChapters>(new Request(new URL(`./chapters?take=999&skip=${page * 999}&postId=${manga.Identifier}`, this.apiUrl)));
         return chapters
-            .filter(({ isLocked }) => !isLocked)
+            .filter(({ isLocked, chapterPurchased }) => !isLocked || chapterPurchased)
             .map(({ number, title, slug: chapterSlug, mangaPost: { slug: mangaSlug } }) => {
                 title = 'Chapter ' + number + (title ? ` - ${title}` : '');
                 return new Chapter(this, manga, `/series/${mangaSlug}/${chapterSlug}`, title);
             });
-    }
-
-    public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const { images } = await FetchNextJS<HydratedPages>(new Request(new URL(chapter.Identifier, this.URI)), data => 'images' in data);
-        return images.map(({ url }) => new Page(this, chapter, new URL(url)));
     }
 }

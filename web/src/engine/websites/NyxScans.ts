@@ -1,6 +1,8 @@
 import { Tags } from '../Tags';
+import type { Chapter, Page } from '../providers/MangaPlugin';
 import icon from './NyxScans.webp';
 import { VTheme } from './templates/VTheme';
+import { FetchPages } from './VortexScans';
 
 export default class extends VTheme {
 
@@ -10,5 +12,9 @@ export default class extends VTheme {
 
     public override get Icon() {
         return icon;
+    }
+
+    public override async FetchPages(chapter: Chapter): Promise<Page[]> {
+        return await FetchPages.call(this, chapter);
     }
 }
