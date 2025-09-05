@@ -42,7 +42,7 @@ function VolumeExtractor(row: HTMLTableRowElement) {
 
 function ChapterExtractor(anchor: HTMLAnchorElement) {
     return {
-        id: /javascript/.test(anchor.dataset.targetUrl) ? anchor.dataset.targetUrl.match(/['"](\/(shonenjump|vizmanga)[^']+)['"]/).at(1) : anchor.dataset.targetUrl,
+        id: anchor.dataset.targetUrl.match(/['"](\/(shonenjump|vizmanga)[^']+)['"]/)?.at(1) ?? anchor.dataset.targetUrl,
         title: (anchor.querySelector<HTMLElement>('.disp-id, tr.o_chapter td > div')?.textContent ?? anchor.text).trim()
     };
 }
@@ -50,11 +50,11 @@ function ChapterExtractor(anchor: HTMLAnchorElement) {
 export default class extends DecoratableMangaScraper {
 
     private readonly patterns = new Map<RegExp, string>([
-        [ new RegExp(`^${this.URI.origin}/(shonenjump|vizmanga)/chapters/[^/]+$`), 'section#series-intro div h2' ],
-        [ new RegExp(`^${this.URI.origin}/account/library/(gn|sj)/[^/]+$`), 'body > div.row h3.type-md' ],
+        [new RegExp(`^${this.URI.origin}/(shonenjump|vizmanga)/chapters/[^/]+$`), 'section#series-intro div h2'],
+        [new RegExp(`^${this.URI.origin}/account/library/(gn|sj)/[^/]+$`), 'body > div.row h3.type-md'],
     ]);
 
-    public constructor () {
+    public constructor() {
         super('vizshonenjump', 'Viz - Shonen Jump', 'https://www.viz.com', Tags.Language.English, Tags.Media.Manga, Tags.Source.Official, Tags.Accessibility.RegionLocked);
         this.imageTaskPool.RateLimit = new RateLimit(4, 1);
     }
@@ -74,28 +74,41 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
         return [
-            ...await Common.FetchMangasSinglePagesCSS.call(this, provider, [ '/account/library', '/account/library/sj' ], 'table.purchase-table a', MangasExtractor),
-            ...await Common.FetchMangasSinglePagesCSS.call(this, provider, [ '/read/shonenjump/section/free-chapters' ], 'div#chpt_grid div.o_sortable a.o_chapters-link', MangasExtractor),
-            ...await Common.FetchMangasSinglePagesCSS.call(this, provider, [ '/read/vizmanga/section/free-chapters' ], 'div.o_sort_container div.o_sortable a.o_chapters-link', MangasExtractor)
+            ...await Common.FetchMangasSinglePagesCSS.call(this, provider, ['/account/library', '/account/library/sj'], 'table.purchase-table a', MangasExtractor),
+            ...await Common.FetchMangasSinglePagesCSS.call(this, provider, ['/read/shonenjump/section/free-chapters'], 'div#chpt_grid div.o_sortable a.o_chapters-link', MangasExtractor),
+            ...await Common.FetchMangasSinglePagesCSS.call(this, provider, ['/read/vizmanga/section/free-chapters'], 'div.o_sort_container div.o_sortable a.o_chapters-link', MangasExtractor)
         ].distinct();
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         return /^\/(shonenjump|vizmanga)\/chapters/.test(manga.Identifier)
-            ? Common.FetchChaptersSinglePageCSS.call(this, manga, 'div > a.o_chapter-container[data-target-url]:not([href*="javascript"]), tr.o_chapter td.ch-num-list-spacing a.o_chapter-container[data-target-url]:not([href*="javascript"])', ChapterExtractor)
+            ? Common.FetchChaptersSinglePageCSS.call(this, manga, 'div > a.o_chapter-container[data-target-url], tr.o_chapter td.ch-num-list-spacing a.o_chapter-container[data-target-url]', ChapterExtractor)
             : Common.FetchChaptersSinglePageCSS.call(this, manga, 'table.product-table tr', VolumeExtractor);
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
         const chapterurl = new URL(chapter.Identifier, this.URI);
         const { pagesCount, mangaID } = await FetchWindowScript<PagesInfos>(new Request(chapterurl), PagesScript, 1500);
-        return Array(pagesCount + 1).fill(0).map((_, index) => {
+        const pages = Array(pagesCount + 1).fill(0).map((_, index) => {
             const url = new URL('/manga/get_manga_url', this.URI);
             url.searchParams.set('device_id', '3');
             url.searchParams.set('manga_id', mangaID);
             url.searchParams.set('page', index.toString());
             return new Page(this, chapter, url, { Referer: chapterurl.href });
         });
+
+        //test last page
+        return await this.TestPage(pages.at(-1)) ? pages : pages.slice(0, -1);
+    }
+
+    private async TestPage(page: Page): Promise<boolean> {
+        try {
+            const url = await (await Fetch(new Request(page.Link, { headers: { Referer: page.Parameters.Referer, } }))).text();
+            await Fetch(new Request(url, { method: 'HEAD', headers: { Referer: page.Parameters.Referer } }));
+            return true;
+        } catch {
+            return false;
+        }
     }
 
     public override async FetchImage(page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
@@ -123,7 +136,6 @@ export default class extends DecoratableMangaScraper {
                 const blockWidth = Math.floor(canvasWidth / 10);
                 const blockHeight = Math.floor(canvasHeight / 15);
 
-                console.log(`${canvasWidth}x${canvasHeight}`, '=>', `${bitmap.width}x${bitmap.height}`);
                 ctx.drawImage(bitmap, 0, 0, canvasWidth, blockHeight, 0, 0, canvasWidth, blockHeight);
                 ctx.drawImage(bitmap, 0, blockHeight + 10, blockWidth, canvasHeight - 2 * blockHeight, 0, blockHeight, blockWidth, canvasHeight - 2 * blockHeight);
                 ctx.drawImage(bitmap, 0, 14 * (blockHeight + 10), canvasWidth, bitmap.height - 14 * (blockHeight + 10), 0, 14 * blockHeight, canvasWidth, bitmap.height - 14 * (blockHeight + 10));
@@ -136,8 +148,8 @@ export default class extends DecoratableMangaScraper {
                         Math.floor((Math.floor(index / 8) + 1) * (blockHeight + 10)),
                         blockWidth,
                         blockHeight,
-                        Math.floor((shuffleMap[ index ] % 8 + 1) * blockWidth),
-                        Math.floor((Math.floor(shuffleMap[ index ] / 8) + 1) * blockHeight),
+                        Math.floor((shuffleMap[index] % 8 + 1) * blockWidth),
+                        Math.floor((Math.floor(shuffleMap[index] / 8) + 1) * blockHeight),
                         blockWidth,
                         blockHeight
                     );
