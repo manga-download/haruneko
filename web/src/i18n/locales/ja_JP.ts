@@ -83,7 +83,7 @@ const translations: VariantResource = { // NOTE: Use defaults for missing transl
   Frontend_FluentCore_Window_ButtonMinimize_Description: "アプリケーションを最小化",
   Frontend_FluentCore_Window_ButtonMaximize_Description: "アプリケーションを最大化",
   Frontend_FluentCore_Window_ButtonRestore_Description: "アプリケーションを元に戻す",
-  Frontend_FluentCore_Window_ButtonClose_Description: "プリケーションを終了",
+  Frontend_FluentCore_Window_ButtonClose_Description: "閉じる",
   //
   Frontend_FluentCore_Menu_Description: "アプリケーションメニューを表示",
   Frontend_FluentCore_Menu_OpenSettings_Label: "設定...",
@@ -92,7 +92,12 @@ const translations: VariantResource = { // NOTE: Use defaults for missing transl
   Frontend_FluentCore_Menu_ImportBookmarks_Description: "すべてのブックマークをファイルからインポート（既存のブックマークは保持）",
   Frontend_FluentCore_Menu_ExportBookmarks_Label: "ブックマークをエクスポート...",
   Frontend_FluentCore_Menu_ExportBookmarks_Description: "すべてのブックマークをファイルに保存（例：バックアップ用）",
+  Frontend_FluentCore_Button_ToggleTheme_Description: 'Toggle Theme to {0}',
   //
+  Frontend_FluentCore_Settings_ThemeMode_Label: 'Theme',
+  Frontend_FluentCore_Settings_ThemeMode_Description: 'Select the color mode for the user interface',
+  Frontend_FluentCore_Settings_ThemeMode_WebDark: 'Dark (Web)',
+  Frontend_FluentCore_Settings_ThemeMode_WebLight: 'Light (Web)',
   Frontend_FluentCore_Settings_ShowBookmarksPanel_Label: "ブックマークリスト",
   Frontend_FluentCore_Settings_ShowBookmarksPanel_Description: "ブックマークリストの表示/非表示を切り替える",
   Frontend_FluentCore_Settings_ShowDownloadsPanel_Label: "ダウンロードマネージャー",
