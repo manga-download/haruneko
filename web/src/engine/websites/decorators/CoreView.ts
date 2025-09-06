@@ -122,11 +122,11 @@ async function AjaxFetchEntriesFromHTML(this: MangaScraper, manga: Manga, endpoi
     const chaptersList: Chapter[] = [];
     for (let i = 1; i <= count; i++) {
         const { html, nextUrl } = await FetchJSON<APIChaptersHTML>(new Request(new URL(endpoint, this.URI)));
-        const doc = new DOMParser().parseFromString(html, 'text/html');
-        chaptersList.push(...[...doc.querySelectorAll<HTMLAnchorElement>(queryChapters)].map(chapter => {
-            const { id, title } = extractor(chapter);
-            return new Chapter(this, manga, id, title.replace(manga.Title, '').trim() || title);
-        }));
+        const nodes = new DOMParser().parseFromString(html, 'text/html').querySelectorAll<HTMLAnchorElement>(queryChapters).values();
+        for (const chapterNode of nodes) {
+            const { id, title } = extractor(chapterNode);
+            chaptersList.push(new Chapter(this, manga, id, title.replace(manga.Title, '').trim() || title));
+        }
         endpoint = nextUrl;
     };
     return chaptersList;
