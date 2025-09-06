@@ -137,6 +137,7 @@ export { default as DynastyScans } from './DynastyScans';
 export { default as EighteenComic } from './EighteenComic';
 export { default as EightMuses } from './EightMuses';
 export { default as EightMusesXXX } from './EightMusesXXX';
+export { default as ElderManga } from './ElderManga';
 export { default as ElevenToon } from './ElevenToon';
 export { default as ElfToon } from './ElfToon';
 export { default as Ero18x } from './Ero18x';
