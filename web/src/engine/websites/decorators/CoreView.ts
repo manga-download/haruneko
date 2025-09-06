@@ -1,6 +1,6 @@
 import { WebsiteResourceKey as R } from '../../../i18n/ILocale';
 import { Exception } from '../../Error';
-import { FetchCSS, FetchJSON } from '../../platform/FetchProvider';
+import { FetchCSS, FetchHTML, FetchJSON } from '../../platform/FetchProvider';
 import { type MangaScraper, type Manga, Chapter, Page } from '../../providers/MangaPlugin';
 import type { Priority } from '../../taskpool/TaskPool';
 import * as Common from './Common';
@@ -9,41 +9,35 @@ import DeScramble from '../../transformers/ImageDescrambler';
 export const queryMangaTitleFromURI = '.series-header-title';
 const defaultQueryChapters = 'a.series-episode-list-container';
 const queryEpisodeJSON = '#episode-json';
+const defaultEntriesTypes = ['episode', 'volume'];
 
 type ChapterJSON = {
     readableProduct: {
-        isPublic: boolean,
-        hasPurchased: boolean,
+        isPublic: boolean;
+        hasPurchased: boolean;
         pageStructure: {
-            choJuGiga: string,
+            choJuGiga: string;
             pages: {
-                type: string,
-                src: string
+                type: string;
+                src: string;
             }[]
         }
     }
-}
-
-type JSONSerie = {
-    readableProduct: {
-        series: {
-            id: string;
-        }
-    }
-}
+};
 
 type APIChaptersHTML = {
-    html: string
-}
+    html: string;
+    nextUrl: string;
+};
 
-type APIChapter = {
-    title: string,
-    viewer_uri: string
-}
+type APIChapterV2 = {
+    title: string;
+    viewer_uri: string;
+};
 
 type PageParams = {
-    scrambled: boolean
-}
+    scrambled: boolean;
+};
 
 /**
  * Creates an info extractor that will parse the media id from the first found {@link HTMLAnchorElement}
@@ -83,12 +77,12 @@ function ChapterExtractor(element: HTMLAnchorElement) {
  * @param query - A CSS selector used to extract chapters from the api answer (html from json)
  * @param extractor - A function to extract id and title from queried elements
  */
-export function ChaptersSinglePageAJAXV1(query: string = defaultQueryChapters, extractor = ChapterExtractor) {
+export function ChaptersMultiPagesAJAXV1(query: string = defaultQueryChapters, extractor = ChapterExtractor) {
     return function DecorateClass<T extends Common.Constructor>(ctor: T, context?: ClassDecoratorContext): T {
         Common.ThrowOnUnsupportedDecoratorContext(context);
         return class extends ctor {
             public async FetchChapters(this: MangaScraper, manga: Manga): Promise<Chapter[]> {
-                return FetchChaptersSinglePageAJAXV1.call(this, manga, query, extractor);
+                return FetchChaptersMultiPageAJAXV1.call(this, manga, query, extractor);
             }
         };
     };
@@ -97,70 +91,90 @@ export function ChaptersSinglePageAJAXV1(query: string = defaultQueryChapters, e
 /**
  * A class decorator for extracting chapters using Coreview API. Use this when website uses endpoint 'readable_products'.
  * @param this - A reference to the {@link MangaScraper} instance which will be used as context for this method
- * @param query - A CSS selector used to extract chapters from the api answer (html from json)
+ * @param manga - A reference to the {@link Manga} which shall be assigned as parent for the extracted chapters
+ * @param queryChapters - A CSS selector used to extract chapters from the api answer (html from json)
  * @param extractor - A function to extract id and title from queried elements
  */
-export async function FetchChaptersSinglePageAJAXV1(this: MangaScraper, manga: Manga, queryChapters: string = defaultQueryChapters, extractor = ChapterExtractor): Promise<Chapter[]> {
-    const jsonData = (await FetchCSS(new Request(new URL(manga.Identifier, this.URI)), 'script#episode-json')).shift().dataset.value;
-    const { readableProduct: { series: { id } } } = JSON.parse(jsonData) as JSONSerie;
+export async function FetchChaptersMultiPageAJAXV1(this: MangaScraper, manga: Manga, queryChapters: string = defaultQueryChapters, extractor = ChapterExtractor): Promise<Chapter[]> {
+    const doc = await FetchHTML(new Request(new URL(manga.Identifier, this.URI)));
+    const readableProductList = doc.querySelector<HTMLDivElement>('.js-readable-product-list');
+    const readMoreElement = doc.querySelector<HTMLDivElement>('.js-read-more-button');
 
-    const url = new URL(`/api/viewer/readable_products`, this.URI);
-    url.search = new URLSearchParams({
-        aggregate_id: id,
-        number_since: '99999',
-        number_until: '0',
-        read_more_num: '150',
-        type: 'episode'
-    }).toString();
-
-    const { html } = await FetchJSON<APIChaptersHTML>(new Request(url));
-    const doc = new DOMParser().parseFromString(html, 'text/html');
-    return [...doc.querySelectorAll<HTMLAnchorElement>(queryChapters)].map(chapter => {
-        const { id, title } = extractor(chapter);
-        return new Chapter(this, manga, id, title.replace(manga.Title, '').trim() || title);
-    });
+    return [
+        ...await AjaxFetchEntriesFromHTML.call(this, manga, readableProductList.dataset.firstListEndpoint, 1, queryChapters, extractor),
+        ...
+        readMoreElement
+            ? await AjaxFetchEntriesFromHTML.call(this, manga, readMoreElement.dataset.readMoreEndpoint, parseInt(readMoreElement.dataset.maxReadMoreCount), queryChapters, extractor)
+            : [],
+        ...await AjaxFetchEntriesFromHTML.call(this, manga, readableProductList.dataset.latestListEndpoint, 1, queryChapters, extractor),
+    ];
+}
+/**
+ * Extract entries (episode volume magazine) from V1 API.
+ * @param this - A reference to the {@link MangaScraper} instance which will be used as context for this method
+ * @param manga - A reference to the {@link Manga} which shall be assigned as parent for the extracted chapte
+ * @param endpoint - Starting endpoint to use.
+ * @param count - How many pages to fetch, because the api ALWAYS return a "nextUrl" so its unreliable.
+ * @param queryChapters - A CSS selector used to extract chapters from the api answer (html from json)
+ * @param extractor - A function to extract id and title from queried elements
+ */
+async function AjaxFetchEntriesFromHTML(this: MangaScraper, manga: Manga, endpoint: string, count: number = 1, queryChapters: string = defaultQueryChapters, extractor = ChapterExtractor): Promise<Chapter[]> {
+    const chaptersList: Chapter[] = [];
+    for (let i = 1; i <= count; i++) {
+        const { html, nextUrl } = await FetchJSON<APIChaptersHTML>(new Request(new URL(endpoint, this.URI)));
+        const nodes = new DOMParser().parseFromString(html, 'text/html').querySelectorAll<HTMLAnchorElement>(queryChapters).values();
+        for (const chapterNode of nodes) {
+            const { id, title } = extractor(chapterNode);
+            chaptersList.push(new Chapter(this, manga, id, title.replace(manga.Title, '').trim() || title));
+        }
+        endpoint = nextUrl;
+    };
+    return chaptersList;
 }
 
 /**
  * An extension method for extracting chapters using Coreview API. Use this when endpoint 'pagination_readable_products' is available.
+* @param entriesTypes - types of entries to fetch : ['episode', 'volume', 'magazine'].
  */
-export function ChaptersMultiPageAJAXV2() {
+export function ChaptersMultiPageAJAXV2(entriesTypes: string[] = defaultEntriesTypes) {
     return function DecorateClass<T extends Common.Constructor>(ctor: T, context?: ClassDecoratorContext): T {
         Common.ThrowOnUnsupportedDecoratorContext(context);
         return class extends ctor {
             public async FetchChapters(this: MangaScraper, manga: Manga): Promise<Chapter[]> {
-                return FetchChaptersMultiPageAJAXV2.call(this, manga);
+                return FetchChaptersMultiPageAJAXV2.call(this, manga, entriesTypes);
             }
         };
     };
 }
 
 /**
- * A class deocrator for extracting chapters using Coreview API. Use this when endpoint 'pagination_readable_products' is available.
+ * A class decorator for extracting chapters using Coreview API. Use this when endpoint 'pagination_readable_products' is available.
  * @param this - A reference to the {@link MangaScraper} instance which will be used as context for this method
  * @param manga - A reference to the {@link Manga} which shall be assigned as parent for the extracted chapters
+ * @param entriesTypes - types of entries to fetch : ['episode', 'volume', 'magazine'].
  */
-export async function FetchChaptersMultiPageAJAXV2(this: MangaScraper, manga: Manga): Promise<Chapter[]> {
-    const jsonData = (await FetchCSS(new Request(new URL(manga.Identifier, this.URI)), 'script#episode-json')).shift().dataset.value;
-    const { readableProduct: { series: { id } } } = JSON.parse(jsonData) as JSONSerie;
+export async function FetchChaptersMultiPageAJAXV2(this: MangaScraper, manga: Manga, entriesTypes: string[] = defaultEntriesTypes): Promise<Chapter[]> {
+    const aggregateId = (await FetchCSS(new Request(new URL(manga.Identifier, this.URI)), '.js-readable-products-pagination')).at(0).dataset.aggregateId;
     const chapterList: Chapter[] = [];
 
-    for (let offset = 0, run = true; run;) {
-        const url = new URL(`/api/viewer/pagination_readable_products`, this.URI);
-        url.search = new URLSearchParams({
-            aggregate_id: id,
-            type: 'episode',
-            sort_order: 'desc',
-            offset: offset.toString()
-        }).toString();
+    for (const type of entriesTypes) {
+        for (let offset = 0, run = true; run;) {
+            const url = new URL(`./api/viewer/pagination_readable_products`, this.URI);
+            url.search = new URLSearchParams({
+                aggregate_id: aggregateId,
+                type,
+                sort_order: 'desc',
+                offset: offset.toString()
+            }).toString();
 
-        const data = await FetchJSON<APIChapter[]>(new Request(url));
-        const chapters = data.map(chapter => {
-            const title = chapter.title.replace(manga.Title, '').trim() || chapter.title;
-            return new Chapter(this, manga, new URL(chapter.viewer_uri).pathname, title);
-        });
-        chapters.length > 0 ? chapterList.push(...chapters) : run = false;
-        offset += chapters.length;
+            const data = await FetchJSON<APIChapterV2[]>(new Request(url));
+            const chapters = data.map(chapter => {
+                const title = chapter.title.replace(manga.Title, '').trim() || chapter.title;
+                return new Chapter(this, manga, new URL(chapter.viewer_uri).pathname, title);
+            });
+            chapters.length > 0 ? chapterList.push(...chapters) : run = false;
+            offset += chapters.length;
+        }
     }
     return chapterList;
 }

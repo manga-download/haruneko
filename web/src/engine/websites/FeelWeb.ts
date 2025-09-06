@@ -19,7 +19,7 @@ function MangaExtractor(anchor: HTMLAnchorElement) {
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('feelweb', `FeelWeb`, 'https://feelweb.jp', Tags.Language.Japanese, Tags.Source.Official, Tags.Media.Manga);
+        super('feelweb', 'FeelWeb', 'https://feelweb.jp', Tags.Language.Japanese, Tags.Source.Official, Tags.Media.Manga);
     }
 
     public override get Icon() {

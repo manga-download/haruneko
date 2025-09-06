@@ -31,7 +31,7 @@ export default class extends DecoratableMangaScraper {
     private readonly apiURI = new URL('/graphql', 'https://comic-earthstar.com');
 
     public constructor () {
-        super('comicearthstar', `コミック アース・スター (Comic Earth Star)`, 'https://comic-earthstar.com', Tags.Language.Japanese, Tags.Media.Manga, Tags.Source.Official);
+        super('comicearthstar', 'コミック アース・スター (Comic Earth Star)', 'https://comic-earthstar.com', Tags.Language.Japanese, Tags.Media.Manga, Tags.Source.Official);
     }
 
     public override get Icon() {
