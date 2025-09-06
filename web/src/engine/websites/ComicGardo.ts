@@ -12,7 +12,7 @@ import * as Common from './decorators/Common';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('comicgardo', `コミックガルド (Comic Gardo)`, 'https://comic-gardo.com', Tags.Language.Japanese, Tags.Source.Official, Tags.Media.Manga);
+        super('comicgardo', 'コミックガルド (Comic Gardo)', 'https://comic-gardo.com', Tags.Language.Japanese, Tags.Source.Official, Tags.Media.Manga);
     }
 
     public override get Icon() {
