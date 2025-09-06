@@ -30,11 +30,6 @@ type APIChaptersHTML = {
     nextUrl: string
 };
 
-type APIChaptersV1 = {
-    chapters: Chapter[],
-    nextUrl: string
-};
-
 type APIChapterV2 = {
     title: string,
     viewer_uri: string
@@ -96,44 +91,37 @@ export function ChaptersMultiPagesAJAXV1(query: string = defaultQueryChapters, e
 /**
  * A class decorator for extracting chapters using Coreview API. Use this when website uses endpoint 'readable_products'.
  * @param this - A reference to the {@link MangaScraper} instance which will be used as context for this method
- * @param query - A CSS selector used to extract chapters from the api answer (html from json)
+ * @param queryChapters - A CSS selector used to extract chapters from the api answer (html from json)
  * @param extractor - A function to extract id and title from queried elements
  */
 export async function FetchChaptersMultiPageAJAXV1(this: MangaScraper, manga: Manga, queryChapters: string = defaultQueryChapters, extractor = ChapterExtractor): Promise<Chapter[]> {
 
-    const chaptersList: Chapter[] = [];
     const doc = await FetchHTML(new Request(new URL(manga.Identifier, this.URI)));
-    const firstListEndpoint = doc.querySelector<HTMLDivElement>('.js-readable-product-list')?.dataset.firstListEndpoint;
-    chaptersList.push(...(await ExtractChaptersV1.call(this, manga, firstListEndpoint, queryChapters, extractor)).chapters);
-
+    const readableProductList = doc.querySelector<HTMLDivElement>('.js-readable-product-list');
     const readMoreElement = doc.querySelector<HTMLDivElement>('.js-read-more-button');
-    if (readMoreElement) {
-        const readMoreCount = parseInt(readMoreElement.dataset.maxReadMoreCount);
-        let endpoint = readMoreElement.dataset.readMoreEndpoint;
-        for (let i = 1; i <= readMoreCount; i++) {
-            const { chapters, nextUrl } = await ExtractChaptersV1.call(this, manga, endpoint, queryChapters, extractor);
-            chaptersList.push(...chapters);
-            endpoint = nextUrl;
-        }
-    }
 
-    const latestListEndpoint = doc.querySelector<HTMLDivElement>('.js-readable-product-list')?.dataset.latestListEndpoint;
-    chaptersList.push(...(await ExtractChaptersV1.call(this, manga, latestListEndpoint, queryChapters, extractor)).chapters);
-    return chaptersList.distinct();
+    return [
+        ...await AjaxFetchEntriesFromHTML.call(this, manga, readableProductList.dataset.firstListEndpoint, 1, queryChapters, extractor),
+        ...
+        readMoreElement
+            ? await AjaxFetchEntriesFromHTML.call(this, manga, readMoreElement.dataset.readMoreEndpoint, parseInt(readMoreElement.dataset.maxReadMoreCount), queryChapters, extractor)
+            : [],
+        ...await AjaxFetchEntriesFromHTML.call(this, manga, readableProductList.dataset.latestListEndpoint, 1, queryChapters, extractor),
+    ];
 }
 
-async function ExtractChaptersV1(this: MangaScraper, manga: Manga, endpoint: string, queryChapters: string, extractor: Function): Promise<APIChaptersV1> {
-    if (!endpoint) return {
-        chapters: [], nextUrl: ''
+async function AjaxFetchEntriesFromHTML(this: MangaScraper, manga: Manga, endpoint: string, count: number = 1, queryChapters: string = defaultQueryChapters, extractor = ChapterExtractor): Promise<Chapter[]> {
+    const chaptersList: Chapter[] = [];
+    for (let i = 1; i <= count; i++) {
+        const { html, nextUrl } = await FetchJSON<APIChaptersHTML>(new Request(endpoint));
+        const doc = new DOMParser().parseFromString(html, 'text/html');
+        chaptersList.push(...[...doc.querySelectorAll<HTMLAnchorElement>(queryChapters)].map(chapter => {
+            const { id, title } = extractor(chapter);
+            return new Chapter(this, manga, id, title.replace(manga.Title, '').trim() || title);
+        }));
+        endpoint = nextUrl;
     };
-    const chapters: Chapter[] = [];
-    const { html, nextUrl } = await FetchJSON<APIChaptersHTML>(new Request(endpoint));
-    const doc = new DOMParser().parseFromString(html, 'text/html');
-    chapters.push(...[...doc.querySelectorAll<HTMLAnchorElement>(queryChapters)].map(chapter => {
-        const { id, title } = extractor(chapter);
-        return new Chapter(this, manga, id, title.replace(manga.Title, '').trim() || title);
-    }));
-    return { chapters, nextUrl };
+    return chaptersList;
 }
 
 /**
