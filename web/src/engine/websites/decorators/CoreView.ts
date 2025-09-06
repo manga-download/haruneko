@@ -13,30 +13,30 @@ const defaultEntriesTypes = ['episode', 'volume'];
 
 type ChapterJSON = {
     readableProduct: {
-        isPublic: boolean,
-        hasPurchased: boolean,
+        isPublic: boolean;
+        hasPurchased: boolean;
         pageStructure: {
-            choJuGiga: string,
+            choJuGiga: string;
             pages: {
-                type: string,
-                src: string
+                type: string;
+                src: string;
             }[]
         }
     }
 };
 
 type APIChaptersHTML = {
-    html: string,
-    nextUrl: string
+    html: string;
+    nextUrl: string;
 };
 
 type APIChapterV2 = {
-    title: string,
-    viewer_uri: string
+    title: string;
+    viewer_uri: string;
 };
 
 type PageParams = {
-    scrambled: boolean
+    scrambled: boolean;
 };
 
 /**
@@ -91,11 +91,11 @@ export function ChaptersMultiPagesAJAXV1(query: string = defaultQueryChapters, e
 /**
  * A class decorator for extracting chapters using Coreview API. Use this when website uses endpoint 'readable_products'.
  * @param this - A reference to the {@link MangaScraper} instance which will be used as context for this method
+ * @param manga - A reference to the {@link Manga} which shall be assigned as parent for the extracted chapters
  * @param queryChapters - A CSS selector used to extract chapters from the api answer (html from json)
  * @param extractor - A function to extract id and title from queried elements
  */
 export async function FetchChaptersMultiPageAJAXV1(this: MangaScraper, manga: Manga, queryChapters: string = defaultQueryChapters, extractor = ChapterExtractor): Promise<Chapter[]> {
-
     const doc = await FetchHTML(new Request(new URL(manga.Identifier, this.URI)));
     const readableProductList = doc.querySelector<HTMLDivElement>('.js-readable-product-list');
     const readMoreElement = doc.querySelector<HTMLDivElement>('.js-read-more-button');
@@ -109,11 +109,19 @@ export async function FetchChaptersMultiPageAJAXV1(this: MangaScraper, manga: Ma
         ...await AjaxFetchEntriesFromHTML.call(this, manga, readableProductList.dataset.latestListEndpoint, 1, queryChapters, extractor),
     ];
 }
-
+/**
+ * Extract entries (episode volume magazine) from V1 API.
+ * @param this - A reference to the {@link MangaScraper} instance which will be used as context for this method
+ * @param manga - A reference to the {@link Manga} which shall be assigned as parent for the extracted chapte
+ * @param endpoint - Starting endpoint to use.
+ * @param count - How many pages to fetch, because the api ALWAYS return a "nextUrl" so its unreliable.
+ * @param queryChapters - A CSS selector used to extract chapters from the api answer (html from json)
+ * @param extractor - A function to extract id and title from queried elements
+ */
 async function AjaxFetchEntriesFromHTML(this: MangaScraper, manga: Manga, endpoint: string, count: number = 1, queryChapters: string = defaultQueryChapters, extractor = ChapterExtractor): Promise<Chapter[]> {
     const chaptersList: Chapter[] = [];
     for (let i = 1; i <= count; i++) {
-        const { html, nextUrl } = await FetchJSON<APIChaptersHTML>(new Request(endpoint));
+        const { html, nextUrl } = await FetchJSON<APIChaptersHTML>(new Request(new URL(endpoint, this.URI)));
         const doc = new DOMParser().parseFromString(html, 'text/html');
         chaptersList.push(...[...doc.querySelectorAll<HTMLAnchorElement>(queryChapters)].map(chapter => {
             const { id, title } = extractor(chapter);
