@@ -610,6 +610,7 @@ export { default as RokuHentai } from './RokuHentai';
 export { default as RoliaScan } from './RoliaScan';
 export { default as RuManhua } from './RuManhua';
 export { default as RuyaManga } from './RuyaManga';
+export { default as RuyaMangaNet } from './RuyaMangaNet';
 export { default as S2Manga } from './S2Manga';
 export { default as Sadscans } from './Sadscans';
 export { default as SakuraManga } from './SakuraManga';
