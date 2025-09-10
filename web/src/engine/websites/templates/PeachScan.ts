@@ -8,9 +8,9 @@ import type { Priority } from '../../taskpool/DeferredTask';
 
 type PageKey = {
     key: string;
-}
+} | undefined;
 
-export function ChapterExtractor(anchor: HTMLAnchorElement) {
+function ChapterExtractor(anchor: HTMLAnchorElement) {
     return {
         id: anchor.pathname,
         title: anchor.querySelector<HTMLDivElement>('div.info__capitulo__obras span.numero__capitulo').textContent.trim()
@@ -24,28 +24,21 @@ export function ChapterExtractor(anchor: HTMLAnchorElement) {
 export class PeachScan extends DecoratableMangaScraper {
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const request = new Request(new URL(chapter.Identifier, this.URI));
-        const doc = await FetchHTML(request);
-        let files: string[] = [];
+        const doc = await FetchHTML(new Request(new URL(chapter.Identifier, this.URI)));
 
         //NOT using script because their anti-adblock triggers a messagebox and screw up the process
         const filesZip = doc.documentElement.innerHTML.match(/const\s+urls\s*=\s*\[(.*?)]\s*;/)?.at(1);
-        if (filesZip) {
-            files = filesZip.split(',').map(element => element.replaceAll("'", '').trim());
-        } else {
-            files = [...doc.querySelectorAll<HTMLImageElement>('div#imageContainer img')].map(image => new URL(image.src, this.URI).href);
-        }
+        const files = filesZip ? filesZip.split(',').map(element => element.replaceAll("'", '').trim())
+            : [...doc.querySelectorAll<HTMLImageElement>('div#imageContainer img')].map(image => new URL(image.src, this.URI).href);
 
-        if (files.length == 0) return [];
-
-        if (files.at(0).endsWith('.zip')) {
+        if (files.at(0)?.endsWith('.zip')) {
             const pages: Page[] = [];
             for (const zipurl of files) {
                 const request = new Request(new URL(zipurl, this.URI), { cache: 'reload', headers: { Referer: this.URI.href } });
                 const response = await Fetch(request);
                 const zipfile = await JSZip.loadAsync(await response.arrayBuffer());
                 const fileNames = Object.keys(zipfile.files)
-                    .sort((a, b) => ExtractNumber(a) - ExtractNumber(b))
+                    .sort((a, b) => this.ExtractNumber(a) - this.ExtractNumber(b))
                     .filter(key => [/jpe?g$/i, /png$/i, /webp$/i, /avif$/i].some(pattern => pattern.test(key)))
                     .map(key => new Page<PageKey>(this, chapter, new URL(zipurl, this.URI), { key }));
                 pages.push(...fileNames);
@@ -57,15 +50,15 @@ export class PeachScan extends DecoratableMangaScraper {
         }
     }
 
-    public override async FetchImage(page: Page<PageKey> | Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
+    public override async FetchImage(page: Page<PageKey>, priority: Priority, signal: AbortSignal): Promise<Blob> {
         return !page.Link.href.endsWith('.zip') ? await Common.FetchImageAjax.call(this, page, priority, signal, true) : this.imageTaskPool.Add(async () => {
             const response = await Fetch(new Request(page.Link, { cache: 'force-cache', headers: { Referer: this.URI.href } }));
             const zip = await JSZip.loadAsync(await response.arrayBuffer());
             return Common.GetTypedData(await zip.files[(page as Page<PageKey>).Parameters.key].async('arraybuffer'));
         }, priority, signal);
     }
-}
 
-function ExtractNumber(fileName): number {
-    return parseInt(fileName.split(".")[0]);
+    private ExtractNumber(fileName): number {
+        return parseInt(fileName.split(".")[0]);
+    }
 }
