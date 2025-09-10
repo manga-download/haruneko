@@ -21,7 +21,7 @@ export namespace Channels {
     };
 
     /**
-     * ...
+     * Supported IPC Channels for managing the blocked requests.
      */
     export const enum BloatGuard {
         Initialize = 'BloatGuard::Initialize',
@@ -38,7 +38,7 @@ export namespace Channels {
     };
 
     /**
-     * Supported IPC Channels for interacting with browser windows.
+     * Supported IPC Channels for creating and interacting with browser windows.
      */
     export const enum RemoteBrowserWindowController {
         OnDomReady = 'RemoteBrowserWindowController::OnDomReady',
@@ -52,7 +52,7 @@ export namespace Channels {
     };
 
     /**
-     * Supported IPC Channels for interacting with the RPC manager.
+     * Supported IPC Channels for managing the RPC service.
      */
     export const enum RemoteProcedureCallManager {
         Stop = 'RemoteProcedureCallManager::Stop',
@@ -60,7 +60,7 @@ export namespace Channels {
     };
 
     /**
-     * Supported IPC Channels for interacting with the RPC contract callbacks.
+     * Supported IPC Channels for using the RPC service.
      */
     export const enum RemoteProcedureCallContract {
         LoadMediaContainerFromURL = 'RemoteProcedureCallContract::LoadMediaContainerFromURL',
@@ -107,17 +107,17 @@ export class IPC {
     Handle(channel: Channels.ApplicationWindow.CloseSplash, callback: () => Promise<void>): void;
     // BloatGuard
     Handle(channel: Channels.BloatGuard.Initialize, callback: (patterns: string[]) => Promise<void>): void;
-    // ...
+    // FetchProvider
     Handle(channel: Channels.FetchProvider.Initialize, callback: (fetchApiSupportedPrefix: string) => Promise<void>): void;
     Handle(channel: Channels.FetchProvider.GetSessionCookies, callback: (filter: Electron.CookiesGetFilter) => PromiseLike<Electron.Cookie[]>): void;
-
+    // RemoteBrowserWindowController
     Handle(channel: Channels.RemoteBrowserWindowController.OpenWindow, callback: (options: string) => Promise<number>): void;
     Handle(channel: Channels.RemoteBrowserWindowController.CloseWindow, callback: (windowID: number) => Promise<void>): void;
     Handle(channel: Channels.RemoteBrowserWindowController.SetVisibility, callback: (windowID: number, show: boolean) => Promise<void>): void;
     Handle(channel: Channels.RemoteBrowserWindowController.ExecuteScript, callback: <T extends JSONElement>(windowID: number, script: string) => Promise<T>): void;
     Handle(channel: Channels.RemoteBrowserWindowController.SendDebugCommand, callback: <T extends void | JSONElement>(windowID: number, channel: string, parameters?: JSONObject) => Promise<T>): void;
     Handle(channel: Channels.RemoteBrowserWindowController.LoadURL, callback: (windowID: number, url: string, options: string) => Promise<void>): void;
-
+    // RemoteProcedureCallManager
     Handle(channel: Channels.RemoteProcedureCallManager.Stop, callback: () => Promise<void>): void;
     Handle(channel: Channels.RemoteProcedureCallManager.Restart, callback: (port: number, secret: string) => Promise<void>): void;
 
