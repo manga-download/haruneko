@@ -303,6 +303,7 @@ export { default as LilyManga } from './LilyManga';
 export { default as LilyumFansub } from './LilyumFansub';
 export { default as LineWebtoon } from './LineWebtoon';
 export { default as LineWebtoonTranslate } from './LineWebtoonTranslate';
+export { default as LoversToon } from './LoversToon';
 export { default as LowerWorld } from './LowerWorld';
 export { default as LumosKomik } from './LumosKomik';
 export { default as LunaScans } from './LunaScans';
