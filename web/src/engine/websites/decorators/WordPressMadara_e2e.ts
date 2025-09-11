@@ -6,6 +6,7 @@ import '../AquaManga_e2e';
 import '../ArabToons_e2e';
 import '../ArgosScan_e2e';
 import '../ArthurScan_e2e';
+import '../ArvenScans_e2e';
 import '../AryaScans_e2e';
 import '../AstralManga_e2e';
 import '../AsuraScansTR_e2e';
