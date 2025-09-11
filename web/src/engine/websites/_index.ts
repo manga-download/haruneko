@@ -780,6 +780,7 @@ export { default as YuriVerso } from './YuriVerso';
 export { default as YushukeMangas } from './YushukeMangas';
 export { default as Zebrack } from './Zebrack';
 export { default as ZenithScans } from './ZenithScans';
+export { default as ZenManga } from './ZenManga';
 export { default as ZeroScans } from './ZeroScans';
 export { default as ZeurelScan } from './ZeurelScan';
 export { default as Zhuzhumh } from './Zhuzhumh';
