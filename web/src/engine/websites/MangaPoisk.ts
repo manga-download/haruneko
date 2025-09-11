@@ -20,9 +20,9 @@ type APIChapters = {
 
 type JSONAPP = {
     version: string;
-}
+};
 
-@Common.MangaCSS(/^{origin}\/manga\/[^/]+$/, 'header.card-header h1 span')
+@Common.MangaCSS(/^{origin}\/manga\/[^/]+/, 'header.card-header h1 span')
 @Common.MangasMultiPageCSS('/manga?page={page}', 'div.grid div.manga-card > a')
 @Common.PagesSinglePageCSS('img[data-page]')
 @Common.ImageAjax()
