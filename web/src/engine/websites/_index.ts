@@ -242,7 +242,6 @@ export { default as KadoComi } from './KadoComi';
 export { default as KaiScans } from './KaiScans';
 export { default as Kakaopage } from './Kakaopage';
 export { default as KaliScan } from './KaliScan';
-export { default as Kanjiku } from './Kanjiku';
 export { default as KanMan } from './KanMan';
 export { default as Kanzenin } from './Kanzenin';
 export { default as Katakomik } from './Katakomik';
