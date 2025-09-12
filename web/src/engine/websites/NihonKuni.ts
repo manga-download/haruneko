@@ -1,17 +1,17 @@
 import { Tags } from '../Tags';
-import icon from './MangaGun.webp';
+import icon from './NihonKuni.webp';
 import { DecoratableMangaScraper, type Manga, type Chapter } from '../providers/MangaPlugin';
 import * as FlatManga from './templates/FlatManga';
 import * as Common from './decorators/Common';
 
-@Common.MangaCSS(FlatManga.pathManga, FlatManga.queryMangaTitle)
+@Common.MangaCSS(/^{origin}\/manga-[^/]+\.html$/, FlatManga.queryMangaTitle)
 @Common.MangasMultiPageCSS(FlatManga.pathMangasMultiPage, FlatManga.queryMangas)
-@Common.PagesSinglePageCSS(FlatManga.queryPages, (imageElement: HTMLImageElement) => atob(imageElement.dataset.img))
+@Common.PagesSinglePageJS(`[...document.querySelectorAll('${FlatManga.queryPages}')].map(image=>image.dataset.srcset);`, 500)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('mangagun', 'MangaGun', 'https://mangagun.net', Tags.Language.English, Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Source.Aggregator);
+        super('mangagun', 'NihonKuni', 'https://nihonkuni.com', Tags.Language.English, Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Source.Aggregator);
     }
 
     public override get Icon() {
