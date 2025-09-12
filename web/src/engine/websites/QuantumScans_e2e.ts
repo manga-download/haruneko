@@ -6,17 +6,17 @@ new TestFixture({
         title: 'Quantum Scans'
     },
     container: {
-        url: 'https://quantumtoon.com/series/628e2319b4b/',
-        id: '/series/628e2319b4b/',
-        title: 'Celestial Phase'
+        url: 'https://quantumtoon.com/series/celestial-phenomenon',
+        id: '5',
+        title: 'Celestial Phenomenon'
     },
     child: {
-        id: '/chapter/628e2319b4b-628e242ce6f/',
+        id: '/series/celestial-phenomenon/chapter-47',
         title: 'Chapter 47'
     },
     entry: {
-        index: 0,
-        size: 775_821,
+        index: 1,
+        size: 4_544_610,
         type: 'image/jpeg'
     }
 }).AssertWebsite();
