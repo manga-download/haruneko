@@ -3,10 +3,10 @@ import { TestFixture } from '../../../test/WebsitesFixture';
 new TestFixture({
     plugin: {
         id: 'mangagun',
-        title: 'MangaGun'
+        title: 'NihonKuni'
     },
     container: {
-        url: 'https://mangagun.net/manga-oshi-no-ko-raw.html',
+        url: 'https://nihonkuni.com/manga-oshi-no-ko-raw.html',
         id: '/manga-oshi-no-ko-raw.html',
         title: 'OSHI NO KO - RAW'
     },
