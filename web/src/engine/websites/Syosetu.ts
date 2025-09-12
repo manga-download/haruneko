@@ -41,7 +41,7 @@ export default class extends DecoratableMangaScraper {
     private zingParams: ZingParams;
 
     public constructor () {
-        super('syosetu', 'Syosetu', 'https://syosetu.ec', Tags.Media.Manga, Tags.Language.Japanese, Tags.Source.Aggregator);
+        super('syosetu', 'Syosetu', 'https://syosetu.fi', Tags.Media.Manga, Tags.Language.Japanese, Tags.Source.Aggregator);
     }
 
     public override get Icon() {

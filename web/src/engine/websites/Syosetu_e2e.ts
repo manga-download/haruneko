@@ -6,7 +6,7 @@ new TestFixture({
         title: 'Syosetu'
     },
     container: {
-        url: 'https://syosetu.ec/manga/どれが恋かがわからない-raw-free/',
+        url: 'https://syosetu.fi/manga/どれが恋かがわからない-raw-free/',
         id: encodeURI('/manga/どれが恋かがわからない-raw-free/'),
         title: 'どれが恋かがわからない'
     },
