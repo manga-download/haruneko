@@ -1,33 +1,14 @@
 import { Tags } from '../Tags';
 import icon from './MangaPoisk.webp';
-import { Chapter } from '../providers/MangaPlugin';
-import { DecoratableMangaScraper, type Manga } from '../providers/MangaPlugin';
+import { FetchCSS } from '../platform/FetchProvider';
+import { DecoratableMangaScraper, type Manga, Chapter } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { FetchCSS, FetchJSON } from '../platform/FetchProvider';
-
-type APIResult<T> = {
-    props: T
-};
-
-type APIChapters = {
-    chapters: {
-        data: {
-            link: string;
-            title: string;
-        }[]
-    }
-};
-
-type JSONAPP = {
-    version: string;
-};
 
 @Common.MangaCSS(/^{origin}\/manga\/[^/]+/, 'header.card-header h1 span')
-@Common.MangasMultiPageCSS('/manga?page={page}', 'div.grid div.manga-card > a')
+@Common.MangasMultiPageCSS('/manga?page={page}', 'div.grid div.manga-card > a', 1, 1, 0, (element: HTMLAnchorElement) => ({ id: element.pathname, title: element.text.trim() }))
 @Common.PagesSinglePageCSS('img[data-page]')
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
-    private apiVersion: string = '5b848c59da46cd7956567ddcf21104f6';
 
     public constructor() {
         super('mangapoisk', 'MangaPoisk', 'https://mangapoisk.io', Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Language.Russian, Tags.Source.Aggregator);
@@ -37,23 +18,13 @@ export default class extends DecoratableMangaScraper {
         return icon;
     }
 
-    public override async Initialize(): Promise<void> {
-        const [app] = await FetchCSS<HTMLDivElement>(new Request(new URL(this.URI)), 'div#app');
-        this.apiVersion = (JSON.parse(app.dataset.page) as JSONAPP).version;
-    }
-
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const { chapters: { data } } = await this.FetchAPI<APIChapters>(`${manga.Identifier}?tab=chapters`);
-        return data.map(({ link, title }) => new Chapter(this, manga, link, title));
-    }
-
-    private async FetchAPI<T extends JSONElement>(endpoint: string): Promise<T> {
-        return (await FetchJSON<APIResult<T>>(new Request(new URL(endpoint, this.URI), {
-            headers: {
-                'Content-Type': 'application/json',
-                'X-Inertia': 'true',
-                'X-Inertia-Version': this.apiVersion
+        return Array.fromAsync(async function* () {
+            for (let page = 1, run = true; run; page++) {
+                const data = await FetchCSS<HTMLSpanElement>(new Request(new URL(manga.Identifier + `?tab=chapters&page=` + page, this.URI)), '#page-content span.chapter-title');
+                const chapters = data.map(element => new Chapter(this, manga, element.closest('a').pathname, element.innerText.trim()));
+                chapters.length > 0 ? yield* chapters : run = false;
             }
-        }))).props;
+        }.call(this));
     }
 }

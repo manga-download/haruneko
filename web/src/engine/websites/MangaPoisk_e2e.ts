@@ -6,17 +6,17 @@ new TestFixture({
         title: 'MangaPoisk',
     },
     container: {
-        url: 'https://mangapoisk.io/manga/i-need-sponsorship',
-        id: '/manga/i-need-sponsorship',
-        title: 'Мне нужен спонсор'
+        url: 'https://mangapoisk.io/manga/dungeon-odyssey',
+        id: '/manga/dungeon-odyssey',
+        title: 'Подземная Одиссея'
     },
     child: {
-        id: '/manga/i-need-sponsorship/chapter/1-26',
-        title: '26 Том 1'
+        id: '/manga/dungeon-odyssey/chapter/1-10',
+        title: 'Том 1 Глава 10'
     },
     entry: {
         index: 0,
-        size: 248_126,
-        type: 'image/webp'
+        size: 1_541_685,
+        type: 'image/jpeg'
     }
 }).AssertWebsite();
