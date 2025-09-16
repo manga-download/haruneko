@@ -1,90 +1,15 @@
 ﻿import { Tags } from '../Tags';
 import icon from './Syosetu.webp';
-import { type Chapter, DecoratableMangaScraper, Page } from '../providers/MangaPlugin';
-import * as Common from './decorators/Common';
-import { Fetch, FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
-import type { Priority } from '../taskpool/DeferredTask';
+import { Zing92Base } from './templates/Zing92Base';
 
-// TODO : make a Zing92 template
-
-type ZingParams = {
-    nonce: string,
-    apiURL: string,
-};
-
-type PageParameters = {
-    sp: string,
-    chapterID: string,
-    imageIndex: number,
-};
-
-function CleanTitle(title: string): string {
-    return title.replace(/\(Raw.*Free\)/i, '').trim();
-}
-
-function MangaLabelExtractor(element: HTMLHeadingElement): string {
-    return CleanTitle(element.textContent);
-}
-
-function MediaExtractor(anchor: HTMLAnchorElement) {
-    return {
-        id: anchor.pathname,
-        title: CleanTitle(anchor.text)
-    };
-}
-
-@Common.MangaCSS(/^{origin}\/manga\/[^/]+\/$/, 'div.container div.row h1.name', MangaLabelExtractor)
-@Common.MangasMultiPageCSS('/page/{page}/', 'div.grid-of-mangas h2.name a', 1, 1, 0, MediaExtractor)
-@Common.ChaptersSinglePageCSS('div.chapter-box a', MediaExtractor)
-export default class extends DecoratableMangaScraper {
-
-    private zingParams: ZingParams;
+export default class extends Zing92Base {
 
     public constructor () {
         super('syosetu', 'Syosetu', 'https://syosetu.fi', Tags.Media.Manga, Tags.Language.Japanese, Tags.Source.Aggregator);
+        this.decodeImageAjaxAction = 'decode_images_100';
     }
 
     public override get Icon() {
         return icon;
-    }
-
-    public override async Initialize(): Promise<void> {
-        this.zingParams = await FetchWindowScript(new Request(this.URI), 'new Promise(resolve => resolve({ nonce: zing.nonce, apiURL: zing.ajax_url }));', 500);
-    }
-
-    public override async FetchPages(chapter: Chapter): Promise<Page<PageParameters>[]> {
-        const data = await (await Fetch(new Request(new URL(chapter.Identifier, this.URI)))).text();
-        const sp = data.match(/\sp:\s*(\d+),/).at(-1);
-        const chapterID = data.match(/chapter_id\s*:\s*['"]([^'"]+)/).at(-1);
-        const possibleLinks = new Array(256).fill(0).map((_, imageIndex) => new Page<PageParameters>(this, chapter, this.URI, { sp, chapterID, imageIndex }));
-        return possibleLinks.takeUntil(async page => this.FetchZingPage(page.Parameters).then(data => data.includes('<img')));
-    }
-
-    public override async FetchImage(page: Page<PageParameters>, priority: Priority, signal: AbortSignal): Promise<Blob> {
-        return this.imageTaskPool.Add(async () => {
-            const data = await this.FetchZingPage(page.Parameters);
-            const link = new DOMParser().parseFromString(data, 'text/html').documentElement.querySelector('img')?.src;
-            return Fetch(new Request(link)).then(response => response.arrayBuffer()).then(data => Common.GetTypedData(data));
-        }, priority, signal);
-    }
-
-    private async FetchZingPage(params: PageParameters): Promise<string> {
-        const { mes } = await FetchJSON<{ mes: string; }>(new Request(this.zingParams.apiURL, {
-            method: 'POST',
-            body: new URLSearchParams({
-                nonce_a: this.zingParams.nonce,
-                action: 'z_do_ajax',
-                _action: 'decode_images_100',
-                p: params.sp,
-                img_index: `${params.imageIndex}`,
-                chapter_id: params.chapterID,
-                content: ''
-            }),
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded; charset=UTF8',
-                'X-Requested-With': 'XMLHttpRequest',
-            }
-        }));
-        return mes;
     }
 }
