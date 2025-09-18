@@ -2,8 +2,8 @@
 import icon from './ZenManga.webp';
 import { Chapter, DecoratableMangaScraper, Manga, type MangaPlugin, Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { FetchCSS, FetchJSON } from '../platform/FetchProvider';
-import * as devalue from 'devalue';
+import { FetchCSS, FetchJSON, FetchWindowPreloadScript, FetchWindowScript } from '../platform/FetchProvider';
+//import * as devalue from 'devalue';
 
 type APIManga = {
     id: string;
@@ -36,10 +36,10 @@ type APIPages = {
 
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
-    private readonly apiUrl = 'https://api.zenmanga.io/v2/';
+    private readonly apiUrl = 'https://api.inkstory.me/v2/';
 
     public constructor() {
-        super('zenmanga', 'ZenManga', 'https://zenmanga.io', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Russian, Tags.Source.Aggregator);
+        super('zenmanga', 'ZenManga', 'https://inkstory.me', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Russian, Tags.Source.Aggregator);
     }
 
     public override get Icon() {
@@ -70,6 +70,30 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
+        const request = new Request(new URL(`./content/${manga.Identifier}`, this.URI));
+        const eventName = Math.random().toString(36).split('').slice(Math.random() * 6 + 4).join('');
+        const preload = `(function(eventName) {
+            document.addEventListener('@it-astro:server-state-loaded', event => {
+                setInterval(() => window.dispatchEvent(new CustomEvent(eventName, { detail: event.serverState })), 250);
+            });
+        })('${eventName}');`;
+
+        const script = `new Promise(resolve => {
+            const eventName = '${eventName}';
+            window.addEventListener(eventName, event => {
+                const objects = event.detail.get('@inox-tools/request-nanostores');
+                const branches = objects.get('current-book-branches');
+                const chaptersData = objects.get('current-book-chapters');
+                resolve ( {chaptersData , branches});
+            }, { once: true });
+        });`;
+
+        const data = await FetchWindowPreloadScript(request, preload, script, 0, 7500);
+
+
+
+        //const data = await FetchWindowScript(new Request(new URL(`./content/${manga.Identifier}`, this.URI)), chapterScript);
+        /*
         const revivers = {
             URL: t => new URL(t),
             Date: t => new Date(t),
@@ -83,7 +107,7 @@ export default class extends DecoratableMangaScraper {
             const publishers = branches.find(branch => branch.id === branchId).publishers.map(({ name }) => name).join(' & ');
             const title = ['Том', `${volume}.`, 'Глава', number, name ? `: ${name}` : undefined].join(' ').trim() + ` (${publishers})`;
             return new Chapter(this, manga, id, title);
-        });
+        });*/
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
