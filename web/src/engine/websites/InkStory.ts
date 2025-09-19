@@ -5,6 +5,7 @@ import * as Common from './decorators/Common';
 import { FetchJSON, FetchWindowPreloadScript } from '../platform/FetchProvider';
 import type { Priority } from '../taskpool/DeferredTask';
 import { GetBytesFromUTF8 } from '../BufferEncoder';
+import { RandomText } from '../Random';
 
 type APIManga = {
     id: string;
@@ -104,7 +105,7 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const request = new Request(new URL(`./content/${manga.Identifier}`, this.URI));
-        const eventName = Math.random().toString(36).split('').slice(Math.random() * 6 + 4).join('');
+        const eventName = RandomText(Math.random() * 6 + 4);
         const { branches, chaptersData } = await FetchWindowPreloadScript<HydratedData>(request, PreloadScript(eventName), HydratedDataScript(eventName), 0, 7500);
         return chaptersData.map(({ id, branchId, name, number, volume }) => {
             const publishers = branches.find(branch => branch.id === branchId).publishers.map(({ name }) => name).join(' & ');
@@ -115,7 +116,7 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchPages(chapter: Chapter): Promise<Page<PageParameters>[]> {
         const request = new Request(new URL(`./content/${chapter.Parent.Identifier}`, this.URI));
-        const eventName = Math.random().toString(36).split('').slice(Math.random() * 6 + 4).join('');
+        const eventName = RandomText(Math.random() * 6 + 4);
         const { secretKey } = await FetchWindowPreloadScript<HydratedData>(request, PreloadScript(eventName), HydratedDataScript(eventName), 0, 7500);
         const { pages } = await FetchJSON<APIPages>(new Request(new URL(`./chapters/${chapter.Identifier}`, this.apiUrl)));
         return pages.map(({ image }) => {
