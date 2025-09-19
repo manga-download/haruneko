@@ -75,7 +75,6 @@ export { default as ComicFans } from './ComicFans';
 export { default as ComicFuz } from './ComicFuz';
 export { default as ComicGardo } from './ComicGardo';
 export { default as ComicGrowl } from './ComicGrowl';
-export { default as ComicK } from './ComicK';
 export { default as COMICMeDu } from './COMICMeDu';
 export { default as Comico } from './Comico';
 export { default as ComicOgyaaa } from './ComicOgyaaa';
