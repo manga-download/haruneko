@@ -8,7 +8,7 @@ const chapterScript = `
         const element = document.querySelector('astro-island[component-url*="MangaChaptersLoader"]');
         element.hydrator = () => (_, props) => {
             resolve(props.manga.MangaChapters.map(chapter => {
-                const title = chapter.title ? chapter.title : ['Chapter', + chapter.chapter_number].join(' ');
+                const title = chapter.title ? chapter.title : ['Chapter', chapter.chapter_number].join(' ');
                 return { id: '/reader/' + location.pathname.split('/').at(-1) + '/' + chapter.chapter_number, title};
             }));
         };
