@@ -80,6 +80,7 @@ import '../Manga18FX_e2e';
 import '../MangaBin_e2e';
 import '../MangaClash_e2e';
 import '../MangaDistrict_e2e';
+import '../MangaDiyari_e2e';
 import '../MangaEclipse_e2e';
 import '../MangaForFree_e2e';
 import '../MangaFoxFull_e2e';
