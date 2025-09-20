@@ -44,6 +44,6 @@ export default class extends DecoratableMangaScraper {
                 genreMatchMode: 'any'
             })
         }));
-        return mangas.map(({ url, title }) => new Manga(this, provider, new URL(url).pathname, title));
+        return mangas.map(({ url, title }) => new Manga(this, provider, new URL(url, this.URI).pathname, title));
     }
 }
