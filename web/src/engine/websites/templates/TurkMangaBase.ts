@@ -13,7 +13,7 @@ type HydratedPages = {
 
 @Common.MangaCSS(/^{origin}\/manga\/\d+\/[^/]+$/, 'div.content-info img', (element: HTMLImageElement) => element.alt.trim())
 @Common.MangasMultiPageCSS('search?page={page}', 'section[aria-label*="series"] div.card > div a:has(h2)')
-@Common.ChaptersSinglePageCSS('div.list-episode a', (anchor: HTMLAnchorElement) => ({ id: anchor.pathname, title: anchor.querySelector('.chapternum').textContent.trim() }))
+@Common.ChaptersSinglePageCSS('div.list-episode a', undefined, (anchor: HTMLAnchorElement) => ({ id: anchor.pathname, title: anchor.querySelector('.chapternum').textContent.trim() }))
 @Common.ImageAjax()
 export class TurkMangaBase extends DecoratableMangaScraper {
 

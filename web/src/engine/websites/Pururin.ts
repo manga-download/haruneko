@@ -27,7 +27,7 @@ function ChapterExtractor(element: HTMLDivElement) {
 
 @Common.MangaCSS(/^{origin}\/gallery\/\d+\//, 'div.title h1 span')
 @Common.MangasMultiPageCSS('/?page={page}', 'a.card.card-gallery', 1, 1, 0, MangaInfoExTractor)
-@Common.ChaptersSinglePageCSS('div.gallery-wrapper', ChapterExtractor)
+@Common.ChaptersSinglePageCSS('div.gallery-wrapper', undefined, ChapterExtractor)
 @Common.PagesSinglePageJS(pageScript, 1500)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
