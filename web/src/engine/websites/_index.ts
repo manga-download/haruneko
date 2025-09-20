@@ -428,6 +428,7 @@ export { default as MangaSushi } from './MangaSushi';
 export { default as MangaSusuku } from './MangaSusuku';
 export { default as MangaSwat } from './MangaSwat';
 export { default as MangaTales } from './MangaTales';
+export { default as MangaTaro } from './MangaTaro';
 export { default as Mangatellers } from './Mangatellers';
 export { default as MangaTepesi } from './MangaTepesi';
 export { default as MangaTilkisi } from './MangaTilkisi';
