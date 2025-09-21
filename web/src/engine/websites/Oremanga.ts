@@ -6,7 +6,7 @@ import * as ZManga from './templates/ZManga';
 
 @Common.MangaCSS(/^{origin}\/series\/[^/]+\/$/, ZManga.queryMangaTitle)
 @Common.MangasSinglePagesCSS([ '/manga-list-รายชื่อมังงะ/' ], ZManga.queryManga)
-@Common.ChaptersSinglePageCSS(ZManga.queryChapters, Common.AnchorInfoExtractor(false, 'span.date'))
+@Common.ChaptersSinglePageCSS(ZManga.queryChapters, undefined, Common.AnchorInfoExtractor(false, 'span.date'))
 @Common.PagesSinglePageCSS('div.reader-area-main img')
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
