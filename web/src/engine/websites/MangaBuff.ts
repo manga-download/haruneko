@@ -5,7 +5,7 @@ import * as Common from './decorators/Common';
 
 @Common.MangaCSS(/^{origin}\/manga\/[^/]+$/, 'h1.manga__name')
 @Common.MangasMultiPageCSS('/manga?page={page}', 'div.cards a.cards__item', 1, 1, 0, (anchor: HTMLAnchorElement) => ({ id: anchor.pathname, title: anchor.querySelector('div.cards__name').textContent.trim() }))
-@Common.ChaptersSinglePageCSS('div.chapters__list a.chapters__item', (anchor: HTMLAnchorElement) => ({ id: anchor.pathname, title: anchor.dataset.chapter.trim() }))
+@Common.ChaptersSinglePageCSS('div.chapters__list a.chapters__item', undefined, (anchor: HTMLAnchorElement) => ({ id: anchor.pathname, title: anchor.dataset.chapter.trim() }))
 @Common.PagesSinglePageCSS('div.reader__item img')
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
