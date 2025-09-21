@@ -14,7 +14,7 @@ function MangaLabelExtractor(element: HTMLElement): string {
 }
 
 @Common.MangaCSS(/^{origin}\/comic\/[^/]+$/, 'div.manga-right h1.manga-title', MangaLabelExtractor)
-@Common.ChaptersSinglePageCSS('ul.basic-list li a', ChapterExtractor)
+@Common.ChaptersSinglePageCSS('ul.basic-list li a', undefined, ChapterExtractor)
 @Common.PagesSinglePageCSS('div.chapter-container img.chapter_img')
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
