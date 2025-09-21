@@ -31,7 +31,9 @@ const patternAliasDomains = [
     'wto.to',
 ].join('|').replaceAll('.', '\\.');
 
-@AnyACG.MangaCSS(new RegExp(`^https://${patternAliasDomains}/series/\\d+(/[^/]+)?$/`), 'div.mainer div.title-set', 'h3.item-title', 'em.item-flag')
+// TODO: support BatoV3
+
+@AnyACG.MangaCSS(new RegExp(`^https://(${patternAliasDomains})/series/\\d+(/[^/]+)?$`), 'div.mainer div.title-set', 'h3.item-title', 'em.item-flag')
 @AnyACG.MangasMultiPageCSS('/browse?page={page}', 'div.series-list div.item-text', 'a.item-title', 'em.item-flag')
 @Common.ChaptersSinglePageCSS('div.episode-list div.main a.chapt')
 @AnyACG.PagesSinglePageJS()
