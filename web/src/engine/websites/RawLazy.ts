@@ -6,7 +6,7 @@ import { FetchJSON } from '../platform/FetchProvider';
 import { ChapterExtractor, CleanTitle, Zing92Base, type APIResult } from './templates/Zing92Base';
 
 @Common.MangaCSS(/^{origin}\/manga-lazy\/[^/]+\/$/, 'title', (element) => CleanTitle(element.textContent.split('|').at(0)))
-@Common.ChaptersSinglePageCSS('div.chapters-list a', ChapterExtractor)
+@Common.ChaptersSinglePageCSS('div.chapters-list a', undefined, ChapterExtractor)
 export default class extends Zing92Base {
 
     public constructor() {
@@ -27,8 +27,7 @@ export default class extends Zing92Base {
     }
 
     private async GetMangasFromPage(provider: MangaPlugin, page: number) {
-
-        const request = new Request(new URL(this.zingParams.apiURL, this.URI), {
+        const { mes: html } = await FetchJSON<APIResult>(new Request(new URL(this.zingParams.apiURL, this.URI), {
             credentials: 'include',
             method: 'POST',
             body: new URLSearchParams({
@@ -41,9 +40,7 @@ export default class extends Zing92Base {
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
             }
-        });
-
-        const { mes: html } = await FetchJSON<APIResult>(request);
+        }));
         const links = [...new DOMParser().parseFromString(html, 'text/html').querySelectorAll<HTMLAnchorElement>('div.entry-tag h2 a')];
         return links.map(link => new Manga(this, provider, link.pathname, CleanTitle(link.text)));
     }
