@@ -141,7 +141,7 @@ export default class extends DecoratableMangaScraper {
 }
 
 /**
- * A basic oAuth token manager with MangaLib specific business logic
+ * A basic oAuth token manager with AsuraScans specific business logic
  */
 class DRMProvider {
     #crsfToken: string = null;
