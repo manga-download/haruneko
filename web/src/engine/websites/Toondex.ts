@@ -11,7 +11,7 @@ function ChapterExtractor(anchor: HTMLAnchorElement) {
 }
 
 @Common.MangaCSS(/^{origin}\/comics\/[^/]+\/$/, 'div.container div[class=""] h1.font-semibold')
-@Common.MangasMultiPageCSS('/latest-updates/{page}/', 'div.grid a:has(h2.box-title)')
+@Common.MangasMultiPageCSS('div.grid a:has(h2.box-title)', Common.PatternLinkGenerator('/latest-updates/{page}/'))
 @Common.ChaptersSinglePageCSS('div#chapters-box ul li a', undefined, ChapterExtractor)
 @Common.PagesSinglePageCSS('div.container img[id*="row"]')
 @Common.ImageAjax()

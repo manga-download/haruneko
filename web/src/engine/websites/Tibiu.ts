@@ -12,14 +12,14 @@ type APIChapters = {
 };
 
 @Common.MangaCSS(/^{origin}\/comic\/\d+$/, 'h2.comicInfo__title')
-@Common.MangasMultiPageCSS('https://comic.tibiu.net/search/_/{page}', 'div.cate-comic-list p.comic__title > a')
+@Common.MangasMultiPageCSS('div.cate-comic-list p.comic__title > a', Common.PatternLinkGenerator('/search/_/{page}'))
 @Common.PagesSinglePageCSS('div[data-pid] > img[data-original]:not([data-original$="boylove.cc"])', img => img.dataset.original)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
     private readonly apiURL = 'https://comic.tibiu.net/index.php/api/';
 
-    public constructor () {
+    public constructor() {
         super('tibiu', 'Tibiu', 'https://comic.tibiu.net', Tags.Media.Manga, Tags.Media.Manhua, Tags.Language.Chinese, Tags.Source.Official, Tags.Rating.Pornographic);
     }
 

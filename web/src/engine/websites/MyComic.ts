@@ -17,12 +17,12 @@ function MangaExtractor(element: HTMLDivElement) {
 }
 
 @Common.MangaCSS(/^{origin}\/comics\/\d+$/, 'div[data-flux-breadcrumbs] > div:last-of-type')
-@Common.MangasMultiPageCSS('/comics?page={page}', 'div.grid div.group.relative', 1, 1, 0, MangaExtractor)
+@Common.MangasMultiPageCSS('div.grid div.group.relative', Common.PatternLinkGenerator('/comics?page={page}'), 0, MangaExtractor)
 @Common.PagesSinglePageCSS('img.page')
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
-    public constructor () {
+    public constructor() {
         super('mycomic', 'MyComic', 'https://mycomic.com', Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Media.Comic, Tags.Language.Chinese, Tags.Source.Aggregator);
     }
 

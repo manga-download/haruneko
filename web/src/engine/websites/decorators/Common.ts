@@ -3,8 +3,7 @@ import { Exception, InternalError } from '../../Error';
 import { Fetch, FetchCSS, FetchWindowScript } from '../../platform/FetchProvider';
 import { type MangaScraper, type DecoratableMangaScraper, type MangaPlugin, Manga, Chapter, Page } from '../../providers/MangaPlugin';
 import type { MediaChild, MediaContainer } from '../../providers/MediaPlugin';
-import { RateLimit } from '../../taskpool/RateLimit';
-import { TaskPool, Priority } from '../../taskpool/TaskPool';
+import type { Priority } from '../../taskpool/TaskPool';
 import DeProxify from '../../transformers/ImageLinkDeProxifier';
 import { Delay } from '../../BackgroundTimers';
 
@@ -16,12 +15,16 @@ export function ThrowOnUnsupportedDecoratorContext(context: ClassDecoratorContex
 
 export type Constructor = new (...args: any[]) => DecoratableMangaScraper;
 
-/********************************
- ******** Link Resolvers ********
- ********************************/
+/*********************************
+ ******** Link Generators ********
+ *********************************/
 
-type LinkResolver = (this: MangaScraper, media: MediaContainer<MediaChild>, page?: string | number) => URL;
+type LinkResolver<T extends MediaContainer<MediaChild> = MediaContainer<MediaChild>> = (this: MangaScraper, media?: T, page?: string | number) => URL;
 
+/**
+ * ...
+ * @deprecated Use {@link LinkGenerator} instead
+ */
 function DefaultLinkResolver(this: MangaScraper, media: MediaContainer<MediaChild>) {
     return new URL(media.Identifier, this.URI);
 };
@@ -29,10 +32,38 @@ function DefaultLinkResolver(this: MangaScraper, media: MediaContainer<MediaChil
 /**
  * Creates a link resolver that will compose an URL based on a provided media container (e.g., manga) and an optional provided page identifier.
  * @param endpoint - The absolute URL or relative path to the scraper's base url containing the optional placeholders `{id}` which is replaced by the media containers identifier and `{page}` which is replaced by an incrementing page identifier
+ * @deprecated Use {@link LinkGenerator} instead
  */
-export function PatternLinkResolver(endpoint: string): LinkResolver {
-    return function (this: MangaScraper, media: MediaContainer<MediaChild>, page?: string | number) {
+export function PatternLinkResolver<T extends MediaContainer<MediaChild>>(endpoint: string): LinkResolver<T> {
+    return function (this: MangaScraper, media: T, page?: string | number) {
         return new URL(endpoint.replace('{id}', media.Identifier).replace('{page}', `${page}`), this.URI);
+    };
+}
+
+type LinkGeneratorFlags = { isSizeFixed?: boolean };
+type LinkGenerator<T extends MediaContainer<MediaChild> = MediaContainer<MediaChild>> = ((this: MangaScraper, media?: T) => Generator<URL>) & LinkGeneratorFlags
+
+/**
+ * Creates a finite link generator that will compose URLs based on a provided sequence of {@link endpoints}.
+ * @param endpoints - A list of absolute URLs or relative paths of the scraper's base url
+ */
+export function StaticLinkGenerator(...endpoints: string[]): LinkGenerator {
+    return Object.assign<LinkGenerator, LinkGeneratorFlags>(function* (this: MangaScraper): Generator<URL> {
+        yield* endpoints.map(endpoint => new URL(endpoint, this.URI));
+    }, { isSizeFixed: true });
+}
+
+/**
+ * Creates an infinite link generator that will compose URLs based on a sequence of numbers.
+ * @param endpoint - The absolute URL or the relative path of the scraper's base url containing the optional placeholders `{id}` which is replaced by the media containers identifier and `{page}` which is replaced by an incrementing number
+ * @param start - The start for the sequence of incremental numbers which are applied to the {@link endpoint} pattern
+ * @param increment - The amount by which the sequence shall be incremented for each iteration
+ */
+export function PatternLinkGenerator<T extends MediaContainer<MediaChild>>(endpoint: string, start = 1, increment = 1): LinkGenerator<T> {
+    return function* (this: MangaScraper, media: T): Generator<URL> {
+        for (let page = start; true; page += increment) {
+            yield new URL(endpoint.replace('{id}', media.Identifier).replace('{page}', `${page}`), this.URI);
+        }
     };
 }
 
@@ -202,7 +233,7 @@ export function MangasNotSupported() {
  * @param query - A CSS query to locate the elements from which the manga identifier and title shall be extracted
  * @param extract - A function to extract the manga identifier and title from a single element (found with {@link query})
  */
-async function FetchMangasSinglePageCSS<E extends HTMLElement>(this: MangaScraper, provider: MangaPlugin, endpoint: string, query: string, extract = DefaultInfoExtractor as InfoExtractor<E>) {
+export async function FetchMangasSinglePageCSS<E extends HTMLElement>(this: MangaScraper, provider: MangaPlugin, endpoint: string, query: string, extract = DefaultInfoExtractor as InfoExtractor<E>) {
     const request = new Request(new URL(endpoint, this.URI), {
         headers: {
             Referer: this.URI.href
@@ -223,6 +254,7 @@ async function FetchMangasSinglePageCSS<E extends HTMLElement>(this: MangaScrape
  * @param query - A CSS query to locate the elements from which the manga identifier and title shall be extracted
  * @param extract - A function to extract the manga identifier and title from a single element (found with {@link query})
  */
+/*
 export async function FetchMangasSinglePagesCSS<E extends HTMLElement>(this: MangaScraper, provider: MangaPlugin, endpoints: string[], query: string, extract = DefaultInfoExtractor as InfoExtractor<E>): Promise<Manga[]> {
     const cancellator = new AbortController();
     const mangaTaskPool: TaskPool = new TaskPool(4, new RateLimit(0, 0));
@@ -233,19 +265,20 @@ export async function FetchMangasSinglePagesCSS<E extends HTMLElement>(this: Man
         cancellator.abort();
     }
 }
+*/
 
 /**
  * A class decorator that adds the ability to extract multiple mangas from the given relative {@link endpoints} using the given CSS {@link query}.
- * @param endpoints - The endpoints relative to the scraper's base url from which the mangas shall be extracted
+ * @param endpoint - The endpoint relative to the scraper's base url from which the mangas shall be extracted
  * @param query - A CSS query to locate the elements from which the manga identifier and title shall be extracted
  * @param extract - A function to extract the manga identifier and title from a single element (found with {@link query})
  */
-export function MangasSinglePagesCSS<E extends HTMLElement>(endpoints: string[], query: string, extract = DefaultInfoExtractor as InfoExtractor<E>) {
+export function MangasSinglePageCSS<E extends HTMLElement>(endpoint: string, query: string, extract = DefaultInfoExtractor as InfoExtractor<E>) {
     return function DecorateClass<T extends Constructor>(ctor: T, context?: ClassDecoratorContext): T {
         ThrowOnUnsupportedDecoratorContext(context);
         return class extends ctor {
             public async FetchMangas(this: MangaScraper, provider: MangaPlugin): Promise<Manga[]> {
-                return FetchMangasSinglePagesCSS.call(this, provider, endpoints, query, extract as InfoExtractor<HTMLElement>);
+                return FetchMangasSinglePageCSS.call(this, provider, endpoint, query, extract as InfoExtractor<HTMLElement>);
             }
         };
     };
@@ -263,15 +296,18 @@ export function MangasSinglePagesCSS<E extends HTMLElement>(endpoints: string[],
  * @param throttle - A delay [ms] for each request (only required for rate-limited websites)
  * @param extract - A function to extract the manga identifier and title from a single element (found with {@link query})
  */
-export async function FetchMangasMultiPageCSS<E extends HTMLElement>(this: MangaScraper, provider: MangaPlugin, path: string, query: string, start = 1, step = 1, throttle = 0, extract = DefaultInfoExtractor as InfoExtractor<E>): Promise<Manga[]> {
+export async function FetchMangasMultiPageCSS<E extends HTMLElement>(this: MangaScraper, provider: MangaPlugin, query: string, generate: LinkGenerator<MangaPlugin>, throttle = 0, extract = DefaultInfoExtractor as InfoExtractor<E>): Promise<Manga[]> {
     const mangaList: Manga[] = [];
     let reducer = Promise.resolve();
-    for (let page = start, run = true; run; page += step) {
+    for (let uri of generate.call(this, provider)) {
         await reducer;
         reducer = throttle > 0 ? Delay(throttle) : Promise.resolve();
-        const mangas = await FetchMangasSinglePageCSS.call(this, provider, path.replace('{page}', `${page}`), query, extract as InfoExtractor<HTMLElement>);
-        mangaList.isMissingLastItemFrom(mangas) ? mangaList.push(...mangas) : run = false;
-        // TODO: Broadcast event that mangalist for provider has been updated?
+        const mangas = await FetchMangasSinglePageCSS.call(this, provider, uri.href, query, extract as InfoExtractor<HTMLElement>);
+        if (generate.isSizeFixed || mangaList.isMissingLastItemFrom(mangas)) {
+            mangaList.push(...mangas); // TODO: Broadcast event that mangalist for provider has been updated?
+        } else {
+            break;
+        }
     }
     return mangaList.distinct();
 }
@@ -286,12 +322,12 @@ export async function FetchMangasMultiPageCSS<E extends HTMLElement>(this: Manga
  * @param throttle - A delay [ms] for each request (only required for rate-limited websites)
  * @param extract - A function to extract the manga identifier and title from a single element (found with {@link query})
  */
-export function MangasMultiPageCSS<E extends HTMLElement>(path: string, query: string, start = 1, step = 1, throttle = 0, extract = DefaultInfoExtractor as InfoExtractor<E>) {
+export function MangasMultiPageCSS<E extends HTMLElement>(query: string, generate: LinkGenerator<MangaPlugin>, throttle = 0, extract = DefaultInfoExtractor as InfoExtractor<E>) {
     return function DecorateClass<T extends Constructor>(ctor: T, context?: ClassDecoratorContext): T {
         ThrowOnUnsupportedDecoratorContext(context);
         return class extends ctor {
             public async FetchMangas(this: MangaScraper, provider: MangaPlugin): Promise<Manga[]> {
-                return FetchMangasMultiPageCSS.call(this, provider, path, query, start, step, throttle, extract as InfoExtractor<HTMLElement>);
+                return FetchMangasMultiPageCSS.call(this, provider, query, generate, throttle, extract as InfoExtractor<HTMLElement>);
             }
         };
     };
@@ -354,7 +390,7 @@ export function ChaptersSinglePageCSS<E extends HTMLElement>(query: string, reso
  * @param resolve - A function to create an URL based on the provided media container (manga) and a page identifier
  * @param extract - A function to extract the chapter identifier and title from a single element (found with {@link query})
  */
-export async function FetchChaptersMultiPageCSS<E extends HTMLElement>(this: MangaScraper, manga: Manga, query: string, start = 1, step = 1, throttle = 0, resolve: LinkResolver, extract = DefaultInfoExtractor as InfoExtractor<E>): Promise<Chapter[]> {
+export async function FetchChaptersMultiPageCSS<E extends HTMLElement>(this: MangaScraper, manga: Manga, query: string, start = 1, step = 1, throttle = 0, resolve: LinkResolver<Manga>, extract = DefaultInfoExtractor as InfoExtractor<E>): Promise<Chapter[]> {
     const chapterList: Chapter[] = [];
     let reducer = Promise.resolve();
     for (let page = start, run = true; run; page += step) {
@@ -377,7 +413,7 @@ export async function FetchChaptersMultiPageCSS<E extends HTMLElement>(this: Man
  * @param resolve - A function to create an URL based on the provided media container (manga) and a page identifier
  * @param extract - A function to extract the chapter identifier and title from a single element (found with {@link query})
  */
-export function ChaptersMultiPageCSS<E extends HTMLElement>(query: string, start = 1, step = 1, throttle = 0, resolve: LinkResolver, extract = DefaultInfoExtractor as InfoExtractor<E>) {
+export function ChaptersMultiPageCSS<E extends HTMLElement>(query: string, start = 1, step = 1, throttle = 0, resolve: LinkResolver<Manga>, extract = DefaultInfoExtractor as InfoExtractor<E>) {
     return function DecorateClass<T extends Constructor>(ctor: T, context?: ClassDecoratorContext): T {
         ThrowOnUnsupportedDecoratorContext(context);
         return class extends ctor {
@@ -403,10 +439,10 @@ export async function FetchChaptersSinglePageJS(this: MangaScraper, manga: Manga
             Referer: this.URI.href
         }
     });
-    const data = await FetchWindowScript<{ id: string, title: string }[]>(request, script, delay);
+    const data = await FetchWindowScript<{ id: string, title: string; }[]>(request, script, delay);
     // NOTE: The Array prototype of `data` comes from a different window context and therefore is missing prototype extensions made for Array in this window context
     //       => Spread `data` into a new Array
-    return [ ...data ].map(entry => {
+    return [...data].map(entry => {
         return new Chapter(this, manga, entry.id, entry.title.replace(manga.Title, '').trim() || manga.Title);
     }).distinct();
 }
@@ -437,7 +473,7 @@ export function ChaptersUniqueFromManga() {
         ThrowOnUnsupportedDecoratorContext(context);
         return class extends ctor {
             public async FetchChapters(this: MangaScraper, manga: Manga): Promise<Chapter[]> {
-                return [ new Chapter(this, manga, manga.Identifier, manga.Title) ];
+                return [new Chapter(this, manga, manga.Identifier, manga.Title)];
             }
         };
     };
@@ -543,7 +579,7 @@ export async function FetchImageAjax(this: MangaScraper, page: Page, priority: P
         };
         const request = new Request(imageLink, { signal, headers });
         let response = await Fetch(request);
-        if(deProxifyLink && response.headers.has('Cf-Polished')) {
+        if (deProxifyLink && response.headers.has('Cf-Polished')) {
             headers['Origin'] = imageLink.protocol + '//' + Date.now().toString(36) + Math.random().toString(36);
             response = await Fetch(new Request(imageLink, { signal, headers }));
         }
@@ -587,7 +623,7 @@ export async function FetchImageElement(this: MangaScraper, page: Page, priority
             'Sec-Fetch-Dest': 'image',
         };
         let response = await Fetch(new Request(imageLink, { signal, headers }));
-        if(deProxifyLink && response.headers.has('Cf-Polished')) {
+        if (deProxifyLink && response.headers.has('Cf-Polished')) {
             headers['Origin'] = imageLink.protocol + '//' + Date.now().toString(36) + Math.random().toString(36);
             response = await Fetch(new Request(imageLink, { signal, headers }));
         }
