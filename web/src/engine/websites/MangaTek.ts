@@ -17,7 +17,7 @@ const chapterScript = `
 `;
 
 @Common.MangaCSS(/^{origin}\/manga\/[^/]+$/, 'img#mangaCover', (element: HTMLImageElement) => element.alt.trim())
-@Common.MangasMultiPageCSS('/manga-list?page={page}', 'div.manga-card a[dir]')
+@Common.MangasMultiPageCSS('div.manga-card a[dir]', Common.PatternLinkGenerator('/manga-list?page={page}'))
 @Common.ChaptersSinglePageJS(chapterScript, 1500)
 @Common.PagesSinglePageCSS('div.manga-page img')
 @Common.ImageAjax()
