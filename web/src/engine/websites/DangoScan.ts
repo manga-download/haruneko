@@ -2,6 +2,7 @@ import { Tags } from '../Tags';
 import icon from './DangoScan.webp';
 import { PeachScan } from './templates/PeachScan';
 
+// TODO : no more peachscans
 export default class extends PeachScan {
 
     public constructor() {
