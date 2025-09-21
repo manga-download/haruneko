@@ -9,7 +9,7 @@ function MangaInfoExtractor(anchor: HTMLAnchorElement) {
 }
 
 @Common.MangaCSS(/^{origin}\/manga\/[^/]+$/, 'section img.object-cover', (element: HTMLImageElement) => element.alt.trim())
-@Common.MangasMultiPageCSS('/manga?page={page}', 'div#card-real a', 1, 1, 0, MangaInfoExtractor)
+@Common.MangasMultiPageCSS('div#card-real a', Common.PatternLinkGenerator('/manga?page={page}'), 0, MangaInfoExtractor)
 @Common.ChaptersMultiPageCSS('div#chapters-list a', 1, 1, 0,
     Common.PatternLinkResolver('{id}?page={page}'),
     (anchor: HTMLAnchorElement) => ({ id: anchor.pathname, title: anchor.querySelector('span').innerText.trim() }))

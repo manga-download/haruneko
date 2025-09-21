@@ -15,12 +15,12 @@ function MangaExtractor(anchor: HTMLAnchorElement) {
 function ChapterExtractor(anchor: HTMLAnchorElement) {
     const title = anchor.querySelector('p span').textContent.trim();
     const id = anchor.pathname;
-    return {id, title};
+    return { id, title };
 
 }
 
 @Common.MangaCSS(/^{origin}\/manga\/[^/]+$/, 'h1.title', MangaExtractorFromURI)
-@Common.MangasMultiPageCSS('/manga-list?page={page}', 'article.anime a', 1, 1, 0, MangaExtractor)
+@Common.MangasMultiPageCSS('article.anime a', Common.PatternLinkGenerator('/manga-list?page={page}'), 0, MangaExtractor)
 @Common.ChaptersSinglePageCSS('ul.episodes-list li a', undefined, ChapterExtractor)
 @MangaStream.PagesSinglePageCSS([/discord\.jpg/], 'div#chapter_imgs img')
 @Common.ImageAjax()

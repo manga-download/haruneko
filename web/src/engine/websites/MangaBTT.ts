@@ -6,7 +6,7 @@ import * as Common from './decorators/Common';
 import { FetchCSS } from '../platform/FetchProvider';
 
 @Common.MangaCSS(/^{origin}\/manga\/[^/]+$/, MojoPortalComic.queryManga)
-@Common.MangasMultiPageCSS(MojoPortalComic.patternMangas, MojoPortalComic.queryMangas)
+@Common.MangasMultiPageCSS(MojoPortalComic.queryMangas, MojoPortalComic.MangasLinkGenerator)
 @Common.PagesSinglePageCSS('div.page-chapter img[data-index]:not([src$="/top.jpg"]):not([src$=".gif"])')
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {

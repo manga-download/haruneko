@@ -12,7 +12,7 @@ function MangaExtractor(element: HTMLLIElement) {
 }
 
 @Common.MangaCSS(/^{origin}\/episode\/\d+$/, CoreView.queryMangaTitleFromURI)
-@Common.MangasSinglePagesCSS(['/series', '/series/oneshot', '/series/manga-action'], 'ul[class*="Common_series_list"] li[class*="SeriesListItem_item"]', MangaExtractor)
+@Common.MangasMultiPageCSS('ul[class*="Common_series_list"] li[class*="SeriesListItem_item"]', Common.StaticLinkGenerator('/series', '/series/oneshot', '/series/manga-action'), 0, MangaExtractor)
 @CoreView.ChaptersMultiPageAJAXV2()
 @CoreView.PagesSinglePageJSON()
 @CoreView.ImageAjax()

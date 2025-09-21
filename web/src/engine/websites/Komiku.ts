@@ -10,7 +10,7 @@ function MangaLabelExtractor(element: HTMLElement) {
 }
 
 @Common.MangaCSS(/^{origin}\/manga\/[^/]+\/$/, 'article div#Judul h1 span[itemprop="name"]', MangaLabelExtractor)
-@Common.MangasSinglePagesCSS(endpoints, 'div.ls4 div.ls4j h4 a')
+@Common.MangasMultiPageCSS('div.ls4 div.ls4j h4 a', Common.StaticLinkGenerator(...endpoints))
 @Common.ChaptersSinglePageCSS('table#Daftar_Chapter td.judulseries a')
 @Common.PagesSinglePageCSS('div#Baca_Komik img')
 @Common.ImageAjax()
