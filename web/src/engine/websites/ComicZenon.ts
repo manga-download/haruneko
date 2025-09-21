@@ -12,7 +12,7 @@ import * as CoreView from './decorators/CoreView';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('comiczenon', `ゼノン編集部 (Comic Zenon)`, 'https://comic-zenon.com', Tags.Language.Japanese, Tags.Source.Official, Tags.Media.Manga);
+        super('comiczenon', 'ゼノン編集部 (Comic Zenon)', 'https://comic-zenon.com', Tags.Language.Japanese, Tags.Source.Official, Tags.Media.Manga);
     }
 
     public override get Icon() {

@@ -15,7 +15,7 @@ const script = `new Promise(resolve => resolve(rff_imageList.map(page => 'https:
 
 @Common.MangaCSS(/^{origin}\/m\/[^/]+$/, 'div.bg-black h4 a', Common.ElementLabelExtractor('span'))
 @Common.MangasMultiPageCSS('/directory?page={page}', 'div.item a.text-ellipsis')
-@Common.ChaptersSinglePageCSS('li.sub-chp a#chapterBlock', ChapterInfoExtractor)
+@Common.ChaptersSinglePageCSS('li.sub-chp a#chapterBlock', undefined, ChapterInfoExtractor)
 @Common.PagesSinglePageJS(script, 500)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
