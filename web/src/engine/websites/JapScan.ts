@@ -5,7 +5,7 @@ import * as Common from './decorators/Common';
 import { DRMProvider } from './JapScan.DRM';
 
 @Common.MangaCSS(/^https:\/\/(?:www\.)?japscan\.[a-z]{2,4}\/man(g|hw)a\/[^/]+\/$/, '#main div.card-body h1', element => element.textContent.replace(/^man[gh][wu]?a\s+/i, ''))
-@Common.MangasMultiPageCSS('/mangas/?p={page}', 'div.mangas-list div.manga-block a', 1, 1, 2500)
+@Common.MangasMultiPageCSS('div.mangas-list div.manga-block a', Common.PatternLinkGenerator('/mangas/?p={page}'), 2500)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
