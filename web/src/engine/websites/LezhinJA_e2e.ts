@@ -8,7 +8,7 @@ new TestFixture({
     },
     container: {
         url: 'https://lezhin.jp/comic/hikarikage',
-        id: 'hikarikage',
+        id: '/comic/hikarikage',
         title: '光と影【連載】'
     },
     child: {
@@ -30,7 +30,7 @@ new TestFixture({
     },
     container: {
         url: 'https://lezhin.jp/comic/t5_470281',
-        id: 't5_470281',
+        id: '/comic/t5_470281',
         title: '五等分の花嫁'
     },
     child: {
