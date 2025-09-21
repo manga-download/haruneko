@@ -12,7 +12,7 @@ function MangaExtractor(anchor: HTMLAnchorElement) {
 }
 
 @Common.MangaCSS(/^{origin}\/episode\/\d+$/, CoreView.queryMangaTitleFromURI)
-@Common.MangasSinglePagesCSS(['/series'], 'ul[class*="SeriesSection_series_list"] > li[class*="SeriesItem_series_item"] > a', MangaExtractor)
+@Common.MangasSinglePageCSS('/series', 'ul[class*="SeriesSection_series_list"] > li[class*="SeriesItem_series_item"] > a', MangaExtractor)
 @CoreView.ChaptersMultiPageAJAXV2()
 @CoreView.PagesSinglePageJSON()
 @CoreView.ImageAjax()

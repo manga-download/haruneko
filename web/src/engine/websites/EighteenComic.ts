@@ -35,7 +35,7 @@ type Seed = {
 }
 
 @Common.MangaCSS(/^{origin}\/album\/\d+\//, 'div[itemprop="name"] h1#book-name')
-@Common.MangasMultiPageCSS('/albums?page={page}', 'div.row div.thumb-overlay-albums', 1, 1, 0, MangaInfoExtractor)
+@Common.MangasMultiPageCSS('div.row div.thumb-overlay-albums', Common.PatternLinkGenerator('/albums?page={page}'), 0, MangaInfoExtractor)
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
