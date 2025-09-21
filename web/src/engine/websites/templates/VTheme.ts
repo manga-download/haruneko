@@ -39,7 +39,7 @@ type APIChapters = {
             if(!sources.some(src => src === '')) resolve(sources);
         }, 250);
     });
-`)
+`, 750)
 @Common.ImageAjax(true)
 export class VTheme extends DecoratableMangaScraper {
 
