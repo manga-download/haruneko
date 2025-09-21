@@ -6,7 +6,7 @@ import * as Common from './decorators/Common';
 
 @Common.MangaCSS(/^{origin}\/[^.]+\.html$/, 'div.comics-detail-head h1.title-heading')
 @Common.MangasMultiPageCSS('h4.content-title a', Common.PatternLinkGenerator('/truyen-tranh?page={page}'))
-@Common.ChaptersMultiPageCSS('div.list-comics-chapter div.episode-title a', 1, 1, 0, Common.PatternLinkResolver('{id}?page={page}'))
+@Common.ChaptersMultiPageCSS('div.list-comics-chapter div.episode-title a', Common.PatternLinkGenerator('{id}?page={page}'))
 @Madara.PagesSinglePageCSS()
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {

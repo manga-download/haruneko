@@ -31,9 +31,7 @@ function ChapterInfoExtractor(div: HTMLDivElement) {
 
 @Common.MangaCSS(/^{origin}\/books\/\d+$/, 'div.p-bookInfo_title h1')
 @Common.MangasMultiPageCSS('div.p-book_detail dt.p-book_title a', Common.PatternLinkGenerator('/free/list?page={page}'))
-@Common.ChaptersMultiPageCSS('li.p-chapterList_item div.p-chapterInfo-comic', 1, 1, 0,
-    Common.PatternLinkResolver('{id}?page={page}'),
-    ChapterInfoExtractor)
+@Common.ChaptersMultiPageCSS('li.p-chapterList_item div.p-chapterInfo-comic', Common.PatternLinkGenerator('{id}?page={page}'), 0, ChapterInfoExtractor)
 export default class extends DecoratableMangaScraper {
 
     public constructor() {

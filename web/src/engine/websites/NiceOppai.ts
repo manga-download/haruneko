@@ -12,9 +12,7 @@ function MangaInfoExtractor(anchor: HTMLAnchorElement) {
 
 @Common.MangaCSS(/^{origin}\/[^/]+\/$/, 'div.wpm_pag h1.ttl')
 @Common.MangasMultiPageCSS('div.lst_ara div.cvr a', Common.PatternLinkGenerator('/manga_list/all/any/name-az/{page}/'), 0, MangaInfoExtractor)
-@Common.ChaptersMultiPageCSS('ul.lst li.lng_ a.lst', 1, 1, 0,
-    Common.PatternLinkResolver('{id}chapter-list/{page}/'),
-    Common.AnchorInfoExtractor(true))
+@Common.ChaptersMultiPageCSS('ul.lst li.lng_ a.lst', Common.PatternLinkGenerator('{id}chapter-list/{page}/'), 0, Common.AnchorInfoExtractor(true))
 @Common.PagesSinglePageCSS('div#image-container img')
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
