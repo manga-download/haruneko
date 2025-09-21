@@ -1,14 +1,14 @@
 import { Tags } from '../Tags';
 import icon from './ArvenScans.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
+import * as Madara from './decorators/WordPressMadara';
 import * as Common from './decorators/Common';
-import * as KeyoApp from './templates/KeyoApp';
 
-@Common.MangaCSS(/^{origin}\/series\/[^/]+\/$/, KeyoApp.queryMangaTitle)
-@Common.MangasSinglePagesCSS([ KeyoApp.queryMangaPath ], KeyoApp.queryManga, Common.AnchorInfoExtractor(true))
-@Common.ChaptersSinglePageCSS(KeyoApp.queryChapters, Common.AnchorInfoExtractor(true))
-@Common.PagesSinglePageJS(KeyoApp.PagesScript(), 1500)
-@Common.ImageAjax(true)
+@Madara.MangaCSS(/^{origin}\/comic\/[^/]+\/$/, 'ol.breadcrumb li:last-of-type a')
+@Madara.MangasMultiPageAJAX()
+@Madara.ChaptersSinglePageAJAXv2()
+@Madara.PagesSinglePageCSS()
+@Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
