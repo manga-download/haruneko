@@ -24,7 +24,7 @@ const patternAliasDomains = [
 
 @Common.MangaCSS(new RegExp(`^https?://(${patternAliasDomains})/title/[^/]+$`), 'h3 > a[q\\:id]')
 @Common.MangasMultiPageCSS('/search?page={page}', 'h3 > a[q\\:id]')
-@Common.ChaptersSinglePageCSS('div.scrollable-panel div[q\\:key] > div:first-of-type > a.link-primary[q\\:id]', (a: HTMLAnchorElement) => ({ id: a.pathname, title: a.closest('div').innerText }))
+@Common.ChaptersSinglePageCSS('div.scrollable-panel div[q\\:key] > div:first-of-type > a.link-primary[q\\:id]', undefined, (a: HTMLAnchorElement) => ({ id: a.pathname, title: a.closest('div').innerText }))
 @Common.PagesSinglePageCSS('div[data-name="image-item"] img')
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
