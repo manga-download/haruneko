@@ -17,7 +17,7 @@ function MangaLabelExtractor(element: HTMLTitleElement) {
 
 @Common.MangaCSS(/^{origin}\/manga\/[^/]+$/, 'title', MangaLabelExtractor)
 @Common.MangasMultiPageCSS('/manga?page={page}', 'div.series-paginated a.link-series')
-@Common.ChaptersSinglePageCSS('div.chapters-list div.col-chapter', ChapterExtractor)
+@Common.ChaptersSinglePageCSS('div.chapters-list div.col-chapter', undefined, ChapterExtractor)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
