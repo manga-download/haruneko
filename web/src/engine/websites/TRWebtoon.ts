@@ -12,7 +12,7 @@ function ChapterExtractor(anchor: HTMLAnchorElement) {
 
 @Common.MangaCSS(/^{origin}\/webtoon\//, 'div#movie-card h2.movie__title')
 @Common.MangasMultiPageCSS('/webtoon-listesi?page={page}', 'div.page-content div.card div.card-body div.table-responsive a.text-hover-primary')
-@Common.ChaptersSinglePageCSS('table#chapters tbody tr td:first-of-type a', ChapterExtractor)
+@Common.ChaptersSinglePageCSS('table#chapters tbody tr td:first-of-type a', undefined, ChapterExtractor)
 @Common.PagesSinglePageCSS('div#images img')
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {

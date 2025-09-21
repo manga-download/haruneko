@@ -19,7 +19,7 @@ function MangaExtractor(element: HTMLLIElement) {
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('comicaction', `webアクション (Comic Action)`, 'https://comic-action.com', Tags.Language.Japanese, Tags.Source.Official, Tags.Media.Manga);
+        super('comicaction', 'webアクション (Comic Action)', 'https://comic-action.com', Tags.Language.Japanese, Tags.Source.Official, Tags.Media.Manga);
     }
 
     public override get Icon() {

@@ -3,23 +3,9 @@ import icon from './MangaBuff.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 
-function ChapterExtractor(anchor: HTMLAnchorElement) {
-    return {
-        id: anchor.pathname,
-        title: anchor.dataset.chapter.trim()
-    };
-}
-
-function MangaExtractor(anchor: HTMLAnchorElement) {
-    return {
-        id: anchor.pathname,
-        title: anchor.querySelector<HTMLDivElement>('div.cards__name').textContent.trim()
-    };
-}
-
 @Common.MangaCSS(/^{origin}\/manga\/[^/]+$/, 'h1.manga__name')
-@Common.MangasMultiPageCSS('/manga?page={page}', 'div.cards a.cards__item', 1, 1, 0, MangaExtractor)
-@Common.ChaptersSinglePageCSS('div.chapters__list a.chapters__item', ChapterExtractor)
+@Common.MangasMultiPageCSS('/manga?page={page}', 'div.cards a.cards__item', 1, 1, 0, (anchor: HTMLAnchorElement) => ({ id: anchor.pathname, title: anchor.querySelector('div.cards__name').textContent.trim() }))
+@Common.ChaptersSinglePageCSS('div.chapters__list a.chapters__item', undefined, (anchor: HTMLAnchorElement) => ({ id: anchor.pathname, title: anchor.dataset.chapter.trim() }))
 @Common.PagesSinglePageCSS('div.reader__item img')
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
