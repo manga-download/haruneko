@@ -5,23 +5,23 @@ import * as Common from './decorators/Common';
 import { FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
 
 type APIManga = {
-    id: number,
-    label : string
-}
+    id: number;
+    label: string;
+};
 
 type JSONManga = {
-    series_id: number,
-    title : string
-}
+    series_id: number;
+    title: string;
+};
 
 type JSONChapter = {
-    chapter: string,
-    title: string
-    token: string,
+    chapter: string;
+    title: string;
+    token: string;
     images: {
-        name: string
+        name: string;
     }[]
-}
+};
 
 // TODO: Check for possible revision
 
@@ -49,13 +49,13 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        const mangas = await FetchJSON<APIManga[]>(new Request(new URL('./series/', this.apiUrl)));
-        return mangas.map(manga => new Manga(this, provider, manga.id.toString(), manga.label));
+        const mangas = await FetchJSON<APIManga[]>(new Request(new URL('./series', this.apiUrl)));
+        return mangas.map(({ label, id }) => new Manga(this, provider, id.toString(), label));
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const chapters = await FetchWindowScript<JSONChapter[]>(new Request(new URL(`/series/${manga.Identifier}`, this.URI)), '__NEXT_DATA__.props.pageProps.chapters', 1500);
-        return chapters.map(episode => new Chapter(this, manga, episode.token, ['Chapter', episode.chapter, episode.title].join(' ').trim()));
+        return chapters.map(({ token, chapter, title }) => new Chapter(this, manga, token, ['Chapter', chapter, title].join(' ').trim()));
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
@@ -63,7 +63,7 @@ export default class extends DecoratableMangaScraper {
         const chapterPath = `/series/${chapter.Parent.Identifier}/${chapter.Identifier}`;
         const { images } = await FetchWindowScript<JSONChapter>(new Request(new URL(chapterPath, this.URI)), '__NEXT_DATA__.props.pageProps.chapter', 1500);
         return Object.values(images)
-            .filter(image => exclude.none(pattern => pattern.test(image.name)))
-            .map(image => new Page(this, chapter, new URL(`/uploads/images/${chapterPath}/${image.name}`, this.cdnURL)));
+            .filter(({ name }) => exclude.none(pattern => pattern.test(name)))
+            .map(({ name }) => new Page(this, chapter, new URL(`/uploads/images/${chapterPath}/${name}`, this.cdnURL)));
     }
 }

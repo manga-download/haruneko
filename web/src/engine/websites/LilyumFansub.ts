@@ -12,7 +12,7 @@ import * as Common from './decorators/Common';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('lilyumfansub', 'Lilyum Fansub', 'https://lilyumfansub.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Media.Manga, Tags.Source.Scanlator, Tags.Language.Turkish );
+        super('lilyumfansub', 'Lilyum Fansub', 'https://lilyumfansub.pro', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Media.Manga, Tags.Source.Scanlator, Tags.Language.Turkish );
     }
     public override get Icon() {
         return icon;
