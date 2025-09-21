@@ -43,7 +43,7 @@ export class NaverBase extends DecoratableMangaScraper {
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
         const { titleListMap } = await this.FetchAPI<APIWeekDaysList>(`./webtoon/titlelist/weekday`);
         return Object.values(titleListMap).reduce((accumulator: Manga[], dailyMangas) => {
-            const mangas = dailyMangas.map(manga => new Manga(this, provider, `/webtoon/list?titleId=${manga.titleId}`, manga.titleName));
+            const mangas = dailyMangas.map(({ titleId, titleName }) => new Manga(this, provider, `/webtoon/list?titleId=${titleId}`, titleName));
             accumulator.push(...mangas);
             return accumulator;
         }, []);
@@ -62,7 +62,7 @@ export class NaverBase extends DecoratableMangaScraper {
         const titleId = new URL(manga.Identifier, this.URI).searchParams.get('titleId');
         const { articleList, webtoonLevelCode } = await this.FetchAPI<APIManga>(`./article/list?titleId=${titleId}&page=${page}`);
         return articleList.filter(chapter => !chapter.charge)
-            .map(chapter => new Chapter(this, manga, `/${mangaTypeMap.get(webtoonLevelCode)}/detail?titleId=${titleId}&no=${chapter.no}`, chapter.subtitle));
+            .map(({ no, subtitle }) => new Chapter(this, manga, `/${mangaTypeMap.get(webtoonLevelCode)}/detail?titleId=${titleId}&no=${no}`, subtitle));
     }
 
     private async FetchAPI<T extends JSONElement>(endpoint: string): Promise<T> {
