@@ -30,7 +30,7 @@ type DrupalSettings = {
 
 type DrupalResult = {
     command: string,
-    data :string
+    data: string
 }
 
 @Common.PagesSinglePageJS(pageScript, 1500)
@@ -67,7 +67,7 @@ export default class extends DecoratableMangaScraper {
         try {
             const promises: Promise<Manga[]>[] = [];
             for (const category of categories) {
-                const promise = Common.FetchMangasMultiPageCSS.call(this, provider, category + '?page={page}', 'div.view-content table tr td strong a', 0);
+                const promise = Common.FetchMangasMultiPageCSS.call(this, provider, 'div.view-content table tr td strong a', Common.PatternLinkGenerator(category + '?page={page}'), 0);
                 promises.push(promise);
             }
             const results = (await Promise.all(promises)).flat();

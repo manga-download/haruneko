@@ -74,7 +74,7 @@ function CreateMangaInfoExtractor(queryAnchor: string, queryLanguage: string) {
  * @param queryLanguage - A CSS sub-query to extract the language for the manga title from the element found by {@link query}
  */
 export async function FetchMangasMultiPageCSS(this: MangaScraper, provider: MangaPlugin, path = pathpaged, query = queryMangaListLinks, queryAnchor: string = queryMangaListLinksAnchor, queryLanguage = queryMangaListLinksLanguage): Promise<Manga[]> {
-    return Common.FetchMangasMultiPageCSS.call(this, provider, path, query, 1, 1, 0, CreateMangaInfoExtractor(queryAnchor, queryLanguage));
+    return Common.FetchMangasMultiPageCSS.call(this, provider, query, Common.PatternLinkGenerator(path), 0, CreateMangaInfoExtractor(queryAnchor, queryLanguage));
 }
 
 /**
@@ -86,7 +86,7 @@ export async function FetchMangasMultiPageCSS(this: MangaScraper, provider: Mang
  * @param queryLanguage - A CSS sub-query to extract the language for the manga title from the element found by {@link query}
  */
 export function MangasMultiPageCSS(path: string = pathpaged, query: string = queryMangaListLinks, queryAnchor: string = queryMangaListLinksAnchor, queryLanguage = queryMangaListLinksLanguage) {
-    return Common.MangasMultiPageCSS(path, query, 1, 1, 0, CreateMangaInfoExtractor(queryAnchor, queryLanguage));
+    return Common.MangasMultiPageCSS(query, Common.PatternLinkGenerator(path), 0, CreateMangaInfoExtractor(queryAnchor, queryLanguage));
 }
 
 /*************************************************

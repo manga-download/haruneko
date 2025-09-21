@@ -38,7 +38,7 @@ function MangaExtractor(anchor: HTMLAnchorElement) {
     return { id, title };
 }
 
-@Common.MangasMultiPageCSS('?page={page}', 'div.work_wrap ul.work_lst > li > a', 1, 1, 0, MangaExtractor)
+@Common.MangasMultiPageCSS('div.work_wrap ul.work_lst > li > a', Common.PatternLinkGenerator('?page={page}'), 0, MangaExtractor)
 export default class extends LineWebtoonBase {
 
     public constructor() {
