@@ -6,7 +6,7 @@ import * as Common from './decorators/Common';
 
 @Common.MangaCSS(/^{origin}\/manga\/[^/]+$/, MangaReader.queryManga)
 @Common.MangasSinglePagesCSS([ MangaReader.patternMangas ], MangaReader.queryMangas)
-@Common.ChaptersSinglePageCSS('ul li h5', MangaReader.ChapterInfoExtractor)
+@Common.ChaptersSinglePageCSS('ul li h5', undefined, MangaReader.ChapterInfoExtractor)
 @Common.PagesSinglePageCSS(MangaReader.queryPages)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
