@@ -7,7 +7,7 @@ import * as DM5 from './decorators/DM5';
 
 @Common.MangaCSS(/^{origin}\/manga\/[^/]+\/$/, 'div.detail-info span.detail-info-right-title-font')
 @Common.MangasSinglePagesCSS([ '/mangalist/' ], 'div.browse-new-block-list div.browse-new-block p.browse-new-block-content a', Common.AnchorInfoExtractor(true))
-@Common.ChaptersSinglePageCSS('div#chapterlist ul li a', Common.AnchorInfoExtractor(true))
+@Common.ChaptersSinglePageCSS('div#chapterlist ul li a', undefined, Common.AnchorInfoExtractor(true))
 @DM5.PagesSinglePageScript()
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper /* MangaFox */ {

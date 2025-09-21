@@ -12,7 +12,7 @@ import * as Common from './decorators/Common';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('tonarinoyoungjump', `となりのヤングジャンプ (Tonari no Young Jump)`, 'https://tonarinoyj.jp', Tags.Language.Japanese, Tags.Source.Official, Tags.Media.Manga);
+        super('tonarinoyoungjump', 'となりのヤングジャンプ (Tonari no Young Jump)', 'https://tonarinoyj.jp', Tags.Language.Japanese, Tags.Source.Official, Tags.Media.Manga);
     }
 
     public override get Icon() {
