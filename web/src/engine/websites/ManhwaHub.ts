@@ -5,7 +5,7 @@ import * as Madara from './decorators/WordPressMadara';
 import * as Common from './decorators/Common';
 
 @Common.MangaCSS(/^{origin}\/webtoon\/[^/]+$/, 'ol.breadcrumb li:last-of-type a')
-@Common.MangasMultiPageCSS('?page={page}', 'div.post-title a')
+@Common.MangasMultiPageCSS('div.post-title a', Common.PatternLinkGenerator('?page={page}'))
 @Common.ChaptersSinglePageCSS('ul li.wp-manga-chapter > a')
 @Madara.PagesSinglePageCSS()
 @Common.ImageAjax()

@@ -36,16 +36,16 @@ function MangaInfoExtractor(element: HTMLElement) {
 
 function ChapterExtractor(element: HTMLElement) {
     return {
-        id: new URL(element.dataset[ 'href' ]).pathname,
+        id: new URL(element.dataset['href']).pathname,
         title: element.querySelector<HTMLSpanElement>('span.series-ep-list-item-h-text').textContent.trim()
     };
 }
 
-@Common.MangasMultiPageCSS('/series/list?page={page}', 'div.series-box-vertical', 0, 1, 0, MangaInfoExtractor)
+@Common.MangasMultiPageCSS('div.series-box-vertical', Common.PatternLinkGenerator('/series/list?page={page}', 0), 0, MangaInfoExtractor)
 export class ComiciViewer extends DecoratableMangaScraper {
 
     protected mangaRegexp = /\/series\/[^/]+(\/)?$/;//same website can provide manga links with and without trailing slash
-    private readonly scrambleMatrix = new Array(16).fill(null).map((_, index) => [ index / 4 >> 0, index % 4 >> 0 ]);
+    private readonly scrambleMatrix = new Array(16).fill(null).map((_, index) => [index / 4 >> 0, index % 4 >> 0]);
 
     public override ValidateMangaURL(url: string): boolean {
         return this.mangaRegexp.test(url) && url.startsWith(this.URI.origin);
@@ -53,7 +53,7 @@ export class ComiciViewer extends DecoratableMangaScraper {
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
         const mangaUrl = new URL(url);
-        const [ title ] = await FetchCSS<HTMLHeadingElement>(new Request(mangaUrl), 'h1.series-h-title span:not([class])');
+        const [title] = await FetchCSS<HTMLHeadingElement>(new Request(mangaUrl), 'h1.series-h-title span:not([class])');
         return new Manga(this, provider, StripTrailingDash(mangaUrl.pathname), title.textContent.trim());
     }
 
@@ -66,10 +66,10 @@ export class ComiciViewer extends DecoratableMangaScraper {
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page<ScrambleData>[]> {
-        const [ viewer ] = await FetchCSS(new Request(new URL(chapter.Identifier, this.URI)), '#comici-viewer');
+        const [viewer] = await FetchCSS(new Request(new URL(chapter.Identifier, this.URI)), '#comici-viewer');
         if (!viewer) throw new Exception(R.Plugin_Common_Chapter_UnavailableError);
 
-        const { result } = await this.FetchCoordInfo(viewer.getAttribute('comici-viewer-id'), viewer.dataset[ 'memberJwt' ], chapter);
+        const { result } = await this.FetchCoordInfo(viewer.getAttribute('comici-viewer-id'), viewer.dataset['memberJwt'], chapter);
         return result.map(image => new Page<ScrambleData>(this, chapter, new URL(image.imageUrl), { scramble: image.scramble, Referer: this.URI.href }));
     }
 
@@ -82,7 +82,7 @@ export class ComiciViewer extends DecoratableMangaScraper {
             const tileHeight = Math.floor(image.height / 4);
             for (let k = 0, i = 0; i < 4; i++) {
                 for (let j = 0; j < 4; j++) {
-                    ctx.drawImage(image, tileWidth * decodedArray[ k ][ 0 ], tileHeight * decodedArray[ k ][ 1 ], tileWidth, tileHeight, tileWidth * i, tileHeight * j, tileWidth, tileHeight);
+                    ctx.drawImage(image, tileWidth * decodedArray[k][0], tileHeight * decodedArray[k][1], tileWidth, tileHeight, tileWidth * i, tileHeight * j, tileWidth, tileHeight);
                     k++;
                 }
             }
@@ -109,7 +109,7 @@ export class ComiciViewer extends DecoratableMangaScraper {
         const decoded: number[][] = [];
         const encoded = scramble.replace(/\s+/g, '').slice(1).slice(0, -1).split(',');
         for (let i = 0; i < this.scrambleMatrix.length; i++) {
-            decoded.push(this.scrambleMatrix[ encoded.at(i) ]);
+            decoded.push(this.scrambleMatrix[encoded.at(i)]);
         }
         return decoded;
     }

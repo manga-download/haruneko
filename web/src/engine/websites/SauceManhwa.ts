@@ -15,7 +15,7 @@ type APIManga = {
 };
 
 @Common.MangaCSS(/^{origin}\/[^/]+$/, 'h1[itemprop="name"]')
-@Common.MangasMultiPageCSS('/list/comic-updated?page={page}', 'main div.container section > div.grid a.block.text-white')
+@Common.MangasMultiPageCSS('main div.container section > div.grid a.block.text-white', Common.PatternLinkGenerator('/list/comic-updated?page={page}'))
 @Common.PagesSinglePageCSS('div.image-item img')
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
