@@ -19,7 +19,7 @@ function ChapterExtractor(anchor: HTMLAnchorElement) {
     };
 }
 
-@Common.ChaptersSinglePageCSS('div.episode__body ul.eps li#eps_not_selected a', ChapterExtractor)
+@Common.ChaptersSinglePageCSS('div.episode__body ul.eps li#eps_not_selected a', undefined, ChapterExtractor)
 @Common.PagesSinglePageCSS('div.viewer__img img', Toomics.PageExtractor)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
@@ -103,15 +103,14 @@ export default class extends DecoratableMangaScraper {
     }
 
     private async FetchPOST(path: string, params: string): Promise<string> {
-        const request = new Request(new URL(path, this.URI), {
+        const response = await Fetch(new Request(new URL(path, this.URI), {
             method: 'POST',
             credentials: 'same-origin',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded'
             },
             body: params
-        });
-        const response = await Fetch(request);
+        }));
         return response.text();
     }
 }
