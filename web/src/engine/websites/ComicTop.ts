@@ -19,7 +19,7 @@ function ChapterExtractor(this: MangaScraper, anchor: HTMLAnchorElement) {
 }
 
 @Common.MangaCSS(/^{origin}\/manga\/[^/]+\/$/, 'div.infox h1.entry-title')
-@Common.MangasMultiPageCSS('/manga-list/page/{page}/', 'div.animepost div.animposx a', 1, 1, 0, Common.AnchorInfoExtractor(true))
+@Common.MangasMultiPageCSS('div.animepost div.animposx a', Common.PatternLinkGenerator('/manga-list/page/{page}/'), 0, Common.AnchorInfoExtractor(true))
 @Common.ChaptersSinglePageCSS('div#chapter_list ul li a[title]', undefined, ChapterExtractor)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {

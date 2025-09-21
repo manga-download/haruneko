@@ -15,7 +15,7 @@ const patternAliasDomains = [
 ].join('|').replaceAll('.', '\\.');
 
 @Common.MangaCSS(new RegExp(`^https?://(${patternAliasDomains})/[^/]+$`), MojoPortalComic.queryManga)
-@Common.MangasMultiPageCSS(MojoPortalComic.patternMangas, MojoPortalComic.queryMangas)
+@Common.MangasMultiPageCSS(MojoPortalComic.queryMangas, MojoPortalComic.MangasLinkGenerator)
 @Common.ChaptersSinglePageCSS(MojoPortalComic.queryChapters)
 @Common.PagesSinglePageCSS('div.page-chapter img:not([src$="/123.jpg"]):not([src$="/ttt5xyz.jpg"])')
 @Common.ImageAjax()

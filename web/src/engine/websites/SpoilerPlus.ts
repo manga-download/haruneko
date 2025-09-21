@@ -91,13 +91,13 @@ export function MangaInfoExtractor(anchor: HTMLAnchorElement) {
 }
 
 @Common.MangaCSS(/^{origin}\/[^/]+-raw-free\/$/, 'article#item-detail h1.title-detail', MangaLabelExtractor)
-@Common.MangasMultiPageCSS('/page/{page}/', 'article.item div.image > a', 1, 1, 0, MangaInfoExtractor)
+@Common.MangasMultiPageCSS('article.item div.image > a', Common.PatternLinkGenerator('/page/{page}/'), 0, MangaInfoExtractor)
 @Common.ChaptersSinglePageCSS('div.list-chapter ul li a')
 export default class extends DecoratableMangaScraper {
 
     private readonly queryPages: string = '';
 
-    public constructor (id = 'spoilerplus', label = 'SpoilerPlus', url = 'https://spoilerplus.tv', queryPages = 'div#post-comic div[data-z]', tags = [ Tags.Media.Manga, Tags.Language.Japanese, Tags.Source.Aggregator, Tags.Accessibility.RegionLocked ]) {
+    public constructor(id = 'spoilerplus', label = 'SpoilerPlus', url = 'https://spoilerplus.tv', queryPages = 'div#post-comic div[data-z]', tags = [Tags.Media.Manga, Tags.Language.Japanese, Tags.Source.Aggregator, Tags.Accessibility.RegionLocked]) {
         super(id, label, url, ...tags);
         this.queryPages = queryPages;
     }

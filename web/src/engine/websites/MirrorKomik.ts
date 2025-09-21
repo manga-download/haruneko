@@ -6,7 +6,7 @@ import * as ZManga from './templates/ZManga';
 import * as MangaStream from './decorators/WordPressMangaStream';
 
 @Common.MangaCSS(/^{origin}\/Man(hwa|ga|hua)\/[^/]+$/, 'ol li:last-of-type')
-@Common.MangasSinglePagesCSS(['/list-komik'], ZManga.queryManga)
+@Common.MangasSinglePageCSS('/list-komik', ZManga.queryManga)
 @MangaStream.ChaptersSinglePageCSS()
 @MangaStream.PagesSinglePageJS([/pasang-iklan(\d)?\.png$/], `[...document.querySelectorAll('div#readerarea img.imglist')].map(image => (image.dataset.realSrc ?? image.src));`)
 @Common.ImageAjax()
