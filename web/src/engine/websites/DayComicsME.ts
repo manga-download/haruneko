@@ -6,7 +6,7 @@ import * as Toomics from './decorators/ToomicsBase';
 import { FetchCSS, FetchWindowScript } from '../platform/FetchProvider';
 
 @Common.MangaCSS(/^{origin}\/en\/[^/]+\/[^/]+\.html$/, 'div.title_content h2.episode-title')
-@Common.MangasMultiPageCSS('/en/genres?page={page}', 'div.list-wrap ul li a', 1, 1, 0, Toomics.MangaInfoExtractor(false))
+@Common.MangasMultiPageCSS('div.list-wrap ul li a', Common.PatternLinkGenerator('/en/genres?page={page}'), 0, Toomics.MangaInfoExtractor(false))
 @Common.PagesSinglePageCSS(Toomics.queryPages, Toomics.PageExtractor)
 @Common.ImageAjax(true)
 export default class extends DecoratableMangaScraper {

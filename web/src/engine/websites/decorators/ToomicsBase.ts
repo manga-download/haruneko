@@ -80,7 +80,7 @@ export function MangaCSS(pattern: RegExp, query: string, appendLanguage : boolea
 export async function FetchMangasSinglePageCSS(this: MangaScraper, provider: MangaPlugin, languages: string[], query, path: string = defaultMangaPath, appendLanguage: boolean = true): Promise<Manga[]> {
     const mangalist: Manga[] = [];
     for (const language of languages) {
-        const mangas = await Common.FetchMangasSinglePagesCSS.call(this, provider, [path.replace('{language}', language)], query, MangaInfoExtractor(appendLanguage)) ;
+        const mangas = await Common.FetchMangasSinglePageCSS.call(this, provider, path.replace('{language}', language), query, MangaInfoExtractor(appendLanguage)) ;
         mangalist.push(...mangas);
     }
     return mangalist.distinct();
