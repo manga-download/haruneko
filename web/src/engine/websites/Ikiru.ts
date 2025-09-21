@@ -9,7 +9,7 @@ function LabelCleaner(element: HTMLElement): string {
 }
 
 @Common.MangaCSS(/^{origin}\/manga\/[^/]+\/$/, 'title', LabelCleaner)
-@Common.MangasMultiPageCSS('/project/?the_page={page}', 'div#search-results a:not([class]')
+@Common.MangasMultiPageCSS('div#search-results a:not([class]', Common.PatternLinkGenerator('/project/?the_page={page}'))
 @Common.PagesSinglePageCSS('section img')
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {

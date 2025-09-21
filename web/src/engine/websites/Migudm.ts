@@ -7,7 +7,7 @@ const script = `[...document.querySelectorAll('div.comicMain ul.readUl li img')]
 `;
 
 @Common.MangaCSS(/^{origin}\/comic\/\d+\.html$/, 'div.inner h1.title', Common.ElementLabelExtractor('span'))
-@Common.MangasMultiPageCSS('/comic/list_p{page}/', 'div.classificationList ul li div.clItemRight h4.title a')
+@Common.MangasMultiPageCSS('div.classificationList ul li div.clItemRight h4.title a', Common.PatternLinkGenerator('/comic/list_p{page}/'))
 @Common.ChaptersSinglePageCSS('div.comic div#negCtSectionListBd div.titleList a.item', undefined, Common.AnchorInfoExtractor(true))
 @Common.PagesSinglePageJS(script, 2500)
 @Common.ImageAjax()
