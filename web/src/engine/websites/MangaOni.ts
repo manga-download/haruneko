@@ -18,8 +18,8 @@ const pageScript = `
 
 @Common.MangaCSS(/^{origin}\/manga\/[^/]+\/$/, 'article.manga h1.post-title')
 @Common.MangasMultiPageCSS('/directorio?p={page}', 'div#content div#content-left div#article-div a', 1, 1, 0, MangaExtractor)
-@Common.ChaptersSinglePageCSS('div#entry-manga div#c_list a', Common.AnchorInfoExtractor(false, 'span, b'))
-@Common.PagesSinglePageJS(pageScript, 2500) //Note : chapter is behind cloudflare turnstyle
+@Common.ChaptersSinglePageCSS('div#entry-manga div#c_list a', undefined, Common.AnchorInfoExtractor(false, 'span, b'))
+@Common.PagesSinglePageJS(pageScript, 2500) // NOTE : chapter is behind cloudflare turnstile
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
