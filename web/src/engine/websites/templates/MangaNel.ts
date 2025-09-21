@@ -15,9 +15,9 @@ const pageScript = `
 `;
 
 @Common.MangaCSS(/^{origin}\/manga\/[^/]+$/, 'ul.manga-info-text li h1')
-@Common.MangasMultiPageCSS('/manga-list/latest-manga?page={page}', 'div.truyen-list div.list-truyen-item-wrap h3 a', 1, 1, 500)
+@Common.MangasMultiPageCSS('div.truyen-list div.list-truyen-item-wrap h3 a', Common.PatternLinkGenerator('/manga-list/latest-manga?page={page}'), 500)
 @Common.ChaptersSinglePageCSS('div.chapter-list div.row span a')
-    @Grouple.ImageWithMirrors()
+@Grouple.ImageWithMirrors()
 export class MangaNel extends DecoratableMangaScraper {
 
     public override async FetchPages(chapter: Chapter): Promise<Page<any>[]> {

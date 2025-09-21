@@ -60,7 +60,7 @@ function MangaInfoExtractor(anchor: HTMLAnchorElement) {
     };
 }
 
-@Common.MangasMultiPageCSS('/series?page={page}', 'div.grid a', 1, 1, 0, MangaInfoExtractor)
+@Common.MangasMultiPageCSS('div.grid a', Common.PatternLinkGenerator('/series?page={page}'), 0, MangaInfoExtractor)
 export default class extends DecoratableMangaScraper {
     private readonly drmProvider: DRMProvider;
 

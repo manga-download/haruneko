@@ -4,7 +4,7 @@ import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 
 @Common.MangaCSS(/^{origin}\/p-[^/]+\/$/, 'div#content div.archive-title')
-@Common.MangasMultiPageCSS('/japanese-manga-list/?lcp_page0={page}', 'ul#lcp_instance_0 li a')
+@Common.MangasMultiPageCSS('ul#lcp_instance_0 li a', Common.PatternLinkGenerator('/japanese-manga-list/?lcp_page0={page}'))
 @Common.ChaptersSinglePageCSS('div.chap-list a')
 @Common.PagesSinglePageCSS('div.entry-content p img')
 @Common.ImageAjax()
