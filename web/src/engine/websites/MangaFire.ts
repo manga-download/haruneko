@@ -38,7 +38,7 @@ const chapterLanguageMap = new Map<string, Tag>([
 ]);
 
 @Common.MangaCSS(/^{origin}\/manga\/[^/]+$/, 'div.info h1[itemprop="name"]')
-@Common.MangasMultiPageCSS('/az-list?page={page}', 'div.info > a', 1, 1, 250)
+@Common.MangasMultiPageCSS('div.info > a', Common.PatternLinkGenerator('/az-list?page={page}'), 250)
 export default class extends DecoratableMangaScraper {
 
     public constructor () {

@@ -11,7 +11,7 @@ const chapterScript = `
 `;
 
 @Common.MangaCSS(/^{origin}\/series\/[^/]+\/$/, 'h1.post-title')
-@Common.MangasMultiPageCSS('/page/{page}/?s&post_type=wp-manga', 'div.post-title h2 > a')
+@Common.MangasMultiPageCSS('div.post-title h2 > a', Common.PatternLinkGenerator('/page/{page}/?s&post_type=wp-manga'))
 @Common.ChaptersSinglePageJS(chapterScript, 750)
 @Common.PagesSinglePageCSS('div.page-break img:not([src])', img => [ ...img.attributes ].find(attribute => attribute.name.startsWith('data-img-')).value)
 @Common.ImageAjax()
