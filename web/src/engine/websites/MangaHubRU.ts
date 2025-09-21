@@ -9,12 +9,12 @@ function MangaLabelExtractor(element: HTMLImageElement): string {
 }
 
 @Common.MangaCSS(/^{origin}\/title\/[^/]+/, 'img.cover', MangaLabelExtractor)
-@Common.MangasMultiPageCSS('/explore?page={page}', 'div.container div.card a.fw-medium')
+@Common.MangasMultiPageCSS('div.container div.card a.fw-medium', Common.PatternLinkGenerator('/explore?page={page}'))
 @Common.PagesSinglePageCSS('img.reader-viewer-img')
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
-    public constructor () {
+    public constructor() {
         super('mangahubru', `MangaHub.ru`, 'https://mangahub.ru', Tags.Language.Russian, Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Source.Aggregator);
     }
 

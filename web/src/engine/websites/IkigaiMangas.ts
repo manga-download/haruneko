@@ -13,7 +13,7 @@ function MangaInfoExtractor(anchor: HTMLAnchorElement) {
 }
 
 @Common.MangaCSS(/^{origin}\/series\/[^/]+\/$/, 'article figure > img', (element: HTMLImageElement) => element.alt.trim())
-@Common.MangasMultiPageCSS('/series/?pagina={page}', 'section ul.grid li > a', 1, 1, 0, MangaInfoExtractor)
+@Common.MangasMultiPageCSS('section ul.grid li > a', Common.PatternLinkGenerator('/series/?pagina={page}'), 0, MangaInfoExtractor)
 @Common.ChaptersMultiPageCSS('ul li.w-full a', 1, 1, 0,
     Common.PatternLinkResolver('{id}?pagina={page}'),
     (anchor: HTMLAnchorElement) => ({ id: anchor.pathname, title: anchor.querySelector<HTMLHeadingElement>('h3.card-title').innerText.trim() }))

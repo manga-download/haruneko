@@ -9,7 +9,7 @@ import DeScramble from '../transformers/ImageDescrambler';
 
 type JSImageData = {
     url: string,
-    pieces : ImagePiece[]
+    pieces: ImagePiece[]
 };
 
 type ImageData = {
@@ -50,7 +50,7 @@ const pageScript = `
 `;
 
 @MangaStream.MangaCSS(/^{origin}\/manga\/[^/]+\/$/)
-@Common.MangasMultiPageCSS('/manga-list/page/{page}/', 'div.bs div.bsx > a', 1, 1, 0, Common.AnchorInfoExtractor(true))
+@Common.MangasMultiPageCSS('div.bs div.bsx > a', Common.PatternLinkGenerator('/manga-list/page/{page}/'), 0, Common.AnchorInfoExtractor(true))
 @MangaStream.ChaptersSinglePageCSS()
 export default class extends DecoratableMangaScraper {
 

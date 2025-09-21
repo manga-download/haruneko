@@ -79,7 +79,7 @@ function MangaInfosExtractor(this: MangaScraper, anchor: HTMLAnchorElement) {
  * @param query - A CSS query to locate the elements from which the manga identifier and title shall be extracted
  */
 export async function FetchMangasSinglePageCSS(this: MangaScraper, provider: MangaPlugin, path = pathname, query = queryMangaListLinks): Promise<Manga[]> {
-    return Common.FetchMangasSinglePagesCSS.call(this, provider, [ path ], query, MangaInfosExtractor);
+    return Common.FetchMangasSinglePageCSS.call(this, provider, path, query, MangaInfosExtractor);
 }
 
 /**
@@ -88,7 +88,7 @@ export async function FetchMangasSinglePageCSS(this: MangaScraper, provider: Man
  * @param path - The path relative to the scraper's base url from which the mangas shall be extracted
  */
 export function MangasSinglePageCSS(query: string = queryMangaListLinks, path: string = pathname) {
-    return Common.MangasSinglePagesCSS([ path ], query, MangaInfosExtractor);
+    return Common.MangasSinglePageCSS(path, query, MangaInfosExtractor);
 }
 
 /*************************************************
@@ -97,11 +97,11 @@ export function MangasSinglePageCSS(query: string = queryMangaListLinks, path: s
 
 function CreateChapterInfoExtractor<T extends HTMLAnchorElement>(manga: Manga, queryTitle?: string, queryBloat?: string) {
     return (anchor: T) => {
-        if(anchor.hostname === 'nofil.net' && anchor.pathname.includes('safeme')) {
+        if (anchor.hostname === 'nofil.net' && anchor.pathname.includes('safeme')) {
             anchor.href = new URL(anchor.href).searchParams.get('url');
         }
         if (queryBloat) {
-            for(const bloat of anchor.querySelectorAll(queryBloat)) {
+            for (const bloat of anchor.querySelectorAll(queryBloat)) {
                 if (bloat.parentElement) {
                     bloat.parentElement.removeChild(bloat);
                 }
