@@ -46,6 +46,7 @@ export default class extends DecoratableMangaScraper {
             });
     }
 
+    // NOTE: current FetchNEXTJS implementation cant find what we need
     private FindJSONObject<T>(scripts: HTMLScriptElement[], scriptRegex: RegExp, keyName: string, currentElement = undefined): T {
 
         if (scripts && scriptRegex) {

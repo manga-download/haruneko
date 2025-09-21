@@ -12,7 +12,7 @@ function ChapterExtractor(anchor: HTMLAnchorElement) {
 }
 
 @Common.MangaCSS(/^{origin}\/digimon_liberator\/(en|jp)\/comic\/$/, 'meta[name="Description"]')
-@Common.ChaptersSinglePageCSS('section#chapters ul.chapterList li.chapterListBox > a:not(.closed)', ChapterExtractor)
+@Common.ChaptersSinglePageCSS('section#chapters ul.chapterList li.chapterListBox > a:not(.closed)', undefined, ChapterExtractor)
 @ClipStudioReader.PagesSinglePageAJAX()
 @ClipStudioReader.ImageAjax()
 export default class extends DecoratableMangaScraper {
