@@ -5,7 +5,7 @@ import * as MojoPortalComic from './templates/MojoPortalComic';
 import * as Common from './decorators/Common';
 
 @Common.MangaCSS(new RegExp(`^{origin}/manga/[^/]+$`), MojoPortalComic.queryManga)
-@Common.MangasMultiPageCSS('/danh-sach-truyen/{page}', MojoPortalComic.queryMangas)
+@Common.MangasMultiPageCSS(MojoPortalComic.queryMangas, Common.PatternLinkGenerator('/danh-sach-truyen/{page}'))
 @Common.ChaptersSinglePageCSS(MojoPortalComic.queryChapters)
 @Common.PagesSinglePageCSS('div.page-chapter > img:not([src^="data:image"]):not([src*="imgur.com"])')
 @Common.ImageAjax()

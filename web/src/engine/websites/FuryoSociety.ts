@@ -4,7 +4,7 @@ import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 
 @Common.MangaCSS(/^{origin}\/series\/[^/]+\/$/, 'h1.fs-comic-title')
-@Common.MangasSinglePagesCSS(['/mangas'], 'span.fs-comic-title a')
+@Common.MangasSinglePageCSS('/mangas', 'span.fs-comic-title a')
 @Common.ChaptersSinglePageCSS('div.fs-chapter-list div.title a', undefined, Common.AnchorInfoExtractor(true))
 @Common.PagesSinglePageCSS('div.main-img div.fs-reader-page img')
 @Common.ImageAjax()
