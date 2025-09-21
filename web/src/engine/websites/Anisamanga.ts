@@ -12,7 +12,7 @@ function ChapterExtractor(anchor: HTMLAnchorElement) {
 
 @Common.MangaCSS(/^{origin}\/manga\/[^/]+\/$/, 'div.manga-details div.title h1')
 @Common.MangasMultiPageCSS('/page/{page}/?s', 'div.chapter-box div.title a')
-@Common.ChaptersSinglePageCSS('div.chapter-list ul li a', ChapterExtractor)
+@Common.ChaptersSinglePageCSS('div.chapter-list ul li a', undefined, ChapterExtractor)
 @Common.PagesSinglePageCSS('div.chapter-images div.chapter-item img.wp-post-image')
 @Common.ImageAjax(undefined, true)
 export default class extends DecoratableMangaScraper {

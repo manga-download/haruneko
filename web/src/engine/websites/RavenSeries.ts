@@ -25,7 +25,7 @@ type APIPages = {
 
 @Common.MangaCSS(/^{origin}\/sr2\/[^/]+$/, 'title', MangaExtractor)
 @Common.MangasMultiPageCSS('/comics?page={page}', 'div#projectsDiv figure div a')
-@Common.ChaptersSinglePageCSS('section#section-list-cap div.grid a.group', ChapterExtractor)
+@Common.ChaptersSinglePageCSS('section#section-list-cap div.grid a.group', undefined, ChapterExtractor)
 @Common.ImageAjax(true, true)
 export default class extends DecoratableMangaScraper {
 

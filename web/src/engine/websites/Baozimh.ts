@@ -18,7 +18,7 @@ function ChapterInfoExtractor(anchor: HTMLAnchorElement) {
 }
 
 @Common.MangaCSS(/^{origin}\/comic\/[^/]+/, '.comics-detail__title')
-@Common.ChaptersSinglePageCSS('a.comics-chapters__item', ChapterInfoExtractor)
+@Common.ChaptersSinglePageCSS('a.comics-chapters__item', undefined, ChapterInfoExtractor)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 

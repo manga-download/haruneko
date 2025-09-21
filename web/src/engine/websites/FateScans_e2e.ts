@@ -6,17 +6,17 @@ new TestFixture({
         title: 'Fate Scans'
     },
     container: {
-        url: 'https://fatescans.com/series/alive',
-        id: '/series/alive',
-        title: 'Alive'
+        url: 'https://fatescans.com/manga/figuranin-nihai-rehberi/',
+        id: '/manga/figuranin-nihai-rehberi/',
+        title: 'Figüranın Nihai Rehberi'
     },
     child: {
-        id: '/series/alive/chapter-0.00',
-        title: '0. Bölüm'
+        id: '/manga/figuranin-nihai-rehberi/bolum-5/',
+        title: 'Bölüm 5'
     },
     entry: {
-        index: 0,
-        size: 189_540,
+        index: 1,
+        size: 1_445_452,
         type: 'image/webp'
     }
 }).AssertWebsite();

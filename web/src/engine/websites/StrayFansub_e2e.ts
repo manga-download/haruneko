@@ -6,7 +6,7 @@ new TestFixture({
         title: 'Stray Fansub'
     }, /* Need Login
     container: {
-        url: 'https://strayfansub.com/manga/dash/',
+        url: 'https://strayfansub.net/manga/dash/',
         id: JSON.stringify({ post: '40', slug: '/manga/dash/' }),
         title: 'DASH'
     },

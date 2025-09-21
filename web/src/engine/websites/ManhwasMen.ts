@@ -21,7 +21,7 @@ function ChapterExtractor(anchor: HTMLAnchorElement) {
 
 @Common.MangaCSS(/^{origin}\/manga\/[^/]+$/, 'h1.title', MangaExtractorFromURI)
 @Common.MangasMultiPageCSS('/manga-list?page={page}', 'article.anime a', 1, 1, 0, MangaExtractor)
-@Common.ChaptersSinglePageCSS('ul.episodes-list li a', ChapterExtractor)
+@Common.ChaptersSinglePageCSS('ul.episodes-list li a', undefined, ChapterExtractor)
 @MangaStream.PagesSinglePageCSS([/discord\.jpg/], 'div#chapter_imgs img')
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {

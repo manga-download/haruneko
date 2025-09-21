@@ -20,7 +20,7 @@ function ChaptersExtractor(element: HTMLElement) {
 }
 
 @Common.MangaCSS(/^{origin}\/manga\/(official|\d+)\/\d+/, 'div.manga-detail-description > div.title, div.content-main > h1.title')
-@Common.ChaptersSinglePageCSS('div.episode-unit, div.episodes div.episode a', ChaptersExtractor)
+@Common.ChaptersSinglePageCSS('div.episode-unit, div.episodes div.episode a', undefined, ChaptersExtractor)
 export default class extends DecoratableMangaScraper {
 
     public constructor() {

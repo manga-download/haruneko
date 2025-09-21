@@ -1,7 +1,7 @@
 import { Tags } from '../Tags';
 import icon from './ElevenToon.webp';
-import { Chapter, DecoratableMangaScraper, type Manga } from '../providers/MangaPlugin';
 import { FetchCSS, FetchWindowScript } from '../platform/FetchProvider';
+import { DecoratableMangaScraper, type Manga, Chapter } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 
 function MangaExtractor(anchor: HTMLAnchorElement) {
@@ -41,9 +41,9 @@ export default class extends DecoratableMangaScraper {
 
     private async GetChaptersFromPage(manga: Manga, page: number): Promise<Chapter[]> {
         const request = new Request(new URL(`${manga.Identifier}&page=${page}`, this.URI));
-        const data = await FetchCSS(request, 'ul#comic-episode-list li button.episode');
+        const data = await FetchCSS<HTMLButtonElement>(request, 'ul#comic-episode-list li button.episode');
         return data.map(element => {
-            const title = element.querySelector<HTMLDivElement>('div.episode-title').textContent.replace(manga.Title, '').trim();
+            const title = element.querySelector<HTMLDivElement>('div.episode-title').innerText.replace(manga.Title, '').trim();
             const link = new URL(element.getAttribute('onclick').split('\'').at(1), request.url);
             return new Chapter(this, manga, link.pathname + link.search, title);
         });

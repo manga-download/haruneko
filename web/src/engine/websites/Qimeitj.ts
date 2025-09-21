@@ -7,7 +7,7 @@ import { FetchCSS } from '../platform/FetchProvider';
 
 @Common.MangaCSS(/^{origin}\/book\/[^/]+$/, MH.queryMangaTitleFromURI)
 @Common.MangasMultiPageCSS(MH.mangaPath, MH.queryMangas)
-@Common.ChaptersSinglePageCSS(MH.queryChapters, MH.ChapterExtractor)
+@Common.ChaptersSinglePageCSS(MH.queryChapters, undefined, MH.ChapterExtractor)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 

@@ -6,12 +6,12 @@ new TestFixture({
         title: 'Titan Manga'
     },
     container: {
-        url: 'https://titanmanga.com/manga/hajime-no-ippo/',
-        id: JSON.stringify({ post: '14946', slug: '/manga/hajime-no-ippo/' }),
+        url: 'https://titanmanga.net/manga/hajime-no-ippo/',
+        id: '/manga/hajime-no-ippo/',
         title: 'Hajime no Ippo'
     },
     child: {
-        id: '/manga/hajime-no-ippo/bolum-1482/',
+        id: '/hajime-no-ippo-bolum-1482/',
         title: 'Bölüm 1482'
     },
     entry: {

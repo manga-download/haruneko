@@ -18,7 +18,7 @@ function MangaExtractor(anchor: HTMLAnchorElement) {
 
 @Common.MangaCSS(/^{origin}\/lecture[^/]+$/, 'meta[name="lelscan"]')
 @Common.MangasSinglePagesCSS([ '' ], 'div.outil_lecture ul li a', MangaExtractor)
-@Common.ChaptersSinglePageCSS('div#header-image form select:first-of-type option', ChapterExtractor)
+@Common.ChaptersSinglePageCSS('div#header-image form select:first-of-type option', undefined, ChapterExtractor)
 @Common.ImageAjaxFromHTML('div#image img')
 export default class extends DecoratableMangaScraper {
 

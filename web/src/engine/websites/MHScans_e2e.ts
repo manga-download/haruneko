@@ -1,12 +1,12 @@
 ﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'mhscans',
         title: 'MHScans'
     },
     container: {
-        url: 'https://twobluescans.com/series/de-un-simple-soldado-a-monarca/',
+        url: 'https://curiosidadtop.com/series/de-un-simple-soldado-a-monarca/',
         id: JSON.stringify({ post: '2337', slug: '/series/de-un-simple-soldado-a-monarca/' }),
         title: `De un Simple Soldado a Monarca`
     },
@@ -19,6 +19,4 @@ const config = {
         size: 613_048,
         type: 'image/jpeg'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

@@ -3,7 +3,7 @@ import icon from './MgJinx.webp';
 import { ChapterExtractor, MadTheme, queryChapters } from './templates/MadTheme';
 import * as Common from './decorators/Common';
 
-@Common.ChaptersSinglePageCSS(queryChapters, ChapterExtractor)
+@Common.ChaptersSinglePageCSS(queryChapters, undefined, ChapterExtractor)
 export default class extends MadTheme {
 
     public constructor() {

@@ -13,7 +13,7 @@ function ChapterInfoExtractor(element: HTMLHeadingElement) {
 
 @Common.MangaCSS(/^{origin}\/manga\/[^/]+$/, MangaReader.queryManga)
 @Common.MangasSinglePagesCSS([ MangaReader.patternMangas ], MangaReader.queryMangas)
-@Common.ChaptersSinglePageCSS('ul li h5', ChapterInfoExtractor)
+@Common.ChaptersSinglePageCSS('ul li h5', undefined, ChapterInfoExtractor)
 @Common.PagesSinglePageCSS(MangaReader.queryPages)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {

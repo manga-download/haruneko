@@ -1,4 +1,3 @@
-/* NW.js crash on website initialize => CloudFlare
 import { TestFixture } from '../../../test/WebsitesFixture';
 
 // CASE: Invariant Locale
@@ -10,7 +9,7 @@ new TestFixture({
     container: {
         url: 'https://xbato.org/series/173640/villainesses-have-more-fun',
         id: '/series/173640/villainesses-have-more-fun',
-        title: 'Villainesses Have More Fun'
+        title: 'Villainesses Have More Fun (Valir Scans)'
     },
     child: {
         id: '/chapter/3116336',
@@ -44,4 +43,3 @@ new TestFixture({
         type: 'image/webp'
     }
 }).AssertWebsite();
-*/

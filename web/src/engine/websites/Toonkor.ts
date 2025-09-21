@@ -19,7 +19,7 @@ const pageScript = `
 
 @Common.MangaCSS(/https:\/\/(toonkor|tkor)\d+\.com\/[^/]+$/, 'table.bt_view1 td.bt_title')
 @Common.MangasSinglePagesCSS([ '/웹툰/연재?fil=제목', '/웹툰/완결?fil=제목' ], 'div.section-item-title a#title')
-@Common.ChaptersSinglePageCSS('td.content__title', ChapterExtractor)
+@Common.ChaptersSinglePageCSS('td.content__title', undefined, ChapterExtractor)
 @Common.PagesSinglePageJS(pageScript, 1500)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {

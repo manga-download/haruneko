@@ -14,7 +14,7 @@ const pageScript = `imageArray.map(image => new URL(window.location.pathname+ima
 
 @Common.MangaCSS(/^{origin}\/Computer\/\?manga=[^#]+$/, 'div.nomeserie a', Common.ElementLabelExtractor(), true)
 @Common.MangasSinglePagesCSS([ '/Computer/' ], 'div.theList div.nomeserie > a', MangaAndChapterExtractor)
-@Common.ChaptersSinglePageCSS('div.theList a[title = "Capitolo Italiano"]', MangaAndChapterExtractor)
+@Common.ChaptersSinglePageCSS('div.theList a[title = "Capitolo Italiano"]', undefined, MangaAndChapterExtractor)
 @Common.PagesSinglePageJS(pageScript)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {

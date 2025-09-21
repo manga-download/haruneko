@@ -11,7 +11,7 @@ function ChapterExtractor(anchor: HTMLAnchorElement) {
 
 @Common.MangaCSS(/^{origin}\/manga\/[^/]+$/, 'div#manga-info-rightColumn h1.big-fat-titles')
 @Common.MangasMultiPageCSS('/newmangalist.php?list={page}', 'div.updates-element-info > h2 a', 1, 1, 0, Common.AnchorInfoExtractor(true))
-@Common.ChaptersSinglePageCSS('div#chapters-list a', ChapterExtractor)
+@Common.ChaptersSinglePageCSS('div#chapters-list a', undefined, ChapterExtractor)
 @Common.PagesSinglePageCSS('img.imgholder')
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {

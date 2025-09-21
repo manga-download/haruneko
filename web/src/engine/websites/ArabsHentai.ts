@@ -4,14 +4,15 @@ import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 
 function ChapterExtractor(anchor: HTMLAnchorElement) {
-    const id = anchor.pathname;
-    const title = anchor.querySelector('span.chapternum').textContent.trim();
-    return { id, title };
+    return {
+        id: anchor.pathname,
+        title: anchor.querySelector<HTMLSpanElement>('span.chapternum').textContent.trim()
+    };
 }
 
 @Common.MangaCSS(/^{origin}\/manga\/[^/]+\/$/, 'div.sheader div.data h1')
-@Common.MangasMultiPageCSS('/manga/page/{page}/', 'article data h3 a')
-@Common.ChaptersSinglePageCSS('div#chapter-list ul li a:not(:has(span.chapter-lock))', ChapterExtractor)
+@Common.MangasMultiPageCSS('/manga/page/{page}/', 'article div.data h3 a')
+@Common.ChaptersSinglePageCSS('div#chapter-list ul li a:not(:has(span.chapter-lock))', undefined, ChapterExtractor)
 @Common.PagesSinglePageCSS('div.chapter_image div.page-break img')
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {

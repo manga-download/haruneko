@@ -13,7 +13,7 @@ function ChapterExtractor(this: MangaScraper, anchor: HTMLAnchorElement) {
 
 @Common.MangaCSS(/^{origin}\/manga\/[^/]+$/, 'div.card div.row h1', (element) => element.textContent.replace('الفصل', '').trim())
 @Common.MangasMultiPageCSS('/manga?page={page}', 'div.series-paginated a.link-series')
-@Common.ChaptersSinglePageCSS('div.chapters-list a', ChapterExtractor)
+@Common.ChaptersSinglePageCSS('div.chapters-list a', undefined, ChapterExtractor)
 @Common.ImageAjaxFromHTML('div.book-page img.img-fluid')
 export default class extends DecoratableMangaScraper {
 

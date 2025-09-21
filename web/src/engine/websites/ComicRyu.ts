@@ -18,7 +18,7 @@ function ChapterInfoExtractor(anchor: HTMLAnchorElement) {
 }
 
 @Common.MangasSinglePagesCSS(['シリーズ一覧-連載中', '完結作品', 'https://unicorn.comic-ryu.jp/シリーズ一覧-連載中/'], 'ul.m-series-list li a.m-list-sakuhin-list-item-link', MangaInfoExtractor)
-@Common.ChaptersSinglePageCSS('a.sakuhin-episode-link', ChapterInfoExtractor)
+@Common.ChaptersSinglePageCSS('a.sakuhin-episode-link', undefined, ChapterInfoExtractor)
 @Common.PagesSinglePageCSS('figure.wp-block-image img')
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {

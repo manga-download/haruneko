@@ -123,7 +123,7 @@ function CreateChapterInfoExtractor<T extends HTMLAnchorElement>(manga: Manga, q
  * @param queryTitle - A CSS sub-query performed on each element found with {@link query} to extract the chapter title
  */
 export async function FetchChaptersSinglePageCSS(this: MangaScraper, manga: Manga, query = queryChapterListLinks, queryTitle = queryChapterListTitle): Promise<Chapter[]> {
-    return Common.FetchChaptersSinglePageCSS.call(this, manga, query, CreateChapterInfoExtractor(manga, queryTitle, queryChapterListBloat));
+    return Common.FetchChaptersSinglePageCSS.call(this, manga, query, undefined, CreateChapterInfoExtractor(manga, queryTitle, queryChapterListBloat));
 }
 
 /**

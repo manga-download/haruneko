@@ -82,8 +82,8 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         return /^\/(shonenjump|vizmanga)\/chapters/.test(manga.Identifier)
-            ? Common.FetchChaptersSinglePageCSS.call(this, manga, 'div > a.o_chapter-container[data-target-url]:not([href*="javascript"]), tr.o_chapter td.ch-num-list-spacing a.o_chapter-container[data-target-url]:not([href*="javascript"])', ChapterExtractor)
-            : Common.FetchChaptersSinglePageCSS.call(this, manga, 'table.product-table tr', VolumeExtractor);
+            ? Common.FetchChaptersSinglePageCSS.call(this, manga, 'div > a.o_chapter-container[data-target-url]:not([href*="javascript"]), tr.o_chapter td.ch-num-list-spacing a.o_chapter-container[data-target-url]:not([href*="javascript"])', undefined, ChapterExtractor)
+            : Common.FetchChaptersSinglePageCSS.call(this, manga, 'table.product-table tr', undefined, VolumeExtractor);
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {

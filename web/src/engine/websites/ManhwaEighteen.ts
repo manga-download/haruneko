@@ -6,7 +6,7 @@ import * as Common from './decorators/Common';
 
 @Common.MangaCSS(/^{origin}\/manga\/[^/]+$/, 'meta[property="og:title"]')
 @Common.MangasMultiPageCSS('/manga-list?page={page}', FlatManga.queryMangas)
-@Common.ChaptersSinglePageCSS(FlatManga.queryChapters, Common.AnchorInfoExtractor(true))
+@Common.ChaptersSinglePageCSS(FlatManga.queryChapters, undefined, Common.AnchorInfoExtractor(true))
 @Common.PagesSinglePageCSS('div#chapter-content img.lazy')
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {

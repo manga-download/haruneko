@@ -39,7 +39,7 @@ const endpoints = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun', 'end'].map(s
 
 @Common.MangaCSS(/^{origin}\/title\/\d+$/, 'div.titleMain div.titleInfo h1')
 @Common.MangasSinglePagesCSS(endpoints, 'div.list div.series ul.common-list li a', MangaExtractor)
-@Common.ChaptersSinglePageCSS('div.chapter ul li[data-chapter-id]', ChapterExtractor)
+@Common.ChaptersSinglePageCSS('div.chapter ul li[data-chapter-id]', undefined, ChapterExtractor)
 export default class extends DecoratableMangaScraper {
 
     public constructor() {

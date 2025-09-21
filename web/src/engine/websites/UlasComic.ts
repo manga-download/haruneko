@@ -5,7 +5,7 @@ import * as Common from './decorators/Common';
 import { ZeistManga } from './templates/ZeistManga';
 
 @MangaStream.MangaCSS(/^{origin}\/\d+\/\d+\/[^.]+\.html$/)
-@Common.PagesSinglePageJS(`config.chapterImage.map(image => image.replace(/\\/s\\d+[^/]*(\\/[^/]+$)/, '/s0$1'));`, 2500)
+@Common.PagesSinglePageJS(`[...document.querySelectorAll('div#readerarea img')].map(image => image.src.replace(/\\/s\\d+[^/]*(\\/[^/]+$)/, '/s0$1'));`, 2500)
 export default class extends ZeistManga {
 
     public constructor() {

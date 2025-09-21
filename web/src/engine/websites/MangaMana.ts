@@ -15,7 +15,7 @@ const pageScript = `
 `;
 
 @Common.MangaCSS(/^{origin}\/m\/[^/]+$/, 'h1.show_title')
-@Common.ChaptersSinglePageCSS('ul.row li a', Common.AnchorInfoExtractor(false, 'div.small, span'))
+@Common.ChaptersSinglePageCSS('ul.row li a', undefined, Common.AnchorInfoExtractor(false, 'div.small, span'))
 @Common.PagesSinglePageJS(pageScript, 500)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {

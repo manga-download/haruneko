@@ -7,7 +7,11 @@ import * as Common from './decorators/Common';
 
 @Common.MangaCSS(FlatManga.pathManga, 'img.thumbnail', (img: HTMLImageElement) => img.title.trim())
 @Common.MangasSinglePagesCSS([ '/manga-list.html' ], 'div.container a[data-toggle="mangapop"]:not([data-original-title=""])')
-@Common.PagesSinglePageJS(`[...document.querySelectorAll('${FlatManga.queryPages}')].map(image => window.atob(image.dataset.src))`, 1500)
+@Common.PagesSinglePageJS(`
+    [...document.querySelectorAll('${FlatManga.queryPages}')]
+        .filter(image => image.dataset.src)
+        .map(image => window.atob(image.dataset.src));
+`, 1500)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
