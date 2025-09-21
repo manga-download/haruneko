@@ -251,7 +251,7 @@ export async function FetchMangasSinglePageCSS<E extends HTMLElement>(this: Mang
  * @param query - A CSS query to locate the elements from which the manga identifier and title shall be extracted
  * @param extract - A function to extract the manga identifier and title from a single element (found with {@link query})
  */
-export function MangasSinglePageCSS<E extends HTMLElement>(query: string, resource: string | LinkResolver<MangaPlugin>, extract = DefaultInfoExtractor as InfoExtractor<E>) {
+export function MangasSinglePageCSS<E extends HTMLElement>(resource: string | LinkResolver<MangaPlugin>, query: string, extract = DefaultInfoExtractor as InfoExtractor<E>) {
     return function DecorateClass<T extends Constructor>(ctor: T, context?: ClassDecoratorContext): T {
         ThrowOnUnsupportedDecoratorContext(context);
         return class extends ctor {
