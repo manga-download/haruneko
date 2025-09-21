@@ -6,7 +6,7 @@ import * as FlatManga from './templates/FlatManga';
 import * as Common from './decorators/Common';
 
 @Common.MangaCSS(FlatManga.pathManga, 'img.thumbnail', (img: HTMLImageElement) => img.title.trim())
-@Common.MangasSinglePagesCSS([ '/manga-list.html' ], 'div.container a[data-toggle="mangapop"]:not([data-original-title=""])')
+@Common.MangasSinglePageCSS('/manga-list.html', 'div.container a[data-toggle="mangapop"]:not([data-original-title=""])')
 @Common.PagesSinglePageJS(`
     [...document.querySelectorAll('${FlatManga.queryPages}')]
         .filter(image => image.dataset.src)
@@ -15,7 +15,7 @@ import * as Common from './decorators/Common';
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
-    public constructor () {
+    public constructor() {
         super('mangatr', 'Manga-TR', 'https://manga-tr.com', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Language.Turkish, Tags.Source.Aggregator);
     }
 

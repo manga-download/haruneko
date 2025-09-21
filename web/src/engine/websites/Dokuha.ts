@@ -26,7 +26,7 @@ function ChapterExtractor(anchor: HTMLAnchorElement) {
 }
 
 @Common.MangaCSS(/^{origin}\/comicweb\/contents\/comic\/[^/]+$/, 'div.comic-navigation h1.comic-name', Common.ElementLabelExtractor('span'))
-@Common.MangasMultiPageCSS('/comicweb/category/general/list?page={page}', 'div#list-row div.list-comic-info dt.title a')
+@Common.MangasMultiPageCSS('div#list-row div.list-comic-info dt.title a', Common.PatternLinkGenerator('/comicweb/category/general/list?page={page}'))
 @Common.ChaptersSinglePageCSS('section.comic-list ul a', undefined, ChapterExtractor)
 export default class extends DecoratableMangaScraper {
 

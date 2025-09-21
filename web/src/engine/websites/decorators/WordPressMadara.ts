@@ -116,7 +116,7 @@ function MangaInfoExtractor(anchor: HTMLAnchorElement) {
  * @param path - The path pattern relative to {@link this} scraper's base url from which the mangas shall be extracted containing the placeholder `{page}` which is replaced by an incrementing number
  */
 export async function FetchMangasMultiPageCSS(this: MangaScraper, provider: MangaPlugin, query = queryMangaListLinks, throttle = 0, path = pathpaged): Promise<Manga[]> {
-    return Common.FetchMangasMultiPageCSS.call(this, provider, path, query, 1, 1, throttle, MangaInfoExtractor);
+    return Common.FetchMangasMultiPageCSS.call(this, provider, query, Common.PatternLinkGenerator(path), throttle, MangaInfoExtractor);
 }
 
 /**
@@ -129,7 +129,7 @@ export async function FetchMangasMultiPageCSS(this: MangaScraper, provider: Mang
  * @param path - The path pattern relative to the scraper's base url from which the mangas shall be extracted containing the placeholder `{page}` which is replaced by an incrementing number
  */
 export function MangasMultiPageCSS(query = queryMangaListLinks, throttle = 0, path = pathpaged) {
-    return Common.MangasMultiPageCSS(path, query, 1, 1, throttle, MangaInfoExtractor);
+    return Common.MangasMultiPageCSS(query, Common.PatternLinkGenerator(path), throttle, MangaInfoExtractor);
 }
 
 /**

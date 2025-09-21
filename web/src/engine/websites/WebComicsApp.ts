@@ -34,11 +34,11 @@ function MangaInfoExtractor(anchor: HTMLAnchorElement) {
     return { id, title };
 }
 
-@Common.MangasMultiPageCSS('/genres/All/All/Popular/{page}', 'div.list-item a', 1, 1, 0, MangaInfoExtractor)
+@Common.MangasMultiPageCSS('div.list-item a', Common.PatternLinkGenerator('/genres/All/All/Popular/{page}'), 0, MangaInfoExtractor)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
-    public constructor () {
+    public constructor() {
         super('webcomicsapp', `WebComicsApp`, 'https://www.webcomicsapp.com', Tags.Language.English, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Source.Official);
     }
 

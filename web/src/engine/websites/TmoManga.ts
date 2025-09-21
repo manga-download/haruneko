@@ -5,7 +5,7 @@ import * as Common from './decorators/Common';
 
 // Madara?
 @Common.MangaCSS(/^{origin}\/manga\/[^/]+$/, 'ol.breadcrumb li:last-of-type')
-@Common.MangasMultiPageCSS('/biblioteca?page={page}', 'div.manga_biblioteca a[title]', 1, 1, 0, Common.AnchorInfoExtractor(true))
+@Common.MangasMultiPageCSS('div.manga_biblioteca a[title]', Common.PatternLinkGenerator('/biblioteca?page={page}'), 0, Common.AnchorInfoExtractor(true))
 @Common.ChaptersSinglePageCSS('ul li.wp-manga-chapter > a')
 @Common.PagesSinglePageCSS('div.reading-content div#images_chapter img.img-fluid.lazyload')
 @Common.ImageAjax()

@@ -12,7 +12,7 @@ function MangaInfosExtractor(anchor: HTMLAnchorElement) {
 }
 
 @MangaStream.MangaCSS(/^{origin}\/manga\/[^/]+\/$/, 'h1.entry-title')
-@Common.MangasMultiPageCSS('/project/page/{page}/', 'div.bs div.bsx a', 1, 1, 0, MangaInfosExtractor)
+@Common.MangasMultiPageCSS('div.bs div.bsx a', Common.PatternLinkGenerator('/project/page/{page}/'), 0, MangaInfosExtractor)
 @MangaStream.ChaptersSinglePageCSS()
 @MangaStream.PagesSinglePageCSS()
 @Common.ImageAjax(true)
