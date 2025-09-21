@@ -19,7 +19,7 @@ function MangaExtractor(anchor: HTMLAnchorElement) {
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('magcomi', `MAGCOMI`, 'https://magcomi.com', Tags.Language.Japanese, Tags.Source.Official, Tags.Media.Manga);
+        super('magcomi', 'MAGCOMI', 'https://magcomi.com', Tags.Language.Japanese, Tags.Source.Official, Tags.Media.Manga);
     }
 
     public override get Icon() {

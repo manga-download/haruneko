@@ -6,17 +6,17 @@ new TestFixture({
         title: 'Reyume',
     },
     container: {
-        url: 'https://www.re-yume.my.id/2024/08/please-behave-my-wife.html',
-        id: '/2024/08/please-behave-my-wife.html',
-        title: 'Please Behave, My Wife'
+        url: 'https://www.re-yume.my.id/2024/01/shangri-la-frontier-kusoge-hunter.html',
+        id: '/2024/01/shangri-la-frontier-kusoge-hunter.html',
+        title: 'Shangri-La Frontier ~Kusoge Hunter. Kamige ni Idoman to su~'
     },
     child: {
-        id: '/2024/11/please-behave-my-wife-chapter-70-end-s1.html',
-        title: 'Chapter 70 - End S1'
+        id: '/2024/01/shangri-la-frontier-chapter-01.html',
+        title: 'Chapter 01'
     },
     entry: {
-        index: 0,
-        size: 1_149_074,
+        index: 2,
+        size: 163_315,
         type: 'image/jpeg'
     }
 }).AssertWebsite();

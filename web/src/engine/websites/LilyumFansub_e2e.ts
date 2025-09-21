@@ -6,7 +6,7 @@ new TestFixture({
         title: 'Lilyum Fansub'
     },
     container: {
-        url: 'https://lilyumfansub.com/manga/uchiha-sasukenin-sharingan-magarasi/',
+        url: 'https://lilyumfansub.pro/manga/uchiha-sasukenin-sharingan-magarasi/',
         id: JSON.stringify({ post: '391', slug: '/manga/uchiha-sasukenin-sharingan-magarasi/' }),
         title: `Uchiha Sasuke'nin Sharingan Mağarası`
     },
