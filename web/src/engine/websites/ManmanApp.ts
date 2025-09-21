@@ -20,7 +20,7 @@ function ChapterExtractor(element: HTMLLIElement) {
 }
 
 @Common.MangaCSS(/^{origin}\/comic-[\d]+\.html$/, 'div.cartoon li.title', Common.ElementLabelExtractor('span'))
-@Common.MangasMultiPageCSS('/comic/category_{page}.html', 'div.classification li.title a')
+@Common.MangasMultiPageCSS('div.classification li.title a', Common.PatternLinkGenerator('/comic/category_{page}.html'))
 @Common.PagesSinglePageCSS('img.man_img')
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {

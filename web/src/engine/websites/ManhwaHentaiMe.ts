@@ -23,12 +23,12 @@ function MangaInfoExtractor(anchor: HTMLAnchorElement) {
     return { id, title: CleanTitle(anchor.text) };
 }
 
-@Common.MangasMultiPageCSS('/home/page/{page}/', 'div.post-title h3 a, div.post-title h5 a', 1, 1, 0, MangaInfoExtractor)
+@Common.MangasMultiPageCSS('div.post-title h3 a, div.post-title h5 a', Common.PatternLinkGenerator('/home/page/{page}/'), 0, MangaInfoExtractor)
 @Madara.PagesSinglePageCSS()
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
-    public constructor (id: string = 'manhwahentaime', label: string = 'ManhwaHentai.me', url: string = 'https://manhwahentai.me', tags: Tag[] = [ Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Language.English ]) {
+    public constructor(id: string = 'manhwahentaime', label: string = 'ManhwaHentai.me', url: string = 'https://manhwahentai.me', tags: Tag[] = [Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Language.English]) {
         super(id, label, url, ...tags);
     }
 

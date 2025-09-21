@@ -38,7 +38,7 @@ function ChapterExtractor(element: HTMLElement) {
 const endpoints = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun', 'end'].map(segment => `/series/${segment}`);
 
 @Common.MangaCSS(/^{origin}\/title\/\d+$/, 'div.titleMain div.titleInfo h1')
-@Common.MangasSinglePagesCSS(endpoints, 'div.list div.series ul.common-list li a', MangaExtractor)
+@Common.MangasMultiPageCSS('div.list div.series ul.common-list li a', Common.StaticLinkGenerator(...endpoints), 0, MangaExtractor)
 @Common.ChaptersSinglePageCSS('div.chapter ul li[data-chapter-id]', undefined, ChapterExtractor)
 export default class extends DecoratableMangaScraper {
 

@@ -18,7 +18,7 @@ function MangaExtractor(anchor: HTMLAnchorElement) {
 }
 
 @Common.MangaCSS(/^{origin}\/read\/[^/]+$/, 'div.comic-details p', MangaStream.MangaLabelExtractor)
-@Common.MangasMultiPageCSS('/daftar-komik?page={page}', 'div#daftar-komik a', 1, 1, 0, MangaExtractor)
+@Common.MangasMultiPageCSS('div#daftar-komik a', Common.PatternLinkGenerator('/daftar-komik?page={page}'), 0, MangaExtractor)
 @Common.ChaptersSinglePageCSS('tbody#result-comic tr', undefined, ChapterExtractor)
 @Common.PagesSinglePageCSS('div.content_place img[alt]')
 @Common.ImageAjax()

@@ -11,7 +11,7 @@ function MangaInfoExtractor(anchor: HTMLAnchorElement) {
 }
 
 @Common.MangaCSS(/^{origin}\/[^/]+\/$/, 'div.wpm_pag h1.ttl')
-@Common.MangasMultiPageCSS('/manga_list/all/any/name-az/{page}/', 'div.lst_ara div.cvr a', 1, 1, 0, MangaInfoExtractor)
+@Common.MangasMultiPageCSS('div.lst_ara div.cvr a', Common.PatternLinkGenerator('/manga_list/all/any/name-az/{page}/'), 0, MangaInfoExtractor)
 @Common.ChaptersMultiPageCSS('ul.lst li.lng_ a.lst', 1, 1, 0,
     Common.PatternLinkResolver('{id}chapter-list/{page}/'),
     Common.AnchorInfoExtractor(true))

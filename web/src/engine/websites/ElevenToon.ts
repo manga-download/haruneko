@@ -12,7 +12,7 @@ function MangaExtractor(anchor: HTMLAnchorElement) {
 }
 
 @Common.MangaCSS(/^https?:\/\/www\.11toon\d*\.com\/bbs\/board\.php\?bo_table=toons&stx=[^/]+/, '#cover-info h2', Common.ElementLabelExtractor(), true)
-@Common.MangasMultiPageCSS('/bbs/board.php?bo_table=toon_c&type=upd&page={page}', 'ul.homelist li[data-id] a', 1, 1, 0, MangaExtractor)
+@Common.MangasMultiPageCSS('ul.homelist li[data-id] a', Common.PatternLinkGenerator('/bbs/board.php?bo_table=toon_c&type=upd&page={page}'), 0, MangaExtractor)
 @Common.PagesSinglePageJS('img_list', 500)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
