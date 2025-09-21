@@ -9,7 +9,7 @@ import { DRMProvider } from './CrunchyScan.DRM';
 const ExtractTitle = (element: HTMLElement) => element.innerText.replace(/^\s*\(\s*adulte[^\)]*\)\s*/i, '');
 
 @Common.MangaCSS(/^{origin}\/lecture-en-ligne\/[^/]+$/, 'main.container .baseManga h2', ExtractTitle)
-@Common.MangasMultiPageCSS('/api/getLastManga?method=grid&page={page}', 'a[class*="text"][href*="/lecture-en-ligne/"]', 1, 1, 0, (a: HTMLAnchorElement) => ({ id: a.pathname, title: ExtractTitle(a) }))
+@Common.MangasMultiPageCSS('a[class*="text"][href*="/lecture-en-ligne/"]', Common.PatternLinkGenerator('/api/getLastManga?method=grid&page={page}'), 0, (a: HTMLAnchorElement) => ({ id: a.pathname, title: ExtractTitle(a) }))
 @Common.ChaptersSinglePageCSS('#ChapterWrap a.chapter-link[href*="/read/"]')
 export default class extends DecoratableMangaScraper {
 

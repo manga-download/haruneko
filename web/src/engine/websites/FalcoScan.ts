@@ -17,7 +17,7 @@ function ChapterExtractor(element: HTMLDivElement) {
 }
 
 @Common.MangaCSS(/^{origin}\/comics\/[^/]+$/, 'meta[property="og:title"]', (element: HTMLMetaElement) => element.content.split('|').at(0).trim())
-@Common.MangasSinglePagesCSS([ '/comics' ], 'div.col-xxl-9 div.row a[href*="/comics/"]', MangaInfoExtractor)
+@Common.MangasSinglePageCSS('/comics', 'div.col-xxl-9 div.row a[href*="/comics/"]', MangaInfoExtractor)
 @Common.ChaptersSinglePageCSS('div.specmobile div[onclick]', undefined, ChapterExtractor)
 @Common.PagesSinglePageCSS('div.page-content div.container div.img-blade img')
 @Common.ImageAjax()

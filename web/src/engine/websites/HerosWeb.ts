@@ -5,7 +5,7 @@ import * as CoreView from './decorators/CoreView';
 import * as Common from './decorators/Common';
 
 @Common.MangaCSS(/^{origin}\/episode\/\d+$/, CoreView.queryMangaTitleFromURI)
-@Common.MangasSinglePagesCSS(['/series/heros', '/series/flat', '/series/wild'], 'section.series-section ul.series-items > li.series-item > a', CoreView.DefaultMangaExtractor)
+@Common.MangasMultiPageCSS('section.series-section ul.series-items > li.series-item > a', Common.StaticLinkGenerator('/series/heros', '/series/flat', '/series/wild'), 0, CoreView.DefaultMangaExtractor)
 @CoreView.ChaptersMultiPageAJAXV2()
 @CoreView.PagesSinglePageJSON()
 @CoreView.ImageAjax()

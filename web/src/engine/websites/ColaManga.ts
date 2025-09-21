@@ -12,7 +12,7 @@ type PageParameters = {
 };
 
 @Common.MangaCSS(/^{origin}\/manga-[^/]+\//, 'dl.fed-deta-info dd.fed-deta-content h1.fed-part-eone')
-@Common.MangasMultiPageCSS('/show?page={page}', 'ul.fed-list-info li.fed-list-item a.fed-list-title')
+@Common.MangasMultiPageCSS('ul.fed-list-info li.fed-list-item a.fed-list-title', Common.PatternLinkGenerator('/show?page={page}'))
 @Common.ChaptersSinglePageCSS('div.all_data_list ul li a')
 export default class extends DecoratableMangaScraper {
 

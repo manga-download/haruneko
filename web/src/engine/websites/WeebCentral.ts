@@ -11,12 +11,12 @@ function MangaLabelExtractor(meta: HTMLMetaElement): string {
 const pageScript = `[...document.querySelectorAll('main section img[alt*="Page"]:not([x-show]')].map(image => new URL(image.getAttribute('src'), window.location.origin).href);`;
 
 @Common.MangaCSS(/^{origin}\/series\/[^/]+\/[^/]+$/, 'meta[property="og:title"]', MangaLabelExtractor)
-@Common.MangasMultiPageCSS(`/search/data?display_mode=Minimal+Display&limit=32&offset={page}`, 'article > a.link', 0, 32, 0)
+@Common.MangasMultiPageCSS('article > a.link', Common.PatternLinkGenerator(`/search/data?display_mode=Minimal+Display&limit=32&offset={page}`, 0, 32), 0)
 @Common.PagesSinglePageJS(pageScript, 1500)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
-    public constructor () {
+    public constructor() {
         super('weebcentral', 'WeebCentral', 'https://weebcentral.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Media.Manga, Tags.Language.English, Tags.Source.Aggregator);
     }
 
