@@ -13,7 +13,7 @@ function ChapterExtractor(anchor: HTMLAnchorElement) {
 
 @Common.MangaCSS(/^{origin}\/product\/index\/title_id\/\d+\/vol_no\/\d+$/, 'li.contents span.book_title')
 @Common.MangasNotSupported()
-@Common.ChaptersSinglePageCSS('div#slide_up_top li.item div.buttons a.bl-bviewer[data-title][data-vol]', ChapterExtractor)
+@Common.ChaptersSinglePageCSS('div#slide_up_top li.item div.buttons a.bl-bviewer[data-title][data-vol]', undefined, ChapterExtractor)
 @SpeedBinb.PagesSinglePageAjax(SpeedBindVersion.v016130)
 @SpeedBinb.ImageAjax()
 

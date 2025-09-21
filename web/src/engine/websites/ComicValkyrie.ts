@@ -19,7 +19,7 @@ function ChapterExtractor(element: HTMLElement) {
 }
 
 @Common.MangasSinglePagesCSS(['/list'], '.box_wrap .box', MangaExtractor)
-@Common.ChaptersSinglePageCSS('#new_story .title, #back_number .title', ChapterExtractor)
+@Common.ChaptersSinglePageCSS('#new_story .title, #back_number .title', undefined, ChapterExtractor)
 @SpeedBinb.PagesSinglePageAjax()
 @SpeedBinb.ImageAjax()
 export default class extends DecoratableMangaScraper {
@@ -35,9 +35,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
-        const data = await FetchCSS<HTMLMetaElement>(new Request(url), 'meta[property = "og:title"]');
-        const id = new URL(url).pathname.replace('/new.html', '/');
-        const title = data[0].content.replace(/\s*THE COMIC\s*/i, '').trim();
-        return new Manga(this, provider, id, title);
+        const [element] = await FetchCSS<HTMLMetaElement>(new Request(url), 'meta[property = "og:title"]');
+        return new Manga(this, provider, new URL(url).pathname.replace('/new.html', '/'), element.content.replace(/\s*THE COMIC\s*/i, '').trim());
     }
 }

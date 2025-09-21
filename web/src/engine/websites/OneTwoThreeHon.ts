@@ -19,7 +19,7 @@ function ChapterExtractor(element: HTMLLIElement) {
 
 @Common.MangaCSS(/^{origin}\/[^/]+\/web-comic\/[^/]+\/$/, 'div.title-area h2')
 @Common.MangasSinglePagesCSS(['/polca/web-comic/', '/nova/web-comic/'], 'ul.comic__list > li > a', MangaInfoExtractor)
-@Common.ChaptersSinglePageCSS('div.read-episode li:has(a)', ChapterExtractor)
+@Common.ChaptersSinglePageCSS('div.read-episode li:has(a)', undefined, ChapterExtractor)
 @SpeedBinb.PagesSinglePageAjax()
 @SpeedBinb.ImageAjax()
 export default class extends DecoratableMangaScraper {

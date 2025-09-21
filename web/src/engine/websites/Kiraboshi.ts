@@ -20,7 +20,7 @@ type APIMangas = {
 };
 
 @Common.MangaCSS(/^{origin}\/[^/]+\/titles\/[^/]+$/, 'div.breadcrumb ul li:last-of-type')
-@Common.ChaptersSinglePageCSS('div.episode-item:has(a)', ChapterExtractor)
+@Common.ChaptersSinglePageCSS('div.episode-item:has(a)', undefined, ChapterExtractor)
 @SpeedBinb.PagesSinglePageAjax()
 @SpeedBinb.ImageAjax()
 export default class extends DecoratableMangaScraper {
@@ -39,7 +39,6 @@ export default class extends DecoratableMangaScraper {
 
         const readAt = doc.querySelector<HTMLAnchorElement>('a#more_titles_button').dataset.readAt;
         const { data } = await FetchJSON<APIMangas>(new Request(new URL(`./title-list?read_at=${readAt}`, 'https://kirapo.jp/api/')));
-
-        return mangaList.concat(...data.map(manga => new Manga(this, provider, new URL(manga.url).pathname, manga.name)));
+        return mangaList.concat(...data.map(({ url, name }) => new Manga(this, provider, new URL(url, this.URI).pathname, name)));
     }
 }
