@@ -50,11 +50,11 @@ function ChapterExtractor(anchor: HTMLAnchorElement) {
 export default class extends DecoratableMangaScraper {
 
     private readonly patterns = new Map<RegExp, string>([
-        [ new RegExp(`^${this.URI.origin}/(shonenjump|vizmanga)/chapters/[^/]+$`), 'section#series-intro div h2' ],
-        [ new RegExp(`^${this.URI.origin}/account/library/(gn|sj)/[^/]+$`), 'body > div.row h3.type-md' ],
+        [new RegExp(`^${this.URI.origin}/(shonenjump|vizmanga)/chapters/[^/]+$`), 'section#series-intro div h2'],
+        [new RegExp(`^${this.URI.origin}/account/library/(gn|sj)/[^/]+$`), 'body > div.row h3.type-md'],
     ]);
 
-    public constructor () {
+    public constructor() {
         super('vizshonenjump', 'Viz - Shonen Jump', 'https://www.viz.com', Tags.Language.English, Tags.Media.Manga, Tags.Source.Official, Tags.Accessibility.RegionLocked);
         this.imageTaskPool.RateLimit = new RateLimit(4, 1);
     }
@@ -74,16 +74,16 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
         return [
-            ...await Common.FetchMangasSinglePagesCSS.call(this, provider, [ '/account/library', '/account/library/sj' ], 'table.purchase-table a', MangasExtractor),
-            ...await Common.FetchMangasSinglePagesCSS.call(this, provider, [ '/read/shonenjump/section/free-chapters' ], 'div#chpt_grid div.o_sortable a.o_chapters-link', MangasExtractor),
-            ...await Common.FetchMangasSinglePagesCSS.call(this, provider, [ '/read/vizmanga/section/free-chapters' ], 'div.o_sort_container div.o_sortable a.o_chapters-link', MangasExtractor)
+            ...await Common.FetchMangasSinglePageCSS.call(this, provider, '/read/shonenjump/section/free-chapters', 'div#chpt_grid div.o_sortable a.o_chapters-link', MangasExtractor),
+            ...await Common.FetchMangasSinglePageCSS.call(this, provider, '/read/vizmanga/section/free-chapters', 'div.o_sort_container div.o_sortable a.o_chapters-link', MangasExtractor),
+            ...await Common.FetchMangasMultiPageCSS.call(this, provider, 'table.purchase-table a', Common.StaticLinkGenerator('/account/library', '/account/library/sj'), 0, MangasExtractor),
         ].distinct();
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         return /^\/(shonenjump|vizmanga)\/chapters/.test(manga.Identifier)
-            ? Common.FetchChaptersSinglePageCSS.call(this, manga, 'div > a.o_chapter-container[data-target-url]:not([href*="javascript"]), tr.o_chapter td.ch-num-list-spacing a.o_chapter-container[data-target-url]:not([href*="javascript"])', ChapterExtractor)
-            : Common.FetchChaptersSinglePageCSS.call(this, manga, 'table.product-table tr', VolumeExtractor);
+            ? Common.FetchChaptersSinglePageCSS.call(this, manga, 'div > a.o_chapter-container[data-target-url]:not([href*="javascript"]), tr.o_chapter td.ch-num-list-spacing a.o_chapter-container[data-target-url]:not([href*="javascript"])', undefined, ChapterExtractor)
+            : Common.FetchChaptersSinglePageCSS.call(this, manga, 'table.product-table tr', undefined, VolumeExtractor);
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
@@ -136,8 +136,8 @@ export default class extends DecoratableMangaScraper {
                         Math.floor((Math.floor(index / 8) + 1) * (blockHeight + 10)),
                         blockWidth,
                         blockHeight,
-                        Math.floor((shuffleMap[ index ] % 8 + 1) * blockWidth),
-                        Math.floor((Math.floor(shuffleMap[ index ] / 8) + 1) * blockHeight),
+                        Math.floor((shuffleMap[index] % 8 + 1) * blockWidth),
+                        Math.floor((Math.floor(shuffleMap[index] / 8) + 1) * blockHeight),
                         blockWidth,
                         blockHeight
                     );

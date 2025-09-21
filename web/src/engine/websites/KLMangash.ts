@@ -39,8 +39,8 @@ function ChapterExtractor(anchor: HTMLAnchorElement) {
 }
 
 @Common.MangaCSS(/^{origin}\/manga-raw\/[^/]+\/$/, 'div.container div.z-single-mg h1.name', MangaLabelExtractor)
-@Common.MangasMultiPageCSS('/page/{page}/', 'div.grid-of-mangas h2.name a', 1, 1, 0, MangaExtractor)
-@Common.ChaptersSinglePageCSS('div.chapter-box a', ChapterExtractor)
+@Common.MangasMultiPageCSS('div.grid-of-mangas h2.name a', Common.PatternLinkGenerator('/page/{page}/'), 0, MangaExtractor)
+@Common.ChaptersSinglePageCSS('div.chapter-box a', undefined, ChapterExtractor)
 export default class extends DecoratableMangaScraper {
 
     private zingParams: ZingParams;

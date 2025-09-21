@@ -9,8 +9,8 @@ function MangaLabelExtractor(element: HTMLElement): string {
 }
 
 @Common.MangaCSS(/^{origin}\/manga\/[^/]+$/, 'div.card div.row h1', MangaLabelExtractor)
-@Common.MangasMultiPageCSS('/manga?page={page}', 'div.series a.link-series')
-@Common.ChaptersSinglePageCSS('div.chapters-list a', Common.AnchorInfoExtractor(false, 'div.text-muted, div.rate-value'))
+@Common.MangasMultiPageCSS('div.series a.link-series', Common.PatternLinkGenerator('/manga?page={page}'))
+@Common.ChaptersSinglePageCSS('div.chapters-list a', undefined, Common.AnchorInfoExtractor(false, 'div.text-muted, div.rate-value'))
 @Common.ImageAjaxFromHTML('div.book-page img.img-fluid')
 export default class extends DecoratableMangaScraper {
 

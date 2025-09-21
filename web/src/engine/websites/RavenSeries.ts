@@ -24,12 +24,12 @@ type APIPages = {
 };
 
 @Common.MangaCSS(/^{origin}\/sr2\/[^/]+$/, 'title', MangaExtractor)
-@Common.MangasMultiPageCSS('/comics?page={page}', 'div#projectsDiv figure div a')
-@Common.ChaptersSinglePageCSS('section#section-list-cap div.grid a.group', ChapterExtractor)
+@Common.MangasMultiPageCSS('div#projectsDiv figure div a', Common.PatternLinkGenerator('/comics?page={page}'))
+@Common.ChaptersSinglePageCSS('section#section-list-cap div.grid a.group', undefined, ChapterExtractor)
 @Common.ImageAjax(true, true)
 export default class extends DecoratableMangaScraper {
 
-    public constructor () {
+    public constructor() {
         super('ravenseries', 'RavenSeries', 'https://ravensword.lat', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Language.Spanish, Tags.Source.Aggregator);
     }
 

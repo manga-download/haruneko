@@ -12,7 +12,7 @@ function MangaExtractor(element: HTMLDivElement) {
 }
 
 @MangaStream.MangaCSS(/^{origin}\/komik\/[^/]+\/$/, 'h1.komik_info-content-body-title')
-@Common.MangasMultiPageCSS('/daftar-komik/page/{page}/', 'div.list-update_item', 1, 1, 0, MangaExtractor)
+@Common.MangasMultiPageCSS('div.list-update_item', Common.PatternLinkGenerator('/daftar-komik/page/{page}/'), 0, MangaExtractor)
 @MangaStream.ChaptersSinglePageCSS('div.komik_info-chapters ul li.komik_info-chapters-item a.chapter-link-item')
 @MangaStream.PagesSinglePageCSS([ /999\.jpg/ ], 'div.main-reading-area img.alignnone, div.separator img.alignnone')
 @Common.ImageAjax()

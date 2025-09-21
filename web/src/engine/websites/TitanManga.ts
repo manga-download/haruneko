@@ -12,8 +12,8 @@ function ChapterExtractor(anchor: HTMLAnchorElement) {
 }
 
 @Common.MangaCSS(/^{origin}\/manga\/[^/]+\/$/, 'div.manga-details div.title h1')
-@Common.MangasMultiPageCSS('/page/{page}/?s', 'div.search-posts div.title a')
-@Common.ChaptersSinglePageCSS('ul.scroll li a', ChapterExtractor)
+@Common.MangasMultiPageCSS('div.search-posts div.title a', Common.PatternLinkGenerator('/page/{page}/?s'))
+@Common.ChaptersSinglePageCSS('ul.scroll li a', undefined, ChapterExtractor)
 @Madara.PagesSinglePageCSS('div.chapter-images div.chapter-item img')
 @Common.ImageAjax(true)
 export default class extends DecoratableMangaScraper {

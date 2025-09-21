@@ -1,7 +1,7 @@
 import { Tags } from '../Tags';
 import icon from './ElevenToon.webp';
-import { Chapter, DecoratableMangaScraper, type Manga } from '../providers/MangaPlugin';
 import { FetchCSS, FetchWindowScript } from '../platform/FetchProvider';
+import { DecoratableMangaScraper, type Manga, Chapter } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 
 function MangaExtractor(anchor: HTMLAnchorElement) {
@@ -12,7 +12,7 @@ function MangaExtractor(anchor: HTMLAnchorElement) {
 }
 
 @Common.MangaCSS(/^https?:\/\/www\.11toon\d*\.com\/bbs\/board\.php\?bo_table=toons&stx=[^/]+/, '#cover-info h2', Common.ElementLabelExtractor(), true)
-@Common.MangasMultiPageCSS('/bbs/board.php?bo_table=toon_c&type=upd&page={page}', 'ul.homelist li[data-id] a', 1, 1, 0, MangaExtractor)
+@Common.MangasMultiPageCSS('ul.homelist li[data-id] a', Common.PatternLinkGenerator('/bbs/board.php?bo_table=toon_c&type=upd&page={page}'), 0, MangaExtractor)
 @Common.PagesSinglePageJS('img_list', 500)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
@@ -41,9 +41,9 @@ export default class extends DecoratableMangaScraper {
 
     private async GetChaptersFromPage(manga: Manga, page: number): Promise<Chapter[]> {
         const request = new Request(new URL(`${manga.Identifier}&page=${page}`, this.URI));
-        const data = await FetchCSS(request, 'ul#comic-episode-list li button.episode');
+        const data = await FetchCSS<HTMLButtonElement>(request, 'ul#comic-episode-list li button.episode');
         return data.map(element => {
-            const title = element.querySelector<HTMLDivElement>('div.episode-title').textContent.replace(manga.Title, '').trim();
+            const title = element.querySelector<HTMLDivElement>('div.episode-title').innerText.replace(manga.Title, '').trim();
             const link = new URL(element.getAttribute('onclick').split('\'').at(1), request.url);
             return new Chapter(this, manga, link.pathname + link.search, title);
         });

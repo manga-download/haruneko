@@ -5,7 +5,7 @@ import * as Liliana from './templates/Liliana';
 import * as Common from './decorators/Common';
 
 @Common.MangaCSS(/^{origin}\/manga\/[^/]+$/, 'article header h1')
-@Common.MangasMultiPageCSS(Liliana.mangaPath, 'div.grid div.text-center a.clamp')
+@Common.MangasMultiPageCSS('div.grid div.text-center a.clamp', Liliana.MangasLinkGenerator)
 @Common.ChaptersSinglePageCSS(Liliana.queryChapters)
 @Liliana.PagesSinglePageJS()
 @Common.ImageElement(false, true, true)

@@ -8,8 +8,8 @@ import * as DM5 from './decorators/DM5';
 const labelExtractor = Common.ElementLabelExtractor('span.right');
 const chapterExtractor = Common.AnchorInfoExtractor(false, 'div.cover, p.subtitle, p.tip, span');
 @Common.MangaCSS(/^{origin}\/manhua-/, 'div.info p.title', labelExtractor)
-@Common.MangasMultiPageCSS('/manhua-list-p{page}/', 'ul li div.mh-item-detali h2.title a')
-@Common.ChaptersSinglePageCSS('div#chapterlistload ul li a', chapterExtractor)
+@Common.MangasMultiPageCSS('ul li div.mh-item-detali h2.title a', Common.PatternLinkGenerator('/manhua-list-p{page}/'))
+@Common.ChaptersSinglePageCSS('div#chapterlistload ul li a', undefined, chapterExtractor)
 @DM5.PagesSinglePageScript()
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {

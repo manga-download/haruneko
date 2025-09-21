@@ -14,6 +14,7 @@ export default class extends DecoratableMangaScraper {
     public constructor() {
         super('mangadiyari', 'MangaDiyari', 'https://mangadiyari.com', Tags.Media.Manhua, Tags.Media.Manga, Tags.Media.Manhwa, Tags.Language.Turkish, Tags.Accessibility.RegionLocked);
     }
+
     public override get Icon() {
         return icon;
     }

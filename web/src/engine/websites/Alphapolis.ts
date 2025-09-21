@@ -20,7 +20,7 @@ function ChaptersExtractor(element: HTMLElement) {
 }
 
 @Common.MangaCSS(/^{origin}\/manga\/(official|\d+)\/\d+/, 'div.manga-detail-description > div.title, div.content-main > h1.title')
-@Common.ChaptersSinglePageCSS('div.episode-unit, div.episodes div.episode a', ChaptersExtractor)
+@Common.ChaptersSinglePageCSS('div.episode-unit, div.episodes div.episode a', undefined, ChaptersExtractor)
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
@@ -34,10 +34,10 @@ export default class extends DecoratableMangaScraper {
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
         const results: Manga[] = [];
         for (const character of '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('')) {
-            const mangas = await Common.FetchMangasMultiPageCSS.call(this, provider, `/search?category=official_manga&query=${character}&page={page}`, 'div.mangas-list div.wrap div.title a', 1, 1, 500);
+            const mangas = await Common.FetchMangasMultiPageCSS.call(this, provider, 'div.mangas-list div.wrap div.title a', Common.PatternLinkGenerator(`/search?category=official_manga&query=${character}&page={page}`), 500);
             results.push(...mangas);
         }
-        results.push(...await Common.FetchMangasMultiPageCSS.call(this, provider, '/manga/index?sort=title&limit=1000&page={page}', 'div.content-main div.content-title a', 1, 1, 500));
+        results.push(...await Common.FetchMangasMultiPageCSS.call(this, provider, 'div.content-main div.content-title a', Common.PatternLinkGenerator('/manga/index?sort=title&limit=1000&page={page}'), 500));
         return results.distinct();
     }
 
