@@ -19,7 +19,7 @@ function ChapterExtractor(anchor: HTMLAnchorElement) {
 }
 
 @Common.MangaCSS(/^{origin}\/manga\/[^/]+$/, 'h1.project__content-informations-title')
-@Common.ChaptersSinglePageCSS('div.project__chapters a.project__chapter', ChapterExtractor)
+@Common.ChaptersSinglePageCSS('div.project__chapters a.project__chapter', undefined, ChapterExtractor)
 @Common.PagesSinglePageCSS('img.chapter-image')
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
