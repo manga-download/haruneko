@@ -16,7 +16,7 @@ function MangaInfoExtractor(anchor: HTMLAnchorElement) {
 }
 
 @Common.MangaCSS(/^{origin}\/manga\/[^/]+\/$/, 'span.rate-title', MangaLabelExtractor)
-@Common.MangasMultiPageCSS('/page/{page}/', 'div.post-title h3 a', 1, 1, 0, MangaInfoExtractor)
+@Common.MangasMultiPageCSS('div.post-title h3 a', Common.PatternLinkGenerator('/page/{page}/'), 0, MangaInfoExtractor)
 @Common.ChaptersSinglePageCSS('li.wp-manga-chapter a')
 @Madara.PagesSinglePageCSS()
 @Common.ImageAjax()

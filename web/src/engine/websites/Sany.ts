@@ -8,7 +8,7 @@ function PageExtractor(image: HTMLImageElement): string {
 }
 
 @Common.MangaCSS(/^{origin}\/manga\/[^/]+\/$/, 'h1.entry-title')
-@Common.MangasSinglePagesCSS([ '/manga/' ], 'div.animposx a', Common.AnchorInfoExtractor(true))
+@Common.MangasSinglePageCSS('/manga/', 'div.animposx a', Common.AnchorInfoExtractor(true))
 @Common.ChaptersSinglePageCSS('div#chapter_list span.lchx a')
 @Common.PagesSinglePageCSS('div.reader-area img#imagech[data-lazy-src]', PageExtractor)
 @Common.ImageAjax()

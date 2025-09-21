@@ -11,7 +11,7 @@ function ChapterExtractor(anchor: HTMLAnchorElement) {
 }
 
 @Common.MangaCSS(/^{origin}\/_\/[^/]+$/, 'div.tanitim li.list-group-item blockquote.h3')
-@Common.MangasSinglePagesCSS([ '/webtoon-listesi' ], 'ul.list-inline li a')
+@Common.MangasSinglePageCSS('/webtoon-listesi', 'ul.list-inline li a')
 @Common.ChaptersSinglePageCSS('table.table tbody tr td a', undefined, ChapterExtractor)
 @Common.PagesSinglePageCSS('img.cImg')
 @Common.ImageAjax()

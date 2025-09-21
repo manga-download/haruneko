@@ -16,12 +16,12 @@ function MangaLabelExtractor(element: HTMLTitleElement) {
 }
 
 @Common.MangaCSS(/^{origin}\/manga\/[^/]+$/, 'title', MangaLabelExtractor)
-@Common.MangasMultiPageCSS('/manga?page={page}', 'div.series-paginated a.link-series')
+@Common.MangasMultiPageCSS('div.series-paginated a.link-series', Common.PatternLinkGenerator('/manga?page={page}'))
 @Common.ChaptersSinglePageCSS('div.chapters-list div.col-chapter', undefined, ChapterExtractor)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
-    public constructor () {
+    public constructor() {
         super('manga-italia', 'Manga Italia', 'https://mangaita.io', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Media.Manga, Tags.Language.Italian, Tags.Source.Scanlator);
     }
 

@@ -41,8 +41,7 @@ export default class extends DecoratableMangaScraper {
         const categories = ['completed', 'ongoing', 'paused', 'cancelled'];
         const mangaList: Manga[] = [];
         for (const category of categories) {
-            const path = `/status/${category}/?page={page}`;
-            const mangas = await Common.FetchMangasMultiPageCSS.call(this, provider, path, 'div.media div.media-body a');
+            const mangas = await Common.FetchMangasMultiPageCSS.call(this, provider, 'div.media div.media-body a', Common.PatternLinkGenerator(`/status/${category}/?page={page}`));
             mangaList.push(...mangas);
         }
         return mangaList.distinct();
