@@ -35,7 +35,7 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         // The Ajax call doesnt work with page 1, so we have to fetch page 1 manually
-        const chapterslist = await Common.FetchChaptersSinglePageCSS.call(this, manga, 'ul.comic_list li', ChapterExtractor);
+        const chapterslist = await Common.FetchChaptersSinglePageCSS.call(this, manga, 'ul.comic_list li', undefined, ChapterExtractor);
         for (let page = 2, run = true; run; page++) {
             const chapters = await this.GetChaptersFromPage(page, manga);
             chapters.length > 0 ? chapterslist.push(...chapters) : run = false;

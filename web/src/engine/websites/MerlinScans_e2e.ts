@@ -6,16 +6,16 @@ new TestFixture({
         title: 'Merlin Scans'
     },
     container: {
-        url: 'https://merlinscans.com.de/manga/akademinin-dehasi/',
+        url: 'https://merlintoon.com/manga/akademinin-dehasi/',
         id: '/manga/akademinin-dehasi/',
         title: 'Akademinin Dehası'
     },
     child: {
-        id: '/akademinin-dehasi-42/',
-        title: 'Chapter 65'
+        id: '/manga/akademinin-dehasi/chapter-65/',
+        title: 'Bölüm 65'
     },
     entry: {
-        index: 1,
+        index: 0,
         size: 553_600,
         type: 'image/webp'
     }
