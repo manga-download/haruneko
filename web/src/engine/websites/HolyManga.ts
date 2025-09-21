@@ -7,7 +7,7 @@ import * as Common from './decorators/Common';
 
 @Common.MangaCSS(/^https:\/\/w\d+\.holymanga\.net\/[^/]+\.html$/, FlatManga.queryMangaTitle)
 @Common.MangasMultiPageCSS(FlatManga.pathMangasMultiPage, FlatManga.queryMangas)
-@Common.ChaptersSinglePageCSS(FlatManga.queryChapters, Common.AnchorInfoExtractor(true))
+@Common.ChaptersSinglePageCSS(FlatManga.queryChapters, undefined, Common.AnchorInfoExtractor(true))
 @Common.PagesSinglePageCSS(FlatManga.queryPages, (img: HTMLImageElement) => img.dataset.original ?? img.src)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
