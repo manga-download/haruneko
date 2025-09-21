@@ -18,7 +18,7 @@ function ChapterExtractor(anchor: HTMLAnchorElement) {
 }
 
 @Common.MangaCSS(/^{origin}\/manga\/[^/]+\/$/, 'ul.manga__title li:first-child')
-@Common.MangasSinglePagesCSS(['/manga/'], 'div.manga_item', MangaExtractor)
+@Common.MangasSinglePageCSS('/manga/', 'div.manga_item', MangaExtractor)
 @Common.ChaptersSinglePageCSS('div.read__area div.read__outer a.read__link:not([href*="#"])', undefined, ChapterExtractor)
 @SpeedBinb.PagesSinglePageAjax()
 @SpeedBinb.ImageAjax()

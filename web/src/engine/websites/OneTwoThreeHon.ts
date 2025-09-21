@@ -18,7 +18,7 @@ function ChapterExtractor(element: HTMLLIElement) {
 }
 
 @Common.MangaCSS(/^{origin}\/[^/]+\/web-comic\/[^/]+\/$/, 'div.title-area h2')
-@Common.MangasSinglePagesCSS(['/polca/web-comic/', '/nova/web-comic/'], 'ul.comic__list > li > a', MangaInfoExtractor)
+@Common.MangasMultiPageCSS('ul.comic__list > li > a', Common.StaticLinkGenerator('/polca/web-comic/', '/nova/web-comic/'), 0, MangaInfoExtractor)
 @Common.ChaptersSinglePageCSS('div.read-episode li:has(a)', undefined, ChapterExtractor)
 @SpeedBinb.PagesSinglePageAjax()
 @SpeedBinb.ImageAjax()

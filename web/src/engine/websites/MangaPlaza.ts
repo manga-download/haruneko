@@ -51,7 +51,7 @@ export default class extends DecoratableMangaScraper {
         genres = Array.from(new Set(genres));
         const mangaList: Manga[] = [];
         for (const genre of genres) {
-            mangaList.push(... await Common.FetchMangasMultiPageCSS.call(this, provider, `/genre/${genre}/?page={page}`, 'ul.listBox li div.titleName a', 1, 1, 0, MangaInfoExtractor));
+            mangaList.push(... await Common.FetchMangasMultiPageCSS.call(this, provider, 'ul.listBox li div.titleName a', Common.PatternLinkGenerator(`/genre/${genre}/?page={page}`), 0, MangaInfoExtractor));
         }
         return mangaList.distinct();
     }

@@ -8,8 +8,7 @@ import type { Priority } from '../taskpool/DeferredTask';
 import { SpeedBindVersion } from './decorators/SpeedBinb';
 
 @Common.MangaCSS(/^https:\/\/gaugau\.futabane(t|x)\.jp\/list\/work\/[^/]+$/, 'ol.breadcrumb li:last-of-type')
-@Common.MangasMultiPageCSS('/list/works?page={page}', 'div.works__grid div.list__box h4 a')
-
+@Common.MangasMultiPageCSS('div.works__grid div.list__box h4 a', Common.PatternLinkGenerator('/list/works?page={page}'),)
 export default class extends DecoratableMangaScraper {
 
     public constructor() {

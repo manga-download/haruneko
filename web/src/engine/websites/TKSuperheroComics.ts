@@ -13,7 +13,7 @@ function MangaExtractor(anchor: HTMLAnchorElement) {
 }
 
 @Common.MangaCSS(/{origin}\/rensai\/[^/]+\/$/, 'div.manga-overview-top-wrapper h2.manga-heading')
-@Common.MangasSinglePagesCSS(['/rensai'], 'li.rensai-episode-list a', MangaExtractor)
+@Common.MangasSinglePageCSS('/rensai', 'li.rensai-episode-list a', MangaExtractor)
 @SpeedBinb.PagesSinglePageAjax()
 @SpeedBinb.ImageAjax()
 export default class extends DecoratableMangaScraper {

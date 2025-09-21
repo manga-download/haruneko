@@ -7,8 +7,8 @@ import { FetchCSS } from '../platform/FetchProvider';
 
 function MangaExtractor(element: HTMLElement) {
     return {
-        id: new URL(element.querySelector<HTMLAnchorElement>('a').href).pathname.replace('/new.html', '/'),
-        title: element.querySelector('.title').textContent.replace(/\s*THE COMIC\s*/i, '').trim()
+        id: CleanPath(element.querySelector<HTMLAnchorElement>('a').pathname),
+        title: CleanTitle(element.querySelector('.title').textContent)
     };
 }
 function ChapterExtractor(element: HTMLElement) {
@@ -18,7 +18,15 @@ function ChapterExtractor(element: HTMLElement) {
     };
 }
 
-@Common.MangasSinglePagesCSS(['/list'], '.box_wrap .box', MangaExtractor)
+function CleanTitle(title: string): string {
+    return title.replace(/\s*THE COMIC\s*/i, '').trim();
+}
+
+function CleanPath(path: string): string {
+    return path.replace('/new.html', '/');
+}
+
+@Common.MangasSinglePageCSS('/list', '.box_wrap .box', MangaExtractor)
 @Common.ChaptersSinglePageCSS('#new_story .title, #back_number .title', undefined, ChapterExtractor)
 @SpeedBinb.PagesSinglePageAjax()
 @SpeedBinb.ImageAjax()
@@ -36,6 +44,6 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
         const [element] = await FetchCSS<HTMLMetaElement>(new Request(url), 'meta[property = "og:title"]');
-        return new Manga(this, provider, new URL(url).pathname.replace('/new.html', '/'), element.content.replace(/\s*THE COMIC\s*/i, '').trim());
+        return new Manga(this, provider, CleanPath(new URL(url).pathname), CleanTitle(element.content));
     }
 }

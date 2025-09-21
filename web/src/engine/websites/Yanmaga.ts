@@ -32,7 +32,7 @@ const chapterScript = `
 `;
 
 @Common.MangaCSS(/^{origin}\/comics\/[^/]+$/, 'h1.detail-header-title, h1.detailv2-outline-title')
-@Common.MangasSinglePagesCSS(['/comics'], 'a.ga-comics-book-item', MangaExtractor)
+@Common.MangasSinglePageCSS('/comics', 'a.ga-comics-book-item', MangaExtractor)
 @Common.ChaptersSinglePageJS(chapterScript, 200)
 @SpeedBinb.PagesSinglePageAjax(SpeedBindVersion.v016130, true)
 @SpeedBinb.ImageAjax()

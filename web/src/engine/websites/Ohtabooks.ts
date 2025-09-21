@@ -14,7 +14,7 @@ function MangaExtractor(anchor: HTMLAnchorElement) {
 }
 
 @Common.MangaCSS(/^{origin}\/[^/]+\/$/, 'h2.contentTitle')
-@Common.MangasSinglePagesCSS(['/list/'], 'div.bnrList ul li a', MangaExtractor)
+@Common.MangasSinglePageCSS('/list/', 'div.bnrList ul li a', MangaExtractor)
 @SpeedBinb.ImageAjax()
 export default class extends DecoratableMangaScraper {
 

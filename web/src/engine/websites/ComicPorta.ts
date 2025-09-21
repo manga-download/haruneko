@@ -12,7 +12,7 @@ function ChapterExtractor(element: HTMLElement) {
 }
 
 @Common.MangaCSS(/^{origin}\/series\/\d+\/$/, 'div#breadcrumb li:last-of-type')
-@Common.MangasSinglePagesCSS(['/series/'], 'div.series-list ul li h3.title a')
+@Common.MangasSinglePageCSS('/series/', 'div.series-list ul li h3.title a')
 @Common.ChaptersSinglePageCSS('ul.episode-list li.episode div.inner div.wrap p.episode-btn', undefined, ChapterExtractor)
 @SpeedBinb.PagesSinglePageAjax()
 @SpeedBinb.ImageAjax()

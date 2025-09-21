@@ -27,7 +27,7 @@ export default class extends DecoratableMangaScraper {
         const paths = ['magazine', 'magazine_pop', 'manga', 'manga_pop'];
         const mangaList: Manga[] = [];
         for (const path of paths) {
-            const mangas = await Common.FetchMangasMultiPageCSS.call(this, provider, `/search/${path}?page={page}`, '.p-bookdetail-contents__title a');
+            const mangas = await Common.FetchMangasMultiPageCSS.call(this, provider, '.p-bookdetail-contents__title a', Common.PatternLinkGenerator(`/search/${path}?page={page}`));
             mangaList.push(...mangas);
         }
         return mangaList.distinct();

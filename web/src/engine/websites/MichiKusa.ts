@@ -18,7 +18,7 @@ function ChapterExtractor(anchor: HTMLAnchorElement) {
 }
 
 @Common.MangaCSS(/^{origin}\/product\/[^/]+$/, 'header.entry-header h1.page-title')
-@Common.MangasMultiPageCSS('/product/page/{page}', 'div.entry-content', 1, 1, 0, MangaInfoExtractor)
+@Common.MangasMultiPageCSS('div.entry-content', Common.PatternLinkGenerator('/product/page/{page}'), 0, MangaInfoExtractor)
 @Common.ChaptersSinglePageCSS('div.released_episodes div.items div.item a', undefined, ChapterExtractor)
 @SpeedBinb.PagesSinglePageAjax()
 @SpeedBinb.ImageAjax()

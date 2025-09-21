@@ -8,13 +8,13 @@ import { SpeedBindVersion } from './decorators/SpeedBinb';
 
 function MangaExtractor(element: HTMLElement) {
     return {
-        id: element.querySelector('a').pathname,
-        title: element.querySelector('h3').innerText.trim()
+        id: element.querySelector<HTMLAnchorElement>('a').pathname,
+        title: element.querySelector<HTMLHeadingElement>('h3').innerText.trim()
     };
 }
 
 @Common.MangaCSS(/^{origin}\/comic\/[^/]+$/, '.card-body.book-detail h3')
-@Common.MangasMultiPageCSS('/browse/title?ttlpage={page}', 'div#Title .row.book-list', 1, 1, 0, MangaExtractor)
+@Common.MangasMultiPageCSS('div#Title .row.book-list', Common.PatternLinkGenerator('/browse/title?ttlpage={page}'), 0, MangaExtractor)
 @SpeedBinb.PagesSinglePageAjax(SpeedBindVersion.v016130, true)
 @SpeedBinb.ImageAjax()
 
@@ -32,7 +32,7 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const data = await FetchCSS(new Request(new URL(manga.Identifier, this.URI)), '#accordion div[id*="vol_"]');
-        const chapters : Chapter[] = [];
+        const chapters: Chapter[] = [];
         for (const volume of data) {
             const title = volume.querySelector('h3').textContent.trim() + " - ";
 

@@ -19,7 +19,7 @@ function ChapterExtractor(anchor: HTMLAnchorElement) {
 }
 
 @Common.MangaCSS(/^{origin}\/work_list\/detail\/[^/]+\/$/, 'meta[property="og:title"]')
-@Common.MangasSinglePagesCSS(['/comics/'], 'article a[data-props-mode="comic-detail"]:first-of-type', MangaExtractor)
+@Common.MangasSinglePageCSS('/comics/', 'article a[data-props-mode="comic-detail"]:first-of-type', MangaExtractor)
 @Common.ChaptersSinglePageCSS('section a.unit-button', undefined, ChapterExtractor)
 @SpeedBinb.PagesSinglePageAjax(SpeedBindVersion.v016130)
 @SpeedBinb.ImageAjax()
