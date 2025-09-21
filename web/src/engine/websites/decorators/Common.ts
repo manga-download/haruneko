@@ -223,12 +223,15 @@ export function MangasNotSupported() {
  * An extension method for extracting multiple mangas from the given relative {@link endpoint} using the given CSS {@link query}.
  * @param this - A reference to the {@link MangaScraper} instance which will be used as context for this method
  * @param provider - A reference to the {@link MangaPlugin} which shall be assigned as parent for the extracted mangas
- * @param endpoint - The endpoint relative to {@link this} scraper's base url from which the mangas shall be extracted
+ * @param resource -
+ * - A relative path for the website's base URL or an absolute URL from which the mangas shall be extracted
+ * - A function to create the URL based on the provided media container (plugin) from which the mangas shall be extracted
  * @param query - A CSS query to locate the elements from which the manga identifier and title shall be extracted
  * @param extract - A function to extract the manga identifier and title from a single element (found with {@link query})
  */
-export async function FetchMangasSinglePageCSS<E extends HTMLElement>(this: MangaScraper, provider: MangaPlugin, endpoint: string, query: string, extract = DefaultInfoExtractor as InfoExtractor<E>) {
-    const request = new Request(new URL(endpoint, this.URI), {
+export async function FetchMangasSinglePageCSS<E extends HTMLElement>(this: MangaScraper, provider: MangaPlugin, resource: string | LinkResolver<MangaPlugin>, query: string, extract = DefaultInfoExtractor as InfoExtractor<E>) {
+    const uri = typeof resource === 'string' ? new URL(resource, this.URI) : resource.call(this, provider);
+    const request = new Request(uri, {
         headers: {
             Referer: this.URI.href
         }
@@ -242,16 +245,18 @@ export async function FetchMangasSinglePageCSS<E extends HTMLElement>(this: Mang
 
 /**
  * A class decorator that adds the ability to extract multiple mangas from the given relative {@link endpoints} using the given CSS {@link query}.
- * @param endpoint - The endpoint relative to the scraper's base url from which the mangas shall be extracted
+ * @param resource -
+ * - A relative path for the website's base URL or an absolute URL from which the mangas shall be extracted
+ * - A function to create the URL based on the provided media container (plugin) from which the mangas shall be extracted
  * @param query - A CSS query to locate the elements from which the manga identifier and title shall be extracted
  * @param extract - A function to extract the manga identifier and title from a single element (found with {@link query})
  */
-export function MangasSinglePageCSS<E extends HTMLElement>(endpoint: string, query: string, extract = DefaultInfoExtractor as InfoExtractor<E>) {
+export function MangasSinglePageCSS<E extends HTMLElement>(query: string, resource: string | LinkResolver<MangaPlugin>, extract = DefaultInfoExtractor as InfoExtractor<E>) {
     return function DecorateClass<T extends Constructor>(ctor: T, context?: ClassDecoratorContext): T {
         ThrowOnUnsupportedDecoratorContext(context);
         return class extends ctor {
             public async FetchMangas(this: MangaScraper, provider: MangaPlugin): Promise<Manga[]> {
-                return FetchMangasSinglePageCSS.call(this, provider, endpoint, query, extract as InfoExtractor<HTMLElement>);
+                return FetchMangasSinglePageCSS.call(this, provider, resource, query, extract as InfoExtractor<HTMLElement>);
             }
         };
     };
@@ -274,7 +279,7 @@ export async function FetchMangasMultiPageCSS<E extends HTMLElement>(this: Manga
     for (let uri of generate.call(this, provider)) {
         await reducer;
         reducer = throttle > 0 ? Delay(throttle) : Promise.resolve();
-        const mangas = await FetchMangasSinglePageCSS.call(this, provider, uri.href, query, extract as InfoExtractor<HTMLElement>);
+        const mangas = await FetchMangasSinglePageCSS.call(this, provider, () => uri, query, extract as InfoExtractor<HTMLElement>);
         if (generate.isExhaustive || mangaList.isMissingLastItemFrom(mangas)) {
             mangaList.push(...mangas); // TODO: Broadcast event that mangalist for provider has been updated?
         } else {
@@ -320,7 +325,7 @@ export function MangasMultiPageCSS<E extends HTMLElement>(query: string, generat
  */
 export async function FetchChaptersSinglePageCSS<E extends HTMLElement>(this: MangaScraper, manga: Manga, query: string, resource: string | LinkResolver<Manga> = MediaLinkResolver, extract = DefaultInfoExtractor as InfoExtractor<E>): Promise<Chapter[]> {
     const uri = typeof resource === 'string' ? new URL(resource, this.URI) : resource.call(this, manga);
-    const request = new Request(uri.href, {
+    const request = new Request(uri, {
         headers: {
             Referer: this.URI.href
         }
