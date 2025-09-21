@@ -27,7 +27,7 @@ function PageLinkExtractor( element: HTMLElement) {
 }
 
 @Common.MangaCSS(/^{origin}\/manga\/[^/]+\.html/, 'div.manga div.ttline h1', MangaLabelExtractor)
-@Common.MangasMultiPageCSS(mangaPath, 'dl.bookinfo a.bookname')
+@Common.MangasMultiPageCSS('dl.bookinfo a.bookname', Common.PatternLinkGenerator(mangaPath))
 export class TAADBase extends DecoratableMangaScraper {
 
     protected nsfwUrlParameter: string = 'waring';// typo of 'warning' for NineManga websites

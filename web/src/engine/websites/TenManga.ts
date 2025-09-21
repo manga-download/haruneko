@@ -4,7 +4,7 @@ import * as Common from './decorators/Common';
 import { MangaLabelExtractor, TAADBase, mangaPath } from './templates/TAADDBase';
 
 @Common.MangaCSS(/^{origin}\/book\/[^/]+\.html$/, 'meta[property="og:title"]', MangaLabelExtractor)
-@Common.MangasMultiPageCSS(mangaPath, 'section.book-list div.book-item a:first-of-type', 1, 1, 0, Common.AnchorInfoExtractor(true))
+@Common.MangasMultiPageCSS('section.book-list div.book-item a:first-of-type', Common.PatternLinkGenerator(mangaPath), 0, Common.AnchorInfoExtractor(true))
 
 export default class extends TAADBase {
     public constructor() {
