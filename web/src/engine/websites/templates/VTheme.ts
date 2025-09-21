@@ -31,7 +31,7 @@ type APIChapters = {
 };
 
 @Common.PagesSinglePageJS(`
-    new Promise(async resolve => {
+    new Promise(resolve => {
         const images = [ ...document.querySelectorAll('.image-container img[data-image-index]') ];
         setInterval(() => {
             images.forEach(img => img.scrollIntoView());
