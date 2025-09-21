@@ -30,7 +30,7 @@ function ChapterInfoExtractor(div: HTMLDivElement) {
 }
 
 @Common.MangaCSS(/^{origin}\/books\/\d+$/, 'div.p-bookInfo_title h1')
-@Common.MangasMultiPageCSS('/free/list?page={page}', 'div.p-book_detail dt.p-book_title a')
+@Common.MangasMultiPageCSS('div.p-book_detail dt.p-book_title a', Common.PatternLinkGenerator('/free/list?page={page}'))
 @Common.ChaptersMultiPageCSS('li.p-chapterList_item div.p-chapterInfo-comic', 1, 1, 0,
     Common.PatternLinkResolver('{id}?page={page}'),
     ChapterInfoExtractor)
@@ -77,7 +77,7 @@ export default class extends DecoratableMangaScraper {
     private async DecryptImage(encrypted: ArrayBuffer, keyData: string): Promise<Blob> {
         const data = new Uint8Array(encrypted);
         const algorithm = { name: 'AES-CBC', iv: data.slice(0, 16) };
-        const key = await crypto.subtle.importKey('raw', GetBytesFromHex(keyData), algorithm, false, [ 'decrypt' ]);
+        const key = await crypto.subtle.importKey('raw', GetBytesFromHex(keyData), algorithm, false, ['decrypt']);
         const decrypted = await crypto.subtle.decrypt(algorithm, key, data.slice(16));
         return Common.GetTypedData(decrypted);
     }

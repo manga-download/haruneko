@@ -31,7 +31,7 @@ function MangaExtractor(anchor: HTMLAnchorElement) {
     };
 }
 
-@Common.MangasSinglePagesCSS(['/mangas'], 'ul li a[href*="/mangas/"]', MangaExtractor)
+@Common.MangasSinglePageCSS('/mangas', 'ul li a[href*="/mangas/"]', MangaExtractor)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 

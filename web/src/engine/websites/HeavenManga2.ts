@@ -21,7 +21,7 @@ type APIChapter = {
 const scriptPages = `window.pUrl.map(page => page.imgURL);`;
 
 @Common.MangaCSS(/^{origin}\/manga\/[^/]+$/, 'div.site-content div.post-title h3')
-@Common.MangasMultiPageCSS('/top?page={page}', 'div.page-item-detail div.photo a.thumbnail', 1, 1, 0, MangaInfoExtractor)
+@Common.MangasMultiPageCSS('div.page-item-detail div.photo a.thumbnail', Common.PatternLinkGenerator('/top?page={page}'), 0, MangaInfoExtractor)
 @Common.PagesSinglePageJS(scriptPages, 500)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {

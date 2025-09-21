@@ -29,7 +29,7 @@ function ChapterScript(bookVariable: string, chapterEndpoint: string): string {
 }
 
 @Common.MangaCSS(/^{origin}(\/manga)?\/[^/]+$/, 'div.name.box h1')
-@Common.MangasMultiPageCSS('/az-list?page={page}', 'div.manga-list div.title h3 a')
+@Common.MangasMultiPageCSS('div.manga-list div.title h3 a', Common.PatternLinkGenerator('/az-list?page={page}'))
 @Common.PagesSinglePageJS(pageScript, 500)
 @Common.ImageAjax()
 export class MadTheme extends DecoratableMangaScraper {

@@ -74,9 +74,9 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
         return [
-            ...await Common.FetchMangasSinglePagesCSS.call(this, provider, ['/account/library', '/account/library/sj'], 'table.purchase-table a', MangasExtractor),
-            ...await Common.FetchMangasSinglePagesCSS.call(this, provider, ['/read/shonenjump/section/free-chapters'], 'div#chpt_grid div.o_sortable a.o_chapters-link', MangasExtractor),
-            ...await Common.FetchMangasSinglePagesCSS.call(this, provider, ['/read/vizmanga/section/free-chapters'], 'div.o_sort_container div.o_sortable a.o_chapters-link', MangasExtractor)
+            ...await Common.FetchMangasSinglePageCSS.call(this, provider, '/read/shonenjump/section/free-chapters', 'div#chpt_grid div.o_sortable a.o_chapters-link', MangasExtractor),
+            ...await Common.FetchMangasSinglePageCSS.call(this, provider, '/read/vizmanga/section/free-chapters', 'div.o_sort_container div.o_sortable a.o_chapters-link', MangasExtractor),
+            ...await Common.FetchMangasMultiPageCSS.call(this, provider, 'table.purchase-table a', Common.StaticLinkGenerator('/account/library', '/account/library/sj'), 0, MangasExtractor),
         ].distinct();
     }
 

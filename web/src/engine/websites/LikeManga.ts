@@ -22,7 +22,7 @@ const pagescript = `
 `;
 
 @Common.MangaCSS(/^{origin}\/.*-\d+\/$/, 'h1#title-detail-manga')
-@Common.MangasMultiPageCSS('?act=home&pageNum={page}', 'div.card-body p.card-text a')
+@Common.MangasMultiPageCSS('div.card-body p.card-text a', Common.PatternLinkGenerator('?act=home&pageNum={page}'))
 @Common.PagesSinglePageJS(pagescript, 500)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
