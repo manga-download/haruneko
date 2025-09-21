@@ -21,7 +21,7 @@ type APIResult = {
 }
 
 @Common.MangaCSS(/^{origin}\/manga-lazy\/[^/]+\/$/, 'title', MangaLabelExtractor)
-@Common.ChaptersSinglePageCSS('div.chapters-list a', ChapterExtractor)
+@Common.ChaptersSinglePageCSS('div.chapters-list a', undefined, ChapterExtractor)
 @Common.PagesSinglePageCSS('.chapter_popup img')
 @Common.ImageAjax(true)
 export default class extends DecoratableMangaScraper {
