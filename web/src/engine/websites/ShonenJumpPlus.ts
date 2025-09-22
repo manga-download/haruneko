@@ -19,10 +19,10 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        if (/^\/magazine\/\d+$/.test(manga.Identifier)) {
-            return CoreView.FetchChaptersMultiPageAJAXV1.call(this, manga);
+        if (/^\/magazine\/\d+$/.test(manga.Identifier)) { //avoid a server error specific to this website.
+            return CoreView.FetchChaptersMultiPageAJAXV2.call(this, manga, ['magazine'] );
         } else {
-            return CoreView.FetchChaptersMultiPageAJAXV2.call(this, manga);
+            return CoreView.FetchChaptersMultiPageAJAXV2.call(this, manga, ['episode', 'volume']);
         }
     }
 }
