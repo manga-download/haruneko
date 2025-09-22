@@ -2,45 +2,59 @@
 import icon from './Ganma.webp';
 import { Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { FetchJSON } from '../platform/FetchProvider';
+import { Fetch, FetchCSS, FetchGraphQL } from '../platform/FetchProvider';
+import { Exception } from '../Error';
+import { WebsiteResourceKey as R } from '../../i18n/ILocale';
 
-type APIRequest<T> = {
-    success: boolean;
-    root: T
+type APIFinishedMagazines = {
+    magazinesByCategory: {
+        magazines: {
+            edges: {
+                node: APIMagazineDetails
+            }[];
+            pageInfo: PageInfo
+        }
+    }
+};
+
+type APIMagazine = {
+    magazine: APIMagazineDetails;
+};
+
+type PageInfo = {
+    endCursor: string;
+    hasNextPage: boolean;
 }
 
-type APIManga = {
-    id: string,
-    title: string,
-    class : string
-}
+type APIMagazineDetails = {
+    magazineId: string;
+    title: string;
+    storyInfos: {
+        edges: {
+            node: APIChapter
+        }[]
+        pageInfo: PageInfo
+    },
+    storyContents: {
+        error: string;
+        pageImages?: {
+            pageCount: number;
+            pageImageBaseURL: string;
+            pageImageSign: string;
+        }
+    }
+};
 
-type APIBox = {
-    boxes: {
-        class: string,
-        id: string,
-        panels: APIManga[]
-    }[]
-}
-
-type APIChapters = {
-    items: {
-        id: string,
-        title: string,
-        number: number,
-        subtitle: string
-        page: APIPages
-    }[]
-}
-
-type APIPages = {
-    baseUrl: string,
-    token : string,
-    files: string[]
-}
+type APIChapter = {
+    storyId: string;
+    title: string;
+    subtitle: string;
+};
 
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
+    private queryHashesMap = new Map<string, string>();
+    private apiUrl = 'https://ganma.jp/api/graphql';
 
     public constructor() {
         super('ganma', `GANMA!`, 'https://ganma.jp', Tags.Language.Japanese, Tags.Media.Manga, Tags.Source.Official);
@@ -50,72 +64,79 @@ export default class extends DecoratableMangaScraper {
         return icon;
     }
 
+    public override async Initialize(): Promise<void> {
+        //Website forces persistedQueries so we gather queries hashes from scripts
+        const scriptUrl = (await FetchCSS<HTMLScriptElement>(new Request(this.URI), 'script[src*="/app/layout-"]')).at(0).getAttribute('src');
+        const scriptData = await (await Fetch(new Request(new URL(scriptUrl, this.URI)))).text();
+        for (const match of scriptData.matchAll(/id:"([a-f0-9]{64})",body:".*?",name:"(\w+)"/g)) {
+            this.queryHashesMap.set(match[2], match[1]);// queryName, queryHash
+        }
+    }
+
     public override ValidateMangaURL(url: string): boolean {
-        return new RegExpSafe(`^${this.URI.origin}/[^/]+$`).test(url);
+        return new RegExpSafe(`^${this.URI.origin}/web/magazine/[^/]+$`).test(url);
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
-        const request = new Request(new URL('/api/1.0/magazines/web/' + new URL(url).pathname.split('/').at(-1), this.URI), {
-            headers: {
-                'X-From': this.URI.href
-            }
-        });
-        const { root: { id, title } } = await FetchJSON<APIRequest<APIManga>>(request);
-        return new Manga(this, provider, id, title.trim());
+        const { magazine: { magazineId, title } } = await this.FetchAPI<APIMagazine>('magazineDetail', { magazineIdOrAlias: url.split('/').at(-1) });
+        return new Manga(this, provider, magazineId, title);
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        return [
-            ...await this.GetMangasTop(provider),
-            ...await this.GetMangasCompleted(provider)
-        ];
-    }
-
-    private async GetMangasCompleted(provider: MangaPlugin): Promise<Manga[]> {
-        const request = new Request(new URL('/api/1.1/ranking?flag=Finish', this.URI), {
-            headers: {
-                'X-From': this.URI.href
-            }
-        });
-        const { root } = await FetchJSON<APIRequest<APIManga[]>>(request);
-        return root.map(manga => new Manga(this, provider, manga.id, manga.title.trim()));
-    }
-
-    private async GetMangasTop(provider: MangaPlugin): Promise<Manga[]> {
-        const request = new Request(new URL('/api/2.2/top', this.URI), {
-            headers: {
-                'X-From': this.URI.href
-            }
-        });
-        const { root: { boxes } } = await FetchJSON<APIRequest<APIBox>>(request);
-        return boxes.reduce((accumulator, box) => {
-            const mangas = box.panels.filter(panel => panel.class === 'CustomTopMagazinePanel')
-                .map(panel => new Manga(this, provider, panel.id, panel.title.trim()));
-            return accumulator.concat(mangas);
-        }, []);
+        const mangasList: Manga[] = [];
+        for (let run = true, after = undefined; run;) {
+            const { magazinesByCategory: { magazines: { edges, pageInfo: { endCursor, hasNextPage } } } } = await this.FetchAPI<APIFinishedMagazines>('finishedMagazines', { after });
+            const mangas = edges.map(({ node: { magazineId, title } }) => new Manga(this, provider, magazineId, title));
+            mangasList.push(...mangas);
+            after = endCursor;
+            run = hasNextPage;
+        }
+        return mangasList;
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const request = new Request(new URL(`/api/1.0/magazines/web/${manga.Identifier}`, this.URI), {
-            headers: {
-                'X-From': this.URI.href
-            }
-        });
-        const { root: { items } } = await FetchJSON<APIRequest<APIChapters>>(request);
-        return items.map((chapter, index) => {
-            const title = ((chapter.number || index + 1) + ': 【' + chapter.title + '】 ' + (chapter.subtitle || '')).trim();
-            return new Chapter(this, manga, chapter.id, title);
-        });
+        const chaptersList: Chapter[] = [];
+        for (let run = true, after = undefined; run;) {
+            const variables = {
+                magazineIdOrAlias: manga.Identifier,
+                first: 100,
+                after
+            };
+            const { magazine: { storyInfos: { edges, pageInfo: { endCursor, hasNextPage } } } } = await this.FetchAPI<APIMagazine>('storyInfoList', variables);
+            const chapters = edges.map(({ node: { storyId, title, subtitle } }) => new Chapter(this, manga, storyId, [title, subtitle].join(' ').trim()));
+            chaptersList.push(...chapters);
+            after = endCursor;
+            run = hasNextPage;
+        }
+        return chaptersList;
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const request = new Request(new URL(`/api/1.0/magazines/web/${chapter.Parent.Identifier}`, this.URI), {
+        const variables = {
+            magazineIdOrAlias: chapter.Parent.Identifier,
+            storyId: chapter.Identifier,
+        };
+        const { magazine: { storyContents } } = await this.FetchAPI<APIMagazine>('magazineStoryForReader', variables);
+        if (storyContents.error || !storyContents.pageImages) {
+            throw new Exception(R.Plugin_Common_Chapter_UnavailableError);
+        }
+        const { pageCount, pageImageBaseURL, pageImageSign } = storyContents.pageImages;
+        return new Array(pageCount).fill(0).map((_, index) => index + 1).map(page => new Page(this, chapter, new URL(`${pageImageBaseURL}${page}.jpg?${pageImageSign}`)));
+    }
+
+    private async FetchAPI<T extends JSONElement>(operation: string, variables: JSONObject): Promise<T> {
+        return FetchGraphQL<T>(new Request(new URL(this.apiUrl), {
             headers: {
-                'X-From': this.URI.href
+                'User-Agent': 'GanmaReader / 9.9.1 Android',
+                'X-From': this.URI.href + 'web',
+                'Content-Type': 'application/json;charset=UTF-8',
+                Accept: 'application/json, text/plain, */*'
+            }
+        }), operation, undefined, variables, {
+            persistedQuery: {
+                sha256Hash: this.queryHashesMap.get(operation),
+                version: 1,
             }
         });
-        const { root: { items } } = await FetchJSON<APIRequest<APIChapters>>(request);
-        const pages = items.find(item => item.id === chapter.Identifier).page;
-        return pages.files.map(image => new Page(this, chapter, new URL(`${image}?${pages.token}`, pages.baseUrl)));
     }
 }
