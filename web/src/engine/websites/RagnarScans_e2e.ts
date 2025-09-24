@@ -7,7 +7,7 @@ new TestFixture({
     },
     container: {
         url: 'https://ragnarscans.com/manga/deli-iblisin-donusu/',
-        id: JSON.stringify({ post: '15261', slug: '/manga/deli-iblisin-donusu/'}),
+        id: '/manga/deli-iblisin-donusu/',
         title: 'Deli İblisin Dönüşü',
     },
     child: {
