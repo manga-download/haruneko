@@ -48,7 +48,7 @@ type ChapterID = {
     id: string;
 };
 
-@Common.MangaCSS(/^{origin}\/comic\/[^/]+$/, 'title', (element: HTMLTitleElement) => element.textContent.split('｜').at(0).trim())
+@Common.MangaCSS(/^{origin}\/comic\/[^/]+$/, 'title', (element: HTMLTitleElement, uri) => ({ id: uri.pathname, title: element.textContent.split('｜').at(0).trim() }))
 export default class extends DecoratableMangaScraper {
     private readonly apiUrl = 'https://lezhin.jp/api/';
     private readonly xorKey = '57e87c8a4d50b7c3456dbab4ab144b200826e62459039c9915d1e5f5e0bf3a51';
