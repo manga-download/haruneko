@@ -19,7 +19,7 @@ function ChapterExtractor(element: HTMLLIElement) {
     };
 }
 
-@Common.MangaCSS(/^{origin}\/comic-[\d]+\.html$/, 'div.cartoon li.title', Common.ElementLabelExtractor('span'))
+@Common.MangaCSS(/^{origin}\/comic-[\d]+\.html$/, 'div.cartoon li.title', Common.WebsiteInfoExtractor({ queryBloat: 'span' }))
 @Common.MangasMultiPageCSS('div.classification li.title a', Common.PatternLinkGenerator('/comic/category_{page}.html'))
 @Common.PagesSinglePageCSS('img.man_img')
 @Common.ImageAjax()

@@ -6,7 +6,7 @@ import * as Common from './decorators/Common';
 const script = `[...document.querySelectorAll('div.comicMain ul.readUl li img')].map(image => image.dataset['src'] || image.dataset['data-src'] || image.src);
 `;
 
-@Common.MangaCSS(/^{origin}\/comic\/\d+\.html$/, 'div.inner h1.title', Common.ElementLabelExtractor('span'))
+@Common.MangaCSS(/^{origin}\/comic\/\d+\.html$/, 'div.inner h1.title', Common.WebsiteInfoExtractor({ queryBloat: 'span' }))
 @Common.MangasMultiPageCSS('div.classificationList ul li div.clItemRight h4.title a', Common.PatternLinkGenerator('/comic/list_p{page}/'))
 @Common.ChaptersSinglePageCSS('div.comic div#negCtSectionListBd div.titleList a.item', undefined, Common.AnchorInfoExtractor(true))
 @Common.PagesSinglePageJS(script, 2500)

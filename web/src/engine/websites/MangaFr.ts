@@ -4,11 +4,8 @@ import { type Chapter, DecoratableMangaScraper, Page, type MangaScraper } from '
 import { Fetch } from '../platform/FetchProvider';
 import * as Common from './decorators/Common';
 
-function ChapterExtractor(this: MangaScraper, anchor: HTMLAnchorElement) {
-    return {
-        id: anchor.pathname,
-        title: Common.ElementLabelExtractor('span, div').call(this, anchor.querySelector<HTMLHeadingElement>('h5'))
-    };
+function ChapterExtractor(this: MangaScraper, anchor: HTMLAnchorElement, uri: URL) {
+    return Common.AnchorInfoExtractor(false, 'span, div').call(this, anchor.querySelector<HTMLHeadingElement>('h5'), uri);
 }
 
 @Common.MangaCSS(/^https:\/\/(www\.)?mangafr\.org\/series\/[^/]+$/, 'div.card div.row h1')
