@@ -1,8 +1,8 @@
+import { FetchCSS } from '../platform/FetchProvider';
+import { DecoratableMangaScraper, Manga, type MangaPlugin } from '../providers/MangaPlugin';
 import { Tags } from '../Tags';
 import icon from './ComicRyu.webp';
-import { DecoratableMangaScraper, type MangaPlugin, Manga } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { FetchCSS } from '../platform/FetchProvider';
 
 function MangaInfoExtractor(anchor: HTMLAnchorElement) {
     return {
@@ -17,6 +17,7 @@ function ChapterInfoExtractor(anchor: HTMLAnchorElement) {
     };
 }
 
+@Common.MangaCSS<HTMLHeadingElement>(/^https:\/\/(www|unicorn)\.comic-ryu\.jp\/series\/[^/]+\/$/, 'article.sakuhin-article h1.sakuhin-article-title', (heading, uri) => ({ id: uri.href, title: heading.innerText.trim() }))
 @Common.MangasMultiPageCSS('ul.m-series-list li a.m-list-sakuhin-list-item-link', Common.StaticLinkGenerator('/シリーズ一覧-連載中', '/完結作品', 'https://unicorn.comic-ryu.jp/シリーズ一覧-連載中/'), 0, MangaInfoExtractor)
 @Common.ChaptersSinglePageCSS('a.sakuhin-episode-link', undefined, ChapterInfoExtractor)
 @Common.PagesSinglePageCSS('figure.wp-block-image img')
@@ -29,14 +30,5 @@ export default class extends DecoratableMangaScraper {
 
     public override get Icon() {
         return icon;
-    }
-
-    public override ValidateMangaURL(url: string): boolean {
-        return /^https:\/\/(www|unicorn)\.comic-ryu\.jp\/series\/[^/]+\/$/.test(url);
-    }
-
-    public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
-        const title = (await FetchCSS<HTMLHeadingElement>(new Request(new URL(url)), 'article.sakuhin-article h1.sakuhin-article-title')).shift().textContent.trim();
-        return new Manga(this, provider, url, title);
     }
 }
