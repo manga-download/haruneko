@@ -25,15 +25,17 @@ const scriptPageListLinks = `ts_reader_control.getImages();`;
  ******** Manga from URL Extraction Methods ********
  ***************************************************/
 
-export function MangaLabelExtractor(this: MangaScraper, element: HTMLElement) {
-    return [
+export function DefaultLinkInfoExtractor(this: MangaScraper, element: HTMLElement, uri: URL) {
+    const result = Common.DefaultLinkInfoExtractor.call(this, element, uri);
+    [
         /^Comic\s+/i,
         /^Komik\s+/i,
         /^Manga\s+/i,
         /^Manhwa\s+/i,
         /^Manhua\s+/i,
         /\s+Bahasa\s+Indonesia$/i,
-    ].reduce((aggregator, pattern) => aggregator.replace(pattern, ''), (element instanceof HTMLMetaElement ? element.content : element.textContent).trim());
+    ].forEach(pattern => result.title = result.title.replace(pattern, ''));
+    return result;
 }
 
 /**
@@ -46,7 +48,7 @@ export function MangaLabelExtractor(this: MangaScraper, element: HTMLElement) {
  * @param query - A CSS query to locate the element from which the manga title shall be extracted
  */
 export async function FetchMangaCSS(this: MangaScraper, provider: MangaPlugin, url: string, query: string = queryMangaTitle): Promise<Manga> {
-    return Common.FetchMangaCSS.call(this, provider, url, query, MangaLabelExtractor);
+    return Common.FetchMangaCSS.call(this, provider, url, query, DefaultLinkInfoExtractor);
 }
 
 /**
@@ -57,7 +59,7 @@ export async function FetchMangaCSS(this: MangaScraper, provider: MangaPlugin, u
  * @param query - A CSS query to locate the element from which the manga title shall be extracted
  */
 export function MangaCSS(pattern: RegExp, query: string = queryMangaTitle) {
-    return Common.MangaCSS(pattern, query, MangaLabelExtractor);
+    return Common.MangaCSS(pattern, query, DefaultLinkInfoExtractor);
 }
 
 /***********************************************
@@ -65,10 +67,7 @@ export function MangaCSS(pattern: RegExp, query: string = queryMangaTitle) {
  ***********************************************/
 
 function MangaInfosExtractor(this: MangaScraper, anchor: HTMLAnchorElement) {
-    return {
-        id: anchor.pathname,
-        title: MangaLabelExtractor.call(this, anchor)
-    };
+    return DefaultLinkInfoExtractor.call(this, anchor, new URL(anchor.href));
 }
 
 /**

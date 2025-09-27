@@ -23,7 +23,7 @@ function ChapterInfoExtractor(div: HTMLDivElement) {
     return {
         id: div.querySelector<HTMLAnchorElement>('a.p-btn-chapter').pathname,
         title: [
-            Common.ElementLabelExtractor('span').call(this, div.querySelector('.p-chapterList_no')).trim(),
+            Common.WebsiteInfoExtractor({ queryBloat: 'span' }).call(this, div.querySelector('.p-chapterList_no'), this.URI).title,
             div.querySelector('.p-chapterList_name').textContent.trim()
         ].join(' ').trim()
     };

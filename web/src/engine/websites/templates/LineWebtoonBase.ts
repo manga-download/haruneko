@@ -86,7 +86,6 @@ export class LineWebtoonBase extends DecoratableMangaScraper {
 
     protected mangaRegexp = /[a-z]{2}\/[^/]+\/[^/]+\/list\?title_no=\d+$/;
     private queryMangaTitleURI = 'div.info .subj';
-    private mangaLabelExtractor = Common.ElementLabelExtractor();
     protected pageScript = defaultPageScript;
     private readonly interactionTaskPool = new TaskPool(1, RateLimit.PerMinute(30));
 
@@ -95,7 +94,7 @@ export class LineWebtoonBase extends DecoratableMangaScraper {
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
-        return this.interactionTaskPool.Add(async () => Common.FetchMangaCSS.call(this, provider, url, this.queryMangaTitleURI, this.mangaLabelExtractor, true, false), Priority.Normal);
+        return this.interactionTaskPool.Add(async () => Common.FetchMangaCSS.call(this, provider, url, this.queryMangaTitleURI, Common.WebsiteInfoExtractor({ includeSearch: true })), Priority.Normal);
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
