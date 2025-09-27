@@ -4,15 +4,18 @@ import { Chapter, DecoratableMangaScraper, type MangaPlugin, type Manga } from '
 import * as Common from './decorators/Common';
 import { FetchCSS } from '../platform/FetchProvider';
 
-function LabelExtractor(head: HTMLHeadingElement) {
-    return head.textContent.replace(/ Comic/i, '').trim();
+function MangaLinkExtractor(head: HTMLHeadingElement, uri: URL) {
+    return {
+        id: uri.pathname,
+        title: head.innerText.replace(/ Comic/i, '').trim(),
+    };
 }
 
 function ImageExtractor(img: HTMLImageElement) {
     return img.dataset.original;
 }
 
-@Common.MangaCSS(/^{origin}\/comic\/[^/]+$/, 'article#item-detail > h1.title-detail', LabelExtractor)
+@Common.MangaCSS(/^{origin}\/comic\/[^/]+$/, 'article#item-detail > h1.title-detail', MangaLinkExtractor)
 @Common.PagesSinglePageCSS('div.page-chapter img', ImageExtractor)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {

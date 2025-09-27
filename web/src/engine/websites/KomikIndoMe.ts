@@ -4,15 +4,12 @@ import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as MangaStream from './decorators/WordPressMangaStream';
 import * as Common from './decorators/Common';
 
-function MangaInfosExtractor(anchor: HTMLAnchorElement) {
-    return {
-        id: anchor.pathname,
-        title: MangaStream.MangaLabelExtractor.call(this, anchor.querySelector('div.bigor div.tt'))
-    };
+function MangaInfoExtractor(anchor: HTMLAnchorElement) {
+    return MangaStream.DefaultLinkInfoExtractor.call(this, anchor.querySelector('div.bigor div.tt'), new URL(anchor.href));
 }
 
 @MangaStream.MangaCSS(/^{origin}\/manga\/[^/]+\/$/, 'h1.entry-title')
-@Common.MangasMultiPageCSS('div.bs div.bsx a', Common.PatternLinkGenerator('/project/page/{page}/'), 0, MangaInfosExtractor)
+@Common.MangasMultiPageCSS('div.bs div.bsx a', Common.PatternLinkGenerator('/project/page/{page}/'), 0, MangaInfoExtractor)
 @MangaStream.ChaptersSinglePageCSS()
 @MangaStream.PagesSinglePageCSS()
 @Common.ImageAjax(true)
