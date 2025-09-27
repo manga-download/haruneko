@@ -34,8 +34,9 @@ export async function FetchMangaCSS(this: MangaScraper, provider: MangaPlugin, u
             'Content-Type': 'application/x-www-form-urlencoded'
         }
     });
-    const data = (await FetchCSS<HTMLElement>(request, query)).at(0);
-    return new Manga(this, provider, new URL(url).pathname, Common.ElementLabelExtractor().call(this, data));
+    const [element] = await FetchCSS<HTMLElement>(request, query);
+    const { id, title } = Common.DefaultLinkInfoExtractor.call(this, element, new URL(url));
+    return new Manga(this, provider, id, title);
 }
 
 /**
@@ -90,8 +91,6 @@ export function MangasMultiPageCSS(path: string = pathpaged, query: string = que
  ******** Chapter List Extraction Methods ********
  *************************************************/
 
-const ChapterInfoExtractor = Common.AnchorInfoExtractor();
-
 /**
  * An extension method for extracting all chapters for the given {@link manga} using the given CSS {@link query}.
  * The chapters are extracted from the composed url based on the `Identifier` of the {@link manga} and the `URI` of the website.
@@ -99,8 +98,9 @@ const ChapterInfoExtractor = Common.AnchorInfoExtractor();
  * @param manga - A reference to the {@link Manga} which shall be assigned as parent for the extracted chapters
  * @param query - A CSS query to locate the elements from which the chapter identifier and title shall be extracted
  */
-export async function FetchChaptersSinglePageCSS(this: MangaScraper, manga: Manga, query: string = queryChapterListLinks, extractor = ChapterInfoExtractor): Promise<Chapter[]> {
-    const request = new Request(new URL(manga.Identifier, this.URI), {
+export async function FetchChaptersSinglePageCSS(this: MangaScraper, manga: Manga, query: string = queryChapterListLinks, extractor = Common.DefaultElementInfoExtractor): Promise<Chapter[]> {
+    const uri = new URL(manga.Identifier, this.URI);
+    const request = new Request(uri, {
         method: 'POST',
         body: 'adult=true',
         headers: {
@@ -109,7 +109,7 @@ export async function FetchChaptersSinglePageCSS(this: MangaScraper, manga: Mang
     });
     const data = await FetchCSS<HTMLAnchorElement>(request, query);
     return data.map(element => {
-        const { id, title } = extractor.call(this, element);
+        const { id, title } = extractor.call(this, element, uri);
         return new Chapter(this, manga, id, title.replace(manga.Title, '').trim() || manga.Title);
     });
 }
@@ -119,7 +119,7 @@ export async function FetchChaptersSinglePageCSS(this: MangaScraper, manga: Mang
  * The chapters are extracted from the composed url based on the `Identifier` of the manga and the `URI` of the website.
  * @param query - A CSS query to locate the elements from which the chapter identifier and title shall be extracted
  */
-export function ChaptersSinglePageCSS(query: string = queryChapterListLinks, extractor = ChapterInfoExtractor) {
+export function ChaptersSinglePageCSS(query: string = queryChapterListLinks, extractor = Common.DefaultElementInfoExtractor) {
     return function DecorateClass<T extends Common.Constructor>(ctor: T, context?: ClassDecoratorContext): T {
         Common.ThrowOnUnsupportedDecoratorContext(context);
         return class extends ctor {
@@ -153,13 +153,13 @@ export async function FetchPagesSinglePageREGEX(this: MangaScraper, chapter: Cha
     const response = await Fetch(request);
     const data = await response.text();
 
-    for(const matcher of [...matchers, ...regexPageListEntries]) {
+    for (const matcher of [...matchers, ...regexPageListEntries]) {
         const results = data.match(matcher);
-        if(!results?.length) {
+        if (!results?.length) {
             continue;
         }
         let result = results[1];
-        if(result.includes('atob')) {
+        if (result.includes('atob')) {
             result = window.atob(result);
         }
         return JSON.parse(result).map((page: { url: string }) => {
