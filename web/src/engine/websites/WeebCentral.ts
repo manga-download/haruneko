@@ -4,13 +4,16 @@ import { Chapter, DecoratableMangaScraper, type Manga } from '../providers/Manga
 import * as Common from './decorators/Common';
 import { FetchCSS } from '../platform/FetchProvider';
 
-function MangaLabelExtractor(meta: HTMLMetaElement): string {
-    return meta.content.split('|').shift().trim();
+function MangaLinkExtractor(meta: HTMLMetaElement, uri: URL) {
+    return {
+        id: uri.pathname,
+        title: meta.content.split('|').shift().trim(),
+    };
 }
 
 const pageScript = `[...document.querySelectorAll('main section img[alt*="Page"]:not([x-show]')].map(image => new URL(image.getAttribute('src'), window.location.origin).href);`;
 
-@Common.MangaCSS(/^{origin}\/series\/[^/]+\/[^/]+$/, 'meta[property="og:title"]', MangaLabelExtractor)
+@Common.MangaCSS(/^{origin}\/series\/[^/]+\/[^/]+$/, 'meta[property="og:title"]', MangaLinkExtractor)
 @Common.MangasMultiPageCSS('article > a.link', Common.PatternLinkGenerator(`/search/data?display_mode=Minimal+Display&limit=32&offset={page}`, 0, 32), 0)
 @Common.PagesSinglePageJS(pageScript, 1500)
 @Common.ImageAjax()

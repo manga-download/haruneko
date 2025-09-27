@@ -79,18 +79,25 @@ type TPuzzleData = {
     to: TPiece;
 };
 
-export function MangaLabelExtractor(element: HTMLElement): string {
-    return StripCrap(element.textContent);
+function CleanupTitle(text: string): string {
+    return text.trim().replace(/Raw Free/i, '').trim();
+}
+
+export function MangaLinkExtractor<T extends HTMLElement>(element: T, uri: URL) {
+    return {
+        id: uri.pathname,
+        title: CleanupTitle(element.innerText),
+    };
 }
 
 export function MangaInfoExtractor(anchor: HTMLAnchorElement) {
     return {
         id: anchor.pathname,
-        title: StripCrap(anchor.title)
+        title: CleanupTitle(anchor.title)
     };
 }
 
-@Common.MangaCSS(/^{origin}\/[^/]+-raw-free\/$/, 'article#item-detail h1.title-detail', MangaLabelExtractor)
+@Common.MangaCSS(/^{origin}\/[^/]+-raw-free\/$/, 'article#item-detail h1.title-detail', MangaLinkExtractor<HTMLHeadingElement>)
 @Common.MangasMultiPageCSS('article.item div.image > a', Common.PatternLinkGenerator('/page/{page}/'), 0, MangaInfoExtractor)
 @Common.ChaptersSinglePageCSS('div.list-chapter ul li a')
 export default class extends DecoratableMangaScraper {
@@ -140,10 +147,6 @@ export default class extends DecoratableMangaScraper {
             });
         });
     }
-}
-
-function StripCrap(text: string): string {
-    return text.trim().replace(/Raw Free/i, '').trim();
 }
 
 function COMPUTEPIECE(dimensions: TDimension, numColAndRow: number, pieceindex: number): TPiece {

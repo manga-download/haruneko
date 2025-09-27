@@ -1,4 +1,4 @@
-﻿import { Tags } from '../Tags';
+import { Tags } from '../Tags';
 import icon from './Dokuha.webp';
 import { type Chapter, DecoratableMangaScraper, Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
@@ -25,12 +25,12 @@ function ChapterExtractor(anchor: HTMLAnchorElement) {
     };
 }
 
-@Common.MangaCSS(/^{origin}\/comicweb\/contents\/comic\/[^/]+$/, 'div.comic-navigation h1.comic-name', Common.ElementLabelExtractor('span'))
+@Common.MangaCSS(/^{origin}\/comicweb\/contents\/comic\/[^/]+$/, 'div.comic-navigation h1.comic-name', Common.WebsiteInfoExtractor({ queryBloat: 'span' }))
 @Common.MangasMultiPageCSS('div#list-row div.list-comic-info dt.title a', Common.PatternLinkGenerator('/comicweb/category/general/list?page={page}'))
 @Common.ChaptersSinglePageCSS('section.comic-list ul a', undefined, ChapterExtractor)
 export default class extends DecoratableMangaScraper {
 
-    public constructor () {
+    public constructor() {
         super('dokuha', 'マンガ読破！EX (Dokuha)', 'https://dokuha.jp', Tags.Media.Manga, Tags.Language.Japanese, Tags.Source.Official);
     }
 
@@ -46,7 +46,7 @@ export default class extends DecoratableMangaScraper {
     public override async FetchImage(page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
         const blob = await Common.FetchImageAjax.call(this, page, priority, signal);
         const data = new Uint8Array(await blob.arrayBuffer());
-        return this.DecryptPicture(data, page.Parameters[ 'scrambleJSONUrl' ] as string);
+        return this.DecryptPicture(data, page.Parameters['scrambleJSONUrl'] as string);
     }
 
     private async DecryptPicture(data: Uint8Array, jsonUrl: string): Promise<Blob> {
@@ -60,7 +60,7 @@ export default class extends DecoratableMangaScraper {
         const { decodeRecipes, size } = await FetchJSON<DecryptingData>(new Request(jsonUrl));
         const result = [];
         for (const recipe of decodeRecipes) {
-            result[ recipe.before ] = chunks[ recipe.after ];
+            result[recipe.before] = chunks[recipe.after];
         }
 
         return Common.GetTypedData(await new Blob(result).slice(0, size).arrayBuffer());

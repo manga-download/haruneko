@@ -11,11 +11,15 @@ function ChapterExtractor(element: HTMLElement) {
         title: element.querySelector('h5').textContent.trim().split('\n').at(0),
     };
 }
-function MangaLabelExtractor(element: HTMLTitleElement) {
-    return element.text.split('-').at(0).trim();
+
+function MangaLinkExtractor(title: HTMLTitleElement, uri: URL) {
+    return {
+        id: uri.pathname,
+        title: title.text.split('-').at(0).trim(),
+    };
 }
 
-@Common.MangaCSS(/^{origin}\/manga\/[^/]+$/, 'title', MangaLabelExtractor)
+@Common.MangaCSS(/^{origin}\/manga\/[^/]+$/, 'title', MangaLinkExtractor)
 @Common.MangasMultiPageCSS('div.series-paginated a.link-series', Common.PatternLinkGenerator('/manga?page={page}'))
 @Common.ChaptersSinglePageCSS('div.chapters-list div.col-chapter', undefined, ChapterExtractor)
 @Common.ImageAjax()
