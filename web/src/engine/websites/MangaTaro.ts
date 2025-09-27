@@ -4,7 +4,7 @@ import { FetchJSON } from '../platform/FetchProvider';
 import { Manga, type MangaPlugin, DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 
-@Common.MangaCSS(/^{origin}\/manga\/[^/]+$/, 'button[data-manga-title]', (element) => element.dataset.mangaTitle.trim())
+@Common.MangaCSS<HTMLButtonElement>(/^{origin}\/manga\/[^/]+$/, 'button[data-manga-title]', (button, uri) => ({ id: uri.pathname, title: button.dataset.mangaTitle.trim() }))
 @Common.ChaptersSinglePageCSS('div.chapter-list  a', undefined, Common.AnchorInfoExtractor(true))
 @Common.PagesSinglePageCSS('img.comic-image')
 @Common.ImageAjax()
