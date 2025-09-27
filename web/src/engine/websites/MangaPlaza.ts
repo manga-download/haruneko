@@ -13,10 +13,6 @@ type APIChapterResult = {
     }
 };
 
-function MangaExtractor(element: HTMLHeadingElement) {
-    return CleanTitle(element.textContent);
-}
-
 function MangaInfoExtractor(anchor: HTMLAnchorElement) {
     return {
         id: anchor.pathname,
@@ -28,7 +24,7 @@ function CleanTitle(title: string): string {
     return title.replace(/^<.*>/i, '').trim();
 }
 
-@Common.MangaCSS(/^{origin}\/title\/\d+\/$/, 'div.mainTitle h1.titleTxt', MangaExtractor)
+@Common.MangaCSS(/^{origin}\/title\/\d+\/$/, 'div.mainTitle h1.titleTxt', (element, uri) => ({ id: uri.pathname, title: CleanTitle(element.textContent) }))
 @SpeedBinb.PagesSinglePageAjax(SpeedBindVersion.v016130, true)
 @SpeedBinb.ImageAjax()
 export default class extends DecoratableMangaScraper {
