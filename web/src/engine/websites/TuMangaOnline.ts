@@ -1,10 +1,8 @@
+import { type Chapter, DecoratableMangaScraper, Page } from '../providers/MangaPlugin';
 import { Tags } from '../Tags';
-import icon from './TuMangaOnline.webp';
-import { Page } from '../providers/MangaPlugin';
-import { DecoratableMangaScraper, type Chapter } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-
 import { DRMProvider } from './TuMangaOnline.DRM.js';
+import icon from './TuMangaOnline.webp';
 
 function ChapterInfoExtractor(element: HTMLAnchorElement) {
     const row = element.closest<HTMLUListElement>('li.list-group-item');
@@ -28,9 +26,11 @@ function ChapterInfoExtractor(element: HTMLAnchorElement) {
 export default class extends DecoratableMangaScraper {
 
     #drm: DRMProvider = new DRMProvider();
+
     public constructor() {
         super('tumangaonline', `TuMangaOnline`, 'https://zonatmo.com', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Spanish, Tags.Language.English, Tags.Source.Aggregator);
     }
+
     public override get Icon(): string {
         return icon;
     }

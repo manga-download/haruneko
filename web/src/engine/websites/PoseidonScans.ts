@@ -1,8 +1,8 @@
-import { Tags } from '../Tags';
-import icon from './PoseidonScans.webp';
-import { Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from '../providers/MangaPlugin';
-import * as Common from './decorators/Common';
 import { FetchNextJS } from '../platform/FetchProvider';
+import { Chapter, DecoratableMangaScraper, Manga, type MangaPlugin, Page } from '../providers/MangaPlugin';
+import { Tags } from '../Tags';
+import * as Common from './decorators/Common';
+import icon from './PoseidonScans.webp';
 
 type HydratedManga = {
     manga: {
@@ -19,9 +19,8 @@ type HydratedPages = {
     images: { originalUrl: string; }[];
 };
 
-@Common.MangasMultiPageCSS('div.grid a.block.group', Common.PatternLinkGenerator('/series?page={page}'), 0,
-    (anchor: HTMLAnchorElement) => { return { id: anchor.pathname.split('/').at(-1), title: anchor.querySelector('h2').textContent.trim() };
-    })
+@Common.MangasMultiPageCSS<HTMLAnchorElement>('div.grid a.block.group', Common.PatternLinkGenerator('/series?page={page}'), 0,
+    anchor => ({ id: anchor.pathname.split('/').at(-1), title: anchor.querySelector('h2').innerText.trim() }))
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
