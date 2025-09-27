@@ -4,18 +4,25 @@ import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Madara from './decorators/WordPressMadara';
 import * as Common from './decorators/Common';
 
-function MangaLabelExtractor(element: HTMLElement): string {
-    return StripLabelJunk(element.textContent);
+function CleanTitle(text: string): string {
+    return text.replace(/–.*$/, '').trim();
+}
+
+function MangaLinkExtractor(span: HTMLSpanElement, uri: URL) {
+    return {
+        id: uri.pathname,
+        title: CleanTitle(span.innerText),
+    };
 }
 
 function MangaInfoExtractor(anchor: HTMLAnchorElement) {
     return {
         id: anchor.pathname,
-        title: StripLabelJunk(anchor.text)
+        title: CleanTitle(anchor.text)
     };
 }
 
-@Common.MangaCSS(/^{origin}\/manga\/[^/]+\/$/, 'span.rate-title', MangaLabelExtractor)
+@Common.MangaCSS(/^{origin}\/manga\/[^/]+\/$/, 'span.rate-title', MangaLinkExtractor)
 @Common.MangasMultiPageCSS('div.post-title h3 a', Common.PatternLinkGenerator('/page/{page}/'), 0, MangaInfoExtractor)
 @Common.ChaptersSinglePageCSS('li.wp-manga-chapter a')
 @Madara.PagesSinglePageCSS()
@@ -29,7 +36,4 @@ export default class extends DecoratableMangaScraper {
     public override get Icon() {
         return icon;
     }
-}
-function StripLabelJunk(text: string): string {
-    return text.replace(/–.*$/, '').trim();
 }

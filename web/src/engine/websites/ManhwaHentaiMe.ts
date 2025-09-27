@@ -44,8 +44,8 @@ export default class extends DecoratableMangaScraper {
         const uri = new URL(url);
         const data = await FetchHTML(new Request(uri));
         const post = data.querySelector<HTMLElement>('div#star[data-id]')?.dataset?.id;
-        const element = data.querySelector<HTMLElement>('div.post-title h1');
-        const title = CleanTitle(AnchorInfoExtractor.call(this, element).title);
+        const element = data.querySelector<HTMLHeadingElement>('div.post-title h1');
+        const title = CleanTitle(AnchorInfoExtractor.call(this, element, uri).title);
         return new Manga(this, provider, JSON.stringify({ post, slug: uri.pathname }), title);
     }
 
@@ -63,9 +63,9 @@ export default class extends DecoratableMangaScraper {
             }
         });
 
-        const data = await FetchCSS(request, 'ul li.wp-manga-chapter > a');
+        const data = await FetchCSS<HTMLAnchorElement>(request, 'ul li.wp-manga-chapter > a');
         return data.map(element => {
-            const { id, title } = AnchorInfoExtractor.call(this, element);
+            const { id, title } = AnchorInfoExtractor.call(this, element, new URL(request.url));
             return new Chapter(this, manga, id, title.replace(manga.Title, '').trim());
         });
     }
