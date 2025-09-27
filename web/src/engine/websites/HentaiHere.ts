@@ -13,7 +13,7 @@ function ChapterInfoExtractor(element: HTMLAnchorElement) {
 
 const script = `new Promise(resolve => resolve(rff_imageList.map(page => 'https://hentaicdn.com/hentai'+ page)));`;
 
-@Common.MangaCSS(/^{origin}\/m\/[^/]+$/, 'div.bg-black h4 a', Common.ElementLabelExtractor('span'))
+@Common.MangaCSS(/^{origin}\/m\/[^/]+$/, 'div.bg-black h4 a', Common.WebsiteInfoExtractor({ queryBloat: 'span' }))
 @Common.MangasMultiPageCSS('div.item a.text-ellipsis', Common.PatternLinkGenerator('/directory?page={page}'))
 @Common.ChaptersSinglePageCSS('li.sub-chp a#chapterBlock', undefined, ChapterInfoExtractor)
 @Common.PagesSinglePageJS(script, 500)
