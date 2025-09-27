@@ -4,11 +4,14 @@ import { Chapter, DecoratableMangaScraper, type Manga } from '../providers/Manga
 import * as Common from './decorators/Common';
 import { FetchCSS, FetchWindowScript } from './../platform/FetchProvider';
 
-function MangaLabelExtractor(element: HTMLImageElement): string {
-    return element.getAttribute('alt').trim();
+function MangaLinkExtractor(img: HTMLImageElement, uri: URL) {
+    return {
+        id: uri.pathname,
+        title: img.getAttribute('alt').trim(),
+    };
 }
 
-@Common.MangaCSS(/^{origin}\/title\/[^/]+/, 'img.cover', MangaLabelExtractor)
+@Common.MangaCSS(/^{origin}\/title\/[^/]+/, 'img.cover', MangaLinkExtractor)
 @Common.MangasMultiPageCSS('div.container div.card a.fw-medium', Common.PatternLinkGenerator('/explore?page={page}'))
 @Common.PagesSinglePageCSS('img.reader-viewer-img')
 @Common.ImageAjax()
