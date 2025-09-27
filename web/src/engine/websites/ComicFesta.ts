@@ -9,7 +9,7 @@ type JSONChapters = {
     packages: {
         id: number,
         number: number,
-        fairInfo : {
+        fairInfo: {
             free: {
                 endAt: string,
                 startAt: string
@@ -22,7 +22,7 @@ type JSONChapters = {
     }[]
 }
 
-@Common.MangaCSS(/^{origin}\/titles\/\d+/, 'section[class*="title-name-section_section__"] h2', Common.ElementLabelExtractor('span'))
+@Common.MangaCSS(/^{origin}\/titles\/\d+/, 'section[class*="title-name-section_section__"] h2', Common.WebsiteInfoExtractor({ queryBloat: 'span' }))
 @Common.MangasNotSupported()
 @ClipStudioReader.PagesSinglePageAJAX()
 @ClipStudioReader.ImageAjax()
