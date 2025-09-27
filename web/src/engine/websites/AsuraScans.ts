@@ -1,7 +1,6 @@
 import { Tags } from '../Tags';
 import icon from './AsuraScans.webp';
-import { Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from '../providers/MangaPlugin';
-import * as MangaStream from './decorators/WordPressMangaStream';
+import { type Chapter, DecoratableMangaScraper, Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import { Fetch, FetchJSON, FetchNextJS, FetchWindowScript } from '../platform/FetchProvider';
 import type { Priority } from '../taskpool/DeferredTask';
@@ -10,13 +9,6 @@ type APIResult<T> = {
     success: boolean;
     data: T;
 };
-
-type HydratedChapters = {
-    chapters: {
-        name: number;
-        title: string;
-    }[]
-}
 
 type HydratedPages = {
     chapter: {
@@ -53,6 +45,24 @@ const excludes = [
     /EndDesignPSD/i
 ];
 
+const chapterScript = `
+    new Promise( resolve => {
+        resolve( [...document.querySelectorAll('a[href*="/chapter/"]:has(h3.text-xs)')].map(chapter => {
+            return {
+                id: chapter.pathname.replace(/(-[^-]+\\/chapter)/, '-/chapter'),
+                title : chapter.querySelector('h3').innerText.replace('\\n', ' ').trim()
+            };
+        }));
+    });
+`;
+
+function MangaLinkExtractor(title: HTMLTitleElement, uri: URL) {
+    return {
+        id: uri.pathname.replace(/-[^-]+$/, '-'),
+        title: title.innerText.replace(/-[^-]+$/, '').trim(),
+    };
+}
+
 function MangaInfoExtractor(anchor: HTMLAnchorElement) {
     return {
         id: anchor.pathname.replace(/-[^-]+$/, '-'),
@@ -60,7 +70,9 @@ function MangaInfoExtractor(anchor: HTMLAnchorElement) {
     };
 }
 
+@Common.MangaCSS(/^{origin}\/series\/[^/]+$/, 'head title', MangaLinkExtractor)
 @Common.MangasMultiPageCSS('div.grid a', Common.PatternLinkGenerator('/series?page={page}'), 0, MangaInfoExtractor)
+@Common.ChaptersSinglePageJS(chapterScript, 500)
 export default class extends DecoratableMangaScraper {
     private readonly drmProvider: DRMProvider;
 
@@ -80,17 +92,6 @@ export default class extends DecoratableMangaScraper {
 
     public override ValidateMangaURL(url: string): boolean {
         return new RegExpSafe(`^${this.URI.origin}/series/[^/]+$`).test(url);
-    }
-
-    public override async FetchManga(this: DecoratableMangaScraper, provider: MangaPlugin, url: string): Promise<Manga> {
-        const manga = await MangaStream.FetchMangaCSS.call(this, provider, url.replace(/-[^-]+$/, '-'), 'title');
-        return new Manga(this, provider, manga.Identifier, manga.Title.replace(' - Asura Scans', '').trim());
-    }
-
-    public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const { chapters } = await FetchNextJS<HydratedChapters>(new Request(new URL(manga.Identifier, this.URI)), data => 'chapters' in data);
-        return chapters.reverse()
-            .map(({ name, title }) => new Chapter(this, manga, [manga.Identifier, 'chapter', name].join('/'), ['Chapter', name, title].join(' ').trim()));
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page<PageParameters>[]> {
@@ -124,13 +125,12 @@ export default class extends DecoratableMangaScraper {
                 signal
             }), 'POST');
 
-            const request = new Request(data, {
+            const response = await Fetch(new Request(data, {
                 signal: signal,
                 headers: {
                     Referer: this.URI.href
                 }
-            });
-            const response = await Fetch(request);
+            }));
             return response.blob();
         }, priority, signal);
     }
