@@ -30,7 +30,7 @@ function MangaLinkExtractor(title: HTMLTitleElement, uri: URL) {
     return {
         id: uri.pathname.replace(/-[^-]+$/, '-'),
         title: title.innerText.replace(/-[^-]+$/, '').trim(),
-    }
+    };
 }
 
 function MangaInfoExtractor(anchor: HTMLAnchorElement) {

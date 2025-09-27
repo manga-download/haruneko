@@ -1,5 +1,4 @@
-import { FetchCSS } from '../platform/FetchProvider';
-import { DecoratableMangaScraper, Manga, type MangaPlugin } from '../providers/MangaPlugin';
+import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import { Tags } from '../Tags';
 import icon from './ComicRyu.webp';
 import * as Common from './decorators/Common';
