@@ -10,15 +10,18 @@ function MangaInfoExtractor(anchor: HTMLAnchorElement) {
     };
 }
 
-function MangaLabelExtractor(image: HTMLImageElement) {
-    return image.getAttribute('alt').trim();
+function MangaLinkExtractor(img: HTMLImageElement, uri: URL) {
+    return {
+        id: uri.pathname,
+        title: img.getAttribute('alt').trim(),
+    };
 }
 
 function PageExtractor(element: HTMLSpanElement) {
     return element.getAttribute('img-url').trim();
 }
 
-@Common.MangaCSS(/^{origin}\/product\/[^/]+$/, 'p.cover img', MangaLabelExtractor)
+@Common.MangaCSS(/^{origin}\/product\/[^/]+$/, 'p.cover img', MangaLinkExtractor)
 @Common.MangasSinglePageCSS('/product', 'div.cards_wrap article a', MangaInfoExtractor)
 @Common.ChaptersSinglePageCSS('div.episode ul li a')
 @Common.PagesSinglePageCSS('#viewer.manga div.manga_page:not(.info_page) span.manga_page_image', PageExtractor)

@@ -11,7 +11,7 @@ type HydratedPages = {
     }[];
 };
 
-@Common.MangaCSS(/^{origin}\/manga\/\d+\/[^/]+$/, 'div.content-info img', (element: HTMLImageElement) => element.alt.trim())
+@Common.MangaCSS<HTMLImageElement>(/^{origin}\/manga\/\d+\/[^/]+$/, 'div.content-info img', (img, uri) => ({ id: uri.pathname, title: img.alt.trim() }))
 @Common.MangasMultiPageCSS('section[aria-label*="series"] div.card > div a:has(h2)', Common.PatternLinkGenerator('search?page={page}'))
 @Common.ChaptersSinglePageCSS('div.list-episode a', undefined, (anchor: HTMLAnchorElement) => ({ id: anchor.pathname, title: anchor.querySelector('.chapternum').textContent.trim() }))
 @Common.ImageAjax()

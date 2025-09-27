@@ -5,8 +5,7 @@ import * as Common from './decorators/Common';
 
 @Common.MangaCSS(/^{origin}\/manga\/[^/]+/, 'header.card-header h1 span')
 @Common.MangasMultiPageCSS('div.grid div.manga-card > a', Common.PatternLinkGenerator('/manga?page={page}'), 0, (element: HTMLAnchorElement) => ({ id: element.pathname, title: element.text.trim() }))
-@Common.ChaptersMultiPageCSS('#page-content span.chapter-title', 1, 1, 0,
-    Common.PatternLinkResolver('{id}?tab=chapters&page={page}'),
+@Common.ChaptersMultiPageCSS('#page-content span.chapter-title', Common.PatternLinkGenerator('{id}?tab=chapters&page={page}'), 0,
     (span: HTMLSpanElement) => ({ id: span.closest('a').pathname, title: span.innerText.trim() }))
 @Common.PagesSinglePageCSS('img[data-page]')
 @Common.ImageAjax()
