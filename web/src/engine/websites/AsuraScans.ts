@@ -20,7 +20,7 @@ type HydratedPages = {
 };
 
 type APIPages = APIResult<{
-    unlock_token?: string;
+    unlock_token: string;
     pages: {
         id?: number;
         url?: string;
