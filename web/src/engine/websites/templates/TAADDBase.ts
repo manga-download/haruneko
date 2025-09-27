@@ -4,9 +4,16 @@ import type { Priority } from '../../taskpool/DeferredTask';
 import * as Common from '../decorators/Common';
 
 export const mangaPath = '/search/?completed_series=either&page={page}';
-export function MangaLabelExtractor(element: HTMLElement) {
-    return ((element as HTMLMetaElement).content || element.textContent).replace(/(^\s*[Мм]анга|[Mm]anga\s*$)/, '').trim();
+export function MangaInfoExtractor(element: HTMLElement, uri: URL) {
+    return {
+        id: uri.pathname,
+        title: CleanTitle((element as HTMLMetaElement).content || element.textContent)
+    };
 }
+
+function CleanTitle(title: string): string {
+    return title.replace(/(^\s*[Мм]анга|[Mm]anga\s*$)/, '').trim();
+};
 
 function ChapterExtractor(element: HTMLAnchorElement) {
     return {
@@ -26,7 +33,7 @@ function PageLinkExtractor( element: HTMLElement) {
     }
 }
 
-@Common.MangaCSS(/^{origin}\/manga\/[^/]+\.html/, 'div.manga div.ttline h1', MangaLabelExtractor)
+@Common.MangaCSS(/^{origin}\/manga\/[^/]+\.html/, 'div.manga div.ttline h1', MangaInfoExtractor)
 @Common.MangasMultiPageCSS('dl.bookinfo a.bookname', Common.PatternLinkGenerator(mangaPath))
 export class TAADBase extends DecoratableMangaScraper {
 

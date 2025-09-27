@@ -1,9 +1,9 @@
 import { Tags } from '../Tags';
 import icon from './TenManga.webp';
 import * as Common from './decorators/Common';
-import { MangaLabelExtractor, TAADBase, mangaPath } from './templates/TAADDBase';
+import { MangaInfoExtractor, TAADBase, mangaPath } from './templates/TAADDBase';
 
-@Common.MangaCSS(/^{origin}\/book\/[^/]+\.html$/, 'meta[property="og:title"]', MangaLabelExtractor)
+@Common.MangaCSS(/^{origin}\/book\/[^/]+\.html$/, 'meta[property="og:title"]', MangaInfoExtractor)
 @Common.MangasMultiPageCSS('section.book-list div.book-item a:first-of-type', Common.PatternLinkGenerator(mangaPath), 0, Common.AnchorInfoExtractor(true))
 
 export default class extends TAADBase {
