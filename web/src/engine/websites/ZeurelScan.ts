@@ -17,7 +17,7 @@ function ChapterExtractor(anchor: HTMLAnchorElement) {
     };
 }
 
-@Common.MangaCSS(/^{origin}\/serie\.php\?serie=\d+$/, '.valore', undefined, true)
+@Common.MangaCSS(/^{origin}\/serie\.php\?serie=\d+$/, '.valore', Common.WebsiteInfoExtractor({ includeSearch: true }))
 @Common.MangasSinglePageCSS('/', 'div.dropdown-content a.titoliSerie', MangaExtractor)
 @Common.ChaptersSinglePageCSS('.rigaCap a', undefined, ChapterExtractor)
 @Common.PagesSinglePageCSS('.Immag img')
