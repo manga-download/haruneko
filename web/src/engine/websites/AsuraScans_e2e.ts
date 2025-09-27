@@ -6,17 +6,17 @@ new TestFixture({
         title: 'Asura Scans',
     },
     container: {
-        url: 'https://asuracomic.net/series/nano-machine-b755c1b9',
+        url: 'https://asuracomic.net/series/nano-machine-8f82311f',
         id: '/series/nano-machine-',
         title: 'Nano Machine',
     },
     child: {
-        id: '/series/nano-machine-/chapter/222',
-        title: 'Chapter 222 76. Level (1)',
+        id: '/series/nano-machine-/chapter/270',
+        title: 'Nano Machine Chapter 270 - 90. Lightning Qi <2>',
     },
     entry: {
         index: 1,
-        size: 781_272,
+        size: 1_030_468,
         type: 'image/webp'
     }
 }).AssertWebsite();
