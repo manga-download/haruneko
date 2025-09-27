@@ -10,10 +10,9 @@ function MangaExtractor(anchor: HTMLAnchorElement) {
     };
 }
 
-@Common.MangasMultiPageCSS('/series?page={page}', 'div.bs div.bsx a', 1, 1, 0, MangaExtractor)
-    @Common.ChaptersMultiPageCSS('div.eplister ul li a:not([data-bs-toggle])', 1, 1, 0,
-        Common.PatternLinkResolver('{id}?page={page}'),
-        (anchor: HTMLAnchorElement) => ({ id: anchor.pathname, title: anchor.querySelector('.epl-num:nth-of-type(2)').textContent.trim() }))
+@Common.MangasMultiPageCSS('div.bs div.bsx a', Common.PatternLinkGenerator('/series?page={page}'), 0, MangaExtractor)
+@Common.ChaptersMultiPageCSS('div.eplister ul li a:not([data-bs-toggle])', Common.PatternLinkGenerator('{id}?page={page}'), 0,
+    (anchor: HTMLAnchorElement) => ({ id: anchor.pathname, title: anchor.querySelector('.epl-num:nth-of-type(2)').textContent.trim() }))
 @Common.PagesSinglePageCSS('.page-break img')
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {

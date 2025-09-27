@@ -6,7 +6,7 @@ import * as Liliana from './templates/Liliana';
 import * as Common from './decorators/Common';
 
 @Common.MangaCSS(/^{origin}\/manga\/[^/]+$/, MojoPortalComic.queryManga)
-@Common.MangasMultiPageCSS(Liliana.mangaPath, MojoPortalComic.queryMangas)
+@Common.MangasMultiPageCSS(MojoPortalComic.queryMangas, Liliana.MangasLinkGenerator)
 @Common.ChaptersSinglePageCSS(MojoPortalComic.queryChapters)
 @Liliana.PagesSinglePageJS(undefined, 'div.page-chapter img')
 @Common.ImageAjax()

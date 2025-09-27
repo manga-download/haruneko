@@ -16,7 +16,7 @@ const chapterScript = `
 `;
 
 @Common.MangaCSS(/^{origin}\/manga\/[^/]+\/$/, 'div.post-title h1')
-@Common.MangasMultiPageCSS('/page/{page}/', 'div.post-title h3 a, div.post-title h5 a')
+@Common.MangasMultiPageCSS('div.post-title h3 a, div.post-title h5 a', Common.PatternLinkGenerator('/page/{page}/'))
 @Common.ChaptersSinglePageJS(chapterScript, 5000)
 @Madara.PagesSinglePageCSS()
 @Common.ImageAjax(true)

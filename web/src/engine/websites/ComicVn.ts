@@ -19,14 +19,14 @@ const chapterScript = `
 `;
 
 @Common.MangaCSS(/^https:\/\/comicvn\d+\.(com|net)\/[^/]+\.html$/, 'div.detailComic div.preface div.detail h1')
-@Common.MangasMultiPageCSS('/danh-muc/truyen-moi?page={page}', 'div.listComic ul li div.detail h3 a')
+@Common.MangasMultiPageCSS('div.listComic ul li div.detail h3 a', Common.PatternLinkGenerator('/danh-muc/truyen-moi?page={page}'))
 @Common.ChaptersSinglePageJS(chapterScript, 1500)
 @Common.PagesSinglePageCSS('div.readComic div#lightgallery2 img')
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('comicvn', 'ComicVn', 'https://comicvn16.net', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Vietnamese, Tags.Source.Aggregator, Tags.Accessibility.DomainRotation);
+        super('comicvn', 'ComicVn', 'https://comicvn17.net', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Vietnamese, Tags.Source.Aggregator, Tags.Accessibility.DomainRotation);
     }
 
     public override get Icon() {

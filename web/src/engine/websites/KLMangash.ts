@@ -1,4 +1,4 @@
-﻿import { Tags } from '../Tags';
+import { Tags } from '../Tags';
 import icon from './KLMangash.webp';
 import { type Chapter, DecoratableMangaScraper, Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
@@ -20,8 +20,11 @@ function CleanTitle(title: string): string {
     return title.replace(/\(Raw.*Free\)/i, '').trim();
 }
 
-function MangaLabelExtractor(element: HTMLHeadingElement): string {
-    return CleanTitle(element.textContent);
+function MangaLinkExtractor(element: HTMLHeadingElement, uri: URL) {
+    return {
+        id: uri.pathname,
+        title: CleanTitle(element.innerText),
+    };
 }
 
 function MangaExtractor(anchor: HTMLAnchorElement) {
@@ -38,14 +41,14 @@ function ChapterExtractor(anchor: HTMLAnchorElement) {
     };
 }
 
-@Common.MangaCSS(/^{origin}\/manga-raw\/[^/]+\/$/, 'div.container div.z-single-mg h1.name', MangaLabelExtractor)
-@Common.MangasMultiPageCSS('/page/{page}/', 'div.grid-of-mangas h2.name a', 1, 1, 0, MangaExtractor)
+@Common.MangaCSS(/^{origin}\/manga-raw\/[^/]+\/$/, 'div.container div.z-single-mg h1.name', MangaLinkExtractor)
+@Common.MangasMultiPageCSS('div.grid-of-mangas h2.name a', Common.PatternLinkGenerator('/page/{page}/'), 0, MangaExtractor)
 @Common.ChaptersSinglePageCSS('div.chapter-box a', undefined, ChapterExtractor)
 export default class extends DecoratableMangaScraper {
 
     private zingParams: ZingParams;
 
-    public constructor () {
+    public constructor() {
         super('klmangash', 'KLManga(.sh)', 'https://klmanga.lv', Tags.Media.Manga, Tags.Language.Japanese, Tags.Source.Aggregator);
     }
 

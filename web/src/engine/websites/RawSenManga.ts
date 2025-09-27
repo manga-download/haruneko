@@ -1,11 +1,11 @@
 import { Tags } from '../Tags';
 import icon from './RawSenManga.webp';
+import { FetchWindowScript } from '../platform/FetchProvider';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { FetchWindowScript } from '../platform/FetchProvider';
 
 @Common.MangaCSS(/^{origin}/, 'div.desc h1.series')
-@Common.MangasMultiPageCSS('/directory?page={page}', 'div.item-info div.series-title a')
+@Common.MangasMultiPageCSS('div.item-info div.series-title a', Common.PatternLinkGenerator('/directory?page={page}'))
 @Common.ChaptersSinglePageCSS('ul.chapter-list li > a')
 @Common.PagesSinglePageCSS('div.reader img.picture')
 @Common.ImageElement()
