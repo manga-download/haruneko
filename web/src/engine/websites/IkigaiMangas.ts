@@ -1,4 +1,4 @@
-﻿import { Tags } from '../Tags';
+import { Tags } from '../Tags';
 import icon from './IkigaiMangas.webp';
 import { FetchWindowScript } from '../platform/FetchProvider';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
@@ -12,17 +12,16 @@ function MangaInfoExtractor(anchor: HTMLAnchorElement) {
     };
 }
 
-@Common.MangaCSS(/^{origin}\/series\/[^/]+\/$/, 'article figure > img', (element: HTMLImageElement) => element.alt.trim())
+@Common.MangaCSS<HTMLImageElement>(/^{origin}\/series\/[^/]+\/$/, 'article figure > img', (img, uri) => ({ id: uri.pathname, title: img.alt.trim() }))
 @Common.MangasMultiPageCSS('section ul.grid li > a', Common.PatternLinkGenerator('/series/?pagina={page}'), 0, MangaInfoExtractor)
-@Common.ChaptersMultiPageCSS('ul li.w-full a', 1, 1, 0,
-    Common.PatternLinkResolver('{id}?pagina={page}'),
+@Common.ChaptersMultiPageCSS('ul li.w-full a', Common.PatternLinkGenerator('{id}?pagina={page}'), 0,
     (anchor: HTMLAnchorElement) => ({ id: anchor.pathname, title: anchor.querySelector<HTMLHeadingElement>('h3.card-title').innerText.trim() }))
 @Common.PagesSinglePageCSS('div.img img[alt*="Página"]')
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
-    public constructor () {
-        super('ikigaimangas', 'Ikigai Mangas', 'https://viralikigai.fraviral.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Spanish, Tags.Source.Aggregator, Tags.Accessibility.DomainRotation);
+    public constructor() {
+        super('ikigaimangas', 'Ikigai Mangas', 'https://visualikigai.riccineer.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Spanish, Tags.Source.Aggregator, Tags.Accessibility.DomainRotation);
     }
 
     public override get Icon() {

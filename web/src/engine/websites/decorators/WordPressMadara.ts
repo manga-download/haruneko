@@ -200,7 +200,7 @@ export function MangasMultiPageAJAX(query = queryMangaListLinks, throttle = 0, p
 async function FetchChaptersCSS(this: MangaScraper, manga: Manga, request: Request, query = queryChapterListLinks, extract = DefaultInfoExtractor): Promise<Chapter[]> {
     const data = await FetchCSS<HTMLAnchorElement>(request, query);
     return data.map(element => {
-        const { id, title } = extract.call(this, element);
+        const { id, title } = extract.call(this, element, new URL(request.url));
         return new Chapter(this, manga, id, title.replace(manga.Title, '').trim() || manga.Title);
     });
 }
@@ -218,7 +218,7 @@ export async function FetchChaptersSinglePageCSS(this: MangaScraper, manga: Mang
     const uri = new URL(slug, this.URI);
     const request = new Request(uri.href);
     const chapters = await FetchChaptersCSS.call(this, manga, request, query, extract);
-    if(!chapters.length) {
+    if (!chapters.length) {
         throw new Exception(R.Plugin_Common_Chapter_InvalidError);
     } else {
         return chapters;
@@ -382,9 +382,9 @@ function ChapterPageExtractor(this: MangaScraper, image: HTMLImageElement): stri
 export async function FetchPagesSinglePageCSS(this: MangaScraper, chapter: Chapter, query = queryPageListLinks): Promise<Page[]> {
     const uri = new URL(chapter.Identifier, this.URI);
     let request = new Request(uri.href);
-    const [ body ] = await FetchCSS<HTMLBodyElement>(request, 'body');
+    const [body] = await FetchCSS<HTMLBodyElement>(request, 'body');
     let data: HTMLImageElement[] = [];
-    if(body.querySelector(queryPageListSelector)) {
+    if (body.querySelector(queryPageListSelector)) {
         uri.searchParams.set('style', 'list');
         request = new Request(uri.href);
         data = await FetchCSS<HTMLImageElement>(request, query);
