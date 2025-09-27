@@ -14,11 +14,14 @@ const scriptPageListLinks = `app.items.map(item => item.src || item.isrc);`;
  ******** Manga from URL Extraction Methods ********
  ***************************************************/
 
-function CreateMangaLabelExtractor(queryLabel: string, queryLanguage: string) {
-    return function(this: MangaScraper, element: HTMLElement) {
+function CreateMangaLinkExtractor(queryLabel: string, queryLanguage: string) {
+    return function (this: MangaScraper, element: HTMLElement, uri: URL) {
         const label = queryLabel ? element.querySelector<HTMLElement>(queryLabel) : element;
         const language = queryLanguage ? element.querySelector<HTMLElement>(queryLanguage)?.dataset?.lang : undefined;
-        return label.textContent.trim() + (language ? ` [${language}]` : '');
+        return {
+            id: uri.pathname,
+            title: label.textContent.trim() + (language ? ` [${language}]` : ''),
+        };
     };
 }
 
@@ -33,7 +36,7 @@ function CreateMangaLabelExtractor(queryLabel: string, queryLanguage: string) {
  * @param queryLanguage - A CSS sub-query to extract the language for the manga title from the element found by {@link query}
  */
 export async function FetchMangaCSS(this: MangaScraper, provider: MangaPlugin, url: string, query: string = queryMangaTitle, queryLabel: string = queryMangaTitleLabel, queryLanguage: string = queryMangaTitleLanguage): Promise<Manga> {
-    return Common.FetchMangaCSS.call(this, provider, url, query, CreateMangaLabelExtractor(queryLabel, queryLanguage));
+    return Common.FetchMangaCSS.call(this, provider, url, query, CreateMangaLinkExtractor(queryLabel, queryLanguage));
 }
 
 /**
@@ -45,7 +48,7 @@ export async function FetchMangaCSS(this: MangaScraper, provider: MangaPlugin, u
  * @param queryLanguage - A CSS sub-query to extract the language for the manga title from the element found by {@link query}
  */
 export function MangaCSS(pattern: RegExp, query: string = queryMangaTitle, queryLabel: string = queryMangaTitleLabel, queryLanguage: string = queryMangaTitleLanguage) {
-    return Common.MangaCSS(pattern, query, CreateMangaLabelExtractor(queryLabel, queryLanguage));
+    return Common.MangaCSS(pattern, query, CreateMangaLinkExtractor(queryLabel, queryLanguage));
 }
 
 /***********************************************
@@ -53,7 +56,7 @@ export function MangaCSS(pattern: RegExp, query: string = queryMangaTitle, query
  ***********************************************/
 
 function CreateMangaInfoExtractor(queryAnchor: string, queryLanguage: string) {
-    return function(this: MangaScraper, element: HTMLElement) {
+    return function (this: MangaScraper, element: HTMLElement) {
         const anchor = element.querySelector<HTMLAnchorElement>(queryAnchor);
         const language = queryLanguage ? element.querySelector<HTMLElement>(queryLanguage)?.dataset?.lang : undefined;
         return {

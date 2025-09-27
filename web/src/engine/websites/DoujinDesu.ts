@@ -4,7 +4,7 @@ import { type Chapter, DecoratableMangaScraper, Page } from '../providers/MangaP
 import * as Common from './decorators/Common';
 import { FetchCSS } from '../platform/FetchProvider';
 
-@Common.MangaCSS(/^{origin}\/manga\/[^/]+\/$/, 'section.metadata h1.title', Common.ElementLabelExtractor('span.alter'))
+@Common.MangaCSS(/^{origin}\/manga\/[^/]+\/$/, 'section.metadata h1.title', Common.WebsiteInfoExtractor({ queryBloat: 'span.alter' }))
 @Common.MangasMultiPageCSS('article.entry a', Common.PatternLinkGenerator('/manga/page/{page}/'), 0, Common.AnchorInfoExtractor(true))
 @Common.ChaptersSinglePageCSS('div#chapter_list div.epsleft span.lchx a', undefined, Common.AnchorInfoExtractor(true))
 @Common.ImageAjax()
