@@ -36,7 +36,7 @@ function MangaExtractor(anchor: HTMLAnchorElement) {
     };
 }
 
-@Common.MangaCSS(/^{origin}\/manga(-raw)?\/[^/]+\/$/, 'div.container h1.name', (element) => CleanTitle(element.textContent))
+@Common.MangaCSS(/^{origin}\/manga(-raw)?\/[^/]+\/$/, 'div.container h1.name', (element, uri) => ({ id: uri.pathname, title: CleanTitle(element.textContent)}))
 @Common.MangasMultiPageCSS('div.grid-of-mangas h2.name a', Common.PatternLinkGenerator('/page/{page}/'), 0, MangaExtractor)
 @Common.ChaptersSinglePageCSS('div.chapter-box a', undefined, ChapterExtractor)
 export class Zing92Base extends DecoratableMangaScraper {

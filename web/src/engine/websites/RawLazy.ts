@@ -5,7 +5,7 @@ import * as Common from './decorators/Common';
 import { FetchJSON } from '../platform/FetchProvider';
 import { ChapterExtractor, CleanTitle, Zing92Base, type APIResult } from './templates/Zing92Base';
 
-@Common.MangaCSS(/^{origin}\/manga-lazy\/[^/]+\/$/, 'title', (element) => CleanTitle(element.textContent.split('|').at(0)))
+@Common.MangaCSS(/^{origin}\/manga-lazy\/[^/]+\/$/, 'title', (element, uri) => ({ id: uri.pathname, title: CleanTitle(element.textContent.split('|').at(0)) }))
 @Common.ChaptersSinglePageCSS('div.chapters-list a', undefined, ChapterExtractor)
 export default class extends Zing92Base {
 
