@@ -32,7 +32,7 @@ const patternAliasDomains = [
     '2025copy.com',
 ].join('|').replaceAll('.', '\\.');
 
-@Common.MangaCSS(new RegExp(`^https://(www\.)?${patternAliasDomains}/comic/[^/]+$/`), 'h6[title]', element => element.title.trim())
+@Common.MangaCSS<HTMLHeadingElement>(new RegExp(`^https://(www\.)?${patternAliasDomains}/comic/[^/]+$/`), 'h6[title]', (head, uri) => ({ id: uri.pathname, title: head.title.trim() }))
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
@@ -81,7 +81,7 @@ export default class extends DecoratableMangaScraper {
     private async Decrypt<T>(encryptedData: string): Promise<T> {
         const encrypted = GetBytesFromHex(encryptedData.slice(16, encryptedData.length));
         const algorithm = { name: 'AES-CBC', iv: GetBytesFromUTF8(encryptedData.slice(0, 16)) };
-        const key = await crypto.subtle.importKey('raw', this.keyData, algorithm, false, [ 'decrypt' ]);
+        const key = await crypto.subtle.importKey('raw', this.keyData, algorithm, false, ['decrypt']);
         const decrypted = await crypto.subtle.decrypt(algorithm, key, encrypted);
         return JSON.parse(new TextDecoder('utf-8').decode(decrypted)) as T;
     }
