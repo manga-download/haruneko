@@ -5,7 +5,7 @@ import { DecoratableMangaScraper, type Manga, type Chapter } from '../providers/
 import * as FlatManga from './templates/FlatManga';
 import * as Common from './decorators/Common';
 
-@Common.MangaCSS(FlatManga.pathManga, 'img.thumbnail', (img: HTMLImageElement) => img.title.trim())
+@Common.MangaCSS<HTMLImageElement>(FlatManga.pathManga, 'img.thumbnail', (img, uri) => ({ id: uri.pathname, title: img.title.trim() }))
 @Common.MangasSinglePageCSS('/manga-list.html', 'div.container a[data-toggle="mangapop"]:not([data-original-title=""])')
 @Common.PagesSinglePageJS(`
     [...document.querySelectorAll('${FlatManga.queryPages}')]

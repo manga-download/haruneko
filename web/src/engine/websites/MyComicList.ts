@@ -9,11 +9,15 @@ function ChapterExtractor(anchor: HTMLAnchorElement) {
         title: anchor.textContent.trim()
     };
 }
-function MangaLabelExtractor(element: HTMLElement): string {
-    return element.textContent.replace(/Comic Details$/, '').trim();
+
+function MangaLinkExtractor(head: HTMLHeadingElement, uri: URL) {
+    return {
+        id: uri.pathname,
+        title: head.innerText.replace(/Comic Details$/, '').trim(),
+    };
 }
 
-@Common.MangaCSS(/^{origin}\/comic\/[^/]+$/, 'div.manga-right h1.manga-title', MangaLabelExtractor)
+@Common.MangaCSS(/^{origin}\/comic\/[^/]+$/, 'div.manga-right h1.manga-title', MangaLinkExtractor)
 @Common.ChaptersSinglePageCSS('ul.basic-list li a', undefined, ChapterExtractor)
 @Common.PagesSinglePageCSS('div.chapter-container img.chapter_img')
 @Common.ImageAjax()

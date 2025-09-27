@@ -1,8 +1,8 @@
+import { DecoratableMangaScraper, type Manga, type MangaPlugin } from '../providers/MangaPlugin';
 import { Tags } from '../Tags';
 import icon from './ComicDays.webp';
-import { DecoratableMangaScraper, type Manga, type MangaPlugin } from '../providers/MangaPlugin';
-import * as CoreView from './decorators/CoreView';
 import * as Common from './decorators/Common';
+import * as CoreView from './decorators/CoreView';
 
 function MangaExtractor(anchor: HTMLAnchorElement) {
     const titleElement = anchor.querySelector<HTMLHeadingElement>('div.yomikiri-link-title h4');
@@ -13,7 +13,7 @@ function MangaExtractor(anchor: HTMLAnchorElement) {
 }
 
 @Common.MangaCSS(/^{origin}\/(episode|magazine|volume)\/\d+$/, CoreView.queryMangaTitleFromURI)
-@CoreView.ChaptersMultiPageAJAXV2(['episode', 'volume', 'magazine'])
+@CoreView.ChaptersMultiPageAJAXV2('magazine', 'volume', 'episode')
 @CoreView.PagesSinglePageJSON()
 @CoreView.ImageAjax()
 export default class extends DecoratableMangaScraper {
