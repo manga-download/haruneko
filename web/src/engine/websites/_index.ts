@@ -26,7 +26,6 @@ export { default as ArcRelight } from './ArcRelight';
 export { default as ArcuraFansub } from './ArcuraFansub';
 export { default as AresManga } from './AresManga';
 export { default as ArgosScan } from './ArgosScan';
-export { default as ArothScans } from './ArothScans';
 export { default as ArthurScan } from './ArthurScan';
 export { default as ArvenScans } from './ArvenScans';
 export { default as AryaScans } from './AryaScans';
