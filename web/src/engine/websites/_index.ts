@@ -225,6 +225,7 @@ export { default as IMHentai } from './IMHentai';
 export { default as ImperioDaBritannia } from './ImperioDaBritannia';
 export { default as InariManga } from './InariManga';
 export { default as InfraFandub } from './InfraFandub';
+export { default as InkStory } from './InkStory';
 export { default as InManga } from './InManga';
 export { default as InmortalScan } from './InmortalScan';
 export { default as iqiyi } from './iqiyi';
