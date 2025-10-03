@@ -3,7 +3,7 @@ import icon from './ToomicsKO.webp';
 import { type MangaPlugin } from '../providers/MangaPlugin';
 import { DecoratableMangaScraper, Manga } from '../providers/MangaPlugin';
 import { Fetch, FetchCSS, FetchWindowScript } from '../platform/FetchProvider';
-import * as Toomics from './decorators/ToomicsBase';
+import * as Toomics from './templates/ToomicsBase';
 import * as Common from './decorators/Common';
 
 type TPagingData = {

@@ -1,17 +1,15 @@
 import { Tags } from '../Tags';
 import icon from './HotComics.webp';
-import { Chapter, DecoratableMangaScraper, type Manga } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import * as Toomics from './decorators/ToomicsBase';
-import { FetchCSS, FetchWindowScript } from '../platform/FetchProvider';
+import { ToomicsBase, WebsiteInfoExtractor } from './templates/ToomicsBase';
+import { FetchWindowScript } from '../platform/FetchProvider';
 
-@Toomics.MangaCSS(/^{origin}\/[a-z]+\/[^/]+\/[^/]+\.html$/, 'div.title_content h2.episode-title')
-@Toomics.MangasSinglePageCSS(['en', 'de', 'jp', 'ch', 'tc', 'mx', 'es', 'it', 'por', 'fr', 'ko'], 'div.list-wrap ul li a', '/{language}/ranking/')
-@Common.PagesSinglePageCSS(Toomics.queryPages, Toomics.PageExtractor)
-@Common.ImageAjax()
-export default class extends DecoratableMangaScraper {
+@Common.MangaCSS(/^{origin}\/[a-z]+\/[^/]+\/[^/]+\.html$/, 'div.title_content h2.episode-title', WebsiteInfoExtractor())
+export default class extends ToomicsBase {
     public constructor() {
         super('hotcomics', `HotComics`, 'https://hotcomics.me', Tags.Language.Multilingual, Tags.Media.Manhwa, Tags.Source.Official);
+        this.languages = ['en', 'de', 'jp', 'ch', 'tc', 'mx', 'es', 'it', 'por', 'fr', 'ko'];
+        this.mangaPath = '/{language}/ranking';
     }
 
     public override get Icon() {
@@ -21,20 +19,4 @@ export default class extends DecoratableMangaScraper {
     public override async Initialize(): Promise<void> {
         await FetchWindowScript(new Request(this.URI), 'window.cookieStore.set("hc_vfs", "Y");');//allow +18 content
     }
-
-    public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const chapterRegexp = /\/[a-z]+\/[^/]+\/episode[^/]+\.html/;
-        const mangaTitle = manga.Title.replace(/\[.+\]$/, '').trim();
-        const elements = await FetchCSS<HTMLAnchorElement>(new Request(new URL(manga.Identifier, this.URI)), 'ol.list-ep li.normal_ep a');
-        return elements.map(element => {
-            let id = element.pathname;
-            if (!chapterRegexp.test(id)) id = element.getAttribute('onclick').match(chapterRegexp).at(0);
-            const title = [
-                element.querySelector<HTMLDivElement>('div.cell-num').textContent.trim(),
-                element.querySelector<HTMLDivElement>('div.cell-title strong').textContent.trim()
-            ].join(' ').replace(mangaTitle, '').trim();
-            return new Chapter(this, manga, id, title);
-        });
-    }
-
 }

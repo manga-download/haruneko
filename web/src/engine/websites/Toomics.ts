@@ -1,18 +1,15 @@
 import { Tags } from '../Tags';
 import icon from './Toomics.webp';
-import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import * as Toomics from './decorators/ToomicsBase';
 import { FetchWindowScript } from '../platform/FetchProvider';
+import { ToomicsBase, WebsiteInfoExtractor } from './templates/ToomicsBase';
 
-@Toomics.MangaCSS(/^{origin}\/[a-z]+\/webtoon\/episode\/toon\/\d+$/, 'title')
-@Toomics.MangasSinglePageCSS(['en', 'es', 'de', 'fr', 'it', 'jp', 'mx', 'por', 'sc', 'tc'], 'div.section_ongoing div.list_wrap ul li > div.visual > a')
-@Toomics.ChaptersSinglePageCSS('ol.list-ep li.normal_ep a')
-@Common.PagesSinglePageCSS(Toomics.queryPages, Toomics.PageExtractor)
-@Common.ImageAjax()
-export default class extends DecoratableMangaScraper {
+@Common.MangaCSS(/^{origin}\/[a-z]+\/webtoon\/episode\/toon\/\d+$/, 'section.ep-body a[data-toon-name]', WebsiteInfoExtractor())
+export default class extends ToomicsBase {
+
     public constructor() {
         super('toomics', 'Toomics (Global)', 'https://global.toomics.com', Tags.Language.Multilingual, Tags.Media.Manhwa, Tags.Source.Official);
+        this.languages = ['en', 'es', 'de', 'fr', 'it', 'jp', 'mx', 'por', 'sc', 'tc'];
     }
 
     public override get Icon() {
