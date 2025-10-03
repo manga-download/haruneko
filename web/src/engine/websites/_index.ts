@@ -570,6 +570,7 @@ export { default as Qimeitj } from './Qimeitj';
 export { default as QiScans } from './QiScans';
 export { default as Rackus } from './Rackus';
 export { default as RadiantScans } from './RadiantScans';
+export { default as RageScans } from './RageScans';
 export { default as RagnarScans } from './RagnarScans';
 export { default as RaijinScans } from './RaijinScans';
 export { default as RaikiScan } from './RaikiScan';
