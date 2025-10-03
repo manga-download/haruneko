@@ -6,7 +6,7 @@ new TestFixture({
         title: 'ManhwaIndo'
     },
     container: {
-        url: 'https://manhwaindo.com/series/9th-class-sword-master/',
+        url: 'https://manhwaindo.app/series/9th-class-sword-master/',
         id: '/series/9th-class-sword-master/',
         title: '9th Class Sword Master'
     },
@@ -16,7 +16,7 @@ new TestFixture({
     },
     entry: {
         index: 0,
-        size: 84_843,
+        size: 65_237,
         type: 'image/jpeg'
     }
 }).AssertWebsite();
