@@ -9,20 +9,20 @@ type APIResult<T> = {
 };
 
 type APIManga = {
-    manga_id: number,
-    titulo: string
+    manga_id: number;
+    titulo: string;
 };
 
 type APIChapter = {
-    capitulo_id: number,
-    capitulo_nome: string
+    capitulo_id: number;
+    capitulo_nome: string;
 };
 
 type APIPages = APIResult<{
     chapter: {
-        baseUrl: string,
-        hash: string,
-        data: string[]
+        baseUrl: string;
+        hash: string;
+        data: string[];
     }
 }>;
 
