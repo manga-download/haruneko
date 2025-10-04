@@ -45,8 +45,8 @@ const pagesScript = `
              //*****************/
              //Create a Page
              const fPage = new NFBR.a6i.Page(index, page.file, "0", extension, "");
-             const realURL = new URL(fpage.T3q(content), parameters.url);
-             realUrl.search = '?'+parameters.contentAppendParam;
+             const realURL = new URL(fPage.T3q(content), parameters.url);
+             realURL.search = '?'+parameters.contentAppendParam;
 
              //*****************************/
              //GETTING IMAGE SCRAMBLE DATA
