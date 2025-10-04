@@ -24,7 +24,7 @@ type APIMagazine = {
 type PageInfo = {
     endCursor: string;
     hasNextPage: boolean;
-}
+};
 
 type APIMagazineDetails = {
     magazineId: string;
@@ -55,7 +55,7 @@ type APIChapter = {
 type MangaId = {
     magazineId: string;
     isWebOnlySensitive: boolean;
-}
+};
 
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
