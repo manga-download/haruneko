@@ -8,8 +8,8 @@ const chapterScript = `
     new Promise( resolve => {
         document.querySelector('#chapter-list').dispatchEvent(new Event('getChapterList'));
         setTimeout( () => {
-            resolve ( [...document.querySelectorAll('#chapter-list a')].map(chapter => {
-                return { id: chapter.pathname, title : chapter.querySelector('span').textContent.trim()};
+            resolve ( [...document.querySelectorAll('#chapter-list div[data-chapter-number]')].map(chapter => {
+                return { id: chapter.querySelector('a').pathname, title : ['Chapter', chapter.dataset.chapterNumber].join(' ').trim()};
             }));
         }, 750);
     });
@@ -21,8 +21,8 @@ const chapterScript = `
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
-    public constructor() {
-        super('natsuid', 'NatsuID', 'https://natsu.tv', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Media.Manga, Tags.Language.Indonesian, Tags.Source.Scanlator);
+    public constructor(id = 'natsuid', label = 'NatsuID', url = 'https://natsu.tv', tags = [Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Media.Manga, Tags.Language.Japanese] ) {
+        super(id, label, url, ...tags);
     }
 
     public override get Icon() {

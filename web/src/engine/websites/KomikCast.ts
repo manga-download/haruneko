@@ -18,7 +18,7 @@ function MangaExtractor(element: HTMLDivElement) {
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
     public constructor () {
-        super('komikcast', 'KomikCast', 'https://komikcast.li', Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Language.Indonesian, Tags.Source.Aggregator, Tags.Accessibility.DomainRotation);
+        super('komikcast', 'KomikCast', 'https://komikcast.pics', Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Language.Indonesian, Tags.Source.Aggregator, Tags.Accessibility.DomainRotation);
     }
 
     public override get Icon() {
