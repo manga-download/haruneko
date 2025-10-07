@@ -4,6 +4,8 @@ import { Chapter, DecoratableMangaScraper, type MangaPlugin, Manga, Page } from 
 import * as Common from './decorators/Common';
 import { FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
 
+// TODO : Add Novel support.
+
 type APIResult<T> = {
     data: T
 };
@@ -22,7 +24,7 @@ type APIPages = APIResult<{
     chapter: {
         baseUrl: string;
         hash: string;
-        data: string[];
+        data?: string[];
     }
 }>;
 
@@ -43,7 +45,7 @@ class TokenProvider {
      */
     public async UpdateToken() {
         try {
-            this.#token = await FetchWindowScript<string>(new Request(this.clientURI), `localStorage.getItem('token') || null);`) ?? null;
+            this.#token = await FetchWindowScript<string>(new Request(this.clientURI), `localStorage.getItem('token') || null;`) ?? null;
         } catch (error) {
             console.warn('UpdateToken()', error);
             this.#token = null;
@@ -102,7 +104,7 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
         const { data: { chapter: { baseUrl, data, hash } } } = await this.FetchAPI<APIPages>(`./paginas/${chapter.Identifier}`);
-        return data.map(page => new Page(this, chapter, new URL([baseUrl, hash, page].join('/'))));
+        return data? data.map(page => new Page(this, chapter, new URL([baseUrl, hash, page].join('/')))): [];
     }
 
     private async GetAllMangas(provider: MangaPlugin): Promise<Manga[]> {
