@@ -115,6 +115,9 @@ async function Render(image: ImageBitmap, ctx: OffscreenCanvasRenderingContext2D
     }
 }
 
+/* eslint-disable semi */
+/* eslint-disable @stylistic/no-extra-parens */
+
 // Extracted from website script
 // TODO: May be simplified ...
 function VRF(signature: string) {
@@ -254,3 +257,6 @@ function VRF(signature: string) {
 
     return crc_vrf(signature);
 }
+
+/* eslint-enable semi */
+/* eslint-enable @stylistic/no-extra-parens */
