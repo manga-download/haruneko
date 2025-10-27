@@ -35,7 +35,6 @@ export { default as AstralManga } from './AstralManga';
 export { default as AsuraScans } from './AsuraScans';
 export { default as AsuraScansTR } from './AsuraScansTR';
 export { default as Atikrost } from './Atikrost';
-export { default as AuroraScans } from './AuroraScans';
 export { default as AyaToon } from './AyaToon';
 export { default as Aymry } from './Aymry';
 export { default as AzoraWorld } from './AzoraWorld';
