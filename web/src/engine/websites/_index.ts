@@ -151,7 +151,6 @@ export { default as FlashManga } from './FlashManga';
 export { default as FlowerComics } from './FlowerComics';
 export { default as FMTeam } from './FMTeam';
 export { default as FoxTruyen } from './FoxTruyen';
-export { default as FoyScan } from './FoyScan';
 export { default as FreeComicOnline } from './FreeComicOnline';
 export { default as FreeManga } from './FreeManga';
 export { default as FuryoSociety } from './FuryoSociety';
