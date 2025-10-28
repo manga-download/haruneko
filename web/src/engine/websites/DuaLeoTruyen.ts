@@ -6,7 +6,7 @@ import * as Common from './decorators/Common';
 function MangaExtractor(element: HTMLAnchorElement) {
     return {
         id: element.pathname,
-        title: element.querySelector<HTMLDivElement>('div.name').textContent.trim()
+        title: element.querySelector<HTMLDivElement>('div.name').innerText.trim()
     };
 }
 
@@ -18,7 +18,7 @@ function MangaExtractor(element: HTMLAnchorElement) {
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('dualeotruyen', 'DuaLeoTruyen', 'https://dualeotruyenf.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Media.Manga, Tags.Language.Vietnamese, Tags.Source.Aggregator);
+        super('dualeotruyen', 'DuaLeoTruyen', 'https://dualeotruyenlv.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Media.Manga, Tags.Language.Vietnamese, Tags.Source.Aggregator);
     }
 
     public override get Icon() {
