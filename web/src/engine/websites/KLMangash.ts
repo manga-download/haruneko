@@ -41,7 +41,7 @@ function ChapterExtractor(anchor: HTMLAnchorElement) {
     };
 }
 
-@Common.MangaCSS(/^{origin}\/manga-raw\/[^/]+\/$/, 'div.container div.z-single-mg h1.name', MangaLinkExtractor)
+@Common.MangaCSS(/^https:\/\/klmanga\.[a-z]{2,3}\/manga-raw\/[^/]+\/$/, 'div.container div.z-single-mg h1.name', MangaLinkExtractor)
 @Common.MangasMultiPageCSS('div.grid-of-mangas h2.name a', Common.PatternLinkGenerator('/page/{page}/'), 0, MangaExtractor)
 @Common.ChaptersSinglePageCSS('div.chapter-box a', undefined, ChapterExtractor)
 export default class extends DecoratableMangaScraper {
@@ -49,7 +49,7 @@ export default class extends DecoratableMangaScraper {
     private zingParams: ZingParams;
 
     public constructor() {
-        super('klmangash', 'KLManga(.sh)', 'https://klmanga.lt', Tags.Media.Manga, Tags.Language.Japanese, Tags.Source.Aggregator);
+        super('klmangash', 'KLManga(.sh)', 'https://klmanga.li', Tags.Media.Manga, Tags.Language.Japanese, Tags.Source.Aggregator, Tags.Accessibility.DomainRotation);
     }
 
     public override get Icon() {
