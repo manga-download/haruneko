@@ -744,6 +744,7 @@ export { default as WebtoonTR } from './WebtoonTR';
 export { default as WebtoonTRNET } from './WebtoonTRNET';
 export { default as WebtoonXYZ } from './WebtoonXYZ';
 export { default as WeebCentral } from './WeebCentral';
+export { default as WeebDex } from './WeebDex';
 export { default as WeLoMa } from './WeLoMa';
 export { default as WeLoveManga } from './WeLoveManga';
 export { default as WestManga } from './WestManga';
