@@ -12,10 +12,8 @@ const chapterScript = `
 
 const pageScript = `
     [...document.querySelectorAll('div.page-break img.wp-manga-chapter-img[id^="image-"]')]
-    .flatMap(img => {
-        const k = img.getAttributeNames().find(n => n.startsWith('zdk2-'));
-        return k ? [img.getAttribute(k)] : [];
-    });
+        .map(img => [...img.attributes].find(attribute => attribute.value.startsWith('/validate2.php'))?.value)
+        .filter(img => img);
 `;
 
 @Common.MangaCSS(/^{origin}\/series\/[^/]+\/$/, 'h1.post-title')
