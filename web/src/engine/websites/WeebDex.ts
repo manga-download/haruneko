@@ -42,7 +42,6 @@ export default class extends DecoratableMangaScraper {
 
     public constructor() {
         super('weebdex', 'WeebDex', 'https://weebdex.org', Tags.Media.Manga, Tags.Language.Multilingual, Tags.Source.Aggregator);
-        this.imageTaskPool
     }
 
     public override get Icon() {
