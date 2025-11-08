@@ -8,12 +8,12 @@ new TestFixture({
     },
     container: {
         url: 'https://mangafire.to/manga/vagabondd.4mx',
-        id: '4mx',
+        id: '/manga/vagabondd.4mx',
         title: 'Vagabond'
     },
     child: {
-        id: 'chapter/4745876',
-        title: 'Chap 25: Chaos at the Yoshioka School (en)'
+        id: '/read/vagabondd.4mx/en/chapter-25',
+        title: 'Chapter 25: Chaos at the Yoshioka School (en)'
     },
     entry: {
         index: 0,
@@ -30,11 +30,11 @@ new TestFixture({
     },
     container: {
         url: 'https://mangafire.to/manga/vagabondd.4mx',
-        id: '4mx',
+        id: '/manga/vagabondd.4mx',
         title: 'Vagabond'
     },
     child: {
-        id: 'chapter/4723973',
+        id: '/read/vagabondd.4mx/ja/chapter-315',
         title: 'Chap 315: 水ぬるむ頃 (ja)'
     },
     entry: {
@@ -52,11 +52,11 @@ new TestFixture({
     },
     container: {
         url: 'https://mangafire.to/manga/vagabondd.4mx',
-        id: '4mx',
+        id: '/manga/vagabondd.4mx',
         title: 'Vagabond'
     },
     child: {
-        id: 'volume/122754',
+        id: '/read/vagabondd.4mx/en/volume-10',
         title: 'Vol 10: (en)'
     },
     entry: {
@@ -65,3 +65,8 @@ new TestFixture({
         type: 'image/jpeg'
     }
 }).AssertWebsite();
+
+// CASE: Volume (Japanese)
+/*
+    ...
+*/
