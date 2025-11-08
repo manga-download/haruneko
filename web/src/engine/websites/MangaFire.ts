@@ -1,4 +1,4 @@
-import { type Tag, Tags } from '../Tags';
+import { Tags } from '../Tags';
 import icon from './MangaFire.webp';
 import type { Priority } from '../taskpool/DeferredTask';
 import { DecoratableMangaScraper, type Chapter, Page } from '../providers/MangaPlugin';
@@ -18,7 +18,7 @@ function ChapterInfoExtractor(span: HTMLSpanElement) {
     return {
         id: pathname,
         title: `${span.innerText.trim()} (${language})`,
-    }
+    };
 }
 
 @Common.MangaCSS(/^{origin}\/manga\/[^/]+$/, 'div.info h1[itemprop="name"]', (head, uri) => ({ id: uri.pathname, title: head.innerText.trim() }))
