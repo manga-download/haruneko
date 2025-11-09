@@ -95,18 +95,18 @@ export default class extends DecoratableMangaScraper {
         const blob = await Common.FetchImageAjax.call(this, page, priority, signal);
         return DeScramble(blob, async (image, ctx) => {
             ctx.drawImage(image, 0, 0);
-            const tileInfo = GetTileInfo(image.width, image.height);
-            for (const { source, dest } of GetTileMap(page.Parameters.seed)) {
+            // source code: const i = r === 1 ? tt(e.width, e.height, t) : nt(e.width, e.height, t);
+            // r: scrambleVer (always 1)
+            const i = tt(image.width, image.height, COL_NUM);
+            for (const c of it(COL_NUM, page.Parameters.seed)) {
                 ctx.drawImage(
                     image,
-                    source.x * tileInfo.width,
-                    source.y * tileInfo.height,
-                    tileInfo.width,
-                    tileInfo.height,
-                    dest.x * tileInfo.width,
-                    dest.y * tileInfo.height,
-                    tileInfo.width,
-                    tileInfo.height
+                    c.source.x * i.width,
+                    c.source.y * i.height,
+                    i.width, i.height,
+                    c.dest.x * i.width,
+                    c.dest.y * i.height,
+                    i.width, i.height
                 );
             }
         });
@@ -155,52 +155,51 @@ export class DRMProvider {
 // Copy & Paste from Website
 
 const COL_NUM = 4;
+const O = 8;
 
-function GetTileInfo(imageWidth: number, imageHeight: number) {
-    return getPieceDimension(imageWidth, imageHeight, COL_NUM);
+const ot = function*(n: number) {
+    const e = Uint32Array.of(n);
+    for (; ; )
+        e[0] ^= e[0] << 13,
+        e[0] ^= e[0] >>> 17,
+        e[0] ^= e[0] << 5,
+        yield e[0]
 }
 
-function GetTileMap(seed: number) {
-    return xs(COL_NUM, seed);
+const at = (n: any[], e: number) => {
+    const t = ot(e);
+    return n.map(r => [t.next().value, r]).sort( (r, i) => +(r[0] > i[0]) - +(i[0] > r[0])).map(r => r[1])
 }
 
-function getPieceDimension(width: number, height: number, t: number) {
-    if (width < t || height < t) return null;
-    const s = Cs(t, 8);
-    return width > s && height > s && (width = Math.floor(width / s) * s, height = Math.floor(height / s) * s),
-    {
-        width: Math.floor(width / t),
-        height: Math.floor(height / t)
-    };
+const it = function*(n: number, e: number) {
+    yield*at([...Array(n ** 2)].map( (s, r) => r), e).map( (s, r) => ({
+        source: {
+            x: s % n,
+            y: Math.floor(s / n)
+        },
+        dest: {
+            x: r % n,
+            y: Math.floor(r / n)
+        }
+    }))
 }
 
-function Cs(e: number, i: number): number {
-    e > i && ([ e, i ] = [ i, e ]);
-    const t = (s, o) => s ? t(o % s, s) : o;
-    return e * i / t(e, i);
-}
-
-const xs = function* (e: number, i: number) {
-    yield* Is([ ...Array(e ** 2) ].map((s, o) => o), i).map(
-        (s, o) => ({
-            source: {
-                x: s % e,
-                y: Math.floor(s / e)
-            },
-            dest: {
-                x: o % e,
-                y: Math.floor(o / e)
-            }
-        })
-    );
+const st = (n: number, e: number) => {
+  const t = (s, r) => s ? t(r % s, s) : r;
+  return n * e / t(n, e);
 };
 
-function Is(e: number[], seed: number): number[] {
-    const t = Ls(seed);
-    return e.map(o => [ t.next().value, o ]).sort((o, r) => + (o[ 0 ] > r[ 0 ]) - + (r[ 0 ] > o[ 0 ])).map(o => o[ 1 ]);
-}
-
-const Ls = function* (seed: number) {
-    const i = Uint32Array.of(seed);
-    for (; ;) i[ 0 ] ^= i[ 0 ] << 13, i[ 0 ] ^= i[ 0 ] >>> 17, i[ 0 ] ^= i[ 0 ] << 5, yield i[ 0 ];
+const tt = (n: number, e: number, t: number) => {
+  if (n < t || e < t) {
+    return null;
+  }
+  const s = st(t, O);
+  if (n > s && e > s) {
+    n = Math.floor(n / s) * s;
+    e = Math.floor(e / s) * s;
+  }
+  return {
+    width: Math.floor(n / t),
+    height: Math.floor(e / t)
+  };
 };
