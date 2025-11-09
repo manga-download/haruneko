@@ -158,54 +158,57 @@ const COL_NUM = 4;
 const O = 8;
 
 const ot = function* (n: number) {
-  const e = Uint32Array.of(n);
-  for (;;)
-    (e[0] ^= e[0] << 13),
-      (e[0] ^= e[0] >>> 17),
-      (e[0] ^= e[0] << 5),
-      yield e[0];
+    const e = Uint32Array.of(n);
+    for (;;) {
+        e[0] ^= e[0] << 13;
+        e[0] ^= e[0] >>> 17;
+        e[0] ^= e[0] << 5;
+        yield e[0];
+    }
 };
 
 const at = (n: any[], e: number) => {
-  const t = ot(e);
-  return n
-    .map((r) => [t.next().value, r])
-    .sort((r, i) => +(r[0] > i[0]) - +(i[0] > r[0]))
-    .map((r) => r[1]);
+    const t = ot(e);
+    return n
+        .map((r) => [t.next().value, r])
+        .sort((r, i) => +(r[0] > i[0]) - +(i[0] > r[0]))
+        .map((r) => r[1]);
 };
 
 const it = function* (n: number, e: number) {
-  yield* at(
-    [...Array(n ** 2)].map((s, r) => r),
-    e
-  ).map((s, r) => ({
-    source: {
-      x: s % n,
-      y: Math.floor(s / n),
-    },
-    dest: {
-      x: r % n,
-      y: Math.floor(r / n),
-    },
-  }));
+    yield* at(
+        [...Array(n ** 2)].map((s, r) => r),
+        e
+    ).map((s, r) => ({
+        source: {
+            x: s % n,
+            y: Math.floor(s / n),
+        },
+        dest: {
+            x: r % n,
+            y: Math.floor(r / n),
+        },
+    }));
 };
 
 const st = (n: number, e: number) => {
-  const t = (s, r) => (s ? t(r % s, s) : r);
-  return (n * e) / t(n, e);
+    const t = function t(s: number, r: number): number {
+        return s ? t(r % s, s) : r;
+    };
+    return (n * e) / t(n, e);
 };
 
 const tt = (n: number, e: number, t: number) => {
-  if (n < t || e < t) {
-    return null;
-  }
-  const s = st(t, O);
-  if (n > s && e > s) {
-    n = Math.floor(n / s) * s;
-    e = Math.floor(e / s) * s;
-  }
-  return {
-    width: Math.floor(n / t),
-    height: Math.floor(e / t),
-  };
+    if (n < t || e < t) {
+        return null;
+    }
+    const s = st(t, O);
+    if (n > s && e > s) {
+        n = Math.floor(n / s) * s;
+        e = Math.floor(e / s) * s;
+    }
+    return {
+        width: Math.floor(n / t),
+        height: Math.floor(e / t),
+    };
 };
