@@ -195,7 +195,7 @@ const st = (n: number, e: number) => {
     const t = function t(s: number, r: number): number {
         return s ? t(r % s, s) : r;
     };
-    return (n * e) / t(n, e);
+    return n * e / t(n, e);
 };
 
 const tt = (n: number, e: number, t: number) => {
