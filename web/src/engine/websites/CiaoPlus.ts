@@ -25,11 +25,13 @@ type APIChapters = {
 
 type APIPages = {
     scramble_seed?: number;
+    scramble_ver?: number;
     page_list: string[];
 };
 
-type PageSeed = {
+type PageInfo = {
     seed: number;
+    version: number;
 };
 
 // TODO: Check for possible revision
@@ -83,21 +85,20 @@ export default class extends DecoratableMangaScraper {
         return chapters;
     }
 
-    public override async FetchPages(chapter: Chapter): Promise<Page<PageSeed>[]> {
-        const { page_list, scramble_seed } = await this.drm.FetchAPI<APIPages>('./web/episode/viewer', {
+    public override async FetchPages(chapter: Chapter): Promise<Page<PageInfo>[]> {
+        const { page_list, scramble_ver, scramble_seed } = await this.drm.FetchAPI<APIPages>('./web/episode/viewer', {
             platform: '3',
             episode_id: chapter.Identifier,
         });
-        return page_list.map(page => new Page<PageSeed>(this, chapter, new URL(page), { seed: scramble_seed ?? 1 }));
+        return page_list.map(page => new Page<PageInfo>(this, chapter, new URL(page), { seed: scramble_seed ?? 1, version: scramble_ver ?? 1 }));
     }
 
-    public override async FetchImage(page: Page<PageSeed>, priority: Priority, signal: AbortSignal): Promise<Blob> {
+    public override async FetchImage(page: Page<PageInfo>, priority: Priority, signal: AbortSignal): Promise<Blob> {
         const blob = await Common.FetchImageAjax.call(this, page, priority, signal);
         return DeScramble(blob, async (image, ctx) => {
             ctx.drawImage(image, 0, 0);
             // source code: const i = r === 1 ? tt(e.width, e.height, t) : nt(e.width, e.height, t);
-            // r: scrambleVer (always 1)
-            const i = tt(image.width, image.height, COL_NUM);
+            const i = page.Parameters.version === 1 ? tt(image.width, image.height, COL_NUM) : nt(image.width, image.height, COL_NUM);
             for (const c of it(COL_NUM, page.Parameters.seed)) {
                 ctx.drawImage(
                     image,
@@ -210,5 +211,19 @@ const tt = (n: number, e: number, t: number) => {
     return {
         width: Math.floor(n / t),
         height: Math.floor(e / t),
+    };
+};
+
+const nt = (n: number, e: number, t: number) => {
+    if (n < t * O || e < t * O) {
+        return null;
+    }
+    const s = Math.floor(n / O);
+    const r = Math.floor(e / O);
+    const i = Math.floor(s / t);
+    const c = Math.floor(r / t);
+    return {
+        width: i * O,
+        height: c * O
     };
 };
