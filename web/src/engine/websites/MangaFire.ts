@@ -1,7 +1,8 @@
 import { Tags } from '../Tags';
 import icon from './MangaFire.webp';
+import { FetchJSON } from '../platform/FetchProvider';
 import type { Priority } from '../taskpool/DeferredTask';
-import { DecoratableMangaScraper, type Chapter, Page } from '../providers/MangaPlugin';
+import { DecoratableMangaScraper, type Manga, Chapter, Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import DeScramble from '../transformers/ImageDescrambler';
 
@@ -11,19 +12,8 @@ type PageParameters = {
     ScramblingOffset?: number;
 };
 
-function ChapterInfoExtractor(span: HTMLSpanElement) {
-    const pathname = span.closest('a').pathname;
-    console.log(pathname);
-    const language = pathname.split('/').at(-2);
-    return {
-        id: pathname,
-        title: `${span.innerText.trim()} (${language})`,
-    };
-}
-
 @Common.MangaCSS(/^{origin}\/manga\/[^/]+$/, 'div.info h1[itemprop="name"]', (head, uri) => ({ id: uri.pathname, title: head.innerText.trim() }))
 @Common.MangasMultiPageCSS<HTMLAnchorElement>('div.info > a', Common.PatternLinkGenerator('/az-list?page={page}'), 250, anchor => ({ id: anchor.pathname.split('.').at(-1), title: anchor.text.trim() }))
-@Common.ChaptersSinglePageCSS('section.m-list ul li.item[data-number] > a > span:first-of-type', undefined, ChapterInfoExtractor)
 export default class extends DecoratableMangaScraper {
 
     #drm = new DRMProvider();
@@ -34,6 +24,21 @@ export default class extends DecoratableMangaScraper {
 
     public override get Icon() {
         return icon;
+    }
+
+    public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
+        const parser = new DOMParser();
+        const id = manga.Identifier.split('.').at(-1);
+        return Array.fromAsync(async function* () {
+            for (const type of ['chapter', 'volume']) {
+                for (const language of ['en', 'es', 'es-la', 'fr', 'ja', 'pt-br']) {
+                    const uri = new URL(`/ajax/manga/${id}/${type}/${language}`, this.URI);
+                    const { result } = await FetchJSON<{ result: string }>(new Request(uri));
+                    const entries = [...parser.parseFromString(result, 'text/html').documentElement.querySelectorAll<HTMLSpanElement>('.item[data-number] > a > span:first-of-type')];
+                    yield* entries.map(span => new Chapter(this, manga, span.closest('a').pathname, `${span.innerText.trim()} (${language})`));
+                }
+            }
+        }.call(this));
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page<PageParameters>[]> {
