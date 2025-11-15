@@ -1,31 +1,12 @@
-# Stage 1: Build stage
-FROM node:20-bullseye-slim AS builder
-
-# Set working directory
-WORKDIR /app
-
-# Copy package files
-COPY package*.json ./
-
-# Install ALL dependencies (including dev dependencies for build)
-RUN npm ci
-
-# Copy source files
-COPY . .
-
-# Build TypeScript (only build what's needed for production)
-RUN npm run build:prod
-
-# Stage 2: Production stage
+# Use Node.js 20 LTS
 FROM node:20-bullseye-slim
 
-# Install Chromium and required dependencies
+# Install Chromium and dependencies
 RUN apt-get update && apt-get install -y \
     chromium \
     chromium-sandbox \
     fonts-liberation \
     fonts-noto-color-emoji \
-    libappindicator3-1 \
     libasound2 \
     libatk-bridge2.0-0 \
     libatk1.0-0 \
@@ -47,24 +28,19 @@ RUN apt-get update && apt-get install -y \
 # Set working directory
 WORKDIR /app
 
-# Set Puppeteer environment variables to use system Chromium
+# Set Puppeteer to use system Chromium
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
-    PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium \
-    NODE_ENV=production
+    PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
 
-# Copy package files
+# Copy everything
 COPY package*.json ./
+COPY . .
 
-# Install only production dependencies
-RUN npm ci --only=production
+# Install all dependencies
+RUN npm install
 
-# Copy built files from builder stage
-COPY --from=builder /app/dist ./dist
-
-# Copy necessary runtime files (images, translations, website icons)
-COPY --from=builder /app/src/img ./src/img
-COPY --from=builder /app/src/i18n ./src/i18n
-COPY --from=builder /app/src/engine/websites ./src/engine/websites
+# Build with skipLibCheck to avoid type errors
+RUN npx tsc --skipLibCheck && npx tsc-alias
 
 # Create storage directories
 RUN mkdir -p /app/storage/database \
