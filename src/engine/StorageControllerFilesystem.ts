@@ -184,13 +184,30 @@ export class StorageControllerFilesystem implements StorageController {
      * Remove temporary data
      */
     public async RemoveTemporary(...keys: string[]): Promise<void> {
+        const tempDir = path.join(this.basePath, 'TemporaryData');
+
         await Promise.all(
-            keys.map(key => {
-                const filePath = this.getFilePath('TemporaryData', key);
-                return fs.unlink(filePath).catch(err => {
-                    // Ignore ENOENT errors
-                    if (err.code !== 'ENOENT') throw err;
-                });
+            keys.map(async (key) => {
+                // Try both blob path (without .json) and json path (with .json)
+                const blobPath = path.join(tempDir, key);
+                const jsonPath = this.getFilePath('TemporaryData', key);
+
+                // Try to delete blob file first
+                try {
+                    await fs.unlink(blobPath);
+                } catch (error) {
+                    // If blob doesn't exist, try JSON file
+                    if ((error as NodeJS.ErrnoException).code === 'ENOENT') {
+                        try {
+                            await fs.unlink(jsonPath);
+                        } catch (err) {
+                            // Ignore ENOENT errors for JSON too
+                            if ((err as NodeJS.ErrnoException).code !== 'ENOENT') throw err;
+                        }
+                    } else {
+                        throw error;
+                    }
+                }
             })
         );
     }

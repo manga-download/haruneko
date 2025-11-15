@@ -109,7 +109,15 @@ class DownloadService {
                 fileUrl: `/api/v1/downloads/${downloadId}/file`,
             });
         } catch (error) {
-            logger.error(`Download processing failed for ${downloadId}:`, error);
+            const errorMessage = error instanceof Error ? error.message : String(error);
+            const errorStack = error instanceof Error ? error.stack : undefined;
+            logger.error(`Download processing failed for ${downloadId}:`, {
+                error: errorMessage,
+                stack: errorStack,
+                downloadId,
+                sourceId: request.sourceId,
+                mangaId: request.mangaId,
+            });
             throw error;
         }
     }
@@ -148,8 +156,12 @@ class DownloadService {
                 for (let pageIndex = 0; pageIndex < pages.length; pageIndex++) {
                     const page = pages[pageIndex];
                     try {
+                        logger.debug(`Fetching page ${pageIndex + 1}/${pages.length}: ${page.Link?.href}`);
                         const imageBlob = await page.Fetch(Priority.Normal, new AbortController().signal);
+                        logger.debug(`Received blob: type=${imageBlob?.type}, size=${imageBlob?.size}`);
+
                         const tempKey = await storageController.SaveTemporary(imageBlob);
+                        logger.debug(`Saved to temporary storage with key: ${tempKey}`);
                         resourceMap.set(pageIndex, tempKey);
 
                         // Update progress within chapter
@@ -158,8 +170,14 @@ class DownloadService {
                             progress: Math.floor(chapterProgress * 90),
                         });
                     } catch (error) {
-                        logger.error(`Failed to download page ${pageIndex + 1} of chapter ${chapter.Title}:`, error);
-                        throw new Error(`Failed to download page ${pageIndex + 1}: ${error.message}`);
+                        const errorMessage = error instanceof Error ? error.message : String(error);
+                        const errorStack = error instanceof Error ? error.stack : undefined;
+                        logger.error(`Failed to download page ${pageIndex + 1} of chapter ${chapter.Title}:`, {
+                            error: errorMessage,
+                            stack: errorStack,
+                            pageLink: page.Link?.href,
+                        });
+                        throw new Error(`Failed to download page ${pageIndex + 1}: ${errorMessage}`);
                     }
                 }
 
@@ -200,7 +218,14 @@ class DownloadService {
                 return outputPath;
 
             } catch (error) {
-                logger.error(`Failed to process chapter ${chapter.Title}:`, error);
+                const errorMessage = error instanceof Error ? error.message : String(error);
+                const errorStack = error instanceof Error ? error.stack : undefined;
+                logger.error(`Failed to process chapter ${chapter.Title}:`, {
+                    error: errorMessage,
+                    stack: errorStack,
+                    chapterTitle: chapter.Title,
+                    chapterId: chapter.Identifier,
+                });
                 throw error;
             }
         }
