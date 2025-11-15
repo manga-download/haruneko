@@ -1,0 +1,53 @@
+# Dependencies
+node_modules
+npm-debug.log
+yarn-error.log
+
+# Build output
+dist
+build
+*.tsbuildinfo
+
+# Storage (will be mounted as volume)
+storage
+
+# Git
+.git
+.gitignore
+.github
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+*~
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Documentation
+*.md
+!README.md
+
+# Test files
+**/*.test.ts
+**/*.spec.ts
+**/__tests__
+test
+tests
+
+# CI/CD
+.gitlab-ci.yml
+.travis.yml
+
+# Misc
+.editorconfig
+.prettierrc
+.eslintrc

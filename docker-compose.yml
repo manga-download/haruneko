@@ -1,0 +1,96 @@
+version: '3.8'
+
+services:
+  haruneko-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: haruneko-api
+    restart: unless-stopped
+
+    ports:
+      - "3000:3000"
+
+    environment:
+      # Node environment
+      - NODE_ENV=production
+
+      # Server configuration
+      - PORT=3000
+      - HOST=0.0.0.0
+
+      # Storage paths
+      - STORAGE_PATH=/app/storage
+
+      # Puppeteer configuration
+      - PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
+      - PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
+      - PUPPETEER_HEADLESS=true
+      - PUPPETEER_MAX_BROWSERS=5
+      - PUPPETEER_TIMEOUT=150000
+
+      # Logging
+      - LOG_LEVEL=info
+      - LOG_FORMAT=json
+
+      # Downloads
+      - DOWNLOAD_RETENTION_DAYS=7
+
+    volumes:
+      # Persist storage data
+      - ./storage:/app/storage
+
+      # Optional: Mount custom config if needed
+      # - ./config:/app/config
+
+    # Resource limits (adjust based on your needs)
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 2G
+        reservations:
+          cpus: '1'
+          memory: 512M
+
+    # Security options
+    security_opt:
+      - no-new-privileges:true
+
+    # Shared memory size (required for Chromium)
+    shm_size: '2gb'
+
+    # Health check
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3000/api/v1/sources', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"]
+      interval: 30s
+      timeout: 10s
+      start_period: 40s
+      retries: 3
+
+    # Logging
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+# Optional: Add a reverse proxy like nginx
+# Uncomment if you need SSL/TLS termination
+#
+#  nginx:
+#    image: nginx:alpine
+#    container_name: haruneko-nginx
+#    restart: unless-stopped
+#    ports:
+#      - "80:80"
+#      - "443:443"
+#    volumes:
+#      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+#      - ./ssl:/etc/nginx/ssl:ro
+#    depends_on:
+#      - haruneko-api
+
+volumes:
+  storage:
+    driver: local
