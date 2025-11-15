@@ -23,9 +23,9 @@ info:
     url: https://unlicense.org/
 
 servers:
-  - url: http://localhost:3000/api/v1
+  - url: http://localhost:3000
     description: Local development server
-  - url: https://api.example.com/api/v1
+  - url: https://api.example.com
     description: Production server
 
 tags:
@@ -51,7 +51,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/HealthResponse'
 
-  /sources:
+  /api/v1/sources:
     get:
       summary: Get all manga sources
       tags: [Sources]
@@ -73,7 +73,7 @@ paths:
                         items:
                           $ref: '#/components/schemas/SourceInfo'
 
-  /sources/{sourceId}:
+  /api/v1/sources/{sourceId}:
     get:
       summary: Get specific manga source
       tags: [Sources]
@@ -94,7 +94,7 @@ paths:
         '404':
           $ref: '#/components/responses/NotFound'
 
-  /sources/{sourceId}/search:
+  /api/v1/sources/{sourceId}/search:
     get:
       summary: Search manga in source
       tags: [Manga]
@@ -123,7 +123,7 @@ paths:
                         items:
                           $ref: '#/components/schemas/MangaInfo'
 
-  /sources/{sourceId}/manga:
+  /api/v1/sources/{sourceId}/manga:
     get:
       summary: List all manga from source
       tags: [Manga]
@@ -146,7 +146,7 @@ paths:
                         items:
                           $ref: '#/components/schemas/MangaInfo'
 
-  /sources/{sourceId}/manga/{mangaId}:
+  /api/v1/sources/{sourceId}/manga/{mangaId}:
     get:
       summary: Get manga details
       tags: [Manga]
@@ -168,7 +168,7 @@ paths:
         '404':
           $ref: '#/components/responses/NotFound'
 
-  /sources/{sourceId}/manga/{mangaId}/chapters:
+  /api/v1/sources/{sourceId}/manga/{mangaId}/chapters:
     get:
       summary: Get manga chapters
       tags: [Manga]
@@ -190,7 +190,7 @@ paths:
                         items:
                           $ref: '#/components/schemas/ChapterInfo'
 
-  /downloads:
+  /api/v1/downloads:
     get:
       summary: Get all downloads
       tags: [Downloads]
@@ -236,7 +236,7 @@ paths:
         '400':
           $ref: '#/components/responses/BadRequest'
 
-  /downloads/{downloadId}:
+  /api/v1/downloads/{downloadId}:
     get:
       summary: Get download status
       tags: [Downloads]
@@ -272,7 +272,7 @@ paths:
         '404':
           $ref: '#/components/responses/NotFound'
 
-  /downloads/{downloadId}/file:
+  /api/v1/downloads/{downloadId}/file:
     get:
       summary: Download file
       tags: [Downloads]
