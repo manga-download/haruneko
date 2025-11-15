@@ -4,35 +4,25 @@ import { Chapter, DecoratableMangaScraper, type Manga } from '../providers/Manga
 import * as Common from './decorators/Common';
 import { FetchJSON } from '../platform/FetchProvider';
 
-type APIResult<T> = {
+type APIChapters = {
     result: {
         data: {
-            json: T
-        }
-    }
+            json: {
+                chapters: {
+                    href: string;
+                    name: string;
+                    no: number;
+                }[];
+            };
+        };
+    };
 }[];
 
-type APIChapters = APIResult<{
-    chapters: {
-        href: string;
-        name: string;
-        no: number;
-    }[]
-}>;
-
-function MangaInfoExtractor(element: HTMLAnchorElement) {
-    return {
-        id: element.pathname,
-        title: element.querySelector<HTMLHeadingElement>('h3').textContent.trim()
-    };
-};
-
-@Common.MangaCSS(/{origin}\/seriler\/[^/]+$/, 'title', (el, uri) => ({ id: uri.pathname, title: el.textContent.split('- SADSCANS').at(0).trim() }))
-@Common.MangasSinglePageCSS('/seriler', 'a.block.group', MangaInfoExtractor)
+@Common.MangaCSS(/{origin}\/seriler\/[^/]+$/, 'div.container h1', (heading, uri) => ({ id: uri.pathname, title: heading.innerText.trim() }))
+@Common.MangasSinglePageCSS<HTMLAnchorElement>('/seriler', 'a.block.group', anchor => ({ id: anchor.pathname, title: anchor.querySelector('h3').innerText.trim() }))
 @Common.PagesSinglePageJS(`[...document.querySelectorAll('.reader-img')].map(image => image.src);`, 2000)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
-    private apiUrl = 'https://sadscans.net/api/trpc/';
 
     public constructor() {
         super('sadscans', `Sadscans`, 'https://sadscans.net', Tags.Language.Turkish, Tags.Source.Scanlator, Tags.Media.Manga);
@@ -43,19 +33,9 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const data = await this.FetchAPI<APIChapters>('./seriesSingle.getSeriesData?batch=1', {
-            0: {
-                json: {
-                    sef: manga.Identifier.split('/').at(-1)
-                }
-            }
-        });
-        return data.pop().result.data.json.chapters.map(chapter => new Chapter(this, manga, chapter.href, `${chapter.no}. Bölüm - ${chapter.name}`));
-    }
-
-    private async FetchAPI<T extends JSONElement>(endpoint: string, input: JSONElement): Promise<T> {
-        const url = new URL(endpoint, this.apiUrl);
-        url.searchParams.set('input', JSON.stringify(input));
-        return await FetchJSON<T>(new Request(url));
+        const uri = new URL('/api/trpc/seriesSingle.getSeriesData?batch=1', this.URI);
+        uri.searchParams.set('input', JSON.stringify({ 0: { json: { sef: manga.Identifier.split('/').at(-1) } } }));
+        const [{ result: { data: { json: { chapters } } } }]= await FetchJSON<APIChapters>(new Request(uri));
+        return chapters.map(({ href, no, name })=> new Chapter(this, manga, href, `${no}. Bölüm - ${name}`));
     }
 }
