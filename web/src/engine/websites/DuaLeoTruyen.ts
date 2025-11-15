@@ -1,5 +1,6 @@
 import { Tags } from '../Tags';
 import icon from './DuaLeoTruyen.webp';
+import { FetchWindowScript } from '../platform/FetchProvider';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 
@@ -18,10 +19,16 @@ function MangaExtractor(element: HTMLAnchorElement) {
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('dualeotruyen', 'DuaLeoTruyen', 'https://dualeotruyenlv.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Media.Manga, Tags.Language.Vietnamese, Tags.Source.Aggregator);
+        super('dualeotruyen', 'DuaLeoTruyen', 'https://dualeotruyenks.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Media.Manga, Tags.Language.Vietnamese, Tags.Source.Aggregator, Tags.Accessibility.DomainRotation);
     }
 
     public override get Icon() {
         return icon;
+    }
+
+    public override async Initialize(): Promise<void> {
+        // Latest Domain: https://www.facebook.com/dualeotruyen2
+        this.URI.href = await FetchWindowScript(new Request(this.URI), `window.location.origin;`, 0);
+        console.log(`Assigned URL '${this.URI}' to ${this.Title}`);
     }
 }
