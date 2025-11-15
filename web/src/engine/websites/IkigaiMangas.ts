@@ -21,7 +21,7 @@ function CreateInfoExtractor(query: string) {
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('ikigaimangas', 'Ikigai Mangas', 'https://visualikigai.yovek.online', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Spanish, Tags.Source.Aggregator, Tags.Accessibility.DomainRotation);
+        super('ikigaimangas', 'Ikigai Mangas', 'https://viralikigai.oxkdog.xyz', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Spanish, Tags.Source.Aggregator, Tags.Accessibility.DomainRotation);
     }
 
     public override get Icon() {
@@ -29,6 +29,12 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async Initialize(): Promise<void> {
+        /*
+        this.URI.href = await FetchWindowScript(new Request('https://ikigaimangas.com'), `new Promise(resolve => {
+            window.open = (url, target) => resolve(url);
+            document.querySelectorAll('div[' + CSS.escape('on:click') + ']').forEach(div => div.click());
+        })`, 0);
+        */
         this.URI.href = await FetchWindowScript(new Request('https://visualikigai.com'), `window.cookieStore.set('nsfw-mode', 'true'); window.location.origin;`, 0);
         console.log(`Assigned URL '${this.URI}' to ${this.Title}`);
     }
