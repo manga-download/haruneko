@@ -110,12 +110,37 @@ export class MangaPlugin extends MediaContainer<Manga> {
     }
 
     protected async PerformUpdate(): Promise<Manga[]> {
-        const entries = await this.scraper.FetchMangas(this);
-        const mangas = entries.map(entry => {
-            return { id: entry.Identifier, title: entry.Title };
-        });
-        await this.storageController.SavePersistent(mangas, Store.MediaLists, this.Identifier);
-        return entries;
+        console.log(`[MangaPlugin] 🔄 Starting FetchMangas for plugin: ${this.Identifier} (${this.Title})`);
+        const fetchStartTime = Date.now();
+
+        try {
+            const entries = await this.scraper.FetchMangas(this);
+            const fetchDuration = Date.now() - fetchStartTime;
+
+            console.log(`[MangaPlugin] ✅ FetchMangas completed for ${this.Identifier} in ${fetchDuration}ms`);
+            console.log(`[MangaPlugin] 📊 Fetched ${entries.length} manga entries from scraper`);
+
+            const mangas = entries.map(entry => {
+                return { id: entry.Identifier, title: entry.Title };
+            });
+
+            console.log(`[MangaPlugin] 💾 Saving ${mangas.length} entries to persistent storage...`);
+            await this.storageController.SavePersistent(mangas, Store.MediaLists, this.Identifier);
+            console.log(`[MangaPlugin] ✅ Saved successfully to storage`);
+
+            return entries;
+        } catch (error) {
+            const fetchDuration = Date.now() - fetchStartTime;
+            console.error(`[MangaPlugin] ❌ Error in FetchMangas for ${this.Identifier} after ${fetchDuration}ms:`, error);
+            console.error(`[MangaPlugin] ❌ Error details:`, {
+                plugin: this.Identifier,
+                title: this.Title,
+                url: this.URI?.href,
+                errorMessage: error instanceof Error ? error.message : String(error),
+                errorStack: error instanceof Error ? error.stack : undefined,
+            });
+            throw error;
+        }
     }
 }
 
@@ -134,8 +159,29 @@ export class Manga extends MediaContainer<Chapter> {
         return new Chapter(this.scraper, this, identifier, title);
     }
 
-    protected PerformUpdate(): Promise<Chapter[]> {
-        return this.scraper.FetchChapters(this);
+    protected async PerformUpdate(): Promise<Chapter[]> {
+        console.log(`[Manga] 🔄 Starting FetchChapters for manga: "${this.Title}" (${this.Identifier})`);
+        const fetchStartTime = Date.now();
+
+        try {
+            const chapters = await this.scraper.FetchChapters(this);
+            const fetchDuration = Date.now() - fetchStartTime;
+
+            console.log(`[Manga] ✅ FetchChapters completed for "${this.Title}" in ${fetchDuration}ms`);
+            console.log(`[Manga] 📊 Fetched ${chapters.length} chapters from scraper`);
+
+            return chapters;
+        } catch (error) {
+            const fetchDuration = Date.now() - fetchStartTime;
+            console.error(`[Manga] ❌ Error in FetchChapters for "${this.Title}" after ${fetchDuration}ms:`, error);
+            console.error(`[Manga] ❌ Error details:`, {
+                manga: this.Title,
+                identifier: this.Identifier,
+                errorMessage: error instanceof Error ? error.message : String(error),
+                errorStack: error instanceof Error ? error.stack : undefined,
+            });
+            throw error;
+        }
     }
 }
 

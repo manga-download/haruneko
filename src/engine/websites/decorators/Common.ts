@@ -145,7 +145,9 @@ export function AnchorInfoExtractor(useTitleAttribute = false, queryBloat: strin
         }
         return {
             id: element.pathname,
-            title: useTitleAttribute ? element.title.trim() : element.innerText.trim()
+            title: useTitleAttribute
+                ? (element.title || '').trim()
+                : (element.innerText || element.textContent || '').trim()
         };
     };
 }
