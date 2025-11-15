@@ -24,8 +24,11 @@ const __dirname = path.dirname(__filename);
 export function createApp(): Express {
     const app = express();
 
-    // Security middleware
-    app.use(helmet());
+    // Security middleware - disable CSP for Swagger UI
+    app.use(helmet({
+        contentSecurityPolicy: false,
+        crossOriginEmbedderPolicy: false,
+    }));
     app.use(cors(config.cors));
 
     // Rate limiting
