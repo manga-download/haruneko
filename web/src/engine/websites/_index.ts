@@ -434,6 +434,7 @@ export { default as MangaWorld } from './MangaWorld';
 export { default as MangaWorldAdult } from './MangaWorldAdult';
 export { default as MangaWOW } from './MangaWOW';
 export { default as MangaWT } from './MangaWT';
+export { default as Mangaz } from './Mangaz';
 export { default as Mangazure } from './Mangazure';
 export { default as ManHastro } from './ManHastro';
 export { default as ManHatic } from './ManHatic';
