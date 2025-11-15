@@ -1,0 +1,30 @@
+import { Tags } from '../Tags';
+import icon from './Hentai2Read.webp';
+import { DecoratableMangaScraper } from '../providers/MangaPlugin';
+import * as Common from './decorators/Common';
+
+const scriptPages = `
+    new Promise((resolve, reject) => {
+        try {
+            resolve(window.gData.images.map(page => 'https://static.hentaicdn.com/hentai' + page));
+        } catch (error) {
+            reject(error);
+        }
+    });
+`;
+
+@Common.MangaCSS(/^{origin}\//, 'h3.block-title a', Common.WebsiteInfoExtractor({ queryBloat: 'small' }))
+@Common.MangasMultiPageCSS('div.book-grid div.overlay div.overlay-title a', Common.PatternLinkGenerator('/hentai-list/all/any/all/name-az/{page}'))
+@Common.ChaptersSinglePageCSS('ul.nav-chapters li div.media > a', undefined, Common.AnchorInfoExtractor(false, 'div'))
+@Common.PagesSinglePageJS(scriptPages)
+@Common.ImageAjax()
+export default class extends DecoratableMangaScraper {
+
+    public constructor() {
+        super('hentai2read', `Hentai2R`, 'https://hentai2read.com', Tags.Language.English, Tags.Media.Manga, Tags.Rating.Pornographic, Tags.Source.Aggregator);
+    }
+
+    public override get Icon() {
+        return icon;
+    }
+}

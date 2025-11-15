@@ -1,0 +1,37 @@
+package MangaUpGlobal;
+syntax = "proto3";
+
+message SearchView  {
+    repeated Manga titles = 2;
+}
+
+message Manga {
+    optional uint32 titleId = 1;
+    optional string titleName = 2;
+}
+
+message MangaDetailView {
+    optional string titleName = 3;
+    repeated Chapter chapters = 13;
+}
+
+
+message Chapter {
+    optional uint32 id = 1;
+    optional string titleName = 2;
+    optional string subName = 3;
+}
+
+message MangaViewerV2View {
+    repeated PageBlock pageblocks = 3;
+}
+
+message PageBlock {
+    repeated MangaPage pages = 3;
+}
+
+message MangaPage {
+    optional string imageUrl = 1;
+    optional string encryptionKey = 5;
+    optional string iv = 6;
+}

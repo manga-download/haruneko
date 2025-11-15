@@ -1,0 +1,22 @@
+import { TestFixture } from '../../../test/WebsitesFixture';
+
+new TestFixture({
+    plugin: {
+        id: 'freecomiconline',
+        title: 'Free Comic Online'
+    },
+    container: {
+        url: 'https://freecomiconline.me/comic/daughter-friend-raw/',
+        id: JSON.stringify({ post: '13014', slug: '/comic/daughter-friend-raw/' }),
+        title: 'Daughter Friend Raw'
+    },
+    child: {
+        id: '/comic/daughter-friend-raw/chapter-1/',
+        title: 'Chapter 1'
+    },
+    entry: {
+        index: 0,
+        size: 249_175,
+        type: 'image/jpeg'
+    }
+}).AssertWebsite();
