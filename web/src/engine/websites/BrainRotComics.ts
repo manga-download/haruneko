@@ -1,5 +1,5 @@
 import { Tags } from '../Tags';
-import icon from './AryaScans.webp';
+import icon from './BrainRotComics.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Madara from './decorators/WordPressMadara';
 import * as Common from './decorators/Common';
@@ -12,7 +12,7 @@ import * as Common from './decorators/Common';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('aryascans', 'Arya Scans', 'https://aryascans.com', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Source.Scanlator, Tags.Language.English);
+        super('brainrotcomics', 'BrainRotComics', 'https://brainrotcomics.com', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Source.Scanlator, Tags.Language.English);
     }
 
     public override get Icon() {
