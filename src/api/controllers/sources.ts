@@ -144,7 +144,18 @@ export async function getManga(req: Request, res: Response): Promise<void> {
 export async function getChapters(req: Request, res: Response): Promise<void> {
     const { sourceId, mangaId } = req.params;
 
+    logger.info(`🌐 API Request: GET /api/v1/sources/${sourceId}/manga/${mangaId}/chapters`, {
+        sourceId,
+        mangaId,
+        ip: req.ip,
+        userAgent: req.get('user-agent'),
+    });
+
+    const chaptersStartTime = Date.now();
     const chapters = await engineService.getChapters(sourceId, mangaId);
+    const chaptersDuration = Date.now() - chaptersStartTime;
+
+    logger.info(`⏱️  Chapters fetch completed in ${chaptersDuration}ms, found ${chapters.length} chapters`);
 
     const response: ApiResponse<ChapterInfo[]> = {
         success: true,

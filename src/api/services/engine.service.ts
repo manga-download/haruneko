@@ -240,26 +240,63 @@ class EngineService {
      * Get chapters for a manga
      */
     public async getChapters(sourceId: string, mangaId: string): Promise<ChapterInfo[]> {
+        logger.info(`📖 Getting chapters: source="${sourceId}", mangaId="${mangaId}"`);
+
         const engine = this.getEngine();
         const plugin = engine.PluginController.WebsitePlugins.find(
             (p: any) => p.Identifier === sourceId
         );
 
         if (!plugin) {
+            logger.warn(`❌ Source not found: ${sourceId}`);
             throw Errors.SourceNotFound(sourceId);
         }
 
+        logger.info(`✅ Found plugin: ${plugin.Title} (${sourceId})`);
+
         try {
-            const mangas = await plugin.Entries;
+            // First, ensure we have the manga list loaded
+            const currentMangas = plugin.Entries.Value;
+            logger.info(`📦 Current cached manga count: ${currentMangas.length}`);
+
+            if (currentMangas.length === 0) {
+                logger.info(`🔄 No manga cached, fetching manga list first...`);
+                await plugin.Update();
+                logger.info(`✅ Manga list loaded: ${plugin.Entries.Value.length} manga`);
+            }
+
+            const mangas = plugin.Entries;
             const manga = mangas.Value.find((m: any) => m.Identifier === mangaId);
 
             if (!manga) {
+                logger.warn(`❌ Manga not found: ${mangaId} in source ${sourceId}`);
+                logger.info(`📋 Available manga IDs (first 10):`, mangas.Value.slice(0, 10).map((m: any) => m.Identifier));
                 throw Errors.MangaNotFound(mangaId);
             }
 
-            const chapters = await manga.Entries;
+            logger.info(`✅ Found manga: "${manga.Title}" (${mangaId})`);
 
-            return chapters.Value.map((chapter: any) => ({
+            // Check if chapters are already loaded for this manga
+            const currentChapters = manga.Entries.Value;
+            logger.info(`📦 Current cached chapters count: ${currentChapters.length}`);
+
+            // If no chapters cached, fetch fresh data
+            if (currentChapters.length === 0) {
+                logger.info(`🔄 No cached chapters found, fetching from source...`);
+                logger.info(`⏳ Calling manga.Update() to fetch chapter list...`);
+
+                const updateStartTime = Date.now();
+                await manga.Update();
+                const updateDuration = Date.now() - updateStartTime;
+
+                const updatedChapters = manga.Entries.Value;
+                logger.info(`✅ Update completed in ${updateDuration}ms, fetched ${updatedChapters.length} chapters`);
+            } else {
+                logger.info(`✅ Using ${currentChapters.length} cached chapters`);
+            }
+
+            const chapters = manga.Entries;
+            const results = chapters.Value.map((chapter: any) => ({
                 id: chapter.Identifier,
                 title: chapter.Title,
                 mangaId,
@@ -268,11 +305,21 @@ class EngineService {
                 volume: chapter.Volume,
                 language: chapter.Language,
             }));
+
+            logger.info(`✅ Returning ${results.length} chapters for manga "${manga.Title}"`);
+            return results;
         } catch (error) {
             if (error instanceof Error && error.message.includes('not found')) {
                 throw error;
             }
-            logger.error(`Error getting chapters for ${mangaId}:`, error);
+
+            logger.error(`❌ Error getting chapters for ${mangaId}:`, {
+                error: error instanceof Error ? error.message : String(error),
+                stack: error instanceof Error ? error.stack : undefined,
+                sourceId,
+                mangaId,
+            });
+
             const message = error instanceof Error ? error.message : 'Unknown error';
             throw Errors.InternalError(`Failed to get chapters: ${message}`);
         }

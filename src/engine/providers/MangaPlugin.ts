@@ -159,8 +159,29 @@ export class Manga extends MediaContainer<Chapter> {
         return new Chapter(this.scraper, this, identifier, title);
     }
 
-    protected PerformUpdate(): Promise<Chapter[]> {
-        return this.scraper.FetchChapters(this);
+    protected async PerformUpdate(): Promise<Chapter[]> {
+        console.log(`[Manga] 🔄 Starting FetchChapters for manga: "${this.Title}" (${this.Identifier})`);
+        const fetchStartTime = Date.now();
+
+        try {
+            const chapters = await this.scraper.FetchChapters(this);
+            const fetchDuration = Date.now() - fetchStartTime;
+
+            console.log(`[Manga] ✅ FetchChapters completed for "${this.Title}" in ${fetchDuration}ms`);
+            console.log(`[Manga] 📊 Fetched ${chapters.length} chapters from scraper`);
+
+            return chapters;
+        } catch (error) {
+            const fetchDuration = Date.now() - fetchStartTime;
+            console.error(`[Manga] ❌ Error in FetchChapters for "${this.Title}" after ${fetchDuration}ms:`, error);
+            console.error(`[Manga] ❌ Error details:`, {
+                manga: this.Title,
+                identifier: this.Identifier,
+                errorMessage: error instanceof Error ? error.message : String(error),
+                errorStack: error instanceof Error ? error.stack : undefined,
+            });
+            throw error;
+        }
     }
 }
 
