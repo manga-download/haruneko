@@ -1,6 +1,6 @@
 import type { IPC } from '../InterProcessCommunication';
 import type { IRemoteProcedureCallContract } from '../RemoteProcedureCallContract';
-import { RemoteProcedureCallContract as Channels } from '../../../../../app/src/ipc/Channels';
+import { RemoteProcedureCallContract as Channels } from '../../../ipc/Channels';
 
 export default class RemoteProcedureCallContract implements IRemoteProcedureCallContract {
 

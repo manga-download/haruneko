@@ -3,6 +3,7 @@ import { Runtime } from './PlatformInfo';
 import { PlatformInstanceActivator } from './PlatformInstanceActivator';
 import NodeWebkitRemoteProcedureCallManager from './nw/RemoteProcedureCallManager';
 import ElectronRemoteProcedureCallManager from './electron/RemoteProcedureCallManager';
+import NodeRemoteProcedureCallManager from './node/RemoteProcedureCallManager';
 import GetIPC from './InterProcessCommunication';
 
 export interface IRemoteProcedureCallManager {
@@ -14,5 +15,6 @@ export function CreateRemoteProcedureCallManager(settingsManager: SettingsManage
     return new PlatformInstanceActivator<IRemoteProcedureCallManager>()
         .Configure(Runtime.NodeWebkit, () => new NodeWebkitRemoteProcedureCallManager(GetIPC(), settingsManager))
         .Configure(Runtime.Electron, () => new ElectronRemoteProcedureCallManager(GetIPC(), settingsManager))
+        .Configure(Runtime.Node, () => new NodeRemoteProcedureCallManager())
         .Create();
 }

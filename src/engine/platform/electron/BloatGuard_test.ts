@@ -1,6 +1,6 @@
 import { vi, describe, it, expect } from 'vitest';
 import type { IPC } from '../InterProcessCommunication';
-import { BloatGuard as Channels } from '../../../../../app/src/ipc/Channels';
+import { BloatGuard as Channels } from '../../../ipc/Channels';
 import BloatGuard from './BloatGuard';
 
 class TestFixture {

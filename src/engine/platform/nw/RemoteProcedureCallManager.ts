@@ -2,7 +2,7 @@ import type { IPC } from '../InterProcessCommunication';
 import { Key as GlobalKey } from '../../SettingsGlobal';
 import type { Numeric, Text, Check, SettingsManager } from '../../SettingsManager';
 import type { IRemoteProcedureCallManager } from '../RemoteProcedureCallManager';
-import { RemoteProcedureCallManager as Channels } from '../../../../../app/src/ipc/Channels';
+import { RemoteProcedureCallManager as Channels } from '../../../ipc/Channels';
 
 export default class RemoteProcedureCallManager implements IRemoteProcedureCallManager {
 

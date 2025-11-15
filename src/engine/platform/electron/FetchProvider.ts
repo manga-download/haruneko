@@ -1,7 +1,7 @@
 import { FetchProvider } from '../FetchProviderCommon';
 import type { FeatureFlags } from '../../FeatureFlags';
 import type { IPC } from '../InterProcessCommunication';
-import { FetchProvider as Channels } from '../../../../../app/src/ipc/Channels';
+import { FetchProvider as Channels } from '../../../ipc/Channels';
 
 // See: https://developer.mozilla.org/en-US/docs/Glossary/Forbidden_header_name
 const fetchApiSupportedPrefix = 'X-FetchAPI-';

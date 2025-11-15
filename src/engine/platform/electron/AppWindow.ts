@@ -1,6 +1,6 @@
 import type { IPC } from '../InterProcessCommunication';
 import type { IAppWindow } from '../AppWindow';
-import { ApplicationWindow as Channels } from '../../../../../app/src/ipc/Channels';
+import { ApplicationWindow as Channels } from '../../../ipc/Channels';
 
 export default class implements IAppWindow {
 

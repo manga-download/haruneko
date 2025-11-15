@@ -3,7 +3,7 @@ import { Observable, type IObservable } from '../../Observable';
 import type { IRemoteBrowserWindow } from '../RemoteBrowserWindow';
 import type { ScriptInjection } from '../FetchProviderCommon';
 import type { IPC } from '../InterProcessCommunication';
-import { RemoteBrowserWindowController as Channels } from '../../../../../app/src/ipc/Channels';
+import { RemoteBrowserWindowController as Channels } from '../../../ipc/Channels';
 
 export default class RemoteBrowserWindow implements IRemoteBrowserWindow {
 

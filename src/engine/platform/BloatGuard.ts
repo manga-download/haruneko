@@ -2,6 +2,7 @@ import { Runtime } from './PlatformInfo';
 import { PlatformInstanceActivator } from './PlatformInstanceActivator';
 import NodeWebkitBloatGuard from './nw/BloatGuard';
 import ElectronBloatGuard from './electron/BloatGuard';
+import NodeBloatGuard from './node/BloatGuard';
 import GetIPC from './InterProcessCommunication';
 
 export interface IBloatGuard {
@@ -12,6 +13,7 @@ export function CreateBloatGuard(): IBloatGuard {
     return new PlatformInstanceActivator<IBloatGuard>()
         .Configure(Runtime.NodeWebkit, () => new NodeWebkitBloatGuard(patterns))
         .Configure(Runtime.Electron, () => new ElectronBloatGuard(GetIPC(), patterns))
+        .Configure(Runtime.Node, () => new NodeBloatGuard())
         .Create();
 }
 
