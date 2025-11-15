@@ -88,14 +88,31 @@ export abstract class MediaContainer<T extends MediaChild> {
 
     public async Update(): Promise<void> {
         if(this.updating.Value) {
+            console.log(`[MediaContainer] ⏸️  Update already in progress for ${this.Identifier}, skipping...`);
             return;
         }
 
+        console.log(`[MediaContainer] 🚀 Starting Update() for ${this.Identifier} (${this.Title})`);
+        this.updating.Value = true;
+
         try {
+            console.log(`[MediaContainer] 🔧 Calling Initialize()...`);
             await this.Initialize();
-            this.entries.Value = await this.PerformUpdate();
+            console.log(`[MediaContainer] ✅ Initialize() completed`);
+
+            console.log(`[MediaContainer] 📥 Calling PerformUpdate()...`);
+            const updateStartTime = Date.now();
+            const updatedEntries = await this.PerformUpdate();
+            const updateDuration = Date.now() - updateStartTime;
+
+            this.entries.Value = updatedEntries;
+            console.log(`[MediaContainer] ✅ PerformUpdate() completed in ${updateDuration}ms, ${updatedEntries.length} entries loaded`);
+        } catch (error) {
+            console.error(`[MediaContainer] ❌ Error during Update() for ${this.Identifier}:`, error);
+            throw error;
         } finally {
             this.updating.Value = false;
+            console.log(`[MediaContainer] 🏁 Update() finished for ${this.Identifier}`);
         }
     }
 }

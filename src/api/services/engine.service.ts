@@ -74,26 +74,76 @@ class EngineService {
      * Search manga in a specific source
      */
     public async searchManga(sourceId: string, query: string): Promise<MangaInfo[]> {
+        logger.info(`🔍 Starting manga search: source="${sourceId}", query="${query}"`);
+
         const engine = this.getEngine();
         const plugin = engine.PluginController.WebsitePlugins.find(
             (p: any) => p.Identifier === sourceId
         );
 
         if (!plugin) {
+            logger.warn(`❌ Source not found: ${sourceId}`);
             throw Errors.SourceNotFound(sourceId);
         }
 
-        try {
-            // For now, get all manga and filter by query
-            // TODO: Implement proper search if supported by the plugin
-            const mangas = await plugin.Entries;
-            const filtered = mangas.Value.filter((manga: any) =>
-                manga.Title.toLowerCase().includes(query.toLowerCase())
-            );
+        logger.info(`✅ Found plugin: ${plugin.Title} (${sourceId})`);
 
-            return filtered.map((manga: any) => this.mapMangaToInfo(manga, sourceId));
+        try {
+            // Check if entries are already loaded
+            const currentEntries = plugin.Entries.Value;
+            logger.info(`📦 Current cached entries count: ${currentEntries.length}`);
+
+            // If no entries cached or very few, fetch fresh data
+            if (currentEntries.length === 0) {
+                logger.info(`🔄 No cached entries found, fetching fresh manga list from source...`);
+                logger.info(`⏳ Calling plugin.Update() to fetch manga list...`);
+
+                const updateStartTime = Date.now();
+                await plugin.Update();
+                const updateDuration = Date.now() - updateStartTime;
+
+                const updatedEntries = plugin.Entries.Value;
+                logger.info(`✅ Update completed in ${updateDuration}ms, fetched ${updatedEntries.length} manga entries`);
+            } else {
+                logger.info(`✅ Using ${currentEntries.length} cached entries`);
+            }
+
+            // Get the entries after update
+            const mangas = plugin.Entries;
+            const allMangas = mangas.Value;
+            logger.info(`📚 Total manga available for search: ${allMangas.length}`);
+
+            // Filter by query if provided
+            let filtered = allMangas;
+            if (query && query.trim().length > 0) {
+                const queryLower = query.toLowerCase().trim();
+                logger.info(`🔎 Filtering manga with query: "${queryLower}"`);
+
+                filtered = allMangas.filter((manga: any) => {
+                    const titleMatch = manga.Title.toLowerCase().includes(queryLower);
+                    if (titleMatch) {
+                        logger.debug(`✓ Match found: "${manga.Title}"`);
+                    }
+                    return titleMatch;
+                });
+
+                logger.info(`📊 Search results: ${filtered.length} manga matched out of ${allMangas.length} total`);
+            } else {
+                logger.info(`📊 No query provided, returning all ${allMangas.length} manga`);
+            }
+
+            const results = filtered.map((manga: any) => this.mapMangaToInfo(manga, sourceId));
+            logger.info(`✅ Search completed successfully, returning ${results.length} results`);
+
+            return results;
         } catch (error) {
-            logger.error(`Error searching manga in ${sourceId}:`, error);
+            logger.error(`❌ Error searching manga in ${sourceId}:`, {
+                error: error instanceof Error ? error.message : String(error),
+                stack: error instanceof Error ? error.stack : undefined,
+                sourceId,
+                query,
+            });
+
             const message = error instanceof Error ? error.message : 'Unknown error';
             throw Errors.InternalError(`Failed to search manga: ${message}`);
         }
@@ -103,20 +153,52 @@ class EngineService {
      * List all manga from a source
      */
     public async listManga(sourceId: string): Promise<MangaInfo[]> {
+        logger.info(`📋 Listing all manga from source: ${sourceId}`);
+
         const engine = this.getEngine();
         const plugin = engine.PluginController.WebsitePlugins.find(
             (p: any) => p.Identifier === sourceId
         );
 
         if (!plugin) {
+            logger.warn(`❌ Source not found: ${sourceId}`);
             throw Errors.SourceNotFound(sourceId);
         }
 
+        logger.info(`✅ Found plugin: ${plugin.Title} (${sourceId})`);
+
         try {
-            const mangas = await plugin.Entries;
-            return mangas.Value.map((manga: any) => this.mapMangaToInfo(manga, sourceId));
+            // Check if entries are already loaded
+            const currentEntries = plugin.Entries.Value;
+            logger.info(`📦 Current cached entries count: ${currentEntries.length}`);
+
+            // If no entries cached, fetch fresh data
+            if (currentEntries.length === 0) {
+                logger.info(`🔄 No cached entries found, fetching fresh manga list from source...`);
+                logger.info(`⏳ Calling plugin.Update() to fetch manga list...`);
+
+                const updateStartTime = Date.now();
+                await plugin.Update();
+                const updateDuration = Date.now() - updateStartTime;
+
+                const updatedEntries = plugin.Entries.Value;
+                logger.info(`✅ Update completed in ${updateDuration}ms, fetched ${updatedEntries.length} manga entries`);
+            } else {
+                logger.info(`✅ Using ${currentEntries.length} cached entries`);
+            }
+
+            const mangas = plugin.Entries;
+            const results = mangas.Value.map((manga: any) => this.mapMangaToInfo(manga, sourceId));
+
+            logger.info(`✅ List completed successfully, returning ${results.length} manga`);
+            return results;
         } catch (error) {
-            logger.error(`Error listing manga from ${sourceId}:`, error);
+            logger.error(`❌ Error listing manga from ${sourceId}:`, {
+                error: error instanceof Error ? error.message : String(error),
+                stack: error instanceof Error ? error.stack : undefined,
+                sourceId,
+            });
+
             const message = error instanceof Error ? error.message : 'Unknown error';
             throw Errors.InternalError(`Failed to list manga: ${message}`);
         }

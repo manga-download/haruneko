@@ -1,6 +1,7 @@
 import type { Request, Response } from 'express';
 import { engineService } from '../services/engine.service.js';
 import type { ApiResponse, SourceInfo, MangaInfo, ChapterInfo, SearchQuery } from '../types/responses.js';
+import { logger } from '../../config/logger.js';
 
 /**
  * Get all manga sources
@@ -56,12 +57,26 @@ export async function searchManga(req: Request, res: Response): Promise<void> {
     const pageNum = Number(page);
     const limitNum = Number(limit);
 
+    logger.info(`🌐 API Request: GET /api/v1/sources/${sourceId}/search`, {
+        query: q,
+        page: pageNum,
+        limit: limitNum,
+        ip: req.ip,
+        userAgent: req.get('user-agent'),
+    });
+
+    const searchStartTime = Date.now();
     const results = await engineService.searchManga(sourceId, q || '');
+    const searchDuration = Date.now() - searchStartTime;
+
+    logger.info(`⏱️  Search completed in ${searchDuration}ms, found ${results.length} total results`);
 
     // Paginate results
     const startIndex = (pageNum - 1) * limitNum;
     const endIndex = startIndex + limitNum;
     const paginatedResults = results.slice(startIndex, endIndex);
+
+    logger.info(`📄 Returning page ${pageNum} with ${paginatedResults.length} results (of ${results.length} total)`);
 
     const response: ApiResponse<MangaInfo[]> = {
         success: true,
