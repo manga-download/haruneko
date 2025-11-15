@@ -1,6 +1,9 @@
 import type { Request, Response } from 'express';
 import { downloadService } from '../services/download.service.js';
 import type { ApiResponse, DownloadRequest, DownloadStatus } from '../types/responses.js';
+import { promises as fs } from 'fs';
+import path from 'path';
+import archiver from 'archiver';
 
 /**
  * Create new download request
@@ -86,7 +89,31 @@ export async function downloadFile(req: Request, res: Response): Promise<void> {
         `attachment; filename="${download.mangaId}.${download.format}"`
     );
 
-    res.sendFile(filePath);
+    // Check if it's a directory (images format)
+    const stats = await fs.stat(filePath);
+
+    if (stats.isDirectory()) {
+        // Create a zip archive on-the-fly for directories
+        const archive = archiver('zip', {
+            zlib: { level: 0 }, // No compression for already compressed images
+        });
+
+        archive.on('error', (err) => {
+            throw err;
+        });
+
+        // Pipe archive to response
+        archive.pipe(res);
+
+        // Add all files from the directory
+        archive.directory(filePath, false);
+
+        // Finalize the archive
+        await archive.finalize();
+    } else {
+        // Send file directly for non-directory formats
+        res.sendFile(filePath);
+    }
 }
 
 /**
