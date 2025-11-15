@@ -6,6 +6,7 @@ import { engineService } from './engine.service.js';
 import { config } from '../../config/settings.js';
 import { Errors } from '../middleware/error-handler.js';
 import { logger } from '../../config/logger.js';
+import { SanitizeFileName } from '../../engine/StorageController.js';
 
 /**
  * Download service for managing chapter downloads
@@ -154,8 +155,13 @@ class DownloadService {
      */
     private async createExport(_downloadId: string, request: DownloadRequest): Promise<string> {
         // TODO: Implement actual export using engine's exporters
-        const fileName = `${request.mangaId}_${Date.now()}.${request.format || 'cbz'}`;
+        // Sanitize manga ID to create a valid filename
+        const sanitizedMangaId = SanitizeFileName(request.mangaId);
+        const fileName = `${sanitizedMangaId}_${Date.now()}.${request.format || 'cbz'}`;
         const filePath = path.join(this.downloadDir, fileName);
+
+        logger.info(`Creating export file: ${fileName}`);
+        logger.debug(`Sanitized manga ID: "${request.mangaId}" → "${sanitizedMangaId}"`);
 
         // For now, create a placeholder file
         // In production, this would use the actual exporter from the engine
@@ -192,11 +198,13 @@ class DownloadService {
             throw Errors.BadRequest('Download is not completed yet');
         }
 
-        // Find the file
+        // Find the file using sanitized manga ID
+        const sanitizedMangaId = SanitizeFileName(download.mangaId);
         const files = await fs.readdir(this.downloadDir);
-        const file = files.find((f) => f.includes(download.mangaId));
+        const file = files.find((f) => f.includes(sanitizedMangaId));
 
         if (!file) {
+            logger.warn(`File not found for download ${downloadId}, looking for: ${sanitizedMangaId}`);
             throw Errors.NotFound('Download file');
         }
 
