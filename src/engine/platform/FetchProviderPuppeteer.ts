@@ -19,21 +19,30 @@ export class FetchProviderPuppeteer extends FetchProvider {
      */
     private async getBrowser(): Promise<Browser> {
         if (!this.browser || !this.browser.connected) {
-            logger.info('🌐 Launching Puppeteer browser...');
-            this.browser = await puppeteer.launch({
-                headless: config.puppeteer.headless,
-                executablePath: config.puppeteer.executablePath,
-                args: [
-                    '--no-sandbox',
-                    '--disable-setuid-sandbox',
-                    '--disable-dev-shm-usage',
-                    '--disable-gpu',
-                    '--no-first-run',
-                    '--no-zygote',
-                    '--disable-extensions',
-                ],
-            });
-            logger.info('✅ Puppeteer browser launched');
+            try {
+                logger.info('🌐 Launching Puppeteer browser...');
+                this.browser = await puppeteer.launch({
+                    headless: config.puppeteer.headless,
+                    executablePath: config.puppeteer.executablePath,
+                    args: [
+                        '--no-sandbox',
+                        '--disable-setuid-sandbox',
+                        '--disable-dev-shm-usage',
+                        '--disable-gpu',
+                        '--no-first-run',
+                        '--no-zygote',
+                        '--disable-extensions',
+                    ],
+                });
+                logger.info('✅ Puppeteer browser launched');
+            } catch (error) {
+                logger.error('❌ Failed to launch Puppeteer browser:', error);
+                logger.error('💡 Solution: Install Chromium/Chrome or set PUPPETEER_EXECUTABLE_PATH');
+                logger.error('📖 See PUPPETEER_SETUP.md for detailed instructions');
+                throw new Error(
+                    'Failed to launch browser. Please install Chromium/Chrome or set PUPPETEER_EXECUTABLE_PATH environment variable. See PUPPETEER_SETUP.md for instructions.'
+                );
+            }
         }
         return this.browser;
     }
