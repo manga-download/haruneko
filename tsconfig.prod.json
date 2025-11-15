@@ -1,0 +1,32 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "skipLibCheck": true,
+    "noEmit": false,
+    "declaration": false,
+    "declarationMap": false,
+    "sourceMap": false
+  },
+  "include": [
+    "src/api/**/*",
+    "src/config/**/*",
+    "src/engine/**/*"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "web",
+    "app",
+    "**/*_test.ts",
+    "**/*.test.ts",
+    "**/*_e2e.ts",
+    "test",
+    "src/engine/platform/nw/**/*",
+    "src/engine/platform/electron/**/*",
+    "src/engine/InteractiveFileContentProvider.ts",
+    "src/engine/PluginController_e2e.ts",
+    "src/engine/SettingsGlobal_e2e.ts",
+    "src/frontend/**/*",
+    "src/i18n/**/*"
+  ]
+}

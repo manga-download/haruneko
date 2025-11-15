@@ -38,6 +38,11 @@
     "app",
     "**/*_test.ts",
     "**/*.test.ts",
-    "test"
+    "**/*_e2e.ts",
+    "test",
+    "src/engine/platform/nw",
+    "src/engine/platform/electron",
+    "src/engine/InteractiveFileContentProvider.ts",
+    "src/frontend"
   ]
 }

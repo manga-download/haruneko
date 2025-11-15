@@ -1,4 +1,22 @@
-# Use Node.js 20 LTS as base image
+# Stage 1: Build stage
+FROM node:20-bullseye-slim AS builder
+
+# Set working directory
+WORKDIR /app
+
+# Copy package files
+COPY package*.json ./
+
+# Install ALL dependencies (including dev dependencies for build)
+RUN npm ci
+
+# Copy source files
+COPY . .
+
+# Build TypeScript (only build what's needed for production)
+RUN npm run build:prod
+
+# Stage 2: Production stage
 FROM node:20-bullseye-slim
 
 # Install Chromium and required dependencies
@@ -31,19 +49,22 @@ WORKDIR /app
 
 # Set Puppeteer environment variables to use system Chromium
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
-    PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
+    PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium \
+    NODE_ENV=production
 
 # Copy package files
 COPY package*.json ./
 
-# Install dependencies
+# Install only production dependencies
 RUN npm ci --only=production
 
-# Copy application files
-COPY . .
+# Copy built files from builder stage
+COPY --from=builder /app/dist ./dist
 
-# Build TypeScript
-RUN npm run build
+# Copy necessary runtime files (images, translations, website icons)
+COPY --from=builder /app/src/img ./src/img
+COPY --from=builder /app/src/i18n ./src/i18n
+COPY --from=builder /app/src/engine/websites ./src/engine/websites
 
 # Create storage directories
 RUN mkdir -p /app/storage/database \
