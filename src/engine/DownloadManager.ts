@@ -1,3 +1,4 @@
+import './ArrayExtensions';
 import { DownloadTask, Status } from './DownloadTask';
 import { ObservableArray, type IObservable } from './Observable';
 import type { StoreableMediaContainer, MediaItem } from './providers/MediaPlugin';
