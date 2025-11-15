@@ -1,0 +1,651 @@
+openapi: 3.0.3
+info:
+  title: HakuNeko Manga Downloader API
+  description: |
+    REST API for downloading manga from 788+ sources with built-in Cloudflare bypass support.
+
+    ## Features
+    - 788+ manga sources supported
+    - Automatic Cloudflare challenge solving via Puppeteer
+    - Multiple export formats (CBZ, PDF, EPUB, Images)
+    - Rate limiting and concurrency control
+    - Progress tracking for downloads
+
+    ## Authentication
+    API key authentication is optional and can be enabled via environment variables.
+
+  version: 1.0.0
+  contact:
+    name: HakuNeko API
+    url: https://github.com/manga-download/hakuneko
+  license:
+    name: Unlicense
+    url: https://unlicense.org/
+
+servers:
+  - url: http://localhost:3000/api/v1
+    description: Local development server
+  - url: https://api.example.com/api/v1
+    description: Production server
+
+tags:
+  - name: Sources
+    description: Manga source operations
+  - name: Manga
+    description: Manga and chapter operations
+  - name: Downloads
+    description: Download management
+  - name: Health
+    description: Health check
+
+paths:
+  /health:
+    get:
+      summary: Health check
+      tags: [Health]
+      responses:
+        '200':
+          description: API is healthy
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+
+  /sources:
+    get:
+      summary: Get all manga sources
+      tags: [Sources]
+      parameters:
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/Limit'
+      responses:
+        '200':
+          description: List of manga sources
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/SourceInfo'
+
+  /sources/{sourceId}:
+    get:
+      summary: Get specific manga source
+      tags: [Sources]
+      parameters:
+        - $ref: '#/components/parameters/SourceId'
+      responses:
+        '200':
+          description: Source details
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/SourceInfo'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /sources/{sourceId}/search:
+    get:
+      summary: Search manga in source
+      tags: [Manga]
+      parameters:
+        - $ref: '#/components/parameters/SourceId'
+        - name: q
+          in: query
+          description: Search query
+          required: false
+          schema:
+            type: string
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/Limit'
+      responses:
+        '200':
+          description: Search results
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/MangaInfo'
+
+  /sources/{sourceId}/manga:
+    get:
+      summary: List all manga from source
+      tags: [Manga]
+      parameters:
+        - $ref: '#/components/parameters/SourceId'
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/Limit'
+      responses:
+        '200':
+          description: List of manga
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/MangaInfo'
+
+  /sources/{sourceId}/manga/{mangaId}:
+    get:
+      summary: Get manga details
+      tags: [Manga]
+      parameters:
+        - $ref: '#/components/parameters/SourceId'
+        - $ref: '#/components/parameters/MangaId'
+      responses:
+        '200':
+          description: Manga details
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/MangaInfo'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /sources/{sourceId}/manga/{mangaId}/chapters:
+    get:
+      summary: Get manga chapters
+      tags: [Manga]
+      parameters:
+        - $ref: '#/components/parameters/SourceId'
+        - $ref: '#/components/parameters/MangaId'
+      responses:
+        '200':
+          description: List of chapters
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/ChapterInfo'
+
+  /downloads:
+    get:
+      summary: Get all downloads
+      tags: [Downloads]
+      parameters:
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/Limit'
+      responses:
+        '200':
+          description: List of downloads
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/DownloadStatus'
+
+    post:
+      summary: Create new download
+      tags: [Downloads]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DownloadRequest'
+      responses:
+        '201':
+          description: Download created
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/DownloadStatus'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+
+  /downloads/{downloadId}:
+    get:
+      summary: Get download status
+      tags: [Downloads]
+      parameters:
+        - $ref: '#/components/parameters/DownloadId'
+      responses:
+        '200':
+          description: Download status
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/DownloadStatus'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    delete:
+      summary: Cancel/delete download
+      tags: [Downloads]
+      parameters:
+        - $ref: '#/components/parameters/DownloadId'
+      responses:
+        '200':
+          description: Download deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /downloads/{downloadId}/file:
+    get:
+      summary: Download file
+      tags: [Downloads]
+      parameters:
+        - $ref: '#/components/parameters/DownloadId'
+      responses:
+        '200':
+          description: File download
+          content:
+            application/vnd.comicbook+zip:
+              schema:
+                type: string
+                format: binary
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+            application/epub+zip:
+              schema:
+                type: string
+                format: binary
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+components:
+  parameters:
+    SourceId:
+      name: sourceId
+      in: path
+      required: true
+      description: Manga source identifier
+      schema:
+        type: string
+        example: mangadex
+
+    MangaId:
+      name: mangaId
+      in: path
+      required: true
+      description: Manga identifier
+      schema:
+        type: string
+
+    DownloadId:
+      name: downloadId
+      in: path
+      required: true
+      description: Download identifier
+      schema:
+        type: string
+        format: uuid
+
+    Page:
+      name: page
+      in: query
+      description: Page number
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+
+    Limit:
+      name: limit
+      in: query
+      description: Items per page
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 20
+
+  schemas:
+    ApiResponse:
+      type: object
+      required:
+        - success
+      properties:
+        success:
+          type: boolean
+          description: Whether the request was successful
+        error:
+          $ref: '#/components/schemas/ApiError'
+        meta:
+          $ref: '#/components/schemas/ResponseMeta'
+
+    ApiError:
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: string
+          example: NOT_FOUND
+        message:
+          type: string
+          example: Resource not found
+        details:
+          type: object
+          additionalProperties: true
+        stack:
+          type: string
+          description: Stack trace (development only)
+
+    ResponseMeta:
+      type: object
+      properties:
+        page:
+          type: integer
+        totalPages:
+          type: integer
+        total:
+          type: integer
+        limit:
+          type: integer
+        timestamp:
+          type: string
+          format: date-time
+
+    HealthResponse:
+      allOf:
+        - $ref: '#/components/schemas/ApiResponse'
+        - type: object
+          properties:
+            data:
+              type: object
+              properties:
+                status:
+                  type: string
+                  example: healthy
+                version:
+                  type: string
+                  example: 1.0.0
+                uptime:
+                  type: number
+                  example: 12345.67
+                timestamp:
+                  type: string
+                  format: date-time
+
+    SourceInfo:
+      type: object
+      required:
+        - id
+        - title
+        - url
+      properties:
+        id:
+          type: string
+          example: mangadex
+        title:
+          type: string
+          example: MangaDex
+        url:
+          type: string
+          format: uri
+          example: https://mangadex.org
+        icon:
+          type: string
+          description: Base64 encoded icon or URL
+        tags:
+          type: array
+          items:
+            type: string
+          example: [English, Multi-Language]
+        supportsSearch:
+          type: boolean
+          default: true
+        supportsList:
+          type: boolean
+          default: true
+        language:
+          type: string
+          example: en
+        status:
+          type: string
+          enum: [active, inactive, broken]
+
+    MangaInfo:
+      type: object
+      required:
+        - id
+        - title
+        - sourceId
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+          example: One Piece
+        sourceId:
+          type: string
+          example: mangadex
+        url:
+          type: string
+          format: uri
+        coverUrl:
+          type: string
+          format: uri
+        description:
+          type: string
+        authors:
+          type: array
+          items:
+            type: string
+        artists:
+          type: array
+          items:
+            type: string
+        genres:
+          type: array
+          items:
+            type: string
+        tags:
+          type: array
+          items:
+            type: string
+        status:
+          type: string
+          example: ongoing
+        year:
+          type: integer
+          example: 1997
+
+    ChapterInfo:
+      type: object
+      required:
+        - id
+        - title
+        - mangaId
+        - sourceId
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+          example: Chapter 1
+        mangaId:
+          type: string
+        sourceId:
+          type: string
+        number:
+          type: number
+          example: 1
+        volume:
+          type: number
+          example: 1
+        language:
+          type: string
+          example: en
+        releaseDate:
+          type: string
+          format: date
+        pageCount:
+          type: integer
+          example: 20
+
+    DownloadRequest:
+      type: object
+      required:
+        - sourceId
+        - mangaId
+        - chapterIds
+      properties:
+        sourceId:
+          type: string
+          example: mangadex
+        mangaId:
+          type: string
+        chapterIds:
+          type: array
+          items:
+            type: string
+          minItems: 1
+        format:
+          type: string
+          enum: [cbz, pdf, epub, images]
+          default: cbz
+        options:
+          type: object
+          properties:
+            quality:
+              type: string
+              enum: [low, medium, high]
+            includeMetadata:
+              type: boolean
+
+    DownloadStatus:
+      type: object
+      required:
+        - id
+        - sourceId
+        - mangaId
+        - chapterIds
+        - status
+        - progress
+        - format
+        - createdAt
+        - updatedAt
+      properties:
+        id:
+          type: string
+          format: uuid
+        sourceId:
+          type: string
+        mangaId:
+          type: string
+        chapterIds:
+          type: array
+          items:
+            type: string
+        status:
+          type: string
+          enum: [queued, downloading, processing, completed, failed, cancelled]
+        progress:
+          type: number
+          minimum: 0
+          maximum: 100
+          example: 75.5
+        totalBytes:
+          type: integer
+          format: int64
+        downloadedBytes:
+          type: integer
+          format: int64
+        currentChapter:
+          type: string
+        format:
+          type: string
+          enum: [cbz, pdf, epub, images]
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        completedAt:
+          type: string
+          format: date-time
+        error:
+          type: string
+        fileUrl:
+          type: string
+          format: uri
+          example: /api/v1/downloads/123e4567-e89b-12d3-a456-426614174000/file
+
+  responses:
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/ApiResponse'
+              - type: object
+                properties:
+                  success:
+                    example: false
+                  error:
+                    $ref: '#/components/schemas/ApiError'
+
+    BadRequest:
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/ApiResponse'
+              - type: object
+                properties:
+                  success:
+                    example: false
+                  error:
+                    $ref: '#/components/schemas/ApiError'

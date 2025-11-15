@@ -1,0 +1,32 @@
+package ComicZerosum;
+syntax = "proto3";
+
+//Mangas
+message Listview {
+  repeated Title titles = 3;
+}
+
+message Title {
+  optional string tag = 2;
+  optional string name = 3;
+}
+
+//Chapter
+message TitleView {
+  optional Title title = 2;
+  repeated Chapter chapters = 3;
+}
+
+message Chapter {
+  optional uint32 id = 1;
+  optional string name = 2;
+}
+
+//Pages
+message MangaViewerView {
+  repeated MangaPage pages = 5;
+}
+
+message MangaPage {
+  optional string imageUrl = 1;
+}

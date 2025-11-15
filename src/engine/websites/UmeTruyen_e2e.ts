@@ -1,0 +1,22 @@
+﻿import { TestFixture } from '../../../test/WebsitesFixture';
+
+new TestFixture({
+    plugin: {
+        id: 'umetruyen',
+        title: 'UmeTruyen'
+    },
+    container: {
+        url: 'https://umetruyenz.net/truyen-vet-do.html',
+        id: '/truyen-vet-do.html',
+        title: 'Vết Đỏ'
+    },
+    child: {
+        id: '/truyen-vet-do/chapter-18',
+        title: 'Chapter 18'
+    },
+    entry: {
+        index: 0,
+        size: 1_266_999,
+        type: 'image/jpeg'
+    }
+}).AssertWebsite();

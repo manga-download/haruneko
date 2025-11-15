@@ -1,5 +1,6 @@
 .DS_Store
 .vscode
+.idea
 .cache
 cache
 build
@@ -9,4 +10,27 @@ dist
 node_modules
 package-lock.json
 junit.xml
-web/vite.config.ts.timestamp*
+
+# API-specific
+.env
+.env.local
+.env.*.local
+storage/
+logs/
+*.log
+*.tmp
+temp/
+tmp/
+coverage/
+.nyc_output/
+.local-chromium/
+.local-firefox/
+*.pid
+*.seed
+*.pid.lock
+*.tsbuildinfo
+
+# Old project files
+web/
+app/
+docs/

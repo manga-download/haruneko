@@ -1,0 +1,25 @@
+import { Tags } from '../Tags';
+import icon from './RawSenManga.webp';
+import { FetchWindowScript } from '../platform/FetchProvider';
+import { DecoratableMangaScraper } from '../providers/MangaPlugin';
+import * as Common from './decorators/Common';
+
+@Common.MangaCSS(/^{origin}/, 'div.desc h1.series')
+@Common.MangasMultiPageCSS('div.item-info div.series-title a', Common.PatternLinkGenerator('/directory?page={page}'))
+@Common.ChaptersSinglePageCSS('ul.chapter-list li > a')
+@Common.PagesSinglePageCSS('div.reader img.picture')
+@Common.ImageElement()
+export default class extends DecoratableMangaScraper {
+
+    public constructor() {
+        super('rawsenmanga', `RawSenManga`, 'https://raw.senmanga.com', Tags.Media.Manga, Tags.Language.Japanese, Tags.Source.Aggregator);
+    }
+
+    public override async Initialize(): Promise<void> {
+        return FetchWindowScript(new Request(this.URI), `window.cookieStore.set('viewer', '1')`);
+    }
+
+    public override get Icon() {
+        return icon;
+    }
+}
