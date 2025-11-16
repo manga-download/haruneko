@@ -82,7 +82,7 @@ export default class extends DecoratableMangaScraper {
                     }
                     page: $page
                     limit: 20
-                    countryOrigin: 'ALL'
+                    countryOrigin: ALL
                 ) {
                     edges {
                         _id
