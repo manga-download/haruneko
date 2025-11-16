@@ -90,7 +90,7 @@ export default class extends DecoratableMangaScraper {
             platform: '3',
             episode_id: chapter.Identifier,
         });
-        return page_list.map(page => new Page<PageInfo>(this, chapter, new URL(page), { seed: scramble_seed ?? 1, version: scramble_ver ?? 1 }));
+        return page_list.map(page => new Page<PageInfo>(this, chapter, new URL(page), { seed: scramble_seed ?? 1, version: scramble_ver ?? -1 }));
     }
 
     public override async FetchImage(page: Page<PageInfo>, priority: Priority, signal: AbortSignal): Promise<Blob> {
