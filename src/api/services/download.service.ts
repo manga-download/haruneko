@@ -86,12 +86,19 @@ class DownloadService {
 
             // Get chapters
             const chapters = await manga.Entries;
+
+            // Log available chapter IDs for debugging
+            logger.info(`Found ${chapters.Value.length} chapters for manga ${request.mangaId}`);
+            logger.debug('Available chapter IDs:', chapters.Value.map((c: any) => c.Identifier));
+            logger.debug('Requested chapter IDs:', request.chapterIds);
+
             const chaptersToDownload = chapters.Value.filter((c: any) =>
                 request.chapterIds.includes(c.Identifier)
             );
 
             if (chaptersToDownload.length === 0) {
-                throw new Error('No valid chapters found to download');
+                const availableChapterIds = chapters.Value.map((c: any) => c.Identifier).join(', ');
+                throw new Error(`No valid chapters found to download. Available chapter IDs: ${availableChapterIds}. Requested: ${request.chapterIds.join(', ')}`);
             }
 
             this.updateDownloadStatus(downloadId, {
