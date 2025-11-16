@@ -7,6 +7,9 @@ import { config } from '../../config/settings.js';
 import { Errors } from '../middleware/error-handler.js';
 import { logger } from '../../config/logger.js';
 import { SanitizeFileName } from '../../engine/StorageController.js';
+import { NodeComicBookArchiveExporter } from '../exporters/NodeComicBookArchiveExporter.js';
+import { NodeImageDirectoryExporter } from '../exporters/NodeImageDirectoryExporter.js';
+import { Priority } from '../../engine/taskpool/TaskPool.js';
 
 /**
  * Download service for managing chapter downloads
@@ -96,17 +99,8 @@ class DownloadService {
                 progress: 0,
             });
 
-            // Enqueue chapters for download
-            const downloadManager = engineService.getDownloadManager();
-            // Note: Casting to any due to type complexity
-            await downloadManager.Enqueue(...chaptersToDownload as any);
-
-            // Wait for downloads to complete
-            // TODO: Implement proper status tracking from DownloadManager
-            await this.waitForDownloadCompletion(chaptersToDownload, downloadId);
-
-            // Create final archive/export
-            await this.createExport(downloadId, request);
+            // Download chapters and create export
+            await this.downloadAndExport(downloadId, request, chaptersToDownload, manga.Title);
 
             this.updateDownloadStatus(downloadId, {
                 status: 'completed',
@@ -115,59 +109,128 @@ class DownloadService {
                 fileUrl: `/api/v1/downloads/${downloadId}/file`,
             });
         } catch (error) {
-            logger.error(`Download processing failed for ${downloadId}:`, error);
+            const errorMessage = error instanceof Error ? error.message : String(error);
+            const errorStack = error instanceof Error ? error.stack : undefined;
+            logger.error(`Download processing failed for ${downloadId}:`, {
+                error: errorMessage,
+                stack: errorStack,
+                downloadId,
+                sourceId: request.sourceId,
+                mangaId: request.mangaId,
+            });
             throw error;
         }
     }
 
     /**
-     * Wait for download completion
-     * TODO: Implement proper status tracking
+     * Download chapters and create export file
      */
-    private async waitForDownloadCompletion(chapters: any[], downloadId: string): Promise<void> {
-        // This is a simplified version
-        // In production, you'd want to track actual download progress
-        const totalChapters = chapters.length;
-        let completedChapters = 0;
+    private async downloadAndExport(downloadId: string, request: DownloadRequest, chapters: any[], mangaTitle: string): Promise<string> {
+        const storageController = engineService.getStorageController();
+        const format = request.format || 'cbz';
 
-        // Simulate progress updates
-        // TODO: Hook into actual DownloadTask status updates
-        return new Promise((resolve) => {
-            const interval = setInterval(() => {
-                completedChapters++;
-                const progress = Math.floor((completedChapters / totalChapters) * 100);
+        // Process each chapter
+        for (let chapterIndex = 0; chapterIndex < chapters.length; chapterIndex++) {
+            const chapter = chapters[chapterIndex];
 
-                this.updateDownloadStatus(downloadId, {
-                    progress,
-                    currentChapter: chapters[completedChapters - 1]?.Title,
-                });
+            logger.info(`Downloading chapter ${chapterIndex + 1}/${chapters.length}: ${chapter.Title}`);
+            this.updateDownloadStatus(downloadId, {
+                currentChapter: chapter.Title,
+                progress: Math.floor((chapterIndex / chapters.length) * 90), // Reserve last 10% for export
+            });
 
-                if (completedChapters >= totalChapters) {
-                    clearInterval(interval);
-                    resolve();
+            try {
+                // Fetch pages for this chapter
+                await chapter.Update();
+                const pages = chapter.Entries.Value;
+
+                if (pages.length === 0) {
+                    logger.warn(`Chapter ${chapter.Title} has no pages, skipping`);
+                    continue;
                 }
-            }, 2000); // Update every 2 seconds
-        });
-    }
 
-    /**
-     * Create export file
-     */
-    private async createExport(_downloadId: string, request: DownloadRequest): Promise<string> {
-        // TODO: Implement actual export using engine's exporters
-        // Sanitize manga ID to create a valid filename
-        const sanitizedMangaId = SanitizeFileName(request.mangaId);
-        const fileName = `${sanitizedMangaId}_${Date.now()}.${request.format || 'cbz'}`;
-        const filePath = path.join(this.downloadDir, fileName);
+                logger.info(`Fetching ${pages.length} pages for chapter: ${chapter.Title}`);
 
-        logger.info(`Creating export file: ${fileName}`);
-        logger.debug(`Sanitized manga ID: "${request.mangaId}" → "${sanitizedMangaId}"`);
+                // Download all pages and store temporarily
+                const resourceMap = new Map<number, string>();
+                for (let pageIndex = 0; pageIndex < pages.length; pageIndex++) {
+                    const page = pages[pageIndex];
+                    try {
+                        logger.debug(`Fetching page ${pageIndex + 1}/${pages.length}: ${page.Link?.href}`);
+                        const imageBlob = await page.Fetch(Priority.Normal, new AbortController().signal);
+                        logger.debug(`Received blob: type=${imageBlob?.type}, size=${imageBlob?.size}`);
 
-        // For now, create a placeholder file
-        // In production, this would use the actual exporter from the engine
-        await fs.writeFile(filePath, 'Download completed', 'utf-8');
+                        const tempKey = await storageController.SaveTemporary(imageBlob);
+                        logger.debug(`Saved to temporary storage with key: ${tempKey}`);
+                        resourceMap.set(pageIndex, tempKey);
 
-        return filePath;
+                        // Update progress within chapter
+                        const chapterProgress = (chapterIndex + (pageIndex + 1) / pages.length) / chapters.length;
+                        this.updateDownloadStatus(downloadId, {
+                            progress: Math.floor(chapterProgress * 90),
+                        });
+                    } catch (error) {
+                        const errorMessage = error instanceof Error ? error.message : String(error);
+                        const errorStack = error instanceof Error ? error.stack : undefined;
+                        logger.error(`Failed to download page ${pageIndex + 1} of chapter ${chapter.Title}:`, {
+                            error: errorMessage,
+                            stack: errorStack,
+                            pageLink: page.Link?.href,
+                        });
+                        throw new Error(`Failed to download page ${pageIndex + 1}: ${errorMessage}`);
+                    }
+                }
+
+                logger.info(`Successfully downloaded ${resourceMap.size} pages for chapter: ${chapter.Title}`);
+
+                // Create export using appropriate exporter
+                const sanitizedMangaId = SanitizeFileName(request.mangaId);
+                const sanitizedChapterTitle = SanitizeFileName(chapter.Title);
+
+                let outputPath: string;
+                let exporter;
+
+                if (format === 'cbz') {
+                    const fileName = `${sanitizedMangaId}_${sanitizedChapterTitle}_${Date.now()}.cbz`;
+                    outputPath = path.join(this.downloadDir, fileName);
+                    exporter = new NodeComicBookArchiveExporter(storageController);
+                } else if (format === 'images') {
+                    const dirName = `${sanitizedMangaId}_${sanitizedChapterTitle}_${Date.now()}.images`;
+                    outputPath = path.join(this.downloadDir, dirName);
+                    exporter = new NodeImageDirectoryExporter(storageController);
+                } else {
+                    throw new Error(`Unsupported format: ${format}`);
+                }
+
+                logger.info(`Exporting to ${format}: ${outputPath}`);
+
+                try {
+                    await exporter.Export(resourceMap, outputPath, chapter.Title, mangaTitle);
+                    logger.info(`Successfully exported chapter to: ${outputPath}`);
+                } finally {
+                    // Clean up temporary files
+                    const tempKeys = Array.from(resourceMap.values());
+                    await storageController.RemoveTemporary(...tempKeys);
+                }
+
+                // For now, only download the first chapter
+                // TODO: Support multiple chapters in a single download
+                return outputPath;
+
+            } catch (error) {
+                const errorMessage = error instanceof Error ? error.message : String(error);
+                const errorStack = error instanceof Error ? error.stack : undefined;
+                logger.error(`Failed to process chapter ${chapter.Title}:`, {
+                    error: errorMessage,
+                    stack: errorStack,
+                    chapterTitle: chapter.Title,
+                    chapterId: chapter.Identifier,
+                });
+                throw error;
+            }
+        }
+
+        throw new Error('No chapters were successfully downloaded');
     }
 
     /**
@@ -198,17 +261,24 @@ class DownloadService {
             throw Errors.BadRequest('Download is not completed yet');
         }
 
-        // Find the file using sanitized manga ID
+        // Find the file or directory using sanitized manga ID
         const sanitizedMangaId = SanitizeFileName(download.mangaId);
-        const files = await fs.readdir(this.downloadDir);
-        const file = files.find((f) => f.includes(sanitizedMangaId));
+        const entries = await fs.readdir(this.downloadDir, { withFileTypes: true });
 
-        if (!file) {
-            logger.warn(`File not found for download ${downloadId}, looking for: ${sanitizedMangaId}`);
+        // Look for files/directories that match the sanitized manga ID
+        const entry = entries.find((e) => e.name.includes(sanitizedMangaId));
+
+        if (!entry) {
+            logger.warn(`File/directory not found for download ${downloadId}, looking for: ${sanitizedMangaId}`);
+            logger.debug(`Available entries: ${entries.map(e => e.name).join(', ')}`);
             throw Errors.NotFound('Download file');
         }
 
-        return path.join(this.downloadDir, file);
+        const filePath = path.join(this.downloadDir, entry.name);
+
+        // For image directories, we might want to create a zip on-the-fly or return the directory
+        // For now, return the path as-is
+        return filePath;
     }
 
     /**
@@ -254,7 +324,8 @@ class DownloadService {
         const retentionMs = config.downloads.retentionDays * 24 * 60 * 60 * 1000;
         const now = Date.now();
 
-        for (const [id, download] of this.downloads.entries()) {
+        const entries = Array.from(this.downloads.entries());
+        for (const [id, download] of entries) {
             const createdAt = new Date(download.createdAt).getTime();
 
             if (now - createdAt > retentionMs) {

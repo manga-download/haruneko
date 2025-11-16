@@ -340,6 +340,13 @@ class EngineService {
     }
 
     /**
+     * Get storage controller
+     */
+    public getStorageController() {
+        return this.getEngine().StorageController;
+    }
+
+    /**
      * Map plugin to source info
      */
     private mapPluginToSource(plugin: any): SourceInfo {

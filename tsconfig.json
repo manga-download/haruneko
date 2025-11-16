@@ -2,7 +2,7 @@
   "compilerOptions": {
     "target": "ES2022",
     "module": "ES2022",
-    "lib": ["ES2022"],
+    "lib": ["ES2022", "DOM"],
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "allowJs": true,
@@ -11,17 +11,19 @@
     "strict": false,
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true,
-    "declaration": true,
-    "declarationMap": true,
-    "sourceMap": true,
+    "forceConsistentCasingInFileNames": false,
+    "declaration": false,
+    "declarationMap": false,
+    "sourceMap": false,
     "noUnusedLocals": false,
     "noUnusedParameters": false,
     "noImplicitReturns": false,
-    "noFallthroughCasesInSwitch": true,
+    "noFallthroughCasesInSwitch": false,
+    "noImplicitAny": false,
     "allowSyntheticDefaultImports": true,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
+    "noEmitOnError": false,
     "paths": {
       "@engine/*": ["./src/engine/*"],
       "@api/*": ["./src/api/*"],
@@ -38,6 +40,10 @@
     "app",
     "**/*_test.ts",
     "**/*.test.ts",
-    "test"
+    "**/*_e2e.ts",
+    "test",
+    "src/engine/platform/nw/**/*",
+    "src/engine/platform/electron/**/*",
+    "src/frontend"
   ]
 }

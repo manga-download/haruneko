@@ -21,20 +21,40 @@ A production-grade REST API for downloading manga from 788+ sources with built-i
 
 ## 🔧 Installation
 
-### 1. Clone the Repository
+### Quick Start with Docker (Recommended)
+
+The easiest way to run the API with all dependencies (including Chromium):
+
+```bash
+# Build and start
+docker-compose up -d
+
+# View logs
+docker-compose logs -f
+
+# API available at http://localhost:3000
+```
+
+See [DOCKER_SETUP.md](./DOCKER_SETUP.md) for complete Docker documentation.
+
+### Manual Installation
+
+#### 1. Clone the Repository
 
 ```bash
 git clone <repository-url>
 cd haruneko
 ```
 
-### 2. Install Dependencies
+#### 2. Install Dependencies
 
 ```bash
 npm install
 ```
 
-### 3. Configure Environment
+**Important:** Manga downloads require Chromium/Chrome for Puppeteer. See [PUPPETEER_SETUP.md](./PUPPETEER_SETUP.md) if downloads fail.
+
+#### 3. Configure Environment
 
 Copy the example environment file and customize:
 
@@ -55,6 +75,7 @@ STORAGE_PATH=./storage
 
 # Puppeteer Configuration
 PUPPETEER_HEADLESS=true
+PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium  # Or your Chrome path
 PUPPETEER_MAX_BROWSERS=5
 
 # Download Configuration
@@ -66,13 +87,13 @@ DOWNLOAD_RETENTION_DAYS=7
 LOG_LEVEL=info
 ```
 
-### 4. Build the Project
+#### 4. Build the Project
 
 ```bash
 npm run build
 ```
 
-### 5. Start the Server
+#### 5. Start the Server
 
 **Development mode (with auto-reload):**
 ```bash

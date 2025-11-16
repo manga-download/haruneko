@@ -77,6 +77,10 @@ export class HakuNeko {
         return this.#downloadManager;
     }
 
+    public get StorageController(): StorageController {
+        return this.#storageController;
+    }
+
     public get PastedClipboardURL(): Observable<URL> {
         return this.#pastedClipboardURL;
     }
