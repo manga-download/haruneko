@@ -5,15 +5,15 @@ import * as Common from './decorators/Common';
 import { FetchWindowScript } from '../platform/FetchProvider';
 
 const chapterScript = `
-    new Promise ( resolve => {
-        resolve( [...document.querySelectorAll('div.listChapters ul li > a')].map(chapter => {
-            const titleElement = chapter.querySelector('span.titleComic');
-            const vipBloat = titleElement.querySelector('.vip-chapter');
-            if ( vipBloat ) vipBloat.parentElement.removeChild(vipBloat);
+    new Promise(resolve => {
+        resolve([...document.querySelectorAll('div.listChapters ul li > a')].map(anchor => {
+            const span = anchor.querySelector('span.titleComic');
+            const bloat = span.querySelector('.vip-chapter');
+            bloat?.parentElement.removeChild(bloat);
             return {
-                id: chapter.pathname,
-                title : titleElement.textContent.trim()
-            }
+                id: anchor.pathname,
+                title : span.innerText.trim()
+            };
         }));
     });
 `;
@@ -26,7 +26,7 @@ const chapterScript = `
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('comicvn', 'ComicVn', 'https://comicvn17.net', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Vietnamese, Tags.Source.Aggregator, Tags.Accessibility.DomainRotation);
+        super('comicvn', 'ComicVn', 'https://comicvn18.net', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Vietnamese, Tags.Source.Aggregator, Tags.Accessibility.DomainRotation);
     }
 
     public override get Icon() {

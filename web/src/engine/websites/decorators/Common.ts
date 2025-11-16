@@ -23,7 +23,7 @@ type ClassDecorator = <T extends Constructor>(ctor: T, context?: ClassDecoratorC
 type LinkResolver<T extends MediaContainer<MediaChild> = MediaContainer<MediaChild>> = (this: MangaScraper, media?: T) => URL;
 
 /**
- * Creates an link from the manga scraper's base URL and the identifier of the given {@link media} container.
+ * Creates a link from the manga scraper's base URL and the identifier of the given {@link media} container.
  */
 function DefaultMediaLinkResolver(this: MangaScraper, media: MediaContainer<MediaChild>): URL {
     return new URL(media.Identifier, this.URI);
