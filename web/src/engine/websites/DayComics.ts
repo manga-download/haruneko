@@ -8,30 +8,29 @@ const matureCookieScript = `
     new Promise(async (resolve, reject) => {
         try {
             const sessionData = (await window.cookieStore.get('userSession'))?.value;
-            if (sessionData) {  // if user is Logged, set mature to 1
+            if (sessionData) { // if user is Logged, set mature to 1
                 const decodedData = JSON.parse(sessionData.decodeString('test'));
                 decodedData.mature = 1;
                 const cookieValue = JSON.stringify(decodedData).unicode().encodeString('test');
                 await window.cookieStore.set('userSession', cookieValue);
-            } else { // set +18 for non logged user
-                const response = await fetch('https://api.daycomics.com/preAuth/setMature', {
-                    method: 'POST',
-                    body: JSON.stringify({
-                        mature: 1
-                    }),
-                    headers: {
-                        'Content-Type': 'application/json',
-                    }
-                });
-                const data = await response.json();
-                const cookieValue = JSON.stringify(data.data.token).unicode().encodeString('test');
-                await window.cookieStore.set('pa_t', cookieValue);
             }
-        }
-        catch {
+            // set +18 for non logged user
+            const response = await fetch('https://api.daycomics.com/preAuth/setMature', {
+                method: 'POST',
+                body: JSON.stringify({
+                    mature: 1
+                }),
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            });
+            const data = await response.json();
+            const cookieValue = JSON.stringify(data.data.token).unicode().encodeString('test');
+            await window.cookieStore.set('pa_t', cookieValue);
+
+        } catch {
             await window.cookieStore.delete('pa_t');
-        }
-        finally {
+        } finally {
             resolve();
         }
     });
@@ -68,13 +67,13 @@ type APIComicFromLibrary = {
 }
 
 type APIComicFromClipboard = APIResult<{
-    comic: APIComic
+    comic: APIComic;
 }>
 
 type APIComic = {
     comicId: number,
     information: {
-        title: string
+        title: string;
     }
 }
 
@@ -120,11 +119,11 @@ export default class extends DecoratableMangaScraper {
     private async GetMangas(provider: MangaPlugin, path: string): Promise<Manga[]> {
         const { data } = await FetchJSON<APIComicList>(new Request(new URL(path, this.apiUrl)));
         const comics = data[path.split('/').at(-1)];
-        return comics.map(comic => new Manga(this, provider, `/content/${comic.comicId}`, comic.information.title));
+        return comics.map(({ comicId, information: { title } }) => new Manga(this, provider, `/content/${comicId}`, title));
     }
 
     private async GetMangasFromLibrary(provider: MangaPlugin): Promise<Manga[]> {
         const data = await FetchWindowScript<APIComicFromLibrary[]>(new Request(new URL('/library', this.URI)), libraryScript, 2500);
-        return data.map(comic => new Manga(this, provider, comic.id, comic.title));
+        return data.map(({ id, title }) => new Manga(this, provider, id, title));
     }
 }
