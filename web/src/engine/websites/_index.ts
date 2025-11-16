@@ -376,6 +376,7 @@ export { default as MangaLivre } from './MangaLivre';
 export { default as MangaLover } from './MangaLover';
 export { default as MangaMana } from './MangaMana';
 export { default as MangaMirror } from './MangaMirror';
+export { default as MangaMonk } from './MangaMonk';
 export { default as MangaNato } from './MangaNato';
 export { default as ManganeloInfo } from './ManganeloInfo';
 export { default as MangaOkuTR } from './MangaOkuTR';
