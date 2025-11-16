@@ -1,4 +1,4 @@
-﻿import { TestFixture } from '../../../test/WebsitesFixture';
+import { TestFixture } from '../../../test/WebsitesFixture';
 
 new TestFixture({
     plugin: {
@@ -6,7 +6,7 @@ new TestFixture({
         title: 'KomikCast'
     },
     container: {
-        url: 'https://komikcast.pics/komik/swordmasters-youngest-son/',
+        url: 'https://komikcast03.com/komik/swordmasters-youngest-son/',
         id: '/komik/swordmasters-youngest-son/',
         title: 'Swordmaster’s Youngest Son'
     },
