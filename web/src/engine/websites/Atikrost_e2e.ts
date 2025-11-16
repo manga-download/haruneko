@@ -1,12 +1,12 @@
 import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'atikrost',
         title: 'Atikrost'
     },
     container: {
-        url: 'https://www.mangaoku.org/manga/i-am-the-grim-reaper-webtoon-oku/',
+        url: 'https://www.atikrost.com/manga/i-am-the-grim-reaper-webtoon-oku/',
         id: JSON.stringify({ post: '51', slug: '/manga/i-am-the-grim-reaper-webtoon-oku/' }),
         title: 'I am the Grim Reaper'
     },
@@ -19,6 +19,4 @@ const config = {
         size: 99_003,
         type: 'image/jpeg'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();
