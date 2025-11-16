@@ -655,6 +655,7 @@ export { default as StarboundScans } from './StarboundScans';
 export { default as StarlightScan } from './StarlightScan';
 export { default as StellarSaber } from './StellarSaber';
 export { default as StickHorse } from './StickHorse';
+export { default as StoneScape } from './StoneScape';
 export { default as StrayFansub } from './StrayFansub';
 export { default as Sukima } from './Sukima';
 export { default as SumManga } from './SumManga';
