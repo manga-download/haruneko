@@ -6,7 +6,7 @@ new TestFixture({
         title: 'RaijinScans'
     },
     container: {
-        url: 'https://raijinscan.co/manga/legendary-blacksmiths-vengeance/',
+        url: 'https://raijin-scans.fr/manga/legendary-blacksmiths-vengeance/',
         id: JSON.stringify({ slug: '/manga/legendary-blacksmiths-vengeance/' }),
         title: 'Legendary Blacksmith’s Vengeance'
     },

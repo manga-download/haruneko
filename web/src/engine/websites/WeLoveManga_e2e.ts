@@ -6,7 +6,7 @@ new TestFixture({
         title: 'WeloveManga'
     },
     container: {
-        url: 'https://welovemanga.one/1067/',
+        url: 'https://love4u.net/1067/',
         id: '/1067/',
         title: 'TONO KANRI O SHITE MIYOU - RAW',
     },
