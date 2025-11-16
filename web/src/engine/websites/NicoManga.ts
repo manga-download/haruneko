@@ -22,13 +22,6 @@ type APIChapter = {
 
 type APIChapters = APIChapter[];
 
-type APIImage = {
-    url: string,
-}
-type APIImages = {
-    images: APIImage[],
-}
-
 @Common.MangaCSS<HTMLHeadingElement>(FlatManga.pathManga, FlatManga.queryMangaTitle, (head, uri) => ({ id: uri.pathname, title: head.innerText.replace(/\(MANGA\)$/i, '').trim() }))
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
@@ -44,8 +37,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        const request = new Request(new URL("/app/manga/controllers/cont.allmanga.php", this.URI));
-        const { data } = await FetchJSON<APIMangas>(request);
+        const { data } = await FetchJSON<APIMangas>(new Request(new URL("/app/manga/controllers/cont.allmanga.php", this.URI)));
         return data.map(manga => new Manga(this, provider, `/${manga.slug}.html`, manga.name.trim()));
     }
 
@@ -56,20 +48,15 @@ export default class extends DecoratableMangaScraper {
         return chapters.map(chapter => new Chapter(this, manga, `/read-${slug}-chapter-${chapter.chapter}.html`, chapter.name));
     }
 
-    public async ExtractImages(chapter: Chapter): Promise<APIImage[]> {
+    public async ExtractImages(chapter: Chapter): Promise<HTMLImageElement[]> {
         const uri = new URL(chapter.Identifier, this.URI);
-        const scripts = await FetchCSS<HTMLScriptElement>(new Request(uri, {headers: {"Cookie": "smartlink_shown_guest=1"}}), "script");
-        const cid = scripts.map(script => {
-            const match = script.textContent.match(/loadImagesChapter\s*\(\s*(\d+)\s*,\s*'listImgs'\s*\)/);
-            return match ? match[1] : null;
-        }).filter(cid => cid !== null);
-        const imageuri = new URL(`/caches/chapterboth/${cid}.json`, this.URI);
-        const images = await FetchJSON<APIImages>(new Request(imageuri));
-        return images.images;
+        const html_cid = await FetchCSS<HTMLInputElement>(new Request(uri, {headers: {"Cookie": "smartlink_shown_guest=1"}}), "input#chapter");
+        const cid = html_cid[0].getAttribute("value");
+        return await FetchCSS<HTMLImageElement>(new Request(new URL(`/app/manga/controllers/cont.imgsList.php?cid=${cid}`, this.URI)), "img.chapter-img");
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
         const images = await this.ExtractImages(chapter);
-        return images.map(img => new Page(this, chapter, new URL(img.url)));
+        return images.map(img => new Page(this, chapter, new URL(img.getAttribute("data-srcset"))));
     }
 }
