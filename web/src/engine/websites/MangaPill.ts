@@ -9,12 +9,12 @@ const genres = ['Action', 'Adventure', 'Cars', 'Comedy', 'Dementia', 'Demons', '
     'Romance', 'Samurai', 'School', 'Sci-Fi', 'Seinen', 'Shoujo', 'Shoujo Ai', 'Shounen', 'Shounen Ai', 'Slice of Life', 'Space', 'Sports', 'Super Power',
     'Supernatural', 'Tragedy', 'Thriller', 'Vampire', 'Yaoi', 'Yuri'
 ];
-const search = new URLSearchParams({ 'q': '', 'type': '', 'status': ''});
+const search = new URLSearchParams({ 'q': '', 'type': '', 'status': '' });
 genres.forEach(genre => search.append('genre', genre));
 pathMangas += search.toString();
 
 @Common.MangaCSS(/^{origin}\/manga\/\d+\/[^/]+$/, 'div.container h1')
-@Common.MangasMultiPageCSS(pathMangas, 'div.container a.mb-2')
+@Common.MangasMultiPageCSS('div.container a.mb-2', Common.PatternLinkGenerator(pathMangas))
 @Common.ChaptersSinglePageCSS('div#chapters div a')
 @Common.PagesSinglePageCSS('img')
 @Common.ImageAjax()

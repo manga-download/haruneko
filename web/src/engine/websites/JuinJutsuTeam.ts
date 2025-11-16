@@ -3,16 +3,10 @@ import icon from './JuinJutsuTeam.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 
-const pageScript = `
-    new Promise ( resolve=> {
-        resolve (pages.map(page => page.url));
-    });
-`;
-
 @Common.MangaCSS(/^{origin}\/series\/[^/]+\/$/, 'div#container_comic_content div.title_high')
-@Common.MangasMultiPageCSS('/directory/page/{page}/', 'div.series_element div.info div.title a')
+@Common.MangasMultiPageCSS('div.series_element div.info div.title a', Common.PatternLinkGenerator('/directory/page/{page}/'))
 @Common.ChaptersSinglePageCSS('div.title_chapter a')
-@Common.PagesSinglePageJS(pageScript, 500)
+@Common.PagesSinglePageJS('pages.map(({ url }) => url)', 500)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 

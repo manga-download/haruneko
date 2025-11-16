@@ -6,17 +6,17 @@ new TestFixture({
         title: 'RuManhua'
     },
     container: {
-        url: 'https://rumanhua1.com/IVppgVq/',
-        id: 'IVppgVq',
-        title: '我是怪兽大主宰'
+        url: 'https://www.rumanhua.org/news/507050',
+        id: '/news/507050',
+        title: '纯情丫头火辣辣'
     },
     child: {
-        id: '/IVppgVq/OagmJLY.html',
-        title: '第79话 吃龙心'
+        id: '/show/oXKl3hlDG5.html',
+        title: '第1话'
     },
     entry: {
-        index: 5,
-        size: 57_787,
-        type: 'image/jpeg'
+        index: 1,
+        size: 106_778,
+        type: 'image/webp'
     }
 }).AssertWebsite();

@@ -1,24 +1,22 @@
-﻿import { TestFixture, type Config } from '../../../test/WebsitesFixture';
+﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config: Config = {
+new TestFixture({
     plugin: {
         id: 'sadscans',
         title: 'Sadscans'
     },
     container: {
-        url: 'https://sadscans.com/series/one-piece',
-        id: '/series/one-piece',
+        url: 'https://sadscans.net/seriler/one-piece',
+        id: '/seriler/one-piece',
         title: 'One Piece'
     },
     child: {
         id: '/reader/641c309d0406b',
-        title: 'Bölüm 1079 - Kızıl Saç Korsanları - Bir İmparator\'un Tayfası'
+        title: '1079. Bölüm - Kızıl Saç Korsanları - Bir İmparator\'un Tayfası'
     },
     entry: {
         index: 0,
         size: 234_180,
         type: 'image/png'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

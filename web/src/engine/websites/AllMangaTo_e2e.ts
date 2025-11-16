@@ -3,7 +3,7 @@ import { TestFixture } from '../../../test/WebsitesFixture';
 // CASE : English
 new TestFixture({
     plugin: {
-        id: 'allmangato',
+        id: 'allmanga',
         title: 'AllManga.to'
     },
     container: {
@@ -25,7 +25,7 @@ new TestFixture({
 // CASE : "raw" (Chinese)
 new TestFixture({
     plugin: {
-        id: 'allmangato',
+        id: 'allmanga',
         title: 'AllManga.to'
     },
     container: {

@@ -4,7 +4,7 @@ import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 
 @Common.MangaCSS(/^{origin}\/[^/]+\/$/, 'div#infor-box h1[itemprop="name"]')
-@Common.MangasSinglePagesCSS([ '/danh-sach-category' ], 'span.manga > a')
+@Common.MangasSinglePageCSS('/danh-sach-category', 'span.manga > a')
 @Common.ChaptersSinglePageCSS('div#manga-chapter span.chapter-name > a')
 @Common.PagesSinglePageJS('slides_page', 1500)
 @Common.ImageAjax()

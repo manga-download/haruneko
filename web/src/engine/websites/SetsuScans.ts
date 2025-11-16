@@ -53,7 +53,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     private async GetMangasFromPage(page: number, provider: MangaPlugin): Promise<Manga[]> {
-        const mangas = await this.FetchAPI<APIManga[]>('/mangaloaded?page_size=100&page=' + page);
+        const mangas = await this.FetchAPI<APIManga[]>('/mangaloaded?page_size=24&page=' + page);
         return mangas.map(({ slug, title }) => new Manga(this, provider, slug, title));
     }
 

@@ -1,13 +1,13 @@
 import { Tags } from '../Tags';
 import icon from './BarManga.webp';
-import { DecoratableMangaScraper } from '../providers/MangaPlugin';
+import { FetchWindowPreloadScript } from '../platform/FetchProvider';
+import { DecoratableMangaScraper, type Chapter, Page } from '../providers/MangaPlugin';
 import * as Madara from './decorators/WordPressMadara';
 import * as Common from './decorators/Common';
 
 @Madara.MangaCSS(/^{origin}\/manga\/[^/]+\/$/, 'ol.breadcrumb li:last-of-type a')
 @Madara.MangasMultiPageAJAX()
-@Madara.ChaptersSinglePageAJAXv2()
-@Madara.PagesSinglePageCSS()
+@Madara.ChaptersSinglePageAJAXv2('span.chapter-link-inner', element => ({ id: new URL(element.dataset.href).pathname, title: element.textContent.trim() }))
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
@@ -17,5 +17,17 @@ export default class extends DecoratableMangaScraper {
 
     public override get Icon() {
         return icon;
+    }
+
+    public override async FetchPages(chapter: Chapter): Promise<Page[]> {
+        const data = await FetchWindowPreloadScript<string[]>(new Request(new URL(chapter.Identifier, this.URI)), () => {
+            URL.createObjectURL = obj => obj.toString();
+            XMLHttpRequest.prototype.open = function (_: string, url: string) {
+                Object.defineProperty(this, 'status', { value: 200 });
+                Object.defineProperty(this, 'response', { value: url });
+                this.onload();
+            };
+        }, () => [...document.querySelectorAll<HTMLImageElement>('.reading-content .page-break img[id^="preload-"]')].map(({ src }) => src), 2500);
+        return data.map(link => new Page(this, chapter, new URL(link)));
     }
 }

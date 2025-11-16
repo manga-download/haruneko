@@ -6,11 +6,11 @@ import * as FlatManga from './templates/FlatManga';
 import * as Common from './decorators/Common';
 
 @Common.MangaCSS(FlatManga.pathManga, FlatManga.queryMangaTitle)
-@Common.MangasSinglePagesCSS([ FlatManga.pathMangasSinglePage ], 'span[data-toggle="mangapop"] a')
+@Common.MangasSinglePageCSS(FlatManga.pathMangasSinglePage, 'span[data-toggle="mangapop"] a')
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
-    public constructor () {
+    public constructor() {
         super('klmanga', 'KLManga', 'https://klz9.com', Tags.Media.Manga, Tags.Language.Japanese, Tags.Source.Aggregator);
     }
 
@@ -41,7 +41,7 @@ type APIChapters = {
 }[];
 
 @Common.MangaCSS(/^{origin}\/[^/]+\.html$/, queryMangaTitle)
-@Common.MangasSinglePagesCSS([ pathMangasSinglePage ], 'span[data-toggle="mangapop"] a')
+@Common.MangasSinglePageCSS(pathMangasSinglePage, 'span[data-toggle="mangapop"] a')
 @Common.PagesSinglePageCSS('img.chapter-img:not([src*="olimposcan"]):not([src$=".gif"])')
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {

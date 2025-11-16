@@ -5,7 +5,7 @@ import * as Common from './decorators/Common';
 import { FetchChapters } from './GodaManhua';
 
 @Common.MangaCSS(/^{origin}\/manga\/[^/]+$/, 'nav ol li:last-of-type a')
-@Common.MangasMultiPageCSS('/manga/page/{page}', 'div.cardlist a')
+@Common.MangasMultiPageCSS('div.cardlist a', Common.PatternLinkGenerator('/manga/page/{page}'))
 @Common.PagesSinglePageCSS('div#chapcontent img[data-src]')
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {

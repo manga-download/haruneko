@@ -1,4 +1,4 @@
-﻿import { TestFixture } from '../../../test/WebsitesFixture';
+import { TestFixture } from '../../../test/WebsitesFixture';
 
 new TestFixture({
     plugin: {
@@ -6,17 +6,17 @@ new TestFixture({
         title: 'CMangax'
     },
     container: {
-        url: 'https://cmangax4.com/album/trong-sinh-chi-quan-chu-80929',
+        url: 'https://cmangax8.com/album/trong-sinh-chi-quan-chu-80929',
         id: '80929',
-        title: 'trọng sinh chi quân chủ'
+        title: 'Trọng Sinh Chi Quân Chủ'
     },
     child: {
         id: '2198086',
-        title: '11'
+        title: 'Chapter 11'
     },
     entry: {
         index: 2,
-        size: 94_988,
-        type: 'image/jpeg'
+        size: 32_766,
+        type: 'image/webp'
     }
 }).AssertWebsite();

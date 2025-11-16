@@ -5,7 +5,7 @@ import * as MangaStream from './decorators/WordPressMangaStream';
 import * as Common from './decorators/Common';
 
 @MangaStream.MangaCSS(/^{origin}\/komik\/[^/]+\/$/)
-@Common.MangasMultiPageCSS('/daftar-manga/page/{page}/', 'div.film-list div.animposx div.bigors a')
+@Common.MangasMultiPageCSS('div.film-list div.animposx div.bigors a', Common.PatternLinkGenerator('/daftar-manga/page/{page}/'))
 @MangaStream.ChaptersSinglePageCSS('div#chapter_list span.lchx a')
 @MangaStream.PagesSinglePageCSS([], 'div.chapter-area div.chapter-image div#chimg-auh img[src]:not([src=""])')
 @Common.ImageAjax()

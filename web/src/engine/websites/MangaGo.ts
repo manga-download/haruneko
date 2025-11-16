@@ -7,12 +7,12 @@ import * as Common from './decorators/Common';
 import { DRMProvider } from './MangaGo.DRM';
 
 @Common.MangaCSS(/^{origin}\/read-manga\/[^/]+\/$/, 'div#page div.people-panel div.w-title h1')
-@Common.MangasMultiPageCSS('/genre/all/{page}/', 'div.pic_list span.title a', 1, 1, 0, Common.AnchorInfoExtractor(true))
+@Common.MangasMultiPageCSS('div.pic_list span.title a', Common.PatternLinkGenerator('/genre/all/{page}/'), 0, Common.AnchorInfoExtractor(true))
 export default class extends DecoratableMangaScraper {
 
     readonly #drm = new DRMProvider();
 
-    public constructor () {
+    public constructor() {
         super('mangago', 'MangaGo', 'https://www.mangago.me', Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Language.English, Tags.Source.Aggregator);
     }
 

@@ -16,13 +16,13 @@ function ChapterInfoExtractor(anchor: HTMLAnchorElement) {
 }
 
 @Common.MangaCSS(/^{origin}\/manga\//, 'div.about-manga-info h2')
-@Common.MangasSinglePagesCSS([ '/mangalistesi' ], 'article.manga-card > a', MangaInfoExtractor)
+@Common.MangasSinglePageCSS('/mangalistesi', 'article.manga-card > a', MangaInfoExtractor)
 @Common.ChaptersSinglePageCSS('div#manga-chapters-item-list a', undefined, ChapterInfoExtractor)
 @Common.PagesSinglePageCSS('img.read-manga-image:not([style])')
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
-    public constructor () {
+    public constructor() {
         super('mangatepesi', `MangaTepesi`, 'https://mangatepesi.com', Tags.Language.Turkish, Tags.Source.Scanlator, Tags.Media.Manga, Tags.Media.Manhwa);
     }
 

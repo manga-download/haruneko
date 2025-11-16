@@ -4,20 +4,23 @@ import { DecoratableMangaScraper, Manga, type MangaPlugin } from '../providers/M
 import * as Common from './decorators/Common';
 import { FetchCSS, FetchWindowScript } from '../platform/FetchProvider';
 
-function MangaLabelExtractor(element: HTMLMetaElement): string {
-    return element.content.split('|').at(0).trim().replace(/comic porn$/i, '').trim();
+function MangaLinkExtractor(element: HTMLMetaElement, uri: URL) {
+    return {
+        id: uri.pathname,
+        title: element.content.split('|').at(0).trim().replace(/comic porn$/i, '').trim(),
+    };
 }
 function PageExtractor(element: HTMLAnchorElement): string {
     return element.href;
 }
 
-@Common.MangaCSS(/^{origin}\/[^/]+\/$/, 'meta[property="og:title"]', MangaLabelExtractor)
+@Common.MangaCSS(/^{origin}\/[^/]+\/$/, 'meta[property="og:title"]', MangaLinkExtractor)
 @Common.ChaptersUniqueFromManga()
 @Common.PagesSinglePageCSS('article.postContent div.scrollmenu figure a', PageExtractor)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
-    public constructor () {
+    public constructor() {
         super('hdporncomics', 'HDPornComics', 'https://hdporncomics.com', Tags.Media.Manga, Tags.Media.Comic, Tags.Language.English, Tags.Source.Aggregator, Tags.Rating.Pornographic);
     }
 

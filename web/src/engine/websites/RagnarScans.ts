@@ -1,14 +1,13 @@
-import { Tags } from '../Tags';
-import icon from './RagnarScans.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
-import * as Madara from './decorators/WordPressMadara';
+import { Tags } from '../Tags';
 import * as Common from './decorators/Common';
-import { FetchWindowScript } from '../platform/FetchProvider';
+import icon from './RagnarScans.webp';
 
-@Madara.MangaCSS(/^{origin}\/manga\/[^/]+\/$/, 'ol.breadcrumb li:last-of-type a')
-@Madara.MangasMultiPageAJAX()
-@Madara.ChaptersSinglePageAJAXv2()
-@Madara.PagesSinglePageCSS()
+@Common.MangaCSS(/^{origin}\/manga\/[^/]+\/$/, 'ul.uk-breadcrumb li:last-of-type')
+@Common.MangasMultiPageCSS('div.manga-block h3 a.uk-link-heading', Common.PatternLinkGenerator('/manga/page/{page}/'))
+@Common.ChaptersMultiPageCSS<HTMLAnchorElement>('div.chapter-item a', Common.PatternLinkGenerator('{id}bolum/page/{page}/'), 0,
+    anchor => ({ id: anchor.pathname, title: anchor.querySelector<HTMLHeadingElement>('h3.uk-link-heading').innerText.trim().match(/^Bölüm[^:]+/).at(0).trim() }))
+@Common.PagesSinglePageJS(`[...document.querySelectorAll('div#chapter-content img')].map(img => img.src);`, 2500)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
@@ -18,9 +17,5 @@ export default class extends DecoratableMangaScraper {
 
     public override get Icon() {
         return icon;
-    }
-
-    public override async Initialize(): Promise<void> {
-        return FetchWindowScript(new Request(new URL(this.URI)), `window.cookieStore.set('wpmanga-adult', '1')`);
     }
 }

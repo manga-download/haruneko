@@ -28,25 +28,25 @@ type TGroup = {
 };
 
 const chapterLanguageMap = new Map([
-    [ 'de', Tags.Language.German ],
-    [ 'en', Tags.Language.English ],
-    [ 'es', Tags.Language.Spanish ],
-    [ 'es-mx', Tags.Language.Spanish ],
-    [ 'fr', Tags.Language.French ],
-    [ 'it', Tags.Language.Italian ],
-    [ 'ja', Tags.Language.Japanese ],
-    [ 'ko', Tags.Language.Korean ],
-    [ 'pl', Tags.Language.Polish ],
-    [ 'pt-br', Tags.Language.Portuguese ],
-    [ 'pt-pt', Tags.Language.Portuguese ],
-    [ 'zh', Tags.Language.Chinese ],
+    ['de', Tags.Language.German],
+    ['en', Tags.Language.English],
+    ['es', Tags.Language.Spanish],
+    ['es-mx', Tags.Language.Spanish],
+    ['fr', Tags.Language.French],
+    ['it', Tags.Language.Italian],
+    ['ja', Tags.Language.Japanese],
+    ['ko', Tags.Language.Korean],
+    ['pl', Tags.Language.Polish],
+    ['pt-br', Tags.Language.Portuguese],
+    ['pt-pt', Tags.Language.Portuguese],
+    ['zh', Tags.Language.Chinese],
 ]);
 
 @Common.MangaCSS(/^{origin}\/[^/]+-\d+$/, 'div#ani_detail div.anisc-detail h2.manga-name')
-@Common.MangasMultiPageCSS('/az-list?page={page}', '#main-content div.manga-detail h3 a', 1, 1, 0, Common.AnchorInfoExtractor(true))
+@Common.MangasMultiPageCSS('#main-content div.manga-detail h3 a', Common.PatternLinkGenerator('/az-list?page={page}'), 0, Common.AnchorInfoExtractor(true))
 export default class extends DecoratableMangaScraper {
 
-    public constructor () {
+    public constructor() {
         super('mangareaderto', `MangaReader.to`, 'https://mangareader.to', Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Language.Multilingual, Tags.Source.Aggregator);
     }
 
@@ -61,26 +61,26 @@ export default class extends DecoratableMangaScraper {
             const title = element instanceof HTMLAnchorElement ? element.title.replace(/([^:]*):(.*)/, (match, g1, g2) => g1.trim().toLowerCase() === g2.trim().toLowerCase() ? g1 : match).trim() : element.textContent.trim();
             const languageCode = link.match(/\/read\/[^/]+\/([^/]+)/).at(1);
             return new Chapter(this, manga, link, `${title} (${languageCode})`,
-                ...chapterLanguageMap.has(languageCode) ? [ chapterLanguageMap.get(languageCode) ] : []);
+                ...chapterLanguageMap.has(languageCode) ? [chapterLanguageMap.get(languageCode)] : []);
         });
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
         const chapterurl = new URL(chapter.Identifier, this.URI);
-        const [ { dataset: { readingId } } ] = await FetchCSS(new Request(chapterurl), 'div#wrapper');
+        const [{ dataset: { readingId } }] = await FetchCSS(new Request(chapterurl), 'div#wrapper');
 
         const uri = new URL(`ajax/image/list/${chapterurl.href.includes('chapter') ? 'chap' : 'vol'}/${readingId}?quality=high`, this.URI);
         const { status, html } = await FetchJSON<AJAXResponse>(new Request(uri));
         if (status !== true) return [];
 
         const dom = new DOMParser().parseFromString(html, 'text/html');
-        const imagesArr = [ ...dom.querySelectorAll<HTMLDivElement>('div.iv-card') ];
+        const imagesArr = [...dom.querySelectorAll<HTMLDivElement>('div.iv-card')];
         return imagesArr.map(image => new Page(this, chapter, new URL(image.dataset.url, this.URI), { shuffled: image.classList.contains('shuffled') }));
     }
 
     public override async FetchImage(page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
         const blob = await Common.FetchImageAjax.call(this, page, priority, signal);
-        return !page.Parameters[ 'shuffled' ] ? blob : DeScramble(blob, async (image, ctx) => {
+        return !page.Parameters['shuffled'] ? blob : DeScramble(blob, async (image, ctx) => {
 
             const blockDimension = 200;
             const defaultSeed = 'stay';
@@ -103,7 +103,7 @@ export default class extends DecoratableMangaScraper {
                 const group = getGroup(slices);
 
                 slices.forEach((slice, index) => {
-                    let n = scrambleArray[ index ];
+                    let n = scrambleArray[index];
                     let o = Math.trunc(n / group.cols);
                     n = (n - o * group.cols) * slice.width;
                     o = o * slice.height;
@@ -137,9 +137,9 @@ function unShuffle(numArray: number[], seed: string): number[] {
     }
     for (let index = 0; index < c; index++) {
         let e = seedRand(d, 0, arr2.length - 1),
-            f = arr2[ e ];
+            f = arr2[e];
         arr2.splice(e, 1);
-        arr[ f ] = numArray[ index ];
+        arr[f] = numArray[index];
     }
     return arr;
 }
@@ -176,8 +176,8 @@ function seedrandom(seed: string) {
 function mixkey(seed: string, key: number[]): string {
     let stringseed = seed + '', smear, j = 0;
     while (j < stringseed.length) {
-        key[ 255 & j ] =
-            255 & (smear ^= key[ 255 & j ] * 19) + stringseed.charCodeAt(j++);
+        key[255 & j] =
+            255 & (smear ^= key[255 & j] * 19) + stringseed.charCodeAt(j++);
     }
     return String.fromCharCode.apply(0, key);
 }
@@ -187,23 +187,23 @@ function ARC4(key: number[]) {
         me = this, i = 0, j = me.i = me.j = 0, s = me.S = [];
 
     if (!keylen) {
-        key = [ keylen++ ];
+        key = [keylen++];
     }
 
     while (i < 256) {
-        s[ i ] = i++;
+        s[i] = i++;
     }
     for (i = 0; i < 256; i++) {
-        s[ i ] = s[ j = 255 & j + key[ i % keylen ] + (t = s[ i ]) ];
-        s[ j ] = t;
+        s[i] = s[j = 255 & j + key[i % keylen] + (t = s[i])];
+        s[j] = t;
     }
 
     (me.g = function (count) {
         let t, r = 0,
             i = me.i, j = me.j, s = me.S;
         while (count--) {
-            t = s[ i = 255 & i + 1 ];
-            r = r * 256 + s[ 255 & (s[ i ] = s[ j = 255 & j + t ]) + (s[ j ] = t) ];
+            t = s[i = 255 & i + 1];
+            r = r * 256 + s[255 & (s[i] = s[j = 255 & j + t]) + (s[j] = t)];
         }
         me.i = i; me.j = j;
         return r;
@@ -214,8 +214,8 @@ function getGroup(slices: TSlice[]): TGroup {
     const cols = getColsInGroup(slices);
     return {
         rows: slices.length / cols,
-        x: slices[ 0 ].x,
-        y: slices[ 0 ].y,
+        x: slices[0].x,
+        y: slices[0].y,
         slices: slices.length,
         cols: cols
     };
@@ -228,9 +228,9 @@ function getColsInGroup(slices: TSlice[]): number {
     let t: string | number = 'init';
     for (let i = 0; i < slices.length; i++) {
         if (t == 'init') {
-            t = slices[ i ].y;
+            t = slices[i].y;
         }
-        if (t != slices[ i ].y) {
+        if (t != slices[i].y) {
             return i;
         }
     }
@@ -253,7 +253,7 @@ function baseRange(base: number, size: number, c: number, d: boolean): number[] 
         );
     const _array: number[] = new Array(arraysize);
     for (; arraysize--;) {
-        _array[ d ? arraysize : ++e ] = base;
+        _array[d ? arraysize : ++e] = base;
         base += c;
     }
     return _array;

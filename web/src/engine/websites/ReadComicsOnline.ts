@@ -5,7 +5,7 @@ import * as MangaReader from './templates/MangaReaderCMS';
 import * as Common from './decorators/Common';
 
 @Common.MangaCSS(/^{origin}\/comic\/[^/]+$/, 'h2.listmanga-header')
-@Common.MangasSinglePagesCSS([ MangaReader.patternMangas ], MangaReader.queryMangas)
+@Common.MangasSinglePageCSS(MangaReader.patternMangas, MangaReader.queryMangas)
 @Common.ChaptersSinglePageCSS(MangaReader.queryChapters, undefined, MangaReader.ChapterInfoExtractor)
 @Common.PagesSinglePageCSS(MangaReader.queryPages)
 @Common.ImageAjax()

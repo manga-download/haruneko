@@ -4,7 +4,7 @@ import * as Common from './decorators/Common';
 import Manatoki from './Manatoki';
 
 @Common.MangaCSS(/^https:\/\/newtoki\d+\.com\/webtoon\/\d+(\/[^/]+)?$/, 'div.page-title span.page-desc')
-@Common.MangasMultiPageCSS('/webtoon/p{page}', 'ul#webtoon-list-all div.list-item a:has(span.title)')
+@Common.MangasMultiPageCSS('ul#webtoon-list-all div.list-item a:has(span.title)', Common.PatternLinkGenerator('/webtoon/p{page}'))
 export default class extends Manatoki {
 
     public constructor() {

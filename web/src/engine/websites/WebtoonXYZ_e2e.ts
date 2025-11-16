@@ -1,15 +1,14 @@
 import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'webtoonxyz',
         title: 'WebtoonXYZ'
     },
-    /* CloudFlare
     container: {
         url: 'https://www.webtoon.xyz/read/the-creator-is-on-hiatus/',
         id: JSON.stringify({ post: '10628', slug: '/read/the-creator-is-on-hiatus/' }),
-        title: 'I�ll Be Taking A Break For Personal Reasons'
+        title: 'I’ll Be Taking A Break For Personal Reasons'
     },
     child: {
         id: '/read/the-creator-is-on-hiatus/chapter-81/',
@@ -19,7 +18,5 @@ const config = {
         index: 0,
         size: 122_885,
         type: 'image/jpeg'
-    }*/
-};
-
-new TestFixture(config).AssertWebsite();
+    }
+}).AssertWebsite();

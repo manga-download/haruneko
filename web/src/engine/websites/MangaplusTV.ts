@@ -18,7 +18,7 @@ const chapterLanguageMap = new Map([
 // TODO: Check for possible revision
 
 @Common.MangaCSS(/^{origin}\/truyen-tranh\/[^/]+$/, 'ol.breadcrumb li:last-of-type a')
-@Common.MangasMultiPageCSS('/truyen-tranh-hay/trang-{page}.html', 'div.story-item h3.title-book a')
+@Common.MangasMultiPageCSS('div.story-item h3.title-book a', Common.PatternLinkGenerator('/truyen-tranh-hay/trang-{page}.html'))
 @Common.PagesSinglePageCSS('div.story-see-content img')
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
@@ -37,7 +37,7 @@ export default class extends DecoratableMangaScraper {
         return (await Promise.all(promises)).flat();
     }
 
-    private async ExtractChapters(manga : Manga, endpoint: URL): Promise<Chapter[]> {
+    private async ExtractChapters(manga: Manga, endpoint: URL): Promise<Chapter[]> {
         const data = await FetchCSS<HTMLAnchorElement>(new Request(endpoint), 'div.works-chapter-item a');
         return data.map(chapter => new Chapter(this, manga, chapter.pathname, chapter.textContent.trim(), ...this.ExtractLanguage(chapter.pathname)));
     }

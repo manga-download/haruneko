@@ -10,12 +10,12 @@ type APIChapter = {
 };
 
 @Common.MangaCSS(/^{origin}\/book\/[^/]+\.html$/, 'div.cy_title h1')
-@Common.MangasMultiPageCSS('/sort/1-{page}.html', 'div.cy_list_mh ul li.title a')
+@Common.MangasMultiPageCSS('div.cy_list_mh ul li.title a', Common.PatternLinkGenerator('/sort/1-{page}.html'))
 @Common.PagesSinglePageJS('newImgs', 1500)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
-    public constructor () {
+    public constructor() {
         super('zhuzhumh', `Zhuzhumh`, 'https://cn.zhuzhumh.com', Tags.Language.Chinese, Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Source.Aggregator);
     }
 

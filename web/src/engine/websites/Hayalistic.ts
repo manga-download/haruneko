@@ -12,7 +12,7 @@ import * as Common from './decorators/Common';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('hayalistic', 'Hayalistic', 'https://hayalistic.com.tr', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Turkish);
+        super('hayalistic', 'Hayalistic', 'https://hayalistic.net', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Turkish);
     }
 
     public override get Icon() {

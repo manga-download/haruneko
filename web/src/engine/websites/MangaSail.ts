@@ -5,11 +5,11 @@ import * as Common from './decorators/Common';
 import { FetchCSS } from '../platform/FetchProvider';
 
 function IsImage(page: string) {
-    return [ 'png', 'jpg', 'jpeg', 'bmp', 'avif', 'webp' ].includes(page.toLowerCase().split('.').at(-1));
+    return ['png', 'jpg', 'jpeg', 'bmp', 'avif', 'webp'].includes(page.toLowerCase().split('.').at(-1));
 }
 
 @Common.MangaCSS(/^{origin}\/content\/[^/]+$/, 'div.main-content-inner h1.page-header')
-@Common.MangasMultiPageCSS('/directory?page={page}', 'table.directory_list tr td:first-of-type a')
+@Common.MangasMultiPageCSS('table.directory_list tr td:first-of-type a', Common.PatternLinkGenerator('/directory?page={page}'))
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 

@@ -1,4 +1,4 @@
-﻿import { TestFixture } from '../../../test/WebsitesFixture';
+import { TestFixture } from '../../../test/WebsitesFixture';
 
 new TestFixture({
     plugin: {
@@ -6,17 +6,17 @@ new TestFixture({
         title: 'ArcaneScans'
     },
     container: {
-        url: 'https://arcanescans.com/manga/99-wooden-stick/',
-        id: '/manga/99-wooden-stick/',
-        title: 'Serving the Heavens is my Destiny'
+        url: 'https://arcanescans.org/manga/celebrating-the-remaining-life/',
+        id: '/manga/celebrating-the-remaining-life/',
+        title: 'Celebrating the Remaining Life'
     },
     child: {
-        id: '/99-wooden-stick-chapter-1/',
-        title: 'Chapter 1'
+        id: '/celebrating-the-remaining-life-chapter-75/',
+        title: 'Chapter 75'
     },
     entry: {
-        index: 2,
-        size: 298_021,
+        index: 0,
+        size: 55_487,
         type: 'image/jpeg'
     }
 }).AssertWebsite();

@@ -6,7 +6,7 @@ new TestFixture({
         title: 'Galaxy Manga'
     },
     container: {
-        url: 'https://galaxymanga.to/manga/you-awakened-while-i-was-dead/',
+        url: 'https://galaxymanga.io/manga/you-awakened-while-i-was-dead/',
         id: '/manga/you-awakened-while-i-was-dead/',
         title: 'You Awakened while I Was Dead'
     },

@@ -31,7 +31,7 @@ type PageParams = {
 };
 
 @Common.MangaCSS(/^{origin}\/episode\/\d+$/, 'meta[name="twitter:title"]')
-@Common.MangasSinglePagesCSS([ '/series' ], '#main div.group a[href*="episode"]', (a: HTMLAnchorElement) => ({ id: a.pathname, title: a.querySelector('h3').innerText.trim() }))
+@Common.MangasSinglePageCSS('/series', '#main div.group a[href*="episode"]', (a: HTMLAnchorElement) => ({ id: a.pathname, title: a.querySelector('h3').innerText.trim() }))
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
@@ -65,7 +65,7 @@ export default class extends DecoratableMangaScraper {
 
     private async DecryptImage(encrypted: ArrayBuffer, keyData: string, iv: string): Promise<Blob> {
         const algorithm = { name: 'AES-CBC', iv: GetBytesFromHex(iv) };
-        const key = await crypto.subtle.importKey('raw', GetBytesFromHex(keyData), algorithm, false, [ 'decrypt' ]);
+        const key = await crypto.subtle.importKey('raw', GetBytesFromHex(keyData), algorithm, false, ['decrypt']);
         const decrypted = await crypto.subtle.decrypt(algorithm, key, encrypted);
         return Common.GetTypedData(decrypted);
     }

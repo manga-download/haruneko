@@ -8,10 +8,9 @@ function MangaInfoExtractor(anchor: HTMLAnchorElement) {
     };
 }
 
-@Common.MangaCSS(/^{origin}\/manga\/[^/]+$/, 'section img.object-cover', (element: HTMLImageElement) => element.alt.trim())
-@Common.MangasMultiPageCSS('/manga?page={page}', 'div#card-real a', 1, 1, 0, MangaInfoExtractor)
-@Common.ChaptersMultiPageCSS('div#chapters-list a', 1, 1, 0,
-    Common.PatternLinkResolver('{id}?page={page}'),
+@Common.MangaCSS<HTMLImageElement>(/^{origin}\/manga\/[^/]+$/, 'section img.object-cover', (img, uri) => ({ id: uri.pathname, title: img.alt.trim() }))
+@Common.MangasMultiPageCSS('div#card-real a', Common.PatternLinkGenerator('/manga?page={page}'), 0, MangaInfoExtractor)
+@Common.ChaptersMultiPageCSS('div#chapters-list a', Common.PatternLinkGenerator('{id}?page={page}'), 0,
     (anchor: HTMLAnchorElement) => ({ id: anchor.pathname, title: anchor.querySelector('span').innerText.trim() }))
 @Common.PagesSinglePageCSS('div#chapter-container img.chapter-image')
 @Common.ImageAjax()

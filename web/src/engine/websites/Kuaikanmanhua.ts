@@ -44,7 +44,7 @@ const mangascript = `
     });
 `;
 
-@Common.MangasMultiPageCSS('/tag/0?page={page}', 'div.tagContent div a')
+@Common.MangasMultiPageCSS('div.tagContent div a', Common.PatternLinkGenerator('/tag/0?page={page}'))
 @Common.ChaptersSinglePageJS(chapterScript, 500)
 @Common.PagesSinglePageJS(pageScript, 500)
 @Common.ImageAjax()

@@ -68,8 +68,8 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
         return [
-            ... await Common.FetchMangasMultiPageCSS.call(this, provider, '/webtoon/p{page}', 'ul#webtoon-list-all div.list-item a:has(span.title)'),
-            ... await Common.FetchMangasMultiPageCSS.call(this, provider, '/comic/p{page}', 'ul#webtoon-list-all div.list-item a:has(span.title)')
+            ... await Common.FetchMangasMultiPageCSS.call(this, provider, 'ul#webtoon-list-all div.list-item a:has(span.title)', Common.PatternLinkGenerator('/webtoon/p{page}')),
+            ... await Common.FetchMangasMultiPageCSS.call(this, provider, 'ul#webtoon-list-all div.list-item a:has(span.title)', Common.PatternLinkGenerator('/comic/p{page}'))
         ];
     }
 

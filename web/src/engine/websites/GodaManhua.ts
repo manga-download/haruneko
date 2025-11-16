@@ -29,7 +29,7 @@ export async function FetchChapters(this: DecoratableMangaScraper, manga: Manga,
 }
 
 @Common.MangaCSS(/^{origin}\/manga\/[^/]+$/, 'nav ol li:last-of-type a')
-@Common.MangasMultiPageCSS('/manga/page/{page}', 'div.cardlist a')
+@Common.MangasMultiPageCSS('div.cardlist a', Common.PatternLinkGenerator('/manga/page/{page}'))
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 

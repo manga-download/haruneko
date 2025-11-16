@@ -52,16 +52,16 @@ export default class extends DecoratableMangaScraper {
         const uri = new URL(url);
         const id = uri.pathname.split('/')[3];
         uri.pathname = uri.pathname.split('/').slice(0, 4).join('/');
-        const [ element ] = await FetchCSS<HTMLHeadElement>(new Request(uri.href), 'h1.PCM-productTitle');
+        const [element] = await FetchCSS<HTMLHeadingElement>(new Request(uri.href), 'h1.PCM-productTitle');
         return new Manga(this, provider, id, element.textContent.trim());
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
         const cancellator = new AbortController();
         try {
-            const genres = [ 1, 2, 3, 4, 5, 6, 7, 9, 10 ];
+            const genres = [1, 2, 3, 4, 5, 6, 7, 9, 10];
             const mangaList: Manga[] = [];
-            for(const genre of genres) {
+            for (const genre of genres) {
                 const result = await this.GetMangasFromPage(genre, 1, provider, cancellator.signal);
                 mangaList.push(...result.mangas);
                 const promises = Array(result.pages - 1).fill(0).map(async (_, index) => {
@@ -71,7 +71,7 @@ export default class extends DecoratableMangaScraper {
                 await Promise.all(promises);
             }
             return mangaList.distinct();
-        } catch(error) {
+        } catch (error) {
             cancellator.abort();
             throw error;
         }
@@ -108,11 +108,11 @@ export default class extends DecoratableMangaScraper {
         const request = new Request(`${this.URI.origin}/web/product/${manga.Identifier}/episodes?etype=V`);
         const data = await FetchCSS<HTMLUListElement>(request, 'ul.PCM-volList li');
         return data.map(element => {
-            const volume = [ ...element.querySelectorAll<HTMLElement>('div.PCM-prdVol_btns > a:not([class*="buyBtn"])') ].at(-1);
+            const volume = [...element.querySelectorAll<HTMLElement>('div.PCM-prdVol_btns > a:not([class*="buyBtn"])')].at(-1);
             const title = [
                 element.querySelector<HTMLElement>('div.PCM-prdVol_title h2').innerText.trim(),
-                volume.classList.contains('PCM-prdVol_freeBtn') ? ` (${ volume.innerText.trim() })` : '',
-                volume.classList.contains('PCM-prdVol_trialBtn') ? ` (${ volume.innerText.trim() })` : '',
+                volume.classList.contains('PCM-prdVol_freeBtn') ? ` (${volume.innerText.trim()})` : '',
+                volume.classList.contains('PCM-prdVol_trialBtn') ? ` (${volume.innerText.trim()})` : '',
             ].join('');
             return new Chapter(this, manga, volume.dataset.episode_id, title);
         });
@@ -158,17 +158,17 @@ type PDataImage = {
 export function script(this: Window) {
     return new Promise<ImageLinks>(resolve => {
 
-        (function() {
-            if(globalThis.shuffleSeed?.shuffle) {
+        (function () {
+            if (globalThis.shuffleSeed?.shuffle) {
                 return;
             }
             const temp = { exports: {} };
             (function locate(object, id) {
-                if(object[id]) {
+                if (object[id]) {
                     return object[id];
                 }
                 let result = null;
-                for(const key in object) {
+                for (const key in object) {
                     result = result ?? locate(object[key], id);
                 }
                 return result;
@@ -198,7 +198,7 @@ export function script(this: Window) {
                 const tileWidth = offsetX + tileSize > img.width ? img.width - offsetX : tileSize;
                 const tileHeight = offsetY + tileSize > img.height ? img.height - offsetY : tileSize;
                 const group = `${tileWidth}-${tileHeight}`;
-                if(!groupedTileMaps[group]) {
+                if (!groupedTileMaps[group]) {
                     groupedTileMaps[group] = { tileWidth, tileHeight, tiles: [], indexmap: [] };
                 }
                 groupedTileMaps[group].tiles.push({ x: offsetX, y: offsetY });

@@ -98,7 +98,7 @@ class TestFixture {
             }
         } catch (error) {
             result.code = StatusCode.ERROR;
-            result.info = `${error.cause ?? error.message ?? error}`;
+            result.info = `${error.cause ?? error.message ?? error}`.trim();
         } finally {
             return result;
         }

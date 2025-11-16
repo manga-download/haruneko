@@ -4,19 +4,19 @@ new TestFixture({
     plugin: {
         id: 'manhastro',
         title: 'ManHastro'
-    },
+    }, /* Need Login for everything
     container: {
-        url: 'https://manhastro.net/lermanga/yohan-loves-tite/',
-        id: JSON.stringify({ post: '47401', slug: '/lermanga/yohan-loves-tite/'}),
+        url: 'https://manhastro.net/manga/47401',
+        id: '47401',
         title: 'Yohan Loves Tite'
     },
     child: {
-        id: '/lermanga/yohan-loves-tite/capitulo-1/',
+        id: '461708',
         title: 'Capitulo 1'
     },
     entry: {
         index: 2,
         size: 5_026,
         type: 'image/avif'
-    }
+    }*/
 }).AssertWebsite();

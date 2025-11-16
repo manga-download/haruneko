@@ -1,16 +1,15 @@
 ﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-// user paste a "manga" link
+// user paste a "manga" link (a category)
 new TestFixture({
     plugin: {
         id: 'multporn',
         title: 'MultPorn'
     },
     container: {
-        url: 'https://multporn.com/hentai_manga/azur_lane',
-        id: '/hentai_manga/azur_lane',
+        url: 'https://multporn.com/manga/azur_lane',
+        id: '/manga/azur_lane',
         title: 'Azur Lane',
-        timeout: 15000
     },
     child: {
         id: '/hentai_manga/a_maids_duty',
@@ -18,12 +17,12 @@ new TestFixture({
     },
     entry: {
         index: 1,
-        size: 619_504,
+        size: 526_291,
         type: 'image/png'
     }
 }).AssertWebsite();
 
-// user directly paste a "chapter" link
+// user directly paste a "chapter" link (a 'manga')
 new TestFixture({
     plugin: {
         id: 'multporn',
@@ -31,9 +30,8 @@ new TestFixture({
     },
     container: {
         url: 'https://multporn.com/hentai_manga/a_maids_duty',
-        id: '/hentai_manga/azur_lane',
+        id: '/manga/azur_lane',
         title: 'Azur Lane',
-        timeout: 15000
     },
     child: {
         id: '/hentai_manga/a_maids_duty',
@@ -41,7 +39,7 @@ new TestFixture({
     },
     entry: {
         index: 1,
-        size: 619_504,
+        size: 526_291,
         type: 'image/png'
     }
 }).AssertWebsite();

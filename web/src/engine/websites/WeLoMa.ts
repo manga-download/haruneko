@@ -5,7 +5,7 @@ import * as FlatManga from './templates/FlatManga';
 import * as Common from './decorators/Common';
 
 @Common.MangaCSS(/^{origin}\/\d+\/$/, FlatManga.queryMangaTitle)
-@Common.MangasMultiPageCSS(FlatManga.pathMangasMultiPage, FlatManga.queryMangas)
+@Common.MangasMultiPageCSS(FlatManga.queryMangas, FlatManga.MangasLinkGenerator)
 @Common.ChaptersSinglePageCSS(FlatManga.queryChapters, undefined, Common.AnchorInfoExtractor(true))
 @Common.PagesSinglePageCSS(FlatManga.queryPages, (img: HTMLImageElement) => atob(img.dataset.img))
 @Common.ImageAjax()

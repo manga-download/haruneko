@@ -14,7 +14,7 @@ function MangaInfoExtractor(element: HTMLElement) {
 }
 
 @Common.MangaCSS(/^{origin}\/manga\/\d+/, 'div.card-body h4')
-@Common.MangasMultiPageCSS('/seriler/{page}', 'div.ecommerce-card', 1, 1, 0, MangaInfoExtractor)
+@Common.MangasMultiPageCSS('div.ecommerce-card', Common.PatternLinkGenerator('/seriler/{page}'), 0, MangaInfoExtractor)
 @Common.ChaptersSinglePageCSS('div.table-responsive a[title]')
 @Common.PagesSinglePageJS(pageScript, 500)
 @Common.ImageAjax()

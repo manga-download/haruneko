@@ -1,4 +1,4 @@
-﻿import { Tags } from '../Tags';
+import { Tags } from '../Tags';
 import icon from './PlotTwistNoFansub.webp';
 import { Chapter, DecoratableMangaScraper, type MangaPlugin, Manga } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
@@ -44,7 +44,8 @@ export default class extends DecoratableMangaScraper {
     }
 
     private async GetMangasFromLetter(provider: MangaPlugin, letter: string): Promise<Manga[]> {
-        const { td_data } = await FetchJSON<APISearchResult>(new Request(new URL('/wp-admin/admin-ajax.php', this.URI), {
+        const uri = new URL('/wp-admin/admin-ajax.php', this.URI);
+        const { td_data } = await FetchJSON<APISearchResult>(new Request(uri, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
@@ -60,7 +61,7 @@ export default class extends DecoratableMangaScraper {
 
         const doc = new DOMParser().parseFromString(td_data, 'text/html');
         return [...doc.querySelectorAll<HTMLAnchorElement>('.entry-title a[href*="/plotwist/manga/"]')].map(manga => {
-            const { id, title } = Common.AnchorInfoExtractor(true).call(this, manga);
+            const { id, title } = Common.AnchorInfoExtractor(true).call(this, manga, uri);
             return new Manga(this, provider, id, title);
         });
     }

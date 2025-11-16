@@ -5,7 +5,7 @@ import * as Common from './decorators/Common';
 import * as MangaReader from './templates/MangaReaderCMS';
 
 @Common.MangaCSS(/^{origin}\/manga\/[^/]+$/, 'div.single-managa div.panel-heading') //yes, its managa, not manga
-@Common.MangasSinglePagesCSS([MangaReader.patternMangas], MangaReader.queryMangas)
+@Common.MangasSinglePageCSS(MangaReader.patternMangas, MangaReader.queryMangas)
 @Common.ChaptersSinglePageCSS(MangaReader.queryChapters, undefined, MangaReader.ChapterInfoExtractor)
 @Common.PagesSinglePageCSS(MangaReader.queryPages)
 @Common.ImageAjax()

@@ -1,4 +1,4 @@
-﻿import { Tags } from '../Tags';
+import { Tags } from '../Tags';
 import icon from './MangaHot.webp';
 import { Chapter, DecoratableMangaScraper, Manga, type MangaPlugin, Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
@@ -22,7 +22,7 @@ function MangaExtractor(element: HTMLAnchorElement) {
 
 }
 
-@Common.MangasSinglePagesCSS([ '/ranking' ], 'div.ranking a.parent', MangaExtractor)
+@Common.MangasSinglePageCSS('/ranking', 'div.ranking a.parent', MangaExtractor)
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
@@ -79,7 +79,7 @@ export default class extends DecoratableMangaScraper {
             });
 
             const { result } = await FetchJSON<APIResult<string[] | PageResult>>(request); //result can be an array or a json object list
-            if(!result || Object.keys(result).length === 0) {
+            if (!result || Object.keys(result).length === 0) {
                 run = false;
                 continue;
             }

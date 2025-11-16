@@ -83,7 +83,10 @@
             size="small"
             icon={TrashCan}
             iconDescription="Delete"
-            on:click={() => window.HakuNeko.DownloadManager.Dequeue(job)}
+            on:click={(e) => {
+                window.HakuNeko.DownloadManager.Dequeue(job);
+                e.stopPropagation();
+            }}
         />
     </div>
 </div>

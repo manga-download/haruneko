@@ -1,15 +1,16 @@
 import { WebsiteResourceKey as R } from '../../../i18n/ILocale';
 import { Exception } from '../../Error';
 import { FetchCSS, FetchHTML, FetchJSON } from '../../platform/FetchProvider';
-import { type MangaScraper, type Manga, Chapter, Page } from '../../providers/MangaPlugin';
+import { Chapter, type Manga, type MangaScraper, Page } from '../../providers/MangaPlugin';
 import type { Priority } from '../../taskpool/TaskPool';
-import * as Common from './Common';
 import DeScramble from '../../transformers/ImageDescrambler';
+import * as Common from './Common';
 
 export const queryMangaTitleFromURI = '.series-header-title';
 const defaultQueryChapters = 'a.series-episode-list-container';
 const queryEpisodeJSON = '#episode-json';
-const defaultEntriesTypes = ['episode', 'volume'];
+
+type ChapterCategory = 'magazine' | 'volume' | 'episode';
 
 type ChapterJSON = {
     readableProduct: {
@@ -133,31 +134,32 @@ async function AjaxFetchEntriesFromHTML(this: MangaScraper, manga: Manga, endpoi
 }
 
 /**
- * An extension method for extracting chapters using Coreview API. Use this when endpoint 'pagination_readable_products' is available.
-* @param entriesTypes - types of entries to fetch : ['episode', 'volume', 'magazine'].
+ * A class decorator for extracting chapters using Coreview API. Use this when endpoint 'pagination_readable_products' is available.
+ * @param categories - Specify the types that shall be included when searching chapters (Defaults to `['volume', 'epsiode']`)
  */
-export function ChaptersMultiPageAJAXV2(entriesTypes: string[] = defaultEntriesTypes) {
+export function ChaptersMultiPageAJAXV2(...categories: ChapterCategory[]) {
     return function DecorateClass<T extends Common.Constructor>(ctor: T, context?: ClassDecoratorContext): T {
         Common.ThrowOnUnsupportedDecoratorContext(context);
         return class extends ctor {
             public async FetchChapters(this: MangaScraper, manga: Manga): Promise<Chapter[]> {
-                return FetchChaptersMultiPageAJAXV2.call(this, manga, entriesTypes);
+                return FetchChaptersMultiPageAJAXV2.call(this, manga, ...categories);
             }
         };
     };
 }
 
 /**
- * A class decorator for extracting chapters using Coreview API. Use this when endpoint 'pagination_readable_products' is available.
+ * An extension method for extracting chapters using Coreview API. Use this when endpoint 'pagination_readable_products' is available.
  * @param this - A reference to the {@link MangaScraper} instance which will be used as context for this method
  * @param manga - A reference to the {@link Manga} which shall be assigned as parent for the extracted chapters
- * @param entriesTypes - types of entries to fetch : ['episode', 'volume', 'magazine'].
+ * @param categories - Specify the types that shall be included when searching chapters (Defaults to (`['volume', 'epsiode']`)
  */
-export async function FetchChaptersMultiPageAJAXV2(this: MangaScraper, manga: Manga, entriesTypes: string[] = defaultEntriesTypes): Promise<Chapter[]> {
+export async function FetchChaptersMultiPageAJAXV2(this: MangaScraper, manga: Manga, ...categories: ChapterCategory[]): Promise<Chapter[]> {
     const aggregateId = (await FetchCSS(new Request(new URL(manga.Identifier, this.URI)), '.js-readable-products-pagination')).at(0).dataset.aggregateId;
     const chapterList: Chapter[] = [];
 
-    for (const type of entriesTypes) {
+    categories = categories.length ? categories : ['volume', 'episode'];
+    for (const type of categories) {
         for (let offset = 0, run = true; run;) {
             const url = new URL(`./api/viewer/pagination_readable_products`, this.URI);
             url.search = new URLSearchParams({

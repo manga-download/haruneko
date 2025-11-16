@@ -5,7 +5,7 @@ import * as Common from './decorators/Common';
 import { FetchNextJS } from '../platform/FetchProvider';
 
 type HydratedChapters = {
-    chapters:{
+    chapters: {
         id: number,
         name: string,
         subName: string,
@@ -18,7 +18,7 @@ type HydratedPages = {
     }[]
 };
 
-const mangasEndpoints = [
+const endpoints = [
     'mon',
     'tue',
     'wed',
@@ -38,7 +38,7 @@ function MangasExtractor(element: HTMLAnchorElement) {
 }
 
 @Common.MangaCSS(/^{origin}\/titles\/\d+$/, 'h2[class*="text-title-lg"]')
-@Common.MangasSinglePagesCSS(mangasEndpoints, 'a:has(div[class*="text-title-md"])', MangasExtractor)
+@Common.MangasMultiPageCSS('a:has(div[class*="text-title-md"])', Common.StaticLinkGenerator(...endpoints), 0, MangasExtractor)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 

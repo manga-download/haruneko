@@ -1,6 +1,6 @@
 // Grouple.co russian website family
 import { Fetch, FetchWindowScript } from '../../platform/FetchProvider';
-import { type MangaScraper, type Chapter, Page } from '../../providers/MangaPlugin';
+import { type MangaScraper, type MangaPlugin, type Chapter, Page } from '../../providers/MangaPlugin';
 import { type Priority } from '../../taskpool/DeferredTask';
 import * as Common from './Common';
 
@@ -10,8 +10,7 @@ type MirroredPage = Page<{
 
 export const queryMangas = 'div.tile div.desc h3 a';
 export const queryMangaTitle = 'meta[itemprop = "name"]';
-export const pathMangas = '/list?offset={page}';
-export const pageMangaOffset = 50;
+export const MangasLinkGenerator = Common.PatternLinkGenerator<MangaPlugin>('/list?offset={page}', 0, 50);
 export const queryPages = [
     'div#all img.img-responsive',
     'div.text-center img[loading="lazy"]'

@@ -5,7 +5,7 @@ import * as Common from './decorators/Common';
 import { FetchWindowScript } from './../platform/FetchProvider';
 
 @Common.MangaCSS(/^{origin}\/[^/]+$/, 'div.info h1.title')
-@Common.MangasMultiPageCSS('/directory?page={page}', 'div.item-info div.series-title a')
+@Common.MangasMultiPageCSS('div.item-info div.series-title a', Common.PatternLinkGenerator('/directory?page={page}'))
 @Common.ChaptersSinglePageCSS('ul.chapter-list li > a')
 @Common.PagesSinglePageCSS('div.reader img.picture')
 @Common.ImageAjax(true, true)

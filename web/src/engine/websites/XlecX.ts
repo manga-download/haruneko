@@ -11,7 +11,7 @@ function MangaExtractor(anchor: HTMLAnchorElement) {
 }
 
 @Common.MangaCSS(/^{origin}\/\d+-[\S]+\.html/, 'main div.sect__content div#dle-content article.page div.page__col-left h1')
-@Common.MangasMultiPageCSS('/page/{page}/', 'main section.sect div#dle-content > a.thumb', 1, 1, 0, MangaExtractor)
+@Common.MangasMultiPageCSS('main section.sect div#dle-content > a.thumb', Common.PatternLinkGenerator('/page/{page}/'), 0, MangaExtractor)
 @Common.ChaptersUniqueFromManga()
 @Common.PagesSinglePageCSS('article.page a img, div.tabs ul.xfieldimagegallery.manyfotos li img')
 @Common.ImageAjax()

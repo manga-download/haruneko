@@ -33,10 +33,13 @@ type APIChapters = {
 @Common.PagesSinglePageJS(`
     new Promise(resolve => {
         const images = [ ...document.querySelectorAll('.image-container img[data-image-index]') ];
-        images.forEach(img => img.scrollIntoView());
-        setTimeout(() => resolve(images.map(img => img.src)), 500);
+        setInterval(() => {
+            images.forEach(img => img.scrollIntoView());
+            const sources = images.map(img => img.src || '');
+            if(!sources.some(src => src === '')) resolve(sources);
+        }, 250);
     });
-`)
+`, 750)
 @Common.ImageAjax(true)
 export class VTheme extends DecoratableMangaScraper {
 

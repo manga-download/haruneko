@@ -4,7 +4,7 @@ import { DecoratableMangaScraper, type MangaPlugin, type Manga } from '../provid
 import * as Common from './decorators/Common';
 import { FetchMangas, PageExtract } from './SixParkbbsClub';
 
-@Common.MangaCSS(/^{origin}\/index\.php\?app=forum&act=view&tid=\d+/, 'div.c-box p.c-box-h b', undefined, true)
+@Common.MangaCSS(/^{origin}\/index\.php\?app=forum&act=view&tid=\d+/, 'div.c-box p.c-box-h b', Common.WebsiteInfoExtractor({ includeSearch: true }))
 @Common.ChaptersUniqueFromManga()
 @Common.PagesSinglePageCSS('div.cen-main div.c-box-m center img', PageExtract)
 @Common.ImageAjax()

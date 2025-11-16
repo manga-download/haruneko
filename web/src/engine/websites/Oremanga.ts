@@ -1,11 +1,11 @@
-﻿import { Tags } from '../Tags';
+import { Tags } from '../Tags';
 import icon from './Oremanga.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import * as ZManga from './templates/ZManga';
 
 @Common.MangaCSS(/^{origin}\/series\/[^/]+\/$/, ZManga.queryMangaTitle)
-@Common.MangasSinglePagesCSS([ '/manga-list-รายชื่อมังงะ/' ], ZManga.queryManga)
+@Common.MangasSinglePageCSS('/manga-list-รายชื่อมังงะ/', ZManga.queryManga)
 @Common.ChaptersSinglePageCSS(ZManga.queryChapters, undefined, Common.AnchorInfoExtractor(false, 'span.date'))
 @Common.PagesSinglePageCSS('div.reader-area-main img')
 @Common.ImageAjax()

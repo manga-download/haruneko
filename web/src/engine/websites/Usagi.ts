@@ -5,13 +5,13 @@ import * as Common from './decorators/Common';
 import * as Grouple from './decorators/Grouple';
 
 @Common.MangaCSS(/^{origin}/, Grouple.queryMangaTitle)
-@Common.MangasMultiPageCSS(Grouple.pathMangas, Grouple.queryMangas, 0, Grouple.pageMangaOffset, 0)
+@Common.MangasMultiPageCSS(Grouple.queryMangas, Grouple.MangasLinkGenerator, 0)
 @Common.ChaptersSinglePageJS(Grouple.chapterScript, 500)
 @Grouple.PagesSinglePageJS()
 @Grouple.ImageWithMirrors()
 export default class extends DecoratableMangaScraper {
 
-    public constructor () {
+    public constructor() {
         super('usagi', 'Usagi', 'https://web.usagi.one', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Russian, Tags.Source.Aggregator);
     }
 

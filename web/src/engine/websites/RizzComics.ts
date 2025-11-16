@@ -5,7 +5,7 @@ import * as MangaStream from './decorators/WordPressMangaStream';
 import * as Common from './decorators/Common';
 
 @MangaStream.MangaCSS(/^{origin}\/series\/[^/]+$/)
-@Common.MangasSinglePagesCSS(['/series'], 'div.bsx a', Common.AnchorInfoExtractor(true))
+@Common.MangasSinglePageCSS('/series', 'div.bsx a', Common.AnchorInfoExtractor(true))
 @MangaStream.ChaptersSinglePageCSS()
 @MangaStream.PagesSinglePageCSS([/ramrvsrc\d+\.webp$/, /66c47bc2c15dd\.webp/])
 @Common.ImageAjax()

@@ -18,6 +18,5 @@ new TestFixture({
         index: 0,
         size: 2_649_022,
         type: 'image/png',
-        timeout: 10000
     }
 }).AssertWebsite();

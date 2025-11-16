@@ -12,7 +12,7 @@ export function MangaExtractor(anchor: HTMLAnchorElement) {
 }
 
 @MangaStream.MangaCSS(/^{origin}\/Komik\/[^/]+\/$/)
-@Common.MangasSinglePagesCSS([ '/Komik/list-mode/' ], 'div#content div.soralist ul li a.series', MangaExtractor)
+@Common.MangasSinglePageCSS('/Komik/list-mode/', 'div#content div.soralist ul li a.series', MangaExtractor)
 @MangaStream.ChaptersSinglePageCSS()
 @MangaStream.PagesSinglePageJS()
 @Common.ImageAjax()

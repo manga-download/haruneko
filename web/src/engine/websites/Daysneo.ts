@@ -5,7 +5,7 @@ import * as Common from './decorators/Common';
 import { FetchRegex } from '../platform/FetchProvider';
 
 @Common.MangaCSS(/^{origin}\/works\/[^/]+\.html$/, 'p.f150.b')
-@Common.MangasMultiPageCSS('/search/?page_num={page}', 'ul.tile li strong.f130 a')
+@Common.MangasMultiPageCSS('ul.tile li strong.f130 a', Common.PatternLinkGenerator('/search/?page_num={page}'))
 @Common.ChaptersSinglePageCSS('ul.ul01 li strong.f130 a')
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {

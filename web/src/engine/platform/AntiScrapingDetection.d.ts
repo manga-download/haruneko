@@ -1,6 +1,3 @@
-type JSONElement = null | boolean | number | string | Array<JSONElement> | {
-    [key: string]: JSONElement;
-};
 type AntiScrapingDetection = (invoke: <T extends void | JSONElement = void>(script: string) => T | Promise<T>) => Promise<FetchRedirection | undefined>;
 interface IRemoteBrowserWindow {
     ExecuteScript: <T extends void | JSONElement = void>(script: string) => T | Promise<T>;

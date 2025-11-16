@@ -5,13 +5,13 @@ import * as Common from './decorators/Common';
 import * as Grouple from './decorators/Grouple';
 
 @Common.MangaCSS(/^{origin}\/[^/]+$/, Grouple.queryMangaTitle)
-@Common.MangasMultiPageCSS(Grouple.pathMangas, Grouple.queryMangas, 0, Grouple.pageMangaOffset, 0, Common.AnchorInfoExtractor(true))
+@Common.MangasMultiPageCSS(Grouple.queryMangas, Grouple.MangasLinkGenerator, 0, Common.AnchorInfoExtractor(true))
 @Common.ChaptersSinglePageJS(Grouple.chapterScript, 500)
 @Grouple.PagesSinglePageJS()
 @Grouple.ImageWithMirrors()
 export default class extends DecoratableMangaScraper {
 
-    public constructor () {
+    public constructor() {
         super('selfmanga', `SelfManga`, 'https://1.selfmanga.live', Tags.Language.Russian, Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Source.Aggregator);
     }
 

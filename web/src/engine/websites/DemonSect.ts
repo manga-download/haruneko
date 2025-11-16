@@ -1,13 +1,13 @@
 import { Tags } from '../Tags';
 import icon from './DemonSect.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
-import * as MangaStream from './decorators/WordPressMangaStream';
+import * as Madara from './decorators/WordPressMadara';
 import * as Common from './decorators/Common';
 
-@MangaStream.MangaCSS(/^{origin}\/comics\/[^/]+\/$/)
-@MangaStream.MangasSinglePageCSS(undefined, '/comics/list-mode/')
-@MangaStream.ChaptersSinglePageCSS()
-@MangaStream.PagesSinglePageJS()
+@Madara.MangaCSS(/^{origin}\/manga\/[^/]+\/$/, 'div.post-title h1')
+@Madara.MangasMultiPageAJAX('div.post-title h2 a')
+@Madara.ChaptersSinglePageAJAXv2()
+@Madara.PagesSinglePageCSS()
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 

@@ -1,9 +1,9 @@
-﻿/*
-    Kōsaku WC
-    Version: 1.8.4.0
-    Author: King
-    Look likes madara but no similar endpoint
-    Use different madara endpoint to get mangas
+/*
+   Kōsaku WC
+   Version: 1.8.4.0
+   Author: King
+   Look likes madara but no similar endpoint
+   Use different madara endpoint to get mangas
 */
 
 import { FetchCSS } from "../../platform/FetchProvider";
@@ -36,7 +36,7 @@ function ChapterExtractor(anchor: HTMLAnchorElement) {
     };
 }
 
-@Common.MangaCSS(/^{origin}\/serie\/[^/]+\/$/, 'meta[property="og:title"]', (element) => (element as HTMLMetaElement).content.split('-').at(0).trim())
+@Common.MangaCSS<HTMLMetaElement>(/^{origin}\/serie\/[^/]+\/$/, 'meta[property="og:title"]', (meta, uri) => ({ id: uri.pathname, title: meta.content.split('-').at(0).trim() }))
 @Common.ChaptersSinglePageCSS('ul#list-chapters li a', undefined, ChapterExtractor)
 @Madara.PagesSinglePageCSS()
 @Common.ImageAjax()

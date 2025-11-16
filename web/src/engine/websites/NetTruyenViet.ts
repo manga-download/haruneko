@@ -12,7 +12,7 @@ const patternAliasDomains = [
 ].join('|').replaceAll('.', '\\.');
 
 @Common.MangaCSS(new RegExp(`^https?://(${patternAliasDomains})/truyen-tranh/[^/]+$`), MojoPortalComic.queryManga)
-@Common.MangasMultiPageCSS(MojoPortalComic.patternMangas, MojoPortalComic.queryMangas, 1, 1, 2500)
+@Common.MangasMultiPageCSS(MojoPortalComic.queryMangas, MojoPortalComic.MangasLinkGenerator, 2500)
 @MojoPortalComic.ChaptersSinglePageAJAX()
 @Common.PagesSinglePageCSS(MojoPortalComic.queryPages, (img: HTMLImageElement) => img.dataset.src)
 @Common.ImageAjax()

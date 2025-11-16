@@ -6,13 +6,13 @@ import * as KeyoApp from './templates/KeyoApp';
 import { FetchRegex } from '../platform/FetchProvider';
 
 type JSONImage = {
-    path : string
+    path: string
 }
 
 // TODO: Check for possible revision
 
-@Common.MangaCSS(/^{origin}\/series\/[^/]+$/, 'input#serieTitle', (element) => element.getAttribute('value').trim())
-@Common.MangasSinglePagesCSS([ '/latest' ], 'div.grid a.grid', Common.AnchorInfoExtractor(true))
+@Common.MangaCSS<HTMLInputElement>(/^{origin}\/series\/[^/]+$/, 'input#serieTitle', (input, uri) => ({ id: uri.pathname, title: input.getAttribute('value').trim() }))
+@Common.MangasSinglePageCSS('/latest', 'div.grid a.grid', Common.AnchorInfoExtractor(true))
 @Common.ChaptersSinglePageCSS(KeyoApp.queryChapters, undefined, Common.AnchorInfoExtractor(true))
 @Common.ImageAjax(true)
 export default class extends DecoratableMangaScraper {

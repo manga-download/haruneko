@@ -1,4 +1,4 @@
-﻿import { Tags } from '../Tags';
+import { Tags } from '../Tags';
 import icon from './MangasNoSekai.webp';
 import { Chapter, DecoratableMangaScraper, type Manga } from '../providers/MangaPlugin';
 import * as Madara from './decorators/WordPressMadara';
@@ -14,7 +14,7 @@ type APIChapters = {
 };
 
 @Common.MangaCSS(/^{origin}\/manga\/[^/]+\/$/, 'p.titleMangaSingle')
-@Common.MangasMultiPageCSS('/biblioteca/page/{page}/', 'div.page-listing-item figure > a', 1, 1, 0, Common.AnchorInfoExtractor(true))
+@Common.MangasMultiPageCSS('div.page-listing-item figure > a', Common.PatternLinkGenerator('/biblioteca/page/{page}/'), 0, Common.AnchorInfoExtractor(true))
 @Madara.PagesSinglePageCSS()
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
@@ -51,7 +51,7 @@ export default class extends DecoratableMangaScraper {
                 'Content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
                 Origin: this.URI.origin,
                 Referer: new URL(manga.Identifier, this.URI).href,
-                'X-Requested-With':	'XMLHttpRequest'
+                'X-Requested-With': 'XMLHttpRequest'
             }
         }));
         return chapters_to_display.map(({ link, name }) => new Chapter(this, manga, new URL(link, this.URI).pathname, name));

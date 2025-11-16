@@ -1,10 +1,10 @@
-﻿import { Tags } from '../Tags';
+import { Tags } from '../Tags';
 import icon from './InariManga.webp';
 import { Kosaku } from './templates/Kosaku';
 import * as Common from './decorators/Common';
 import { FetchWindowScript } from '../platform/FetchProvider';
 
-@Common.MangaCSS(/^https:\/\/inarimanga\.[^/]+\.xyz\/series\/[^/]+\/$/, 'meta[property="og:title"]', (element) => (element as HTMLMetaElement).content.split('–').at(0).trim())
+@Common.MangaCSS<HTMLMetaElement>(/^https:\/\/inarimanga\.[^/]+\.xyz\/series\/[^/]+\/$/, 'meta[property="og:title"]', (meta, uri) => ({ id: uri.pathname, title: meta.content.split('–').at(0).trim() }))
 export default class extends Kosaku {
 
     public constructor() {

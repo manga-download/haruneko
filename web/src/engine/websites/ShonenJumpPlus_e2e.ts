@@ -13,7 +13,7 @@ new TestFixture({
     },
     child: {
         id: '/episode/14079602755278384822',
-        title: '[第1話]'
+        title: '第1話 ［大事にしてみせて］'
     },
     entry: {
         index: 0,
@@ -52,9 +52,9 @@ new TestFixture({
         title: `少年ジャンプ＋ (Shonen Jump +)`
     },
     container: {
-        url: 'https://shonenjumpplus.com/magazine/13933686331641398576',
-        id: '/magazine/13933686331641398576',
-        title: 'ジャンプNEXT!! デジタル'
+        url: 'https://shonenjumpplus.com/magazine/316112896848989699',
+        id: '/magazine/316112896848989699',
+        title: 'ヤングジャンプ'
     }, /* paid content
     child: {
         id: '/magazine/13933686331641398576',

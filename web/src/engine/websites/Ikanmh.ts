@@ -5,7 +5,7 @@ import * as Common from './decorators/Common';
 import * as MH from './templates/MH';
 
 @Common.MangaCSS(/^{origin}\/book\/[^/]+$/, MH.queryMangaTitleFromURI)
-@Common.MangasMultiPageCSS(MH.mangaPath, MH.queryMangas)
+@Common.MangasMultiPageCSS(MH.queryMangas, MH.MangasLinkGenerator)
 @Common.ChaptersSinglePageCSS(MH.queryChapters, undefined, MH.ChapterExtractor)
 @Common.PagesSinglePageCSS(MH.queryPages, MH.PageLinkExtractor)
 @Common.ImageAjax()
