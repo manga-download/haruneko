@@ -1,26 +1,32 @@
 import { Tags } from '../Tags';
 import icon from './NicoManga.webp';
-import { FetchJSON } from '../platform/FetchProvider';
+import { FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
 import { DecoratableMangaScraper, type MangaPlugin, Manga, Chapter, type Page } from '../providers/MangaPlugin';
 import * as FlatManga from './templates/FlatManga';
 import * as Common from './decorators/Common';
 
+type APIManga = {
+    name: string;
+    slug: string;
+    url: string;
+};
+
 type APIMangas = {
-    manga_list: {
-        name: string,
-        slug: string
-    }[],
-    lang: {
-        manga_slug: string
-    }
+    data: APIManga[];
+};
+
+type APIChapter = {
+    chapter: string;
+    name: string;
+};
+
+type APIChapters = APIChapter[];
+
+function CleanMangaTitle(title: string): string {
+    return title.replace(/\(MANGA\)/i, '').replace('- RAW', '').trim();
 }
 
-type APIChapters = {
-    chapter: string,
-    name: string,
-}[];
-
-@Common.MangaCSS<HTMLHeadingElement>(FlatManga.pathManga, FlatManga.queryMangaTitle, (head, uri) => ({ id: uri.pathname, title: head.innerText.replace(/\(MANGA\)$/i, '').trim() }))
+@Common.MangaCSS<HTMLHeadingElement>(FlatManga.pathManga, 'h1.font-bold.text-white', (head, uri) => ({ id: uri.pathname, title: CleanMangaTitle(head.innerText) }))
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
@@ -34,29 +40,19 @@ export default class extends DecoratableMangaScraper {
         return icon;
     }
 
-    public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        const mangaList: Manga[] = [];
-        for (let page = 1, run = true; run; page++) {
-            const mangas = await this.GetMangasFromPageAJAX(provider, page);
-            mangaList.isMissingLastItemFrom(mangas) ? mangaList.push(...mangas) : run = false;
-        }
-        return mangaList.distinct();
+    public override Initialize(): Promise<void> {
+        return FetchWindowScript(new Request(this.URI), `window.cookieStore.set('smartlink_shown_guest', '1')`);
     }
 
-    private async GetMangasFromPageAJAX(provider: MangaPlugin, page: number): Promise<Manga[]> {
-        const request = new Request(new URL(`/app/manga/controllers/cont.display.homeTopday.php?page=${page}`, this.URI), {
-            headers: {
-                Referer: new URL('/manga-list.html', this.URI.origin).href,
-            }
-        });
-        const { manga_list, lang: { manga_slug } } = await FetchJSON<APIMangas>(request);
-        return manga_list.map(manga => new Manga(this, provider, `/${manga_slug}-${manga.slug}.html`, manga.name.trim()));
+    public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
+        const { data } = await FetchJSON<APIMangas>(new Request(new URL('/app/manga/controllers/cont.allmanga.php', this.URI)));
+        return data.map(manga => new Manga(this, provider, `/${manga.slug}.html`, CleanMangaTitle(manga.name.trim())));
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const slug = FlatManga.ExtractSlug(manga);
+        const slug = manga.Identifier.replace('.html', '').replace('/manga-', '').replace('/', '');
         const uri = new URL(this.pathChapters.replace('{manga}', slug), this.URI);
-        const chapters = await FetchJSON<APIChapters>(new Request(uri, { headers: { Referer: new URL(manga.Identifier, this.URI).href } }));
+        const chapters = await FetchJSON<APIChapters>(new Request(uri));
         return chapters.map(chapter => new Chapter(this, manga, `/read-${slug}-chapter-${chapter.chapter}.html`, chapter.name));
     }
 
@@ -64,9 +60,9 @@ export default class extends DecoratableMangaScraper {
         return FlatManga.FetchPagesAJAX.call(
             this,
             chapter,
-            /loadImagesChapter\s*\(\s*(\d+)\s*,\s*'listImgs'\s*\)/g,
-            '/app/manga/controllers/cont.imgsList.php?cid={chapter}',
+            /loadImagesChapter\s*\((\d+)\s*/g,
+            `app/manga/controllers/cont.imgsList.php?cid={chapter}`,
             FlatManga.queryPages,
-            img => img.dataset.srcset);
+            img => img.dataset.srcset.trim());
     }
 }
