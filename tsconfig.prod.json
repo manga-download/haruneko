@@ -18,6 +18,7 @@
   },
   "include": [
     "src/types.d.ts",
+    "src/index.ts",
     "src/api/**/*",
     "src/config/**/*",
     "src/engine/**/*"
