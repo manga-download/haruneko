@@ -1,5 +1,5 @@
-# Use Node.js 20 LTS
-FROM node:20-bullseye-slim
+# Use Node.js 22 LTS (as required by package.json)
+FROM node:22-bullseye-slim
 
 # Install Chromium and dependencies
 RUN apt-get update && apt-get install -y \
