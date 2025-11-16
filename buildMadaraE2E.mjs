@@ -1,15 +1,16 @@
 ﻿// @ts-check
 import { readdir, readFile, writeFile } from "node:fs/promises";
-import { join, dirname } from "node:path";
+import { join } from "node:path";
 
-const ROOT = join('.', "web/src/engine/websites");
-const OUTPUT_FILE = join(
+const root = join('.', "web/src/engine/websites");
+const outputFile = join(
     ".",
     "web/src/engine/websites/decorators/WordPressMadara_e2e.ts"
 );
 
+/** */
 async function main() {
-    const files = await readdir(ROOT);
+    const files = await readdir(root);
 
     // Keep only *_e2e.ts files
     const e2eFiles = files.filter(f => f.endsWith("_e2e.ts"));
@@ -19,7 +20,7 @@ async function main() {
     for (const e2eFile of e2eFiles) {
         const base = e2eFile.replace("_e2e.ts", "");
         const codeFile = `${base}.ts`;
-        const codePath = join(ROOT, codeFile);
+        const codePath = join(root, codeFile);
 
         try {
             const codeContent = await readFile(codePath, "utf8");
@@ -40,9 +41,9 @@ async function main() {
         ``,
     ].join("\n");
 
-    await writeFile(OUTPUT_FILE, output, "utf8");
+    await writeFile(outputFile, output, "utf8");
 
-    console.log(`✔ Generated file: ${OUTPUT_FILE}`);
+    console.log(`✔ Generated file: ${outputFile}`);
     console.log(`✔ ${validImports.length} E2E tests included`);
 }
 
