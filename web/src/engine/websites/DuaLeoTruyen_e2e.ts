@@ -1,4 +1,4 @@
-﻿import { TestFixture } from '../../../test/WebsitesFixture';
+import { TestFixture } from '../../../test/WebsitesFixture';
 
 new TestFixture({
     plugin: {
@@ -6,7 +6,7 @@ new TestFixture({
         title: 'DuaLeoTruyen'
     },
     container: {
-        url: 'https://dualeotruyeng.com/truyen-tranh/list-truyenss-ngan-chit-chit.html',
+        url: 'https://dualeotruyenks.com/truyen-tranh/list-truyenss-ngan-chit-chit.html',
         id: '/truyen-tranh/list-truyenss-ngan-chit-chit.html',
         title: 'LIST TRUYỆN NGẮN CHỊT CHỊT'
     },

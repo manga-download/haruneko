@@ -36,11 +36,33 @@ export const DefaultInfoExtractor = Common.AnchorInfoExtractor(false, queryChapt
 
 export const WPMangaProtectorPagesExtractorScript = `
     new Promise((resolve, reject) => {
-        var imgdata = JSON.parse(CryptoJS.AES.decrypt(chapter_data, wpmangaprotectornonce, {
+        const decrypted = JSON.parse(CryptoJS.AES.decrypt(chapter_data, wpmangaprotectornonce, {
             format: CryptoJSAesJson
         }).toString(CryptoJS.enc.Utf8));
-        resolve(JSON.parse(imgdata));
+        resolve(JSON.parse(decrypted));
     });
+
+    /*
+    const CryptoJSAesJson = {
+        stringify: function(_0x391932) {
+            var _0x1d5d90 = _0x2fd5;
+            const _0x2dac1e = {
+                'ct': _0x391932[_0x1d5d90(0x169)][_0x1d5d90(0xcd)](CryptoJS[_0x1d5d90(0xf4)][_0x1d5d90(0x105)])
+            };
+            _0x391932['iv'] && (_0x2dac1e['iv'] = _0x391932['iv'][_0x1d5d90(0xcd)]());
+            ;_0x391932[_0x1d5d90(0xfb)] && (_0x2dac1e['s'] = _0x391932[_0x1d5d90(0xfb)][_0x1d5d90(0xcd)]());
+            ;return JSON[_0x1d5d90(0x13a)](_0x2dac1e);
+        },
+        parse: function(data) {
+            const input = JSON.parse(data);
+            return CryptoJS.lib.CipherParams.create({
+                ciphertext: CryptoJS.enc.Base64.parse(input.ct),
+                salt = input.s ? CryptoJS.enc.Hex.parse(input.s) : undefined,
+                iv = input.iv ? CryptoJS.enc.Hex.parse(input.iv) : undefined,
+            });
+        }
+    };
+    */
 `;
 
 /***************************************************
@@ -116,7 +138,7 @@ function MangaInfoExtractor(anchor: HTMLAnchorElement) {
  * @param path - The path pattern relative to {@link this} scraper's base url from which the mangas shall be extracted containing the placeholder `{page}` which is replaced by an incrementing number
  */
 export async function FetchMangasMultiPageCSS(this: MangaScraper, provider: MangaPlugin, query = queryMangaListLinks, throttle = 0, path = pathpaged): Promise<Manga[]> {
-    return Common.FetchMangasMultiPageCSS.call(this, provider, path, query, 1, 1, throttle, MangaInfoExtractor);
+    return Common.FetchMangasMultiPageCSS.call(this, provider, query, Common.PatternLinkGenerator(path), throttle, MangaInfoExtractor);
 }
 
 /**
@@ -129,7 +151,7 @@ export async function FetchMangasMultiPageCSS(this: MangaScraper, provider: Mang
  * @param path - The path pattern relative to the scraper's base url from which the mangas shall be extracted containing the placeholder `{page}` which is replaced by an incrementing number
  */
 export function MangasMultiPageCSS(query = queryMangaListLinks, throttle = 0, path = pathpaged) {
-    return Common.MangasMultiPageCSS(path, query, 1, 1, throttle, MangaInfoExtractor);
+    return Common.MangasMultiPageCSS(query, Common.PatternLinkGenerator(path), throttle, MangaInfoExtractor);
 }
 
 /**
@@ -200,7 +222,7 @@ export function MangasMultiPageAJAX(query = queryMangaListLinks, throttle = 0, p
 async function FetchChaptersCSS(this: MangaScraper, manga: Manga, request: Request, query = queryChapterListLinks, extract = DefaultInfoExtractor): Promise<Chapter[]> {
     const data = await FetchCSS<HTMLAnchorElement>(request, query);
     return data.map(element => {
-        const { id, title } = extract.call(this, element);
+        const { id, title } = extract.call(this, element, new URL(request.url));
         return new Chapter(this, manga, id, title.replace(manga.Title, '').trim() || manga.Title);
     });
 }
@@ -218,7 +240,7 @@ export async function FetchChaptersSinglePageCSS(this: MangaScraper, manga: Mang
     const uri = new URL(slug, this.URI);
     const request = new Request(uri.href);
     const chapters = await FetchChaptersCSS.call(this, manga, request, query, extract);
-    if(!chapters.length) {
+    if (!chapters.length) {
         throw new Exception(R.Plugin_Common_Chapter_InvalidError);
     } else {
         return chapters;
@@ -382,9 +404,9 @@ function ChapterPageExtractor(this: MangaScraper, image: HTMLImageElement): stri
 export async function FetchPagesSinglePageCSS(this: MangaScraper, chapter: Chapter, query = queryPageListLinks): Promise<Page[]> {
     const uri = new URL(chapter.Identifier, this.URI);
     let request = new Request(uri.href);
-    const [ body ] = await FetchCSS<HTMLBodyElement>(request, 'body');
+    const [body] = await FetchCSS<HTMLBodyElement>(request, 'body');
     let data: HTMLImageElement[] = [];
-    if(body.querySelector(queryPageListSelector)) {
+    if (body.querySelector(queryPageListSelector)) {
         uri.searchParams.set('style', 'list');
         request = new Request(uri.href);
         data = await FetchCSS<HTMLImageElement>(request, query);

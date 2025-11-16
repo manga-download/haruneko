@@ -1,4 +1,4 @@
-﻿import { Tags } from '../Tags';
+import { Tags } from '../Tags';
 import icon from './MangaDenizi.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as MangaReader from './templates/MangaReaderCMS';
@@ -12,8 +12,8 @@ function ChapterInfoExtractor(element: HTMLHeadingElement) {
 }
 
 @Common.MangaCSS(/^{origin}\/manga\/[^/]+$/, MangaReader.queryManga)
-@Common.MangasSinglePagesCSS([ MangaReader.patternMangas ], MangaReader.queryMangas)
-@Common.ChaptersSinglePageCSS('ul li h5', ChapterInfoExtractor)
+@Common.MangasSinglePageCSS(MangaReader.patternMangas, MangaReader.queryMangas)
+@Common.ChaptersSinglePageCSS('ul li h5', undefined, ChapterInfoExtractor)
 @Common.PagesSinglePageCSS(MangaReader.queryPages)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {

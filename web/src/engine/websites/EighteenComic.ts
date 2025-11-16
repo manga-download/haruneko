@@ -35,7 +35,7 @@ type Seed = {
 }
 
 @Common.MangaCSS(/^{origin}\/album\/\d+\//, 'div[itemprop="name"] h1#book-name')
-@Common.MangasMultiPageCSS('/albums?page={page}', 'div.row div.thumb-overlay-albums', 1, 1, 0, MangaInfoExtractor)
+@Common.MangasMultiPageCSS('div.row div.thumb-overlay-albums', Common.PatternLinkGenerator('/albums?page={page}'), 0, MangaInfoExtractor)
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
@@ -47,7 +47,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const chapters = await Common.FetchChaptersSinglePageCSS.call(this, manga, 'div.episode ul a', Common.AnchorInfoExtractor(false, 'span'));
+        const chapters = await Common.FetchChaptersSinglePageCSS.call(this, manga, 'div.episode ul a', undefined, Common.AnchorInfoExtractor(false, 'span'));
         return chapters.length > 0 ? chapters : [new Chapter(this, manga, manga.Identifier.replace('/album/', '/photo/'), manga.Title)];
     }
 

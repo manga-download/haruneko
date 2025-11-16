@@ -1,19 +1,23 @@
-﻿import { Tags } from '../Tags';
+import { Tags } from '../Tags';
 import icon from './GManga.webp';
 import { type Chapter, DecoratableMangaScraper, Page, type MangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import { Fetch } from '../platform/FetchProvider';
 
-function ChapterExtractor(this: MangaScraper, anchor: HTMLAnchorElement) {
+function MangaLinkExtractor(this: MangaScraper, head: HTMLHeadingElement, uri: URL) {
     return {
-        id: anchor.pathname,
-        title: Common.ElementLabelExtractor('span, div').call(this, anchor.querySelector<HTMLHeadingElement>('h5'))
+        id: uri.pathname,
+        title: head.innerText.replace('الفصل', '').trim(),
     };
 }
 
-@Common.MangaCSS(/^{origin}\/manga\/[^/]+$/, 'div.card div.row h1', (element) => element.textContent.replace('الفصل', '').trim())
-@Common.MangasMultiPageCSS('/manga?page={page}', 'div.series-paginated a.link-series')
-@Common.ChaptersSinglePageCSS('div.chapters-list a', ChapterExtractor)
+function ChapterExtractor(this: MangaScraper, anchor: HTMLAnchorElement, uri: URL) {
+    return Common.AnchorInfoExtractor(false, 'span, div').call(this, anchor.querySelector<HTMLHeadingElement>('h5'), uri);
+}
+
+@Common.MangaCSS(/^{origin}\/manga\/[^/]+$/, 'div.card div.row h1', MangaLinkExtractor)
+@Common.MangasMultiPageCSS('div.series-paginated a.link-series', Common.PatternLinkGenerator('/manga?page={page}'))
+@Common.ChaptersSinglePageCSS('div.chapters-list a', undefined, ChapterExtractor)
 @Common.ImageAjaxFromHTML('div.book-page img.img-fluid')
 export default class extends DecoratableMangaScraper {
 

@@ -11,13 +11,13 @@ type HydratedPages = {
     }[];
 };
 
-@Common.MangaCSS(/^{origin}\/manga\/\d+\/[^/]+$/, 'div.content-info img', (element: HTMLImageElement) => element.alt.trim())
-@Common.MangasMultiPageCSS('search?page={page}', 'section[aria-label*="series"] div.card > div a:has(h2)')
-@Common.ChaptersSinglePageCSS('div.list-episode a', (anchor: HTMLAnchorElement) => ({ id: anchor.pathname, title: anchor.querySelector('.chapternum').textContent.trim() }))
+@Common.MangaCSS<HTMLImageElement>(/^{origin}\/manga\/\d+\/[^/]+$/, 'div.content-info img', (img, uri) => ({ id: uri.pathname, title: img.alt.trim() }))
+@Common.MangasMultiPageCSS('section[aria-label*="series"] div.card > div a:has(h2)', Common.PatternLinkGenerator('search?page={page}'))
+@Common.ChaptersSinglePageCSS('div.list-episode a', undefined, (anchor: HTMLAnchorElement) => ({ id: anchor.pathname, title: anchor.querySelector('.chapternum').textContent.trim() }))
 @Common.ImageAjax()
 export class TurkMangaBase extends DecoratableMangaScraper {
 
-    public constructor (identifier: string, title: string, url: string, protected readonly cdnURL: string, ...tags: Tag[]) {
+    public constructor(identifier: string, title: string, url: string, protected readonly cdnURL: string, ...tags: Tag[]) {
         super(identifier, title, url, ...tags);
     }
 

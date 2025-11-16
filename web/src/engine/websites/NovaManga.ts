@@ -11,8 +11,8 @@ function ChapterExtractor(anchor: HTMLAnchorElement) {
     };
 }
 
-@Common.MangaCSS(/^{origin}\/series\/[^/]+$/, 'title', (element: HTMLTitleElement) => element.textContent.split('|').at(0).trim())
-@Common.ChaptersSinglePageCSS('div.grid a.recentCardItem', ChapterExtractor)
+@Common.MangaCSS<HTMLTitleElement>(/^{origin}\/series\/[^/]+$/, 'title', (title, uri) => ({ id: uri.pathname, title: title.innerText.split('|').at(0).trim() }))
+@Common.ChaptersSinglePageCSS('div.grid a.recentCardItem', undefined, ChapterExtractor)
 @Common.PagesSinglePageCSS('div.content img[data-src]')
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {

@@ -1,4 +1,4 @@
-﻿import { TestFixture } from '../../../test/WebsitesFixture';
+import { TestFixture } from '../../../test/WebsitesFixture';
 
 new TestFixture({
     plugin: {
@@ -6,13 +6,13 @@ new TestFixture({
         title: 'Kiryuu'
     },
     container: {
-        url: 'https://kiryuu02.com/manga/the-modern-eras-strongest-soldier-conquers-another-worlds-dungeon/',
+        url: 'https://kiryuu03.com/manga/the-modern-eras-strongest-soldier-conquers-another-worlds-dungeon/',
         id: '/manga/the-modern-eras-strongest-soldier-conquers-another-worlds-dungeon/',
-        title: 'The Modern Era’s Strongest Soldier Conquers Another World’s Dungeon'
+        title: `The Modern Era's Strongest Soldier Conquers Another World's Dungeon`
     },
     child: {
-        id: '/the-modern-eras-strongest-soldier-conquers-another-worlds-dungeon-chapter-01/',
-        title: 'Chapter 01 Fix'
+        id: '/manga/the-modern-eras-strongest-soldier-conquers-another-worlds-dungeon/chapter-1.433123/',
+        title: 'Chapter 1'
     },
     entry: {
         index: 0,

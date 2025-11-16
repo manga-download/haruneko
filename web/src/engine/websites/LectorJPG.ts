@@ -16,12 +16,12 @@ type APIMangas = {
 function ChapterExtractor(anchor: HTMLAnchorElement) {
     return {
         id: anchor.pathname,
-        title: anchor.querySelector < HTMLSpanElement>('span').textContent.trim().replaceAll(/[\n\t\r]/g, '')
+        title: anchor.querySelector<HTMLSpanElement>('span').innerText.trim().replaceAll(/[\n\t\r]/g, '')
     };
 }
 
-@Common.MangaCSS(/^{origin}\/series\/[^/]+$/, 'title', (element) => element.textContent.split('|').at(0).trim())
-@Common.ChaptersSinglePageCSS('div.grid a.group[href*="/read/"]', ChapterExtractor)
+@Common.MangaCSS<HTMLTitleElement>(/^{origin}\/series\/[^/]+$/, 'title', (title, uri) => ({ id: uri.pathname, title: title.innerText.split('|').at(0).trim() }))
+@Common.ChaptersSinglePageCSS('div.grid a.group[href*="/read/"]', undefined, ChapterExtractor)
 @Common.PagesSinglePageCSS('div.grid img')
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {

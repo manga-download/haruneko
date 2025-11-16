@@ -47,8 +47,8 @@ function ChapterExtractor(anchor: HTMLAnchorElement) {
 }
 
 @Common.MangaCSS(/^{origin}\/Tr\/Manga\/[^/]+$/, 'ul.breadcrumb li:last-of-type')
-@Common.MangasMultiPageCSS('/Tr/Mangalar?page={page}', 'div.zaman', 1, 1, 0, MangaExtractor)
-@Common.ChaptersSinglePageCSS('div.plylist-single-content > a[onclick]', ChapterExtractor) //some chapters are mobile app only
+@Common.MangasMultiPageCSS('div.zaman', Common.PatternLinkGenerator('/Tr/Mangalar?page={page}'), 0, MangaExtractor)
+@Common.ChaptersSinglePageCSS('div.plylist-single-content > a[onclick]', undefined, ChapterExtractor) //some chapters are mobile app only
 @Common.PagesSinglePageJS(pageScript, 500)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
