@@ -1,4 +1,4 @@
-﻿import { TestFixture } from '../../../test/WebsitesFixture';
+import { TestFixture } from '../../../test/WebsitesFixture';
 
 new TestFixture({
     plugin: {
@@ -6,7 +6,7 @@ new TestFixture({
         title: 'CoffeeManga'
     },
     container: {
-        url: 'https://coffeemanga.io/manga/savage-castle-0/',
+        url: 'https://coffeemanga.ink/manga/savage-castle-0/',
         id: JSON.stringify({ post: '23019', slug: '/manga/savage-castle-0/' }),
         title: 'Savage Castle'
     },

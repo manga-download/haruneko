@@ -36,11 +36,33 @@ export const DefaultInfoExtractor = Common.AnchorInfoExtractor(false, queryChapt
 
 export const WPMangaProtectorPagesExtractorScript = `
     new Promise((resolve, reject) => {
-        var imgdata = JSON.parse(CryptoJS.AES.decrypt(chapter_data, wpmangaprotectornonce, {
+        const decrypted = JSON.parse(CryptoJS.AES.decrypt(chapter_data, wpmangaprotectornonce, {
             format: CryptoJSAesJson
         }).toString(CryptoJS.enc.Utf8));
-        resolve(JSON.parse(imgdata));
+        resolve(JSON.parse(decrypted));
     });
+
+    /*
+    const CryptoJSAesJson = {
+        stringify: function(_0x391932) {
+            var _0x1d5d90 = _0x2fd5;
+            const _0x2dac1e = {
+                'ct': _0x391932[_0x1d5d90(0x169)][_0x1d5d90(0xcd)](CryptoJS[_0x1d5d90(0xf4)][_0x1d5d90(0x105)])
+            };
+            _0x391932['iv'] && (_0x2dac1e['iv'] = _0x391932['iv'][_0x1d5d90(0xcd)]());
+            ;_0x391932[_0x1d5d90(0xfb)] && (_0x2dac1e['s'] = _0x391932[_0x1d5d90(0xfb)][_0x1d5d90(0xcd)]());
+            ;return JSON[_0x1d5d90(0x13a)](_0x2dac1e);
+        },
+        parse: function(data) {
+            const input = JSON.parse(data);
+            return CryptoJS.lib.CipherParams.create({
+                ciphertext: CryptoJS.enc.Base64.parse(input.ct),
+                salt = input.s ? CryptoJS.enc.Hex.parse(input.s) : undefined,
+                iv = input.iv ? CryptoJS.enc.Hex.parse(input.iv) : undefined,
+            });
+        }
+    };
+    */
 `;
 
 /***************************************************

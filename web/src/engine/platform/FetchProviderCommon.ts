@@ -6,7 +6,7 @@ import { CheckAntiScrapingDetection, FetchRedirection } from './AntiScrapingDete
 import type { FeatureFlags } from '../FeatureFlags';
 import { Delay, SetTimeout, ClearTimeout } from '../BackgroundTimers';
 
-export type ScriptInjection<T extends void | JSONElement> = string | ((this: Window) => Promise<T>);
+export type ScriptInjection<T extends void | JSONElement> = string | ((this: Window) => T | Promise<T>);
 
 export abstract class FetchProvider {
 
