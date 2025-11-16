@@ -17,7 +17,7 @@ const chapterScript = `
 `;
 
 @Common.MangaCSS(/^{origin}\/manga\/[^/]+$/, MangaReader.queryManga)
-@Common.MangasMultiPageCSS('/filterList?sortBy=name&page={page}', 'h5.media-heading a.chart-title', 1, 1, 0, Common.AnchorInfoExtractor(true))
+@Common.MangasMultiPageCSS('h5.media-heading a.chart-title', Common.PatternLinkGenerator('/filterList?sortBy=name&page={page}'), 0, Common.AnchorInfoExtractor(true))
 @Common.ChaptersSinglePageJS(chapterScript, 500)
 @Common.PagesSinglePageCSS(MangaReader.queryPages)
 @Common.ImageAjax()

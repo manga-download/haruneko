@@ -20,7 +20,7 @@ type APIChapters = {
     name: string,
 }[];
 
-@Common.MangaCSS(FlatManga.pathManga, FlatManga.queryMangaTitle, element => element.innerText.replace(/\(MANGA\)$/i, '').trim())
+@Common.MangaCSS<HTMLHeadingElement>(FlatManga.pathManga, FlatManga.queryMangaTitle, (head, uri) => ({ id: uri.pathname, title: head.innerText.replace(/\(MANGA\)$/i, '').trim() }))
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
