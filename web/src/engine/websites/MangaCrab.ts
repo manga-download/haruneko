@@ -10,10 +10,16 @@ const chapterScript = `
     }));
 `;
 
+const pageScript = `
+    [...document.querySelectorAll('div.page-break img.wp-manga-chapter-img[id^="image-"]')]
+        .map(img => [...img.attributes].find(attribute => attribute.value.startsWith('/validate2.php'))?.value)
+        .filter(img => img);
+`;
+
 @Common.MangaCSS(/^{origin}\/series\/[^/]+\/$/, 'h1.post-title')
 @Common.MangasMultiPageCSS('div.post-title h2 > a', Common.PatternLinkGenerator('/page/{page}/?s&post_type=wp-manga'))
 @Common.ChaptersSinglePageJS(chapterScript, 750)
-@Common.PagesSinglePageCSS('div.page-break img:not([src])', img => [ ...img.attributes ].find(attribute => attribute.name.startsWith('data-img-')).value)
+@Common.PagesSinglePageJS(pageScript, 0)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 

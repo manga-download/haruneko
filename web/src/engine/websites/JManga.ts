@@ -1,5 +1,6 @@
 import { Tags } from '../Tags';
 import icon from './JManga.webp';
+import { FetchWindowScript } from '../platform/FetchProvider';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Liliana from './templates/Liliana';
 import * as Common from './decorators/Common';
@@ -12,10 +13,15 @@ import * as Common from './decorators/Common';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('jmanga', 'JManga', 'https://jmanga.pw', Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Language.Japanese, Tags.Source.Aggregator);
+        super('jmanga', 'JManga', 'https://jmanga.one', Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Language.Japanese, Tags.Source.Aggregator, Tags.Accessibility.DomainRotation);
     }
 
     public override get Icon() {
         return icon;
+    }
+
+    public override async Initialize(): Promise<void> {
+        this.URI.href = await FetchWindowScript(new Request(this.URI), `window.location.origin;`, 0);
+        console.log(`Assigned URL '${this.URI}' to ${this.Title}`);
     }
 }
