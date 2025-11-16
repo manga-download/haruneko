@@ -753,6 +753,7 @@ export { default as WeLoveManga } from './WeLoveManga';
 export { default as WestManga } from './WestManga';
 export { default as WinterScan } from './WinterScan';
 export { default as Wnacg } from './Wnacg';
+export { default as WritersScans } from './WritersScans';
 export { default as XlecX } from './XlecX';
 export { default as XManga } from './XManga';
 export { default as XManhwa } from './XManhwa';
