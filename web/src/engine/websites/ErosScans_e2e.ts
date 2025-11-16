@@ -1,4 +1,4 @@
-﻿import { TestFixture } from '../../../test/WebsitesFixture';
+import { TestFixture } from '../../../test/WebsitesFixture';
 
 new TestFixture({
     plugin: {
@@ -6,17 +6,17 @@ new TestFixture({
         title: 'Eros Scans'
     },
     container: {
-        url: 'https://eros-sun.xyz/manga/absolute-sword-sense/',
-        id: '/manga/absolute-sword-sense/',
-        title: 'Absolute Sword Sense'
+        url: 'https://erosxsun.xyz/manga/i-have-90-billion-licking-gold-coins/',
+        id: '/manga/i-have-90-billion-licking-gold-coins/',
+        title: 'I have 90 billion licking gold coins'
     },
     child: {
-        id: '/absolute-sword-sense-chapter-92-3/',
-        title: 'Chapter 92'
+        id: '/i-have-90-billion-licking-gold-coins-chapter-500/',
+        title: 'Chapter 500'
     },
     entry: {
         index: 0,
-        size: 832_576,
+        size: 1_197_372,
         type: 'image/webp'
     }
 }).AssertWebsite();
