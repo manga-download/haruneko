@@ -1,5 +1,5 @@
 import puppeteer, { type Browser, type Page } from 'puppeteer';
-import { JSDOM } from 'jsdom';
+import { JSDOM, VirtualConsole } from 'jsdom';
 import { FetchProvider, type ScriptInjection } from './FetchProviderCommon.js';
 import { config } from '../../config/settings.js';
 import { logger } from '../../config/logger.js';
@@ -187,10 +187,21 @@ export class FetchProviderPuppeteer extends FetchProvider {
         const response = await this.Fetch(request);
         const html = await response.text();
 
+        // Create a virtual console that suppresses CSS parsing errors
+        // This prevents malformed CSS on manga pages from breaking the download process
+        const virtualConsole = new VirtualConsole();
+        virtualConsole.on('error', (error) => {
+            // Suppress CSS parsing errors but log other errors
+            if (!error.message?.includes('Could not parse CSS') && !error.message?.includes('not found')) {
+                logger.error('JSDOM error:', error);
+            }
+        });
+
         // Use JSDOM to create a DOM
         const dom = new JSDOM(html, {
             url: request.url,
             contentType: 'text/html',
+            virtualConsole,
         });
 
         return dom.window.document;
