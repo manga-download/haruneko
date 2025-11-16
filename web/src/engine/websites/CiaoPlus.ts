@@ -90,7 +90,7 @@ export default class extends DecoratableMangaScraper {
             platform: '3',
             episode_id: chapter.Identifier,
         });
-        // ShonenMagazine uses the same scrambling algorithm as CiaoPlus v2, but reports scramble_version as 1. 
+        // ShonenMagazine uses the same scrambling algorithm as CiaoPlus v2, but reports scramble_version as 1.
         // Set version to -1 here to force the correct descrambling function.
         return page_list.map(page => new Page<PageInfo>(this, chapter, new URL(page), { seed: scramble_seed ?? 1, version: scramble_ver ?? -1 }));
     }
