@@ -1,6 +1,6 @@
 ﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'softkomik',
         title: 'Softkomik'
@@ -11,14 +11,12 @@ const config = {
         title: 'Black Abyss at Dawn'
     },
     child: {
-        id: '028',
+        id: '/black-abyss-at-dawn-bahasa-indonesia/chapter/028',
         title: '028'
     },
     entry: {
         index: 1,
         size: 348_548,
-        type: 'image/jpeg'
+        type: 'image/webp'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

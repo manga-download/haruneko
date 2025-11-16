@@ -11,9 +11,8 @@ new TestFixture({
         title: 'Jujutsu Kaisen'
     },
     child: {
-        id: '/jujutsu-kaisen-chapter-1/',
+        id: '/manga/jujutsu-kaisen/chapter-1.101436/',
         title: 'Chapter 1',
-        timeout: 15000
     },
     entry: {
         index: 0,
