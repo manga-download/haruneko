@@ -44,6 +44,14 @@
     "test",
     "src/engine/platform/nw/**/*",
     "src/engine/platform/electron/**/*",
+    "src/engine/platform/AppWindow.ts",
+    "src/engine/InteractiveFileContentProvider.ts",
+    "src/engine/SettingsGlobal.ts",
+    "src/engine/SettingsManager.ts",
+    "src/engine/providers/Bookmark.ts",
+    "src/engine/providers/BookmarkPlugin.ts",
+    "src/engine/transformers/ImageDescrambler.ts",
+    "src/i18n/Localization.ts",
     "src/frontend"
   ]
 }

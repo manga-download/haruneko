@@ -1,3 +1,4 @@
+// Image imports
 declare module '*.webp' {
     const value: string;
     export default value;
@@ -37,3 +38,8 @@ declare module '*.proto?raw' {
     const value: string;
     export default value;
 }
+
+// Protobuf/JSON types
+type JSONElement = string | number | boolean | null | JSONObject | JSONArray;
+type JSONObject = { [key: string]: JSONElement };
+type JSONArray = JSONElement[];

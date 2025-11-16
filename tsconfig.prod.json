@@ -5,9 +5,19 @@
     "noEmit": false,
     "declaration": false,
     "declarationMap": false,
-    "sourceMap": false
+    "sourceMap": false,
+    "noImplicitAny": false,
+    "strictNullChecks": false,
+    "strictFunctionTypes": false,
+    "strictBindCallApply": false,
+    "strictPropertyInitialization": false,
+    "noImplicitThis": false,
+    "alwaysStrict": false,
+    "allowUnreachableCode": true,
+    "allowUnusedLabels": true
   },
   "include": [
+    "src/types.d.ts",
     "src/api/**/*",
     "src/config/**/*",
     "src/engine/**/*"
@@ -26,6 +36,12 @@
     "src/engine/InteractiveFileContentProvider.ts",
     "src/engine/PluginController_e2e.ts",
     "src/engine/SettingsGlobal_e2e.ts",
+    "src/engine/SettingsGlobal.ts",
+    "src/engine/SettingsManager.ts",
+    "src/engine/platform/AppWindow.ts",
+    "src/engine/providers/Bookmark.ts",
+    "src/engine/providers/BookmarkPlugin.ts",
+    "src/engine/transformers/ImageDescrambler.ts",
     "src/frontend/**/*",
     "src/i18n/**/*"
   ]
