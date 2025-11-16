@@ -1,13 +1,14 @@
-﻿import { Tags } from '../Tags';
+import { Tags } from '../Tags';
 import icon from './KLMangash.webp';
+import type { Priority } from '../taskpool/DeferredTask';
+import { Fetch, FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
 import { type Chapter, DecoratableMangaScraper, Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { Fetch, FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
-import type { Priority } from '../taskpool/DeferredTask';
 
 type ZingParams = {
-    nonce: string,
-    apiURL: string,
+    url: string;
+    apiURL: string;
+    nonce: string;
 };
 
 type PageParameters = {
@@ -20,8 +21,11 @@ function CleanTitle(title: string): string {
     return title.replace(/\(Raw.*Free\)/i, '').trim();
 }
 
-function MangaLabelExtractor(element: HTMLHeadingElement): string {
-    return CleanTitle(element.textContent);
+function MangaLinkExtractor(element: HTMLHeadingElement, uri: URL) {
+    return {
+        id: uri.pathname,
+        title: CleanTitle(element.innerText),
+    };
 }
 
 function MangaExtractor(anchor: HTMLAnchorElement) {
@@ -38,15 +42,15 @@ function ChapterExtractor(anchor: HTMLAnchorElement) {
     };
 }
 
-@Common.MangaCSS(/^{origin}\/manga-raw\/[^/]+\/$/, 'div.container div.z-single-mg h1.name', MangaLabelExtractor)
-@Common.MangasMultiPageCSS('/page/{page}/', 'div.grid-of-mangas h2.name a', 1, 1, 0, MangaExtractor)
+@Common.MangaCSS(/^https:\/\/klmanga\.[a-z]{2,3}\/manga-raw\/[^/]+\/$/, 'div.container div.z-single-mg h1.name', MangaLinkExtractor)
+@Common.MangasMultiPageCSS('div.grid-of-mangas h2.name a', Common.PatternLinkGenerator('/page/{page}/'), 0, MangaExtractor)
 @Common.ChaptersSinglePageCSS('div.chapter-box a', undefined, ChapterExtractor)
 export default class extends DecoratableMangaScraper {
 
     private zingParams: ZingParams;
 
-    public constructor () {
-        super('klmangash', 'KLManga(.sh)', 'https://klmanga.lv', Tags.Media.Manga, Tags.Language.Japanese, Tags.Source.Aggregator);
+    public constructor() {
+        super('klmangash', 'KLManga(.sh)', 'https://klmanga.nu', Tags.Media.Manga, Tags.Language.Japanese, Tags.Source.Aggregator, Tags.Accessibility.DomainRotation);
     }
 
     public override get Icon() {
@@ -54,7 +58,8 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async Initialize(): Promise<void> {
-        this.zingParams = await FetchWindowScript(new Request(this.URI), `new Promise(resolve => resolve({ nonce: zing.nonce_a, apiURL: zing.ajax_url }));`, 500);
+        this.zingParams = await FetchWindowScript(new Request(this.URI), `new Promise(resolve => resolve({ url: window.location.origin, apiURL: zing.ajax_url, nonce: zing.nonce_a }));`, 500);
+        this.URI.href = this.zingParams.url;
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page<PageParameters>[]> {
