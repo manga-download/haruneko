@@ -4,20 +4,19 @@ new TestFixture({
     plugin: {
         id: 'yomucomics',
         title: 'Yomu Comics',
-    },
+    }, /* Nothing works without login
     container: {
-        url: 'https://yomucomics.com/manga/a-lenda-do-general-estelar/',
-        id: '/manga/a-lenda-do-general-estelar/',
-        title: 'A Lenda do General Estelar',
+        url: 'https://yomu.com.br/obra/a-31-peca-que-virou-o-tabuleiro',
+        id: '88',
+        title: 'A 31ª Peça Que virou o Tabuleiro',
     },
     child: {
-        id: '/a-lenda-do-general-estelar-capitulo-00/',
-        title: 'Capítulo 00',
-        timeout: 15_000,
+        id: '01',
+        title: 'Capítulo 01',
     },
     entry: {
-        index: 1,
-        size: 1_056_884,
+        index: 2,
+        size: 3_381_681,
         type: 'image/jpeg',
-    }
+    }*/
 }).AssertWebsite();
