@@ -7,7 +7,7 @@ new TestFixture({
     },
     container: {
         url: 'https://hentai.scantrad-vf.cc/manga/secret-class/',
-        id: JSON.stringify({ post: '6109', slug: '/manga/secret-class/' }),
+        id: JSON.stringify({ post: '4478', slug: '/manga/secret-class/' }),
         title: 'Secret Class'
     },
     child: {
@@ -16,7 +16,7 @@ new TestFixture({
     },
     entry: {
         index: 0,
-        size: 1_132_098,
+        size: 1_008_199,
         type: 'image/jpeg'
     }
 }).AssertWebsite();
