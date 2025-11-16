@@ -4,7 +4,7 @@ import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 
 @Common.MangaCSS(/^{origin}\/doujin\/\d+\.html$/, 'div.content div.posts h1.titl')
-@Common.MangasMultiPageCSS('/xxx/page/{page}', 'div.blog-list-items h2.information a', 1, 1, 0, Common.AnchorInfoExtractor(true))
+@Common.MangasMultiPageCSS('div.blog-list-items h2.information a', Common.PatternLinkGenerator('/xxx/page/{page}'), 0, Common.AnchorInfoExtractor(true))
 @Common.ChaptersUniqueFromManga()
 @Common.PagesSinglePageCSS('div.wp-content p noscript img:not([src*="download.png"])')
 @Common.ImageAjax()

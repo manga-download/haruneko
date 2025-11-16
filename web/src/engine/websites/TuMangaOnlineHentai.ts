@@ -8,7 +8,7 @@ function ImageExtractor(img: HTMLImageElement) {
 }
 
 @Common.MangaCSS(/^{origin}\/contents\//, 'div.panel-heading h3')
-@Common.MangasMultiPageCSS('/section/all?view=list&order=alphabetic&page={page}', 'div.panel-body table.table tbody tr td.text-left a')
+@Common.MangasMultiPageCSS('div.panel-body table.table tbody tr td.text-left a', Common.PatternLinkGenerator('/section/all?view=list&order=alphabetic&page={page}'))
 @Common.PagesSinglePageCSS('div#content-images img.content-image', ImageExtractor)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {

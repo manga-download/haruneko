@@ -5,8 +5,8 @@ import * as Common from './decorators/Common';
 import { FetchCSS } from '../platform/FetchProvider';
 
 export async function FetchMangas(this: DecoratableMangaScraper, provider: MangaPlugin, path: string, search: string, queryMain: string, queryMangas: string, querySearch: string): Promise<Manga[]> {
-    const mangaList : Manga [] = [];
-    for(let page = 1, run = true; run; page++) {
+    const mangaList: Manga[] = [];
+    for (let run = true; run;) {
         const uri = new URL(path + search, this.URI);
         const main = (await FetchCSS(new Request(uri), queryMain))?.at(0);
         const entries = [...main.querySelectorAll<HTMLAnchorElement>(queryMangas)];
@@ -27,7 +27,7 @@ export function PageExtract(element: HTMLImageElement) {
     return element.getAttribute('mydatasrc') || element.getAttribute('src');
 }
 
-@Common.MangaCSS(/^{origin}\/enter6\/index\.php\?app=forum&act=threadview&tid=\d+/, 'td.show_content font b', undefined, true)
+@Common.MangaCSS(/^{origin}\/enter6\/index\.php\?app=forum&act=threadview&tid=\d+/, 'td.show_content font b', Common.WebsiteInfoExtractor({ includeSearch: true }))
 @Common.ChaptersUniqueFromManga()
 @Common.PagesSinglePageCSS('td.show_content pre img', PageExtract)
 @Common.ImageAjax()
