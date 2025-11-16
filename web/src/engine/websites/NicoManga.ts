@@ -6,23 +6,27 @@ import * as FlatManga from './templates/FlatManga';
 import * as Common from './decorators/Common';
 
 type APIManga = {
-    name: string,
-    slug: string,
-    url: string,
-}
+    name: string;
+    slug: string;
+    url: string;
+};
 
 type APIMangas = {
-    data: APIManga[]
-}
+    data: APIManga[];
+};
 
 type APIChapter = {
-    chapter: string,
-    name: string,
-}
+    chapter: string;
+    name: string;
+};
 
 type APIChapters = APIChapter[];
 
-@Common.MangaCSS<HTMLSpanElement>(FlatManga.pathManga, 'nav ul > span', (head, uri) => ({ id: uri.pathname, title: head.innerText.replace(/\(MANGA\)$/i, '').trim() }))
+function CleanMangaTitle(title: string): string {
+    return title.replace(/\(MANGA\)/i, '').replace('- RAW', '').trim();
+}
+
+@Common.MangaCSS<HTMLHeadingElement>(FlatManga.pathManga, 'h1.font-bold.text-white', (head, uri) => ({ id: uri.pathname, title: CleanMangaTitle(head.innerText) }))
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
@@ -42,7 +46,7 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
         const { data } = await FetchJSON<APIMangas>(new Request(new URL('/app/manga/controllers/cont.allmanga.php', this.URI)));
-        return data.map(manga => new Manga(this, provider, `/${manga.slug}.html`, manga.name.trim()));
+        return data.map(manga => new Manga(this, provider, `/${manga.slug}.html`, CleanMangaTitle(manga.name.trim())));
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
