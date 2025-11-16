@@ -34,15 +34,8 @@
     "test",
     "src/engine/platform/nw/**/*",
     "src/engine/platform/electron/**/*",
-    "src/engine/InteractiveFileContentProvider.ts",
     "src/engine/PluginController_e2e.ts",
     "src/engine/SettingsGlobal_e2e.ts",
-    "src/engine/SettingsGlobal.ts",
-    "src/engine/SettingsManager.ts",
-    "src/engine/platform/AppWindow.ts",
-    "src/engine/providers/Bookmark.ts",
-    "src/engine/providers/BookmarkPlugin.ts",
-    "src/engine/transformers/ImageDescrambler.ts",
     "src/frontend/**/*",
     "src/i18n/**/*"
   ]
