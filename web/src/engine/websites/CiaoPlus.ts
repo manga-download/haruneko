@@ -90,6 +90,8 @@ export default class extends DecoratableMangaScraper {
             platform: '3',
             episode_id: chapter.Identifier,
         });
+        // ShonenMagazine uses the same scrambling algorithm as CiaoPlus v2, but reports scramble_version as 1. 
+        // Set version to -1 here to force the correct descrambling function.
         return page_list.map(page => new Page<PageInfo>(this, chapter, new URL(page), { seed: scramble_seed ?? 1, version: scramble_ver ?? -1 }));
     }
 
@@ -98,8 +100,8 @@ export default class extends DecoratableMangaScraper {
         return DeScramble(blob, async (image, ctx) => {
             ctx.drawImage(image, 0, 0);
             // source code: const i = r === 1 ? tt(e.width, e.height, t) : nt(e.width, e.height, t);
-            const i = page.Parameters.version === 1 ? tt(image.width, image.height, COL_NUM) : nt(image.width, image.height, COL_NUM);
-            for (const c of it(COL_NUM, page.Parameters.seed)) {
+            const i = page.Parameters.version === 1 ? ComputeLCMBlockDimensions(image.width, image.height, COL_NUM) : ComputeGridBlockDimensions(image.width, image.height, COL_NUM);
+            for (const c of GenerateScrambleMapping(COL_NUM, page.Parameters.seed)) {
                 ctx.drawImage(
                     image,
                     c.source.x * i.width,
@@ -158,8 +160,9 @@ export class DRMProvider {
 const COL_NUM = 4;
 const O = 8;
 
-const ot = function* (n: number) {
-    const e = Uint32Array.of(n);
+// ot
+const CreateXorShift32 = function* (seed: number) {
+    const e = Uint32Array.of(seed);
     for (;;) {
         e[0] ^= e[0] << 13;
         e[0] ^= e[0] >>> 17;
@@ -168,60 +171,65 @@ const ot = function* (n: number) {
     }
 };
 
-const at = (n: any[], e: number) => {
-    const t = ot(e);
-    return n
+// at
+const ShuffleArrayWithPRNG = (array: any[], seed: number) => {
+    const t = CreateXorShift32(seed);
+    return array
         .map((r) => [t.next().value, r])
         .sort((r, i) => +(r[0] > i[0]) - +(i[0] > r[0]))
         .map((r) => r[1]);
 };
 
-const it = function* (n: number, e: number) {
-    yield* at(
-        [...Array(n ** 2)].map((s, r) => r),
-        e
+// it
+const GenerateScrambleMapping = function* (gridSize: number, seed: number) {
+    yield* ShuffleArrayWithPRNG(
+        [...Array(gridSize ** 2)].map((s, r) => r),
+        seed
     ).map((s, r) => ({
         source: {
-            x: s % n,
-            y: Math.floor(s / n),
+            x: s % gridSize,
+            y: Math.floor(s / gridSize),
         },
         dest: {
-            x: r % n,
-            y: Math.floor(r / n),
+            x: r % gridSize,
+            y: Math.floor(r / gridSize),
         },
     }));
 };
 
-const st = (n: number, e: number) => {
+// st
+const GetLeastCommonMultiple = (a: number, b: number) => {
     const t = function t(s: number, r: number): number {
         return s ? t(r % s, s) : r;
     };
-    return n * e / t(n, e);
+    return a * b / t(a, b);
 };
 
-const tt = (n: number, e: number, t: number) => {
-    if (n < t || e < t) {
+// tt
+const ComputeLCMBlockDimensions = (width: number, height: number, gridSize: number) => {
+    if (width < gridSize || height < gridSize) {
         return null;
     }
-    const s = st(t, O);
-    if (n > s && e > s) {
-        n = Math.floor(n / s) * s;
-        e = Math.floor(e / s) * s;
+    const s = GetLeastCommonMultiple(gridSize, O);
+    if (width > s && height > s) {
+        width = Math.floor(width / s) * s;
+        height = Math.floor(height / s) * s;
     }
     return {
-        width: Math.floor(n / t),
-        height: Math.floor(e / t),
+        width: Math.floor(width / gridSize),
+        height: Math.floor(height / gridSize),
     };
 };
 
-const nt = (n: number, e: number, t: number) => {
-    if (n < t * O || e < t * O) {
+// nt
+const ComputeGridBlockDimensions = (width: number, height: number, gridSize: number) => {
+    if (width < gridSize * O || height < gridSize * O) {
         return null;
     }
-    const s = Math.floor(n / O);
-    const r = Math.floor(e / O);
-    const i = Math.floor(s / t);
-    const c = Math.floor(r / t);
+    const s = Math.floor(width / O);
+    const r = Math.floor(height / O);
+    const i = Math.floor(s / gridSize);
+    const c = Math.floor(r / gridSize);
     return {
         width: i * O,
         height: c * O
