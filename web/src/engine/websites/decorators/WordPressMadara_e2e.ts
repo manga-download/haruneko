@@ -45,6 +45,7 @@ import '../HadesNoFansub_e2e';
 import '../HariManga_e2e';
 import '../HarmonyScan_e2e';
 import '../Hayalistic_e2e';
+import '../HentaiScantrad_e2e';
 import '../HentaiTeca_e2e';
 import '../HentaiVN_e2e';
 import '../HentaiXYuri_e2e';

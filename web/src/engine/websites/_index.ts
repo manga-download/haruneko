@@ -191,6 +191,7 @@ export { default as HentaiHand } from './HentaiHand';
 export { default as HentaiHere } from './HentaiHere';
 export { default as HentaiNexus } from './HentaiNexus';
 export { default as HentaiRead } from './HentaiRead';
+export { default as HentaiScantrad } from './HentaiScantrad';
 export { default as HentaiTeca } from './HentaiTeca';
 export { default as HentaiVN } from './HentaiVN';
 export { default as HentaiWebtoon } from './HentaiWebtoon';
