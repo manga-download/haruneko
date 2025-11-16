@@ -29,8 +29,10 @@ export class NodeComicBookArchiveExporter extends NodeMangaExporter {
         const zip = new JSZip();
         const digits = sourceFileList.size.toString().length;
 
-        // Add ComicInfo.xml metadata
-        zip.file('ComicInfo.xml', this.CreateComicInfo(chapterTitle, mangaTitle ?? chapterTitle), { compression: 'DEFLATE' });
+        // Add ComicInfo.xml metadata with explicit UTF-8 encoding
+        const comicInfoXml = this.CreateComicInfo(chapterTitle, mangaTitle ?? chapterTitle);
+        const comicInfoBuffer = Buffer.from(comicInfoXml, 'utf-8');
+        zip.file('ComicInfo.xml', comicInfoBuffer, { compression: 'DEFLATE' });
 
         // Add all images to the archive
         const entries = Array.from(sourceFileList.entries());
