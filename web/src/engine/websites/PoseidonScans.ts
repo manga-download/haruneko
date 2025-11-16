@@ -25,7 +25,7 @@ type HydratedPages = {
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('poseidonscans', 'Poseidon Scans', 'https://poseidonscans.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Media.Manga, Tags.Language.French, Tags.Source.Aggregator);
+        super('poseidonscans', 'Poseidon Scans', 'https://poseidon-scans.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Media.Manga, Tags.Language.French, Tags.Source.Aggregator);
     }
 
     public override get Icon() {

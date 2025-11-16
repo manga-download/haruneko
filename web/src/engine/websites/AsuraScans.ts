@@ -57,5 +57,6 @@ export default class extends DecoratableMangaScraper {
 
     public override async Initialize(): Promise<void> {
         this.URI.href = await FetchWindowScript<string>(new Request(this.URI), 'window.location.origin');
+        console.log(`Assigned URL '${this.URI}' to ${this.Title}`);
     }
 }
