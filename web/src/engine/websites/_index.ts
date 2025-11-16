@@ -663,6 +663,7 @@ export { default as SuratManga } from './SuratManga';
 export { default as SuryaScans } from './SuryaScans';
 export { default as SushiScans } from './SushiScans';
 export { default as SushiScansFR } from './SushiScansFR';
+export { default as TakeComic } from './TakeComic';
 export { default as Tapas } from './Tapas';
 export { default as TappyToon } from './TappyToon';
 export { default as Tapread } from './Tapread';
