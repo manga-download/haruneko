@@ -400,8 +400,6 @@ export { default as MangaRead } from './MangaRead';
 export { default as MangaReadCO } from './MangaReadCO';
 export { default as MangaReaderSite } from './MangaReaderSite';
 export { default as MangaReaderTo } from './MangaReaderTo';
-export { default as MangaRockTeam } from './MangaRockTeam';
-export { default as MangaRolls } from './MangaRolls';
 export { default as MangaRose } from './MangaRose';
 export { default as MangaRuhu } from './MangaRuhu';
 export { default as MangAs } from './MangAs';

@@ -100,8 +100,6 @@ import '../MangaOnlineTeam_e2e';
 import '../MangaOwlio_e2e';
 import '../MangaReadCO_e2e';
 import '../MangaRead_e2e';
-import '../MangaRockTeam_e2e';
-import '../MangaRolls_e2e';
 import '../MangaRose_e2e';
 import '../MangaScantrad_e2e';
 import '../MangaSehriNet_e2e';
