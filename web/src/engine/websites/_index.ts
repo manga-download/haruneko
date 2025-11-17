@@ -381,7 +381,6 @@ export { default as ManganeloInfo } from './ManganeloInfo';
 export { default as MangaOkuTR } from './MangaOkuTR';
 export { default as MangaOni } from './MangaOni';
 export { default as MangaOnlineFun } from './MangaOnlineFun';
-export { default as MangaOnlineTeam } from './MangaOnlineTeam';
 export { default as MangaOrigin } from './MangaOrigin';
 export { default as MangaOwlio } from './MangaOwlio';
 export { default as MangaPanda } from './MangaPanda';
