@@ -6,7 +6,7 @@ const config: Config = {
         title: 'SirenKomik'
     },
     container: {
-        url: 'https://sirenkomik.my.id/manga/undead-king-teihen-bouken-sha-mamono-no-chikara-de-shinka-musou/',
+        url: 'https://sirenkomik.xyz/manga/undead-king-teihen-bouken-sha-mamono-no-chikara-de-shinka-musou/',
         id: '/manga/undead-king-teihen-bouken-sha-mamono-no-chikara-de-shinka-musou/',
         title: 'Undead King ~Teihen Bouken-sha, Mamono no Chikara de Shinka Musou~'
     },
