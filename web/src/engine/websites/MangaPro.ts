@@ -29,6 +29,11 @@ type MappedImage = {
     dim: number[];//[width, height]
 };
 
+type ImageToken = {
+    token: string;
+    expires: number;
+};
+
 @Common.MangaCSS<HTMLMetaElement>(/^{origin}\/series\/[^/]+\/\d+\/[^/]+$/, 'meta[property="og:image:alt"]')
 @Common.ChaptersSinglePageCSS('div.space-y-2 a[href^="/series"]', undefined, Common.AnchorInfoExtractor(false, 'span[class]'))
 export default class extends DecoratableMangaScraper {
@@ -66,17 +71,9 @@ export default class extends DecoratableMangaScraper {
             const [puzzleMode, layout] = mode.split('_');
 
             return DeScramble(new ImageData(dim[0], dim[1]), async (_, ctx) => {
-                function loadImage(src: string): Promise<HTMLImageElement> {
-                    return new Promise((resolve, reject) => {
-                        const img = new Image();
-                        img.onload = () => resolve(img);
-                        img.onerror = reject;
-                        img.src = src;
-                    });
-                }
 
                 const orderedPieces = order.map(index => pieces[index]);
-                const images = await Promise.all(orderedPieces.map(loadImage));
+                const images = await Promise.all(orderedPieces.map(this.LoadImage));
 
                 switch (puzzleMode) {
                     case 'vertical': {
@@ -109,6 +106,32 @@ export default class extends DecoratableMangaScraper {
 
             });
         }, priority, signal);
+    }
+
+    private async LoadImage(src: string): Promise<HTMLImageElement> {
+        const url = new URL(src);
+        if (url.hostname.startsWith('cdn')) {
+            const { expires, token } = await FetchJSON<ImageToken>(new Request(new URL('https://prochan.net/api/cdn-image/sign'), {
+                credentials: 'same-origin',
+                method: 'POST',
+                body: JSON.stringify({ url }),
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                cache: 'no-store'
+                //referrer: this.URI.href
+            }));
+
+            url.searchParams.set('token', token);
+            url.searchParams.set('expires', expires.toString());
+        };
+
+        return new Promise((resolve, reject) => {
+            const img = new Image();
+            img.onload = () => resolve(img);
+            img.onerror = reject;
+            img.src = url.href;
+        });
     }
 
     private async FetchAPI<T extends JSONElement>(endpoint: string): Promise<T> {
