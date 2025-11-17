@@ -1,10 +1,10 @@
-import { Tags } from '../Tags';
-import icon from './MangaRockTeam.webp';
+﻿import { Tags } from '../Tags';
+import icon from './HentaiScantrad.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Madara from './decorators/WordPressMadara';
 import * as Common from './decorators/Common';
 
-@Madara.MangaCSS(/^{origin}\/manga\/[^/]+\/$/, 'div.post-title')
+@Madara.MangaCSS(/^{origin}\/manga\/[^/]+\/$/, 'div.post-title h1')
 @Madara.MangasMultiPageAJAX()
 @Madara.ChaptersSinglePageAJAXv2()
 @Madara.PagesSinglePageCSS()
@@ -12,7 +12,7 @@ import * as Common from './decorators/Common';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('mangarockteam', 'Manga Rock Team', 'https://mangarockteam.com', Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Language.English);
+        super('hentaiscantrad', 'Hentai-Scantrad', 'https://hentai.scantrad-vf.cc', Tags.Media.Manhwa, Tags.Media.Manga, Tags.Language.French, Tags.Source.Aggregator, Tags.Rating.Pornographic);
     }
 
     public override get Icon() {
