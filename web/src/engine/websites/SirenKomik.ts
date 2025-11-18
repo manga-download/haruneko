@@ -1,9 +1,10 @@
 import { Tags } from '../Tags';
 import icon from './SirenKomik.webp';
-import { Chapter, DecoratableMangaScraper, Manga, type MangaPlugin, Page } from '../providers/MangaPlugin';
+import { DecoratableMangaScraper, Manga, type MangaPlugin } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import { FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
-import { GetBytesFromBase64, GetBytesFromHex, GetBytesFromUTF8 } from '../BufferEncoder';
+import { GetBase64FromBytes, GetBytesFromBase64, GetBytesFromHex, GetBytesFromUTF8 } from '../BufferEncoder';
+import { RandomBytes } from '../Random';
 
 type TokenConfig = {
     authToken?: string;
@@ -23,21 +24,23 @@ type APIMangas = {
 type APIManga = {
     title: string;
     slug: string;
-    chapters: APIChapter[]
 };
 
-type APIChapter = {
-    id: number;
-    title: string;
-    number: string;
-    slug: string;
-};
+const chapterScript = `
+    new Promise(resolve => {
+        resolve([...document.querySelectorAll('a[href*="/chapter"]')].map(anchor => {
+            const titleContainer = anchor.querySelector('h3');
+            const bloat = titleContainer.querySelector('span');
+            bloat?.parentElement.removeChild(bloat);
+            return {
+                id: anchor.pathname,
+                title : titleContainer.innerText.trim()
+            };
+        }));
+    });
+`;
 
-type APIPages = {
-    currentChapterData: {
-        images: Array<Array<string>>
-    }
-};
+const pageScript = `[...document.querySelectorAll('div.bg-gray-800 div img')].map(img => img.src)`;
 
 /**
  * A basic drmProvider manager with SirenKomik specific business logic
@@ -141,9 +144,7 @@ class DRMProvider {
     }
 
     private GenerateBase64UrlKey(size: number = 32): string {
-        const n = new Uint8Array(size);
-        crypto.getRandomValues(n);
-        return btoa(String.fromCharCode(...n)).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+        return GetBase64FromBytes(RandomBytes(size)).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
     }
 
     /**
@@ -175,8 +176,17 @@ class DRMProvider {
         const signature = await crypto.subtle.sign('HMAC', key, new TextEncoder().encode(message));
         return btoa(String.fromCharCode(...new Uint8Array(signature)));
     }
+
+    public async FetchAPI<T extends JSONElement>(endpoint: string) {
+        const request = new Request(new URL(endpoint, this.apiUrl), {
+            headers: await this.ApplyHeaders({}),
+        });
+        return (await FetchJSON<APIResult<T>>(request)).data;
+    }
 };
 
+@Common.ChaptersSinglePageJS(chapterScript, 2000)
+@Common.PagesSinglePageJS(pageScript, 3000)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
     private readonly apiUrl = new URL('https://sirenkomik.xyz/api/');
@@ -200,8 +210,9 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
-        const { slug, title } = await this.FetchAPI<APIManga>(`./manga/${url.split('/').at(-1)}`);
-        return new Manga(this, provider, slug, title);
+        const uri = new URL(url);
+        const title = await FetchWindowScript<string>(new Request(uri), `document.querySelector('div.grid img.object-cover').alt.trim();`, 1500);
+        return new Manga(this, provider, uri.pathname, title);
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
@@ -213,24 +224,7 @@ export default class extends DecoratableMangaScraper {
         return mangaList;
     }
     private async GetMangasFromPage(page: number, provider: MangaPlugin): Promise<Manga[]> {
-        const { manga } = await this.FetchAPI<APIMangas>(`./manga/list?page=${page}&per_page=12&status=All&type=All&sort=project`);
-        return manga.map(({ slug, title }) => new Manga(this, provider, slug, title));
-    }
-
-    public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const { chapters } = await this.FetchAPI<APIManga>(`./manga/${manga.Identifier}`);
-        return chapters.map(({ slug, title }) => new Chapter(this, manga, slug, title.replace(manga.Title, '').trim()));
-    }
-
-    public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const { currentChapterData: { images } } = await this.FetchAPI<APIPages>(`./chapter/${chapter.Identifier}`);
-        return images.at(0).map(image => new Page(this, chapter, new URL(image, this.URI)));
-    }
-
-    private async FetchAPI<T extends JSONElement>(endpoint: string) {
-        const request = new Request(new URL(endpoint, this.apiUrl), {
-            headers: await this.#drmProvider.ApplyHeaders({}),
-        });
-        return (await FetchJSON<APIResult<T>>(request)).data;
+        const { manga } = await this.#drmProvider.FetchAPI<APIMangas>(`./manga/list?page=${page}&per_page=12&status=All&type=All&sort=project`);
+        return manga.map(({ slug, title }) => new Manga(this, provider, `/manga/${slug}`, title));
     }
 }

@@ -7,11 +7,11 @@ new TestFixture({
     },
     container: {
         url: 'https://sirenkomik.xyz/manga/boku-no-kokoro-no-yabai-yatsu',
-        id: 'boku-no-kokoro-no-yabai-yatsu',
+        id: '/manga/boku-no-kokoro-no-yabai-yatsu',
         title: 'Boku no Kokoro no Yabai yatsu'
     },
     child: {
-        id: 'boku-no-kokoro-no-yabai-yatsu-chapter-168',
+        id: '/chapter/boku-no-kokoro-no-yabai-yatsu-chapter-168',
         title: 'Chapter 168',
     },
     entry: {
