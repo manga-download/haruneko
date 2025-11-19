@@ -64,8 +64,7 @@ export default class extends DecoratableMangaScraper {
 
     public override async Initialize(): Promise<void> {
         try {
-            const request = new Request(new URL('/genres', this.URI).href);
-            this.apiUrl = await FetchWindowScript<string>(request, scriptApiUrl, 1000);
+            this.apiUrl = await FetchWindowScript<string>(new Request(new URL('/genres', this.URI)), scriptApiUrl, 1000);
         } catch {
             //
         }
