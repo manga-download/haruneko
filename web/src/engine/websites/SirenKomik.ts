@@ -174,7 +174,7 @@ class DRMProvider {
             'sign'
         ]);
         const signature = await crypto.subtle.sign('HMAC', key, new TextEncoder().encode(message));
-        return btoa(String.fromCharCode(...new Uint8Array(signature)));
+        return GetBase64FromBytes(new Uint8Array(signature));
     }
 
     public async FetchAPI<T extends JSONElement>(endpoint: string) {
