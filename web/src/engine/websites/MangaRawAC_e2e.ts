@@ -1,7 +1,7 @@
 ﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
 const mangaID = encodeURI('/manga/呪術廻戦-raw-free/').toLowerCase();
-const config = {
+new TestFixture({
     plugin: {
         id: 'mangarawac',
         title: 'MangaRawAC'
@@ -20,6 +20,4 @@ const config = {
         size: 156_354,
         type: 'image/jpeg'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

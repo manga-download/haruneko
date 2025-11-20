@@ -38,7 +38,7 @@ export class LazyScroll extends FASTElement {
         if(!this.scrolling) {
             this.scrolling = true;
             window.requestAnimationFrame(() => {
-                if(this.scrollTop + this.clientHeight === this.scrollHeight) {
+                if(this.scrollTop + this.clientHeight >= this.scrollHeight) {
                     this.visibles = this.Items?.slice(0, this.visibles.length + 100) ?? [];
                 }
                 this.scrolling = false;
