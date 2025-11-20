@@ -71,6 +71,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async Initialize(): Promise<void> {
+        super.Initialize();
         //Website forces persistedQueries so we gather queries hashes from scripts
         const scriptUrl = (await FetchCSS<HTMLScriptElement>(new Request(this.URI), 'script[src*="/app/layout-"]')).at(0).getAttribute('src');
         const scriptData = await (await Fetch(new Request(new URL(scriptUrl, this.URI)))).text();
