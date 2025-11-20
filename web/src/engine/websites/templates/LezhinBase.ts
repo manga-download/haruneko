@@ -138,7 +138,7 @@ type LoginResult = {
     appConfig: AuthData
 }
 
-@Common.ChaptersSinglePageCSS('ul[class*=episodeListContents__list] li a', undefined, ChapterExtractor)
+@Common.ChaptersSinglePageCSS('div[class*=episodeListContents] a[class*="episodeListContentsItem__"]', undefined, ChapterExtractor)
 export class LezhinBase extends DecoratableMangaScraper {
     protected locale: string;
     private readonly apiUrl = 'https://www.lezhinus.com/lz-api/v2/';
