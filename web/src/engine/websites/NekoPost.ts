@@ -1,8 +1,7 @@
-import { Tags } from '../Tags';
-import icon from './MangaDex.webp';
-import { FetchJSON, FetchRegex } from '../platform/FetchProvider';
-import { MangaScraper, type MangaPlugin, Manga, Chapter, Page, DecoratableMangaScraper } from '../providers/MangaPlugin';
-import { TaskPool, Priority } from '../taskpool/TaskPool';
+﻿import { Tags } from '../Tags';
+import icon from './NekoPost.webp';
+import { FetchJSON, FetchRegex, FetchWindowScript } from '../platform/FetchProvider';
+import { type MangaPlugin, Manga, type Chapter, Page, DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import { Delay } from '../BackgroundTimers';
 
@@ -10,7 +9,17 @@ type APIMangas = {
     listProject: {
         pid: number;
         projectName: string;
-    }[]
+        projectType: string;
+    }[];
+};
+
+type APIChapter = {
+    chapterId: string;
+    projectId: string;
+    pageItem: {
+        pageName: string;
+        pageNo: number;
+    }[];
 };
 
 const chapterScript = `
@@ -24,12 +33,30 @@ const chapterScript = `
     });
 `;
 
-@Common.ChaptersSinglePageJS(chapterScript, 1500)
+const pageScript = `
+    new Promise( resolve => {
+        window.decodeURIComponent = new Proxy(window.decodeURIComponent, {
+          apply(target, thisArg, args) {
+            const result = Reflect.apply(target, thisArg, args);
+            try{
+                const jsonData = JSON.parse(result);
+                if (jsonData.pageItem) resolve(jsonData);
+            } catch{}
+
+            return result;
+          }
+        });
+    });
+`;
+
+@Common.ChaptersSinglePageJS(chapterScript, 500)
+@Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
     private readonly apiUrl = 'https://nekopost.net/api/';
+    private readonly CDNUrl = 'https://www.osemocphoto.com';
 
     public constructor() {
-        super('nekopost', 'NekoPost', 'https://nekopost.net', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Thai, Tags.Source.Aggregator, Tags.Accessibility.RegionLocked);
+        super('nekopost', 'NekoPost', 'https://www.nekopost.net', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Thai, Tags.Source.Aggregator, Tags.Accessibility.RegionLocked);
     }
 
     public override get Icon() {
@@ -37,11 +64,13 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override ValidateMangaURL(url: string): boolean {
-        return new RegExpSafe(`^${this.URI.origin}/manga/\\d+$`).test(url);
+        return new RegExpSafe(`^${this.URI.origin}/[^/]+/\\d+$`).test(url);
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
-
+        const uri = new URL(url);
+        const [title] = await FetchRegex(new Request(uri), /projectName:"([^"]+)"/g);
+        return new Manga(this, provider, uri.pathname, title.trim());
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
@@ -70,7 +99,8 @@ export default class extends DecoratableMangaScraper {
                 }
             });
             const { listProject } = await FetchJSON<APIMangas>(request);
-            return listProject.map(manga => new Manga(this, provider, `/manga/${manga.pid}`, manga.projectName));
+            return listProject.filter(manga => manga.projectType === 'c' || manga.projectType === 'm')
+                .map(({ pid, projectName, projectType }) => new Manga(this, provider, `/${projectType == 'c' ? 'comic' :'manga'}/${pid}`, projectName));
         } catch {
             return [];
         }
@@ -78,11 +108,9 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-
-    }
-
-    public override async FetchImage(page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
-
+        const { pageItem, chapterId, projectId } = await FetchWindowScript<APIChapter>(new Request(new URL(chapter.Identifier, this.URI)), pageScript);
+        return pageItem.sort((self, other) => self.pageNo - other.pageNo)
+            .map(({ pageName }) => new Page(this, chapter, new URL(`./collectManga/${projectId}/${chapterId}/${pageName}`, this.CDNUrl)));
     }
 
 }
