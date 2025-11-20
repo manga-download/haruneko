@@ -206,6 +206,7 @@ export { default as Hitomi } from './Hitomi';
 export { default as HiveScans } from './HiveScans';
 export { default as HniScanTrad } from './HniScanTrad';
 export { default as HoiFansub } from './HoiFansub';
+export { default as HolonoMetria } from './HolonoMetria';
 export { default as HolyScans } from './HolyScans';
 export { default as HorrorFC } from './HorrorFC';
 export { default as HqNow } from './HqNow';
