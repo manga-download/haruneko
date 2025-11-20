@@ -35,12 +35,12 @@ type ImageToken = {
 };
 
 @Common.MangaCSS<HTMLMetaElement>(/^{origin}\/series\/[^/]+\/\d+\/[^/]+$/, 'meta[property="og:image:alt"]')
-@Common.ChaptersSinglePageCSS('div.space-y-2 a[href^="/series"]', undefined, Common.AnchorInfoExtractor(false, 'span[class]'))
+@Common.ChaptersSinglePageCSS('div.space-y-2 a[href^="/series"]', undefined, Common.AnchorInfoExtractor(false, 'span.text-xl'))
 export default class extends DecoratableMangaScraper {
     private readonly apiUrl = 'https://prochan.net/api/public/';
 
     public constructor() {
-        super('mangapro', 'Pro Chan', 'https://prochan.net', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Arabic, Tags.Source.Scanlator);
+        super('mangapro', 'ProChan', 'https://prochan.net', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Arabic, Tags.Source.Scanlator);
     }
 
     public override get Icon() {
@@ -53,11 +53,12 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page<MappedImage>[]> {
-        const { images, maps } = await FetchNextJS<ImagesData>(new Request(new URL(chapter.Identifier, this.URI)), data => 'images' in data);
+        const chapterUrl = new URL(chapter.Identifier, this.URI);
+        const { images, maps } = await FetchNextJS<ImagesData>(new Request(chapterUrl), data => 'images' in data);
         const pages = images.map(image => new Page<MappedImage>(this, chapter, new URL(image, this.URI)));
 
         for (let mappedImage of maps) {
-            const page = new Page<MappedImage>(this, chapter, this.URI, { ...mappedImage });
+            const page = new Page<MappedImage>(this, chapter, this.URI, { ...mappedImage, Referer: chapterUrl.href });
             pages.push(page);
         };
         return pages;
@@ -73,7 +74,7 @@ export default class extends DecoratableMangaScraper {
             return DeScramble(new ImageData(dim[0], dim[1]), async (_, ctx) => {
 
                 const orderedPieces = order.map(index => pieces[index]);
-                const images = await Promise.all(orderedPieces.map(this.LoadImage));
+                const images = await Promise.all(orderedPieces.map(piece => this.LoadImage(piece, new URL(page.Parent.Identifier, this.URI).href)));
 
                 switch (puzzleMode) {
                     case 'vertical': {
@@ -108,20 +109,21 @@ export default class extends DecoratableMangaScraper {
         }, priority, signal);
     }
 
-    private async LoadImage(src: string): Promise<HTMLImageElement> {
+    private async LoadImage(src: string, chapterUrl: string): Promise<HTMLImageElement> {
         const url = new URL(src);
         if (url.hostname.startsWith('cdn')) {
             const { expires, token } = await FetchJSON<ImageToken>(new Request(new URL('https://prochan.net/api/cdn-image/sign'), {
-                credentials: 'same-origin',
+                credentials: 'include',
                 method: 'POST',
                 body: JSON.stringify({ url }),
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'Sec-Fetch-Site': 'same-origin',
+                    Referer: chapterUrl,
+                    Origin: this.URI.origin
                 },
                 cache: 'no-store'
-                //referrer: this.URI.href
             }));
-
             url.searchParams.set('token', token);
             url.searchParams.set('expires', expires.toString());
         };
