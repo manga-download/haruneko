@@ -3,20 +3,20 @@ import { Chapter, DecoratableMangaScraper, Manga, type MangaPlugin } from '../..
 import * as Common from '../decorators/Common';
 
 type APIManga = {
-    titleName: string,
-    titleId: number,
-    webtoonLevelCode: string,
-    articleList: APIChapter[]
+    titleName: string;
+    titleId: number;
+    webtoonLevelCode: string;
+    articleList: APIChapter[];
 };
 
 type APIChapter = {
-    no: number,
-    subtitle: string,
-    charge: boolean
+    no: number;
+    subtitle: string;
+    charge: boolean;
 };
 
 type APIWeekDaysList = {
-    titleListMap: Record<string, APIManga[]>
+    titleListMap: Record<string, APIManga[]>;
 };
 
 const mangaTypeMap = new Map([
