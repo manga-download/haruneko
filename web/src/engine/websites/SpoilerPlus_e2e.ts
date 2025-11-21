@@ -1,6 +1,6 @@
 ﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'spoilerplus',
         title: 'SpoilerPlus'
@@ -16,9 +16,7 @@ const config = {
     },
     entry: {
         index: 0,
-        size: 1_031_941,
+        size: 1_117_221,
         type: 'image/png'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

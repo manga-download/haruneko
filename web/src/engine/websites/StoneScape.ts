@@ -1,10 +1,10 @@
-import { Tags } from '../Tags';
-import icon from './MangaOnlineTeam.webp';
+﻿import { Tags } from '../Tags';
+import icon from './StoneScape.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Madara from './decorators/WordPressMadara';
 import * as Common from './decorators/Common';
 
-@Madara.MangaCSS(/^{origin}\/manga\/[^/]+\/$/, 'div.post-title')
+@Madara.MangaCSS(/^{origin}\/series\/[^/]+\/$/, 'div.post-title h1')
 @Madara.MangasMultiPageAJAX()
 @Madara.ChaptersSinglePageAJAXv2()
 @Madara.PagesSinglePageCSS()
@@ -12,7 +12,7 @@ import * as Common from './decorators/Common';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('mangaonlineteam', 'Manga Online Team', 'https://mangaonlineteam.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Media.Manga, Tags.Language.English, Tags.Source.Aggregator);
+        super('stonescape', 'StoneScape', 'https://stonescape.xyz', Tags.Media.Manhwa, Tags.Media.Manga, Tags.Language.English, Tags.Source.Aggregator);
     }
 
     public override get Icon() {
