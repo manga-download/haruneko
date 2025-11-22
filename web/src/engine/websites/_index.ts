@@ -766,6 +766,7 @@ export { default as Ynjn } from './Ynjn';
 export { default as YomuComics } from './YomuComics';
 export { default as YoungAnimal } from './YoungAnimal';
 export { default as YoungChampion } from './YoungChampion';
+export { default as YuriGarden } from './YuriGarden';
 export { default as YuriVerso } from './YuriVerso';
 export { default as YushukeMangas } from './YushukeMangas';
 export { default as Zebrack } from './Zebrack';
