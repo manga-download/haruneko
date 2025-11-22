@@ -77,7 +77,6 @@ export default class extends DecoratableMangaScraper {
             const img1 = new Image();
             const img2 = new Image();
 
-            // Attente du chargement
             await Promise.all([
                 new Promise(resolve => { img1.onload = resolve; img1.src = img1Url; }),
                 new Promise(resolve => { img2.onload = resolve; img2.src = img2Url; })
