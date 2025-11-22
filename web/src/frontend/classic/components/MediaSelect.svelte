@@ -146,11 +146,6 @@
     let isTrackerModalOpen = $state(false);
     let selectedTracker: MediaInfoTracker = $state();
 
-    function shouldFilterPlugin(item: any, value: string) {
-        if (!value) return true;
-        return item.text.toLowerCase().includes(value.toLowerCase());
-    }
-
     async function onUpdateMediaEntriesClick() {
         filteredmedias = []
         $selectedMedia = undefined;
@@ -234,7 +229,6 @@
             typeahead
             clearFilterOnOpen
             items={pluginsCombo}
-            shouldFilterItem={shouldFilterPlugin}
             let:item
         >
             {@const plugin = item as ComboBoxItemWithValue}
