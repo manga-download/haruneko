@@ -20,7 +20,7 @@ new TestFixture({
         size: 1_050_614,
         type: 'image/png'
     }
-}).AssertWebsite(); 
+}).AssertWebsite();
 
 new TestFixture({
     plugin: {
@@ -38,7 +38,7 @@ new TestFixture({
     },
     entry: {
         index: 8,
-        size:  1_198_663,
+        size: 1_198_663,
         type: 'image/png'
     }
-}).AssertWebsite(); 
+}).AssertWebsite();

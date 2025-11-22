@@ -28,7 +28,6 @@ new TestFixture({
     plugin: {
         id: 'shonenmagazine',
         title: '週刊少年マガジ (Weekly Shonen Magazine & Pocket Magazine)',
-
     },
     container: {
         url: 'https://pocket.shonenmagazine.com/title/00553/episode/209248',
