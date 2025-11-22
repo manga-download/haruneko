@@ -146,6 +146,11 @@
     let isTrackerModalOpen = $state(false);
     let selectedTracker: MediaInfoTracker = $state();
 
+    function shouldFilterPlugin(item: any, value: string) {
+        if (!value) return true;
+        return item.text.toLowerCase().includes(value.toLowerCase());
+    }
+
     async function onUpdateMediaEntriesClick() {
         filteredmedias = []
         $selectedMedia = undefined;
@@ -226,8 +231,8 @@
             on:clear={async() => ($selectedPlugin = undefined)}
             on:select={async(event) => selectPlugin(event.detail.selectedId)}
             size="sm"
-            typeahead
             clearFilterOnOpen
+            shouldFilterItem={shouldFilterPlugin}
             items={pluginsCombo}
             let:item
         >
