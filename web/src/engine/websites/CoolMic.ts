@@ -3,7 +3,7 @@ import icon from './CoolMic.webp';
 import type { MangaPlugin } from '../providers/MangaPlugin';
 import { Chapter, DecoratableMangaScraper, Page, Manga } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { FetchCSS, FetchJSON } from '../platform/FetchProvider';
+import { FetchCSS, FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
 import type { Priority } from '../taskpool/DeferredTask';
 import { GetBytesFromBase64, GetBytesFromUTF8 } from '../BufferEncoder';
 import { GetTypedData } from './decorators/Common';
@@ -45,6 +45,17 @@ type DecryptedKey = {
     decrypted_key: string;
 };
 
+const tokenAndMatureCookieScript = `
+    new Promise(async (resolve, reject) => {
+        try {
+            await window.cookieStore.set('is_mature', 'true');
+            resolve(document.querySelector('meta[name="csrf-token"]').content);
+        } catch(error) {
+            reject(error);
+        }
+    });
+`;
+
 @Common.MangaCSS(/^{origin}\/titles\/\d+$/, 'meta[property="og:title"]')
 export default class extends DecoratableMangaScraper {
     protected readonly apiUrl = `${this.URI.origin}/api/v1/`;
@@ -61,8 +72,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async Initialize(): Promise<void> {
-        super.Initialize();
-        this.token = (await FetchCSS<HTMLMetaElement>(new Request(this.URI), 'meta[name="csrf-token"]')).at(0).content;
+        this.token = await FetchWindowScript<string>(new Request(this.URI), tokenAndMatureCookieScript);
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
@@ -79,12 +89,7 @@ export default class extends DecoratableMangaScraper {
             });
 
             url.search = params.toString();
-            return FetchJSON<APIMangas>(new Request(url, {
-                headers: {
-                    'x-csrf-token': this.token,
-                    'x-requested-with': 'XMLHttpRequest'
-                }
-            }));
+            return this.FetchAPI<APIMangas>(url.href);
         });
 
         const results = (await Promise.all(promises)).reduce((accumulator: Manga[], element) => {
