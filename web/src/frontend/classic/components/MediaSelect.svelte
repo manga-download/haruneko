@@ -231,6 +231,8 @@
             on:clear={async() => ($selectedPlugin = undefined)}
             on:select={async(event) => selectPlugin(event.detail.selectedId)}
             size="sm"
+            typeahead
+            clearFilterOnOpen
             items={pluginsCombo}
             shouldFilterItem={shouldFilterPlugin}
             let:item
