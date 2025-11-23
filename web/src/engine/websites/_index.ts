@@ -614,7 +614,6 @@ export { default as ScanManga } from './ScanManga';
 export { default as ScantradUnion } from './ScantradUnion';
 export { default as ScanVF } from './ScanVF';
 export { default as ScanVFOrg } from './ScanVFOrg';
-export { default as ScyllaScans } from './ScyllaScans';
 export { default as SeiManga } from './SeiManga';
 export { default as SeinagiAdultoFansub } from './SeinagiAdultoFansub';
 export { default as SeinagiFansubEN } from './SeinagiFansubEN';
