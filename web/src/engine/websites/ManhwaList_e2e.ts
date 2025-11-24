@@ -1,13 +1,12 @@
 ﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'manhwalist',
         title: 'Manhwa List'
     },
-    /* CloudFlare
     container: {
-        url: 'https://manhwalist.in/manga/lookism/',
+        url: 'https://manhwalist02.site/manga/lookism/',
         id: '/manga/lookism/',
         title: 'Lookism'
     },
@@ -19,7 +18,5 @@ const config = {
         index: 0,
         size: 95_488,
         type: 'image/jpeg'
-    }*/
-};
-
-new TestFixture(config).AssertWebsite();
+    }
+}).AssertWebsite();
