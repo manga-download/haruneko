@@ -496,6 +496,7 @@ export { default as MonzeeKomik } from './MonzeeKomik';
 export { default as MugiwarasOficial } from './MugiwarasOficial';
 export { default as MultPorn } from './MultPorn';
 export { default as MundoManhwa } from './MundoManhwa';
+export { default as Mwku } from './Mwku';
 export { default as MyComic } from './MyComic';
 export { default as MyComicList } from './MyComicList';
 export { default as MyHentaiGallery } from './MyHentaiGallery';
