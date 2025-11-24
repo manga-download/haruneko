@@ -523,6 +523,7 @@ export { default as NirvanaManga } from './NirvanaManga';
 export { default as NitroManga } from './NitroManga';
 export { default as NiveraFansub } from './NiveraFansub';
 export { default as NocturneSummer } from './NocturneSummer';
+export { default as NoIndexScan } from './NoIndexScan';
 export { default as NoraNoFansub } from './NoraNoFansub';
 export { default as Noromax } from './Noromax';
 export { default as NovaManga } from './NovaManga';
