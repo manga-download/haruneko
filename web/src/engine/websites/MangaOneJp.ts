@@ -112,14 +112,14 @@ export default class extends DecoratableMangaScraper {
         switch (mediatype) {
             case 'chapter': {
                 const { chapterList: { chapterList } } = await FetchProto<WebChapterListForViewerResponse>(new Request(url), protoTypes, 'MangaOneJp.WebChapterListForViewerResponse');
-                return chapterList.map(chapter => {
-                    const title = [chapter.chapterName, chapter.description].join(' ').trim();
-                    return new Chapter(this, manga, JSON.stringify({ id: chapter.chapterId, type: 'chapter' }), title);
+                return chapterList.map(({ chapterId, chapterName, description }) => {
+                    const title = [chapterName, description].join(' ').trim();
+                    return new Chapter(this, manga, JSON.stringify({ id: chapterId, type: 'chapter' }), title);
                 });
             }
             case 'volume': {
                 const { volumeList: { volumeList } } = await FetchProto<WebChapterListForViewerResponse>(new Request(url), protoTypes, 'MangaOneJp.WebChapterListForViewerResponse');
-                return volumeList.map(({ volume }) => new Chapter(this, manga, JSON.stringify({ id: volume.id, type: 'volume' }), volume.name));
+                return volumeList.map(({ volume: { id, name } }) => new Chapter(this, manga, JSON.stringify({ id, type: 'volume' }), name));
             }
         }
     }
@@ -134,7 +134,7 @@ export default class extends DecoratableMangaScraper {
                 throw new Exception(R.Plugin_Common_Chapter_UnavailableError);
         }
         return data.pages.filter(page => page.image)
-            .map(page => new Page<PageParameters>(this, chapter, new URL(page.image.imageUrl), { key: data.aesKey, iv: data.aesIv }));
+            .map(({ image: { imageUrl } }) => new Page<PageParameters>(this, chapter, new URL(imageUrl), { key: data.aesKey, iv: data.aesIv }));
     }
 
     private async GetWebViewerResponse(mangaId: string, itemId: string, type: string, isTrial: boolean = false): Promise<WebViewerResponse> {
@@ -146,12 +146,12 @@ export default class extends DecoratableMangaScraper {
     public override async FetchImage(page: Page<PageParameters>, priority: Priority, signal: AbortSignal): Promise<Blob> {
         const blob = await Common.FetchImageAjax.call(this, page, priority, signal, true);
         const { key, iv } = page.Parameters;
-        return key && iv ? this.DecryptPicture(blob, page.Parameters) : blob;
+        return key && iv ? this.DecryptPicture(blob, key, iv) : blob;
     }
 
-    private async DecryptPicture(encrypted: Blob, page: PageParameters): Promise<Blob> {
-        const algorithm = { name: 'AES-CBC', iv: GetBytesFromHex(page.iv) };
-        const secretKey = await crypto.subtle.importKey('raw', GetBytesFromHex(page.key), algorithm, false, ['decrypt']);
+    private async DecryptPicture(encrypted: Blob, key: string, iv: string): Promise<Blob> {
+        const algorithm = { name: 'AES-CBC', iv: GetBytesFromHex(iv) };
+        const secretKey = await crypto.subtle.importKey('raw', GetBytesFromHex(key), algorithm, false, ['decrypt']);
         const decrypted = await crypto.subtle.decrypt(algorithm, secretKey, await encrypted.arrayBuffer());
         return Common.GetTypedData(decrypted);
     }
