@@ -6,7 +6,7 @@ import * as Common from './decorators/Common';
 import * as MangaStream from './decorators/WordPressMangaStream';
 
 @Common.MangaCSS(/^{origin}\/manga\/[^/]+\/$/, 'div.post-type-header-inner h1')
-@Common.MangasSinglePageCSS('/updated-mangas0/', 'div.article-feed h6.titleh6series a')
+@Common.MangasMultiPageCSS('div.article-feed a:not(:has(img))', Common.PatternLinkGenerator('/manga/?_paged={page}'))
 @MangaStream.PagesSinglePageCSS([/warning-\d+\./, /x99-1\./, /join-us-discord\./], 'div.manga-child-the-content img')
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
