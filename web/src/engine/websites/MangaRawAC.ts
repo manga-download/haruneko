@@ -9,7 +9,7 @@ import SpoilerPlus, { MangaInfoExtractor, MangaLinkExtractor } from './SpoilerPl
 export default class extends SpoilerPlus {
 
     public constructor() {
-        super('mangarawac', 'MangaRawAC', 'https://mangaraw.ac', 'div.chapter-comic div[data-z]', [Tags.Media.Manga, Tags.Language.Japanese, Tags.Source.Aggregator, Tags.Accessibility.RegionLocked]);
+        super('mangarawac', 'MangaRawAC', 'https://mangaraw.ac', [Tags.Media.Manga, Tags.Language.Japanese, Tags.Source.Aggregator, Tags.Accessibility.RegionLocked]);
     }
 
     public override get Icon() {

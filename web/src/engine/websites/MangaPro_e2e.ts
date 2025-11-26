@@ -3,20 +3,20 @@
 new TestFixture({
     plugin: {
         id: 'mangapro',
-        title: 'Manga Pro'
+        title: 'ProChan'
     },
     container: {
-        url: 'https://promanga.net/series/i-eat-soft-rice-in-another-world',
-        id: '327',
-        title: 'I Eat Soft Rice In Another World'
+        url: 'https://prochan.net/series/manhua/399/awakening-sss-rank-skill-after-a-kiss',
+        id: '/series/manhua/399/awakening-sss-rank-skill-after-a-kiss',
+        title: 'Awakening SSS-Rank skill after a Kiss'
     },
     child: {
-        id: '/series/i-eat-soft-rice-in-another-world/chapter-0',
-        title: 'Chapter 0',
+        id: '/series/manhua/399/awakening-sss-rank-skill-after-a-kiss/22222/91',
+        title: 'Chapter 91',
     },
     entry: {
         index: 0,
-        size: 1_345_428,
-        type: 'image/webp'
+        size: 298_990,
+        type: 'image/avif'
     }
 }).AssertWebsite();

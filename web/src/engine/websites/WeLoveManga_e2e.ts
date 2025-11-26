@@ -11,7 +11,7 @@ new TestFixture({
         title: 'TONO KANRI O SHITE MIYOU - RAW',
     },
     child: {
-        id: '/read-tono-kanri-o-shite-miyou-raw-chapter-65.2.html',
+        id: '/wlmr-tono-kanri-o-shite-miyou-raw-chapter-65.2.html',
         title: 'Chapter 65.2',
     },
     entry: {

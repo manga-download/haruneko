@@ -38,6 +38,6 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async Initialize(): Promise<void> {
-        await FetchWindowScript(new Request(this.URI), `window.cookieStore.set('nsfw', '2');`);
+        return FetchWindowScript(new Request(this.URI), `window.cookieStore.set('nsfw', '2');`);
     }
 }

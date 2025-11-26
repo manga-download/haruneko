@@ -1,4 +1,3 @@
-import '../AuroraScans_e2e';
 import '../EternalMangas_e2e';
 import '../HijalaScans_e2e';
 import '../HiveScans_e2e';

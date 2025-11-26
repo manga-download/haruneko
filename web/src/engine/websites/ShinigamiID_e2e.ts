@@ -6,7 +6,7 @@ new TestFixture({
         title: 'Shinigami ID',
     },
     container: {
-        url: 'https://07.shinigami.asia/series/sss-class-suicide-hunter/',
+        url: 'https://08.shinigami.asia/series/sss-class-suicide-hunter/',
         id: JSON.stringify({ post: '641', slug: '/series/sss-class-suicide-hunter/' }),
         title: 'SSS-Class Suicide Hunter'
     },

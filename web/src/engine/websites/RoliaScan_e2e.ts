@@ -6,17 +6,17 @@ new TestFixture({
         title: 'Rolia Scan'
     },
     container: {
-        url: 'https://roliascan.com/manga/gachiakuta/',
-        id: '/manga/gachiakuta/',
-        title: 'Gachiakuta'
+        url: 'https://roliascan.com/manga/designated-bully/',
+        id: '/manga/designated-bully/',
+        title: 'Designated Bully'
     },
     child: {
-        id: '/manga/gachiakuta/chapter-74/',
-        title: 'Chapter 74'
+        id: '/manga/designated-bully/chapter-1/',
+        title: 'Chapter 1'
     },
     entry: {
-        index: 15,
-        size: 169_070,
+        index: 13,
+        size: 428_532,
         type: 'image/webp'
     }
 }).AssertWebsite();

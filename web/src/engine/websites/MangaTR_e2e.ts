@@ -12,7 +12,7 @@ new TestFixture({
     },
     child: {
         id: '/id-127778-read-mairimashita-iruma-kun-chapter-100.html',
-        title: '100'
+        title: '100. Bölüm'
     },
     entry: {
         index: 2,

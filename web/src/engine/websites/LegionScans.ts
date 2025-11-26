@@ -10,9 +10,11 @@ import * as Common from './decorators/Common';
 @MangaStream.PagesSinglePageJS()
 @Common.ImageAjax(undefined, true)
 export default class extends DecoratableMangaScraper {
+
     public constructor() {
         super('legionscans', 'Legion Scans', 'https://legionscans.com', Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Language.Spanish, Tags.Source.Aggregator);
     }
+
     public override get Icon() {
         return icon;
     }

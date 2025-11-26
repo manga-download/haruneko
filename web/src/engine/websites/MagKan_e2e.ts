@@ -16,7 +16,7 @@ new TestFixture({
     },
     entry: {
         index: 1,
-        size: 3_166_820,
+        size: 3_320_516,
         type: 'image/png',
         timeout: 10000
     }

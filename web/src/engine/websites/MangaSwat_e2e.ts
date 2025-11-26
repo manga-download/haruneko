@@ -1,24 +1,22 @@
-﻿import { TestFixture, type Config } from '../../../test/WebsitesFixture';
+﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config: Config = {
+new TestFixture({
     plugin: {
         id: 'mangaswat',
         title: 'MangaSwat'
-    }, /* CloudFlare
+    },
     container: {
-        url: 'https://swatscans.com/manga/emperor-and-the-female-knight',
-        id: '/manga/emperor-and-the-female-knight',
+        url: 'https://meshmanga.com/series/66587',
+        id: '66587',
         title: 'Emperor And The Female Knight'
     },
     child: {
-        id: '/manga/emperor-and-the-female-knight/emperor-and-the-female-knight-184',
-        title: 'الفصل رقم: 184 FREE',
+        id: '1664788',
+        title: 'الفصل: 184 FREE'
     },
     entry: {
         index: 1,
         size: 218_922,
         type: 'image/webp'
-    } */
-};
-
-new TestFixture(config).AssertWebsite();
+    }
+}).AssertWebsite();

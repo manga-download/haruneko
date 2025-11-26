@@ -51,7 +51,7 @@ type PageParam = {
 
 export default class extends DecoratableMangaScraper {
 
-    #drm: DRMProvider;
+    #drm: DRMProvider = new DRMProvider();
     private readonly mangasSequentialTaskPool = new TaskPool(1, new RateLimit(4, 1));
     private readonly imageFormat = new Choice('image.format',
         W.Plugin_Settings_ImageFormat,
@@ -70,10 +70,6 @@ export default class extends DecoratableMangaScraper {
 
     public override get Icon() {
         return icon;
-    }
-
-    public override async Initialize(): Promise<void> {
-        this.#drm = new DRMProvider();
     }
 
     public override ValidateMangaURL(url: string): boolean {
