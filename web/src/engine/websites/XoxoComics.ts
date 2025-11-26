@@ -11,7 +11,7 @@ function MangaLinkExtractor(head: HTMLHeadingElement, uri: URL) {
 }
 
 @Common.MangaCSS(/^{origin}\/comic\/[^/]+$/, 'article#item-detail > h1.title-detail', MangaLinkExtractor)
-@Common.ChaptersMultiPageCSS<HTMLAnchorElement>('div.chapter > a', Common.PatternLinkGenerator('{id}?page={page}'), 0, anchor => ({ id: anchor.pathname + '/all', title: anchor.text }))
+@Common.ChaptersMultiPageCSS<HTMLAnchorElement>('div.chapter > a', Common.PatternLinkGenerator('{id}?page={page}'), 0, anchor => ({ id: anchor.pathname + '/all', title: anchor.text.trim() }))
 @Common.PagesSinglePageCSS('div.page-chapter img', img => img.dataset.original)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
