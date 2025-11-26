@@ -13,11 +13,12 @@ new TestFixture({
     },
     child: {
         id: mangaID + encodeURI('第1話/'),
-        title: '第1話'
+        title: '第1話',
+        timeout: 10_000
     },
     entry: {
-        index: 0,
-        size: 156_354,
-        type: 'image/jpeg'
+        index: 4,
+        size: 630_963,
+        type: 'image/png'
     }
 }).AssertWebsite();
