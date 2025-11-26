@@ -5,10 +5,10 @@ import * as MojoPortalComic from './templates/MojoPortalComic';
 import * as Common from './decorators/Common';
 import { FetchWindowScript } from '../platform/FetchProvider';
 
-const primaryDomain = 'nettruyenvia.com';
+const primaryDomain = 'nettruyenviet1.com';
 const patternAliasDomains = [
     primaryDomain,
-    'nettruyenrr.com',
+    'nettruyenar.com',
 ].join('|').replaceAll('.', '\\.');
 
 @Common.MangaCSS(new RegExp(`^https?://(${patternAliasDomains})/truyen-tranh/[^/]+$`), MojoPortalComic.queryManga)
