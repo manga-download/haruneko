@@ -231,8 +231,9 @@
             on:clear={async() => ($selectedPlugin = undefined)}
             on:select={async(event) => selectPlugin(event.detail.selectedId)}
             size="sm"
-            items={pluginsCombo}
+            clearFilterOnOpen
             shouldFilterItem={shouldFilterPlugin}
+            items={pluginsCombo}
             let:item
         >
             {@const plugin = item as ComboBoxItemWithValue}

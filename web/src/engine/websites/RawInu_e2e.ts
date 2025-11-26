@@ -11,7 +11,7 @@ new TestFixture({
         title: 'TATARI (WATARI)'
     },
     child: {
-        id: '/manga/tatari-watari/chapter-44.html',
+        id: '/unir-tatari-watari-chapter-44.html',
         title: 'Chapter 44'
     },
     entry: {
