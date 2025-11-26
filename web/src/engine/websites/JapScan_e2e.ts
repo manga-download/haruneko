@@ -7,7 +7,7 @@ new TestFixture({
         title: 'JapScan'
     },
     container: {
-        url: 'https://www.japscan.si/manga/jujutsu-kaisen/',
+        url: 'https://www.japscan.vip/manga/jujutsu-kaisen/',
         id: '/manga/jujutsu-kaisen/',
         title: 'Jujutsu Kaisen'
     },
@@ -29,7 +29,7 @@ new TestFixture({
         title: 'JapScan'
     },
     container: {
-        url: 'https://www.japscan.si/manhwa/king-game/',
+        url: 'https://www.japscan.vip/manhwa/king-game/',
         id: '/manhwa/king-game/',
         title: 'King Game'
     },
