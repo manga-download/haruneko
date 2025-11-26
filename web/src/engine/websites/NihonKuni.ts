@@ -1,5 +1,6 @@
 import { Tags } from '../Tags';
 import icon from './NihonKuni.webp';
+import { FetchWindowScript } from '../platform/FetchProvider';
 import { DecoratableMangaScraper, type Manga, type Chapter } from '../providers/MangaPlugin';
 import * as FlatManga from './templates/FlatManga';
 import * as Common from './decorators/Common';
@@ -16,6 +17,13 @@ export default class extends DecoratableMangaScraper {
 
     public override get Icon() {
         return icon;
+    }
+
+    public override Initialize(): Promise<void> {
+        return FetchWindowScript(new Request(this.URI), () => {
+            window.cookieStore.set('smartlink_shown_guest', '1');
+            window.cookieStore.set('smartlink_shown', '1');
+        });
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {

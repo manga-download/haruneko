@@ -6,7 +6,7 @@ new TestFixture({
         title: 'Manga World'
     },
     container: {
-        url: 'https://www.mangaworld.cx/manga/2682/subzero/',
+        url: 'https://www.mangaworld.mx/manga/2682/subzero/',
         id: '/manga/2682/subzero/',
         title: 'SubZero'
     },
