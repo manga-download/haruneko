@@ -12,7 +12,7 @@ new TestFixture({
     },
     child: {
         id: '1664788',
-        title: '184 FREE'
+        title: 'الفصل: 184 FREE'
     },
     entry: {
         index: 1,

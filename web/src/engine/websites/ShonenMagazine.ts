@@ -52,18 +52,4 @@ export default class extends CiaoPlus {
         const { web_title: { episode_id_list } } = await this.#FetchMangaInfo(manga.Identifier);
         return this.FetchChapterList(manga, episode_id_list);
     }
-
-    /*
-    protected GetPieceDimension(width: number, height: number, numCol: number): TDimension {
-        if (width < numCol * 8 || height < numCol * 8) return null;
-        const o = Math.floor(width / 8),
-            t = Math.floor(height / 8),
-            u = Math.floor(o / numCol),
-            r = Math.floor(t / numCol);
-        return {
-            width: u * 8,
-            height: r * 8
-        };
-    }
-    */
 }

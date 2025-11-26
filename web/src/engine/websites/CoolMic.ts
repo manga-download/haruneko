@@ -3,7 +3,7 @@ import icon from './CoolMic.webp';
 import type { MangaPlugin } from '../providers/MangaPlugin';
 import { Chapter, DecoratableMangaScraper, Page, Manga } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { FetchCSS, FetchJSON } from '../platform/FetchProvider';
+import { FetchCSS, FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
 import type { Priority } from '../taskpool/DeferredTask';
 import { GetBytesFromBase64, GetBytesFromUTF8 } from '../BufferEncoder';
 import { GetTypedData } from './decorators/Common';
@@ -45,13 +45,24 @@ type DecryptedKey = {
     decrypted_key: string;
 };
 
+const tokenAndMatureCookieScript = `
+    new Promise(async (resolve, reject) => {
+        try {
+            await window.cookieStore.set('is_mature', 'true');
+            resolve(document.querySelector('meta[name="csrf-token"]').content);
+        } catch(error) {
+            reject(error);
+        }
+    });
+`;
+
 @Common.MangaCSS(/^{origin}\/titles\/\d+$/, 'meta[property="og:title"]')
 export default class extends DecoratableMangaScraper {
     protected readonly apiUrl = `${this.URI.origin}/api/v1/`;
     private readonly languageCode: string = 'en';
     private token = undefined;
 
-    public constructor(id = 'coolmic', label = 'CoolMic', url = 'https://coolmic.me', tags = [Tags.Media.Manhwa, Tags.Media.Manga, Tags.Language.English, Tags.Source.Official]) {
+    public constructor(id = 'coolmic', label = 'CoolMic', url = 'https://coolmic.me', tags = [Tags.Media.Manhwa, Tags.Media.Manga, Tags.Language.English, Tags.Source.Official, Tags.Accessibility.RegionLocked]) {
         super(id, label, url, ...tags);
         this.languageCode = this.URI.href.match(/https:\/\/([a-z]+)\.coolmic/)?.at(-1) ?? this.languageCode;
     }
@@ -61,8 +72,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async Initialize(): Promise<void> {
-        super.Initialize();
-        this.token = (await FetchCSS<HTMLMetaElement>(new Request(this.URI), 'meta[name="csrf-token"]')).at(0).content;
+        this.token = await FetchWindowScript<string>(new Request(this.URI), tokenAndMatureCookieScript);
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
@@ -79,12 +89,7 @@ export default class extends DecoratableMangaScraper {
             });
 
             url.search = params.toString();
-            return FetchJSON<APIMangas>(new Request(url, {
-                headers: {
-                    'x-csrf-token': this.token,
-                    'x-requested-with': 'XMLHttpRequest'
-                }
-            }));
+            return this.FetchAPI<APIMangas>(url.href);
         });
 
         const results = (await Promise.all(promises)).reduce((accumulator: Manga[], element) => {
@@ -119,7 +124,8 @@ export default class extends DecoratableMangaScraper {
             }));
 
             //get decrypted key
-            const { decrypted_key } = await this.FetchAPI<DecryptedKey>(`./decryption_keys`, { encrypted_key: pageData.kms_encrypted_data_key, file_name: pageData.file_name });
+            const chapterUrl = new URL(page.Parent.Identifier, this.URI).href;
+            const { decrypted_key } = await this.FetchAPI<DecryptedKey>(`./decryption_keys`, { encrypted_key: pageData.kms_encrypted_data_key, file_name: pageData.file_name }, chapterUrl);
             return GetTypedData(await this.Decrypt(pageData, decrypted_key));
 
         }, priority, signal);
@@ -144,10 +150,11 @@ export default class extends DecoratableMangaScraper {
         return crypto.subtle.decrypt({ name: 'AES-CBC', iv: GetBytesFromBase64(iv) }, decryptionKey, GetBytesFromBase64(encrypted_image));
     }
 
-    private async FetchAPI<T extends JSONElement>(endpoint: string, body: JSONElement = undefined): Promise<T> {
+    private async FetchAPI<T extends JSONElement>(endpoint: string, body: JSONElement = undefined, referer: string = undefined): Promise<T> {
         const request = new Request(new URL(endpoint, this.apiUrl), {
             method: body ? 'POST' : 'GET',
             headers: {
+                Origin: this.URI.origin,
                 'Content-type': 'application/json',
                 'X-CSRF-TOKEN': this.token,
                 'X-Requested-With': 'XMLHttpRequest',
@@ -155,6 +162,7 @@ export default class extends DecoratableMangaScraper {
             body: body ? JSON.stringify(body) : undefined
 
         });
+        if (referer) request.headers.set('Referer', referer);
         return FetchJSON<T>(request);
     }
 

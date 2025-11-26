@@ -5,18 +5,22 @@ import * as Common from './decorators/Common';
 import { FetchJSON } from '../platform/FetchProvider';
 
 type APIResult<T> = {
-    results?: T;
+    results?: T[];
 };
 
 type APIManga = {
-    title: string;
-    slug: string;
     id: number;
+    title: string;
 };
 
-type APIChapter = {
+type APIMangas = APIResult<APIManga>;
+
+type APIChapters = APIResult<{
     id: number;
     chapter: string;
+}>;
+
+type APIPages = {
     images: {
         image: string;
     }[]
@@ -24,6 +28,7 @@ type APIChapter = {
 
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
+
     private readonly apiUrl = 'https://appswat.com/v2/api/v2/';
 
     public constructor() {
@@ -40,31 +45,30 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
         const { id, title } = await this.FetchAPI<APIManga>(`./series/${url.split('/').at(-1)}/`);
-        return new Manga(this, provider, id.toString(), title);
+        return new Manga(this, provider, `${id}`, title);
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        const mangaList: Manga[] = [];
-        for (let page = 1, run = true; run; page++) {
-            const mangas = await this.GetMangasFromPage(page, provider);
-            mangas.length > 0 ? mangaList.push(...mangas) : run = false;
-        }
-        return mangaList.distinct();
-    }
-    private async GetMangasFromPage(page: number, provider: MangaPlugin): Promise<Manga[]> {
-        const { results } = await this.FetchAPI<APIResult<APIManga[]>>(`./series/?page_size=200&page=${page}`);
-        return !results ? []: results.map(({ id, title }) => new Manga(this, provider, id.toString(), title));
+        type This = typeof this;
+        return Array.fromAsync(async function* (this: This) {
+            for (let page = 1, run = true; run; page++) {
+                const { results } = await this.FetchAPI<APIMangas>(`./series/?page_size=200&page=${page}`);
+                const mangas = results?.map(({ id, title }) => new Manga(this, provider, `${id}`, title)) ?? [];
+                mangas.length > 0 ? yield* mangas : run = false;
+            }
+        }.call(this));
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const { results } = await this.FetchAPI<APIResult<APIChapter[]>>(`./chapters/?page=1&serie=${manga.Identifier}&page_size=9999`);
-        return !results ? [] : results.map(({ id, chapter }) => new Chapter(this, manga, id.toString(), chapter));
+        const { results } = await this.FetchAPI<APIChapters>(`./chapters/?serie=${manga.Identifier}&page_size=9999&page=1`);
+        return results?.map(({ id, chapter }) => new Chapter(this, manga, `${id}`, 'الفصل: ' + chapter)) ?? [];
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const { images } = await this.FetchAPI<APIChapter>(`./chapters/${chapter.Identifier}/`);
+        const { images } = await this.FetchAPI<APIPages>(`./chapters/${chapter.Identifier}/`);
         return images.map(({ image }) => new Page(this, chapter, new URL(image, this.URI)));
     }
+
     private async FetchAPI<T extends JSONElement>(endpoint: string): Promise<T> {
         return await FetchJSON<T>(new Request(new URL(endpoint, this.apiUrl)));
     }

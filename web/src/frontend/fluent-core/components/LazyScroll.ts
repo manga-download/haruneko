@@ -1,4 +1,4 @@
-import { FASTElement, type ViewTemplate, html, css, observable, repeat } from '@microsoft/fast-element';
+import { FASTElement, type ViewTemplate, html, css, ref, observable, repeat } from '@microsoft/fast-element';
 
 const styles = css`
 
@@ -10,38 +10,37 @@ const styles = css`
 `;
 
 const template = html<LazyScroll>`
-    ${repeat(model => model.visibles, model => model.template)}
+    ${repeat(model => model.visibles, model => model.Template)}
+    <div ${ref('trigger')}></div>
 `;
 
 export class LazyScroll extends FASTElement {
 
+    readonly trigger: HTMLDivElement;
+    observer = new IntersectionObserver(([trigger]) => trigger.isIntersecting && this.LoadNext(100));
+
     override connectedCallback(): void {
         super.connectedCallback();
-        this.addEventListener('scroll', this.LoadNext, { passive: true });
+        this.observer.observe(this.trigger);
     }
 
     override disconnectedCallback(): void {
         super.disconnectedCallback();
-        this.removeEventListener('scroll', this.LoadNext);
+        this.observer.disconnect();
     }
 
-    private scrolling = false;
-    @observable template: ViewTemplate<unknown>;
+    @observable Template: ViewTemplate<unknown>;
     @observable visibles: unknown[] = [];
     @observable Items: unknown[];
     ItemsChanged() {
         this.visibles = [];
-        this.LoadNext();
+        this.LoadNext(100);
     }
 
-    LoadNext = function(this: LazyScroll) {
-        if(!this.scrolling) {
-            this.scrolling = true;
+    LoadNext = function(this: LazyScroll, count: number) {
+        if (this.visibles.length < this.Items.length) {
             window.requestAnimationFrame(() => {
-                if(this.scrollTop + this.clientHeight >= this.scrollHeight) {
-                    this.visibles = this.Items?.slice(0, this.visibles.length + 100) ?? [];
-                }
-                this.scrolling = false;
+                this.visibles = this.Items?.slice(0, this.visibles.length + count) ?? [];
             });
         }
     }.bind(this);
