@@ -380,6 +380,7 @@ export { default as MangaMirror } from './MangaMirror';
 export { default as MangaMonk } from './MangaMonk';
 export { default as MangaNato } from './MangaNato';
 export { default as MangaOkuTR } from './MangaOkuTR';
+export { default as MangaOneJp } from './MangaOneJp';
 export { default as MangaOni } from './MangaOni';
 export { default as MangaOnlineFun } from './MangaOnlineFun';
 export { default as MangaOrigin } from './MangaOrigin';
