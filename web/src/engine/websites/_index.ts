@@ -706,7 +706,6 @@ export { default as TruyenQQ } from './TruyenQQ';
 export { default as TruyenTranhDammy } from './TruyenTranhDammy';
 export { default as TruyenTranhtuan } from './TruyenTranhtuan';
 export { default as TRWebtoon } from './TRWebtoon';
-export { default as Tsumino } from './Tsumino';
 export { default as TuhaoManhua } from './TuhaoManhua';
 export { default as TuMangaOnline } from './TuMangaOnline';
 export { default as TuMangaOnlineHentai } from './TuMangaOnlineHentai';
