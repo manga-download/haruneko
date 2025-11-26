@@ -1,12 +1,12 @@
 import { Tags } from '../Tags';
+import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import icon from './RoliaScan.webp';
-import { FetchCSS } from '../platform/FetchProvider';
-import { Chapter, DecoratableMangaScraper, type Manga } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import * as MangaStream from './decorators/WordPressMangaStream';
 
 @Common.MangaCSS(/^{origin}\/manga\/[^/]+\/$/, 'div.post-type-header-inner h1')
 @Common.MangasMultiPageCSS('div.article-feed a:not(:has(img))', Common.PatternLinkGenerator('/manga/?_paged={page}'))
+@Common.ChaptersMultiPageCSS('div#chapter-list a.seenchapter', Common.PatternLinkGenerator('{id}chapterlist/?chap_page={page}'))
 @MangaStream.PagesSinglePageCSS([/warning-\d+\./, /x99-1\./, /join-us-discord\./], 'div.manga-child-the-content img')
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
@@ -19,8 +19,4 @@ export default class extends DecoratableMangaScraper {
         return icon;
     }
 
-    public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const data = await FetchCSS<HTMLAnchorElement>(new Request(new URL(manga.Identifier + 'chapterlist/', this.URI)), 'div#chapter-list a.seenchapter');
-        return data.map(({ pathname, text }) => new Chapter(this, manga, pathname, text.replace(manga.Title, '').trim() || manga.Title));
-    }
 }
