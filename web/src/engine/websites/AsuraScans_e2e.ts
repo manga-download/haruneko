@@ -12,7 +12,7 @@ new TestFixture({
     },
     child: {
         id: '/series/nano-machine-/chapter/270',
-        title: 'Nano Machine Chapter 270 - 90. Lightning Qi <2>',
+        title: 'Chapter 270 90. Lightning Qi <2>',
     },
     entry: {
         index: 1,

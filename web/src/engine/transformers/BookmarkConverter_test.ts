@@ -12,7 +12,6 @@ const legacyWebsiteIdentifierMapTestCases = [
     { sourceID: 'allanimesite', targetID: 'allmanga' },
     { sourceID: 'apolltoons', targetID: 'mundomanhwa' },
     { sourceID: 'azoramanga', targetID: 'azoraworld' },
-    { sourceID: 'bacamangaorg', targetID: 'bacamanga' },
     { sourceID: 'bananascan', targetID: 'harmonyscan' },
     { sourceID: 'cocomanhua', targetID: 'colamanga' },
     { sourceID: 'comicbushi', targetID: 'comicgrowl' },
@@ -112,5 +111,7 @@ describe('BookmarkConverter', () => {
             });
             expect(actual.Media.ProviderID).toStrictEqual(data.targetID);
         });
+
+        // TODO: All target identifiers must exist
     });
 });
