@@ -8,7 +8,7 @@ import { WPMangaProtectorPagesExtractorScript } from './decorators/WordPressMada
 export default class extends Kosaku {
 
     public constructor() {
-        super('catharsisworld', 'Catharsis World', 'https://catharsisworld.dig-it.info', Tags.Media.Manhwa, Tags.Media.Manga, Tags.Language.Spanish, Tags.Source.Aggregator, Tags.Accessibility.DomainRotation);
+        super('catharsisworld', 'Catharsis World', 'https://catharsisworld.vxviral.xyz', Tags.Media.Manhwa, Tags.Media.Manga, Tags.Language.Spanish, Tags.Source.Aggregator, Tags.Accessibility.DomainRotation);
     }
 
     public override get Icon() {
