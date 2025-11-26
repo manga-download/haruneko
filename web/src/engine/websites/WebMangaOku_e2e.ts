@@ -6,7 +6,7 @@ new TestFixture({
         title: 'WebMangaOku'
     },
     container: {
-        url: 'https://webmangaoku.com/manga/4000-yilin-ardindan-donen-kadim-buyucu/',
+        url: 'https://turkmangaoku.com/manga/4000-yilin-ardindan-donen-kadim-buyucu/',
         id: '/manga/4000-yilin-ardindan-donen-kadim-buyucu/',
         title: '4000 Yılın Ardından Dönen Kadim Büyücü'
     },
