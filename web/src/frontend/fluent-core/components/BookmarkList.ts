@@ -60,7 +60,7 @@ const template = html<BookmarkList>`
         <fluent-searchbox placeholder="" @predicate=${(model, ctx) => model.Match = (ctx.event as CustomEvent<(text: string) => boolean>).detail}></fluent-searchbox>
     </div>
     <div id="entries">
-    <fluent-lazy-scroll id="entries" :Items=${model => model.filtered} :template=${model => CreateMediaItemTemplate<Bookmark>(model.SelectEntry.bind(model), item => !item?.IsOrphaned)}></fluent-lazy-scroll>
+    <fluent-lazy-scroll id="entries" :Items=${model => model.filtered} :Template=${model => CreateMediaItemTemplate<Bookmark>(model.SelectEntry.bind(model), item => !item?.IsOrphaned)}></fluent-lazy-scroll>
 `;
 
 export class BookmarkList extends FASTElement {
