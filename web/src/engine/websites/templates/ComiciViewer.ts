@@ -43,12 +43,14 @@ function ChapterLinkResolver(manga: Manga): URL {
 @Common.ChaptersSinglePageCSS('div.series-ep-list a[data-href]', ChapterLinkResolver, ChapterInfoExtractor)
 export class ComiciViewer extends DecoratableMangaScraper {
 
+    protected apiUrl = this.URI;
     private readonly identityTileMap = new Array(16).fill(null).map((_, index) => ({ col: index / 4 >> 0, row: index % 4 >> 0 }));
 
     public override async FetchPages(chapter: Chapter): Promise<Page<ScrambleData>[]> {
         const [viewer] = await FetchCSS(new Request(new URL(chapter.Identifier, this.URI)), '#comici-viewer');
-        const { totalPages } = await this.FetchContentInfo(chapter, viewer.getAttribute('comici-viewer-id'), viewer.dataset.memberJwt, 1);
-        const { result } = await this.FetchContentInfo(chapter, viewer.getAttribute('comici-viewer-id'), viewer.dataset.memberJwt, totalPages);
+        const viewerId = viewer.getAttribute('comici-viewer-id') ?? viewer.dataset.comiciViewerId;
+        const { totalPages } = await this.FetchContentInfo(chapter, viewerId, viewer.dataset.memberJwt, 1);
+        const { result } = await this.FetchContentInfo(chapter, viewerId, viewer.dataset.memberJwt, totalPages);
         return result.map(image => new Page<ScrambleData>(this, chapter, new URL(image.imageUrl), { scramble: image.scramble, Referer: this.URI.href }));
     }
 
@@ -69,7 +71,7 @@ export class ComiciViewer extends DecoratableMangaScraper {
     }
 
     private FetchContentInfo(chapter: Chapter, viewerId: string, userId: string, pageTo: number): Promise<APIPages> {
-        const uri = new URL('/book/contentsInfo', this.URI);
+        const uri = new URL('./book/contentsInfo', this.apiUrl);
         uri.search = new URLSearchParams({
             'comici-viewer-id': viewerId,
             'user-id': userId,
