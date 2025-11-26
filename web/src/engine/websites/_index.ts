@@ -92,6 +92,7 @@ export { default as CopyManga } from './CopyManga';
 export { default as CoroCoro } from './CoroCoro';
 export { default as CosmicScansIndonesia } from './CosmicScansIndonesia';
 export { default as CovenScan } from './CovenScan';
+export { default as CreativeComic } from './CreativeComic';
 export { default as CrunchyScan } from './CrunchyScan';
 export { default as CulturedWorks } from './CulturedWorks';
 export { default as CuuTruyen } from './CuuTruyen';
