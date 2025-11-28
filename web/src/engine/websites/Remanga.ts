@@ -11,12 +11,14 @@ type APIResult<T> = {
 
 type APIManga = {
     dir: string;
-    main_name: string;
+    main_name: null | string;
     secondary_name: string;
     branches: {
         id: number;
     }[] | null;
 };
+
+type APIMangas = APIResult<APIManga[]>;
 
 type APIChapter = {
     id: number;
@@ -25,49 +27,17 @@ type APIChapter = {
     tome: number;
 };
 
+type APIChapters = APIResult<APIChapter[]>;
+
 type APIPages = {
     pages: Array<Array<{ link: string }>>
-}
-
-/**
- * A basic oAuth token manager with Remanga specific business logic
- */
-class TokenProvider {
-
-    #token: string = null;
-
-    constructor(private readonly clientURI: URL) { }
-
-    /**
-     * Extract the token directly from the website (e.g., after login/logout through manual website interaction)
-     */
-    public async UpdateToken() {
-        try {
-            this.#token = await FetchWindowScript(new Request(this.clientURI), `(async () => (await cookieStore.get('token'))?.value ?? undefined)();`, 750);
-        } catch (error) {
-            console.warn('UpdateToken()', error);
-            this.#token = null;
-        }
-    }
-
-    /**
-     * Determine the _Bearer_ extracted from the current token and add it as authorization header to the given {@link init} headers (replacing any existing authorization header).
-     * In case the _Bearer_ could not be extracted from the current token the authorization header will not be added/replaced.
-     */
-    public async ApplyAuthorizationHeader(init: HeadersInit): Promise<HeadersInit> {
-        const headers = new Headers(init);
-        if (this.#token) {
-            headers.set('Authorization', 'Bearer ' + this.#token);
-        }
-        return headers;
-    }
 }
 
 @Common.ImageAjax(true)
 export default class extends DecoratableMangaScraper {
 
     private readonly apiUrl = 'https://api.remanga.org/api/v2/';
-    #tokenProvider: TokenProvider;
+    #token: null | string = null;
 
     public constructor() {
         super('remanga', 'Remanga', 'https://remanga.org', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Russian, Tags.Source.Aggregator, Tags.Accessibility.RegionLocked);
@@ -78,8 +48,8 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async Initialize(): Promise<void> {
-        this.#tokenProvider = new TokenProvider(this.URI);
-        this.#tokenProvider.UpdateToken();
+        // TODO: Update the token whenever the user performs a login/logout through manual website interaction
+        this.#token = await FetchWindowScript(new Request(this.URI), `cookieStore.get('token').then(({ value }) => value ?? null).catch(error => null);`, 750);
     }
 
     public override ValidateMangaURL(url: string): boolean {
@@ -87,60 +57,45 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
-        const { dir, main_name, secondary_name } = await this.GetMangaDetails(new URL(url).pathname.split('/').at(-2));
+        const { dir, main_name, secondary_name } = await this.FetchAPI<APIManga>(`./titles/${new URL(url).pathname.split('/').at(-2)}/`);
         return new Manga(this, provider, dir, main_name ?? secondary_name);
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        const mangaList: Manga[] = [];
-        for (let page = 1, run = true; run; page++) {
-            await Delay(500);
-            const mangas = await this.GetMangasFromPage(page, provider);
-            mangaList.push(...mangas);
-            run = mangas.length > 0 && page < 1000; //website api is limited to 999 pages
-        }
-        return mangaList;
-    }
+        type This = typeof this;
+        return Array.fromAsync(async function* (this: This) {
+            for (let page = 1, run = true; run && page < 1000; page++) {
+                await Delay(500);
+                const { results } = await this.FetchAPI<APIMangas>(`./search/catalog/?count=30&ordering=score&page=${page}`);
+                const mangas = !results ? [] : results.map(({ dir, main_name: mainName, secondary_name: altName }) => new Manga(this, provider, dir, mainName ?? altName));
+                mangas.length > 0 ? yield* mangas : run = false;
+            }
 
-    private async GetMangasFromPage(page: number, provider: MangaPlugin): Promise<Manga[]> {
-        const { results } = await this.FetchAPI<APIResult<APIManga[]>>(`./search/catalog/?count=30&ordering=score&page=${page}`);
-        return results.map(manga => new Manga(this, provider, manga.dir, manga.main_name ?? manga.secondary_name));
-    }
-
-    private async GetMangaDetails(slug: string): Promise<APIManga> {
-        return this.FetchAPI<APIManga>(`./titles/${slug}/`);
+        }.call(this));
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const chapterList: Chapter[] = [];
-        const { branches } = await this.GetMangaDetails(manga.Identifier);
-        if (branches) {
+        const { branches } = await this.FetchAPI<APIManga>(`./titles/${manga.Identifier}/`);
+        type This = typeof this;
+        return Array.fromAsync(async function* (this: This) {
             for (let page = 1, run = true; run; page++) {
-                const chapters = await this.GetChaptersFromPage(manga, page, branches.at(0).id);
-                chapters.length > 0 ? chapterList.push(...chapters) : run = false;
+                const { results } = await this.FetchAPI<APIChapters>(`./titles/chapters/?branch_id=${branches.at(0).id}&ordering=-index&page=${page}`);
+                const chapters = !results ? [] : results.map(({ id, chapter, name, tome }) => new Chapter(this, manga, `${id}`, [`Vol.${tome}`, `Ch.${chapter}`, name ?? ''].join(' ').trim()));
+                chapters.length > 0 ? yield* chapters : run = false;
             }
-        };
-        return chapterList.distinct();
-    }
-
-    private async GetChaptersFromPage(manga: Manga, page: number, branchId: number): Promise<Chapter[]> {
-        const { results } = await this.FetchAPI<APIResult<APIChapter[]>>(`./titles/chapters/?branch_id=${branchId}&ordering=-index&page=${page}`);
-        return results.map(({ id, chapter, name, tome }) => new Chapter(this, manga, `${id}`, [`Vol.${tome}`, `Ch.${chapter}`, name ?? ''].join(' ').trim()));
+        }.call(this));
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
         const { pages } = await this.FetchAPI<APIPages>(`./titles/chapters/${chapter.Identifier}/`);
-        return pages.reduce((accumulator: Page[], entry) => {
-            const entryPages = entry.map(({ link }) => new Page(this, chapter, new URL(link), { Referer: this.URI.href }));
-            accumulator.push(...entryPages);
-            return accumulator;
-        }, []);
+        return pages.flat().map(({ link }) => new Page(this, chapter, new URL(link), { Referer: this.URI.href }));
     }
 
     public async FetchAPI<T extends JSONElement>(endpoint: string): Promise<T> {
-        const request = new Request(new URL(endpoint, this.apiUrl), {
-            headers: await this.#tokenProvider.ApplyAuthorizationHeader({}),
-        });
-        return FetchJSON<T>(request);
+        return FetchJSON<T>(new Request(new URL(endpoint, this.apiUrl), {
+            headers: {
+                ...this.#token && { Authorization: `Bearer ${this.#token}` }
+            }
+        }));
     }
 }
