@@ -49,49 +49,15 @@ type PageInfo = {
     }
 }
 
-/**
- * A basic oAuth token manager with MeianPlus specific business logic
- */
-class TokenProvider {
-
-    #token: string = null;
-
-    constructor(private readonly clientURI: URL) { }
-
-    /**
-     * Extract the token directly from the website (e.g., after login/logout through manual website interaction)
-     */
-    public async UpdateToken() {
-        try {
-            this.#token = JSON.parse(decodeURIComponent(await FetchWindowScript<string>(new Request(this.clientURI), `(async () => (await cookieStore.get('token_meian_plus'))?.value ?? null)();`)));
-        } catch (error) {
-            console.warn('UpdateToken()', error);
-            this.#token = null;
-        }
-    }
-
-    /**
-     * Determine the _Bearer_ extracted from the current token and add it as authorization header to the given {@link init} headers (replacing any existing authorization header).
-     * In case the _Bearer_ could not be extracted from the current token the authorization header will not be added/replaced.
-     */
-    public async ApplyAuthorizationHeader(init: HeadersInit): Promise<HeadersInit> {
-        const headers = new Headers(init);
-        if (this.#token) {
-            headers.set('Authorization', 'Bearer ' + this.#token);
-        }
-        return headers;
-    }
-}
-
 export default class extends DecoratableMangaScraper {
-    private readonly tokenProvider: TokenProvider;
+
     private readonly apiUrl = 'https://api.meian-plus.fr/v1/';
     private readonly imageCDN = 'https://ebook.meian-plus.fr/';
     private readonly scramblingMatrix = new Array(100).fill(null).map((_, index) => [(index / 10 >> 0) + 1, (index % 10 >> 0) + 1]);
+    #token: null | string = null;
 
     public constructor() {
         super('meianplus', 'Meian Plus', 'https://www.meian-plus.fr', Tags.Media.Manga, Tags.Language.French, Tags.Source.Official);
-        this.tokenProvider = new TokenProvider(this.URI);
     }
 
     public override get Icon() {
@@ -100,7 +66,7 @@ export default class extends DecoratableMangaScraper {
 
     public override async Initialize(): Promise<void> {
         // TODO: Update the token whenever the user performs a login/logout through manual website interaction
-        await this.tokenProvider.UpdateToken();
+        this.#token = await FetchWindowScript<null | string>(new Request(this.URI), `cookieStore.get('token_meian_plus').then(token => JSON.parse(decodeURIComponent(token))).catch(() => null)`);
     }
 
     public override ValidateMangaURL(url: string): boolean {
@@ -127,7 +93,7 @@ export default class extends DecoratableMangaScraper {
         const { licences } = await this.FetchAPI<APISeries>(this.apiUrl, './licences/', {
             ebook: '1',
             limit: '96',
-            index: '' + page,
+            index: `${page}`,
         });
         return licences.map(item => new Manga(this, provider, item.id_licence.toString(), item.titre_licence));
     }
@@ -189,7 +155,10 @@ export default class extends DecoratableMangaScraper {
     private async FetchAPI<T extends JSONElement>(base: string, endpoint: string, search: Record<string, string>): Promise<T> {
         const uri = new URL(endpoint + '?' + new URLSearchParams(search), base);
         const request = new Request(uri, {
-            headers: await this.tokenProvider.ApplyAuthorizationHeader({ Referer: this.URI.href })
+            headers: {
+                Referer: this.URI.href,
+                ...this.#token && { Authorization: `Bearer ${this.#token}` }
+            }
         });
         const response = await Fetch(request);
         const text = await response.text();
