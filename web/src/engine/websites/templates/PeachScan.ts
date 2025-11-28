@@ -34,8 +34,7 @@ export class PeachScan extends DecoratableMangaScraper {
         if (files.at(0)?.endsWith('.zip')) {
             const pages: Page[] = [];
             for (const zipurl of files) {
-                const request = new Request(new URL(zipurl, this.URI), { cache: 'reload', headers: { Referer: this.URI.href } });
-                const response = await Fetch(request);
+                const response = await Fetch(new Request(new URL(zipurl, this.URI), { cache: 'reload', headers: { Referer: this.URI.href } }));
                 const zipfile = await JSZip.loadAsync(await response.arrayBuffer());
                 const fileNames = Object.keys(zipfile.files)
                     .sort((a, b) => this.ExtractNumber(a) - this.ExtractNumber(b))
