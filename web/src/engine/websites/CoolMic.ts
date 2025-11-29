@@ -3,48 +3,66 @@ import icon from './CoolMic.webp';
 import type { MangaPlugin } from '../providers/MangaPlugin';
 import { Chapter, DecoratableMangaScraper, Page, Manga } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { Fetch, FetchCSS, FetchJSON } from '../platform/FetchProvider';
+import { FetchCSS, FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
 import type { Priority } from '../taskpool/DeferredTask';
-import { Exception } from '../Error';
-import { WebsiteResourceKey as R } from '../../i18n/ILocale';
+import { GetBytesFromBase64, GetBytesFromUTF8 } from '../BufferEncoder';
+import { GetTypedData } from './decorators/Common';
 
 type APIMangas = {
-    hits: {
+    hits: {s
         hit: {
-            id: number,
+            id: number;
             fields: {
-                title_name : string
+                title_name: string;
             }
         }[]
     }
-}
+};
 
 type JsonChapters = {
     episodes: {
-        id: number,
-        number : string
+        id: number;
+        number: string;
     }[]
-}
+};
 
 type APIPages = {
     image_data?: {
         path: string
-    }[],
-    signed_cookie?: CookieSigner
-}
+    }[];
+};
 
-type CookieSigner = {
-    'CloudFront-Policy': string,
-    'CloudFront-Signature': string,
-    'CloudFront-Key-Pair-Id': string
-}
+type PageData = {
+    encrypted_image: string;
+    iv: string;
+    salt: string;
+    iterations: number;
+    kms_encrypted_data_key: string;
+    file_name: string;
+};
+
+type DecryptedKey = {
+    decrypted_key: string;
+};
+
+const tokenAndMatureCookieScript = `
+    new Promise(async (resolve, reject) => {
+        try {
+            await window.cookieStore.set('is_mature', 'true');
+            resolve(document.querySelector('meta[name="csrf-token"]').content);
+        } catch(error) {
+            reject(error);
+        }
+    });
+`;
 
 @Common.MangaCSS(/^{origin}\/titles\/\d+$/, 'meta[property="og:title"]')
 export default class extends DecoratableMangaScraper {
-    private readonly apiUrl = `${this.URI.origin}/api/v1/`;
-    private readonly languageCode : string = 'en';
+    protected readonly apiUrl = `${this.URI.origin}/api/v1/`;
+    private readonly languageCode: string = 'en';
+    private token = undefined;
 
-    public constructor(id = 'coolmic', label = 'CoolMic', url = 'https://coolmic.me', tags = [Tags.Media.Manhwa, Tags.Media.Manga, Tags.Language.English, Tags.Source.Official]) {
+    public constructor(id = 'coolmic', label = 'CoolMic', url = 'https://coolmic.me', tags = [Tags.Media.Manhwa, Tags.Media.Manga, Tags.Language.English, Tags.Source.Official, Tags.Accessibility.RegionLocked]) {
         super(id, label, url, ...tags);
         this.languageCode = this.URI.href.match(/https:\/\/([a-z]+)\.coolmic/)?.at(-1) ?? this.languageCode;
     }
@@ -53,8 +71,11 @@ export default class extends DecoratableMangaScraper {
         return icon;
     }
 
+    public override async Initialize(): Promise<void> {
+        this.token = await FetchWindowScript<string>(new Request(this.URI), tokenAndMatureCookieScript);
+    }
+
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        const token = (await FetchCSS<HTMLMetaElement>(new Request(this.URI), 'meta[name="csrf-token"]')).at(0).content;
         const promises = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').map(character => {
             const url = new URL(`https://${this.languageCode}-search.coolmic.me/search`);
             const params = new URLSearchParams({
@@ -68,18 +89,11 @@ export default class extends DecoratableMangaScraper {
             });
 
             url.search = params.toString();
-            const request = new Request(url, {
-                headers: {
-                    'x-csrf-token': token,
-                    'x-requested-with': 'XMLHttpRequest'
-                }
-            });
-
-            return FetchJSON<APIMangas>(request);
+            return this.FetchAPI<APIMangas>(url.href);
         });
 
         const results = (await Promise.all(promises)).reduce((accumulator: Manga[], element) => {
-            const mangas = element.hits.hit.map(manga => new Manga(this, provider, `/titles/${manga.id}`, manga.fields.title_name.trim()));
+            const mangas = element.hits.hit.map(({ id, fields: { title_name: title } }) => new Manga(this, provider, `/titles/${id}`, title.trim()));
             accumulator.push(...mangas);
             return accumulator;
         }, []);
@@ -94,30 +108,61 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const request = new Request(new URL(`/api/v1/viewer/episodes/${chapter.Identifier}`, this.apiUrl));
-        const { image_data, signed_cookie } = await FetchJSON<APIPages>(request);
-        if (!signed_cookie) {
-            throw new Exception(R.Plugin_Common_Chapter_UnavailableError);
-        }
-        return image_data.map(page => new Page<CookieSigner>(this, chapter, new URL(page.path), { ...signed_cookie }));
+        const { image_data } = await this.FetchAPI<APIPages>(`./viewer/comic/secure_episodes/${chapter.Identifier}`);
+        return image_data.map(({ path }) => new Page(this, chapter, new URL(path)));
     }
 
-    public override async FetchImage(page: Page<CookieSigner>, priority: Priority, signal: AbortSignal): Promise<Blob> {
+    public override async FetchImage(page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
         return this.imageTaskPool.Add(async () => {
 
-            const cookiesData = page.Parameters;
-            const cookies = Object.keys(cookiesData).map(name => `${name}=${cookiesData[name]}`).join(';');
-
-            const request = new Request(page.Link, {
-                signal: signal,
+            //fetch page JSON data
+            const pageData = await FetchJSON<PageData>(new Request(page.Link, {
                 headers: {
-                    Cookie: cookies,
-                    Referer: page.Link.origin,
+                    Referer: this.URI.href
                 }
-            });
+            }));
 
-            const response = await Fetch(request);
-            return response.blob();
+            //get decrypted key
+            const chapterUrl = new URL(page.Parent.Identifier, this.URI).href;
+            const { decrypted_key } = await this.FetchAPI<DecryptedKey>(`./decryption_keys`, { encrypted_key: pageData.kms_encrypted_data_key, file_name: pageData.file_name }, chapterUrl);
+            return GetTypedData(await this.Decrypt(pageData, decrypted_key));
+
         }, priority, signal);
     }
+
+    private async Decrypt(pageData: PageData, decryptedKey: string): Promise<ArrayBuffer> {
+
+        const { encrypted_image, iterations, iv, salt } = pageData;
+        //create decryptionKey
+        const derivableKey = await crypto.subtle.importKey('raw', GetBytesFromUTF8(decryptedKey), {
+            name: 'PBKDF2'
+        }, false, ['deriveKey']);
+
+        const decryptionKey = await crypto.subtle.deriveKey({
+            name: 'PBKDF2',
+            salt: GetBytesFromBase64(salt),
+            iterations,
+            hash: 'SHA-256'
+        }, derivableKey, { name: 'AES-CBC', length: 256 }, false, ['decrypt']);
+
+        //decrypt picture
+        return crypto.subtle.decrypt({ name: 'AES-CBC', iv: GetBytesFromBase64(iv) }, decryptionKey, GetBytesFromBase64(encrypted_image));
+    }
+
+    private async FetchAPI<T extends JSONElement>(endpoint: string, body: JSONElement = undefined, referer: string = undefined): Promise<T> {
+        const request = new Request(new URL(endpoint, this.apiUrl), {
+            method: body ? 'POST' : 'GET',
+            headers: {
+                Origin: this.URI.origin,
+                'Content-type': 'application/json',
+                'X-CSRF-TOKEN': this.token,
+                'X-Requested-With': 'XMLHttpRequest',
+            },
+            body: body ? JSON.stringify(body) : undefined
+
+        });
+        if (referer) request.headers.set('Referer', referer);
+        return FetchJSON<T>(request);
+    }
+
 }
