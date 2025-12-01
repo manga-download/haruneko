@@ -6,7 +6,7 @@ new TestFixture({
         title: 'Ikigai Mangas'
     },
     container: {
-        url: 'https://visualikigai.blidi.shop/series/jinx-manhwa/',
+        url: 'https://visualikigai.knele.shop/series/jinx-manhwa/',
         id: '/series/jinx-manhwa/',
         title: 'Jinx'
     },
