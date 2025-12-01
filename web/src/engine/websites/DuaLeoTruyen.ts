@@ -4,22 +4,15 @@ import { FetchWindowScript } from '../platform/FetchProvider';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 
-function MangaExtractor(element: HTMLAnchorElement) {
-    return {
-        id: element.pathname,
-        title: element.querySelector<HTMLHeadingElement>('.card-title').textContent.trim()
-    };
-}
-
-@Common.MangaCSS(/^{origin}\/truyen-tranh\/[^/]+$/, 'ol.breadcrumb li:last-of-type')
-@Common.MangasMultiPageCSS<HTMLAnchorElement>('div.product-grid div.card-body > a', Common.PatternLinkGenerator('/truyen-tranh-moi?page={page}'), 0, MangaExtractor)
-@Common.ChaptersSinglePageCSS('div.list-chapters div.episode-title a')
-@Common.PagesSinglePageCSS('div.chapter-content div.page-break img')
+@Common.MangaCSS(/^{origin}\/truyen-tranh\/[^/]+\.html  $/, 'ol.breadcrumb li:last-of-type')
+@Common.MangasMultiPageCSS<HTMLAnchorElement>('div.li_truyen', Common.PatternLinkGenerator('/truyen-hoan-thanh.html?page={page}'), 0, Common.AnchorInfoExtractor(false, '.img'))
+@Common.ChaptersSinglePageCSS('div.chapter-item a', undefined, Common.AnchorInfoExtractor(true))
+@Common.PagesSinglePageCSS('div.content_view_chap img')
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('dualeotruyen', 'DuaLeoTruyen', 'https://dualeotruyencg.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Media.Manga, Tags.Language.Vietnamese, Tags.Source.Aggregator, Tags.Accessibility.DomainRotation);
+        super('dualeotruyen', 'DuaLeoTruyen', 'https://dualeotruyenjd.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Media.Manga, Tags.Language.Vietnamese, Tags.Source.Aggregator, Tags.Accessibility.DomainRotation);
     }
 
     public override get Icon() {
