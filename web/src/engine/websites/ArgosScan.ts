@@ -15,14 +15,16 @@ const chapterScript = `
     });
 `;
 
-@Common.MangaCSS(/^{origin}\/manga\/[^/]+\/$/, 'div.post-title h1')
-@Common.MangasMultiPageCSS('div.post-title h3 a, div.post-title h5 a', Common.PatternLinkGenerator('/page/{page}/'))
+@Common.MangaCSS<HTMLImageElement>(/^{origin}\/0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}\/[^/]+$/, 'div.relative img',
+    (img, uri) => ({ id: uri.pathname, title: img.alt.trim() }))
+@Common.MangasMultiPageCSS<HTMLAnchorElement>('div.grid a', Common.PatternLinkGenerator('/projetos?page={page}'), 0,
+    el => ({ id: el.pathname, title: el.querySelector<HTMLImageElement>('img').alt.trim() }))
 @Common.ChaptersSinglePageJS(chapterScript, 5000)
 @Madara.PagesSinglePageCSS()
 @Common.ImageAjax(true)
 export default class extends DecoratableMangaScraper {
 
-    public constructor () {
+    public constructor() {
         super('argosscan', `Argos Scan`, 'https://argoscomic.com', Tags.Language.Portuguese, Tags.Source.Scanlator, Tags.Media.Manhwa, Tags.Media.Manga);
     }
 
