@@ -2,14 +2,10 @@ import { ipcMain } from 'electron';
 
 export namespace Channels {
 
-    export const enum Reply {
-        FromRender = 'Reply::FromRender',
-    };
-
     /**
      * Supported IPC Channels for interacting with the main application window.
      */
-    export const enum ApplicationWindow {
+    export enum ApplicationWindow {
         ShowWindow = 'ApplicationWindow::ShowWindow',
         HideWindow = 'ApplicationWindow::HideWindow',
         Minimize = 'ApplicationWindow::Minimize',
@@ -23,16 +19,16 @@ export namespace Channels {
     /**
      * Supported IPC Channels for managing the blocked requests.
      */
-    export const enum BloatGuard {
+    export enum BloatGuard {
         Initialize = 'BloatGuard::Initialize',
     };
 
     /**
      * Supported IPC Channels for interacting with the fetch provider.
      */
-    export const enum FetchProvider {
-        OnBeforeSendHeaders = 'FetchProvider::OnBeforeSendHeaders',
-        OnHeadersReceived = 'FetchProvider::OnHeadersReceived',
+    export enum FetchProvider {
+        //OnBeforeSendHeaders = 'FetchProvider::OnBeforeSendHeaders',
+        //OnHeadersReceived = 'FetchProvider::OnHeadersReceived',
         Initialize = 'FetchProvider::Initialize',
         GetSessionCookies = 'FetchProvider::GetSessionCookies',
     };
@@ -40,7 +36,7 @@ export namespace Channels {
     /**
      * Supported IPC Channels for creating and interacting with browser windows.
      */
-    export const enum RemoteBrowserWindowController {
+    export enum RemoteBrowserWindowController {
         OnDomReady = 'RemoteBrowserWindowController::OnDomReady',
         OnBeforeNavigate = 'RemoteBrowserWindowController::OnBeforeNavigate',
         OpenWindow = 'RemoteBrowserWindowController::OpenWindow',
@@ -54,7 +50,7 @@ export namespace Channels {
     /**
      * Supported IPC Channels for managing the RPC service.
      */
-    export const enum RemoteProcedureCallManager {
+    export enum RemoteProcedureCallManager {
         Stop = 'RemoteProcedureCallManager::Stop',
         Restart = 'RemoteProcedureCallManager::Restart',
     };
@@ -62,31 +58,19 @@ export namespace Channels {
     /**
      * Supported IPC Channels for using the RPC service.
      */
-    export const enum RemoteProcedureCallContract {
+    export enum RemoteProcedureCallContract {
         LoadMediaContainerFromURL = 'RemoteProcedureCallContract::LoadMediaContainerFromURL',
     };
 }
 
 export class IPC {
 
-    #replyResolvers = new Map<string, (value: void | JSONElement) => void>();
+    constructor (private readonly webContents: Electron.WebContents) { }
 
-    constructor (private readonly webContents: Electron.WebContents) {
-        this.On(Channels.Reply.FromRender, this.#ResolveReply.bind(this));
-    }
-
-    #ResolveReply(nonce: string, value: void | JSONElement): void {
-        try {
-            this.#replyResolvers.get(nonce)?.call(this, value);
-        } finally {
-            this.#replyResolvers.delete(nonce);
-        }
-    }
-
-    On(channel: Channels.Reply.FromRender, callback: (nonce: string, result: JSONElement) => void): void;
+    //On(channel: Channels..., callback: (nonce: string, result: JSONElement) => void): void;
 
     /**
-     * Handle an event received from the Render process in the Main process
+     * Handle an event received from the sender (e.g., Render process) without providing a response
      * @remarks This listener is triggered by `ipcRender.send(channel, ...args)`
      * @param channel - ...
      * @param callback - ...
@@ -103,8 +87,8 @@ export class IPC {
     Handle(channel: Channels.ApplicationWindow.Maximize, callback: () => void): void;
     Handle(channel: Channels.ApplicationWindow.Restore, callback: () => void): void;
     Handle(channel: Channels.ApplicationWindow.Close, callback: () => void): void;
-    Handle(channel: Channels.ApplicationWindow.OpenSplash, callback: (url: string) => Promise<void>): void;
-    Handle(channel: Channels.ApplicationWindow.CloseSplash, callback: () => Promise<void>): void;
+    Handle(channel: Channels.ApplicationWindow.OpenSplash, callback: (url: string) => void): void;
+    Handle(channel: Channels.ApplicationWindow.CloseSplash, callback: () => void): void;
     // BloatGuard
     Handle(channel: Channels.BloatGuard.Initialize, callback: (patterns: string[]) => Promise<void>): void;
     // FetchProvider
@@ -115,19 +99,19 @@ export class IPC {
     Handle(channel: Channels.RemoteBrowserWindowController.CloseWindow, callback: (windowID: number) => Promise<void>): void;
     Handle(channel: Channels.RemoteBrowserWindowController.SetVisibility, callback: (windowID: number, show: boolean) => Promise<void>): void;
     Handle(channel: Channels.RemoteBrowserWindowController.ExecuteScript, callback: <T extends JSONElement>(windowID: number, script: string) => Promise<T>): void;
-    Handle(channel: Channels.RemoteBrowserWindowController.SendDebugCommand, callback: <T extends void | JSONElement>(windowID: number, channel: string, parameters?: JSONObject) => Promise<T>): void;
+    Handle(channel: Channels.RemoteBrowserWindowController.SendDebugCommand, callback: <T extends never | JSONElement>(windowID: number, channel: string, parameters?: JSONObject) => Promise<T>): void;
     Handle(channel: Channels.RemoteBrowserWindowController.LoadURL, callback: (windowID: number, url: string, options: string) => Promise<void>): void;
     // RemoteProcedureCallManager
     Handle(channel: Channels.RemoteProcedureCallManager.Stop, callback: () => Promise<void>): void;
     Handle(channel: Channels.RemoteProcedureCallManager.Restart, callback: (port: number, secret: string) => Promise<void>): void;
 
     /**
-     * Handle an invocation from the Render process in the Main process and reply with a corresponding response
-     * @description This handler is triggered by `ipcRender.invoke(channel, ...args)`
+     * Register a {@link callback} Handle an invocation from the sender (e.g., Render process) and reply with a corresponding response
+     * @description This listener is triggered by `ipcRender.invoke(channel, ...args)`
      * @param channel ...
      * @param callback ...
      */
-    public Handle<TParameters extends JSONArray, TReturn extends void | JSONElement>(channel: string, callback: (...parameters: TParameters) => PromiseLike<TReturn>): void {
+    public Handle<TParameters extends JSONArray, TReturn extends JSONElement>(channel: string, callback: (...parameters: TParameters) => TReturn | PromiseLike<TReturn>): void {
         ipcMain.handle(channel, (_, ...parameters: TParameters) => callback(...parameters));
     }
 
@@ -146,22 +130,24 @@ export class IPC {
         this.webContents.send(channel, ...parameters);
     }
 
-    Invoke(channel: Channels.FetchProvider.OnBeforeSendHeaders, url: string, requestHeaders: Electron.OnBeforeSendHeadersListenerDetails[ 'requestHeaders' ]): Promise<Electron.BeforeSendResponse>;
-    Invoke(channel: Channels.FetchProvider.OnHeadersReceived, url: string, responseHeaders: Electron.OnHeadersReceivedListenerDetails[ 'responseHeaders' ]): Promise<Electron.HeadersReceivedResponse>;
+    //Invoke(channel: Channels.FetchProvider.OnBeforeSendHeaders, url: string, requestHeaders: Electron.OnBeforeSendHeadersListenerDetails[ 'requestHeaders' ]): Promise<Electron.BeforeSendResponse>;
+    //Invoke(channel: Channels.FetchProvider.OnHeadersReceived, url: string, responseHeaders: Electron.OnHeadersReceivedListenerDetails[ 'responseHeaders' ]): Promise<Electron.HeadersReceivedResponse>;
 
     /**
-     * Invoke a method in the Render process from the Main process
-     * @remarks This message will trigger `ipcRender.handle(channel, ...args)`
+     * Invoke a listener in the Render process from the Main process
+     * @remarks This message will trigger the `ipcRender.handle(channel, ...args)`
      * @param channel ...
      * @param parameters ...
      * @returns ...
      */
+    /*
     public Invoke<T extends JSONElement>(channel: string, ...parameters: JSONArray): Promise<T> {
         // TODO: Implement mechanism to receive a response ...
-        const nonce = Date.now() + '' + Math.random();
+        const nonce = `${Date.now()}${Math.random()}`;
         return new Promise<T>(resolve => {
             this.#replyResolvers.set(nonce, (value: T) => resolve(value));
             this.webContents.send(channel, nonce, ...parameters);
         });
     }
+    */
 }

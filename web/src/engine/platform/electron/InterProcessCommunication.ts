@@ -20,6 +20,7 @@ class IPC {
         globalThis.ipcRenderer.on(channel, (_, ...parameters: JSONArray) => callback(...parameters));
     }
 
+    /*
     Handle(channel: Channels.Reply.FromRender, callback: (result: JSONElement) => void): void;
 
     public Handle(channel: string, callback: Callback): void {
@@ -27,6 +28,7 @@ class IPC {
         globalThis.ipcRenderer.on(channel, (_, nonce: string, ...parameters: JSONArray) => callback(...parameters));
         // TODO: send back to nonce ...
     }
+    */
 
     /**
      * Send an event from the Render process to the Main process
@@ -53,7 +55,7 @@ class IPC {
     }
 }
 
-let instance: IPC = undefined;
+let instance: IPC;
 
 export function GetIPC() {
     if (!instance) {
