@@ -48,10 +48,6 @@ export default class FetchProviderElectron extends FetchProvider {
 
     private readonly ipc = GetIPC();
 
-    constructor () {
-        super();
-    }
-
     public Initialize(featureFlags: FeatureFlags): void {
 
         super.Initialize(featureFlags);

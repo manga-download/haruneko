@@ -5,10 +5,6 @@ export class ApplicationWindow extends BrowserWindow {
 
     private splash?: BrowserWindow = null;
 
-    constructor(options: BrowserWindowConstructorOptions) {
-        super(options);
-    }
-
     public async RegisterChannels(ipc: IPC) {
         // TODO: Prevent duplicate registrations
         ipc.Handle(Channels.ApplicationWindow.ShowWindow, super.show.bind(this));
