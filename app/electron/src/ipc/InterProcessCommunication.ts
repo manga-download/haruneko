@@ -70,10 +70,9 @@ export class IPC {
     //On(channel: Channels..., callback: (nonce: string, result: JSONElement) => void): void;
 
     /**
-     * Handle an event received from the sender (e.g., Render process) without providing a response
-     * @remarks This listener is triggered by `ipcRender.send(channel, ...args)`
-     * @param channel - ...
-     * @param callback - ...
+     * Register a {@link callback} to handle an event received from a sender (e.g., Render process).
+     * The handler will not respond to the request of the sender.
+     * @remarks The sender may invoke the handler via `ipcRender.send(channel, ...args)`.
      */
     public On<TParameters extends JSONArray>(channel: string, callback: (...parameters: TParameters) => void): void {
         //
@@ -106,10 +105,9 @@ export class IPC {
     Handle(channel: Channels.RemoteProcedureCallManager.Restart, callback: (port: number, secret: string) => Promise<void>): void;
 
     /**
-     * Register a {@link callback} Handle an invocation from the sender (e.g., Render process) and reply with a corresponding response
-     * @description This listener is triggered by `ipcRender.invoke(channel, ...args)`
-     * @param channel ...
-     * @param callback ...
+     * Register a {@link callback} to handle a request received from a sender (e.g., Render process).
+     * The handler will also reply to the request of the sender with the response from the {@link callback}.
+     * @description The sender may invoke the handler via `ipcRender.invoke(channel, ...args)`.
      */
     public Handle<TParameters extends JSONArray, TReturn extends JSONElement>(channel: string, callback: (...parameters: TParameters) => TReturn | PromiseLike<TReturn>): void {
         ipcMain.handle(channel, (_, ...parameters: TParameters) => callback(...parameters));
@@ -120,11 +118,8 @@ export class IPC {
     Send(channel: Channels.RemoteProcedureCallContract.LoadMediaContainerFromURL, url: string): void;
 
     /**
-     * Send an event from the Main process to the Render process
-     * @remarks This message will trigger `ipcRender.on(channel, ...args)`
-     * @param channel ...
-     * @param parameters ...
-     * @returns ...
+     * Provide a method that sends an event to a reciepient (e.g., Render process) without expecting a response.
+     * @remarks This message will trigger the `ipcRender.on(channel, ...args)` handler
      */
     public Send(channel: string, ...parameters: JSONArray): void {
         this.webContents.send(channel, ...parameters);
@@ -134,11 +129,8 @@ export class IPC {
     //Invoke(channel: Channels.FetchProvider.OnHeadersReceived, url: string, responseHeaders: Electron.OnHeadersReceivedListenerDetails[ 'responseHeaders' ]): Promise<Electron.HeadersReceivedResponse>;
 
     /**
-     * Invoke a listener in the Render process from the Main process
+     * Provide a method that sends a request to a reciepient (e.g., Render process) and returns the replied response.
      * @remarks This message will trigger the `ipcRender.handle(channel, ...args)`
-     * @param channel ...
-     * @param parameters ...
-     * @returns ...
      */
     /*
     public Invoke<T extends JSONElement>(channel: string, ...parameters: JSONArray): Promise<T> {
