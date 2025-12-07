@@ -26,8 +26,6 @@ function PageLinkExtractor( element: HTMLElement) {
     switch (element.nodeName) {
         case 'OPTION'://Most TAADD websites got a selector with options element
             return new URL((element as HTMLOptionElement).value, this.URI).href;
-        case 'DIV': //Tenmanga = selector is a div full of <div option_val=url>;
-            return element.getAttribute('option_val') || element.textContent;
         default: //just in case. People could always use a custom PageLinkExtractor anyway
             return element.textContent;
     }

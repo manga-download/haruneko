@@ -684,7 +684,6 @@ export { default as TempestScans } from './TempestScans';
 export { default as TempleScan } from './TempleScan';
 export { default as TempleScanEsp } from './TempleScanEsp';
 export { default as TencentComic } from './TencentComic';
-export { default as TenManga } from './TenManga';
 export { default as TenshiID } from './TenshiID';
 export { default as TenshiManga } from './TenshiManga';
 export { default as TheBlank } from './TheBlank';
