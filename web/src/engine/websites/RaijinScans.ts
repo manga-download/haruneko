@@ -4,8 +4,9 @@ import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Madara from './decorators/WordPressMadara';
 import * as Common from './decorators/Common';
 
-function PageExtractor(element: HTMLDivElement) {
-    return window.atob(element.dataset.src);
+function PageExtractor(element: HTMLElement) {
+    const xored = atob(element.dataset.v.split('').reverse().join(''));
+    return atob(xored.split('').map(value => String.fromCharCode(value.charCodeAt(0) ^ 93)).join(''));
 }
 
 @Madara.MangaCSS(/^{origin}\/manga\/[^/]+\/$/, 'div.serie-info h1.serie-title')
