@@ -4,7 +4,6 @@ import '../Anikiga_e2e';
 import '../ApollComics_e2e';
 import '../AquaManga_e2e';
 import '../ArabToons_e2e';
-import '../ArgosScan_e2e';
 import '../ArthurScan_e2e';
 import '../ArvenScans_e2e';
 import '../AstralManga_e2e';
