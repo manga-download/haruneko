@@ -3,6 +3,7 @@ import icon from './RaijinScans.webp';
 import { type Chapter, DecoratableMangaScraper, Page } from '../providers/MangaPlugin';
 import * as Madara from './decorators/WordPressMadara';
 import * as Common from './decorators/Common';
+
 import { DRMProvider } from './RaijinScans.DRM';
 
 @Madara.MangaCSS(/^{origin}\/manga\/[^/]+\/$/, 'div.serie-info h1.serie-title')
@@ -10,11 +11,11 @@ import { DRMProvider } from './RaijinScans.DRM';
 @Madara.ChaptersSinglePageAJAXv2()
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
-    readonly #drm: DRMProvider;
+
+    readonly #drm = new DRMProvider();
 
     public constructor() {
         super('raijinscans', 'RaijinScans', 'https://raijin-scans.fr', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Media.Manga, Tags.Language.French, Tags.Source.Scanlator);
-        this.#drm = new DRMProvider();
     }
 
     public override get Icon() {
