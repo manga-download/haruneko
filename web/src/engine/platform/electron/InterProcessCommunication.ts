@@ -10,10 +10,8 @@ class IPC {
     On(channel: Channels.RemoteProcedureCallContract.LoadMediaContainerFromURL, callback: (url: string) => Promise<void>): void;
 
     /**
-     * Handle an event received from the Main process in the Render process
-     * @remarks This listener is triggered by `ipcMAin.send(channel, ...args)`
-     * @param channel - ...
-     * @param callback - ...
+     * Register a {@link callback} to handle an event received from a sender (e.g., from _Main_ process via `ipcMain.send(channel, ...args)`).
+     * The handler must not respond to the request of the sender.
      */
     public On<TParameters extends JSONArray>(channel: string, callback: (...parameters: TParameters) => void): void {
         // TODO: Implement mechanism to receive a response ...

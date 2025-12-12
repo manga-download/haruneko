@@ -70,9 +70,8 @@ export class IPC {
     //On(channel: Channels..., callback: (nonce: string, result: JSONElement) => void): void;
 
     /**
-     * Register a {@link callback} to handle an event received from a sender (e.g., Render process).
-     * The handler will not respond to the request of the sender.
-     * @remarks The sender may invoke the handler via `ipcRender.send(channel, ...args)`.
+     * Register a {@link callback} to handle an event received from a sender (e.g., from _Render_ process via `ipcRender.send(channel, ...args)`).
+     * The handler must not respond to the request of the sender.
      */
     public On<TParameters extends JSONArray>(channel: string, callback: (...parameters: TParameters) => void): void {
         //
