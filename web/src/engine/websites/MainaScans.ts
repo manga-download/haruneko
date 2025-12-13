@@ -1,7 +1,6 @@
 import icon from './MainaScans.webp';
 import LetonaScans from './LetonaScans';
 
-@Common.ImageAjax()
 export default class extends LetonaScans {
 
     public constructor() {
