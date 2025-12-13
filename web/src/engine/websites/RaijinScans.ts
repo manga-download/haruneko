@@ -5,6 +5,7 @@ import * as Madara from './decorators/WordPressMadara';
 import * as Common from './decorators/Common';
 
 import { DRMProvider } from './RaijinScans.DRM';
+import { FetchWindowScript } from '../platform/FetchProvider';
 
 @Madara.MangaCSS(/^{origin}\/manga\/[^/]+\/$/, 'div.serie-info h1.serie-title')
 @Madara.MangasMultiPageAJAX()
@@ -20,6 +21,10 @@ export default class extends DecoratableMangaScraper {
 
     public override get Icon() {
         return icon;
+    }
+
+    public override Initialize(): Promise<void> {
+        return FetchWindowScript(new Request(new URL('manga/-/', this.URI)), '');
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
