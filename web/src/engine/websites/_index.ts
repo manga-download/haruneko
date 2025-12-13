@@ -308,6 +308,7 @@ export { default as MagKan } from './MagKan';
 export { default as MagusManga } from './MagusManga';
 export { default as MaID } from './MaID';
 export { default as MaidScan } from './MaidScan';
+export { default as MainaScans } from './MainaScans';
 export { default as Manatoki } from './Manatoki';
 export { default as Manga18FX } from './Manga18FX';
 export { default as Manga168 } from './Manga168';
