@@ -1,10 +1,8 @@
 import { Tags } from '../Tags';
 import icon from './MangaDex.webp';
 import { FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
-import { MangaScraper, type MangaPlugin, Manga, Chapter, Page, DecoratableMangaScraper } from '../providers/MangaPlugin';
-import { TaskPool, Priority } from '../taskpool/TaskPool';
-import { RateLimit } from '../taskpool/RateLimit';
-import * as Common from './decorators/Common';
+import { type MangaPlugin, Manga, Chapter, Page, DecoratableMangaScraper } from '../providers/MangaPlugin';
+import { type Priority } from '../taskpool/TaskPool';
 import { GetBytesFromBase64, GetBytesFromHex, GetBytesFromUTF8, GetHexFromBytes } from '../BufferEncoder';
 
 const uuidScript = `window`;
@@ -52,7 +50,7 @@ type IvAndKey = {
 };
 
 export default class extends DecoratableMangaScraper {
-    private readonly apiUrl = 'https://api.mangadex.org';
+    private readonly apiUrl = 'https://api.creative-comic.tw';
     private uuid: string = undefined;
     private accessToken: string;
 
@@ -102,13 +100,7 @@ export default class extends DecoratableMangaScraper {
             const { iv, key } = await this.GetRealKey(imageKey, this.accessToken);
             const encryptedPage = await (await Fetch(new Request(new URL(`./fs/chapter_content/encrypt/${pageID}/2`, this.URI)))).text();
             const b64image = await this.AESDecrypt(encryptedPage, key, iv);
-
-
-
-
-
-
-
+            return (await fetch(b64image)).blob();
         }, priority, signal);
     }
 
@@ -124,10 +116,10 @@ export default class extends DecoratableMangaScraper {
     private async GetRealKey(imageKey: string, token: string) {
         const { iv, key } = await this.Token2key(token);
         //const l = await this.$lib.AES.decrypt(imageKey, KeyAndIV);
-        const e = (await this.AESDecrypt(imageKey, key, iv)).split(':');
+        const decryptionData = (await this.AESDecrypt(imageKey, key, iv)).split(':');
         return {
-            key: e[0],
-            iv: e[1]
+            key: decryptionData[0],
+            iv: decryptionData[1]
         };
     }
 
@@ -147,5 +139,4 @@ export default class extends DecoratableMangaScraper {
             }
         }))).data;
     }
-
 }
