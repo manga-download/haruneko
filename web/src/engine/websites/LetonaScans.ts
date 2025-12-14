@@ -8,37 +8,36 @@ type HydratedChapter = {
     images: {
         url: string
     }[]
-}
+};
 
 type APIMangaDetails = {
-    novelBySlug: APIManga
-}
+    novelBySlug: APIManga;
+};
 
 type APIMangas = {
     novels: {
-        novels: APIManga[]
+        novels: APIManga[];
     }
-}
+};
 
 type APIManga = {
-    title: string,
-    slug: string
-    chapters: APIChapter[]
+    title: string;
+    slug: string;
+    chapters: APIChapter[];
 }
 
 type APIChapter = {
-    id: string,
-    number: number
-}
+    number: number;
+};
 
 // TODO: Check for possible revision
 
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
-    private readonly apiUrl = 'https://letonascans.com/graphql';
+    private readonly apiUrl = `${this.URI.origin}/graphql`;
 
-    public constructor() {
-        super('letonascans', 'Letona Scans', 'https://letonascans.com', Tags.Media.Manhwa, Tags.Media.Manga, Tags.Language.Turkish, Tags.Source.Official);
+    public constructor(id = 'letonascans', label = 'Letona Scans', url= 'https://letonascans.com', tags = [Tags.Media.Manhwa, Tags.Media.Manga, Tags.Language.Turkish, Tags.Source.Scanlator]) {
+        super(id, label, url, ...tags);
     }
 
     public override get Icon() {
@@ -88,7 +87,7 @@ export default class extends DecoratableMangaScraper {
                 field: 'updatedAt'
             }
         });
-        return novels.map(manga => new Manga(this, provider, manga.slug, manga.title));
+        return novels.map(({ slug, title }) => new Manga(this, provider, slug, title));
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
@@ -102,15 +101,20 @@ export default class extends DecoratableMangaScraper {
             }
         `;
         const { novelBySlug: { chapters } } = await this.FetchAPI<APIMangaDetails>('GetSeriesInfo', query, { slug: manga.Identifier });
-        return chapters.map(chapter => new Chapter(this, manga, `/manga/${manga.Identifier}/bolum/${chapter.number}`, chapter.number.toString()));
+        return chapters.map(({ number }) => new Chapter(this, manga, `/manga/${manga.Identifier}/bolum/${number}`, number.toString()));
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
         const { images } = await FetchNextJS<HydratedChapter>(new Request(new URL(chapter.Identifier, this.URI)), data => 'images' in data);
-        return images.map(image => new Page(this, chapter, new URL(image.url, this.URI)));
+        return images.map(({ url }) => new Page(this, chapter, new URL(url, this.URI)));
     }
 
     private async FetchAPI<T extends JSONElement>(operationName: string, query: string, variables: JSONObject): Promise<T> {
-        return FetchGraphQL<T>(new Request(new URL(this.apiUrl)), operationName, query, variables);
+        return FetchGraphQL<T>(new Request(new URL(this.apiUrl)), operationName, query, variables, {
+            clientLibrary: {
+                name: '@apollo/client',
+                version: '4.0.9'
+            }
+        });
     }
 }

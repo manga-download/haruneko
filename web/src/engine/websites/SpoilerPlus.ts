@@ -88,9 +88,8 @@ export default class extends DecoratableMangaScraper {
             body: JSON.stringify({ m: mangaId, n: chapterId })
         }));
 
-        const key = this.URI.host;
-        const scrambleArray = this.XOR(key, c).split(',').map(Number);
-        const CDN = this.XOR(key, d);
+        const CDN = this.XOR(this.URI.host, d);
+        const scrambleArray = c ? this.XOR(this.URI.host, c).split(',').map(Number) : undefined;
         return e.map(image => new Page<PageData>(this, chapter, new URL(CDN + image), { Referer: this.URI.origin, scrambleArray }));
     }
 
@@ -114,9 +113,8 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchImage(page: Page<PageData>, priority: Priority, signal: AbortSignal): Promise<Blob> {
         const blob = await Common.FetchImageAjax.call(this, page, priority, signal);
-        if (!page.Parameters?.scrambleArray) return blob;
         const { scrambleArray } = page.Parameters;
-        return DeScramble(blob, async (image, ctx) => {
+        return !scrambleArray ? blob: DeScramble(blob, async (image, ctx) => {
             function COMPUTEPIECES(skey: number[], image: ImageBitmap): TPuzzleData[] {
                 const numColAndRow = 4;
                 const dimensions: TDimension = {

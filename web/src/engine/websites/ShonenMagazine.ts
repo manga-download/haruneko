@@ -21,11 +21,16 @@ export default class extends CiaoPlus {
         seed: [
             'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855', // SHA256('')
             'cf83e1357eefb8bdf1542850d66d8007d620e4050b5715dc83f4a921d36ce9ce47d0d13c5d85f2b0ff8318d2877eec2f63b931bd47417a81a538327af927da3e', // SHA512('')
-        ].join('_')
+        ].join('_'),
+    }, {
+        headers: {
+            'x-manga-is-crawler': 'false',
+            'x-manga-platform': '3'
+        }
     });
 
-    public constructor () {
-        super('shonenmagazine', '週刊少年マガジ (Weekly Shonen Magazine & Pocket Magazine)', 'https://pocket.shonenmagazine.com', [ Tags.Media.Manga, Tags.Language.Japanese, Tags.Source.Official ]);
+    public constructor() {
+        super('shonenmagazine', '週刊少年マガジ (Weekly Shonen Magazine & Pocket Magazine)', 'https://pocket.shonenmagazine.com', [Tags.Media.Manga, Tags.Language.Japanese, Tags.Source.Official]);
     }
 
     public override get Icon() {
@@ -34,7 +39,6 @@ export default class extends CiaoPlus {
 
     async #FetchMangaInfo(mangaID: string): Promise<APIManga> {
         return this.drm.FetchAPI<APIManga>('./web/title/detail', {
-            platform: '3',
             title_id: mangaID,
         });
     }
