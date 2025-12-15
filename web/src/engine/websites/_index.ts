@@ -33,6 +33,7 @@ export { default as AsmodeusScans } from './AsmodeusScans';
 export { default as AstralManga } from './AstralManga';
 export { default as AsuraScans } from './AsuraScans';
 export { default as AsuraScansTR } from './AsuraScansTR';
+export { default as Atemporal } from './Atemporal';
 export { default as Atikrost } from './Atikrost';
 export { default as Atsumaru } from './Atsumaru';
 export { default as AyaToon } from './AyaToon';
