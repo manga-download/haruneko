@@ -517,6 +517,7 @@ export { default as NicoNicoSeiga } from './NicoNicoSeiga';
 export { default as NihonKuni } from './NihonKuni';
 export { default as NijiTranslations } from './NijiTranslations';
 export { default as Nimemob } from './Nimemob';
+export { default as NinjaScans } from './NinjaScans';
 export { default as NirvanaManga } from './NirvanaManga';
 export { default as NiveraFansub } from './NiveraFansub';
 export { default as NocturneSummer } from './NocturneSummer';
