@@ -6,7 +6,7 @@ new TestFixture({
         title: 'Ikigai Mangas'
     },
     container: {
-        url: 'https://viralikigai.cookingrecipes500.store/series/jinx-manhwa/',
+        url: 'https://viralikigai.tutorialesminecraft.com/series/jinx-manhwa/',
         id: '/series/jinx-manhwa/',
         title: 'Jinx'
     },
