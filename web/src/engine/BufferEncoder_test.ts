@@ -112,12 +112,40 @@ describe('BufferEncoder', () => {
             null,
             true,
             'X==',
+            'PDw_Pz8-Pg',
             'PDw_Pz8-Pg==',
             {},
             ['-'],
             3,
         ])('Should throw on invalid input', (input: unknown) => {
             expect(() => testee.GetBytesFromBase64(input as string)).toThrow();
+        });
+    });
+
+    describe('GetBytesFromURLBase64()', () => {
+
+        it.each([
+            [ '', [] ],
+            [ 'LQ', [ 0x2D ] ],
+            [ 'PDw_Pz8-Pg', [ 0x3C, 0x3C, 0x3F, 0x3F, 0x3F, 0x3E, 0x3E ] ],
+            [ 'PD\rw_Pz8-\nPg ', [ 0x3C, 0x3C, 0x3F, 0x3F, 0x3F, 0x3E, 0x3E ] ],
+        ])('Should get bytes from valid input', (input: string, expected: number[]) => {
+            const actual = testee.GetBytesFromURLBase64(input);
+            expect(actual).toStrictEqual(new Uint8Array(expected));
+        });
+
+        it.each([
+            undefined,
+            null,
+            true,
+            'X==',
+            'PDw/Pz8+Pg',
+            'PDw/Pz8+Pg==',
+            {},
+            ['-'],
+            3,
+        ])('Should throw on invalid input', (input: unknown) => {
+            expect(() => testee.GetBytesFromURLBase64(input as string)).toThrow();
         });
     });
 
@@ -142,6 +170,30 @@ describe('BufferEncoder', () => {
             3,
         ])('Should throw on invalid input', (input: unknown) => {
             expect(() => testee.GetBase64FromBytes(input as Uint8Array)).toThrow();
+        });
+    });
+
+    describe('GetURLBase64FromBytes', () => {
+
+        it.each([
+            [ [], '' ],
+            [ [ 0x2D ], 'LQ' ],
+            [ [ 0x3C, 0x3C, 0x3F, 0x3F, 0x3F, 0x3E, 0x3E ], 'PDw_Pz8-Pg' ],
+        ])('Should get base64 from valid input', (input: number[], expected: string) => {
+            const actual = testee.GetURLBase64FromBytes(new Uint8Array(input));
+            expect(actual).toStrictEqual(expected);
+        });
+
+        it.each([
+            undefined,
+            null,
+            true,
+            '-',
+            {},
+            ['-'],
+            3,
+        ])('Should throw on invalid input', (input: unknown) => {
+            expect(() => testee.GetURLBase64FromBytes(input as Uint8Array)).toThrow();
         });
     });
 });
