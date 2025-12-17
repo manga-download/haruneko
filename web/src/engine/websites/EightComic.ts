@@ -55,17 +55,13 @@ export default class extends DecoratableMangaScraper {
             headers: { Referer: this.URI.href }
         }), /var.*=\s*['"]([a-zA-Z-0-9]{141,})['"]/g);
 
-        let imageCount = 0, currentChapNumber = '', fileNameData = '', suffix = '', serverAndfolder = '';
-
-        //find good data
-        for (var i = 0; i < 200; i++) {
-            currentChapNumber = Decode(SubStr(chapterData, i * 47 + 0, 2)).toString();
-            serverAndfolder = Decode(SubStr(chapterData, i * 47 + 2, 2)).toString();
-            fileNameData = SubStr(chapterData, i * 47 + 4);
-            imageCount = Decode(SubStr(chapterData, i * 47 + 44, 2));
-            suffix = SubStr(chapterData, i * 47 + 46, 1);
-            if (currentChapNumber == chapterNumber) break;
-        }
+        const { fileNameData, imageCount, serverAndfolder, suffix } = Array.from({ length: 200 }, (_, index) => ({
+            currentChapNumber: Decode(SubStr(chapterData, index * 47 + 2, 2)).toString(),
+            serverAndfolder: Decode(SubStr(chapterData, index * 47 + 4, 2)).toString(),
+            fileNameData: SubStr(chapterData, index * 47 + 6),
+            imageCount: Decode(SubStr(chapterData, index * 47 +0, 2)),
+            suffix: SubStr(chapterData, index * 47 + 46, 1)
+        })).find(d => d.currentChapNumber === chapterNumber);
 
         const [serverIndex, subfolder] = serverAndfolder.split('');
         const { urlStart, domainEnd, extension } = this.ExtractStaticData(chapterData);
@@ -78,7 +74,7 @@ export default class extends DecoratableMangaScraper {
                 chapterNumber,
                 suffix == '0' ? undefined : suffix,
                 ZeroPad(index + 1) + '_' + SubStr(fileNameData, ComputeImageNameIndex(index + 1), 3) + '.' + extension
-            ].join('/');
+            ].filter(val => val).join('/');
             return new Page(this, chapter, new URL(url));
         });
     }
