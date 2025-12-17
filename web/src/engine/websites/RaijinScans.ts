@@ -1,9 +1,10 @@
 import { Tags } from '../Tags';
 import icon from './RaijinScans.webp';
+import { FetchCSS, FetchWindowScript } from '../platform/FetchProvider';
+import { GetBytesFromBase64, GetBytesFromURLBase64 } from '../BufferEncoder';
 import { type Chapter, DecoratableMangaScraper, Page } from '../providers/MangaPlugin';
 import * as Madara from './decorators/WordPressMadara';
 import * as Common from './decorators/Common';
-import { FetchHTML, FetchWindowScript } from '../platform/FetchProvider';
 
 @Madara.MangaCSS(/^{origin}\/manga\/[^/]+\/$/, 'div.serie-info h1.serie-title')
 @Madara.MangasMultiPageAJAX()
@@ -24,19 +25,16 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const doc = await FetchHTML(new Request(new URL(chapter.Identifier, this.URI)));
-        const rmd = doc.body.innerHTML.match(/window\._rmd\s*=\s*["']([^"']+)["']/).at(1).replaceAll('-', '+').replaceAll('_', '/');
-        const rmk = doc.body.innerHTML.match(/window\._rmk\s*=\s*["']([^"']+)["']/).at(1);
+        const [body] = await FetchCSS<HTMLBodyElement>(new Request(new URL(chapter.Identifier, this.URI)), 'body');
+        const encrypted = GetBytesFromURLBase64(body.innerHTML.match(/window\._rmd\s*=\s*["']([^"']+)["']/).at(-1));
+        const keyData = GetBytesFromBase64(body.innerHTML.match(/window\._rmk\s*=\s*["']([^"']+)["']/).at(-1));
+        const keySeed = new Uint8Array([90, 60, 126, 29, 159, 178, 78, 106]);
 
-        // XOR(rmd) with XORED key rmk => JSON array of url strings
-        const pages = JSON.parse(new TextDecoder().decode(this.XOR(rmd, this.XOR(rmk, new Uint8Array([90, 60, 126, 29, 159, 178, 78, 106]))))) as string[];
+        const pages = JSON.parse(new TextDecoder().decode(this.XOR(encrypted, this.XOR(keyData, keySeed)))) as string[];
         return pages.map(page => new Page(this, chapter, new URL(page)));
     }
 
-    private XOR(data: string, key: Uint8Array): Uint8Array {
-        //Don't use GetBytesFromB64 because their B64 is sometimes unpadded and fails our integrity checks
-        const decoded = Uint8Array.from(atob(data.replace(/\s+/g, '')), c => c.charCodeAt(0));
-        return decoded.map((value, index) => value ^ key[index % key.length]);
+    private XOR(bytes: Uint8Array, key: Uint8Array): Uint8Array {
+        return bytes.map((byte, index) => byte ^ key[index % key.length]);
     }
-
 }
