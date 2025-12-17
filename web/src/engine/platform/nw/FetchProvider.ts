@@ -74,11 +74,12 @@ function ModifyResponseHeaders(details: chrome.webRequest.OnHeadersReceivedDetai
 }
 
 class FetchRequest extends Request {
+    readonly #referrer: string = undefined;
+    public override get referrer() { return this.#referrer; }
     constructor(input: URL | RequestInfo, init?: RequestInit) {
-        if(init?.headers) {
-            init.headers = ConcealHeaders(init.headers);
-        }
+        if(init?.headers) init.headers = ConcealHeaders(init.headers);
         super(input, init);
+        this.#referrer = init.referrer;
     }
 }
 
