@@ -68,7 +68,7 @@ export default class extends DecoratableMangaScraper {
         }
 
         const [serverIndex, subfolder] = serverAndfolder.split('');
-        const { urlStart, domainEnd, extension } = this.ExtractStaticChapterData(chapterData);
+        const { urlStart, domainEnd, extension } = this.ExtractStaticData(chapterData);
 
         return new Array(imageCount).fill(null).map((_, index) => {
             const url = [
@@ -83,9 +83,8 @@ export default class extends DecoratableMangaScraper {
         });
     }
 
-    private ExtractStaticChapterData(chapterData: string): ChapterData {
-        function GetStaticData(index: number): string { return UnHex(chapterData.substring(chapterData.length - 47 - index * 6, chapterData.length - 47 - index * 6 + 6)); }
-        function UnHex(data): string { return new TextDecoder().decode(GetBytesFromHex(data)); }
+    private ExtractStaticData(chapterData: string): ChapterData {
+        function GetStaticData(index: number): string { return new TextDecoder().decode(GetBytesFromHex(chapterData.substring(chapterData.length - 47 - index * 6, chapterData.length - 47 - index * 6 + 6))); }
 
         return {
             urlStart: 'https://' + GetStaticData(4), //"img",
