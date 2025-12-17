@@ -5,6 +5,12 @@ import * as Common from './decorators/Common';
 import { FetchRegex } from '../platform/FetchProvider';
 import { GetBytesFromHex } from '../BufferEncoder';
 
+type ChapterData = {
+    urlStart: string;
+    domainEnd: string;
+    extension: string;
+};
+
 const chapterScript = `
     new Promise( resolve => {
         const baselink = 'https://articles.onemoreplace.tw/online/new-' + location.pathname.split('/').at(-1)+'?ch=';
@@ -36,10 +42,6 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
 
-        function GetStaticData(index: number): string {
-            return UnHex(chapterData.substring(chapterData.length - 47 - index * 6, chapterData.length - 47 - index * 6 + 6));
-        }
-        function UnHex(data): string { return new TextDecoder().decode(GetBytesFromHex(data)); }
         function Decode(l: string): number { const az = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"; const a = l.substring(0, 1); const b = l.substring(1, 2); if (a == "Z") return 8000 + az.indexOf(b); else return az.indexOf(a) * 52 + az.indexOf(b); }
         function SubStr(data: string, _start: number, length: number = 40): string { return (data + '').substring(_start, _start + length); }
         function ZeroPad(number: number): string { return number < 10 ? `00${number}` : number < 100 ? `0${number}` : `${number}`; }
@@ -65,10 +67,8 @@ export default class extends DecoratableMangaScraper {
             if (currentChapNumber == chapterNumber) break;
         }
 
-        const urlStart = 'https://' + GetStaticData(4); //"img"
         const [serverIndex, subfolder] = serverAndfolder.split('');
-        const domainEnd = '.8' + GetStaticData(3) + GetStaticData(2) + GetStaticData(3); // '.8'+ 'com'+ '.ic' + 'com'
-        const extension = GetStaticData(1);// "jpg"
+        const { urlStart, domainEnd, extension } = this.ExtractStaticChapterData(chapterData);
 
         return new Array(imageCount).fill(null).map((_, index) => {
             const url = [
@@ -76,10 +76,21 @@ export default class extends DecoratableMangaScraper {
                 subfolder,
                 mangaId,
                 chapterNumber,
-                suffix == "0" ? undefined : suffix,
+                suffix == '0' ? undefined : suffix,
                 ZeroPad(index + 1) + '_' + SubStr(fileNameData, ComputeImageNameIndex(index + 1), 3) + '.' + extension
             ].join('/');
             return new Page(this, chapter, new URL(url));
         });
+    }
+
+    private ExtractStaticChapterData(chapterData: string): ChapterData {
+        function GetStaticData(index: number): string { return UnHex(chapterData.substring(chapterData.length - 47 - index * 6, chapterData.length - 47 - index * 6 + 6)); }
+        function UnHex(data): string { return new TextDecoder().decode(GetBytesFromHex(data)); }
+
+        return {
+            urlStart: 'https://' + GetStaticData(4), //"img",
+            domainEnd: '.8' + GetStaticData(3) + GetStaticData(2) + GetStaticData(3),// '.8'+ 'com'+ '.ic' + 'com'
+            extension: GetStaticData(1)// "jpg"
+        }
     }
 }
