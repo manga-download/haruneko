@@ -118,8 +118,7 @@ export default class extends DecoratableMangaScraper {
             //fetch page JSON data
             const pageData = await FetchJSON<PageData>(new Request(page.Link, {
                 headers: {
-                    Origin: this.URI.origin,
-                    Referrer: this.URI.href
+                    Referer: this.URI.href
                 }
             }));
 

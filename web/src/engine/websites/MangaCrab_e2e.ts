@@ -13,10 +13,10 @@ new TestFixture({
     child: {
         id: '/series/mi-sistema-es-muy-serio/capitulo-19/',
         title: 'Capitulo 19'
-    },
+    }, /* Need login
     entry: {
         index: 1,
         size: 769_088,
         type: 'image/jpeg'
-    }
+    }*/
 }).AssertWebsite();
