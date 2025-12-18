@@ -3,10 +3,10 @@ import { TestFixture } from '../../../test/WebsitesFixture';
 new TestFixture({
     plugin: {
         id: 'noindexscan',
-        title: 'No Index Scan'
+        title: 'Hanami Heaven'
     },
     container: {
-        url: 'https://noindexscan.com/manga/cctv/',
+        url: 'https://hanamiheaven.org/manga/cctv/',
         id: JSON.stringify({ post: '5173', slug: '/manga/cctv/'}),
         title: 'CCTV'
     },

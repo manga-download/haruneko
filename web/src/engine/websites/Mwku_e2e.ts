@@ -6,7 +6,7 @@ new TestFixture({
         title: 'Mwku',
     },
     container: {
-        url: 'https://www.mwku.cc/comic/117015',
+        url: 'https://www.mwbu.cc/comic/117015',
         id: '/comic/117015',
         title: '彩虹甜甜圈 (台版)'
     },
