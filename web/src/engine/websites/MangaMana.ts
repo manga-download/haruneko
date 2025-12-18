@@ -46,8 +46,7 @@ export default class extends DecoratableMangaScraper {
                 'Content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
                 'X-CSRF-TOKEN': token,
                 'X-Requested-With': 'XMLHttpRequest',
-                Referrer: endpoint.href,
-                Origin: this.URI.origin
+                'Referer': endpoint.href
             },
             body: `page=${page}`
         });
