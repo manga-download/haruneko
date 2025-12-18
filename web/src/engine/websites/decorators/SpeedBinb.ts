@@ -178,7 +178,7 @@ export async function FetchPagesSinglePageAjax(this: MangaScraper, chapter: Chap
 
     //easy mode : pages are just an array of div
     if (version == SpeedBindVersion.v016061) {
-        //ComicBrise, Kirapo, ComicPorta, ComicValKyrie, MichiKusa, OneTwoThreeHon, TKSuperheroComics, TakeShoboBase
+        //ComicBrise, Kirapo, ComicPorta, ComicValKyrie, MichiKusa, OneTwoThreeHon, TKSuperheroComics
         const [...imageConfigurations] = SBHtmlElement.querySelectorAll<HTMLDivElement>('div[data-ptimg$="ptimg.json"]');
         return imageConfigurations.map(element => new Page(this, chapter, new URL(element.dataset.ptimg, viewerUrl.href)));
     }

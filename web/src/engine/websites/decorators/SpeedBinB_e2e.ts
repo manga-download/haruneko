@@ -15,7 +15,6 @@ import '../OneTwoThreeHon_e2e';
 import '../ShukanManga_e2e';
 import '../SManga_e2e';
 import '../StoriaDash_e2e';
-import '../templates/TakeShoboBase_e2e';
 import '../TKSuperheroComics_e2e';
 import '../WebComicGamma_e2e';
 import '../Yanmaga_e2e';
