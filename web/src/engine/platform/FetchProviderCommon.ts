@@ -136,7 +136,7 @@ export abstract class FetchProvider {
      * @param regex - ...
      */
     public async FetchRegex(request: Request, regex: RegExp): Promise<string[]> {
-        if (regex.flags.indexOf('g') == -1) {
+        if (regex.flags.indexOf('g') === -1) {
             throw new InternalError(`The provided RegExp must contain the global 'g' modifier!`);
         }
         const response = await fetch(request);

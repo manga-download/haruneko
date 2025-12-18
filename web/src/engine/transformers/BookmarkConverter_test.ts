@@ -35,7 +35,6 @@ const legacyWebsiteIdentifierMapTestCases = [
     { sourceID: 'mangaraw', targetID: 'mangageko' },
     { sourceID: 'mangatale', targetID: 'ikiru' },
     { sourceID: 'manhuascan', targetID: 'kaliscan' },
-    { sourceID: 'nitroscans', targetID: 'nitromanga' },
     { sourceID: 'neteasecomic', targetID: 'bilibilimanhua'},
     { sourceID: 'prismascans', targetID: 'demonsect' },
     { sourceID: 'reaperscansid', targetID: 'shinigamiid' },
