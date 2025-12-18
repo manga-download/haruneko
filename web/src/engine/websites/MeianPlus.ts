@@ -65,8 +65,8 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async Initialize(): Promise<void> {
-        // TODO: Update the token whenever the user performs a login/logout through manual website interaction
-        this.#token = await FetchWindowScript<null | string>(new Request(this.URI), `cookieStore.get('token_meian_plus').then(token => JSON.parse(decodeURIComponent(token))).catch(() => null)`);
+        // TODO: Update the token whenever the user performs a login/logout through manual website interactio
+        this.#token = await FetchWindowScript<null | string>(new Request(this.URI), `cookieStore.get('token_meian_plus').then(({ value }) => JSON.parse(decodeURIComponent(value)) ?? null).catch(error => null)`);
     }
 
     public override ValidateMangaURL(url: string): boolean {
