@@ -9,11 +9,11 @@ import DeScramble from '../transformers/ImageDescrambler';
 import { GetHexFromBytes, GetBytesFromUTF8 } from '../BufferEncoder';
 
 type APIManga = {
-    title_list: [ {
+    title_list: [{
         title_id: number;
         title_name: string;
         episode_id_list: number[];
-    } ];
+    }];
 };
 
 type APIChapters = {
@@ -42,9 +42,12 @@ export default class extends DecoratableMangaScraper {
     protected readonly drm = new DRMProvider('https://api.ciao.shogakukan.co.jp/', {
         name: 'X-Bambi-Hash',
         seed: '',
-    });
+    },
+    { headers: { 'x-bambi-is-crawler': 'false' } }, //headers for all requests
+    { version: '6.0.0', platform: '3' } //urlparams for all requests
+    );
 
-    public constructor (id = 'ciaoplus', label = 'Ciao Plus', url = 'https://ciao.shogakukan.co.jp', tags = [ Tags.Media.Manga, Tags.Language.Japanese, Tags.Source.Official ]) {
+    public constructor(id = 'ciaoplus', label = 'Ciao Plus', url = 'https://ciao.shogakukan.co.jp', tags = [Tags.Media.Manga, Tags.Language.Japanese, Tags.Source.Official]) {
         super(id, label, url, ...tags);
     }
 
@@ -54,8 +57,7 @@ export default class extends DecoratableMangaScraper {
 
     async #FetchMangaInfo(mangaID: string): Promise<APIManga> {
         return this.drm.FetchAPI<APIManga>('./title/list', {
-            platform: '3',
-            title_id_list: mangaID,
+            title_id_list: parseInt(mangaID).toString()//to remove leading 0,
         });
     }
 
@@ -64,12 +66,12 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
-        const { title_list: [ { title_id, title_name } ] } = await this.#FetchMangaInfo(new URL(url).pathname.split('/').at(3));
+        const { title_list: [{ title_id, title_name }] } = await this.#FetchMangaInfo(new URL(url).pathname.split('/').at(3));
         return new Manga(this, provider, title_id.toString(), title_name.trim());
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const { title_list: [ { episode_id_list } ] } = await this.#FetchMangaInfo(manga.Identifier);
+        const { title_list: [{ episode_id_list }] } = await this.#FetchMangaInfo(manga.Identifier);
         return this.FetchChapterList(manga, episode_id_list);
     }
 
@@ -77,7 +79,6 @@ export default class extends DecoratableMangaScraper {
         const chapters: Chapter[] = [];
         while (chapterIDs.length > 0) {
             const { episode_list } = await this.drm.FetchAPI<APIChapters>(`./episode/list`, {
-                platform: '3',
                 episode_id_list: chapterIDs.splice(0, 50).join(','),
             });
             chapters.push(...episode_list.map(chapter => new Chapter(this, manga, chapter.episode_id.toString(), chapter.episode_name.trim())));
@@ -87,7 +88,6 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchPages(chapter: Chapter): Promise<Page<PageInfo>[]> {
         const { page_list, scramble_ver, scramble_seed } = await this.drm.FetchAPI<APIPages>('./web/episode/viewer', {
-            platform: '3',
             episode_id: chapter.Identifier,
         });
         // ShonenMagazine uses the same scrambling algorithm as CiaoPlus v2, but reports scramble_version as 1.
@@ -116,10 +116,10 @@ export default class extends DecoratableMangaScraper {
     }
 }
 
-// TODO: Integration => https://github.com/manga-download/haruneko/commit/72a42dc5b3615af0c01588bc1c8d4db14a36a799#diff-0f4fdeca648eb4546349d45ef81d6abca1844a3dc84b0863ce3073832853792a
 export class DRMProvider {
 
-    constructor (private readonly apiURL: string, readonly requestHeaderHash: { name: string, seed: string; }) { }
+    constructor(private readonly apiURL: string, readonly requestHeaderHash: { name: string, seed: string; },
+        readonly fixedHeaders: RequestInit = {}, readonly fixedUrlParams: Record<string, string> = {}) { }
 
     public async FetchAPI<T extends JSONElement>(endpoint: string, parameters: Record<string, string>, init: RequestInit = { method: 'GET' }): Promise<T> {
         const request = await this.#CreateRequest(endpoint, init, parameters);
@@ -129,19 +129,20 @@ export class DRMProvider {
     async #CreateRequest(endpoint: string, init: RequestInit, parameters: Record<string, string>) {
         const payload = new URLSearchParams(parameters);
         const uri = new URL(endpoint, this.apiURL);
-        if (/^POST$/i.test(init.method)) {
-            init.body = payload;
-        } else {
-            uri.search = payload.toString();
+        uri.search = payload.toString();
+
+        for (let key in this.fixedUrlParams) {
+            uri.searchParams.set(key, this.fixedUrlParams[key]);
         }
-        const request = new Request(uri, init);
-        request.headers.set(this.requestHeaderHash.name, await this.#ComputeHash(payload, this.requestHeaderHash.seed));
+
+        const request = new Request(uri, { ...init, ...this.fixedHeaders });
+        request.headers.set(this.requestHeaderHash.name, await this.#ComputeHash(uri.searchParams, this.requestHeaderHash.seed));
         return request;
     }
 
     async #ComputeHash(parameters: URLSearchParams, seed: string): Promise<string> {
         parameters.sort();
-        const parameterHashes = await Promise.all([ ...parameters.entries() ].map(async ([ key, value ]) => [
+        const parameterHashes = await Promise.all([...parameters.entries()].map(async ([key, value]) => [
             await this.#ComputeSHA(key, 'SHA-256'),
             await this.#ComputeSHA(value, 'SHA-512'),
         ].join('_')));
@@ -163,7 +164,7 @@ const O = 8;
 // ot
 const CreateXorShift32 = function* (seed: number) {
     const e = Uint32Array.of(seed);
-    for (;;) {
+    for (; ;) {
         e[0] ^= e[0] << 13;
         e[0] ^= e[0] >>> 17;
         e[0] ^= e[0] << 5;

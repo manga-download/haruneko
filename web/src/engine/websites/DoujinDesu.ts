@@ -1,11 +1,10 @@
 import { Tags } from '../Tags';
 import icon from './DoujinDesu.webp';
-import { type Chapter, DecoratableMangaScraper, Page } from '../providers/MangaPlugin';
+import { type Chapter, DecoratableMangaScraper, Page, type Manga, type MangaPlugin } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import { FetchCSS } from '../platform/FetchProvider';
 
-@Common.MangaCSS(/^{origin}\/manga\/[^/]+\/$/, 'section.metadata h1.title', Common.WebsiteInfoExtractor({ queryBloat: 'span.alter' }))
-@Common.MangasMultiPageCSS('article.entry a', Common.PatternLinkGenerator('/manga/page/{page}/'), 0, Common.AnchorInfoExtractor(true))
+@Common.MangaCSS(/^{origin}\/manga\/[^/]+$/, 'aside figure a.permalink', (element, uri) => ({ id: uri.pathname, title: element.querySelector<HTMLImageElement>('img').title.trim() }))
 @Common.ChaptersSinglePageCSS('div#chapter_list div.epsleft span.lchx a', undefined, Common.AnchorInfoExtractor(true))
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
@@ -18,22 +17,26 @@ export default class extends DecoratableMangaScraper {
         return icon;
     }
 
+    public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
+        const promises = ['Doujinshi', 'Manga', 'Manhwa'].map(type => {
+            return Common.FetchMangasMultiPageCSS.call(this, provider, 'article.entry a', Common.PatternLinkGenerator(`/manga/page/{page}/?type=${type}`), 0, Common.AnchorInfoExtractor(true));
+        });
+        const mangas = (await Promise.all(promises)).flat();
+        return mangas.distinct();
+    }
+
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
         const chapterurl = new URL(chapter.Identifier, this.URI);
-        let data = await FetchCSS(new Request(chapterurl), "main#reader");
-        const chapterid = data[0].dataset['id'];
-
-        const url = new URL('/themes/ajax/ch.php', this.URI);
-        const request = new Request(url, {
+        const [element] = await FetchCSS(new Request(chapterurl), "main#reader");
+        const images = await FetchCSS<HTMLImageElement>(new Request(new URL('/themes/ajax/ch.php', this.URI), {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
                 'X-Requested-With': 'XMLHttpRequest',
                 'Referer': chapterurl.href
             },
-            body: new URLSearchParams({ id: chapterid })
-        });
-        data = await FetchCSS<HTMLImageElement>(request, 'img');
-        return data.map(element => new Page(this, chapter, new URL(element.getAttribute('src'))));
+            body: new URLSearchParams({ id: element.dataset['id'] })
+        }), 'img');
+        return images.map(element => new Page(this, chapter, new URL(element.getAttribute('src'))));
     }
 }
