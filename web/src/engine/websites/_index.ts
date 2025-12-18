@@ -129,6 +129,7 @@ export { default as DrakeScans } from './DrakeScans';
 export { default as DtupScan } from './DtupScan';
 export { default as DuaLeoTruyen } from './DuaLeoTruyen';
 export { default as DynastyScans } from './DynastyScans';
+export { default as EightComic } from './EightComic';
 export { default as EighteenComic } from './EighteenComic';
 export { default as EightMuses } from './EightMuses';
 export { default as EightMusesXXX } from './EightMusesXXX';
