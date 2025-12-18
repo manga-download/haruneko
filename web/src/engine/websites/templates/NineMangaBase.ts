@@ -54,7 +54,7 @@ export class NineMangaBase extends DecoratableMangaScraper {
             request = new Request(realimage, {
                 signal,
                 headers: {
-                    Referer: page.Parameters?.Referer ? page.Parameters.Referer : page.Link.origin
+                    Referer: page.Parameters.Referer
                 }
             });
             const response = await Fetch(request);
@@ -67,7 +67,7 @@ export class NineMangaBase extends DecoratableMangaScraper {
         return new Request(url, {
             signal,
             headers: {
-                'Referer': undefined
+                'Referer': undefined //no referer is mandatory to bypass website protection
             }
         });
     }
