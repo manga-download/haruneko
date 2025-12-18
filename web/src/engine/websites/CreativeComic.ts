@@ -67,6 +67,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async Initialize(): Promise<void> {
+        // TODO: update token and uuid after manual website interaction (i.e login)
         const { uuid, accessToken } = await FetchWindowScript<TokenData>(new Request(this.URI), uuidScript, 500);
         this.uuid = uuid;
         this.accessToken = accessToken ?? 'freeforccc2020reading';
