@@ -4,6 +4,7 @@ import type { Priority } from '../taskpool/TaskPool';
 import { RateLimit } from '../taskpool/RateLimit';
 import { DecoratableMangaScraper, type Chapter, Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
+
 import { DRMProvider } from './CrunchyScan.DRM';
 
 function CleanTitle(text: string) {

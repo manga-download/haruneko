@@ -6,7 +6,7 @@ import * as Madara from './decorators/WordPressMadara';
 
 @Madara.MangaCSS(/^{origin}\/manga\/[^/]+\/$/, 'ol.breadcrumb li:last-of-type a')
 @Madara.MangasMultiPageAJAX()
-@Madara.ChaptersSinglePageCSS('ul li a[data-chapter-url]', (element: HTMLAnchorElement) => ({ id: element.dataset.chapterUrl, title: element.text.trim() }))
+@Madara.ChaptersSinglePageCSS('ul li a[storage-chapter-url]', (element: HTMLAnchorElement) => ({ id: new URL(element.getAttribute('storage-chapter-url')).pathname, title: element.text.trim() }))
 @Madara.PagesSinglePageCSS()
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
