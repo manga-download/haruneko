@@ -6,8 +6,8 @@ new TestFixture({
         title: 'MangaPoisk',
     },
     container: {
-        url: 'https://mangapoisk.io/manga/dungeon-odyssey',
-        id: '/manga/dungeon-odyssey',
+        url: 'https://mangap.ru/manga/dungeon-odyssey-abs3jU4',
+        id: '/manga/dungeon-odyssey-abs3jU4',
         title: 'Подземная Одиссея'
     },
     child: {
