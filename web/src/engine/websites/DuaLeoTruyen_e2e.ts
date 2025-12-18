@@ -6,12 +6,12 @@ new TestFixture({
         title: 'DuaLeoTruyen'
     },
     container: {
-        url: 'https://dualeotruyencg.com/truyen-tranh/peppermint-candy',
-        id: '/truyen-tranh/peppermint-candy',
+        url: 'https://dualeotruyenjd.com/truyen-tranh/peppermint-candy.html',
+        id: '/truyen-tranh/peppermint-candy.html',
         title: '(ABO) Peppermint Candy'
     },
     child: {
-        id: '/truyen-tranh/peppermint-candy/chapter-13',
+        id: '/truyen-tranh/peppermint-candy/chapter-13.html',
         title: 'Chapter 13'
     },
     entry: {
