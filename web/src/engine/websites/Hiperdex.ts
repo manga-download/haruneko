@@ -7,7 +7,7 @@ import * as Common from './decorators/Common';
 @Madara.MangaCSS(/^{origin}\/manga\/[^/]+\/$/, 'ol.breadcrumb li:last-of-type a')
 @Madara.MangasMultiPageCSS()
 @Madara.ChaptersSinglePageAJAXv2()
-@Madara.PagesSinglePageCSS()
+@Madara.PagesSinglePageCSS('div.page-break img.wp-manga-chapter-img')
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 

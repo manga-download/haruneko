@@ -29,50 +29,17 @@ type APIPages = APIResult<{
 }>;
 
 type APIChapters = APIResult<APIChapter[]>;
+
 type APIMangas = APIResult<APIManga[]>;
-
-/**
- * A basic oAuth token manager with ManHastro specific business logic
- */
-class TokenProvider {
-
-    #token: string = null;
-
-    constructor(private readonly clientURI: URL) { }
-
-    /**
-     * Extract the token directly from the website (e.g., after login/logout through manual website interaction)
-     */
-    public async UpdateToken() {
-        try {
-            this.#token = await FetchWindowScript<string>(new Request(this.clientURI), `localStorage.getItem('token') || null;`) ?? null;
-        } catch (error) {
-            console.warn('UpdateToken()', error);
-            this.#token = null;
-        }
-    }
-
-    /**
-     * Determine the _Bearer_ extracted from the current token and add it as authorization header to the given {@link init} headers (replacing any existing authorization header).
-     * In case the _Bearer_ could not be extracted from the current token the authorization header will not be added/replaced.
-     */
-    public async ApplyAuthorizationHeader(init: HeadersInit): Promise<HeadersInit> {
-        const headers = new Headers(init);
-        if (this.#token) {
-            headers.set('Authorization', 'Bearer ' + this.#token);
-        }
-        return headers;
-    }
-}
 
 @Common.ImageElement(true)
 export default class extends DecoratableMangaScraper {
-    private readonly tokenProvider: TokenProvider;
+
     private readonly apiUrl = 'https://api2.manhastro.net/';
+    #token: null | string = null;
 
     public constructor() {
         super('manhastro', 'ManHastro', 'https://manhastro.net', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Portuguese, Tags.Source.Aggregator);
-        this.tokenProvider = new TokenProvider(this.URI);
     }
 
     public override get Icon() {
@@ -80,7 +47,8 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async Initialize(): Promise<void> {
-        await this.tokenProvider.UpdateToken();
+        // TODO: Update the token whenever the user performs a login/logout through manual website interaction
+        this.#token = await FetchWindowScript<string>(new Request(this.URI), `localStorage.getItem('token') || null;`);
     }
 
     public override ValidateMangaURL(url: string): boolean {
@@ -114,7 +82,9 @@ export default class extends DecoratableMangaScraper {
 
     private async FetchAPI<T extends JSONElement>(endpoint: string) {
         return FetchJSON<T>(new Request(new URL(endpoint, this.apiUrl), {
-            headers: await this.tokenProvider.ApplyAuthorizationHeader({}),
+            headers: {
+                ...this.#token && { Authorization: `Bearer ${this.#token}` }
+            }
         }));
     }
 }

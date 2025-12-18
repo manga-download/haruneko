@@ -1,11 +1,34 @@
 import { Tags } from '../Tags';
 import icon from './MangaTaro.webp';
-import { FetchJSON } from '../platform/FetchProvider';
-import { Manga, type MangaPlugin, DecoratableMangaScraper } from '../providers/MangaPlugin';
+import { FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
+import { Manga, type MangaPlugin, DecoratableMangaScraper, Chapter } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 
+const chapterScript = `
+    new Promise ( resolve => {
+        const { token, timestamp } = generateToken();
+        resolve ({
+            mangaId : document.querySelector('[data-manga-id]').dataset.mangaId.trim(),
+            token, timestamp
+        });
+    });
+`;
+
+type ChaptersData = {
+    mangaId: string;
+    timestamp: number;
+    token: string;
+};
+
+type APIChapters = {
+    chapters: {
+        chapter: string;
+        title: string;
+        url: string;
+    }[]
+};
+
 @Common.MangaCSS<HTMLButtonElement>(/^{origin}\/manga\/[^/]+$/, 'button[data-manga-title]', (button, uri) => ({ id: uri.pathname, title: button.dataset.mangaTitle.trim() }))
-@Common.ChaptersSinglePageCSS('div.chapter-list  a', undefined, Common.AnchorInfoExtractor(true))
 @Common.PagesSinglePageCSS('img.comic-image')
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
@@ -32,5 +55,11 @@ export default class extends DecoratableMangaScraper {
                 mangas.length > 0 ? yield* mangas : run = false;
             }
         }.call(this));
+    }
+
+    public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
+        const { mangaId, timestamp, token } = await FetchWindowScript<ChaptersData>(new Request(new URL(manga.Identifier, this.URI)), chapterScript);
+        const { chapters } = await FetchJSON<APIChapters>(new Request(new URL(`./auth/manga-chapters?manga_id=${mangaId}&offset=0&limit=9999&order=DESC&_t=${token}&_ts=${timestamp}`, this.URI)));
+        return chapters.map(({ chapter, title, url }) => new Chapter(this, manga, new URL(url).pathname, ['Ch.', chapter, title].join(' ').trim()));
     }
 }
