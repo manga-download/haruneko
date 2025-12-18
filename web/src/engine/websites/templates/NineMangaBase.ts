@@ -16,7 +16,7 @@ function ChapterExtractor(element: HTMLAnchorElement) {
 }
 
 function PageLinkExtractor(element: HTMLOptionElement) {
-    return new URL((element as HTMLOptionElement).value, this.URI).href;
+    return new URL(element.value, this.URI).href;
 }
 
 @Common.MangaCSS(/^{origin}\/manga\/[^/]+\.html/, 'div.manga div.ttline h1', (element, uri) => ({ id: uri.pathname, title: CleanTitle(element.textContent) }))
@@ -49,7 +49,7 @@ export class NineMangaBase extends DecoratableMangaScraper {
 
     public override async FetchImage(page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
         return await this.imageTaskPool.Add(async () => {
-            let request = this.CreateRequest(page.Link);
+            let request = this.CreateRequest(page.Link, signal);
             const realimage = (await FetchCSS<HTMLImageElement>(request, 'img.manga_pic')).at(0).getAttribute('src');
             request = new Request(realimage, {
                 signal,
@@ -64,12 +64,9 @@ export class NineMangaBase extends DecoratableMangaScraper {
     }
 
     protected CreateRequest(url: URL, signal: AbortSignal = undefined): Request {
-        const MinFirefoxVersion = 130;
-        const FirefoxVersion = Math.floor(Math.random() * (999 - MinFirefoxVersion + 1)) + MinFirefoxVersion;
         return new Request(url, {
             signal,
             headers: {
-                'User-Agent': `Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:${FirefoxVersion}.0) Gecko/20100101 Firefox/${FirefoxVersion}.0`,
                 'Referer': undefined
             }
         });
