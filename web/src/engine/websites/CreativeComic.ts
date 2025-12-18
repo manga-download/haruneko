@@ -104,7 +104,7 @@ export default class extends DecoratableMangaScraper {
             //decrypt image key and iv using access token
             const { iv, key } = await this.GetRealKey(imageKey, this.accessToken);
             const encryptedPage = await (await Fetch(new Request(new URL(`./fs/chapter_content/encrypt/${page.Link.href.match(/\d+$/).at(-1)}/2`, this.URI)))).arrayBuffer();
-            const b64image = await this.AESDecrypt(new Uint8Array(encryptedPage), key, iv);
+            const b64image = await this.AESDecrypt(encryptedPage, key, iv);
             return (await fetch(b64image)).blob();
         }, priority, signal);
     }
@@ -127,7 +127,7 @@ export default class extends DecoratableMangaScraper {
         };
     }
 
-    private async AESDecrypt(message: string | Uint8Array, key: string, iv: string): Promise<string> {
+    private async AESDecrypt(message: string | ArrayBuffer, key: string, iv: string): Promise<string> {
         const algorithm = { name: 'AES-CBC', iv: GetBytesFromHex(iv) };
         const AESkey = await crypto.subtle.importKey('raw', GetBytesFromHex(key), algorithm, false, ['decrypt']);
         const decrypted = await crypto.subtle.decrypt(algorithm, AESkey, typeof message == 'string'? GetBytesFromBase64(message) : message);
