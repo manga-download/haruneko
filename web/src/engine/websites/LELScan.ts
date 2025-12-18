@@ -4,21 +4,9 @@ import { type Chapter, DecoratableMangaScraper, Page } from '../providers/MangaP
 import * as Common from './decorators/Common';
 import { FetchCSS } from '../platform/FetchProvider';
 
-function ChapterExtractor(option: HTMLOptionElement) {
-    const id = new URL(option.value).pathname;
-    const title = option.text.trim();
-    return { id, title };
-}
-
-function MangaExtractor(anchor: HTMLAnchorElement) {
-    const id = anchor.pathname;
-    const title = anchor.title.replace(/lecture en ligne/, '').trim();
-    return { id, title };
-}
-
 @Common.MangaCSS(/^{origin}\/lecture[^/]+$/, 'meta[name="lelscan"]')
-@Common.MangasSinglePageCSS('/', 'div.outil_lecture ul li a', MangaExtractor)
-@Common.ChaptersSinglePageCSS('div#header-image form select:first-of-type option', undefined, ChapterExtractor)
+@Common.MangasSinglePageCSS<HTMLAnchorElement>('/', 'div.outil_lecture ul li a', anchor => ({ id: anchor.pathname, title: anchor.title.replace(/lecture en ligne/, '').trim() }))
+@Common.ChaptersSinglePageCSS<HTMLOptionElement>('div#header-image form select:first-of-type option', undefined, option => ({ id: new URL(option.value).pathname, title: option.text.trim() }))
 @Common.ImageAjaxFromHTML('div#image img')
 export default class extends DecoratableMangaScraper {
 
@@ -31,9 +19,8 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const request = new Request(new URL(chapter.Identifier, this.URI).href);
-        let data = await FetchCSS<HTMLAnchorElement>(request, 'div#navigation a');
-        data = data.filter(element => parseInt(element.text.trim()));
-        return data.map(page => new Page(this, chapter, new URL(page.pathname, this.URI)));
+        const pages = await FetchCSS<HTMLAnchorElement>(new Request(new URL(chapter.Identifier, this.URI)), 'div#navigation a');
+        return pages.filter(element => parseInt(element.text.trim()))
+            .map(page => new Page(this, chapter, new URL(page.pathname, this.URI)));
     }
 }

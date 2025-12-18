@@ -15,12 +15,12 @@ const fetchApiForbiddenHeaders = [
 ];
 
 class FetchRequest extends Request {
-
-    constructor (input: URL | RequestInfo, init?: RequestInit) {
-        if (init?.headers) {
-            init.headers = FetchRequest.#ConcealHeaders(init.headers, init.credentials);
-        }
+    readonly #referrer: string = undefined;
+    public override get referrer() { return this.#referrer; }
+    constructor(input: URL | RequestInfo, init?: RequestInit) {
+        if(init?.headers) init.headers = FetchRequest.#ConcealHeaders(init.headers, init.credentials);
         super(input, init);
+        if(init?.referrer) this.#referrer = init.referrer;
     }
 
     static #ConcealHeaders(init: HeadersInit, credentials?: RequestCredentials): Headers {
