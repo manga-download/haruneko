@@ -1,5 +1,5 @@
 import { Tags } from '../Tags';
-import icon from './MangaDex.webp';
+import icon from './CreativeComic.webp';
 import { Fetch, FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
 import { type MangaPlugin, Manga, Chapter, Page, DecoratableMangaScraper } from '../providers/MangaPlugin';
 import { type Priority } from '../taskpool/TaskPool';
@@ -82,7 +82,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        const { data } = await this.FetchAPI<APIMangas>('./book?page=1&rows_per_page=99999sort_by=updated_at&class=2');
+        const { data } = await this.FetchAPI<APIMangas>('./book?page=1&rows_per_page=99999&sort_by=updated_at&class=2');
         return data.map(({ id, name }) => new Manga(this, provider, `${id}`, name));
     }
 
@@ -98,7 +98,9 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchImage(page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
         return this.imageTaskPool.Add(async () => {
+            //get image crypted key
             const { key: imageKey } = await this.FetchAPI<PageKey>(page.Link.href);
+            //decrypt image key and iv using access token
             const { iv, key } = await this.GetRealKey(imageKey, this.accessToken);
             const encryptedPage = await (await Fetch(new Request(new URL(`./fs/chapter_content/encrypt/${page.Link.href.match(/\d+$/).at(-1)}/2`, this.URI)))).arrayBuffer();
             const b64image = await this.AESDecrypt(new Uint8Array(encryptedPage), key, iv);
@@ -115,7 +117,7 @@ export default class extends DecoratableMangaScraper {
         };
     }
 
-    private async GetRealKey(imageKey: string, token: string) {
+    private async GetRealKey(imageKey: string, token: string): Promise<IvAndKey> {
         const { iv, key } = await this.Token2key(token);
         const decryptionData = (await this.AESDecrypt(imageKey, key, iv)).split(':');
         return {
