@@ -2,14 +2,7 @@
 import { type Manga, Chapter, Page, DecoratableMangaScraper } from '../../providers/MangaPlugin';
 import type { Priority } from '../../taskpool/DeferredTask';
 import * as Common from '../decorators/Common';
-
-export const mangaPath = '/search/?completed_series=either&page={page}';
-export function MangaInfoExtractor(element: HTMLElement, uri: URL) {
-    return {
-        id: uri.pathname,
-        title: CleanTitle((element as HTMLMetaElement).content || element.textContent)
-    };
-}
+import { GetTypedData } from '../decorators/Common';
 
 function CleanTitle(title: string): string {
     return title.replace(/(^\s*[Мм]анга|[Mm]anga\s*$)/, '').trim();
@@ -22,30 +15,22 @@ function ChapterExtractor(element: HTMLAnchorElement) {
     };
 }
 
-function PageLinkExtractor( element: HTMLElement) {
-    switch (element.nodeName) {
-        case 'OPTION'://Most TAADD websites got a selector with options element
-            return new URL((element as HTMLOptionElement).value, this.URI).href;
-        default: //just in case. People could always use a custom PageLinkExtractor anyway
-            return element.textContent;
-    }
+function PageLinkExtractor(element: HTMLOptionElement) {
+    return new URL((element as HTMLOptionElement).value, this.URI).href;
 }
 
-@Common.MangaCSS(/^{origin}\/manga\/[^/]+\.html/, 'div.manga div.ttline h1', MangaInfoExtractor)
-@Common.MangasMultiPageCSS('dl.bookinfo a.bookname', Common.PatternLinkGenerator(mangaPath))
-export class TAADBase extends DecoratableMangaScraper {
+@Common.MangaCSS(/^{origin}\/manga\/[^/]+\.html/, 'div.manga div.ttline h1', (element, uri) => ({ id: uri.pathname, title: CleanTitle(element.textContent) }))
+@Common.MangasMultiPageCSS('dl.bookinfo a.bookname', Common.PatternLinkGenerator('/search/?completed_series=either&page={page}'))
+export class NineMangaBase extends DecoratableMangaScraper {
 
     protected nsfwUrlParameter: string = 'waring';// typo of 'warning' for NineManga websites
-    protected queryChapters: string = 'div.chapterbox ul li a.chapter_list_a';
-    protected queryImages: string = 'img.manga_pic';
-    protected queryPages: string = 'select#page option';
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const url = new URL(manga.Identifier, this.URI);
         if (this.nsfwUrlParameter) {
             url.searchParams.set(this.nsfwUrlParameter, '1');
         }
-        const data = await FetchCSS<HTMLAnchorElement>(new Request(url), this.queryChapters);
+        const data = await FetchCSS<HTMLAnchorElement>(new Request(url), 'div.chapterbox ul li a.chapter_list_a');
         return data.map(element => {
             const { id, title } = ChapterExtractor.call(this, element);
             const escapedMangaTitle = manga.Title.replace(/[*^.|$?+\-()[\]{}\\/]/g, '\\$&'); //escape special regex chars in manga name
@@ -56,7 +41,7 @@ export class TAADBase extends DecoratableMangaScraper {
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
         const chapterUrl = new URL(chapter.Identifier, this.URI);
-        const data = await FetchCSS<HTMLElement>(this.CreateRequest(chapterUrl), this.queryPages);
+        const data = await FetchCSS<HTMLElement>(this.CreateRequest(chapterUrl), 'select#page option');
         //There may be MORE than one page list element on the page, we need only one ! In case of direct picture links, doesnt matter
         const subpages = Array.from(new Set([...data.map(element => PageLinkExtractor.call(this, element))]));
         return subpages.map(page => new Page(this, chapter, new URL(page, this.URI), { Referer: chapterUrl.href }));
@@ -65,7 +50,7 @@ export class TAADBase extends DecoratableMangaScraper {
     public override async FetchImage(page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
         return await this.imageTaskPool.Add(async () => {
             let request = this.CreateRequest(page.Link);
-            const realimage = (await FetchCSS<HTMLImageElement>(request, this.queryImages)).at(0).getAttribute('src');
+            const realimage = (await FetchCSS<HTMLImageElement>(request, 'img.manga_pic')).at(0).getAttribute('src');
             request = new Request(realimage, {
                 signal,
                 headers: {
@@ -73,7 +58,7 @@ export class TAADBase extends DecoratableMangaScraper {
                 }
             });
             const response = await Fetch(request);
-            return await response.blob();
+            return GetTypedData(await response.arrayBuffer());
 
         }, priority, signal);
     }

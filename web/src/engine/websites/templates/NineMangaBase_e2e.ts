@@ -4,5 +4,4 @@ import '../NineMangaEN_e2e';
 import '../NineMangaES_e2e';
 import '../NineMangaFR_e2e';
 import '../NineMangaIT_e2e';
-import '../TAADD_e2e';
-import '../TenManga_e2e';
+import '../NineMangaRU_e2e';
