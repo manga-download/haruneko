@@ -1,6 +1,7 @@
 import { Observable, type IObservable } from '../../Observable';
 import type { IRemoteBrowserWindow } from '../RemoteBrowserWindow';
 import type { ScriptInjection } from '../FetchProviderCommon';
+import { SetTimeout } from '../../BackgroundTimers';
 
 export default class RemoteBrowserWindow implements IRemoteBrowserWindow {
 
@@ -49,6 +50,18 @@ export default class RemoteBrowserWindow implements IRemoteBrowserWindow {
             //inject_js_start: 'filename'
             //inject_js_end: 'filename'
         };
+
+        chrome.webRequest.onBeforeSendHeaders.addListener(function listener(details: chrome.webRequest.OnBeforeSendHeadersDetails): chrome.webRequest.BlockingResponse {
+            // HACK: Do not unregister before the returned result was consumed by chrome
+            SetTimeout(() => chrome.webRequest.onBeforeSendHeaders.removeListener(listener), 250);
+            return {
+                requestHeaders: [
+                    ...details.requestHeaders ?? [],
+                    // TODO: Currently the concealed headers are revealed quick & dirty, should use reveal headers from FetchProvider
+                    ...Array.from(request.headers.entries(), ([name, value]) => ({ name: name.replace(/^X-FetchAPI-/i, ''), value }))
+                ]
+            };
+        }, { urls: [request.url] }, ['blocking', 'requestHeaders', 'extraHeaders']);
 
         this.nwWindow = await new Promise<NWJS_Helpers.win>(resolve => nw.Window.open(request.url, options, resolve));
 
