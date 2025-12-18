@@ -33,7 +33,7 @@ class FetchRequest extends Request {
     constructor(input: URL | RequestInfo, init?: RequestInit) {
         if(init?.headers) init.headers = ConcealHeaders(init.headers);
         super(input, init);
-        this.#referrer = init.referrer;
+        if(init?.referrer) this.#referrer = init.referrer;
     }
 }
 
