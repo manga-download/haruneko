@@ -12,7 +12,7 @@ import * as Common from './decorators/Common';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('hentaivn', 'HentaiVN', 'https://hentaivn.party', Tags.Media.Manga, Tags.Language.Vietnamese, Tags.Source.Aggregator, Tags.Rating.Pornographic);
+        super('hentaivn', 'HentaiVN', 'https://hentaivn.gold', Tags.Media.Manga, Tags.Language.Vietnamese, Tags.Source.Aggregator, Tags.Rating.Pornographic);
     }
 
     public override get Icon() {
