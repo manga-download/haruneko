@@ -1,8 +1,9 @@
 import { type Chapter, DecoratableMangaScraper, Page } from '../providers/MangaPlugin';
 import { Tags } from '../Tags';
-import * as Common from './decorators/Common';
-import { DRMProvider } from './TuMangaOnline.DRM.js';
 import icon from './TuMangaOnline.webp';
+import * as Common from './decorators/Common';
+
+import { DRMProvider } from './TuMangaOnline.DRM.js';
 
 function ChapterInfoExtractor(element: HTMLAnchorElement) {
     const row = element.closest<HTMLUListElement>('li.list-group-item');
