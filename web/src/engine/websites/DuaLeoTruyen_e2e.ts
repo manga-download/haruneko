@@ -15,8 +15,8 @@ new TestFixture({
         title: 'Chapter 13'
     },
     entry: {
-        index: 1,
-        size: 340_096,
+        index: 4,
+        size: 358_899,
         type: 'image/webp'
     }
 }).AssertWebsite();
