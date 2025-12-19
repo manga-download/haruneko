@@ -7,12 +7,12 @@ import * as Common from './decorators/Common';
 @Common.MangaCSS(new RegExp(`^{origin}/manga/[^/]+$`), MojoPortalComic.queryManga)
 @Common.MangasMultiPageCSS(MojoPortalComic.queryMangas, Common.PatternLinkGenerator('/danh-sach-truyen/{page}'))
 @Common.ChaptersSinglePageCSS(MojoPortalComic.queryChapters)
-@Common.PagesSinglePageCSS('div.page-chapter > img:not([src^="data:image"]):not([src*="imgur.com"])')
+@Common.PagesSinglePageCSS('div.page-chapter > img')
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('nettruyen#A4F21DC2', 'NetTruyen OK', 'https://nettruyen1905.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Vietnamese, Tags.Source.Aggregator);
+        super('nettruyen#A4F21DC2', 'NetTruyen OK', 'https://nettruyenindex.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Vietnamese, Tags.Source.Aggregator);
     }
 
     public override get Icon() {
