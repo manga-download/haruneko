@@ -3,27 +3,21 @@ import icon from './DuaLeoTruyen.webp';
 import { FetchWindowScript } from '../platform/FetchProvider';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { GetBytesFromBase64 } from '../BufferEncoder';
+import { GetBytesFromURLBase64 } from '../BufferEncoder';
 
 function PageExtractor(img: HTMLImageElement) : string {
-    const xorKey = [100, 117, 97, 108, 101, 111, 95, 115, 97, 108, 116, 95, 50, 48, 50, 53];
-    function Pad(s: string): string { return s + '==='.slice((s.length + 3) % 4); };
 
     if (!img.dataset.img) return img.src;
-    const url = new URL(img.dataset.img);
+    const uri = new URL(img.dataset.img);
 
     try {
-        const [, filename, extension ] = url.pathname.match(/\/([^./]+)\.(.*)$/);
-        const elements = url.pathname.split('/').slice(0, -1);
-        const decoded = new TextDecoder('ISO-8859-1').decode(GetBytesFromBase64(Pad(filename.replace(/-/g, '+').replace(/_/g, '/'))));
-        let result = '';
-        for (let index = 0; index < decoded.length; index++) {
-            result += String.fromCharCode(decoded.charCodeAt(index) ^ xorKey[index % xorKey.length]);
-        }
-        elements.push(result + '.' + extension);
-        url.pathname = elements.join('/');
+        const key = new TextEncoder().encode('dualeo_salt_2025');
+        const [, basename, extension ] = uri.pathname.match(/\/([^./]+)\.(.*)$/);
+        const encrypted = Array.from(GetBytesFromURLBase64(basename), (byte, index) => byte ^ key[index % key.length]);
+        const filename = `${String.fromCharCode(...encrypted)}.${extension}`;
+        uri.pathname = uri.pathname.split('/').toSpliced(-1, 1, filename).join('/');
     } finally {
-        return url.href;
+        return uri.href;
     }
 }
 
@@ -44,7 +38,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async Initialize(): Promise<void> {
-        // Latest Domain: https://www.facebook.com/dualeotruyen2
+        // Latest Domain: https://www.facebook.com/dualeotruyen2/about
         this.URI.href = await FetchWindowScript(new Request(this.URI), `window.location.origin;`, 0);
         console.log(`Assigned URL '${this.URI}' to ${this.Title}`);
     }
