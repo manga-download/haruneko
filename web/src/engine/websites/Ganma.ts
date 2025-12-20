@@ -2,7 +2,7 @@
 import icon from './Ganma.webp';
 import { Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { Fetch, FetchCSS, FetchGraphQL } from '../platform/FetchProvider';
+import { FetchGraphQL } from '../platform/FetchProvider';
 import { Exception } from '../Error';
 import { WebsiteResourceKey as R } from '../../i18n/ILocale';
 
@@ -59,7 +59,6 @@ type MangaId = {
 
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
-    private queryHashesMap = new Map<string, string>();
     private apiUrl = 'https://ganma.jp/api/graphql';
 
     public constructor() {
@@ -70,29 +69,20 @@ export default class extends DecoratableMangaScraper {
         return icon;
     }
 
-    public override async Initialize(): Promise<void> {
-        super.Initialize();
-        //Website forces persistedQueries so we gather queries hashes from scripts
-        const scriptUrl = (await FetchCSS<HTMLScriptElement>(new Request(this.URI), 'script[src*="/app/layout-"]')).at(0).getAttribute('src');
-        const scriptData = await (await Fetch(new Request(new URL(scriptUrl, this.URI)))).text();
-        for (const match of scriptData.matchAll(/id:"([a-f0-9]{64})",body:".*?",name:"(\w+)"/g)) {
-            this.queryHashesMap.set(match[2], match[1]);// queryName, queryHash
-        }
-    }
-
     public override ValidateMangaURL(url: string): boolean {
         return new RegExpSafe(`^${this.URI.origin}/web/magazine/[^/]+$`).test(url);
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
-        const { magazine } = await this.FetchAPI<APIMagazine>('magazineDetail', { magazineIdOrAlias: url.split('/').at(-1) });
+        const { magazine } = await this.FetchAPI<APIMagazine>('magazineDetail', { magazineIdOrAlias: url.split('/').at(-1) }, '9a1460a42f8d04c70b23bb9ad763d0dbef2eb6f5d05dafca98ca2be8a2bfe867');
         return this.CreateManga(magazine, provider);
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
         const mangasList: Manga[] = [];
         for (let run = true, after = undefined; run;) {
-            const { magazinesByCategory: { magazines: { edges, pageInfo: { endCursor, hasNextPage } } } } = await this.FetchAPI<APIFinishedMagazines>('finishedMagazines', { after });
+            const { magazinesByCategory: { magazines: { edges, pageInfo: { endCursor, hasNextPage } } } } = await this.FetchAPI<APIFinishedMagazines>('finishedMagazines', { after },
+                'ade49c46df5ef36f15485df70f656fb14f3261e90863fcd9ffbcc10baf30bc4c');
             const mangas = edges.map(({ node }) => this.CreateManga(node, provider));
             mangasList.push(...mangas);
             after = endCursor;
@@ -103,19 +93,19 @@ export default class extends DecoratableMangaScraper {
 
     private CreateManga(mangasData: APIMagazineDetails, provider: MangaPlugin): Manga {
         const { magazineId, title, isWebOnlySensitive } = mangasData;
-        return new Manga(this, provider, JSON.stringify({ magazineId, isWebOnlySensitive }), title);
+        return new Manga(this, provider, JSON.stringify({ magazineId, isWebOnlySensitive: !!isWebOnlySensitive }), title);
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const { magazineId, isWebOnlySensitive } = JSON.parse(manga.Identifier) as MangaId;
         const chaptersList: Chapter[] = [];
         for (let run = true, after = undefined; run;) {
-            const variables = {
-                magazineIdOrAlias: magazineId,
-                first: 100,
-                after
-            };
-            const { magazine: { storyInfos: { edges, pageInfo: { endCursor, hasNextPage } } } } = await this.FetchAPI<APIMagazine>('storyInfoList', variables, !isWebOnlySensitive);
+            const { magazine: { storyInfos: { edges, pageInfo: { endCursor, hasNextPage } } } } = await this.FetchAPI<APIMagazine>('storyInfoList',
+                {
+                    magazineIdOrAlias: magazineId,
+                    first: 100,
+                    after
+                }, 'acd460c52a231029d09e1ccca0aa06b99ae8163d5edff661cd64984ebb6dc4c3', !isWebOnlySensitive);
             const chapters = edges.map(({ node: { storyId, title, subtitle } }) => new Chapter(this, manga, storyId, [title, subtitle].join(' ').trim()));
             chaptersList.push(...chapters);
             after = endCursor;
@@ -126,11 +116,11 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
         const { magazineId, isWebOnlySensitive } = JSON.parse(chapter.Parent.Identifier) as MangaId;
-        const variables = {
+        const { magazine: { storyContents } } = await this.FetchAPI<APIMagazine>('magazineStoryForReader', {
             magazineIdOrAlias: magazineId,
             storyId: chapter.Identifier,
-        };
-        const { magazine: { storyContents } } = await this.FetchAPI<APIMagazine>('magazineStoryForReader', variables, !isWebOnlySensitive);
+        }, 'de907920c909c7ba40a7b6cad5a4b2f3760a4e6a9a871239663c522f3983506f', !isWebOnlySensitive);
+
         if (storyContents.error || !storyContents.pageImages) {
             throw new Exception(R.Plugin_Common_Chapter_UnavailableError);
         }
@@ -138,19 +128,17 @@ export default class extends DecoratableMangaScraper {
         return new Array(pageCount).fill(0).map((_, index) => index + 1).map(page => new Page(this, chapter, new URL(`${pageImageBaseURL}${page}.jpg?${pageImageSign}`)));
     }
 
-    private async FetchAPI<T extends JSONElement>(operation: string, variables: JSONObject, useAppHeaders: boolean = true): Promise<T> {
+    private async FetchAPI<T extends JSONElement>(operation: string, variables: JSONObject, queryID: string, useAppHeaders: boolean = true, queryVersion = 1): Promise<T> {
         const request = new Request(new URL(this.apiUrl), {
             headers: {
                 'X-From': this.URI.href + 'web',
-                'Content-Type': 'application/json;charset=UTF-8',
-                Accept: 'application/json, text/plain, */*'
             }
         });
         if (useAppHeaders) request.headers.set('User-Agent', 'GanmaReader / 9.9.1 Android');
         return FetchGraphQL<T>(request, operation, undefined, variables, {
             persistedQuery: {
-                sha256Hash: this.queryHashesMap.get(operation),
-                version: 1,
+                sha256Hash: queryID,
+                version: queryVersion,
             }
         });
     }
