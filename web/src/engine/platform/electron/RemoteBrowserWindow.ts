@@ -53,6 +53,7 @@ export default class RemoteBrowserWindow implements IRemoteBrowserWindow {
             height: 800,
             center: true,
             webPreferences: {
+                offscreen: !show, //offscreen = true allows some lazyloading script to work, but window is blank
                 sandbox: true,
                 webSecurity: true,
                 contextIsolation: false, // Disabled for sharing `window` instance in pre-load script: https://www.electronjs.org/docs/latest/tutorial/context-isolation#what-is-it

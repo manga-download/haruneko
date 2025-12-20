@@ -32,11 +32,14 @@ type APIChapters = {
 
 @Common.PagesSinglePageJS(`
     new Promise(resolve => {
-        const images = [ ...document.querySelectorAll('.image-container img[data-image-index]') ];
-        setInterval(() => {
-            images.forEach(img => img.scrollIntoView());
+        const interval = setInterval(() => {
+            const images = [ ...document.querySelectorAll('.image-container img[data-image-index]') ];
+            images.forEach(img => img.scrollIntoView({ block: "center" }));
             const sources = images.map(img => img.src || '');
-            if(!sources.some(src => src === '')) resolve(sources);
+            if (!sources.some(src => src === '')) {
+                clearInterval(interval);
+                resolve(sources);
+            }
         }, 250);
     });
 `, 750)
