@@ -36,13 +36,10 @@ type APIChapters = {
             const images = [ ...document.querySelectorAll('.image-container img[data-image-index]') ];
             images.forEach(img => img.scrollIntoView({ block: "center" }));
             const sources = images.map(img => img.src || '');
-            if (!sources.some(src => src === '')) {
-                clearInterval(interval);
-                resolve(sources);
-            }
+            if (!sources.some(src => src === '')) resolve(sources);
         }, 250);
     });
-`, 750)
+`, 750, true)
 @Common.ImageAjax(true)
 export class VTheme extends DecoratableMangaScraper {
 

@@ -535,15 +535,16 @@ export function PagesSinglePageCSS<E extends HTMLElement>(query: string, extract
  * @param chapter - A reference to the {@link Chapter} which shall be assigned as parent for the extracted pages
  * @param script - A JS script to extract the image links
  * @param delay - An initial delay [ms] before the {@link script} is executed
+ * @param shrinkSize - Open a visible window but very small to work with certain lazy loading types
  */
-export async function FetchPagesSinglePageJS(this: MangaScraper, chapter: Chapter, script: string, delay = 0): Promise<Page[]> {
+export async function FetchPagesSinglePageJS(this: MangaScraper, chapter: Chapter, script: string, delay = 0, shrinkSize: boolean = false): Promise<Page[]> {
     const uri = new URL(chapter.Identifier, this.URI);
     const request = new Request(uri.href, {
         headers: {
             Referer: GetParentReferer(chapter, this.URI).href
         }
     });
-    const data = await FetchWindowScript<string[]>(request, script, delay);
+    const data = await FetchWindowScript<string[]>(request, script, delay, undefined, shrinkSize);
     return data.map(link => new Page(this, chapter, new URL(link, uri), { Referer: uri.href }));
 }
 
@@ -552,13 +553,14 @@ export async function FetchPagesSinglePageJS(this: MangaScraper, chapter: Chapte
  * The pages are extracted from the composed url based on the `Identifier` of the chapter and the `URI` of the website.
  * @param script - A JS script to extract the image links
  * @param delay - An initial delay [ms] before the {@link script} is executed
- */
-export function PagesSinglePageJS(script: string, delay = 0) {
+ * @param shrinkSize - Open a visible window but very small to work with certain lazy loading types
+  */
+export function PagesSinglePageJS(script: string, delay = 0, shrinkSize: boolean = false) {
     return function DecorateClass<T extends Constructor>(ctor: T, context?: ClassDecoratorContext): T {
         ThrowOnUnsupportedDecoratorContext(context);
         return class extends ctor {
             public async FetchPages(this: MangaScraper, chapter: Chapter): Promise<Page[]> {
-                return FetchPagesSinglePageJS.call(this, chapter, script, delay);
+                return FetchPagesSinglePageJS.call(this, chapter, script, delay, shrinkSize);
             }
         };
     };

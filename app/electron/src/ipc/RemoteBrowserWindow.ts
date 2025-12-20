@@ -52,6 +52,11 @@ export class RemoteBrowserWindowController {
         win.destroy();
     }
 
+    private async SetSize(windowID: number, width: number, height: number): Promise<void> {
+        const win = this.FindWindow(windowID);
+        return win.setSize(width, height);
+    }
+
     private async SetVisibility(windowID: number, show: boolean): Promise<void> {
         const win = this.FindWindow(windowID);
         return show ? win.show() : win.hide();

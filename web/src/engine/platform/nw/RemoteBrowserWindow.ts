@@ -39,14 +39,14 @@ export default class RemoteBrowserWindow implements IRemoteBrowserWindow {
         }
     }
 
-    public async Open(request: Request, show: boolean = false, preload: ScriptInjection<void> = '') {
+    public async Open(request: Request, show: boolean = false, preload: ScriptInjection<void> = '', shrinkSize : boolean = false) {
 
         const options: NWJS_Helpers.WindowOpenOption = {
             new_instance: false, // TODO: Would be safer when set to TRUE, but this would prevent sharing cookies ...
             show: show, // this.featureFlags.VerboseFetchWindow.Value,
             position: 'center',
-            width: 1280,
-            height: 800,
+            width: shrinkSize ? 100 : 1280,
+            height: shrinkSize ? 100 : 800,
             //inject_js_start: 'filename'
             //inject_js_end: 'filename'
         };
@@ -114,6 +114,11 @@ export default class RemoteBrowserWindow implements IRemoteBrowserWindow {
         }
         this.nwWindow?.removeAllListeners();
         this.nwWindow?.close();
+    }
+
+    public async SetSize(width?: number, height?: number): Promise<void> {
+        this.nwWindow.width = width ?? this.nwWindow.width;
+        this.nwWindow.height = height ?? this.nwWindow.height;
     }
 
     public async Show(): Promise<void> {
