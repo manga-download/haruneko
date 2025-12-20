@@ -3,20 +3,29 @@ import icon from './DuaLeoTruyen.webp';
 import { FetchWindowScript } from '../platform/FetchProvider';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
+import { GetBytesFromURLBase64 } from '../BufferEncoder';
 
-const pageScript = `
-    new Promise (resolve => {
-        resolve( [...document.querySelectorAll('div.content_view_chap img')].map(image => {
-            const link = image.dataset.lazy ?? image.dataset.original ?? image.src;
-            return link.startsWith('http') ? link : decode_light(link)
-        }));
-    });
-`;
+function PageExtractor(img: HTMLImageElement) : string {
+
+    if (!img.dataset.img) return img.src;
+    const uri = new URL(img.dataset.img);
+
+    try {
+        const key = new TextEncoder().encode('dualeo_salt_2025');
+        const [, basename, extension ] = uri.pathname.match(/\/([^./]+)\.(.*)$/);
+        const encrypted = Array.from(GetBytesFromURLBase64(basename), (byte, index) => byte ^ key[index % key.length]);
+        const filename = `${String.fromCharCode(...encrypted)}.${extension}`;
+        uri.pathname = uri.pathname.split('/').toSpliced(-1, 1, filename).join('/');
+    } finally {
+        return uri.href;
+    }
+}
 
 @Common.MangaCSS(/^{origin}\/truyen-tranh\/[^/]+\.html$/, 'ol.breadcrumb li:last-of-type')
-@Common.MangasMultiPageCSS<HTMLAnchorElement>('div.li_truyen', Common.PatternLinkGenerator('/truyen-hoan-thanh.html?page={page}'), 0, Common.AnchorInfoExtractor(false, '.img'))
+@Common.MangasMultiPageCSS<HTMLAnchorElement>('div.li_truyen > a:has(img)', Common.PatternLinkGenerator('/truyen-hoan-thanh.html?page={page}'), 0,
+    anchor => ({ id: anchor.pathname, title: anchor.querySelector<HTMLDivElement>('div.name').textContent.trim() }))
 @Common.ChaptersSinglePageCSS('div.chapter-item a', undefined, Common.AnchorInfoExtractor(true))
-@Common.PagesSinglePageJS(pageScript, 500)
+@Common.PagesSinglePageCSS('div.content_view_chap img', PageExtractor)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
@@ -29,7 +38,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async Initialize(): Promise<void> {
-        // Latest Domain: https://www.facebook.com/dualeotruyen2
+        // Latest Domain: https://www.facebook.com/dualeotruyen2/about
         this.URI.href = await FetchWindowScript(new Request(this.URI), `window.location.origin;`, 0);
         console.log(`Assigned URL '${this.URI}' to ${this.Title}`);
     }

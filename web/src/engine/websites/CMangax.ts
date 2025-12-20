@@ -13,20 +13,20 @@ type APIMangas = {
 type MangaInfo = {
     id: string;
     name: string;
-}
+};
 
 type APIChapter = {
     id_chapter: string;
     info: string;
-}
+};
 
 type ChapterInfo = {
     num: string;
-}
+};
 
 type APIPages = {
     image: string[];
-}
+};
 
 @Common.MangaCSS(/^https:\/\/cmangax\d+.com\/album\/[^/]+-\d+$/, 'h1 p.name', (paragraph, uri) => ({ id: uri.pathname.split('-').at(-1), title: paragraph.innerText.trim() }))
 @Common.ImageAjax(true)
@@ -37,7 +37,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public constructor() {
-        super('cmangax', 'CMangax', 'https://cmangax8.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Vietnamese, Tags.Source.Aggregator, Tags.Accessibility.DomainRotation);
+        super('cmangax', 'CMangax', 'https://cmangax9.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Vietnamese, Tags.Source.Aggregator, Tags.Accessibility.DomainRotation);
     }
 
     public override get Icon() {
