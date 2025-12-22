@@ -13,7 +13,7 @@ function PageExtractor(img: HTMLImageElement) : string {
     try {
         const key = new TextEncoder().encode('dualeo_salt_2025');
         const [, basename, extension ] = uri.pathname.match(/\/([^./]+)\.(.*)$/);
-        const encrypted = Array.from(GetBytesFromURLBase64(basename), (byte, index) => byte ^ key[index % key.length]);
+        const encrypted = Array.from(GetBytesFromURLBase64(basename), (byte: number, index) => byte ^ key[index % key.length]);
         const filename = `${String.fromCharCode(...encrypted)}.${extension}`;
         uri.pathname = uri.pathname.split('/').toSpliced(-1, 1, filename).join('/');
     } finally {
@@ -30,7 +30,7 @@ function PageExtractor(img: HTMLImageElement) : string {
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('dualeotruyen', 'DuaLeoTruyen', 'https://dualeotruyenjd.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Media.Manga, Tags.Language.Vietnamese, Tags.Source.Aggregator, Tags.Accessibility.DomainRotation);
+        super('dualeotruyen', 'DuaLeoTruyen', 'https://dualeotruyenvx.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Media.Manga, Tags.Language.Vietnamese, Tags.Source.Aggregator, Tags.Accessibility.DomainRotation);
     }
 
     public override get Icon() {
