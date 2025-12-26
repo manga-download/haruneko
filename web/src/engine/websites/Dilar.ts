@@ -1,5 +1,5 @@
 import { Tags } from '../Tags';
-import icon from './KanMan.webp';
+import icon from './Dilar.webp';
 import { Chapter, DecoratableMangaScraper, Page, Manga, type MangaPlugin } from '../providers/MangaPlugin';
 import { FetchCSS, FetchJSON } from '../platform/FetchProvider';
 import * as Common from './decorators/Common';
@@ -119,7 +119,7 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const { releases } = await FetchJSON<APIChapters>(new Request(new URL(`./${manga.Identifier}/releases`, this.apiUrl)));
-        return releases.map(({ chapter, title }) => new Chapter(this, manga, `${chapter}`, title.trim() || `${chapter}`));
+        return releases.map(({ chapter, title }) => new Chapter(this, manga, `${chapter}`, [chapter, title].join(' - ').trim()));
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
