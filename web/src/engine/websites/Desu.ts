@@ -20,4 +20,3 @@ export default class extends DecoratableMangaScraper {
         return icon;
     }
 }
-
