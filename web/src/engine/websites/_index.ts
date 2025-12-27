@@ -14,6 +14,7 @@ export { default as AlucardScans } from './AlucardScans';
 export { default as AmuyScan } from './AmuyScan';
 export { default as Anikiga } from './Anikiga';
 export { default as AnimeSama } from './AnimeSama';
+export { default as AnimeXNovel } from './AnimeXNovel';
 export { default as AnzManga } from './AnzManga';
 export { default as APKomik } from './APKomik';
 export { default as ApollComics } from './ApollComics';
