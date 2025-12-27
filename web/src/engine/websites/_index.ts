@@ -126,6 +126,7 @@ export { default as DragonTranslation } from './DragonTranslation';
 export { default as DrakeScans } from './DrakeScans';
 export { default as DtupScan } from './DtupScan';
 export { default as DuaLeoTruyen } from './DuaLeoTruyen';
+export { default as DxdFansub } from './DxdFansub';
 export { default as DynastyScans } from './DynastyScans';
 export { default as EightComic } from './EightComic';
 export { default as EighteenComic } from './EighteenComic';
