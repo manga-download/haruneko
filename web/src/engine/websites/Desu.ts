@@ -3,7 +3,7 @@ import icon from './Desu.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 
-const scriptPages = `Reader.images.map(element => new URL(element.url, window.location.origin));`;
+const scriptPages = `Reader.images.map(element => new URL(element.url, window.location.origin).href);`;
 
 @Common.MangaCSS(/^{origin}\/[^/]+\//, 'div.titleBar h1 span.name')
 @Common.MangasMultiPageCSS('h3 a.animeTitle.oTitle', Common.PatternLinkGenerator('/manga/?page={page}'))
