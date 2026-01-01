@@ -91,6 +91,7 @@ import '../MangaKiss_e2e';
 import '../MangaLC_e2e';
 import '../Mangalek_e2e';
 import '../MangaLink_e2e';
+import '../MangaLivreTo_e2e';
 import '../MangaLover_e2e';
 import '../MangaOnlineBlog_e2e';
 import '../MangaOwlio_e2e';
