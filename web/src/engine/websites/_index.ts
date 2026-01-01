@@ -45,6 +45,7 @@ export { default as BakaMH } from './BakaMH';
 export { default as Baozimh } from './Baozimh';
 export { default as BarManga } from './BarManga';
 export { default as Batoto } from './Batoto';
+export { default as BatotoV4 } from './BatotoV4';
 export { default as BigComics } from './BigComics';
 export { default as BilibiliManhua } from './BilibiliManhua';
 export { default as Bokugents } from './Bokugents';
