@@ -68,6 +68,7 @@ import '../KumoTran_e2e';
 import '../KunManga_e2e';
 import '../LaviniaFansub_e2e';
 import '../LectorMangaLat_e2e';
+import '../LerMangas_e2e';
 import '../LHTranslation_e2e';
 import '../LilyManga_e2e';
 import '../LilyumFansub_e2e';
