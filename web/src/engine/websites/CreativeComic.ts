@@ -17,7 +17,7 @@ type TokenData = {
 };
 
 type APIResult<T> = {
-    data: T
+    data: T;
 };
 
 type APIMangas = {
