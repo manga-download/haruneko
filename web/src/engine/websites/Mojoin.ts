@@ -6,17 +6,19 @@ import { GetBytesFromBase64, GetBytesFromHex, GetBytesFromUTF8, GetHexFromBytes 
 import { FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
 import type { Priority } from '../taskpool/DeferredTask';
 
+// TODO: Update token and key after manual user interaction
+
 type AESParams = {
     key: string;
     iv: string;
 };
 
 type APIResult<T> = {
-    data: T
+    data: T;
 };
 
 type APIMangas = {
-    data: APIManga[]
+    data: APIManga[];
 };
 
 type APIManga = {
@@ -44,7 +46,7 @@ type TokenData = {
 }
 
 type PageParameters = {
-    keyData: string
+    keyData: string;
 };
 
 export default class extends DecoratableMangaScraper {
@@ -71,12 +73,12 @@ export default class extends DecoratableMangaScraper {
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
         const mangaId = new URL(url).pathname.match(/\/comics\/(\d+)/).at(1);
         const { id, name } = await this.FetchAPI<APIManga>(`./comics/book/info/${mangaId}`);
-        return new Manga(this, provider, id.toString(), name);
+        return new Manga(this, provider, `${id}`, name);
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
         const { data } = await this.FetchAPI<APIMangas>('./comics/book?rows_per_page=9999');
-        return data.map(({ id, name }) => new Manga(this, provider, id.toString(), name));
+        return data.map(({ id, name }) => new Manga(this, provider, `${id}`, name));
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
@@ -86,7 +88,7 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchPages(chapter: Chapter): Promise<Page<PageParameters>[]> {
         const { content } = await this.FetchAPI<APIPages>(`./comics/book/${chapter.Parent.Identifier}/chapter/${chapter.Identifier}`);
-        return content.map(({ url, key: keyData }) => new Page<PageParameters>(this, chapter, new URL(url), { keyData }));
+        return content.map(({ url, key: keyData }) => new Page<PageParameters>(this, chapter, new URL(url, this.URI), { keyData }));
     }
 
     private async FetchAPI<T extends JSONElement>(endpoint: string): Promise<T> {
