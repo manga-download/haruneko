@@ -6,7 +6,7 @@ new TestFixture({
         title: 'Raw18'
     },
     container: {
-        url: 'https://raw18.fit/manga/te-shu-bodeigado',
+        url: 'https://raw18.fun/manga/te-shu-bodeigado',
         id: '/manga/te-shu-bodeigado',
         title: '特殊ボディガード'
     },

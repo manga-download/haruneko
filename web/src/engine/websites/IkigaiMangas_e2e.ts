@@ -6,7 +6,7 @@ new TestFixture({
         title: 'Ikigai Mangas'
     },
     container: {
-        url: 'https://viralikigai.ozoviral.xyz/series/jinx-manhwa/',
+        url: 'https://viralikigai.learnixs.site/series/jinx-manhwa/',
         id: '/series/jinx-manhwa/',
         title: 'Jinx'
     },
