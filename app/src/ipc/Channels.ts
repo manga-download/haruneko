@@ -57,6 +57,8 @@ export namespace RemoteBrowserWindowController {
         OpenWindow = 'RemoteBrowserWindowController::OpenWindow',
         /** Channel for IPC callback with signature: `(windowID: number) => Promise<void>` */
         CloseWindow = 'RemoteBrowserWindowController::CloseWindow',
+        /** Channel for IPC callback with signature: `(windowID: number, width: number, height: number) => Promise<void>` */
+        SetSize = 'RemoteBrowserWindowController::SetSize',
         /** Channel for IPC callback with signature: `(windowID: number, show: boolean) => Promise<void>` */
         SetVisibility = 'RemoteBrowserWindowController::SetVisibility',
         /** Channel for IPC callback with signature: `<T extends JSONElement>(windowID: number, script: string) => Promise<T>` */
