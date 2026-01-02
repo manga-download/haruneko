@@ -7,9 +7,9 @@ import { GetBytesFromBase64, GetBytesFromUTF8 } from '../BufferEncoder';
 import { Delay } from '../BackgroundTimers';
 
 type APIResult = {
-    iv: boolean,
+    iv: boolean;
     data: string;
-}
+};
 
 type APISingleManga = {
     mangaDataAction: {
@@ -25,7 +25,7 @@ type APIMangas = {
         id: number;
         title: string;
     }[]
-}
+};
 
 type APIChapters = {
     releases: {
@@ -52,14 +52,14 @@ type APIPages = {
             }
         }
     }
-}
+};
 
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
     private readonly apiUrl = 'https://dilar.tube/api/mangas/';
 
     public constructor() {
-        super('dilar', `Dilar`, 'https://dilar.tube', Tags.Language.Arabic, Tags.Media.Manga, Tags.Source.Aggregator);
+        super('dilar', `Dilar`, 'https://dilar.tube', Tags.Language.Arabic, Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Source.Aggregator);
     }
     public override get Icon() {
         return icon;
@@ -133,7 +133,6 @@ export default class extends DecoratableMangaScraper {
     private async Decrypt(message: string): Promise<string> {
         const [b64plaintext, , b64Iv, keyData] = message.split('|'); //0 : plaintext in b64, 2 : iv in b64, 3: key in b64
         const plaintextBuffer = GetBytesFromBase64(b64plaintext);
-        const iv = GetBytesFromBase64(b64Iv);
         const key = new Uint8Array(await crypto.subtle.digest('SHA-256', GetBytesFromUTF8(keyData)));
         const secretKey = await crypto.subtle.importKey(
             'raw',
@@ -145,7 +144,7 @@ export default class extends DecoratableMangaScraper {
 
         const decrypted = await crypto.subtle.decrypt({
             name: 'AES-CBC',
-            iv: iv
+            iv: GetBytesFromBase64(b64Iv)
         }, secretKey, plaintextBuffer);
         return new TextDecoder('utf-8').decode(decrypted);
     }
