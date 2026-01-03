@@ -13,7 +13,7 @@ new TestFixture({
     child: {
         id: '/series/o-filho-mais-novo-do-mestre-espadachim/capitulo-136/',
         title: 'Capítulo 136'
-    },/* needs to be logged
+    }, /* needs to be logged
     entry: {
         index: 0,
         size: 508_506,

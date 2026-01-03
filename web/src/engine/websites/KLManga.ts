@@ -68,7 +68,7 @@ export default class extends DecoratableMangaScraper {
             'LHScan.png',
             'Credit_LHScan_5d52edc2409e7.jpg',
             '5e1ad960d67b2_5e1ad962338c7.jpg',
-        ]
+        ];
 
         const { content } = await this.FetchAPI<{ content: string }>(`./chapter/${chapter.Identifier}`);
         return content
