@@ -1,25 +1,20 @@
 import { BrowserWindow, type BrowserWindowConstructorOptions } from 'electron';
-import type { IPC } from './InterProcessCommunication';
-import { ApplicationWindow as Channels } from '../../../src/ipc/Channels';
+import { type IPC, Channels } from './InterProcessCommunication';
 
 export class ApplicationWindow extends BrowserWindow {
 
     private splash?: BrowserWindow = null;
 
-    constructor(options: BrowserWindowConstructorOptions) {
-        super(options);
-    }
-
-    public async RegisterChannels(ipc: IPC<Channels.Web, Channels.App>) {
+    public async RegisterChannels(ipc: IPC) {
         // TODO: Prevent duplicate registrations
-        ipc.Listen(Channels.App.ShowWindow, super.show.bind(this));
-        ipc.Listen(Channels.App.HideWindow, super.hide.bind(this));
-        ipc.Listen(Channels.App.Minimize, super.minimize.bind(this));
-        ipc.Listen(Channels.App.Maximize, super.maximize.bind(this));
-        ipc.Listen(Channels.App.Restore, super.restore.bind(this));
-        ipc.Listen(Channels.App.Close, super.close.bind(this));
-        ipc.Listen(Channels.App.OpenSplash, this.OpenSplash.bind(this));
-        ipc.Listen(Channels.App.CloseSplash, this.CloseSplash.bind(this));
+        ipc.Handle(Channels.ApplicationWindow.ShowWindow, super.show.bind(this));
+        ipc.Handle(Channels.ApplicationWindow.HideWindow, super.hide.bind(this));
+        ipc.Handle(Channels.ApplicationWindow.Minimize, super.minimize.bind(this));
+        ipc.Handle(Channels.ApplicationWindow.Maximize, super.maximize.bind(this));
+        ipc.Handle(Channels.ApplicationWindow.Restore, super.restore.bind(this));
+        ipc.Handle(Channels.ApplicationWindow.Close, super.close.bind(this));
+        ipc.Handle(Channels.ApplicationWindow.OpenSplash, this.OpenSplash.bind(this));
+        ipc.Handle(Channels.ApplicationWindow.CloseSplash, this.CloseSplash.bind(this));
     }
 
     private async OpenSplash(url: string) {
