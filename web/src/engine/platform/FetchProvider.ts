@@ -33,6 +33,6 @@ export const FetchGraphQL: typeof instance.FetchGraphQL = (request, operationNam
 /** {@inheritDoc FetchProvider.FetchNextJS} @see {@link FetchProvider.FetchNextJS} */
 export const FetchNextJS: typeof instance.FetchNextJS = (request, predicate) => instance.FetchNextJS(request, predicate);
 /** {@inheritDoc FetchProvider.FetchWindowScript} @see {@link FetchProvider.FetchWindowScript} */
-export const FetchWindowScript: typeof instance.FetchWindowScript = (request, script, delay?, timeout?, shinkSize?) => instance.FetchWindowScript(request, script, delay, timeout, shinkSize);
+export const FetchWindowScript: typeof instance.FetchWindowScript = (request, script, delay?, timeout?, show?) => instance.FetchWindowScript(request, script, delay, timeout, show);
 /** {@inheritDoc FetchProvider.FetchWindowPreloadScript} @see {@link FetchProvider.FetchWindowPreloadScript} */
 export const FetchWindowPreloadScript: typeof instance.FetchWindowPreloadScript = (request, preload, script, delay = 0, timeout = 60_000, shinkSize = false) => instance.FetchWindowPreloadScript(request, preload, script, delay, timeout, shinkSize);

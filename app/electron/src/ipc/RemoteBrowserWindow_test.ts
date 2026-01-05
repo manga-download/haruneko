@@ -26,7 +26,6 @@ describe('RemoteBrowserWindowController', () => {
             expect(fixture.mockIPC.Listen).toHaveBeenCalledWith(Channels.App.OpenWindow, expect.anything());
             expect(fixture.mockIPC.Listen).toHaveBeenCalledWith(Channels.App.CloseWindow, expect.anything());
             expect(fixture.mockIPC.Listen).toHaveBeenCalledWith(Channels.App.SetVisibility, expect.anything());
-            expect(fixture.mockIPC.Listen).toHaveBeenCalledWith(Channels.App.SetSize, expect.anything());
             expect(fixture.mockIPC.Listen).toHaveBeenCalledWith(Channels.App.ExecuteScript, expect.anything());
             expect(fixture.mockIPC.Listen).toHaveBeenCalledWith(Channels.App.SendDebugCommand, expect.anything());
             expect(fixture.mockIPC.Listen).toHaveBeenCalledWith(Channels.App.LoadURL, expect.anything());

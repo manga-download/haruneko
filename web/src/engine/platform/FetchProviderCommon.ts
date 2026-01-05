@@ -220,8 +220,8 @@ export abstract class FetchProvider {
      * @param delay - The time [ms] to wait after the window was fully loaded and before the {@link script} will be injected
      * @param timeout - The maximum time [ms] to wait for the result before a timeout error is thrown (excluding the {@link delay})
      */
-    public async FetchWindowScript<T extends void | JSONElement>(request: Request, script: ScriptInjection<T>, delay?: number, timeout?: number, shinkSize?: boolean): Promise<T> {
-        return this.FetchWindowPreloadScript<T>(request, () => undefined, script, delay, timeout, shinkSize);
+    public async FetchWindowScript<T extends void | JSONElement>(request: Request, script: ScriptInjection<T>, delay?: number, timeout?: number, show?: boolean): Promise<T> {
+        return this.FetchWindowPreloadScript<T>(request, () => undefined, script, delay, timeout, show);
     }
 
     /**
@@ -232,7 +232,7 @@ export abstract class FetchProvider {
      * @param delay - The time [ms] to wait after the window was fully loaded and before the {@link script} will be injected
      * @param timeout - The maximum time [ms] to wait for the result before a timeout error is thrown (excluding the {@link delay})
      */
-    public async FetchWindowPreloadScript<T extends void | JSONElement>(request: Request, preload: ScriptInjection<void>, script: ScriptInjection<T>, delay = 0, timeout = 60_000, shinkSize : boolean = false): Promise<T> {
+    public async FetchWindowPreloadScript<T extends void | JSONElement>(request: Request, preload: ScriptInjection<void>, script: ScriptInjection<T>, delay = 0, timeout = 60_000, show : boolean = false): Promise<T> {
 
         const invocations: {
             name: string;
@@ -243,7 +243,7 @@ export abstract class FetchProvider {
 
         win.BeforeWindowNavigate.Subscribe(async uri => {
             invocations.push({ name: 'BeforeNavigate', info: `URL: ${uri.href}` });
-            return this.featureFlags.VerboseFetchWindow.Value || shinkSize ? null : win.Hide();
+            return this.featureFlags.VerboseFetchWindow.Value || show ? null : win.Hide();
         });
 
         const destroy = async () => {
@@ -277,7 +277,6 @@ export abstract class FetchProvider {
                                 destroy();
                                 reject(new Exception(R.FetchProvider_FetchWindow_TimeoutError));
                             }, 150_000);
-                            if (shinkSize) win.SetSize(1280, 800); //if windows is shrinked, resize it for captcha interaction
                             await win.Show();
                             break;
                         case FetchRedirection.Automatic:
@@ -295,7 +294,7 @@ export abstract class FetchProvider {
             });
 
             invocations.push({ name: 'Open', info: `Request URL: ${request.url}` });
-            await win.Open(request, this.featureFlags.VerboseFetchWindow.Value || shinkSize, preload, shinkSize);
+            await win.Open(request, this.featureFlags.VerboseFetchWindow.Value || show, preload);
         });
     }
 }

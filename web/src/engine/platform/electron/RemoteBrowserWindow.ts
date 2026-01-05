@@ -45,12 +45,12 @@ export default class RemoteBrowserWindow implements IRemoteBrowserWindow {
         }
     }
 
-    public async Open(request: Request, show: boolean = false, preload: ScriptInjection<void> = '', shinkSize: boolean = false,) {
+    public async Open(request: Request, show: boolean = false, preload: ScriptInjection<void> = '') {
 
         const openOptions: BrowserWindowConstructorOptions = {
             show: show,
-            width: shinkSize ? 100 : 1280,
-            height: shinkSize ? 100 : 800,
+            width: 1280,
+            height: 800,
             center: true,
             webPreferences: {
                 sandbox: true,
@@ -89,10 +89,6 @@ export default class RemoteBrowserWindow implements IRemoteBrowserWindow {
         if (!isNaN(this.windowID)) {
             return this.ipc.Send<void>(Channels.App.CloseWindow, this.windowID);
         }
-    }
-
-    public async SetSize(width?: number, height?: number): Promise<void> {
-        this.ipc.Send<void>(Channels.App.SetSize, this.windowID, width, height);
     }
 
     public async Show(): Promise<void> {
