@@ -30,7 +30,7 @@ type APIChapters = {
     };
 };
 
-@Common.PagesSinglePageJS(`
+export const pageScript = `
     new Promise(resolve => {
         const interval = setInterval(() => {
             const images = [ ...document.querySelectorAll('.image-container img[data-image-index]') ];
@@ -39,7 +39,9 @@ type APIChapters = {
             if (!sources.some(src => src === '')) resolve(sources);
         }, 250);
     });
-`, 750, true)
+`;
+
+@Common.PagesSinglePageJS(pageScript, 750)
 @Common.ImageAjax(true)
 export class VTheme extends DecoratableMangaScraper {
 
@@ -55,35 +57,32 @@ export class VTheme extends DecoratableMangaScraper {
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        const mangaList: Manga[] = [];
-        for (let page = 1, run = true; run; page++) {
-            const mangas = await this.GetMangasFromPage(page, provider);
-            mangas.length > 0 ? mangaList.push(...mangas) : run = false;
-        }
-        return mangaList;
-    }
+        type This = typeof this;
+        return Array.fromAsync(async function* (this: This) {
+            for (let page = 1, run = true; run; page++) {
+                const { posts } = await FetchJSON<APIMangas>(new Request(new URL('./query?perPage=9999&page=' + page, this.apiURL)));
+                const mangas = posts.map(({ id, postTitle }) => new Manga(this, provider, `${id}`, postTitle));
+                mangas.length > 0 ? yield* mangas : run = false;
+            }
 
-    private async GetMangasFromPage(page: number, provider: MangaPlugin): Promise<Manga[]> {
-        const { posts } = await FetchJSON<APIMangas>(new Request(new URL('./query?perPage=9999&page=' + page, this.apiURL)));
-        return posts.map(({ id, postTitle }) => new Manga(this, provider, `${id}`, postTitle));
+        }.call(this));
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const chapterList: Chapter[] = [];
-        for (let page = 0, run = true; run; page++) {
-            const chapters = await this.GetChaptersFromPage(page, manga);
-            chapters.length > 0 ? chapterList.push(...chapters) : run = false;
-        }
-        return chapterList;
-    }
+        type This = typeof this;
+        return Array.fromAsync(async function* (this: This) {
+            for (let page = 0, run = true; run; page++) {
+                const { post: { chapters } } = await FetchJSON<APIChapters>(new Request(new URL(`./chapters?postId=${manga.Identifier}&take=999&skip=${page * 999}`, this.apiURL)));
+                const chaps = chapters
+                    .filter(({ isLocked, chapterPurchased }) => !isLocked || chapterPurchased)
+                    .map(({ number, title, slug: chapterSlug, mangaPost: { slug: mangaSlug } }) => {
+                        title = 'Chapter ' + number + (title ? ` - ${title}` : '');
+                        return new Chapter(this, manga, `/series/${mangaSlug}/${chapterSlug}`, title);
+                    });
+                chaps.length > 0 ? yield* chaps : run = false;
+            }
 
-    private async GetChaptersFromPage(page: number, manga: Manga): Promise<Chapter[]> {
-        const { post: { chapters } } = await FetchJSON<APIChapters>(new Request(new URL(`./chapters?postId=${manga.Identifier}&take=999&skip=${page * 999}`, this.apiURL)));
-        return chapters
-            .filter(({ isLocked, chapterPurchased }) => !isLocked || chapterPurchased)
-            .map(({ number, title, slug: chapterSlug, mangaPost: { slug: mangaSlug } }) => {
-                title = 'Chapter ' + number + (title ? ` - ${title}` : '');
-                return new Chapter(this, manga, `/series/${mangaSlug}/${chapterSlug}`, title);
-            });
+        }.call(this));
+
     }
 }

@@ -6,17 +6,17 @@ new TestFixture({
         title: 'Eternal Mangas'
     },
     container: {
-        url: 'https://eternalmangas.org/series/lo-siento-por-ser-una-tonta',
-        id: '1582',
-        title: 'Lo siento por ser una tonta'
+        url: 'https://eternalmangas.org/series/advertencia-sobre-bestias-salvajes',
+        id: '2942',
+        title: 'Advertencia sobre bestias salvajes'
     },
     child: {
-        id: '/series/lo-siento-por-ser-una-tonta/capitulo-14',
-        title: 'Chapter 14'
+        id: '/series/advertencia-sobre-bestias-salvajes/chapter-1',
+        title: 'Chapter 1'
     },
     entry: {
-        index: 0,
-        size: 304_618,
+        index: 7,
+        size: 64_630,
         type: 'image/webp'
     }
 }).AssertWebsite();
