@@ -162,6 +162,7 @@ import '../StickHorse_e2e';
 import '../StoneScape_e2e';
 import '../StrayFansub_e2e';
 import '../SumManga_e2e';
+import '../Summertoon_e2e';
 import '../TatakaeScan_e2e';
 import '../TheBlank_e2e';
 import '../TimeNaight_e2e';
