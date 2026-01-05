@@ -30,14 +30,14 @@ export default class RemoteBrowserWindow implements IRemoteBrowserWindow {
     }
 
     private async OnDomReady(windowID: number): Promise<void> {
-        if (windowID === this.windowID) {
+        if(windowID === this.windowID) {
             this.domReady.Dispatch();
         }
     }
 
     private async OnBeforeNavigate(windowID: number, url: string, isMainFrame: boolean, isSameDocument: boolean): Promise<void> {
-        if (windowID === this.windowID && url.startsWith('http') && !isSameDocument) {
-            if (isMainFrame) {
+        if(windowID === this.windowID && url.startsWith('http') && !isSameDocument) {
+            if(isMainFrame) {
                 this.beforeWindowNavigate.Value = new URL(url);
             } else {
                 this.beforeFrameNavigate.Value = new URL(url);
@@ -78,7 +78,7 @@ export default class RemoteBrowserWindow implements IRemoteBrowserWindow {
         };
 
         // NOTE: Keep in mind that forbidden headers are concealed with the prefix 'X-FetchAPI-'
-        if (request.headers) loadOptions.extraHeaders = Array.from(request.headers, ([key, value]) => `${key}: ${value}`).join('\n');
+        if(request.headers) loadOptions.extraHeaders = Array.from(request.headers, ([key, value]) => `${key}: ${value}`).join('\n');
         // TODO: Add body for POST request e.g., in case of submitting a form ...
         // if(/^POST$/i.test(request.method)) loadOptions.postData = ... // Array<(UploadRawData) | (UploadFile)>;
 
@@ -86,7 +86,7 @@ export default class RemoteBrowserWindow implements IRemoteBrowserWindow {
     }
 
     public async Close(): Promise<void> {
-        if (!isNaN(this.windowID)) {
+        if(!isNaN(this.windowID)) {
             return this.ipc.Send<void>(Channels.App.CloseWindow, this.windowID);
         }
     }
