@@ -4,7 +4,7 @@ import icon from './NyxScans.webp';
 import { VTheme } from './templates/VTheme';
 
 AddAntiScrapingDetection(async (invoke) => {
-    const result = await invoke<boolean>(`document.querySelector('body main.card > h1')?.textContent.trim() == 'One more step'`);
+    const result = await invoke<boolean>(`document.querySelector('body main.card > h1')?.textContent.trim() === 'One more step'`);
     return result ? FetchRedirection.Interactive : undefined;
 });
 
