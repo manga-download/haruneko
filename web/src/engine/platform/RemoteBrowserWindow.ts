@@ -10,7 +10,7 @@ export interface IRemoteBrowserWindow {
     get DOMReady(): IObservable<void, IRemoteBrowserWindow>;
     get BeforeWindowNavigate(): IObservable<URL, IRemoteBrowserWindow>;
     get BeforeFrameNavigate(): IObservable<URL, IRemoteBrowserWindow>;
-    Open(request: Request, show: boolean, preload: ScriptInjection<void>, offscreen: boolean): Promise<void>;
+    Open(request: Request, show: boolean, preload: ScriptInjection<void>, shrinkSize: boolean): Promise<void>;
     Close(): Promise<void>;
     Show(): Promise<void>;
     Hide(): Promise<void>;
