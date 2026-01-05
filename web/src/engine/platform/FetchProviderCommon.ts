@@ -219,6 +219,7 @@ export abstract class FetchProvider {
      * @param script - The JavaScript or function that will be evaluated within the browser window
      * @param delay - The time [ms] to wait after the window was fully loaded and before the {@link script} will be injected
      * @param timeout - The maximum time [ms] to wait for the result before a timeout error is thrown (excluding the {@link delay})
+     * @param show - Display browser window or not
      */
     public async FetchWindowScript<T extends void | JSONElement>(request: Request, script: ScriptInjection<T>, delay?: number, timeout?: number, show?: boolean): Promise<T> {
         return this.FetchWindowPreloadScript<T>(request, () => undefined, script, delay, timeout, show);
@@ -231,6 +232,7 @@ export abstract class FetchProvider {
      * @param script - The JavaScript or function that will be evaluated within the browser window
      * @param delay - The time [ms] to wait after the window was fully loaded and before the {@link script} will be injected
      * @param timeout - The maximum time [ms] to wait for the result before a timeout error is thrown (excluding the {@link delay})
+     * @param show - Display browser window or not
      */
     public async FetchWindowPreloadScript<T extends void | JSONElement>(request: Request, preload: ScriptInjection<void>, script: ScriptInjection<T>, delay = 0, timeout = 60_000, show : boolean = false): Promise<T> {
 
