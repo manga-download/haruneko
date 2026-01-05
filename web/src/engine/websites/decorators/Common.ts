@@ -535,7 +535,7 @@ export function PagesSinglePageCSS<E extends HTMLElement>(query: string, extract
  * @param chapter - A reference to the {@link Chapter} which shall be assigned as parent for the extracted pages
  * @param script - A JS script to extract the image links
  * @param delay - An initial delay [ms] before the {@link script} is executed
- * @param show - Open a visible window but very small to work with certain lazy loading types
+ * @param show - Show window or not
  */
 export async function FetchPagesSinglePageJS(this: MangaScraper, chapter: Chapter, script: string, delay = 0, show: boolean = false): Promise<Page[]> {
     const uri = new URL(chapter.Identifier, this.URI);
