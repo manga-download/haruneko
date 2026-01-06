@@ -596,7 +596,7 @@ export { default as Reyume } from './Reyume';
 export { default as RezoScans } from './RezoScans';
 export { default as RidiBooks } from './RidiBooks';
 export { default as RimacomiPlus } from './RimacomiPlus';
-export { default as RimuScan } from './RimuScan';
+export { default as RimuScans } from './RimuScans';
 export { default as RitharScans } from './RitharScans';
 export { default as RizzComics } from './RizzComics';
 export { default as RokariComics } from './RokariComics';
