@@ -6,7 +6,7 @@ export function RandomInt(max: number, min: number = 0) {
     return Math.round(RandomFloat(Math.ceil(min), Math.floor(max)));
 }
 
-export function RandomBytes(length: number) {
+export function RandomBytes(length: number): Uint8Array<ArrayBuffer> {
     return crypto.getRandomValues(new Uint8Array(length));
 }
 
