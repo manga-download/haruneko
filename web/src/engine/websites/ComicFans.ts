@@ -39,7 +39,7 @@ export default class extends DecoratableMangaScraper {
     private readonly apiUrl = 'https://api.comicfans.io/comic-backend/api/v1/content/';
     private readonly cdnUrl = 'https://static.comicfans.io/';
 
-    public constructor () {
+    public constructor() {
         super('comicfans', 'ComicFans', 'https://comicfans.io', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.English, Tags.Source.Aggregator);
     }
 
@@ -53,36 +53,26 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
         const mangaid = url.match(/\/comic\/(\d+)/).at(-1);
-        const apiEndpoint = new URL(`books/${mangaid}`, this.apiUrl);
-        const { data } = await FetchJSON<APIResult<APIManga>>(new Request(apiEndpoint));
-        return new Manga(this, provider, data.id.toString(), data.title.trim());
+        const { data: { id, title } } = await FetchJSON<APIResult<APIManga>>(new Request(new URL(`./books/${mangaid}`, this.apiUrl)));
+        return new Manga(this, provider, `${id}`, title.trim());
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        const url = new URL('books?&pageNumber=1&pageSize=9999', this.apiUrl);
-        const { data: { list } } = await FetchJSON<APIPagedResult<APIManga[]>>(new Request(url));
-        return list.map(manga => new Manga(this, provider, manga.id.toString(), manga.title.trim()));
+        const { data: { list } } = await FetchJSON<APIPagedResult<APIManga[]>>(new Request(new URL('./books?&pageNumber=1&pageSize=9999', this.apiUrl)));
+        return list.map(({ id, title }) => new Manga(this, provider, `${id}`, title.trim()));
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const chapterList = [];
-        for (let page = 1, run = true; run; page++) {
-            const chapters = await this.GetChaptersFromPage(manga, page);
-            chapters.length > 0 ? chapterList.push(...chapters) : run = false;
-        }
-        return chapterList.distinct();
-    }
-
-    private async GetChaptersFromPage(manga: Manga, page: number): Promise<Chapter[]> {
-        const url = new URL('chapters/page', this.apiUrl);
-        url.search = new URLSearchParams({
-            sortDirection: 'ASC',
-            bookId: manga.Identifier,
-            pageNumber: page.toString(),
-            pageSize: '100'
-        }).toString();
-        const { data: { list } } = await FetchJSON<APIPagedResult<APIChapter[]>>(new Request(url));
-        return list.map(chapter => new Chapter(this, manga, chapter.id.toString(), [ chapter.chapterOrder, chapter.title.trim() ].join(' - ')));
+        type This = typeof this;
+        const url = new URL(`./chapters/page?sortDirection=ASC&bookId=${manga.Identifier}&pageSize=100`, this.apiUrl);
+        return Array.fromAsync(async function* (this: This) {
+            for (let page = 1, run = true; run; page++) {
+                url.searchParams.set('pageNumber', `${page}`);
+                const { data: { list } } = await FetchJSON<APIPagedResult<APIChapter[]>>(new Request(url));
+                const chapters = list.map(chapter => new Chapter(this, manga, chapter.id.toString(), [chapter.chapterOrder, chapter.title.trim()].join(' - ')));
+                chapters.length > 0 ? yield* chapters : run = false;
+            }
+        }.call(this));
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {

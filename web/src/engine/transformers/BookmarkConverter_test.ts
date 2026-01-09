@@ -36,7 +36,6 @@ const legacyWebsiteIdentifierMapTestCases = [
     { sourceID: 'mangatale', targetID: 'ikiru' },
     { sourceID: 'manhuascan', targetID: 'kaliscan' },
     { sourceID: 'neteasecomic', targetID: 'bilibilimanhua'},
-    { sourceID: 'prismascans', targetID: 'demonsect' },
     { sourceID: 'reaperscansid', targetID: 'shinigamiid' },
     { sourceID: 'scanhentaimenu', targetID: 'xmanga' },
     { sourceID: 'shonenmagazine-pocket', targetID: 'shonenmagazine' },
