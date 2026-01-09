@@ -4,6 +4,7 @@ import type { Priority } from '../taskpool/DeferredTask';
 import { DecoratableMangaScraper, type Manga, Chapter, Page } from '../providers/MangaPlugin';
 import DeScramble from '../transformers/ImageDescrambler';
 import * as Common from './decorators/Common';
+
 import { DRMProvider } from './MangaGo.DRM';
 
 @Common.MangaCSS(/^{origin}\/read-manga\/[^/]+\/$/, 'div#page div.people-panel div.w-title h1')
