@@ -1,11 +1,13 @@
 import { Tags } from '../Tags';
 import icon from './WeLoveManga.webp';
-import { DecoratableMangaScraper, type Manga, type Chapter, type Page } from '../providers/MangaPlugin';
+import { FetchWindowScript } from '../platform/FetchProvider';
+import { DecoratableMangaScraper, type Manga, type Chapter } from '../providers/MangaPlugin';
 import * as FlatManga from './templates/FlatManga';
 import * as Common from './decorators/Common';
 
 @Common.MangaCSS(/^{origin}\/\d+\/$/, FlatManga.queryMangaTitle)
 @Common.MangasMultiPageCSS(FlatManga.queryMangas, FlatManga.MangasLinkGenerator)
+@Common.PagesSinglePageCSS(FlatManga.queryPages, (img: HTMLImageElement) => atob(img.dataset.img))
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
@@ -17,17 +19,14 @@ export default class extends DecoratableMangaScraper {
         return icon;
     }
 
-    public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        return FlatManga.FetchChaptersAJAX.call(this, manga, '/app/manga/controllers/cont.Listchapter.php?mid={manga}', FlatManga.queryChapters, (manga: Manga) => manga.Identifier.match(/\d+/).at(0));
+    public override Initialize(): Promise<void> {
+        return FetchWindowScript(new Request(this.URI), () => {
+            window.cookieStore.set('smartlink_shown_guest', '1');
+            window.cookieStore.set('smartlink_shown', '1');
+        });
     }
 
-    public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        return FlatManga.FetchPagesAJAX.call(
-            this,
-            chapter,
-            /load_image\s*\(\s*(\d+)\s*,\s*'list-imga'\s*\)/g,
-            '/app/manga/controllers/cont.listImg.php?cid={chapter}',
-            FlatManga.queryPages,
-            img => img.dataset.srcset);
+    public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
+        return FlatManga.FetchChaptersAJAX.call(this, manga, '/app/manga/controllers/cont.Listchapter.php?mid={manga}', FlatManga.queryChapters, (manga: Manga) => manga.Identifier.match(/\d+/).at(0));
     }
 }

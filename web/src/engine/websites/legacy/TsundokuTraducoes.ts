@@ -8,7 +8,7 @@ import { DecoratableMangaScraper } from '../../providers/MangaPlugin';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('tsundokutraducoes', `Tsundoku Traduções`, 'https://tsundokutraducoes.com.br' /*, Tags.Language.English, Tags ... */);
+        super('tsundokutraducoes', `Tsundoku Traduções`, 'https://tsundoku.com.br' /*, Tags.Language.English, Tags ... */);
     }
 
     public override get Icon() {
