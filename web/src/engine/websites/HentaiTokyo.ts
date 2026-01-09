@@ -19,17 +19,15 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        const mangaList: Manga[] = [];
-        for (let page = 1, run = true; run; page++) {
-            const mangas = await this.GetMangasFromPage(page, provider);
-            mangas.length > 0 ? mangaList.push(...mangas) : run = false;
-        }
-        return mangaList;
-    }
-    private async GetMangasFromPage(page: number, provider: MangaPlugin): Promise<Manga[]> {
-        const response = await Fetch(new Request(new URL(`./page/${page}/`, this.URI)));
-        if (response.status === 404) return [];
-        const mangas = [...new DOMParser().parseFromString(await response.text(), 'text/html').querySelectorAll<HTMLAnchorElement>('div.lista ul li a[href^="https://hentaitokyo.net"]')];
-        return mangas.map(manga => new Manga(this, provider, manga.pathname, manga.text.trim()));
+        type This = typeof this;
+        return Array.fromAsync(async function* (this: This) {
+            for (let page = 1, run = true; run; page++) {
+                const response = await Fetch(new Request(new URL(`./page/${page}/`, this.URI)));
+                const mangasElements = [...new DOMParser().parseFromString(await response.text(), 'text/html').querySelectorAll<HTMLAnchorElement>('div.lista ul li a[href^="https://hentaitokyo.net"]')];
+                const mangas = mangasElements.map(manga => new Manga(this, provider, manga.pathname, manga.title.trim()));
+                response.status === 404 ? run = false : yield* mangas;
+            }
+
+        }.call(this));
     }
 }

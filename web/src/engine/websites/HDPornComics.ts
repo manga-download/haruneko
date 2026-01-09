@@ -4,19 +4,9 @@ import { DecoratableMangaScraper, Manga, type MangaPlugin } from '../providers/M
 import * as Common from './decorators/Common';
 import { FetchCSS, FetchWindowScript } from '../platform/FetchProvider';
 
-function MangaLinkExtractor(element: HTMLMetaElement, uri: URL) {
-    return {
-        id: uri.pathname,
-        title: element.content.split('|').at(0).trim().replace(/comic porn$/i, '').trim(),
-    };
-}
-function PageExtractor(element: HTMLAnchorElement): string {
-    return element.href;
-}
-
-@Common.MangaCSS(/^{origin}\/[^/]+\/$/, 'meta[property="og:title"]', MangaLinkExtractor)
+@Common.MangaCSS<HTMLMetaElement>(/^{origin}\/[^/]+\/$/, 'meta[property="og:title"]', (element, uri) => ({ id: uri.pathname, title: element.content.split('|').at(0).trim().replace(/comic porn$/i, '').trim() }))
 @Common.ChaptersUniqueFromManga()
-@Common.PagesSinglePageCSS('article.postContent div.scrollmenu figure a', PageExtractor)
+@Common.PagesSinglePageCSS<HTMLAnchorElement>('article.postContent div.scrollmenu figure a', anchor => anchor.href)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
@@ -30,33 +20,30 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
         const nonce = await FetchWindowScript<string>(new Request(this.URI), 'misha_loadmore_params.nonce', 500);
-        const mangaList: Manga[] = [];
-        for (let page = 1, run = true; run; page++) {
-            const mangas = await this.GetMangasFromPage(page, provider, nonce);
-            mangas.length > 0 ? mangaList.push(...mangas) : run = false;
-        }
-        return mangaList;
-    }
-
-    private async GetMangasFromPage(page: number, provider: MangaPlugin, nonce: string) {
-        const uri = new URL('/wp-admin/admin-ajax.php', this.URI);
         const body = new URLSearchParams({
             action: 'loadmore',
             query: JSON.stringify({
                 posts_per_page: '250',
             }),
-            page: page.toString(),
             security: nonce
-        }).toString();
-
-        const request = new Request(uri, {
-            method: 'POST', body: body, headers: {
-                'Content-Type': 'application/x-www-form-urlencoded;',
-                Origin: this.URI.origin,
-                Referer: this.URI.href
-            }
         });
-        const data = await FetchCSS<HTMLAnchorElement>(request, 'a[class]');
-        return data.map(item => new Manga(this, provider, item.pathname, item.querySelector('h2').textContent.trim().replace(/comic porn$/i, '').trim()));
+
+        type This = typeof this;
+        return Array.fromAsync(async function* (this: This) {
+            for (let page = 1, run = true; run; page++) {
+                body.set('page', `${page}`);
+                const request = new Request(new URL('/wp-admin/admin-ajax.php', this.URI), {
+                    method: 'POST', body: body, headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded;',
+                        Origin: this.URI.origin,
+                        Referer: this.URI.href
+                    }
+                });
+                const anchors = await FetchCSS<HTMLAnchorElement>(request, 'a[class]');
+                const mangas = anchors.map(item => new Manga(this, provider, item.pathname, item.querySelector('h2').textContent.trim().replace(/comic porn$/i, '').trim()));
+                mangas.length > 0 ? yield* mangas : run = false;
+            }
+
+        }.call(this));
     }
 }

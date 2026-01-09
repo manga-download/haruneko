@@ -2,32 +2,27 @@ import { Tags } from '../Tags';
 import icon from './CookMana.webp';
 import { Chapter, DecoratableMangaScraper, Page, Manga, type MangaPlugin } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { FetchWindowScript } from '../platform/FetchProvider';
+import { FetchJSON } from '../platform/FetchProvider';
 
-type APIManga = {
-    id: string,
-    title: string
-}
+type APIResult<T> = {
+    data: T;
+};
 
-type APIChapter = {
-    id: string,
-    title: string
-}
+type APIMedia = {
+    id: string;
+    title: string;
+};
 
-type APIPage = {
-    folder: string,
-    folder2: string | null,
-    folder3: string,
-    id: string,
-    parentId: string,
-    urls: string
-}
+type APIPages = {
+    folder3: string;
+    urls: string;
+};
 
+@Common.MangaCSS(/^{origin}\/episode\/\d+$/, 'div.detail-mana div.dt-ma-img div.dt-left-tt h1', (element, uri) => ({ id: uri.pathname.split('/').at(-1), title: element.textContent.trim() }))
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
-
-    private readonly cdn1 = 'https://www.11angle.net/';
-    private readonly cdn2 = 'https://www.pl3040.com/';
+    private readonly apiUrl = 'https://cookmana.com/api/';
+    private readonly CDNv2 = 'https://www.pl3040.com/';
 
     public constructor() {
         super('cookmana', 'CookMana', 'https://cookmana.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Korean, Tags.Source.Aggregator);
@@ -37,62 +32,18 @@ export default class extends DecoratableMangaScraper {
         return icon;
     }
 
-    public override ValidateMangaURL(url: string): boolean {
-        return new RegExpSafe(`^${this.URI.origin}/episode/\\d+/1/1$`).test(url);
-    }
-
-    public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
-        const data = await FetchWindowScript<APIManga>(new Request(new URL(url)), 'coverData');
-        return new Manga(this, provider, data.id, data.title.trim());
-    }
-
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        const mangaList: Manga[] = [];
-        for (let page = 1, run = true; run; page++) {
-            const mangas = await this.GetMangasFromPage(page, provider);
-            mangas.length > 0 ? mangaList.push(...mangas) : run = false;
-        }
-        return mangaList;
-    }
-
-    private async GetMangasFromPage(page: number, provider: MangaPlugin): Promise<Manga[]> {
-        const data = await FetchWindowScript<APIManga[]>(new Request(new URL(`/lastest/${page}/0`, this.URI)), 'lastestList');
-        return data?.map(item => new Manga(this, provider, item.id, item.title.trim())) ?? [];
+        const { data } = await FetchJSON<APIResult<APIMedia[]>>(new Request(new URL('./lastest/list?page=1&type=0&pageSize=9999', this.apiUrl)));
+        return data.map(({ id, title }) => new Manga(this, provider, id, title));
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const chapterList = [];
-        for (let page = 1, run = true; run; page++) {
-            const chapters = await this.GetChaptersFromPage(manga, page);
-            chapters.length > 0 ? chapterList.push(...chapters) : run = false;
-        }
-        return chapterList;
-    }
-
-    private async GetChaptersFromPage(manga: Manga, page: number): Promise<Chapter[]> {
-        const url = new URL(`/episode/${manga.Identifier}/${page}/1`, this.URI);
-        const data = await FetchWindowScript<APIChapter[]>(new Request(url), 'episodeList');
-        return data?.map(chapter => new Chapter(this, manga, chapter.id, chapter.title.replace(manga.Title, '').trim())) ?? [];
+        const { data } = await FetchJSON<APIResult<APIMedia[]>>(new Request(new URL(`./episode/list/${manga.Identifier}?page=1&order=desc&pageSize=9999`, this.apiUrl)));
+        return data.map(({ id, title }) => new Chapter(this, manga, id, title.replace(manga.Title, '').trim() || title.trim()));
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const url = new URL(`/detail/${chapter.Parent.Identifier}/${chapter.Identifier}`, this.URI);
-        const data = await FetchWindowScript<APIPage>(new Request(url), 'toonsDetail');
-        return this.ComputeImagesUrl(data)?.map(page => new Page(this, chapter, page)) ?? [];
-    }
-
-    private ComputeImagesUrl(data: APIPage): URL[] {
-        const urls = data.urls?.split(',');
-        if (data.folder2 != '') {
-            data.folder2 = data.folder2.split('/').at(0);
-        }
-        return urls?.map(page => {
-            if (data.folder2 != '') {
-                page = page.split('/').at(-1);
-                return new URL(`${this.cdn2}/kr/${data.folder2}/${data.parentId}/${data.id}/${page}`);
-            } else {
-                return data.folder ? new URL(`${this.cdn1}/image_pst-123/${data.folder}/${data.parentId}/${page}`) : new URL(`${this.cdn1}/toon_pst-123/${page}`);
-            }
-        }) ?? [];
+        const { data: { urls, folder3 } } = await FetchJSON<APIResult<APIPages>>(new Request(new URL(`./detail/${chapter.Identifier}`, this.apiUrl)));
+        return urls.split(',')?.map(page => new Page(this, chapter, new URL(`${this.CDNv2}kr/${folder3}/${page.split('/').at(-1)}`))) ?? [];
     }
 }

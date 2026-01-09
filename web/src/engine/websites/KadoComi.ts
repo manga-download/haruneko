@@ -7,44 +7,42 @@ import type { Priority } from '../taskpool/DeferredTask';
 
 type APIResult<T> = {
     result: T[];
-}
+};
 
 type APIManga = {
-    code: string,
-    title: string
-}
+    code: string;
+    title: string;
+};
 
 type APIChapter = {
-    id: string,
-    title: string,
-    subtitle: string
-}
+    id: string;
+    title: string;
+    subtitle: string;
+};
 
 type APIMangaDetails = {
     work: {
-        code: string,
-        title: string,
-    },
-    firstEpisodes: APIResult<APIChapter>
-    ,
-    latestEpisodes: APIResult<APIChapter>
-    ,
+        code: string;
+        title: string;
+    }
+    firstEpisodes: APIResult<APIChapter>;
+    latestEpisodes: APIResult<APIChapter>;
     comics: {
         result: {
-            episodes: APIChapter[]
-        }[]
+            episodes: APIChapter[];
+        }[];
     }
-}
+};
 
 type APIPages = {
-    manuscripts: APIPage[]
-}
+    manuscripts: APIPage[];
+};
 
 type APIPage = {
-    drmMode: string,
-    drmHash: string,
-    drmImageUrl: string
-}
+    drmMode: string;
+    drmHash: string;
+    drmImageUrl: string;
+};
 
 export default class extends DecoratableMangaScraper {
     private readonly apiURL = 'https://comic-walker.com/api/';
@@ -63,23 +61,20 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
         const workCode = new URL(url).pathname.match(/\/detail\/([^/]+)/).at(1); //strip search
-        const { work } = await FetchJSON<APIMangaDetails>(new Request(new URL(`./contents/details/work?workCode=${workCode}`, this.apiURL)));
-        return new Manga(this, provider, workCode, work.title.trim());
+        const { work: { title } } = await FetchJSON<APIMangaDetails>(new Request(new URL(`./contents/details/work?workCode=${workCode}`, this.apiURL)));
+        return new Manga(this, provider, workCode, title);
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        const mangaList: Manga[] = [];
-        for (let page = 0, run = true; run; page++) { //start at 0 otherwise miss mangas
-            const mangas = await this.GetMangasFromPage(page, provider);
-            mangas.length > 0 ? mangaList.push(...mangas) : run = false;
-        }
-        return mangaList.distinct();
-    }
+        type This = typeof this;
+        return Array.fromAsync(async function* (this: This) {
+            for (let page = 0, run = true; run && page < 1000; page++) {
+                const { result } = await FetchJSON<APIResult<APIManga>>(new Request(new URL(`./search/keywords?keywords=&limit=100&offset=${page * 100}`, this.apiURL)));
+                const mangas = result.map(({ code, title }) => new Manga(this, provider, code, title));
+                mangas.length > 0 ? yield* mangas : run = false;
+            }
 
-    private async GetMangasFromPage(page: number, provider: MangaPlugin): Promise<Manga[]> {
-        const url = new URL(`./search/keywords?keywords=&limit=100&offset=${page * 100}`, this.apiURL);
-        const { result } = await FetchJSON<APIResult<APIManga>>(new Request(url));
-        return result.map(manga => new Manga(this, provider, manga.code, manga.title.trim()));
+        }.call(this));
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {

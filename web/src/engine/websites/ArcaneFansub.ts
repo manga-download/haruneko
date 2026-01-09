@@ -1,5 +1,5 @@
 import { Tags } from '../Tags';
-import icon from './VortexScans.webp';
+import icon from './ArcaneFansub.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as MangaStream from './decorators/WordPressMangaStream';
 import * as Common from './decorators/Common';
@@ -12,7 +12,7 @@ import * as Common from './decorators/Common';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('vortexscansfree', 'Vortex Scans Free', 'https://vortexscansfree.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.English, Tags.Source.Aggregator);
+        super('arcanefansub', 'Arcane Fansub', 'https://arcanefansub.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Turkish, Tags.Source.Scanlator);
     }
 
     public override get Icon() {
