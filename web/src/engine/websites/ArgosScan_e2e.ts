@@ -6,7 +6,7 @@ new TestFixture({
         title: 'Argos Scan'
     },
     container: {
-        url: 'https://argoscomic.com/6b217fc9-6ef8-4708-8e96-2d06e0a78349/o-apocalipse-chegou',
+        url: 'https://aniargos.com/6b217fc9-6ef8-4708-8e96-2d06e0a78349/o-apocalipse-chegou',
         id: '/6b217fc9-6ef8-4708-8e96-2d06e0a78349/o-apocalipse-chegou',
         title: 'O Apocalipse Chegou',
     },
