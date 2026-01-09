@@ -7,7 +7,7 @@ new TestFixture({
     },
     container: {
         url: 'https://www.zinmanga.net/manga/meet-in-the-middle',
-        id: JSON.stringify({ post: '3914', slug: '/manga/meet-in-the-middle' }),
+        id: JSON.stringify({ slug: '/manga/meet-in-the-middle' }),
         title: 'Meet in The Middle'
     },
     child: {
