@@ -1,17 +1,14 @@
 import { Tags } from '../Tags';
 import icon from './RaijinScans.webp';
+import { FetchWindowScript } from '../platform/FetchProvider';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Madara from './decorators/WordPressMadara';
 import * as Common from './decorators/Common';
 
-function PageExtractor(element: HTMLDivElement) {
-    return window.atob(element.dataset.src);
-}
-
 @Madara.MangaCSS(/^{origin}\/manga\/[^/]+\/$/, 'div.serie-info h1.serie-title')
 @Madara.MangasMultiPageAJAX()
 @Madara.ChaptersSinglePageAJAXv2()
-@Common.PagesSinglePageCSS('div.protected-image-data', PageExtractor)
+@Common.PagesSinglePageJS(`[...document.querySelectorAll('div.image-skeleton img')].map( img => img.dataset.src ?? img.src );`, 1500)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
@@ -21,5 +18,9 @@ export default class extends DecoratableMangaScraper {
 
     public override get Icon() {
         return icon;
+    }
+
+    public override Initialize(): Promise<void> {
+        return FetchWindowScript(new Request(new URL('manga/-/', this.URI)), '');
     }
 }

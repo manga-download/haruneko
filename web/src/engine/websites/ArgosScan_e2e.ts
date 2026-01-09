@@ -6,19 +6,17 @@ new TestFixture({
         title: 'Argos Scan'
     },
     container: {
-        url: 'https://argoscomic.com/manga/o-apocalipse-chegou/',
-        id: '/manga/o-apocalipse-chegou/',
+        url: 'https://aniargos.com/6b217fc9-6ef8-4708-8e96-2d06e0a78349/o-apocalipse-chegou',
+        id: '/6b217fc9-6ef8-4708-8e96-2d06e0a78349/o-apocalipse-chegou',
         title: 'O Apocalipse Chegou',
-        timeout: 10000
-
     },
     child: {
-        id: '/manga/o-apocalipse-chegou/1a-temporada/capitulo-09/',
-        title: 'Capítulo 09',
+        id: '/6b217fc9-6ef8-4708-8e96-2d06e0a78349/o-apocalipse-chegou/capitulo/9',
+        title: 'Capítulo 9',
     },
     entry: {
         index: 1,
-        size: 271_682,
+        size: 270_536,
         type: 'image/webp'
     }
 }).AssertWebsite();

@@ -12,7 +12,7 @@ const chapterScript = `
 
 const pageScript = `
     [...document.querySelectorAll('div.page-break img.wp-manga-chapter-img[id^="image-"]')]
-        .map(img => [...img.attributes].find(attribute => attribute.value.startsWith('/validate2.php'))?.value)
+        .map(img => [...img.attributes].find(attribute => attribute.value.startsWith('/encript.php'))?.value)
         .filter(img => img);
 `;
 

@@ -1,11 +1,13 @@
 import { Tags } from '../Tags';
 import icon from './RawInu.webp';
-import { DecoratableMangaScraper, type Manga, type Chapter, type Page } from '../providers/MangaPlugin';
+import { FetchWindowScript } from '../platform/FetchProvider';
+import { DecoratableMangaScraper, type Manga, type Chapter } from '../providers/MangaPlugin';
 import * as FlatManga from './templates/FlatManga';
 import * as Common from './decorators/Common';
 
-@Common.MangaCSS(FlatManga.pathManga, FlatManga.queryMangaTitle)
+@Common.MangaCSS(/^{origin}\/manga-[^/]+\.html$/, FlatManga.queryMangaTitle)
 @Common.MangasMultiPageCSS(FlatManga.queryMangas, FlatManga.MangasLinkGenerator)
+@Common.PagesSinglePageCSS(FlatManga.queryPages, (img: HTMLImageElement) => atob(img.dataset.img))
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
@@ -17,17 +19,14 @@ export default class extends DecoratableMangaScraper {
         return icon;
     }
 
-    public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        return FlatManga.FetchChaptersAJAX.call(this, manga, '/app/manga/controllers/cont.Listchapter.php?slug={manga}', FlatManga.queryChapters);
+    public override Initialize(): Promise<void> {
+        return FetchWindowScript(new Request(this.URI), () => {
+            window.cookieStore.set('smartlink_shown_guest', '1');
+            window.cookieStore.set('smartlink_shown', '1');
+        });
     }
 
-    public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        return FlatManga.FetchPagesAJAX.call(
-            this,
-            chapter,
-            /imgsChapload\s*\(\s*(\d+)\s*,\s*'chapImgslist'\s*\)/g,
-            '/app/manga/controllers/cont.imagesChap.php?cid={chapter}',
-            FlatManga.queryPages,
-            img => img.dataset.srcset);
+    public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
+        return FlatManga.FetchChaptersAJAX.call(this, manga, '/app/manga/controllers/cont.Listchapter.php?slug={manga}', FlatManga.queryChapters);
     }
 }
