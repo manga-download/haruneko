@@ -1,9 +1,9 @@
 import { Tags } from '../Tags';
 import icon from './KLManga.webp';
+import { GetHexFromBytes } from '../BufferEncoder';
+import { FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
 import { DecoratableMangaScraper, Manga, Chapter, Page, type MangaPlugin } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
-import { GetHexFromBytes } from '../BufferEncoder';
 
 type APIManga = {
     name: string;
@@ -22,7 +22,6 @@ function CleanMangaTitle(title: string): string {
 
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
-    private readonly apiUrl = 'https://klz9.com/api/';
 
     public constructor() {
         super('klmanga', 'KLManga', 'https://klz9.com', Tags.Media.Manga, Tags.Language.Japanese, Tags.Source.Aggregator);
@@ -37,7 +36,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override ValidateMangaURL(url: string): boolean {
-        return new RegExpSafe(`^${this.URI.origin}/[^/.]+\.html$`).test(url);
+        return new RegExpSafe(`^${this.URI.origin}/[^/]+.html$`).test(url);
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
@@ -56,31 +55,39 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const serverReplacement = {
-            'https://imfaclub.com': 'https://h1.klimv1.xyz',
-            'https://s2.imfaclub.com': 'https://h2.klimv1.xyz',
-            'https://s4.imfaclub.com': 'https://h4.klimv1.xyz',
-            'https://ihlv1.xyz': 'https://h1.klimv1.xyz',
-            'https://s2.ihlv1.xyz': 'https://h2.klimv1.xyz',
-            'https://s4.ihlv1.xyz': 'https://h4.klimv1.xyz',
-            'https://h1.klimv1.xyz': 'https://j1.jfimv2.xyz',
-            'https://h2.klimv1.xyz': 'https://j2.jfimv2.xyz',
-            'https://h4.klimv1.xyz': 'https://j4.jfimv2.xyz',
-        };
+        const hosts = new Map<string, string>([
+            ['imfaclub.com', 'j1.jfimv2.xyz'],
+            ['s2.imfaclub.com', 'j2.jfimv2.xyz'],
+            ['s4.imfaclub.com', 'j4.jfimv2.xyz'],
+            ['ihlv1.xyz', 'j1.jfimv2.xyz'],
+            ['s2.ihlv1.xyz', 'j2.jfimv2.xyz'],
+            ['s4.ihlv1.xyz', 'j4.jfimv2.xyz'],
+        ]);
+
+        const excluded = [
+            'LHScan.png',
+            'Credit_LHScan_5d52edc2409e7.jpg',
+            '5e1ad960d67b2_5e1ad962338c7.jpg',
+        ];
 
         const { content } = await this.FetchAPI<{ content: string }>(`./chapter/${chapter.Identifier}`);
-        return content.split('\n').map(page => new Page(this, chapter,
-            new URL(Object.entries(serverReplacement).reduce((currentString, [originalUrl, newUrl]) => currentString.replace(originalUrl, newUrl), page.trim()))));
+        return content
+            .split('\n')
+            .filter(link => !excluded.some(file => link.endsWith(file)))
+            .map(link => {
+                const uri = new URL(link);
+                uri.hostname = hosts.get(uri.hostname) ?? uri.hostname;
+                return new Page(this, chapter, uri);
+            });
     }
 
     private async FetchAPI<T extends JSONElement>(endpoint: string): Promise<T> {
-        const key = 'KL9K40zaSyC9K40vOMLLbEcepIFBhUKXwELqxlwTEF';
-        const timestamp = Math.floor(Date.now() / 1000).toString();
-        const signature = GetHexFromBytes(new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(`${timestamp}.${key}`))));
-        return FetchJSON<T>(new Request(new URL(endpoint, this.apiUrl), {
+        const timestamp = `${Date.now() / 1000 | 0}`;
+        const signature = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(`${timestamp}.KL9K40zaSyC9K40vOMLLbEcepIFBhUKXwELqxlwTEF`));
+        return FetchJSON<T>(new Request(new URL(endpoint, 'https://klz9.com/api/'), {
             headers: {
-                'x-client-ts': timestamp,
-                'x-client-sig': signature
+                'X-Client-Ts': timestamp,
+                'X-Client-Sig': GetHexFromBytes(new Uint8Array(signature)),
             }
         }));
     }
