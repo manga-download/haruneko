@@ -6,7 +6,7 @@ new TestFixture({
         title: 'Raven Scans'
     },
     container: {
-        url: 'https://ravenscans.com/manga/seitokai-ni-mo-ana-wa-aru/',
+        url: 'https://ravenscans.org/manga/seitokai-ni-mo-ana-wa-aru/',
         id: '/manga/seitokai-ni-mo-ana-wa-aru/',
         title: 'Seitokai ni mo Ana wa Aru!',
     },

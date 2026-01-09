@@ -1,12 +1,12 @@
 import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'mangalink',
         title: 'MangaLink'
     },
     container: {
-        url: 'https://link-manga.com/readcomics/i-was-the-final-boss/',
+        url: 'https://link-manga.net/readcomics/i-was-the-final-boss/',
         id: JSON.stringify({ post: '86560', slug: '/readcomics/i-was-the-final-boss/' }),
         title: 'I Was the Final Boss'
     },
@@ -20,6 +20,4 @@ const config = {
         size: 1_805_356,
         type: 'image/jpeg'
     }*/
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();
