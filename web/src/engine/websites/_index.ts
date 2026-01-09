@@ -242,7 +242,6 @@ export { default as KaliScan } from './KaliScan';
 export { default as KanMan } from './KanMan';
 export { default as Kanzenin } from './Kanzenin';
 export { default as KaynScan } from './KaynScan';
-export { default as Kedi } from './Kedi';
 export { default as KimiComi } from './KimiComi';
 export { default as KingOfShojo } from './KingOfShojo';
 export { default as Kiryuu } from './Kiryuu';
