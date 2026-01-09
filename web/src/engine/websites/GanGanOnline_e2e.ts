@@ -1,6 +1,6 @@
 import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'ganganonline',
         title: 'ガンガンONLINE (Gangan Online)'
@@ -19,6 +19,4 @@ const config = {
         size: 131_874,
         type: 'image/webp'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

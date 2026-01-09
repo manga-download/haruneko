@@ -34,7 +34,6 @@ export const legacyWebsiteIdentifierMap = new Map([
     [ 'mangatale', 'ikiru' ],
     [ 'manhuascan', 'kaliscan' ],
     [ 'neteasecomic', 'bilibilimanhua' ],
-    [ 'prismascans', 'demonsect' ],
     [ 'reaperscansid', 'shinigamiid' ],
     [ 'scanhentaimenu', 'xmanga' ],
     [ 'shonenmagazine-pocket', 'shonenmagazine' ],
