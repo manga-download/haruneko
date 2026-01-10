@@ -17,6 +17,10 @@ type CLIOptions = {
     origin?: string;
 }
 
+app.commandLine.appendSwitch('allow-running-insecure-content');
+app.commandLine.appendSwitch('disable-background-timer-throttling');
+app.commandLine.appendSwitch('disable-backgrounding-occluded-windows');
+
 function ParseCLI(): CLIOptions {
     try {
         const argv = new Command()
