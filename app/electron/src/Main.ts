@@ -33,7 +33,7 @@ function ParseCLI(): CLIOptions {
 type Manifest = {
     url: string;
     'user-agent': undefined | string;
-    'chromium-args': undefined | string;
+    'user-data-dir': undefined | string;
 };
 
 async function LoadManifest(): Promise<Manifest> {
@@ -43,9 +43,10 @@ async function LoadManifest(): Promise<Manifest> {
 }
 
 async function SetupUserDataDirectory(manifest: Manifest): Promise<void> {
-    // TODO: This detection is more like a hack and does not use the provided path
-    if(manifest['chromium-args']?.includes('--user-data-dir=userdata')) {
-        app.setPath('userData', path.resolve(path.dirname(app.getPath('exe')), 'userdata'));
+    const userDataDir =  manifest['user-data-dir'];
+    // TODO: Do not replace when already set via commandline
+    if(/* !argv['user-data-dir'] && */ userDataDir) {
+        app.setPath('userData', path.isAbsolute(userDataDir) ? userDataDir : path.resolve(path.dirname(app.getPath('exe')), userDataDir));
     }
 }
 
