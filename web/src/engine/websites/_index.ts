@@ -548,6 +548,7 @@ export { default as PhiliaScans } from './PhiliaScans';
 export { default as PhoenixScansIT } from './PhoenixScansIT';
 export { default as Piccoma } from './Piccoma';
 export { default as PiedPiper } from './PiedPiper';
+export { default as PieScans } from './PieScans';
 export { default as PinkSeaUnicorn } from './PinkSeaUnicorn';
 export { default as PixHentai } from './PixHentai';
 export { default as Pixiv } from './Pixiv';
