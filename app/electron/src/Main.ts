@@ -47,7 +47,7 @@ async function LoadManifest(): Promise<Manifest> {
 }
 
 async function SetupUserDataDirectory(manifest: Manifest): Promise<void> {
-    const userDataDir =  manifest['user-data-dir'];
+    const userDataDir = manifest['user-data-dir'];
     // TODO: Do not replace when already set via commandline
     if(/* !argv['user-data-dir'] && */ userDataDir) {
         app.setPath('userData', path.isAbsolute(userDataDir) ? userDataDir : path.resolve(path.dirname(app.getPath('exe')), userDataDir));
