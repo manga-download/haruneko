@@ -6,7 +6,6 @@ import * as Common from './decorators/Common';
 import { FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
 import type { Priority } from '../taskpool/DeferredTask';
 import DeScramble from '../transformers/ImageDescrambler';
-import { RandomText } from '../Random';
 
 type APIMangas = {
     comics: APIManga[];
@@ -32,38 +31,40 @@ type PageKey = {
     key?: number[];
 };
 
-function pageScript(eventName: string) {
-    return `
-        new Promise(async resolve => {
-            let exports = undefined;
+const pageScript = `
+    new Promise(async resolve => {
+        let exports = undefined;
 
-            WebAssembly.instantiateStreaming = new Proxy(WebAssembly.instantiateStreaming, {
-                async apply(target, thisArg, args) {
-                    const result = await Reflect.apply(target, thisArg, args);
-                    exports = result.instance.exports;
-                    dispatchEvent(new CustomEvent('${ eventName }'));
-                    return result;
-                }
-            });
+        WebAssembly.instantiateStreaming = new Proxy(WebAssembly.instantiateStreaming, {
+            async apply(target, thisArg, args) {
+                const result = await Reflect.apply(target, thisArg, args);
+                exports = result.instance.exports;
+                const interval = setInterval(async () => {
+                    try {
 
-            addEventListener('${ eventName }', async (_e) => {
-                const res = await fetch('https://api.yurigarden.com/chapters/' + location.pathname.split('/').pop(), {
-                    headers: {
-                        'x-app-origin': 'https://yurigarden.com',
-                        'x-custom-lang': 'vi'
-                    }
-                });
+                        if (typeof exports.cd !== "function") return;
 
-                const json = await res.json();
-                const chapter = json.encrypted ? JSON.parse(exports.cd(json)) : json;
-                const pages = chapter.pages || [];
-                const result = pages.map(p => {
-                    return { url: p.url.replace('_credit', ''), key: p.key ? exports.dc([p.key]).at(0) : undefined };
-                });
-                resolve(result);
-            }, { once: true });
-        });`;
-}
+                        clearInterval(interval);
+                        const res = await fetch('https://api.yurigarden.com/chapters/' + location.pathname.split('/').pop(), {
+                            headers: {
+                                'x-app-origin': 'https://yurigarden.com',
+                                'x-custom-lang': 'vi'
+                            }
+                        });
+                        const json = await res.json();
+                        const chapter = json.encrypted ? JSON.parse(exports.cd(json)) : json;
+                        const pages = (chapter.pages || []).map(p => {
+                            return { url: p.url.replace('_credit', ''), key: p.key ? exports.dc([p.key]).at(0) : undefined };
+                        });
+                        resolve(pages);
+                    } catch { }
+                }, 50);
+                return result;
+            }
+        });
+    });
+`;
+
 export default class extends DecoratableMangaScraper {
     private apiUrl = 'https://api.yurigarden.com/';
     private CDNUrl = 'https://db.yurigarden.com/storage/v1/object/public/yuri-garden-store/';
@@ -103,7 +104,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page<PageKey>[]> {
-        const pages = await FetchWindowScript<PageData[]>(new Request(new URL(`./comic/${chapter.Parent.Identifier}/${chapter.Identifier}`, this.URI)), pageScript(RandomText(32)));
+        const pages = await FetchWindowScript<PageData[]>(new Request(new URL(`./comic/${chapter.Parent.Identifier}/${chapter.Identifier}`, this.URI)), pageScript);
         return pages.map(({ key, url }) => new Page<PageKey>(this, chapter, new URL(url.startsWith('http') ? url : this.CDNUrl + url), { key, Referer: this.URI.href }));
     }
 
