@@ -11,7 +11,7 @@ new TestFixture({
         title: 'Friends'
     },
     child: {
-        id: '/manga/revenge-by-harem/bolum-13/',
+        id: '/manga/friends/bolum-40/',
         title: 'Bölüm 40'
     },
     entry: {
