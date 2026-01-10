@@ -18,7 +18,7 @@
         "@svelte-put/dragscroll": "4.0.0",
         "@sveltejs/vite-plugin-svelte": "6.2.4",
         "@tsconfig/svelte": "5.0.6",
-        "@types/react": "19.2.7",
+        "@types/react": "19.2.8",
         "@types/react-dom": "19.2.3",
         "@types/wicg-file-system-access": "2023.10.7",
         "@vitejs/plugin-react": "5.1.2",
