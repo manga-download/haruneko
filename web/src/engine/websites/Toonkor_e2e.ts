@@ -1,5 +1,4 @@
-﻿/* NW.js crash on website initialize => CloudFlare
-import { TestFixture } from '../../../test/WebsitesFixture';
+﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
 new TestFixture({
     plugin: {
@@ -7,7 +6,7 @@ new TestFixture({
         title: 'Toonkor'
     },
     container: {
-        url: 'https://tkor11.com/허니-트러블',
+        url: 'https://tkor086.com/허니-트러블',
         id: encodeURI('/허니-트러블'),
         title: '허니 트러블'
     },
@@ -21,4 +20,3 @@ new TestFixture({
         type: 'image/jpeg'
     }
 }).AssertWebsite();
-*/
