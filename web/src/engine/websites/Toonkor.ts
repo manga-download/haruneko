@@ -17,7 +17,6 @@ const pageScript = `
 @Common.PagesSinglePageJS(pageScript, 1500)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
-    private readonly hostRegexp = /https?:\/\/(?:toonkor|tkor)([\d]+)?\.[a-z]+/;
 
     public constructor() {
         super('toonkor', `Toonkor`, 'https://tkor086.com', Tags.Media.Manhwa, Tags.Language.Korean, Tags.Source.Aggregator, Tags.Accessibility.DomainRotation);
@@ -29,17 +28,11 @@ export default class extends DecoratableMangaScraper {
 
     public override async Initialize(): Promise<void> {
         this.URI.href = await FetchWindowScript<string>(new Request(new URL('https://t.me/s/toonkor_com')), `
-            new Promise(resolve => {
-                //fetch telegram messages with links, reverse it because last one is more recent one, and get the first matching our regex
-                const tkLinks = [...document.querySelectorAll('section.tgme_channel_history div.tgme_widget_message_wrap .tgme_widget_message_text a ')].reverse();
-                for (const link of tkLinks) {
-                    if ( ${this.hostRegexp}.test(link.href)) {
-                        resolve(link.href);
-                        break;
-                    }
-                }
-            });
-        `, 500);;
+            document.querySelector([
+                'div.tgme_widget_message_wrap:last-of-type a[href^="https://toonkor"]',
+                'div.tgme_widget_message_wrap:last-of-type a[href^="https://tkor"]',
+            ].join(', '))?.href;
+        `, 500) ?? this.URI.href;
         console.log(`Assigned URL '${this.URI}' to ${this.Title}`);
     }
 }
