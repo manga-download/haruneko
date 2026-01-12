@@ -107,7 +107,6 @@ import '../MangaSpark_e2e';
 import '../MangaStarz_e2e';
 import '../MangaSushi_e2e';
 import '../MangaTilkisi_e2e';
-import '../MangaTRNet_e2e';
 import '../MangaWOW_e2e';
 import '../MangaWT_e2e';
 import '../ManHatic_e2e';
