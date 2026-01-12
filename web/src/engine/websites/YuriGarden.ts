@@ -31,42 +31,44 @@ type PageKey = {
     key?: number[];
 };
 
-const pageScript = `
-    new Promise(async resolve => {
-        let exports = undefined;
+function pageScript(apiUrl: string) {
+    return `
+        new Promise(async resolve => {
+            let exports = undefined;
 
-        WebAssembly.instantiateStreaming = new Proxy(WebAssembly.instantiateStreaming, {
-            async apply(target, thisArg, args) {
-                const result = await Reflect.apply(target, thisArg, args);
-                exports = result.instance.exports;
-                const interval = setInterval(async () => {
-                    try {
+            WebAssembly.instantiateStreaming = new Proxy(WebAssembly.instantiateStreaming, {
+                async apply(target, thisArg, args) {
+                    const result = await Reflect.apply(target, thisArg, args);
+                    exports = result.instance.exports;
+                    const interval = setInterval(async () => {
+                        try {
 
-                        if (typeof exports.cd !== "function") return;
+                            if (typeof exports.cd !== "function") return;
 
-                        clearInterval(interval);
-                        const res = await fetch('https://api.yurigarden.com/chapters/' + location.pathname.split('/').pop(), {
-                            headers: {
-                                'x-app-origin': 'https://yurigarden.com',
-                                'x-custom-lang': 'vi'
-                            }
-                        });
-                        const json = await res.json();
-                        const chapter = json.encrypted ? JSON.parse(exports.cd(json)) : json;
-                        const pages = (chapter.pages || []).map(p => {
-                            return { url: p.url.replace('_credit', ''), key: p.key ? exports.dc([p.key]).at(0) : undefined };
-                        });
-                        resolve(pages);
-                    } catch { }
-                }, 50);
-                return result;
-            }
+                            clearInterval(interval);
+                            const res = await fetch('${apiUrl}chapters/' + location.pathname.split('/').pop(), {
+                                headers: {
+                                    'x-app-origin': window.location.origin,
+                                    'x-custom-lang': 'vi'
+                                }
+                            });
+                            const json = await res.json();
+                            const chapter = json.encrypted ? JSON.parse(exports.cd(json)) : json;
+                            const pages = (chapter.pages || []).map(p => {
+                                return { url: p.url.replace('_credit', ''), key: p.key ? exports.dc([p.key]).at(0) : undefined };
+                            });
+                            resolve(pages);
+                        } catch { }
+                    }, 50);
+                    return result;
+                }
+            });
         });
-    });
 `;
+}
 
 export default class extends DecoratableMangaScraper {
-    private apiUrl = 'https://api.yurigarden.com/';
+    private apiUrl = 'https://api.yurigarden.com/api/';
     private CDNUrl = 'https://db.yurigarden.com/storage/v1/object/public/yuri-garden-store/';
 
     public constructor() {
@@ -104,7 +106,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page<PageKey>[]> {
-        const pages = await FetchWindowScript<PageData[]>(new Request(new URL(`./comic/${chapter.Parent.Identifier}/${chapter.Identifier}`, this.URI)), pageScript);
+        const pages = await FetchWindowScript<PageData[]>(new Request(new URL(`./comic/${chapter.Parent.Identifier}/${chapter.Identifier}`, this.URI)), pageScript(this.apiUrl));
         return pages.map(({ key, url }) => new Page<PageKey>(this, chapter, new URL(url.startsWith('http') ? url : this.CDNUrl + url), { key, Referer: this.URI.href }));
     }
 
@@ -157,7 +159,8 @@ export default class extends DecoratableMangaScraper {
             headers: {
                 Origin: this.URI.origin,
                 Referer: this.URI.href,
-                'x-app-origin': this.URI.origin
+                'x-app-origin': this.URI.origin,
+                'x-custom-lang': 'vi',
             },
         }));
     }
