@@ -10,44 +10,44 @@ import { WebsiteResourceKey as R } from '../../i18n/ILocale';
 
 type APISerie = {
     licence: {
-        id_licence: number,
-        titre_licence: string,
+        id_licence: number;
+        titre_licence: string;
         articles: {
-            ref: number,
-            titre: string,
-            ebook_statut: boolean
+            ref: number;
+            titre: string;
+            ebook_statut: boolean;
         }[]
     }
-}
+};
 
 type APISeries = {
     licences: APISerie['licence'][];
-}
+};
 
 type APIEbook = {
-    success: boolean,
-    message: string,
+    success: boolean;
+    message: string;
     ebook: {
-        max_page: number
+        max_page: number;
     }
-}
+};
 
 type APIImages = {
     images: {
-        ref: number,
-        key: string,
-        w: number,
-        h: number,
-        param: string
+        ref: number;
+        key: string;
+        w: number;
+        h: number;
+        param: string;
     }[]
-}
+};
 
 type PageInfo = {
     descrambleBlock: {
-        width: number,
-        height: number,
+        width: number;
+        height: number;
     }
-}
+};
 
 export default class extends DecoratableMangaScraper {
 
@@ -81,34 +81,31 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        const mangaList: Manga[] = [];
-        for (let page = 0, run = true; run; page++) {
-            const mangas = await this.GetMangasFromPage(page, provider);
-            mangas.length > 0 ? mangaList.push(...mangas) : run = false;
-        }
-        return mangaList;
-    }
-
-    private async GetMangasFromPage(page: number, provider: MangaPlugin): Promise<Manga[]> {
-        const { licences } = await this.FetchAPI<APISeries>(this.apiUrl, './licences/', {
-            ebook: '1',
-            limit: '96',
-            index: `${page}`,
-        });
-        return licences.map(item => new Manga(this, provider, item.id_licence.toString(), item.titre_licence));
+        type This = typeof this;
+        return Array.fromAsync(async function* (this: This) {
+            for (let page = 0, run = true; run && page < 1000; page++) {
+                const { licences } = await this.FetchAPI<APISeries>(this.apiUrl, './licences/', {
+                    ebook: '1',
+                    limit: '96',
+                    index: `${page}`,
+                });
+                const mangas = licences.map(({ id_licence: id, titre_licence: title }) => new Manga(this, provider, `${id}`, title));
+                mangas.length > 0 ? yield* mangas : run = false;
+            }
+        }.call(this));
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const { licence: { articles } } = await this.FetchAPI<APISerie>(this.apiUrl, './licence/', { id_licence: manga.Identifier });
         return articles.filter(item => item.ebook_statut)
-            .map(item => {
-                const title = item.titre.replace(manga.Title, '').replace(/^\s*-\s*/, '').trim();
-                return new Chapter(this, manga, item.ref.toString(), title);
+            .map(({ ref, titre }) => {
+                const title = titre.replace(manga.Title, '').replace(/^\s*-\s*/, '').trim();
+                return new Chapter(this, manga, `${ref}`, title);
             });
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page<PageInfo>[]> {
-        const { success, ebook } = await this.FetchAPI<APIEbook>(this.apiUrl, './ebook/', { ref: chapter.Identifier });
+        const { success, ebook: { max_page } } = await this.FetchAPI<APIEbook>(this.apiUrl, './ebook/', { ref: chapter.Identifier });
         if (!success) {
             throw new Exception(R.Plugin_Common_Chapter_UnavailableError);
         }
@@ -119,19 +116,19 @@ export default class extends DecoratableMangaScraper {
             w: '1920',
             h: '1080',
             webp: 'false',
-            devicePixelRatio: (3/2).toFixed(1),
-            nb_pages: '' + ebook.max_page,
+            devicePixelRatio: (3 / 2).toFixed(1),
+            nb_pages: '' + max_page,
             ref: chapter.Identifier,
         });
 
-        return images.map(item => new Page<PageInfo>(this, chapter, new URL('./hm-img?' + new URLSearchParams({
+        return images.map(({ key, param, w, h }) => new Page<PageInfo>(this, chapter, new URL('./hm-img?' + new URLSearchParams({
             prio: 'h',
-            k: item.key,
-            p: item.param,
+            k: key,
+            p: param,
         }), this.imageCDN), {
             descrambleBlock: {
-                width: item.w,
-                height: item.h,
+                width: w,
+                height: h,
             }
         }));
     }
@@ -139,15 +136,15 @@ export default class extends DecoratableMangaScraper {
     public override async FetchImage(page: Page<PageInfo>, priority: Priority, signal: AbortSignal): Promise<Blob> {
         const blob = await Common.FetchImageAjax.call(this, page, priority, signal);
         return DeScramble(blob, async (image, ctx) => {
-            const block = page.Parameters.descrambleBlock;
+            const { height, width } = page.Parameters.descrambleBlock;
             const decryptedDrmData = window.atob(page.Link.searchParams.get('k')).split('|');
             for (let i = 0; i < decryptedDrmData.length; i++) {
                 const pieceMatrix = decryptedDrmData[i].split(';');
-                const sourceY = (this.scramblingMatrix[i][0] - 1) * block.height;
-                const sourceX = (this.scramblingMatrix[i][1] - 1) * block.width;
-                const destY = (parseInt(pieceMatrix[0]) - 1) * block.height;
-                const destX = (parseInt(pieceMatrix[1]) - 1) * block.width;
-                ctx.drawImage(image, sourceX, sourceY, block.width, block.height, destX, destY, block.width, block.height);
+                const sourceY = (this.scramblingMatrix[i][0] - 1) * height;
+                const sourceX = (this.scramblingMatrix[i][1] - 1) * width;
+                const destY = (parseInt(pieceMatrix[0]) - 1) * height;
+                const destX = (parseInt(pieceMatrix[1]) - 1) * width;
+                ctx.drawImage(image, sourceX, sourceY, width, height, destX, destY, width, height);
             }
         });
     }
