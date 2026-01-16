@@ -4,7 +4,7 @@ import { Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from 
 import * as Common from './decorators/Common';
 import { FetchCSS, FetchJSON } from '../platform/FetchProvider';
 
-// TODO : No more manga, only novels
+// TODO: No more manga, only novels
 
 const imgURL = 'https://static.tapread.com';
 
