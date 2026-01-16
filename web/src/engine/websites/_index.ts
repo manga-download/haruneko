@@ -666,7 +666,6 @@ export { default as TarotScans } from './TarotScans';
 export { default as TatakaeScan } from './TatakaeScan';
 export { default as TCBScans } from './TCBScans';
 export { default as Team1x1 } from './Team1x1';
-export { default as TecnoScan } from './TecnoScan';
 export { default as TempestScans } from './TempestScans';
 export { default as TempleScan } from './TempleScan';
 export { default as TempleScanEsp } from './TempleScanEsp';
