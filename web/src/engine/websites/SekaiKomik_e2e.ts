@@ -6,7 +6,7 @@ new TestFixture({
         title: 'SekaiKomik'
     },
     container: {
-        url: 'https://www.sekaikomik.icu/manga/circles/',
+        url: 'https://www.sekaikomik.lat/manga/circles/',
         id: '/manga/circles/',
         title: 'Circles'
     },
@@ -17,7 +17,7 @@ new TestFixture({
     },
     entry: {
         index: 2,
-        size: 259_614,
+        size: 278_267,
         type: 'image/jpeg'
     }
 }).AssertWebsite();
