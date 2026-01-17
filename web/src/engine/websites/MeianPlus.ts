@@ -117,7 +117,7 @@ export default class extends DecoratableMangaScraper {
             h: '1080',
             webp: 'false',
             devicePixelRatio: (3 / 2).toFixed(1),
-            nb_pages: '' + max_page,
+            nb_pages: `${max_page}`,
             ref: chapter.Identifier,
         });
 
