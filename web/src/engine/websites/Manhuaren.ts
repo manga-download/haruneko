@@ -56,7 +56,6 @@ export default class extends DecoratableMangaScraper {
                 const mangas = UpdateComicItems ? UpdateComicItems.map(({ Title: title, UrlKey: key }) => new Manga(this, provider, `/${key}/`, title)) : [];
                 mangas.length > 0 ? yield* mangas : run = false;
             }
-
         }.call(this));
     }
 }
