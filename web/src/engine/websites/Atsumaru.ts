@@ -71,7 +71,6 @@ export default class extends DecoratableMangaScraper {
                 const mangas = items.map(({ id, title }) => new Manga(this, provider, id, title));
                 mangas.length > 0 ? yield* mangas : run = false;
             }
-
         }.call(this));
     }
 

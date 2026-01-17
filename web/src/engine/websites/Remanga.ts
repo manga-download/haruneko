@@ -70,7 +70,6 @@ export default class extends DecoratableMangaScraper {
                 const mangas = !results ? [] : results.map(({ dir, main_name: mainName, secondary_name: altName }) => new Manga(this, provider, dir, mainName ?? altName));
                 mangas.length > 0 ? yield* mangas : run = false;
             }
-
         }.call(this));
     }
 
