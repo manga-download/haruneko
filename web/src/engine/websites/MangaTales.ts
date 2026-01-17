@@ -6,88 +6,88 @@ import type { Priority } from '../taskpool/DeferredTask';
 import { GetBytesFromBase64, GetBytesFromUTF8 } from '../BufferEncoder';
 
 type EncryptedData = {
-    iv: boolean,
+    iv: boolean;
     data: string;
 };
 
 type PackedData = Record<string, JSONElement> & {
-    cols: string[],
-    isCompact: boolean,
-    isObject: boolean,
-    isArray: boolean,
-    maxLevel: number,
-    rows: PackedData[],
-}
+    cols: string[];
+    isCompact: boolean;
+    isObject: boolean;
+    isArray: boolean;
+    maxLevel: number;
+    rows: PackedData[];
+};
 
 type MangaSearchRestriction = {
-    include: string[],
-    exclude: string[],
+    include: string[];
+    exclude: string[];
 };
 
 type MangaSearch = {
-    title?: string,
-    oneshot?: boolean,
-    manga_types: MangaSearchRestriction,
-    story_status: MangaSearchRestriction,
-    translation_status: MangaSearchRestriction,
-    categories: MangaSearchRestriction,
+    title?: string;
+    oneshot?: boolean;
+    manga_types: MangaSearchRestriction;
+    story_status: MangaSearchRestriction;
+    translation_status: MangaSearchRestriction;
+    categories: MangaSearchRestriction;
     chapters: {
-        min?: string,
-        max?: string,
+        min?: string;
+        max?: string;
     },
     dates: {
-        start?: string,
-        end?: string,
+        start?: string;
+        end?: string;
     },
-    page: number
+    page: number;
 };
 
 type APISingleManga = {
     mangaDataAction: {
         mangaData: {
-            id: number,
-            title: string
+            id: number;
+            title: string;
         }
     }
 };
 
 type APIMangas = {
     mangas?: {
-        id: number,
-        title: string
+        id: number;
+        title: string;
     }[]
 };
 
 type APIChapters = {
     mangaReleases: {
-        team_id: number,
+        team_id: number;
         teams: {
-            id: number,
-            name: string
+            id: number;
+            name: string;
         }[],
-        volume: number,
-        title: string,
-        chapter: number
+        volume: number;
+        title: string;
+        chapter: number;
     }[]
 };
 
 type APIPages = {
     globals: {
-        pageUrl: string,
+        pageUrl: string;
         wla: {
             configs: {
-                http_media_server: string,
-                media_server: string
+                http_media_server: string
+                media_server: string;
             }
         }
     },
     readerDataAction: {
         readerData: {
             release: {
-                hq_pages: string,
-                mq_pages: string,
+                hq_pages: string;
+                mq_pages: string;
                 lq_pages: string
-            }
+            };
         }
     }
 };
@@ -122,7 +122,7 @@ export default class extends DecoratableMangaScraper {
                 const data = await FetchJSON<EncryptedData | PackedData | APIMangas>(new Request(new URL('search', this.apiUrl), {
                     method: 'POST',
                     headers: {
-                        'content-type': 'application/json',
+                        'Content-Type': 'application/json',
                     },
                     body: JSON.stringify(<MangaSearch>{
                         manga_types: unrestricted,
