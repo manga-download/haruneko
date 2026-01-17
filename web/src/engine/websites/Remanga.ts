@@ -64,7 +64,7 @@ export default class extends DecoratableMangaScraper {
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
         type This = typeof this;
         return Array.fromAsync(async function* (this: This) {
-            for (let page = 1, run = true; run && page < 1000; page++) {
+            for (let page = 1, run = true; run ; page++) {
                 await Delay(500);
                 const { results } = await this.FetchAPI<APIMangas>(`./search/catalog/?count=30&ordering=score&page=${page}`);
                 const mangas = !results ? [] : results.map(({ dir, main_name: mainName, secondary_name: altName }) => new Manga(this, provider, dir, mainName ?? altName));
