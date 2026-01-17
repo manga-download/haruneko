@@ -82,6 +82,13 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchImage(page: Page<PageParam>, priority: Priority, signal: AbortSignal): Promise<Blob> {
         const blob = await Common.FetchImageAjax.call(this, page, priority, signal, true);
-        return page.Parameters.mask ? GetTypedData(new Uint8Array(await blob.arrayBuffer()).map(byte => byte ^ page.Parameters.mask)) : blob;
+        return page.Parameters.mask ? GetTypedData(this.Xor(new Uint8Array(await blob.arrayBuffer()), page.Parameters.mask)) : blob;
+    }
+
+    private Xor(sourceArray: Uint8Array, mask: number) {
+        const result = new Uint8Array(sourceArray.length);
+        for (let index = 0; index < sourceArray.length; index++)
+            result[index] = sourceArray[index] ^ mask;
+        return result.buffer;
     }
 }
