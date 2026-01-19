@@ -18,6 +18,11 @@ jobs:
           repository: ${{ github.repository }}
           ref: ${{ github.ref }}
           fetch-depth: 1
+      - name: Setup Flatpak
+        if: startsWith(matrix.os, 'ubuntu')
+        run: |
+          sudo apt update
+          sudo apt install -y flatpak-builder
       - name: Setup Snapcraft
         if: startsWith(matrix.os, 'ubuntu')
         run: |
