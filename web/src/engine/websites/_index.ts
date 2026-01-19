@@ -164,7 +164,6 @@ export { default as Ganma } from './Ganma';
 export { default as GarciaManga } from './GarciaManga';
 export { default as GDScans } from './GDScans';
 export { default as GenzToon } from './GenzToon';
-export { default as GManga } from './GManga';
 export { default as Gntai } from './Gntai';
 export { default as GodaComic } from './GodaComic';
 export { default as GodaManhua } from './GodaManhua';
