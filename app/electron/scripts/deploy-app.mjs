@@ -66,7 +66,12 @@ if (process.platform === 'win32') {
 }
 
 if (process.platform === 'linux') {
+    const flatpak = await import('./bundle-app-flatpak.mjs');
+    dirTemp = await redist(electronVersion, process.platform, 'arm64');
+    await flatpak.bundle(dirApp, dirRes, dirTemp, dirOut);
+    /*
     const snap = await import('./bundle-app-snap.mjs');
     dirTemp = await redist(electronVersion, process.platform, 'x64');
     await snap.bundle(dirApp, dirRes, dirTemp, dirOut);
+    */
 }
