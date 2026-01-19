@@ -15,7 +15,7 @@ export async function bundle(blinkApplicationSourceDirectory, blinkApplicationRe
     // TODO: include ffmpeg
     // TODO: include imagemagick
     // TODO: include kindlegen
-    await createSnapImage(blinkDeploymentTemporaryDirectory, blinkDeploymentOutputDirectory);
+    await createFlatpakImage(blinkDeploymentTemporaryDirectory, blinkDeploymentOutputDirectory);
 }
 
 async function bundleApp(blinkApplicationSourceDirectory, blinkDeploymentTemporaryDirectory) {
