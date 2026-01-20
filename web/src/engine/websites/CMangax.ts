@@ -44,7 +44,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public constructor() {
-        super('cmangax', 'CMangax', 'https://cmangax10.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Vietnamese, Tags.Source.Aggregator, Tags.Accessibility.DomainRotation);
+        super('cmangax', 'CMangax', 'https://cmangax11.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Vietnamese, Tags.Source.Aggregator, Tags.Accessibility.DomainRotation);
     }
 
     public override get Icon() {

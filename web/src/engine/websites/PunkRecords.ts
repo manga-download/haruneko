@@ -24,18 +24,12 @@ type GQLPages = {
     };
 };
 
-function MangaExtractor(anchor: HTMLAnchorElement) {
-    return {
-        id: anchor.pathname.split('/').at(-1),
-        title: anchor.querySelector<HTMLParagraphElement>('p.chakra-text').textContent.trim()
-    };
-}
-
-@Common.MangasSinglePageCSS('/mangas', 'ul li a[href*="/mangas/"]', MangaExtractor)
+@Common.MangasSinglePageCSS<HTMLAnchorElement>('/mangas', 'ul li a[href*="/mangas/"]', anchor => ({ id: anchor.pathname.split('/').at(-1), title: anchor.querySelector<HTMLParagraphElement>('p.chakra-text').textContent.trim() }))
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
-    private readonly apiURL = new URL('https://api.punkrecordz.com/graphql');
+    private readonly CDNurl = new URL('https://api.punkrecordz.com/');
+    private readonly apiURL = new URL('./graphql', this.CDNurl);
 
     public constructor() {
         super('littlegarden', 'Punk Records', 'https://punkrecordz.com', Tags.Language.English, Tags.Language.French, Tags.Media.Manga, Tags.Media.Manhwa, Tags.Source.Scanlator);
@@ -60,29 +54,25 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const chapterList: Chapter[] = [];
-        for (let skip = 0, run = true; run; skip += 100) {
-            const chapters = await this.GetChaptersFromPage(manga, skip);
-            chapters.length > 0 ? chapterList.push(...chapters) : run = false;
-        }
-        return chapterList;
-    }
-
-    private async GetChaptersFromPage(manga: Manga, skip: number): Promise<Chapter[]> {
-        const { chapters } = await this.FetchAPI<GQLChapters>(`
-            query ($slug: String, $skip: Int) {
-                chapters(skip: $skip, limit: 100, where: {
-                    deleted: false
-                    published: true
-                    manga: { slug: $slug }
-                }, order: [{ field: "number", order: -1 }]) {
-                    number
-                    name
-                }
+        type This = typeof this;
+        return Array.fromAsync(async function* (this: This) {
+            for (let skip = 0, run = true; run; skip += 100) {
+                const { chapters: chaptersData } = await this.FetchAPI<GQLChapters>(`
+                    query ($slug: String, $skip: Int) {
+                        chapters(skip: $skip, limit: 100, where: {
+                            deleted: false
+                            published: true
+                            manga: { slug: $slug }
+                        }, order: [{ field: "number", order: -1 }]) {
+                            number
+                            name
+                        }
+                    }
+                `, { slug: manga.Identifier, skip });
+                const chapters = chaptersData.map(({ number }) => new Chapter(this, manga, `${number}`, `${number}`));
+                chapters.length > 0 ? yield* chapters : run = false;
             }
-        `, { slug: manga.Identifier, skip });
-
-        return chapters.map(({ number }) => new Chapter(this, manga, number.toString(), number.toString()));
+        }.call(this));
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
@@ -101,7 +91,7 @@ export default class extends DecoratableMangaScraper {
             slug: chapter.Parent.Identifier,
             number: parseFloat(chapter.Identifier)
         });
-        return pages.map(({ original }) => new Page(this, chapter, new URL(original)));
+        return pages.map(({ original }) => new Page(this, chapter, original.startsWith('http') ? new URL(original) : new URL(`./images/webp/${original}.webp`, this.CDNurl), { Referer: this.URI.href }));
     }
 
     private async FetchAPI<T extends JSONElement>(query: string, variables: JSONObject): Promise<T> {
