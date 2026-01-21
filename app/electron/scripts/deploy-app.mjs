@@ -68,9 +68,9 @@ if (process.platform === 'win32') {
 if (process.platform === 'linux') {
     const flatpak = await import('./bundle-app-flatpak.mjs');
     dirTemp = await redist(electronVersion, process.platform, 'x64');
-    await flatpak.bundle(dirApp, dirRes, dirTemp, dirOut, 'x64');
+    await flatpak.bundle(dirApp, dirRes, dirTemp, dirOut, 'x86_64');
     dirTemp = await redist(electronVersion, process.platform, 'arm64');
-    await flatpak.bundle(dirApp, dirRes, dirTemp, dirOut, 'arm64');
+    await flatpak.bundle(dirApp, dirRes, dirTemp, dirOut, 'aarch64');
     // ...
     const snap = await import('./bundle-app-snap.mjs');
     dirTemp = await redist(electronVersion, process.platform, 'x64');

@@ -9,13 +9,13 @@ const pkgConfig = JSON.parse(await fs.readFile(pkgFile));
  * Bundle Flatpak Image for Linux
  * See: ...
  */
-export async function bundle(blinkApplicationSourceDirectory, blinkApplicationResourcesDirectory, blinkDeploymentTemporaryDirectory, blinkDeploymentOutputDirectory, targetArchitecture) {
+export async function bundle(blinkApplicationSourceDirectory, blinkApplicationResourcesDirectory, blinkDeploymentTemporaryDirectory, blinkDeploymentOutputDirectory, flatpakArchitecture) {
     await bundleApp(blinkApplicationSourceDirectory, blinkDeploymentTemporaryDirectory);
     await updateBinary(blinkApplicationResourcesDirectory, blinkDeploymentTemporaryDirectory);
     // TODO: include ffmpeg
     // TODO: include imagemagick
     // TODO: include kindlegen
-    await createFlatpakImage(blinkDeploymentTemporaryDirectory, blinkDeploymentOutputDirectory, targetArchitecture === 'x64' ? 'x86_64' : 'aarch64');
+    await createFlatpakImage(blinkDeploymentTemporaryDirectory, blinkDeploymentOutputDirectory, flatpakArchitecture);
 }
 
 async function bundleApp(blinkApplicationSourceDirectory, blinkDeploymentTemporaryDirectory) {
@@ -36,8 +36,8 @@ async function createFlatpakImage(blinkDeploymentTemporaryDirectory, blinkDeploy
     } catch { }
     const yaml = await createFlatpakManifest(blinkDeploymentTemporaryDirectory, blinkDeploymentOutputDirectory);
     try {
-        await run(`flatpak-builder ./build ./manifest.yaml --repo=./repo --arch=${flatpakArchitecture} --install-deps-from=flathub --force-clean`, blinkDeploymentOutputDirectory);
-        await run(`flatpak build-bundle --arch=${flatpakArchitecture} ./repo ${flatpak} app.${pkgConfig.name.replace('-', '.')}`, blinkDeploymentOutputDirectory);
+        await run(`flatpak-builder ./build --repo=./repo ./manifest.yaml --arch=${flatpakArchitecture} --install-deps-from=flathub --force-clean`, blinkDeploymentOutputDirectory);
+        await run(`flatpak build-bundle ./repo ${flatpak} app.${pkgConfig.name.replace('-', '.')} --arch=${flatpakArchitecture}`, blinkDeploymentOutputDirectory);
         // flatpak install app.hakuneko.electron
         // flatpak run app.hakuneko.electron
         //await run(`sudo mv ${pkgConfig.name}*.snap ${flatpak}`, blinkDeploymentOutputDirectory);
