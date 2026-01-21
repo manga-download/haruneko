@@ -12,7 +12,7 @@ new TestFixture({
     },
     child: {
         id: '/episodes/zh2601071715300027269321',
-        title: '#30'
+        title: '#030'
     },
     entry: {
         index: 0,
