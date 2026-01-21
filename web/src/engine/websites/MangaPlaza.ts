@@ -24,7 +24,7 @@ function CleanTitle(title: string): string {
     return title.replace(/^<.*>/i, '').trim();
 }
 
-@Common.MangaCSS(/^{origin}\/title\/\d+\/$/, 'div.mainTitle h1.titleTxt', (element, uri) => ({ id: uri.pathname, title: CleanTitle(element.textContent) }))
+@Common.MangaCSS(/^{origin}\/title\/\d+\/$/, 'div.titleName', (element, uri) => ({ id: uri.pathname, title: CleanTitle(element.textContent) }))
 @SpeedBinb.PagesSinglePageAjax(SpeedBindVersion.v016130, true)
 @SpeedBinb.ImageAjax()
 export default class extends DecoratableMangaScraper {
@@ -64,7 +64,7 @@ export default class extends DecoratableMangaScraper {
             const chaptersNodes = [...new DOMParser().parseFromString(data.html_content, 'text/html').querySelectorAll<HTMLElement>('ul.detailBox div.inner_table')];
             for (const chapterNode of chaptersNodes) {
                 const title = chapterNode.querySelector<HTMLParagraphElement>('p.titleName').textContent.trim();
-                const linkNode = chapterNode.querySelector<HTMLAnchorElement>('div.btnBlock a.prevBtn');
+                const linkNode = chapterNode.querySelector<HTMLAnchorElement>('div.btnBox a');
                 if (linkNode) chapters.push(new Chapter(this, manga, linkNode.pathname + linkNode.search, title));
             }
 
