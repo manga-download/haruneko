@@ -9,13 +9,13 @@ const pkgConfig = JSON.parse(await fs.readFile(pkgFile));
  * Bundle Flatpak Image for Linux
  * See: ...
  */
-export async function bundle(blinkApplicationSourceDirectory, blinkApplicationResourcesDirectory, blinkDeploymentTemporaryDirectory, blinkDeploymentOutputDirectory) {
+export async function bundle(blinkApplicationSourceDirectory, blinkApplicationResourcesDirectory, blinkDeploymentTemporaryDirectory, blinkDeploymentOutputDirectory, targetArchitecture) {
     await bundleApp(blinkApplicationSourceDirectory, blinkDeploymentTemporaryDirectory);
     await updateBinary(blinkApplicationResourcesDirectory, blinkDeploymentTemporaryDirectory);
     // TODO: include ffmpeg
     // TODO: include imagemagick
     // TODO: include kindlegen
-    await createFlatpakImage(blinkDeploymentTemporaryDirectory, blinkDeploymentOutputDirectory);
+    await createFlatpakImage(blinkDeploymentTemporaryDirectory, blinkDeploymentOutputDirectory, targetArchitecture === 'x64' ? 'x86_64' : 'aarch64');
 }
 
 async function bundleApp(blinkApplicationSourceDirectory, blinkDeploymentTemporaryDirectory) {
@@ -28,68 +28,59 @@ async function updateBinary(blinkApplicationResourcesDirectory, blinkDeploymentT
     await fs.rename(binary, binary.replace(/electron$/i, `${pkgConfig.name}`));
 }
 
-async function createFlatpakImage(blinkDeploymentTemporaryDirectory, blinkDeploymentOutputDirectory) {
-    /*
-    const snapfile = path.basename(blinkDeploymentTemporaryDirectory).replace(/^electron/i, pkgConfig.name) + '.snap';
+async function createFlatpakImage(blinkDeploymentTemporaryDirectory, blinkDeploymentOutputDirectory, flatpakArchitecture) {
+    const flatpak = path.basename(blinkDeploymentTemporaryDirectory).replace(/^electron/i, pkgConfig.name) + '.flatpak';
     try {
-        const artifact = path.join(blinkDeploymentOutputDirectory, snapfile);
+        const artifact = path.join(blinkDeploymentOutputDirectory, flatpak);
         await fs.unlink(artifact);
     } catch { }
-    const yaml = await createSnapcraftYaml(blinkDeploymentTemporaryDirectory, blinkDeploymentOutputDirectory);
+    const yaml = await createFlatpakManifest(blinkDeploymentTemporaryDirectory, blinkDeploymentOutputDirectory);
     try {
-        await run('sudo snapcraft pack --destructive-mode', blinkDeploymentOutputDirectory);
-        await run(`sudo mv ${pkgConfig.name}*.snap ${snapfile}`, blinkDeploymentOutputDirectory);
-        await run('snapcraft upload *.snap --release=edge', blinkDeploymentOutputDirectory);
+        await run(`flatpak-builder ./build ./manifest.yaml --repo=./repo --arch=${flatpakArchitecture} --install-deps-from=flathub --force-clean`, blinkDeploymentOutputDirectory);
+        await run(`flatpak build-bundle --arch=${flatpakArchitecture} ./repo ${flatpak} app.${pkgConfig.name.replace('-', '.')}`, blinkDeploymentOutputDirectory);
+        // flatpak install app.hakuneko.electron
+        // flatpak run app.hakuneko.electron
+        //await run(`sudo mv ${pkgConfig.name}*.snap ${flatpak}`, blinkDeploymentOutputDirectory);
+        //await run('snapcraft upload *.flatpak --release=edge', blinkDeploymentOutputDirectory);
     } finally {
         fs.unlink(yaml);
     }
-    */
 }
 
-async function createSnapcraftYaml(blinkDeploymentTemporaryDirectory, blinkDeploymentOutputDirectory) {
-    /*
-    const file = path.join(blinkDeploymentOutputDirectory, 'snapcraft.yaml');
+async function createFlatpakManifest(blinkDeploymentTemporaryDirectory, blinkDeploymentOutputDirectory) {
+    const file = path.join(blinkDeploymentOutputDirectory, 'manifest.yaml');
     await fs.writeFile(file, `
-name: ${pkgConfig.name}
+app-id: app.${pkgConfig.name.replace('-', '.')}
 version: ${pkgConfig.devDependencies.electron}
-summary: ${pkgConfig.title}
-description: |
-  ${pkgConfig.description}
-base: core24
-grade: devel
-confinement: strict
-
-apps:
-  ${pkgConfig.name}:
-    command: ${pkgConfig.name} --no-sandbox
-    # TODO: Create desktop entry
-    #desktop: snap/gui/${pkgConfig.name}.desktop
-    extensions: [gnome]
-    plugs:
-    - home
-    - network
-    - network-bind
-    - browser-support
-    environment:
-      # Correct the TMPDIR path for Chromium Framework/Electron to ensure
-      # libappindicator has readable resources.
-      TMPDIR: $XDG_RUNTIME_DIR
-
-parts:
-  ${pkgConfig.name}:
-    source: .
-    plugin: nil
-    override-build: |
-      cp -rv ${blinkDeploymentTemporaryDirectory}/* $SNAPCRAFT_PART_INSTALL/
-      chmod -R 755 $SNAPCRAFT_PART_INSTALL
-    build-snaps:
-    - node/22/stable
-    build-packages:
-    - unzip
-    stage-packages:
-    - libnss3
-    - libnspr4
+command: /app/bin/${pkgConfig.name}
+runtime: org.freedesktop.Platform
+runtime-version: '25.08'
+sdk: org.freedesktop.Sdk
+finish-args:
+  - --device=dri
+  - --socket=wayland
+  - --socket=fallback-x11
+  - --socket=pulseaudio
+  - --share=ipc
+  - --share=network
+  - --filesystem=home
+  - --env=ELECTRON_TRASH=gio
+  # required to fix cursor scaling on wayland
+  - --env=XCURSOR_PATH=/run/host/user-share/icons:/run/host/share/icons
+modules:
+  - name: ${pkgConfig.name}
+    buildsystem: simple
+    build-commands:
+      - mkdir -p /app/share/hakuneko
+      - cp -rv . /app/share/hakuneko
+      - |
+        install -Dm755 /dev/stdin /app/bin/${pkgConfig.name} << 'EOF'
+        #!/bin/sh
+        exec /app/share/hakuneko/${pkgConfig.name} --no-sandbox "$@"
+        EOF
+    sources:
+      - type: dir
+        path: ${blinkDeploymentTemporaryDirectory}
 `);
     return file;
-    */
 }
