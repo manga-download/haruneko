@@ -320,6 +320,7 @@ export { default as Mangabox } from './Mangabox';
 export { default as MangaBTT } from './MangaBTT';
 export { default as MangaBuddy } from './MangaBuddy';
 export { default as MangaBuff } from './MangaBuff';
+export { default as MangaBz } from './MangaBz';
 export { default as MangaCanBlog } from './MangaCanBlog';
 export { default as MangaChan } from './MangaChan';
 export { default as MangaClash } from './MangaClash';
