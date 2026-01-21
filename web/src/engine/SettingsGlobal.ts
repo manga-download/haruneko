@@ -65,6 +65,7 @@ export async function Initialize(settingsManager: SettingsManager, frontends: IF
             MangaExportFormat.RAWs,
             { key: MangaExportFormat.RAWs, label: R.Settings_Global_MangaExportFormat_FolderWithImages },
             { key: MangaExportFormat.CBZ, label: R.Settings_Global_MangaExportFormat_ComicBookArchive },
+            { key: MangaExportFormat.C7Z, label: R.Settings_Global_MangaExportFormat_SevenZipArchive },
             { key: MangaExportFormat.EPUB, label: R.Settings_Global_MangaExportFormat_ElectronicPublication },
             { key: MangaExportFormat.PDF, label: R.Settings_Global_MangaExportFormat_PortableDocumentFormat },
         ),
