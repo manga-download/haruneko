@@ -20,6 +20,7 @@ type APIMangas = {
         language: string;
     }[]
 };
+
 function MangaExtractor(element: HTMLElement, uri: URL) {
     return {
         id: uri.pathname,
