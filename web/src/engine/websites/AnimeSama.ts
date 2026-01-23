@@ -20,7 +20,7 @@ function pageScript(chapterIndex: number) {
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('animesama', 'Anime-Sama', 'https://anime-sama.tv', Tags.Media.Manga, Tags.Language.French, Tags.Source.Aggregator);
+        super('animesama', 'Anime-Sama', 'https://anime-sama.si', Tags.Media.Manga, Tags.Language.French, Tags.Source.Aggregator);
     }
 
     public override get Icon() {

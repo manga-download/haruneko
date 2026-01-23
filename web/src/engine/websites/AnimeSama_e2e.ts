@@ -6,7 +6,7 @@ new TestFixture({
         title: 'Anime-Sama'
     },
     container: {
-        url: 'https://anime-sama.tv/catalogue/alice-in-borderland/',
+        url: 'https://anime-sama.si/catalogue/alice-in-borderland/',
         id: '/catalogue/alice-in-borderland/',
         title: 'Alice in Borderland'
     },
