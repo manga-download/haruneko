@@ -6,7 +6,7 @@ new TestFixture({
         title: 'HentaiVN'
     },
     container: {
-        url: 'https://hentaivn.taxi/truyen-hentai/dong-ho-ngung-dong-thoi-gian/',
+        url: 'https://hentaivn.show/truyen-hentai/dong-ho-ngung-dong-thoi-gian/',
         id: JSON.stringify({ post: '10351', slug: '/truyen-hentai/dong-ho-ngung-dong-thoi-gian/' }),
         title: 'Đồng Hồ Ngưng Đọng Thời Gian'
     },
