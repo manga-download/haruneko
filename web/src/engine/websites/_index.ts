@@ -588,6 +588,7 @@ export { default as Remanga } from './Remanga';
 export { default as ResetScans } from './ResetScans';
 export { default as Retsu } from './Retsu';
 export { default as Reyume } from './Reyume';
+export { default as RfDragonScan } from './RfDragonScan';
 export { default as RidiBooks } from './RidiBooks';
 export { default as RimacomiPlus } from './RimacomiPlus';
 export { default as RimuScans } from './RimuScans';
