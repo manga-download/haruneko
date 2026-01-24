@@ -6,17 +6,17 @@ new TestFixture({
         title: 'WestManga'
     },
     container: {
-        url: 'https://westmanga.me/comic/henkyou-gurashi-no-maou-tensei-shite-saikyou-no-majutsushi-ni-naru-〜aisarenagara-nariagaru-moto-mao-wa-ningen-o-shiritai〜',
-        id: 'henkyou-gurashi-no-maou-tensei-shite-saikyou-no-majutsushi-ni-naru-〜aisarenagara-nariagaru-moto-mao-wa-ningen-o-shiritai〜',
-        title: 'Henkyou Gurashi no Maou, Tensei Shite Saikyou no Majutsushi ni naru 〜Aisarenagara Nariagaru Moto Maō wa, Ningen o Shiritai〜'
+        url: 'https://westmanga.me/comic/bad-born-blood',
+        id: 'bad-born-blood',
+        title: 'Bad Born Blood'
     },
     child: {
-        id: 'henkyou-gurashi-no-maou-tensei-shite-saikyou-no-majutsushi-ni-naru-〜aisarenagara-nariagaru-moto-mao-wa-ningen-o-shiritai〜-chapter-1-1-bahasa-indonesia',
-        title: '1.1'
+        id: 'bad-born-blood-chapter-70-bahasa-indonesia',
+        title: '70'
     },
     entry: {
         index: 1,
-        size: 141_906,
-        type: 'image/jpeg'
+        size: 152_636,
+        type: 'image/webp'
     }
 }).AssertWebsite();

@@ -12,7 +12,7 @@ type APIMangas = {
 };
 
 type APIManga = {
-    id: string | number ;
+    id: string | number;
     title: string;
 };
 
@@ -22,35 +22,53 @@ type APIChapter = {
     name: string;
 };
 
-type PagesData = {
-    pages: {
-        url: string;
-        key?: string;
-    }[]
+type PageData = {
+    url: string;
+    key?: number[];
 };
 
 type PageKey = {
-    key?: string;
+    key?: number[];
 };
 
-const pageScript = `
-    new Promise( resolve => {
-        window.decodeURIComponent = new Proxy(window.decodeURIComponent, {
-          apply(target, thisArg, args) {
-            const result = Reflect.apply(target, thisArg, args);
-            try{
-                const jsonData = JSON.parse(result);
-                if (jsonData.pages) resolve(jsonData);
-            } catch{}
+function pageScript(apiUrl: string) {
+    return `
+        new Promise(async resolve => {
+            let exports = undefined;
 
-            return result;
-          }
+            WebAssembly.instantiateStreaming = new Proxy(WebAssembly.instantiateStreaming, {
+                async apply(target, thisArg, args) {
+                    const result = await Reflect.apply(target, thisArg, args);
+                    exports = result.instance.exports;
+                    const interval = setInterval(async () => {
+                        try {
+
+                            if (typeof exports.cd !== "function") return;
+
+                            clearInterval(interval);
+                            const res = await fetch('${apiUrl}chapters/' + location.pathname.split('/').pop(), {
+                                headers: {
+                                    'x-app-origin': window.location.origin,
+                                    'x-custom-lang': 'vi'
+                                }
+                            });
+                            const json = await res.json();
+                            const chapter = json.encrypted ? JSON.parse(exports.cd(json)) : json;
+                            const pages = (chapter.pages || []).map(p => {
+                                return { url: p.url.replace('_credit', ''), key: p.key ? exports.dc([p.key]).at(0) : undefined };
+                            });
+                            resolve(pages);
+                        } catch { }
+                    }, 50);
+                    return result;
+                }
+            });
         });
-    });
 `;
+}
 
 export default class extends DecoratableMangaScraper {
-    private apiUrl = 'https://api.yurigarden.com/';
+    private apiUrl = 'https://api.yurigarden.com/api/';
     private CDNUrl = 'https://db.yurigarden.com/storage/v1/object/public/yuri-garden-store/';
 
     public constructor() {
@@ -67,32 +85,29 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
         const { id, title } = await this.FetchAPI<APIManga>(`./comics/${url.split('/').at(-1)}`);
-        return new Manga(this, provider, id.toString(), title);
+        return new Manga(this, provider, `${id}`, title);
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        const mangaList: Manga[] = [];
-        for (let page = 1, run = true; run; page++) {
-            const mangas = await this.GetMangasFromPage(page, provider);
-            mangas.length > 0 ? mangaList.push(...mangas) : run = false;
-        }
-        return mangaList;
-    }
-
-    private async GetMangasFromPage(page: number, provider: MangaPlugin): Promise<Manga[]> {
-        const { comics } = await this.FetchAPI<APIMangas>(`./comics?page=${page}&limit=200&status=all&allowR18=true`);
-        return comics.map(({ id, title }) => new Manga(this, provider, id.toString(), title));
+        type This = typeof this;
+        return Array.fromAsync(async function* (this: This) {
+            for (let page = 1, run = true; run; page++) {
+                const { comics } = await this.FetchAPI<APIMangas>(`./comics?page=${page}&limit=30&status=all&allowR18=true`);
+                const mangas = comics.map(({ id, title }) => new Manga(this, provider, `${id}`, title));
+                mangas.length > 0 ? yield* mangas : run = false;
+            }
+        }.call(this));
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const chapters = await this.FetchAPI<APIChapter[]>(`./chapters/comic/${manga.Identifier}`);
-        return chapters.map(({ id, order, name }) => new Chapter(this, manga, id.toString(), [order > -1 ? `Chapter ${order}` : 'OneShot', name].join(' - ').replace(/\s*-\s*$/, '')));
+        return chapters.sort((self, other) => other.order - self.order)
+            .map(({ id, order, name }) => new Chapter(this, manga, `${id}`, [order > -1 ? `Chapter ${order}` : 'OneShot', name].join(' - ').replace(/\s*-\s*$/, '')));
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page<PageKey>[]> {
-        const { pages } = await FetchWindowScript<PagesData>(new Request(new URL(`./comic/${chapter.Parent.Identifier}/${chapter.Identifier}`, this.URI)), pageScript);
-        return pages.filter(({ url }) => !/credit\.jp(e)?g$/.test(url))
-            .map(({ key, url }) => new Page<PageKey>(this, chapter, new URL(url.startsWith('http') ? url : this.CDNUrl + url), { key, Referer: this.URI.href }));
+        const pages = await FetchWindowScript<PageData[]>(new Request(new URL(`./comic/${chapter.Parent.Identifier}/${chapter.Identifier}`, this.URI)), pageScript(this.apiUrl));
+        return pages.map(({ key, url }) => new Page<PageKey>(this, chapter, new URL(url.startsWith('http') ? url : this.CDNUrl + url), { key, Referer: this.URI.href }));
     }
 
     public override async FetchImage(page: Page<PageKey>, priority: Priority, signal: AbortSignal): Promise<Blob> {
@@ -101,8 +116,7 @@ export default class extends DecoratableMangaScraper {
         const MAGIC = 4;
         return !page.Parameters.key ? blob : DeScramble(blob, async (image, ctx) => {
 
-            const piecesOrder = this.GenerateScrambleData(this.ComputeSeed(page.Parameters.key.slice(4).slice(1, - 1)), 10);
-            const newPiecesOrder = this.Reorder(piecesOrder);
+            const piecesOrder = this.SwapIndexAndValues(page.Parameters.key);
             const computedHeight = image.height - MAGIC * (numRows - 1);
 
             ctx.canvas.width = image.width;
@@ -114,13 +128,14 @@ export default class extends DecoratableMangaScraper {
             const piecesX = [0];
             for (let g = 0; g < orderedPiecesHeight.length; g++) piecesX[g + 1] = piecesX[g] + orderedPiecesHeight[g];
             let destX = 0;
-            for (let g = 0; g < newPiecesOrder.length; g++) {
-                const pieceIndex = newPiecesOrder[g];
+            for (let g = 0; g < piecesOrder.length; g++) {
+                const pieceIndex = piecesOrder[g];
                 const sourceX = piecesX[pieceIndex] + MAGIC * pieceIndex;
                 const sourceHeight = orderedPiecesHeight[pieceIndex];
                 ctx.drawImage(image, 0, sourceX, image.width, sourceHeight, 0, destX, image.width, sourceHeight);
                 destX += sourceHeight;
             }
+
         });
     }
 
@@ -132,56 +147,21 @@ export default class extends DecoratableMangaScraper {
         return a;
     }
 
-    private Reorder(originArray: number[]): number[] {
+    private SwapIndexAndValues(originArray: number[]): number[] {
         const newArray = Array(originArray.length).fill(0);
         for (let s = 0; s < originArray.length; s++) newArray[originArray[s]] = s;
         return newArray as number[];
     }
 
-    private ComputeSeed(key: string): number {
-        const charset = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
-        let n = 0;
-        for (const s of key) {
-            const o = charset.indexOf(s);
-            n = n * 58 + o;
-        }
-        return n;
-    }
-
-    private GenerateScrambleData(seed: number, length = 10): number[] {
-        const box = [
-            1,
-            1,
-            2,
-            6,
-            24,
-            120,
-            720,
-            5040,
-            40320,
-            362880,
-            3628800
-        ];
-        const s = Array.from({ length }, (a, l) => l);
-        const o = [];
-        for (let a = length - 1; a >= 0; a--) {
-            const l = box[a];
-            const u = Math.floor(seed / l);
-            seed %= l;
-            o.push(s.splice(u, 1)[0]);
-        }
-        return o;
-    }
-
     private async FetchAPI<T extends JSONElement>(endpoint: string): Promise<T> {
-        const request = new Request(new URL(endpoint, this.apiUrl), {
+        return FetchJSON<T>(new Request(new URL(endpoint, this.apiUrl), {
             method: 'GET',
             headers: {
                 Origin: this.URI.origin,
                 Referer: this.URI.href,
-                'x-app-origin': this.URI.origin
+                'x-app-origin': this.URI.origin,
+                'x-custom-lang': 'vi',
             },
-        });
-        return FetchJSON<T>(request);
+        }));
     }
 }

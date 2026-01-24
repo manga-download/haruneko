@@ -12,7 +12,7 @@ type APIMangas = {
 }
 
 @Common.MangaCSS(/^{origin}\/comic\/[^/]+/, '.comics-detail__title')
-@Common.ChaptersSinglePageCSS<HTMLAnchorElement>('a.comics-chapters__item', undefined, (anchor) => ({ id: anchor.pathname + anchor.search, title: anchor.text.trim() }))
+@Common.ChaptersSinglePageCSS<HTMLAnchorElement>('a.comics-chapters__item', undefined, anchor => ({ id: anchor.pathname + anchor.search, title: anchor.text.trim() }))
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
@@ -34,7 +34,6 @@ export default class extends DecoratableMangaScraper {
                 const mangas = items.map(({ comic_id: id, name }) => new Manga(this, provider, `/comic/${id}`, name.trim()));
                 mangas.length > 0 ? yield* mangas : run = false;
             }
-
         }.call(this));
     }
 
