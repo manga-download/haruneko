@@ -4,15 +4,8 @@ import { DecoratableMangaScraper, Manga, type MangaPlugin } from '../providers/M
 import * as Common from './decorators/Common';
 import { FetchCSS } from '../platform/FetchProvider';
 
-function ChapterExtractor(anchor: HTMLAnchorElement) {
-    return {
-        id: anchor.pathname,
-        title: anchor.querySelector<HTMLParagraphElement>('p').textContent.trim()
-    };
-}
-
 @Common.MangaCSS<HTMLTitleElement>(/^{origin}\/series\/[^/]+$/, 'title', (title, uri) => ({ id: uri.pathname, title: title.innerText.split('|').at(0).trim() }))
-@Common.ChaptersSinglePageCSS('div.grid a.recentCardItem', undefined, ChapterExtractor)
+@Common.ChaptersSinglePageCSS<HTMLAnchorElement>('div.grid a.recentCardItem', undefined, anchor => ({ id: anchor.pathname, title: anchor.querySelector<HTMLParagraphElement>('p').textContent.trim() }))
 @Common.PagesSinglePageCSS('div.content img[data-src]')
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
@@ -26,18 +19,15 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        const mangaList: Manga[] = [];
-        for (let page = 0, run = true; run; page++) {
-            const mangas = await this.GetMangasFromPage(page, provider);
-            mangas.length > 0 ? mangaList.push(...mangas) : run = false;
-        }
-        return mangaList;
-    }
-
-    private async GetMangasFromPage(page: number, provider: MangaPlugin): Promise<Manga[]> {
-        const links = await FetchCSS<HTMLAnchorElement>(new Request(new URL(`./search?page=${page}`, this.URI), {
-            method: 'POST'
-        }), 'div.grid a[href*="/series/"]');
-        return links.map(item => new Manga(this, provider, item.pathname, item.querySelector<HTMLParagraphElement>('div div p').textContent.trim()));
+        type This = typeof this;
+        return Array.fromAsync(async function* (this: This) {
+            for (let page = 0, run = true; run ; page++) {
+                const links = await FetchCSS<HTMLAnchorElement>(new Request(new URL(`./search?page=${page}`, this.URI), {
+                    method: 'POST'
+                }), 'div.grid a[href*="/series/"]');
+                const mangas = links.map(item => new Manga(this, provider, item.pathname, item.querySelector<HTMLParagraphElement>('div div p').textContent.trim()));
+                mangas.length > 0 ? yield* mangas : run = false;
+            }
+        }.call(this));
     }
 }
