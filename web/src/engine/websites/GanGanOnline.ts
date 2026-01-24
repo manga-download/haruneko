@@ -12,6 +12,13 @@ type NEXTDATA<T> = {
     }
 };
 
+type APIManga = {
+    default: {
+        titleId: number;
+        titleName: string;
+    }
+};
+
 type APIMangas = {
     titleSections: {
         titles: {
@@ -21,16 +28,14 @@ type APIMangas = {
     }[];
 };
 
-type APIManga = {
+type APIChapters = {
     default: {
         chapters: {
-            status: number;
             id: number;
+            status: number;
             mainText: string;
             subText: string;
         }[];
-        titleId: number;
-        titleName: string;
     }
 };
 
@@ -66,13 +71,13 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        const mangaList: Manga[] = [];
-        const slugs = ['/finish', '/rensai'];
-        for (const slug of slugs) {
-            const mangas = await this.GetMangasFromPage(slug, provider);
-            mangaList.push(...mangas);
-        }
-        return mangaList;
+        type This = typeof this;
+        return Array.fromAsync(async function* (this: This) {
+            for (const slug of ['/finish', '/rensai']) {
+                const mangas = await this.GetMangasFromPage(slug, provider);
+                yield* mangas;
+            }
+        }.call(this));
     }
 
     private async GetMangasFromPage(slug: string, provider: MangaPlugin): Promise<Manga[]> {
@@ -87,17 +92,9 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const { default: { chapters } } = await this.GetEmbeddedJSON<APIManga>(new URL(`/title/${manga.Identifier}`, this.URI));
+        const { default: { chapters } } = await this.GetEmbeddedJSON<APIChapters>(new URL(`/title/${manga.Identifier}`, this.URI));
         return chapters
-            .filter(({ id, status }) => {
-                if (!id) {
-                    return false;
-                }
-                if (status !== undefined && status < 4) {
-                    return false;
-                }
-                return true;
-            })
+            .filter(({ id, status }) => id && (status === undefined || status > 3))
             .map(({ id, mainText, subText }) => new Chapter(this, manga, `${ id }`, mainText + (subText ? ' - ' + subText : '')));
     }
 
