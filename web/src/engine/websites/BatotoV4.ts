@@ -4,12 +4,14 @@ import { DecoratableMangaScraper, Manga, Chapter, type MangaPlugin, Page } from 
 import * as Common from './decorators/Common';
 import { FetchGraphQL } from '../platform/FetchProvider';
 
-//mirrors from https://batotomirrors.pages.dev/
-
-const primaryDomain = 'bato.si';
+const primaryDomain = 'xbat.app';
 const patternAliasDomains = [
     primaryDomain,
-    'bato.ing'
+    'xbat.si',
+    'xbat.io',
+    'xbat.me',
+    'xbat.tv',
+    'xbat.la',
 ].join('|').replaceAll('.', '\\.');
 
 type APISingleManga = {
@@ -104,7 +106,7 @@ export default class extends DecoratableMangaScraper {
 
         type This = typeof this;
         return Array.fromAsync(async function* (this: This) {
-            for (let page = 1, run = true ; run; page++) {
+            for (let page = 1, run = true; run; page++) {
                 const { get_comic_browse: { items } } = await FetchGraphQL<APIMangas>(new Request(new URL(this.apiUrl)), undefined, query, {
                     select: {
                         page
