@@ -31,27 +31,23 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
         const nonce = (await FetchCSS<HTMLInputElement>(new Request(new URL('./wp-admin/admin-ajax.php?type=search_form&action=get_nonce', this.URI)), 'input')).at(0).value.trim();
-        const mangaList: Manga[] = [];
-        for (let page = 1, run = true; run; page++) {
-            const mangas = await this.GetMangasFromPage(page, provider, nonce);
-            mangas.length > 0 ? mangaList.push(...mangas) : run = false;
-        }
-        return mangaList;
-    }
-
-    private async GetMangasFromPage(page: number, provider: MangaPlugin, nonce: string): Promise<Manga[]> {
-        const request = new Request(new URL('./wp-admin/admin-ajax.php?action=advanced_search', this.URI), {
-            method: 'POST',
-            body: new URLSearchParams({
-                nonce,
-                page: `${page}`,
-            }).toString(),
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-                Referer: this.URI.href
+        type This = typeof this;
+        return Array.fromAsync(async function* (this: This) {
+            for (let page = 1, run = true; run ; page++) {
+                const data = await FetchCSS<HTMLAnchorElement>(new Request(new URL('./wp-admin/admin-ajax.php?action=advanced_search', this.URI), {
+                    method: 'POST',
+                    body: new URLSearchParams({
+                        nonce,
+                        page: `${page}`,
+                    }).toString(),
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        Referer: this.URI.href
+                    }
+                }), 'a:has(>img)[href*="/manga/"]');
+                const mangas = data.map(element => new Manga(this, provider, element.pathname, element.querySelector<HTMLImageElement>('img').alt.trim()));
+                mangas.length > 0 ? yield* mangas : run = false;
             }
-        });
-        const data = await FetchCSS<HTMLAnchorElement>(request, 'a:has(>img)[href*="/manga/"]');
-        return data.map(element => new Manga(this, provider, element.pathname, element.querySelector<HTMLImageElement>('img').alt.trim()));
+        }.call(this));
     }
 }
