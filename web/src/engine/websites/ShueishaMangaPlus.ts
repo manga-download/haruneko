@@ -5,59 +5,66 @@ import * as Common from './decorators/Common';
 import protoTypes from './ShueishaMangaPlus.proto?raw';
 import { FetchProto } from '../platform/FetchProvider';
 import type { Priority } from '../taskpool/DeferredTask';
+import { GetBytesFromHex } from '../BufferEncoder';
+import { GetTypedData } from './decorators/Common';
 
 type MangaPlusResponse = {
     success: {
         titleDetailView: TitleDetailView;
-        allTitlesViewV2: AllTitlesViewV2
+        allTitlesViewV2: AllTitlesViewV2;
         mangaViewer: MangaViewer;
     }
-}
+};
 
 type AllTitlesViewV2 = {
-    alltitlegroups: AllTitlesGroup[]
-}
+    alltitlegroups: AllTitlesGroup[];
+};
 
 type AllTitlesGroup = {
-    thetitle: string,
-    titles: Title[]
-}
+    thetitle: string;
+    titles: Title[];
+};
 
 type Title = {
-    titleId: number,
-    name: string,
-    language: number
-}
+    titleId: number;
+    name: string;
+    language: number;
+};
 
 type TitleDetailView = {
-    title: Title
-    chapterListGroup: ChapterGroup[]
-}
+    title: Title;
+    chapterListGroup: ChapterGroup[];
+};
 
 type ChapterGroup = {
-    firstChapterList: APIChapter[],
-    midChapterList: APIChapter[],
-    lastChapterList: APIChapter[]
-}
+    firstChapterList: APIChapter[];
+    midChapterList: APIChapter[];
+    lastChapterList: APIChapter[];
+};
 
 type APIChapter = {
-    chapterId: number,
-    name: string,
-    subTitle: string
-}
+    chapterId: number;
+    name: string;
+    subTitle: string;
+};
+
 type MangaViewer = {
-    pages: MangaPage[]
-}
+    pages: MangaPage[];
+};
 
 type MangaPage = {
     mangaPage: {
-        imageUrl: string,
+        imageUrl: string;
         encryptionKey: string;
     }
-}
+};
+
+type PageData = {
+    encryptionKey: string;
+};
 
 export default class extends DecoratableMangaScraper {
-    private apiURL = 'https://jumpg-webapi.tokyo-cdn.com';
+    private apiURL = 'https://jumpg-webapi.tokyo-cdn.com/api/';
 
     public constructor() {
         super('shueishamangaplus', `MANGA Plus by Shueisha`, 'https://mangaplus.shueisha.co.jp', Tags.Media.Manga, Tags.Language.Spanish, Tags.Language.French, Tags.Language.Indonesian, Tags.Language.Portuguese, Tags.Language.Russian, Tags.Language.Thai, Tags.Language.Vietnamese, Tags.Language.German, Tags.Source.Official, Tags.Accessibility.RegionLocked);
@@ -79,73 +86,51 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
-        const titleId = url.match(/\/titles\/(\d+)/)[1];
-        const uri = new URL('/api/title_detailV3', this.apiURL);
-        uri.searchParams.set('title_id', titleId);
-        const data = await FetchProto<MangaPlusResponse>(new Request(uri), protoTypes, 'MangaPlus.Response');
-        const title = `${data.success.titleDetailView.title.name} ${this.GetLanguage(data.success.titleDetailView.title.language)}`;
+        const titleId = url.match(/\/titles\/(\d+)/).at(1);
+        const { success: { titleDetailView: { title: { name, language } } } } = await FetchProto<MangaPlusResponse>(new Request(new URL(`./title_detailV3?title_id=${titleId}`, this.apiURL)), protoTypes, 'MangaPlus.Response');
+        const title = `${name} ${this.GetLanguage(language)}`;
         return new Manga(this, provider, titleId, title);
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        const mangalist: Manga[] =[];
-        const request = new Request(new URL('/api/title_list/allV2', this.apiURL).href);
-        const data = await FetchProto<MangaPlusResponse>(request, protoTypes, 'MangaPlus.Response');
-        for (const group of data.success.allTitlesViewV2.alltitlegroups) {
-            mangalist.push(...group.titles.map(manga => new Manga(this, provider, manga.titleId.toString(), `${manga.name} ${this.GetLanguage(manga.language)}`)));
+        const mangalist: Manga[] = [];
+        const { success: { allTitlesViewV2: { alltitlegroups } } } = await FetchProto<MangaPlusResponse>(new Request(new URL('./title_list/allV2', this.apiURL)), protoTypes, 'MangaPlus.Response');
+        for (const group of alltitlegroups) {
+            mangalist.push(...group.titles.map(({ name, titleId, language }) => new Manga(this, provider, `${titleId}`, `${name} ${this.GetLanguage(language)}`)));
         }
         return mangalist;
-
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const uri = new URL('/api/title_detailV3', this.apiURL);
-        uri.searchParams.set('title_id', manga.Identifier);
-        const data = await FetchProto<MangaPlusResponse>(new Request(uri), protoTypes, 'MangaPlus.Response');
-
-        const chaptersList : Chapter[] = data.success.titleDetailView.chapterListGroup.reduce((accumulator: Chapter[], entry) => {
+        const { success: { titleDetailView: { chapterListGroup } } } = await FetchProto<MangaPlusResponse>(new Request(new URL(`./title_detailV3?title_id=${manga.Identifier}`, this.apiURL)), protoTypes, 'MangaPlus.Response');
+        const chaptersList : Chapter[] = chapterListGroup.reduce((accumulator: Chapter[], entry) => {
             const chapters = [...entry.firstChapterList || [],
                 ...entry.midChapterList || [],
                 ...entry.lastChapterList || [],
-            ].map(chapter => new Chapter(this, manga, chapter.chapterId.toString(), chapter.subTitle || chapter.name));
+            ].map(({ chapterId, subTitle, name }) => new Chapter(this, manga, `${chapterId}`, subTitle || name));
             accumulator.push(...chapters);
             return accumulator;
         }, []);
-
         return chaptersList;
-
     }
 
-    public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const uri = new URL('/api/manga_viewer', this.apiURL);
-        uri.searchParams.set('chapter_id', chapter.Identifier);
-        uri.searchParams.set('img_quality', 'super_high');
-        uri.searchParams.set('split', 'yes');
-        const data = await FetchProto<MangaPlusResponse>(new Request(uri), protoTypes, 'MangaPlus.Response');
-        return data?.success.mangaViewer ? data.success.mangaViewer.pages
+    public override async FetchPages(chapter: Chapter): Promise<Page<PageData>[]> {
+        const { success: { mangaViewer: { pages } } } = await FetchProto<MangaPlusResponse>(new Request(new URL(`./manga_viewer?chapter_id=${chapter.Identifier}&img_quality=super_high&split=yes`, this.apiURL)), protoTypes, 'MangaPlus.Response');
+        return pages ? pages
             .filter(page => page.mangaPage)
-            .map(image => new Page(this, chapter, new URL(image.mangaPage.imageUrl), { encryptionKey: image.mangaPage.encryptionKey })) : [];
+            .map(({ mangaPage: { imageUrl, encryptionKey } }) => new Page<PageData>(this, chapter, new URL(imageUrl), { encryptionKey })) : [];
     }
 
-    public override async FetchImage(page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
-        const data = await Common.FetchImageAjax.call(this, page, priority, signal);
-        const key: string = page.Parameters['encryptionKey'] as string;
-        if (!key) return data;
-        const encrypted = await data.arrayBuffer();
-        const decrypted = XORDecrypt(new Uint8Array(encrypted), key);
-        return new Blob([decrypted], { type: data.type });
+    public override async FetchImage(page: Page<PageData>, priority: Priority, signal: AbortSignal): Promise<Blob> {
+        const blob = await Common.FetchImageAjax.call(this, page, priority, signal);
+        return !page.Parameters.encryptionKey ? blob : this.DecryptImage(blob, page.Parameters.encryptionKey);
     }
-}
 
-function XORDecrypt(encrypted: Uint8Array<ArrayBuffer>, key: string) {
-    if (key) {
-        const t = new Uint8Array(key.match(/.{1,2}/g).map(e => parseInt(e, 16)));
-        const s = new Uint8Array(encrypted);
-        for (let n = 0; n < s.length; n++) {
-            s[n] ^= t[n % t.length];
-        }
-        return s;
-    } else {
-        return encrypted;
+    private async DecryptImage(blob: Blob, key: string): Promise<Blob> {
+        const bytes = new Uint8Array(await blob.arrayBuffer());
+        const xorkey = new Uint8Array(GetBytesFromHex(key));
+        for (let n = 0; n < bytes.length; n++)
+            bytes[n] = bytes[n] ^ xorkey[n % xorkey.length];
+        return GetTypedData(bytes.buffer);
     }
 }

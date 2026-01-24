@@ -11,7 +11,7 @@ import * as Common from './decorators/Common';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('truyengg', 'FoxTruyen', 'https://foxtruyen1.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Media.Manga, Tags.Language.Vietnamese, Tags.Source.Aggregator);
+        super('truyengg', 'FoxTruyen', 'https://foxtruyen2.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Media.Manga, Tags.Language.Vietnamese, Tags.Source.Aggregator);
     }
 
     public override get Icon() {

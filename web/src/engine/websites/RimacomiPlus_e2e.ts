@@ -11,7 +11,7 @@ new TestFixture({
         title: '包帯ごっこ',
     },
     child: {
-        id: '/cocohana/episodes/7cba174d95a20/',
+        id: '/cocohana/episodes/5e926ec620784/',
         title: '第1話',
     },
     entry: {
