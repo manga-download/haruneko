@@ -56,22 +56,12 @@ const chapterScript = `
     });
 `;
 
-function MangaLinkExtractor(title: HTMLTitleElement, uri: URL) {
-    return {
-        id: uri.pathname.replace(/-[^-]+$/, '-'),
-        title: title.innerText.replace(/-[^-]+$/, '').trim(),
-    };
-}
-
-function MangaInfoExtractor(anchor: HTMLAnchorElement) {
-    return {
+@Common.MangaCSS(/^{origin}\/series\/[^/]+$/, 'head title', (element, uri) => ({ id: uri.pathname.replace(/-[^-]+$/, '-'), title: element.innerText.replace(/-[^-]+$/, '').trim() }))
+@Common.MangasMultiPageCSS<HTMLAnchorElement>('div.grid a', Common.PatternLinkGenerator('/series?page={page}'), 0,
+    anchor => ({
         id: anchor.pathname.replace(/-[^-]+$/, '-'),
-        title: anchor.querySelector('div.items-center span.font-bold').textContent.trim()
-    };
-}
-
-@Common.MangaCSS(/^{origin}\/series\/[^/]+$/, 'head title', MangaLinkExtractor)
-@Common.MangasMultiPageCSS('div.grid a', Common.PatternLinkGenerator('/series?page={page}'), 0, MangaInfoExtractor)
+        title: anchor.querySelector<HTMLDivElement>('div.items-center span.font-bold').textContent.trim()
+    }))
 @Common.ChaptersSinglePageJS(chapterScript, 500)
 export default class extends DecoratableMangaScraper {
     private readonly drmProvider: DRMProvider;
@@ -96,20 +86,20 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page<PageParameters>[]> {
-        const { chapter: chapterData } = await FetchNextJS<HydratedPages>(new Request(new URL(chapter.Identifier, this.URI)), data => 'chapter' in data);
-        if (chapterData.pages.length > 0) {
-            return this.FilterPages(chapterData.pages.map(({ url }) => new Page(this, chapter, new URL(url))));
+        const { chapter: { id: chapterId, pages: chapterPages } } = await FetchNextJS<HydratedPages>(new Request(new URL(chapter.Identifier, this.URI)), data => 'chapter' in data);
+        if (chapterPages.length > 0) {
+            return this.FilterPages(chapterPages.map(({ url }) => new Page(this, chapter, new URL(url))));
         };
 
         //pages is empty, chapter may be early access : try to get pages id and unlock token
-        const { data: { unlock_token, pages } } = await this.drmProvider.FetchAPI<APIPages>('./chapter/max-quality', JSON.stringify({ chapterId: chapterData.id }), 'POST');
+        const { data: { unlock_token, pages } } = await this.drmProvider.FetchAPI<APIPages>('./chapter/max-quality', JSON.stringify({ chapterId }), 'POST');
 
         //if unlock_token is undefined, we have the direct page url
         if (!unlock_token) {
             return this.FilterPages(pages.map(({ url }) => new Page(this, chapter, new URL(url))));
         } else {
             //otherwise FetchImage will have to request real image url
-            return pages.map(page => new Page<PageParameters>(this, chapter, new URL(this.URI), { chapterId: chapterData.id, mediaId: page.id, token: unlock_token }));
+            return pages.map(({ id }) => new Page<PageParameters>(this, chapter, new URL(this.URI), { chapterId, mediaId: id, token: unlock_token }));
         }
     }
 
