@@ -29,7 +29,7 @@ async function makePortable(blinkDeploymentTemporaryDirectory) {
     await fs.mkdir(userdata, { recursive: true });
     const pkgfile = path.join(blinkDeploymentTemporaryDirectory, 'resources', 'app', 'package.json');
     const pkg = await JSON.parse(await fs.readFile(pkgfile));
-    pkg['chromium-args'] = pkg['chromium-args'] ? pkg['chromium-args'] + ' --user-data-dir=userdata' : '--user-data-dir=userdata';
+    pkg['user-data-dir'] = 'userdata';
     await fs.writeFile(pkgfile, JSON.stringify(pkg, null, 4));
 }
 

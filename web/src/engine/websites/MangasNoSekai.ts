@@ -8,15 +8,15 @@ import { RateLimit } from '../taskpool/RateLimit';
 
 type APIChapters = {
     chapters_to_display: {
-        link: string,
-        name: string
-    }[]
+        link: string;
+        name: string;
+    }[];
 };
 
 @Common.MangaCSS(/^{origin}\/manga\/[^/]+\/$/, 'p.titleMangaSingle')
 @Common.MangasMultiPageCSS('div.page-listing-item figure > a', Common.PatternLinkGenerator('/biblioteca/page/{page}/'), 0, Common.AnchorInfoExtractor(true))
 @Madara.PagesSinglePageCSS()
-@Common.ImageAjax()
+@Common.ImageAjax(true)
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
@@ -30,30 +30,24 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const mangaId = (await FetchCSS<HTMLInputElement>(new Request(new URL(manga.Identifier, this.URI)), 'input.rating-post-id')).at(0).value.trim();
-        const chapterList = [];
-        for (let page = 1, run = true; run; page++) {
-            const chapters = await this.GetChaptersFromPage(manga, mangaId, page);
-            chapters.length > 0 ? chapterList.push(...chapters) : run = false;
-        }
-        return chapterList.distinct();
-    }
-
-    private async GetChaptersFromPage(manga: Manga, mangaId: string, page: number): Promise<Chapter[]> {
-        const { chapters_to_display } = await FetchJSON<APIChapters>(new Request(new URL('./wp-json/muslitos/v1/getcaps7', this.URI), {
-            method: 'POST',
-            body: new URLSearchParams({
-                action: 'muslitos_anti_hack',
-                page: page.toString(),
-                mangaid: mangaId,
-                secret: 'mihonsuckmydick'
-            }).toString(),
-            headers: {
-                'Content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
-                Origin: this.URI.origin,
-                Referer: new URL(manga.Identifier, this.URI).href,
-                'X-Requested-With': 'XMLHttpRequest'
+        type This = typeof this;
+        return Array.fromAsync(async function* (this: This) {
+            for (let page = 1, run = true; run; page++) {
+                const { chapters_to_display } = await FetchJSON<APIChapters>(new Request(new URL('./wp-json/muslitos/v1/getcaps7', this.URI), {
+                    method: 'POST',
+                    body: new URLSearchParams({
+                        action: 'muslitos_anti_hack',
+                        page: `${page}`,
+                        mangaid: mangaId,
+                        secret: 'mihonsuckmydick'
+                    }).toString(),
+                    headers: {
+                        'Content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
+                    }
+                }));
+                const chapters = chapters_to_display.map(({ link, name }) => new Chapter(this, manga, new URL(link, this.URI).pathname, name));
+                chapters.length > 0 ? yield* chapters : run = false;
             }
-        }));
-        return chapters_to_display.map(({ link, name }) => new Chapter(this, manga, new URL(link, this.URI).pathname, name));
+        }.call(this));
     }
 }

@@ -33,17 +33,18 @@ export default class extends DecoratableMangaScraper {
             for (let page = 1, run = true; run; page++) {
                 body.set('page', `${page}`);
                 const request = new Request(new URL('/wp-admin/admin-ajax.php', this.URI), {
-                    method: 'POST', body: body, headers: {
+                    method: 'POST',
+                    headers: {
                         'Content-Type': 'application/x-www-form-urlencoded;',
-                        Origin: this.URI.origin,
-                        Referer: this.URI.href
-                    }
+                        'Origin': this.URI.origin,
+                        'Referer': this.URI.href,
+                    },
+                    body,
                 });
                 const anchors = await FetchCSS<HTMLAnchorElement>(request, 'a[class]');
                 const mangas = anchors.map(item => new Manga(this, provider, item.pathname, item.querySelector('h2').textContent.trim().replace(/comic porn$/i, '').trim()));
                 mangas.length > 0 ? yield* mangas : run = false;
             }
-
         }.call(this));
     }
 }

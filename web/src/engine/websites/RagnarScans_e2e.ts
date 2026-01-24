@@ -12,7 +12,7 @@ new TestFixture({
     },
     child: {
         id: '/manga/deli-iblisin-donusu/bolum-1/',
-        title: 'Bölüm 1',
+        title: 'Bölüm 1:  Bölüm 1',
     },
     entry: {
         index: 2,

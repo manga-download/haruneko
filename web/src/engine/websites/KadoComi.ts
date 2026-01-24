@@ -9,10 +9,10 @@ type APIResult<T> = {
     result: T[];
 };
 
-type APIManga = {
+type APIManga = APIResult<{
     code: string;
     title: string;
-};
+}>;
 
 type APIChapter = {
     id: string;
@@ -27,11 +27,7 @@ type APIMangaDetails = {
     }
     firstEpisodes: APIResult<APIChapter>;
     latestEpisodes: APIResult<APIChapter>;
-    comics: {
-        result: {
-            episodes: APIChapter[];
-        }[];
-    }
+    comics: APIResult<{ episodes: APIChapter[] }>;
 };
 
 type APIPages = {
@@ -45,6 +41,7 @@ type APIPage = {
 };
 
 export default class extends DecoratableMangaScraper {
+
     private readonly apiURL = 'https://comic-walker.com/api/';
 
     public constructor() {
@@ -68,34 +65,28 @@ export default class extends DecoratableMangaScraper {
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
         type This = typeof this;
         return Array.fromAsync(async function* (this: This) {
-            for (let page = 0, run = true; run && page < 1000; page++) {
-                const { result } = await FetchJSON<APIResult<APIManga>>(new Request(new URL(`./search/keywords?keywords=&limit=100&offset=${page * 100}`, this.apiURL)));
+            for (let page = 0, run = true; run ; page++) {
+                const { result } = await FetchJSON<APIManga>(new Request(new URL(`./search/keywords?keywords=&limit=100&offset=${page * 100}`, this.apiURL)));
                 const mangas = result.map(({ code, title }) => new Manga(this, provider, code, title));
                 mangas.length > 0 ? yield* mangas : run = false;
             }
-
         }.call(this));
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const chapterList: Chapter[] = [];
-        const data = await FetchJSON<APIMangaDetails>(new Request(new URL(`./contents/details/work?workCode=${manga.Identifier}`, this.apiURL)));
+        const { comics, firstEpisodes, latestEpisodes } = await FetchJSON<APIMangaDetails>(new Request(new URL(`./contents/details/work?workCode=${manga.Identifier}`, this.apiURL)));
 
-        for (const list of [data.firstEpisodes, data.latestEpisodes]) {
-            chapterList.push(...this.GetChapters(manga, list));
-        }
+        // TODO: Array.fromAsync(...)
+        chapterList.push(...this.GetChapters(manga, latestEpisodes.result));
+        for (const { episodes } of comics.result) chapterList.push(...this.GetChapters(manga, episodes));
+        chapterList.push(...this.GetChapters(manga, firstEpisodes.result));
 
-        for (const comic of data.comics.result) {
-            chapterList.push(...comic.episodes.map(episode => new Chapter(this, manga, episode.id, episode.title.trim())));
-        }
         return chapterList.distinct();
     }
 
-    private GetChapters(manga: Manga, list: APIResult<APIChapter>): Chapter[] {
-        return list.result.map(episode => {
-            const title = [episode.title, episode.subtitle].join(' ').trim();
-            return new Chapter(this, manga, episode.id, title);
-        });
+    private GetChapters(manga: Manga, result: APIChapter[]): Chapter[] {
+        return result.map(({ id, title, subtitle }) => new Chapter(this, manga, id, [title, subtitle].join(' ').trim()));
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
@@ -105,17 +96,15 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchImage(page: Page<APIPage>, priority: Priority, signal: AbortSignal): Promise<Blob> {
         const data = await Common.FetchImageAjax.call(this, page, priority, signal, true);
-        const payload = page.Parameters;
-        switch (payload.drmMode) {
+        const { drmMode, drmHash } = page.Parameters;
+        switch (drmMode) {
             case 'raw':
                 return data;
-            case 'xor': {
-                return this.DecryptXor(new Uint8Array(await data.arrayBuffer()), payload.drmHash);
-            }
+            case 'xor':
+                return this.DecryptXor(new Uint8Array(await data.arrayBuffer()), drmHash);
             default:
                 throw Error('Encryption not supported');
         }
-
     }
 
     private async DecryptXor(encrypted: Uint8Array, passphrase: string): Promise<Blob> {
@@ -124,10 +113,7 @@ export default class extends DecoratableMangaScraper {
 
     private GenerateKey(t: string): Uint8Array {
         const e = t.slice(0, 16).match(/[\da-f]{2}/gi);
-        if (null != e)
-            return new Uint8Array(e.map(function (t) {
-                return parseInt(t, 16);
-            }));
+        if (null != e) return new Uint8Array(e.map(t => parseInt(t, 16)));
         throw new Error("failed generate key.");
     }
 

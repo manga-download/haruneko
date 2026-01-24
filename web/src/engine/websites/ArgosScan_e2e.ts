@@ -4,7 +4,7 @@ new TestFixture({
     plugin: {
         id: 'argosscan',
         title: 'Argos Scan'
-    },
+    }, /* Need login
     container: {
         url: 'https://aniargos.com/6b217fc9-6ef8-4708-8e96-2d06e0a78349/o-apocalipse-chegou',
         id: '/6b217fc9-6ef8-4708-8e96-2d06e0a78349/o-apocalipse-chegou',
@@ -18,5 +18,5 @@ new TestFixture({
         index: 1,
         size: 270_536,
         type: 'image/webp'
-    }
+    }*/
 }).AssertWebsite();

@@ -16,7 +16,7 @@ const configGlobal: Config = {
     },
     entry: {
         index: 0,
-        size: 156_108,
+        size: 171_250,
         type: 'image/webp',
     },
 };

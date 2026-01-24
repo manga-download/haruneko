@@ -60,9 +60,9 @@ export default class extends DecoratableMangaScraper {
                     headers: {
                         'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
                         'X-Requested-With': 'XMLHttpRequest',
-                        'Referer': this.URI.href
+                        'Referer': this.URI.href,
                     },
-                    body
+                    body,
                 }), 'a.manga-result');
                 const mangas = data.map(element => new Manga(this, provider, element.pathname, element.querySelector<HTMLHeadingElement>('h4.ellipsed-text').textContent.trim()));
                 mangas.length > 0 ? yield* mangas : run = false;
@@ -75,7 +75,8 @@ export default class extends DecoratableMangaScraper {
         const mangaId = manga.Identifier.split('/').at(-1);
         const { data } = await FetchJSON<APIResult>(new Request(new URL(new URL(`/chapter/getall?mangaIdentification=${mangaId}`, this.URI))));
         const { result } = JSON.parse(data) as APIChapters;
-        return result.sort((self, other) => other.Number - self.Number)
+        return result
+            .sort((self, other) => other.Number - self.Number)
             .map(({ Identification: id, FriendlyChapterNumber: title, FriendlyChapterNumberUrl: numberUrl }) => new Chapter(this, manga, manga.Identifier.replace(mangaId, `${numberUrl}/${id}`), title));
     }
 }

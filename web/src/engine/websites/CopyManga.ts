@@ -36,7 +36,7 @@ const patternAliasDomains = [
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
-    private readonly keyData = GetBytesFromUTF8('oppzzivv.nzm.oip');
+    private readonly keyData = GetBytesFromUTF8('op0zzpvv.nzn.ocp');
 
     public constructor() {
         super('copymanga', 'CopyManga', uri.origin, Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Chinese, Tags.Source.Aggregator);
@@ -57,8 +57,7 @@ export default class extends DecoratableMangaScraper {
 
     private async GetMangasFromPage(page: number, provider: MangaPlugin): Promise<Manga[]> {
         try {
-            const request = new Request(new URL('/comics?ordering=-datetime_updated&limit=50&offset=' + 50 * page, this.URI));
-            const data = await FetchWindowScript<JSONMangas>(request, 'free_list');
+            const data = await FetchWindowScript<JSONMangas>(new Request(new URL(`./comics?ordering=-datetime_updated&limit=50&offset=${50 * page}`, this.URI)), 'free_list');
             return data.map(({ name, path_word: path }) => new Manga(this, provider, '/comic/' + path, name.trim()));
         } catch {
             return []; // TODO: Do not return empty list for generic errors
@@ -67,15 +66,15 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const uri = new URL(`./comicdetail/${manga.Identifier.split('/').at(-1)}/chapters`, this.URI);
-        const { results } = await FetchJSON<EncryptedChapters>(new Request(uri, { headers: { 'DNTS': '1' } }));
+        const { results } = await FetchJSON<EncryptedChapters>(new Request(uri, { headers: { 'DNTS': '3' } }));
         const { groups: { default: { chapters } } } = await this.Decrypt<APIChapters>(results);
-        return chapters.map(chapter => new Chapter(this, manga, manga.Identifier + '/chapter/' + chapter.id, chapter.name.trim()));
+        return chapters.map(({ id, name }) => new Chapter(this, manga, `${manga.Identifier}/chapter/${id}`, name.trim()));
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
         const imageData = await FetchWindowScript<string>(new Request(new URL(chapter.Identifier, this.URI)), 'contentKey', 500);
         const images = await this.Decrypt<APIPages>(imageData);
-        return images.map(image => new Page(this, chapter, new URL(image.url)));
+        return images.map(({ url }) => new Page(this, chapter, new URL(url)));
     }
 
     private async Decrypt<T>(encryptedData: string): Promise<T> {

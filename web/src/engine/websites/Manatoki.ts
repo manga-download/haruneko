@@ -74,18 +74,15 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const chapterList : Chapter[]= [];
-        for (let page = 1, run = true; run; page++) {
-            const chapters = await this.GetChaptersFromPage(manga, page);
-            chapters.length > 0 ? chapterList.push(...chapters) : run = false;
-        }
-        return chapterList.distinct();
-    }
-
-    private async GetChaptersFromPage(manga: Manga, page: number): Promise<Chapter[]> {
+        type This = typeof this;
         const url = new URL(manga.Identifier, this.URI);
-        url.searchParams.set('spage', page.toString());
-        const chapters = await FetchWindowScript<{ id: string, title: string}[]>(new Request(url), chapterScript, 500);
-        return chapters.map(chapter => new Chapter(this, manga, chapter.id, chapter.title.replace(manga.Title, '').trim() || chapter.title));
+        return Array.fromAsync(async function* (this: This) {
+            for (let page = 1, run = true; run; page++) {
+                url.searchParams.set('spage', page.toString());
+                const chaptersData = await FetchWindowScript<{ id: string, title: string }[]>(new Request(url), chapterScript, 500);
+                const chapters = chaptersData.map(({id, title }) => new Chapter(this, manga, id, title.replace(manga.Title, '').trim() || title));
+                chapters.length > 0 ? yield* chapters : run = false;
+            }
+        }.call(this));
     }
 }

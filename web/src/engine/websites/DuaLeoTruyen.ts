@@ -21,8 +21,8 @@ function PageExtractor(img: HTMLImageElement) : string {
     }
 }
 
-@Common.MangaCSS(/^{origin}\/truyen-tranh\/[^/]+\.html$/, 'ol.breadcrumb li:last-of-type')
-@Common.MangasMultiPageCSS<HTMLAnchorElement>('div.li_truyen > a:has(img)', Common.PatternLinkGenerator('/truyen-hoan-thanh.html?page={page}'), 0,
+@Common.MangaCSS(/^{origin}\/truyen-tranh\/[^/]+$/, 'ol.breadcrumb li:last-of-type')
+@Common.MangasMultiPageCSS<HTMLAnchorElement>('div.li_truyen > a:has(img)', Common.PatternLinkGenerator('/truyen-hoan-thanh?page={page}'), 0,
     anchor => ({ id: anchor.pathname, title: anchor.querySelector<HTMLDivElement>('div.name').textContent.trim() }))
 @Common.ChaptersSinglePageCSS('div.chapter-item a', undefined, Common.AnchorInfoExtractor(true))
 @Common.PagesSinglePageCSS('div.content_view_chap img', PageExtractor)
@@ -30,7 +30,7 @@ function PageExtractor(img: HTMLImageElement) : string {
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('dualeotruyen', 'DuaLeoTruyen', 'https://dualeotruyenhp.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Media.Manga, Tags.Language.Vietnamese, Tags.Source.Aggregator, Tags.Accessibility.DomainRotation);
+        super('dualeotruyen', 'DuaLeoTruyen', 'https://dualeotruyenpe.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Media.Manga, Tags.Language.Vietnamese, Tags.Source.Aggregator, Tags.Accessibility.DomainRotation);
     }
 
     public override get Icon() {

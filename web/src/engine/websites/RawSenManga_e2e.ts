@@ -6,17 +6,17 @@ new TestFixture({
         title: 'RawSenManga'
     },
     container: {
-        url: 'https://raw.senmanga.com/drcl-midnight-children',
-        id: '/drcl-midnight-children',
-        title: '#DRCL – Midnight Children'
+        url: 'https://raw.senmanga.com/one-piece',
+        id: 'one-piece',
+        title: 'One Piece'
     },
     child: {
-        id: '/drcl-midnight-children/64',
-        title: 'Chapter 64'
+        id: '1170.243648',
+        title: 'Chapter 1170'
     },
     entry: {
         index: 0,
-        size: 285_703,
+        size: 507_052,
         type: 'image/jpeg'
     }
 }).AssertWebsite();

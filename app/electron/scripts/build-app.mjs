@@ -27,7 +27,7 @@ const manifest = {
         'https://*.hakuneko.workers.dev/*',
         `${new URL(pkgConfig.url).origin}/*`,
     ],
-    'chromium-args': null,
+    'user-data-dir': null,
     'user-agent': targetConfig['user-agent'] ?? null,
     dependencies: pkgConfig.dependencies
 };

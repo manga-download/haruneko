@@ -6,7 +6,7 @@ new TestFixture({
         title: 'FoxTruyen'
     },
     container: {
-        url: 'https://foxtruyen1.com/truyen-tranh/luyen-khi-chi-than-43774.html',
+        url: 'https://foxtruyen2.com/truyen-tranh/luyen-khi-chi-than-43774.html',
         id: '/truyen-tranh/luyen-khi-chi-than-43774.html',
         title: 'Luyện Khí Chi Thần'
     },

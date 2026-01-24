@@ -1,12 +1,12 @@
-﻿import { TestFixture, type Config } from '../../../test/WebsitesFixture';
+﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config: Config = {
+new TestFixture( {
     plugin: {
         id: 'rawdevart',
         title: 'RawDevart'
     },
     container: {
-        url: 'https://rawdevart.art/kono-gomi-o-nanto-yobu-c23178',
+        url: 'https://rawdevart.art/g/ne23178',
         id: '23178',
         title: 'Kono Gomi o Nanto Yobu'
     },
@@ -19,6 +19,4 @@ const config: Config = {
         size: 139_409,
         type: 'image/jpeg'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

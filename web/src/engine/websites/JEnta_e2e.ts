@@ -11,7 +11,7 @@ new TestFixture({
         title: '異世界でテイムした最強の使い魔は、幼馴染の美少女でした'
     },
     child: {
-        id: '/episodes/b5d46d0267d8a/',
+        id: '/episodes/b5d46d0267d8a',
         title: '第1話①'
     },
     entry: {

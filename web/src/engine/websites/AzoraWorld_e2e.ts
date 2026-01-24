@@ -1,25 +1,22 @@
 import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'azoraworld',
         title: 'ازورا مانجا (AZORA MANGA / WORLD)'
     },
     container: {
-        url: 'https://azoramoon.com/series/return-of-the-unrivaled-spear-knight/',
-        id: JSON.stringify({ post: '36485', slug: '/series/return-of-the-unrivaled-spear-knight/' }),
+        url: 'https://azoramoon.com/series/return-of-the-unrivaled-spear-knight',
+        id: '838',
         title: 'Return of The Unrivaled Spear Knight'
     },
     child: {
-        id: '/series/return-of-the-unrivaled-spear-knight/1/',
-        title: '1',
-        timeout: 15000
+        id: '/series/return-of-the-unrivaled-spear-knight/chapter-1',
+        title: 'Chapter 1',
     },
     entry: {
         index: 0,
         size: 757_319,
         type: 'image/jpeg'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();
