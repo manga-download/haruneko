@@ -5,40 +5,35 @@ import * as Common from './decorators/Common';
 import { FetchJSON } from '../platform/FetchProvider';
 import type { Priority } from '../taskpool/DeferredTask';
 
-type APIManga = {
-    id: number,
-    title: string
-}
-
 type APIMedia = {
-    id: number,
+    id: number;
     meta: {
-        title: string
+        title: string;
     }
-}
+};
 
 type APIPages = APIResult<{
     meta: {
-        source_url: string,
-        drm_hash: string | null
+        source_url: string;
+        drm_hash: string | null;
     }
-}[]>
+}[]>;
 
 type APIResult<T> = {
     meta: {
-        status: number
+        status: number;
     },
     data: {
-        result: T
+        result: T;
     }
-}
+};
 
 type PageData = {
-    drm_hash: string
-}
+    hash: string;
+};
 
+@Common.MangasMultiPageCSS<HTMLAnchorElement>('div.mg_title div.title a', Common.PatternLinkGenerator('/manga/list?page={page}'), 0, anchor => ({ id: anchor.pathname.split('/').at(-1), title: anchor.text.trim() }))
 export default class extends DecoratableMangaScraper {
-
     private readonly apiUrl = 'https://api.nicomanga.jp/api/v1/app/manga/';
 
     public constructor() {
@@ -54,37 +49,23 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
-        const { data: { result: { id, meta: { title } } } } = await FetchJSON<APIResult<APIMedia>>(new Request(new URL(`contents/${url.split('/').at(-1)}`, this.apiUrl)));
-        return new Manga(this, provider, id.toString(), title);
-    }
-
-    public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        const mangaList: Manga[] = [];
-        for (let page = 1, run = true; run; page++) {
-            const mangas = await this.GetMangasFromPage(page, provider);
-            mangas.length > 0 ? mangaList.push(...mangas) : run = false;
-        }
-        return mangaList;
-    }
-
-    private async GetMangasFromPage(page: number, provider: MangaPlugin): Promise<Manga[]> {
-        const data = await FetchJSON<APIManga[] | null>(new Request(new URL(`/manga/ajax/ranking?span=hourly&category=all&page=${page}`, this.URI)));
-        return (Array.isArray(data) ? data : []).map(manga => new Manga(this, provider, manga.id.toString(), manga.title));
+        const { data: { result: { id, meta: { title } } } } = await FetchJSON<APIResult<APIMedia>>(new Request(new URL(`./contents/${url.split('/').at(-1)}`, this.apiUrl)));
+        return new Manga(this, provider, `${id}`, title);
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const { meta, data: { result } } = await FetchJSON<APIResult<APIMedia[]>>(new Request(new URL(`contents/${manga.Identifier}/episodes`, this.apiUrl)));
-        return meta.status === 200 ? result.map(chapter => new Chapter(this, manga, chapter.id.toString(), chapter.meta.title.replace(manga.Title, '') ?? chapter.meta.title )) : [];
+        const { meta: { status }, data: { result } } = await FetchJSON<APIResult<APIMedia[]>>(new Request(new URL(`./contents/${manga.Identifier}/episodes`, this.apiUrl)));
+        return status === 200 ? result.map(({ id, meta: { title } }) => new Chapter(this, manga, `${id}`, title.replace(manga.Title, '') ?? title)) : [];
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page<PageData>[]> {
-        const { meta, data: { result } } = await FetchJSON<APIPages>(new Request(new URL(`episodes/${chapter.Identifier}/frames`, this.apiUrl)));
-        return meta.status === 200 ? result.map(page => new Page<PageData>(this, chapter, new URL(page.meta.source_url), { drm_hash: page.meta.drm_hash })) : [];
+        const { meta: { status }, data: { result } } = await FetchJSON<APIPages>(new Request(new URL(`./episodes/${chapter.Identifier}/frames`, this.apiUrl)));
+        return status === 200 ? result.map(({ meta: { drm_hash: hash, source_url: url } }) => new Page<PageData>(this, chapter, new URL(url), { hash })) : [];
     }
 
     public override async FetchImage(page: Page<PageData>, priority: Priority, signal: AbortSignal): Promise<Blob> {
-        const data = await Common.FetchImageAjax.call(this, page, priority, signal);
-        return !page.Parameters.drm_hash ? data : this.DecryptImage(data, page.Parameters.drm_hash);
+        const blob = await Common.FetchImageAjax.call(this, page, priority, signal);
+        return !page.Parameters.hash ? blob : this.DecryptImage(blob, page.Parameters.hash);
     }
 
     private async DecryptImage(blob: Blob, key: string): Promise<Blob> {

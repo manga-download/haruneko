@@ -44,33 +44,29 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        const mangaList: Manga[] = [];
-        for (let page = 1, run = true; run; page++) {
-            const mangas = await this.GetMangasFromPage(page, provider);
-            mangas.length > 0 ? mangaList.push(...mangas) : run = false;
-        }
-        return mangaList;
-    }
-
-    private async GetMangasFromPage(page: number, provider: MangaPlugin): Promise<Manga[]> {
-        const mangas = await this.FetchAPI<APIManga[]>('/mangaloaded?page_size=24&page=' + page);
-        return mangas.map(({ slug, title }) => new Manga(this, provider, slug, title));
+        type This = typeof this;
+        return Array.fromAsync(async function* (this: This) {
+            for (let page = 1, run = true; run ; page++) {
+                const mangasData = await this.FetchAPI<APIManga[]>('./mangaloaded?page_size=24&page=' + page);
+                const mangas = mangasData.map(({ slug, title }) => new Manga(this, provider, slug, title));
+                mangas.length > 0 ? yield* mangas : run = false;
+            }
+        }.call(this));
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const { chapters } = await this.FetchAPI<APIChapters>('/manga/' + manga.Identifier);
+        const { chapters } = await this.FetchAPI<APIChapters>('./manga/' + manga.Identifier);
         return chapters.map(({ slug, chapter_number: number }) => new Chapter(this, manga, slug, 'Chapter ' + number));
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const { full_image_paths } = await this.FetchAPI<APIPages>(`/manga/${chapter.Parent.Identifier}/${chapter.Identifier}`);
+        const { full_image_paths } = await this.FetchAPI<APIPages>(`./manga/${chapter.Parent.Identifier}/${chapter.Identifier}`);
         return full_image_paths.map(page => new Page(this, chapter, new URL(page, this.URI)));
     }
 
     public override async FetchImage(page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
         return this.imageTaskPool.Add(async () => {
-            const request = new Request(page.Link, { signal, headers: { Accept: 'human/ok' } });
-            const response = await Fetch(request);
+            const response = await Fetch(new Request(page.Link, { signal, headers: { Accept: 'human/ok' } }));
             return response.blob();
         }, priority, signal);
     }

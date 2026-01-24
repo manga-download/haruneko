@@ -11,9 +11,8 @@ new TestFixture({
         title: 'Boşluğun Hükümdarı'
     },
     child: {
-        id: '/boslugun-hukumdari-bolum-1/',
+        id: '/manga/boslugun-hukumdari/bolum-1/',
         title: 'Bölüm 1',
-        timeout: 9000
     },
     entry: {
         index: 0,
