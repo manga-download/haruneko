@@ -5,7 +5,6 @@ import { ToomicsBase, WebsiteInfoExtractor } from './templates/ToomicsBase';
 import { FetchWindowScript } from '../platform/FetchProvider';
 
 @Common.MangaCSS(/^{origin}\/kr\/webtoon\/episode\/toon\/\d+$/, 'h3[class*="episode-top__tit"]', WebsiteInfoExtractor(false))
-
 export default class extends ToomicsBase {
     public constructor() {
         super('lalatoonko', 'Lalatoon (KO)', 'https://www.lalatoon.com', Tags.Language.Korean, Tags.Media.Manhwa, Tags.Source.Official);

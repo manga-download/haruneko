@@ -11,8 +11,7 @@ export function WebsiteInfoExtractor(appendLanguage: boolean = true) {
         };
     };
 };
-
-export function MangaInfoExtractor(appendLanguage: boolean = true) {
+function MangaInfoExtractor(appendLanguage: boolean = true) {
     return function (this: MangaScraper, element: HTMLAnchorElement) {
         const language = ExtractLanguage(element.pathname);
         const title = (element.querySelector('h4.title, h4') ?? element).textContent.trim();
