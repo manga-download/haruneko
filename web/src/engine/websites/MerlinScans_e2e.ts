@@ -15,7 +15,7 @@ new TestFixture({
         title: 'Bölüm 65'
     },
     entry: {
-        index: 0,
+        index: 1,
         size: 553_600,
         type: 'image/webp'
     }
