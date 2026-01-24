@@ -6,7 +6,7 @@ new TestFixture({
         title: 'MHScans'
     },
     container: {
-        url: 'https://twobluescans.com/series/de-un-simple-soldado-a-monarca/',
+        url: 'https://mh.inventariooculto.com/series/de-un-simple-soldado-a-monarca/',
         id: JSON.stringify({ post: '2337', slug: '/series/de-un-simple-soldado-a-monarca/' }),
         title: `De un Simple Soldado a Monarca`
     },
