@@ -19,29 +19,24 @@ export class NineMangaBase extends DecoratableMangaScraper {
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
         const chapterUrl = new URL(chapter.Identifier, this.URI);
-        const data = await FetchCSS<HTMLOptionElement>(this.CreateRequest(chapterUrl), 'select#page option');
-        //There may be MORE than one page list element on the page, we need only one ! In case of direct picture links, doesnt matter
-        const subpages = Array.from(new Set([...data.map(element => new URL(element.value, this.URI).href)]));
-        return subpages.map(page => new Page(this, chapter, new URL(page, this.URI), { Referer: chapterUrl.href }));
+        const [select] = await FetchCSS<HTMLSelectElement>(this.CreateRequest(chapterUrl), 'select#page');
+        return [...select.querySelectorAll<HTMLOptionElement>('option')].map(({ value }) => new Page(this, chapter, new URL(value, this.URI), { Referer: chapterUrl.href }));
     }
 
     public override async FetchImage(page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
         return await this.imageTaskPool.Add(async () => {
-            let request = this.CreateRequest(page.Link, signal);
-            const realimage = (await FetchCSS<HTMLImageElement>(request, 'img.manga_pic')).at(0).getAttribute('src');
-            request = new Request(realimage, {
+            const realimage = (await FetchCSS<HTMLImageElement>(this.CreateRequest(page.Link), 'img.manga_pic')).at(0).getAttribute('src');
+            const response = await Fetch(new Request(realimage, {
                 signal,
                 headers: {
                     Referer: page.Parameters.Referer
                 }
-            });
-            const response = await Fetch(request);
+            }));
             return GetTypedData(await response.arrayBuffer());
-
         }, priority, signal);
     }
 
-    protected CreateRequest(url: URL, signal: AbortSignal = undefined): Request {
+    private CreateRequest(url: URL, signal: AbortSignal = undefined): Request {
         return new Request(url, {
             signal,
             headers: {
