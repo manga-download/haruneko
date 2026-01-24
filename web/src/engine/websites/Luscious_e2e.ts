@@ -6,17 +6,17 @@ new TestFixture({
         title: 'Luscious'
     },
     container: {
-        url: 'https://www.luscious.net/albums/nomikai-de-ikemen-no-senpai-no_500170/',
-        id: '500170',
-        title: 'Nomikai de Ikemen no Senpai no Omochikaeri Sarechau Ko'
+        url: 'https://www.luscious.net/albums/otsuka-kotora-angraecum-tankoubon-version-english_176038/',
+        id: '176038',
+        title: '[Otsuka Kotora] Angraecum (Tankoubon Version) [English]'
     },
     child: {
-        id: '500170',
-        title: 'Nomikai de Ikemen no Senpai no Omochikaeri Sarechau Ko'
+        id: '176038',
+        title: '[Otsuka Kotora] Angraecum (Tankoubon Version) [English]'
     },
-    entry: {
-        index: 0,
-        size: 789_681,
-        type: 'image/jpeg'
+    entry: { //make sure we gather all pages
+        index: 51,
+        size: 441_229,
+        type: 'image/png'
     }
 }).AssertWebsite();
