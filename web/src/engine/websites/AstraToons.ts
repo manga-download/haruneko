@@ -20,7 +20,6 @@ type APIMangas = {
     title: body.querySelector<HTMLImageElement>('img.object-cover').alt.trim()
 }))
 @Common.PagesSinglePageCSS('div#reader-container img')
-
 export default class extends DecoratableMangaScraper {
 
     private readonly apiUrl = 'https://new.astratoons.com/api/';
@@ -41,7 +40,6 @@ export default class extends DecoratableMangaScraper {
                 const mangas = data.map(({ id, title }) => new Manga(this, provider, `${id}`, title));
                 mangas.length > 0 ? yield* mangas : run = false;
             }
-
         }.call(this));
     }
 
@@ -56,7 +54,6 @@ export default class extends DecoratableMangaScraper {
                 });
                 chapters.length > 0 ? yield* chapters : run = false;
             }
-
         }.call(this));
     }
 
