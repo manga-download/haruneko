@@ -1,20 +1,33 @@
 import { Tags } from '../Tags';
 import icon from './InManga.webp';
-import { Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from '../providers/MangaPlugin';
+import { Chapter, DecoratableMangaScraper, Manga, type MangaPlugin } from '../providers/MangaPlugin';
 import { FetchCSS, FetchJSON } from '../platform/FetchProvider';
 import * as Common from './decorators/Common';
 
-type APIChapters = {
+type APIResult = {
     data: string;
-}
+};
 
-type APIChapter = {
-   result : {
-        Identification: string,
-        FriendlyChapterNumber: string
-    }[]
-}
+type APIChapters = {
+    result: {
+        Identification: string;
+        FriendlyChapterNumber: string;
+        FriendlyChapterNumberUrl: string;
+        Number: number;
+    }[];
+};
 
+const pageScript = `
+    new Promise( resolve => {
+        const images = [...document.querySelectorAll('div.PagesContainer img.ImageContainer')];
+        resolve(
+            images.map(image=> pageController._containers.pageUrl.replace('identification', image.id).replace('pageNumber', image.dataset.pagenumber))
+        );
+    });
+`;
+
+@Common.MangaCSS(/^{origin}\/ver\/manga\/[^/]+\/[^/]+$/, 'div.panel-heading h1')
+@Common.PagesSinglePageJS(pageScript, 500)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
@@ -26,74 +39,44 @@ export default class extends DecoratableMangaScraper {
         return icon;
     }
 
-    private CreatePostRequest(uri: string, form: string) {
-        const request = new Request(uri, {
-            body: form, method: 'POST', headers: {
-                'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
-                'X-Requested-With': 'XMLHttpRequest',
-                'Referer': this.URI.href
-            }
-        });
-        return request;
-    }
-
-    public override ValidateMangaURL(url: string): boolean {
-        return new RegExpSafe(`^${this.URI.origin}/ver/`).test(url);
-    }
-
-    public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga>{
-        const id = url.split('/').at(-1);
-        const request = new Request(url);
-        const title = await FetchCSS<HTMLHeadingElement>(request, 'div.panel-heading h1');
-        return new Manga(this, provider, id, title[0].textContent);
-
-    }
-
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        const mangaList: Manga[] = [];
-        for (let page = 0, run = true; run; page++) {
-            const mangas = await this.GetMangasFromPage(page, provider);
-            mangas.length > 0 ? mangaList.push(...mangas) : run = false;
-        }
-        return mangaList;
-    }
-
-    private async GetMangasFromPage(page: number, provider: MangaPlugin): Promise<Manga[]> {
+        type This = typeof this
         const uri = new URL('/manga/getMangasConsultResult', this.URI);
-        const formManga = new URLSearchParams({
+        const mangasPerPage = 500;
+        const body = new URLSearchParams({
             'filter[generes][]': '-1',
             'filter[queryString]': '',
-            'filter[skip]': String(500 * page),
-            'filter[take]': '500',
+            'filter[take]': `${mangasPerPage}`,
             'filter[sortby]': '5',
             'filter[broadcastStatus]': '0',
             'filter[onlyFavorites]': 'false',
             'd': '',
-        }).toString();
-
-        const request = this.CreatePostRequest(uri.href, formManga);
-        const data = await FetchCSS<HTMLAnchorElement>(request, 'a.manga-result');
-        return data.map(element => {
-            const id = element.href.split('/').filter(part => part !== '').at(-1);
-            const title = element.querySelector<HTMLHeadingElement>('h4.ellipsed-text').textContent.trim();
-            return new Manga(this, provider, id, title);
         });
+        return Array.fromAsync(async function* (this: This) {
+            for (let page = 0, run = true; run; page++) {
+                body.set('filter[skip]', `${mangasPerPage * page}`);
+                const data = await FetchCSS<HTMLAnchorElement>(new Request(uri, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Referer': this.URI.href,
+                    },
+                    body,
+                }), 'a.manga-result');
+                const mangas = data.map(element => new Manga(this, provider, element.pathname, element.querySelector<HTMLHeadingElement>('h4.ellipsed-text').textContent.trim()));
+                mangas.length > 0 ? yield* mangas : run = false;
+            }
+
+        }.call(this));
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const uri = new URL('/chapter/getall', this.URI);
-        uri.searchParams.set('mangaIdentification', manga.Identifier);
-        const request = new Request(uri.href);
-        const data = await FetchJSON<APIChapters>(request);
-        const data2: APIChapter = JSON.parse(data.data);
-        return data2.result.map(item => new Chapter(this, manga, item.Identification, item.FriendlyChapterNumber));
-    }
-
-    public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const uri = new URL('/chapter/chapterIndexControls', this.URI);
-        uri.searchParams.set('identification', chapter.Identifier);
-        const request = new Request(uri.href);
-        const data = await FetchCSS<HTMLImageElement>(request, 'div.PagesContainer img.ImageContainer');
-        return data.map(element => new Page(this, chapter, new URL('/page/getPageImage/?identification=' + element.id, request.url)));
+        const mangaId = manga.Identifier.split('/').at(-1);
+        const { data } = await FetchJSON<APIResult>(new Request(new URL(new URL(`/chapter/getall?mangaIdentification=${mangaId}`, this.URI))));
+        const { result } = JSON.parse(data) as APIChapters;
+        return result
+            .sort((self, other) => other.Number - self.Number)
+            .map(({ Identification: id, FriendlyChapterNumber: title, FriendlyChapterNumberUrl: numberUrl }) => new Chapter(this, manga, manga.Identifier.replace(mangaId, `${numberUrl}/${id}`), title));
     }
 }

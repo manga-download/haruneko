@@ -10,15 +10,9 @@ type APIMangas = {
         name: string
     }[]
 }
-function ChapterInfoExtractor(anchor: HTMLAnchorElement) {
-    return {
-        id: anchor.pathname + anchor.search,
-        title: anchor.text.trim()
-    };
-}
 
 @Common.MangaCSS(/^{origin}\/comic\/[^/]+/, '.comics-detail__title')
-@Common.ChaptersSinglePageCSS('a.comics-chapters__item', undefined, ChapterInfoExtractor)
+@Common.ChaptersSinglePageCSS<HTMLAnchorElement>('a.comics-chapters__item', undefined, anchor => ({ id: anchor.pathname + anchor.search, title: anchor.text.trim() }))
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
@@ -33,16 +27,14 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        const mangaList: Manga[] = [];
-        for (let page = 1, run = true; run; page++) {
-            const mangas = await this.GetMangasFromPage(page, provider);
-            mangas.length > 0 ? mangaList.push(...mangas) : run = false;
-        }
-        return mangaList;
-    }
-    private async GetMangasFromPage(page: number, provider: MangaPlugin): Promise<Manga[]> {
-        const { items } = await FetchJSON<APIMangas>(new Request(new URL(`amp_comic_list?type=all&region=all&filter=*&page=${page}&limit=200`, this.apiUrl)));
-        return items.map(item => new Manga(this, provider, `/comic/${item.comic_id}`, item.name.trim()));
+        type This = typeof this;
+        return Array.fromAsync(async function* (this: This) {
+            for (let page = 1, run = true; run; page++) {
+                const { items } = await FetchJSON<APIMangas>(new Request(new URL(`./amp_comic_list?type=all&region=all&filter=*&page=${page}&limit=200`, this.apiUrl)));
+                const mangas = items.map(({ comic_id: id, name }) => new Manga(this, provider, `/comic/${id}`, name.trim()));
+                mangas.length > 0 ? yield* mangas : run = false;
+            }
+        }.call(this));
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {

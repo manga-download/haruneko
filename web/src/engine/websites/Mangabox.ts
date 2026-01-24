@@ -1,19 +1,42 @@
 import { Tags } from '../Tags';
 import icon from './Mangabox.webp';
-import { Chapter, DecoratableMangaScraper, Manga, type MangaPlugin } from '../providers/MangaPlugin';
+import { Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { FetchCSS, FetchJSON } from '../platform/FetchProvider';
+import { FetchJSON } from '../platform/FetchProvider';
+import type { Priority } from '../taskpool/DeferredTask';
+import { GetTypedData } from './decorators/Common';
 
-type APiMangas = {
+type APIMangas = {
     manga: {
-        title: string,
-        id: number
-    }
-}
+        title: string;
+        id: number;
+    };
+};
+type APIResult<T> = {
+    result: T;
+};
 
-@Common.PagesSinglePageCSS('ul.slides li img')
-@Common.ImageAjax()
+type APIChapters = APIResult<{
+    episodes: {
+        episodeId: number;
+        displayVolume: string;
+        volume: number;
+        mask: number;
+    }[];
+}>;
+
+type JSONChapter = {
+    episodeId: number;
+    mask: number;
+};
+
+type PageParam = {
+    mask: number;
+};
+
+@Common.MangaCSS<HTMLImageElement>(/{origin}\/reader\/\d+\/episodes\/$/, 'img[class^="_hero_"]', (element, uri) => ({ id: uri.pathname.match(/\/reader\/(\d+)/).at(1), title: element.alt.trim() }))
 export default class extends DecoratableMangaScraper {
+    private readonly apiUrl = 'https://www.mangabox.me/api/honshi/';
 
     public constructor() {
         super('mangabox', 'Mangabox', 'https://www.mangabox.me', Tags.Media.Manga, Tags.Language.Japanese, Tags.Source.Official);
@@ -23,41 +46,49 @@ export default class extends DecoratableMangaScraper {
         return icon;
     }
 
-    public override ValidateMangaURL(url: string): boolean {
-        return new RegExpSafe(`^${this.URI.origin}/reader/\\d+/episodes/$`).test(url);
-    }
-
-    public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
-        const uri = new URL(url);
-        const id = uri.pathname.match(/\/reader\/(\d+)/)[1];
-        const request = new Request(url);
-        const data = await FetchCSS(request, 'h1.episodes_title');
-        return new Manga(this, provider, id, data[0].textContent.trim());
-    }
-
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        const mangaList: Manga[] = [];
-        for (let page = 1, run = true; run; page++) {
-            const mangas = await this.GetMangasFromPage(page, provider);
-            mangas.length > 0 ? mangaList.push(...mangas) : run = false;
-        }
-        return mangaList;
-    }
-
-    private async GetMangasFromPage(page: number, provider: MangaPlugin): Promise<Manga[]> {
-        const request = new Request(new URL(`/api/reader/episodes?page=${page}`, this.URI).href, {
-            headers: {
-                'X-Requested-With': 'XMLHttpRequest'
+        type This = typeof this;
+        return Array.fromAsync(async function* (this: This) {
+            for (let page = 1, run = true; run ; page++) {
+                const data = await FetchJSON<APIMangas[]>(new Request(new URL(`./api/reader/episodes?page=${page}`, this.URI)));
+                const mangas = data.map(({ manga: { id, title } }) => new Manga(this, provider, `${id}`, title));
+                mangas.length > 0 ? yield* mangas : run = false;
             }
-        });
-        const data = await FetchJSON<APiMangas[]>(request);
-        return data.map(manga => new Manga(this, provider, manga.manga.id.toString(), manga.manga.title.trim()));
+        }.call(this));
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const uri = new URL(`/reader/${manga.Identifier}/episodes/`, this.URI);
-        const request = new Request(uri.href);
-        const data = await FetchCSS<HTMLAnchorElement>(request, 'ul.episodes_list li.episodes_item a');
-        return data.map(element => new Chapter(this, manga, element.pathname, element.querySelector('span.episodes_strong_text').textContent.trim()));
+        const { result: { episodes } } = await FetchJSON<APIChapters>(new Request(new URL('./jsonrpc', this.apiUrl), {
+            method: 'POST',
+            body: JSON.stringify({
+                jsonrpc: '2.0',
+                method: 'get_all_episodes_by_manga_id',
+                params: {
+                    mangaId: parseInt(manga.Identifier)
+                }
+            }),
+            headers: {
+                'Content-type': 'application/json'
+            }
+        }));
+        return episodes.map(({ episodeId, displayVolume, volume, mask }) => new Chapter(this, manga, JSON.stringify({ episodeId, mask }), displayVolume ?? `${volume}`));
+    }
+
+    public override async FetchPages(chapter: Chapter): Promise<Page<PageParam>[]> {
+        const { episodeId, mask } = JSON.parse(chapter.Identifier) as JSONChapter;
+        const { imageUrls } = await FetchJSON<{ imageUrls: string[] }>(new Request(new URL(`./episode/${episodeId}/images`, this.apiUrl)));
+        return imageUrls? imageUrls.map(url => new Page<PageParam>(this, chapter, new URL(url), { mask })): [];
+    }
+
+    public override async FetchImage(page: Page<PageParam>, priority: Priority, signal: AbortSignal): Promise<Blob> {
+        const blob = await Common.FetchImageAjax.call(this, page, priority, signal, true);
+        return page.Parameters.mask ? GetTypedData(this.Xor(new Uint8Array(await blob.arrayBuffer()), page.Parameters.mask)) : blob;
+    }
+
+    private Xor(sourceArray: Uint8Array, mask: number) {
+        const result = new Uint8Array(sourceArray.length);
+        for (let index = 0; index < sourceArray.length; index++)
+            result[index] = sourceArray[index] ^ mask;
+        return result.buffer;
     }
 }

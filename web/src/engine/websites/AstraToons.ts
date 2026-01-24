@@ -1,6 +1,6 @@
 import { Tags } from '../Tags';
 import icon from './AstraToons.webp';
-import { Fetch, FetchHTML, FetchJSON } from '../platform/FetchProvider';
+import { Fetch, FetchJSON } from '../platform/FetchProvider';
 import { type MangaPlugin, Manga, Chapter, type Page, DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import type { Priority } from '../taskpool/DeferredTask';
@@ -15,8 +15,11 @@ type APIMangas = {
     data: APIManga[];
 };
 
+@Common.MangaCSS(/^{origin}\/comics\/[^/]+$/, 'body', body => ({
+    id: body.querySelector('main[x-data]').getAttribute('x-data').match(/\d+/).at(0),
+    title: body.querySelector<HTMLImageElement>('img.object-cover').alt.trim()
+}))
 @Common.PagesSinglePageCSS('div#reader-container img')
-
 export default class extends DecoratableMangaScraper {
 
     private readonly apiUrl = 'https://new.astratoons.com/api/';
@@ -29,18 +32,6 @@ export default class extends DecoratableMangaScraper {
         return icon;
     }
 
-    public override ValidateMangaURL(url: string): boolean {
-        return new RegExpSafe(`^${this.URI.origin}/comics/[^/]+$`).test(url);
-    }
-
-    public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
-        const doc = await FetchHTML(new Request(new URL(url)));
-        return new Manga(this, provider,
-            doc.querySelector('main[x-data]').getAttribute('x-data').match(/\d+/).at(0),
-            doc.querySelector<HTMLImageElement>('img.object-cover').alt.trim()
-        );
-    }
-
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
         type This = typeof this;
         return Array.fromAsync(async function* (this: This) {
@@ -49,7 +40,6 @@ export default class extends DecoratableMangaScraper {
                 const mangas = data.map(({ id, title }) => new Manga(this, provider, `${id}`, title));
                 mangas.length > 0 ? yield* mangas : run = false;
             }
-
         }.call(this));
     }
 
@@ -64,7 +54,6 @@ export default class extends DecoratableMangaScraper {
                 });
                 chapters.length > 0 ? yield* chapters : run = false;
             }
-
         }.call(this));
     }
 
