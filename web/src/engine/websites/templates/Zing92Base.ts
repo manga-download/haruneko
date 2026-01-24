@@ -42,12 +42,11 @@ function MangaExtractor(anchor: HTMLAnchorElement) {
 export class Zing92Base extends DecoratableMangaScraper {
 
     protected zingParams: ZingParams;
-    protected zingParamsScript = 'new Promise(resolve => resolve({ nonce: zing.nonce, apiURL: zing.ajax_url }));';
-    protected decodeImageAjaxAction = 'decode_images';
     protected nonceParameterName = 'nonce';
+    protected decodeImageAjaxAction = 'decode_images';
 
     public override async Initialize(): Promise<void> {
-        this.zingParams = await FetchWindowScript(new Request(this.URI), this.zingParamsScript, 500);
+        this.zingParams = await FetchWindowScript(new Request(this.URI), `new Promise(resolve => resolve({ nonce: zing['${this.nonceParameterName}'], apiURL: zing.ajax_url }));`, 500);
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page<PageParameters>[]> {
