@@ -4,7 +4,7 @@ new TestFixture({
     plugin: {
         id: 'dumanwu',
         title: 'Dumanwu'
-    },/* Geoblocked : China
+    }, /* Geoblocked : China
     container: {
         url: 'https://dumanwu1.com/IVppVyi/',
         id: '/IVppVyi/',
