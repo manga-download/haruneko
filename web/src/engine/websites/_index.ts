@@ -590,7 +590,6 @@ export { default as ReadFreeComics } from './ReadFreeComics';
 export { default as ReadKomik } from './ReadKomik';
 export { default as ReadManga } from './ReadManga';
 export { default as ReadToon } from './ReadToon';
-export { default as ReaperScansFR } from './ReaperScansFR';
 export { default as Remanga } from './Remanga';
 export { default as ResetScans } from './ResetScans';
 export { default as Retsu } from './Retsu';
