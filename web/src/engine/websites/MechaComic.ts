@@ -5,6 +5,8 @@ import type { Priority } from '../taskpool/DeferredTask';
 import { Fetch, FetchJSON } from '../platform/FetchProvider';
 import { DecoratableMangaScraper, type Chapter, Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
+import { Exception } from '../Error';
+import { WebsiteResourceKey as R } from '../../i18n/ILocale';
 
 type ContentData = {
     images: Record<string, ImageData[]>;
@@ -54,9 +56,15 @@ export default class extends DecoratableMangaScraper {
         const baseUrl = url.searchParams.get('directory');
         const ver = url.searchParams.get('ver');
 
+        // Validate required parameters
+        const contentScriptURL = rasterScriptURL || verticalScriptURL || pageScriptURL;
+        if (!contentScriptURL || !baseUrl || !ver) {
+            throw new Exception(R.Plugin_Common_Chapter_UnavailableError);
+        }
+
         const keyData = cryptokeyURL ? await (await Fetch(new Request(new URL(cryptokeyURL, this.URI)))).text() : '';
 
-        const contentUrl = new URL(rasterScriptURL || verticalScriptURL || pageScriptURL, chapterUrl);
+        const contentUrl = new URL(contentScriptURL, chapterUrl);
         contentUrl.searchParams.set('ver', ver);
         const { images } = await FetchJSON<ContentData>(new Request(contentUrl));
         return Object.values(images).map(page => {
