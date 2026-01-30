@@ -38,14 +38,18 @@ export class FetchProvider {
         const originalCookieHeaderName = Object.keys(headers).find(header => header.toLowerCase() === normalizedCookieHeaderName) ?? normalizedCookieHeaderName;
         const headerCookies = headers[originalCookieHeaderName]?.split(';').filter(cookie => cookie.includes('=')).map(cookie => cookie.trim()) ?? [];
         
-        // Get cookies filtering by domain to include partitioned cookies (e.g., cf_clearance)
-        // We can't use URL filter as it excludes partitioned cookies, but we can filter by domain
+        // Filter cookies by domain (instead of URL) to include partitioned cookies (e.g., cf_clearance)
+        // URL-based filtering excludes partitioned cookies, but domain-based filtering includes them
         const urlObj = new URL(url);
         const allCookies = await this.webContents.session.cookies.get({ domain: urlObj.hostname });
         const browserCookies = allCookies.filter(cookie => {
-            // Additional filtering for path and security
-            // Domain is already filtered by the API, but we still need to check path and secure flag
-            const pathMatches = urlObj.pathname.startsWith(cookie.path);
+            // Apply RFC 6265 path matching: cookie path must be a prefix of URL path
+            // and either match exactly or be followed by '/'
+            const pathMatches = urlObj.pathname === cookie.path || 
+                (urlObj.pathname.startsWith(cookie.path) && 
+                 (cookie.path.endsWith('/') || urlObj.pathname[cookie.path.length] === '/'));
+            
+            // Check if cookie's secure flag is compatible with URL protocol
             const secureMatches = !cookie.secure || urlObj.protocol === 'https:';
             
             return pathMatches && secureMatches;
@@ -102,8 +106,10 @@ export class FetchProvider {
             if (normalizedHeader === 'link') {
                 continue;
             }
-            // Currently electron des not include partitioned cookies when filtering with `session.cookies.get({ url })`
-            // => Workaround: Remove the partitioned flag from the server response
+            // Strip the 'partitioned' attribute from Set-Cookie headers as a workaround
+            // This ensures cookies are stored as non-partitioned in the session store
+            // Combined with domain-based filtering in UpdateCookieHeader(), this enables
+            // proper retrieval and transmission of CloudFlare cookies (e.g., cf_clearance)
             if(normalizedHeader === 'set-cookie') {
                 details.responseHeaders[originalHeader] = details.responseHeaders[originalHeader].map(cookie => cookie.replace(/partitioned/gi, ''));
             }
