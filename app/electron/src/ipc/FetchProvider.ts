@@ -13,13 +13,16 @@ export class FetchProvider {
     private fetchApiSupportedPrefix = 'X-FetchAPI-'.toLowerCase();
 
     constructor(private readonly ipc: IPC<Channels.Web, Channels.App>, private readonly webContents: WebContents) {
+        // Set up the response header handler immediately to strip partitioned cookies
+        // This must be done before any requests are made to ensure CloudFlare cookies work properly
+        this.webContents.session.webRequest.onHeadersReceived((details, callback) => callback(this.ModifyResponseHeaders(details)));
         this.ipc.Listen(Channels.App.Initialize, this.Initialize.bind(this));
     }
 
     private async Initialize(fetchApiSupportedPrefix: string): Promise<void> {
         this.fetchApiSupportedPrefix = fetchApiSupportedPrefix.toLowerCase();
         this.webContents.session.webRequest.onBeforeSendHeaders(async (details, callback) => callback(await this.ModifyRequestHeaders(details)));
-        this.webContents.session.webRequest.onHeadersReceived((details, callback) => callback(this.ModifyResponseHeaders(details)));
+        // Response handler already set up in constructor, no need to set it again
         this.Initialize = () => Promise.resolve();
     }
 
