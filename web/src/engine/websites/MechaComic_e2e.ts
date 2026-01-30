@@ -1,24 +1,22 @@
 ﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'mechacomic',
         title: 'MechaComic'
     },
     container: {
-        url: 'https://mechacomic.jp/books/141740',
-        id: '/books/141740',
-        title: '青島くんはいじわる【フルカラー版】'
+        url: 'https://mechacomic.jp/books/165155',
+        id: '/books/165155',
+        title: '鬼畜英雄【G!TOON版】'
     },
     child: {
-        id: '/free_chapters/1706074/download/c19a2c6abab52de29baacb698fd923de1c78a992',
-        title: '001話 豚足と王子様',
+        id: '/free_chapters/2215258/download/7cbf4363d936da39e69bc683ea9b290f459cb0f9',
+        title: '001話 (1)',
     },
     entry: {
         index: 0,
-        size: 49_290,
+        size: 114_694,
         type: 'image/webp'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

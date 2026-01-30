@@ -2,7 +2,7 @@ import { Tags } from '../Tags';
 import icon from './MechaComic.webp';
 import { GetBytesFromHex } from '../BufferEncoder';
 import type { Priority } from '../taskpool/DeferredTask';
-import { Fetch, FetchJSON } from '../platform/FetchProvider';
+import { Fetch, FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
 import { DecoratableMangaScraper, type Chapter, Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 
@@ -40,6 +40,10 @@ export default class extends DecoratableMangaScraper {
 
     public override get Icon() {
         return icon;
+    }
+
+    public override async Initialize(): Promise<void> {
+        return FetchWindowScript(new Request(this.URI), `window.cookieStore.set('_confirmed_adult', '1')`);
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
