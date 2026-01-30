@@ -59,12 +59,12 @@ export default class implements IAppWindow {
     }
 
     #DetectMaximized() {
+        const screen = window.screen as Screen & { availLeft?: number, availTop?: number };
         this.#maximized.Value =
-            window.screenX === window.screen.availLeft
-            && window.screenY === window.screen.availTop
-            && window.outerWidth === window.screen.availWidth
-            && window.outerHeight === window.screen.availHeight;
-        //console.log('Move to Maximum:', this.#maximized.Value, ':', window.screenX, window.screenY, window.outerWidth, window.outerHeight, 'x', window.screen.availLeft, window.screen.availTop, window.screen.availWidth, window.screen.availHeight);
+            window.screenX === screen.availLeft
+            && window.screenY === screen.availTop
+            && window.outerWidth === screen.availWidth
+            && window.outerHeight === screen.availHeight;
     }
 
     public Minimize(): void {
