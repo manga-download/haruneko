@@ -38,23 +38,17 @@ export class FetchProvider {
         const originalCookieHeaderName = Object.keys(headers).find(header => header.toLowerCase() === normalizedCookieHeaderName) ?? normalizedCookieHeaderName;
         const headerCookies = headers[originalCookieHeaderName]?.split(';').filter(cookie => cookie.includes('=')).map(cookie => cookie.trim()) ?? [];
         
-        // Get all cookies without URL filter to include partitioned cookies (e.g., cf_clearance)
-        // Then manually filter by domain/path to include only relevant cookies
-        const allCookies = await this.webContents.session.cookies.get({});
+        // Get cookies filtering by domain to include partitioned cookies (e.g., cf_clearance)
+        // We can't use URL filter as it excludes partitioned cookies, but we can filter by domain
         const urlObj = new URL(url);
+        const allCookies = await this.webContents.session.cookies.get({ domain: urlObj.hostname });
         const browserCookies = allCookies.filter(cookie => {
-            // Check if cookie domain matches the URL
-            const cookieDomain = cookie.domain.startsWith('.') ? cookie.domain.substring(1) : cookie.domain;
-            const urlHostname = urlObj.hostname;
-            const domainMatches = urlHostname === cookieDomain || urlHostname.endsWith('.' + cookieDomain);
-            
-            // Check if cookie path matches
+            // Additional filtering for path and security
+            // Domain is already filtered by the API, but we still need to check path and secure flag
             const pathMatches = urlObj.pathname.startsWith(cookie.path);
-            
-            // Check if cookie is secure and URL is HTTPS
             const secureMatches = !cookie.secure || urlObj.protocol === 'https:';
             
-            return domainMatches && pathMatches && secureMatches;
+            return pathMatches && secureMatches;
         });
         
         for(const browserCookie of browserCookies) {
