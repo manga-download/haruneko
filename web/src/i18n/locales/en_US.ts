@@ -167,6 +167,7 @@ const translations: VariantResource = {
   Settings_Global_MangaExportFormatInfo: 'The container format to store the downloaded content for mangas/comics',
   Settings_Global_MangaExportFormat_FolderWithImages: 'Folder with Images',
   Settings_Global_MangaExportFormat_ComicBookArchive: 'Comic Book Archive (*.cbz)',
+  Settings_Global_MangaExportFormat_SevenZipArchive: '7z Archive (*.7z)',
   Settings_Global_MangaExportFormat_ElectronicPublication: 'E-Book Publication (*.epub)',
   Settings_Global_MangaExportFormat_PortableDocumentFormat: 'Portable Document Format (*.pdf)',
   Settings_Global_DescramblingFormat: 'De-Scrambling Format',

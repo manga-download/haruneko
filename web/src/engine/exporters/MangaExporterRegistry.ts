@@ -2,6 +2,7 @@ import type { StorageController } from '../StorageController';
 import type { MangaExporter } from './MangaExporter';
 import { ImageDirectoryExporter } from './ImageDirectoryExporter';
 import { ComicBookArchiveExporter } from './ComicBookArchiveExporter';
+import { SevenZipArchiveExporter } from './SevenZipArchiveExporter';
 import { ElectronicPublicationExporter } from './ElectronicPublicationExporter';
 import { PortableDocumentFormatExporter } from './PortableDocumentFormatExporter';
 
@@ -29,6 +30,10 @@ export enum MangaExportFormat {
     /**
      * Save images from website in a EPUB file
      */
+    C7Z = 'application/x-7z-compressed',
+    /**
+     * Save images from website in a EPUB file
+     */
     EPUB = 'application/epub+zip',
     /**
      * Save images from website in a document, non-compliant images will be converted to JPEG with q=95%
@@ -40,6 +45,7 @@ export function CreateChapterExportRegistry(storageController: StorageController
     return {
         [MangaExportFormat.RAWs]: new ImageDirectoryExporter(storageController),
         [MangaExportFormat.CBZ]: new ComicBookArchiveExporter(storageController),
+        [MangaExportFormat.C7Z]: new SevenZipArchiveExporter(storageController),
         [MangaExportFormat.PDF]: new PortableDocumentFormatExporter(storageController),
         [MangaExportFormat.EPUB]: new ElectronicPublicationExporter(storageController),
     };

@@ -258,6 +258,7 @@ export enum EngineResourceKey {
     Settings_Global_MangaExportFormatInfo = 'Settings_Global_MangaExportFormatInfo',
     Settings_Global_MangaExportFormat_FolderWithImages = 'Settings_Global_MangaExportFormat_FolderWithImages',
     Settings_Global_MangaExportFormat_ComicBookArchive = 'Settings_Global_MangaExportFormat_ComicBookArchive',
+    Settings_Global_MangaExportFormat_SevenZipArchive = 'Settings_Global_MangaExportFormat_SevenZipArchive',
     Settings_Global_MangaExportFormat_ElectronicPublication = 'Settings_Global_MangaExportFormat_ElectronicPublication',
     Settings_Global_MangaExportFormat_PortableDocumentFormat = 'Settings_Global_MangaExportFormat_PortableDocumentFormat',
     Settings_Global_DescramblingFormat = 'Settings_Global_DescramblingFormat',
