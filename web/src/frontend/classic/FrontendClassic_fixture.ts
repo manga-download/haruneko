@@ -108,11 +108,11 @@ export class TestFixture extends FrontendFixture {
     /**
      * Search for a media item (chapter) with the matching {@link text} in the current list and click on its text.
      */
-    public async SelectMediaItem(text: string) {
+    public async SelectMediaItem(text: string, timeout = 5000) {
         const selectorItemList = '#ItemList .listitem';
         const selectorItemText = '.title';
         const page = await super.GetPage();
-        await page.waitForSelector(selectorItemList, { timeout: 5000 });
+        await page.waitForSelector(selectorItemList, { timeout });
         const elements = await page.$$(selectorItemList);
         for (const element of elements) {
             const titleElement = await element.$(selectorItemText);

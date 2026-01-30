@@ -30,11 +30,12 @@ describe('Front-End (Classic)', { concurrent: false, timeout: 60_000 }, () => {
             await fixture.SelectWebsite('bookmarks');
             await fixture.SetMediaTitleFilter('Apple');
             await fixture.SelectMediaTitle('Apple Collection');
-            await fixture.Delay(2000);
+
+            // Wait for item list to be loaded
+            const page = await fixture.GetPage();
+            await page.waitForSelector('#ItemList .listitem', { timeout: 5000 });
 
             // Select a chapter (media item)
-            await fixture.SetMediaItemFilter('');
-            await fixture.Delay(1000);
             await fixture.SelectMediaItem('Chapter 11');
 
             // Wait for preview images to load
