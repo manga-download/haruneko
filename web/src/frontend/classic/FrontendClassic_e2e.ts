@@ -35,8 +35,8 @@ describe('Front-End (Classic)', { concurrent: false, timeout: 60_000 }, () => {
             const page = await fixture.GetPage();
             await page.waitForSelector('#ItemList .listitem', { timeout: 5000 });
 
-            // Select a chapter (media item)
-            await fixture.SelectMediaItem('Chapter 11');
+            // Select the first available chapter
+            await fixture.SelectFirstMediaItem();
 
             // Wait for preview images to load
             await fixture.WaitForPreviewImages(15000);

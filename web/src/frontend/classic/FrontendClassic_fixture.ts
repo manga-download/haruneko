@@ -127,6 +127,26 @@ export class TestFixture extends FrontendFixture {
     }
 
     /**
+     * Select the first available media item (chapter) in the current list and click on it.
+     */
+    public async SelectFirstMediaItem(timeout = 5000) {
+        const selectorItemList = '#ItemList .listitem';
+        const selectorItemText = '.title';
+        const page = await super.GetPage();
+        await page.waitForSelector(selectorItemList, { timeout });
+        const elements = await page.$$(selectorItemList);
+        if (elements.length === 0) {
+            throw new Error('No media items found in the list');
+        }
+        const firstElement = elements[0];
+        const titleElement = await firstElement.$(selectorItemText);
+        if (!titleElement) {
+            throw new Error(`failed to find element matching selector '${selectorItemText}' in first item`);
+        }
+        return titleElement.click();
+    }
+
+    /**
      * Wait for preview images to be displayed in the viewer.
      */
     public async WaitForPreviewImages(timeout = 10000) {
