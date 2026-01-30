@@ -37,7 +37,7 @@ export class FetchProvider {
         const normalizedCookieHeaderName = (this.fetchApiSupportedPrefix + 'Cookie').toLowerCase();
         const originalCookieHeaderName = Object.keys(headers).find(header => header.toLowerCase() === normalizedCookieHeaderName) ?? normalizedCookieHeaderName;
         const headerCookies = headers[originalCookieHeaderName]?.split(';').filter(cookie => cookie.includes('=')).map(cookie => cookie.trim()) ?? [];
-        
+
         // Filter cookies by domain (instead of URL) to include partitioned cookies (e.g., cf_clearance)
         // URL-based filtering excludes partitioned cookies, but domain-based filtering includes them
         const urlObj = new URL(url);
@@ -45,16 +45,16 @@ export class FetchProvider {
         const browserCookies = allCookies.filter(cookie => {
             // Apply RFC 6265 path matching: cookie path must be a prefix of URL path
             // and either match exactly or be followed by '/'
-            const pathMatches = urlObj.pathname === cookie.path || 
-                (urlObj.pathname.startsWith(cookie.path) && 
-                 (cookie.path.endsWith('/') || urlObj.pathname[cookie.path.length] === '/'));
-            
+            const pathMatches = urlObj.pathname === cookie.path ||
+                urlObj.pathname.startsWith(cookie.path) &&
+                 (cookie.path.endsWith('/') || urlObj.pathname[cookie.path.length] === '/');
+
             // Check if cookie's secure flag is compatible with URL protocol
             const secureMatches = !cookie.secure || urlObj.protocol === 'https:';
-            
+
             return pathMatches && secureMatches;
         });
-        
+
         for(const browserCookie of browserCookies) {
             if(!headerCookies.some(cookie => cookie.startsWith(browserCookie.name + '='))) {
                 headerCookies.push(`${browserCookie.name}=${browserCookie.value}`);
