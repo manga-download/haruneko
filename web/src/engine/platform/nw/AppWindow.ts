@@ -1,3 +1,4 @@
+import { Observable, type IObservable } from '../../Observable';
 import type { IAppWindow } from '../AppWindow';
 
 export default class implements IAppWindow {
@@ -15,6 +16,9 @@ export default class implements IAppWindow {
 
     constructor(private readonly nwWindow: NWJS_Helpers.win, private readonly splashURL: string) {
         // TODO: Confirm really want to close => nwWindow.on('beforunload', ...)
+
+        // TODO: Provisional fullscreen detection needs to be improved ...
+        setInterval(this.#DetectMaximized.bind(this), 250);
     }
 
     private async InitializeSplash(): Promise<void> {
@@ -47,6 +51,20 @@ export default class implements IAppWindow {
 
     public get HasControls() {
         return true;
+    }
+
+    readonly #maximized = new Observable<boolean, IAppWindow>(false, this);
+    public get Maximized(): IObservable<boolean, IAppWindow> {
+        return this.#maximized;
+    }
+
+    #DetectMaximized() {
+        this.#maximized.Value =
+            window.screenX === window.screen.availLeft
+            && window.screenY === window.screen.availTop
+            && window.outerWidth === window.screen.availWidth
+            && window.outerHeight === window.screen.availHeight;
+        //console.log('Move to Maximum:', this.#maximized.Value, ':', window.screenX, window.screenY, window.outerWidth, window.outerHeight, 'x', window.screen.availLeft, window.screen.availTop, window.screen.availWidth, window.screen.availHeight);
     }
 
     public Minimize(): void {
