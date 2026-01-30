@@ -25,21 +25,21 @@ describe('Front-End (Classic)', { concurrent: false, timeout: 60_000 }, () => {
         });
 
         it('Should display preview images when clicking on a bookmarked manga and a chapter', async () => {
-            
+
             await fixture.SetWebsiteFilter('Bookmarks');
             await fixture.SelectWebsite('bookmarks');
             await fixture.SetMediaTitleFilter('Apple');
             await fixture.SelectMediaTitle('Apple Collection');
             await fixture.Delay(2000);
-            
+
             // Select a chapter (media item)
             await fixture.SetMediaItemFilter('');
             await fixture.Delay(1000);
             await fixture.SelectMediaItem('Chapter 11');
-            
+
             // Wait for preview images to load
             await fixture.WaitForPreviewImages(15000);
-            
+
             // Verify preview images are displayed
             const imageCount = await fixture.GetPreviewImageCount();
             if (imageCount === 0) {
