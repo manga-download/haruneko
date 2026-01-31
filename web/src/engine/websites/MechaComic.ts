@@ -7,31 +7,27 @@ import { DecoratableMangaScraper, type Chapter, Page } from '../providers/MangaP
 import * as Common from './decorators/Common';
 
 type ContentData = {
-    images: Record<string, ImageData[]>;
-};
-
-type ImageData = {
-    src: string;
-    format: string;
+    images: Record<string, { src: string }[]>;
 };
 
 type PageParameters = {
-    keyData: string;
+    keyData?: string;
 };
 
-function ChapterInfoExtractor(div: HTMLDivElement) {
+function ChapterInfoExtractor(anchor: HTMLAnchorElement) {
+    const div = anchor.closest('div.p-chapterInfo');
     return {
-        id: div.querySelector<HTMLAnchorElement>('a.p-btn-chapter').pathname,
+        id: anchor.pathname,
         title: [
-            Common.WebsiteInfoExtractor({ queryBloat: 'span' }).call(this, div.querySelector('.p-chapterList_no'), this.URI).title,
-            div.querySelector('.p-chapterList_name').textContent.trim()
-        ].join(' ').trim()
+            div.querySelector('.p-chapterList_no').childNodes.item(0).textContent.trim(),
+            div.querySelector('.p-chapterList_name').textContent.trim(),
+        ].filter(entry => entry).join(' - ').trim()
     };
 }
 
 @Common.MangaCSS(/^{origin}\/books\/\d+$/, 'div.p-bookInfo_title h1')
 @Common.MangasMultiPageCSS('div.p-book_detail dt.p-book_title a', Common.PatternLinkGenerator('/free/list?page={page}'))
-@Common.ChaptersMultiPageCSS('li.p-chapterList_item div.p-chapterInfo-comic', Common.PatternLinkGenerator('{id}?page={page}'), 0, ChapterInfoExtractor)
+@Common.ChaptersMultiPageCSS('ol.p-chapterList li div.p-chapterInfo a.p-btn-chapter:not([href*="register"])', Common.PatternLinkGenerator('{id}?page={page}'), 0, ChapterInfoExtractor)
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
@@ -47,32 +43,26 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const chapterUrl = new URL(chapter.Identifier, this.URI);
-        const response = await Fetch(new Request(chapterUrl));
-        const url = response.redirected ? new URL(response.url) : chapterUrl;
+        const response = await Fetch(new Request(new URL(chapter.Identifier, this.URI)));
+        const params = new URL(response.url).searchParams;
+        const cryptoKeyURL = params.get('cryptokey');
+        const baseURL = params.get('directory');
+        const ver = params.get('ver');
+        const keyData = cryptoKeyURL ? await (await Fetch(new Request(new URL(cryptoKeyURL, this.URI)))).text() : null;
+        const contentURI = new URL(params.get('contents') || params.get('contents_vertical') || params.get('contents_page'), response.url);
+        contentURI.searchParams.set('ver', ver);
+        const { images } = await FetchJSON<ContentData>(new Request(contentURI));
 
-        const rasterScriptURL = url.searchParams.get('contents');
-        const verticalScriptURL = url.searchParams.get('contents_vertical');
-        const pageScriptURL = url.searchParams.get('contents_page');
-        const cryptokeyURL = url.searchParams.get('cryptokey');
-        const baseUrl = url.searchParams.get('directory');
-        const ver = url.searchParams.get('ver');
-
-        const keyData = cryptokeyURL ? await (await Fetch(new Request(new URL(cryptokeyURL, this.URI)))).text() : '';
-
-        const contentUrl = new URL(rasterScriptURL || verticalScriptURL || pageScriptURL, chapterUrl);
-        contentUrl.searchParams.set('ver', ver);
-        const { images } = await FetchJSON<ContentData>(new Request(contentUrl));
-        return Object.values(images).map(page => {
-            const url = new URL(page.shift().src, baseUrl);
-            url.searchParams.set('ver', ver);
-            return new Page<PageParameters>(this, chapter, url, { keyData });
+        return Object.values(images).map(srcset => {
+            const uri = new URL(srcset.at(0).src, baseURL);
+            uri.searchParams.set('ver', ver);
+            return new Page<PageParameters>(this, chapter, uri, { keyData });
         });
     }
 
     public override async FetchImage(page: Page<PageParameters>, priority: Priority, signal: AbortSignal): Promise<Blob> {
+        const { keyData } = page.Parameters;
         const response = await this.imageTaskPool.Add(() => Fetch(new Request(page.Link, { signal })), priority, signal);
-        const keyData = page.Parameters.keyData;
         return keyData ? this.DecryptImage(await response.arrayBuffer(), keyData) : response.blob();
     }
 
