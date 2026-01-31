@@ -187,6 +187,7 @@ export { default as HDPornComics } from './HDPornComics';
 export { default as HeavenManga2 } from './HeavenManga2';
 export { default as HenChan } from './HenChan';
 export { default as Hentai2Read } from './Hentai2Read';
+export { default as Hentai18 } from './Hentai18';
 export { default as Hentai20 } from './Hentai20';
 export { default as HentaiComics } from './HentaiComics';
 export { default as HentaiForce } from './HentaiForce';
