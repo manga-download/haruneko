@@ -12,7 +12,13 @@ type APIPages = {
     }
 };
 
-@Common.MangaCSS(/^{origin}\/comic\/\d+$/, 'h2.comic-title')
+const primaryDomain = 'www.mwbu.cc';
+const patternAliasDomains = [
+    primaryDomain,
+    'www.mwpu.cc',
+].join('|').replaceAll('.', '\\.');
+
+@Common.MangaCSS(new RegExp(`^https?://(${patternAliasDomains})/comic/\\d+$`), 'h2.comic-title')
 @Common.MangasMultiPageCSS<HTMLAnchorElement>('div#dataList div.item a', Common.PatternLinkGenerator('/cate/{page}'), 0,
     anchor => ({ id: anchor.pathname, title: anchor.querySelector<HTMLDivElement>('div.title').textContent.trim() }))
 @Common.ChaptersSinglePageCSS<HTMLAnchorElement>('#chapter-grid-container > a.chapter-item', undefined,
@@ -21,7 +27,7 @@ type APIPages = {
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('mwku', 'Mwku', 'https://www.mwpu.cc', Tags.Language.Chinese, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Source.Aggregator);
+        super('mwku', 'Mwku', `https://${primaryDomain}`, Tags.Language.Chinese, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Source.Aggregator);
     }
 
     public override get Icon() {
