@@ -11,7 +11,7 @@ new TestFixture({
         title: 'Who Made Me a Princess (Official)'
     },
     child: {
-        id: JSON.stringify({ language : 'id', chapterNumber: 1 }),
+        id: JSON.stringify({ language: 'id', chapterNumber: 1 }),
         title: 'Chapter 1 (id)'
     },
     entry: {
