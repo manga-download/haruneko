@@ -15,7 +15,6 @@ type APIManga = {
 
 type APIChapters = {
     data: {
-        chapter_title: string;
         chapter_number: number;
         language: string;
     }[]
