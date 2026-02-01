@@ -99,7 +99,7 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchImage(page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
         return this.imageTaskPool.Add(async () => {
-            //get image crypted key
+            // Get image encrypted key.
             const { key: imageKey } = await this.FetchAPI<PageKey>(page.Link.href);
             // Decrypt image key and iv using access token.
             const { iv, key } = await this.GetRealKey(imageKey, this.accessToken);
