@@ -37,7 +37,7 @@ export default class extends DecoratableMangaScraper {
         const data = await FetchCSS(new Request(new URL(manga.Identifier, this.URI)), 'a[onClick^="return !openBook("]');
         const chapterList = data.map(element => {
             const partId = element.getAttribute('onclick').match(/\d+/).at(0);
-            const title = element.querySelector('.title') ? element.querySelector('.title').textContent : element.querySelector('btnMini') ? element.querySelector('btnMini').textContent : 'マンガをよむ';
+            const title = element.querySelector('.title') ? element.querySelector('.title').textContent : element.querySelector('.btnMini') ? element.querySelector('.btnMini').textContent : 'マンガをよむ';
             return new Chapter(this, manga, `https://yondemill.jp/contents/${partId}?view=1&u0=1`, title.trim());
         });
         return chapterList.reverse().distinct();
