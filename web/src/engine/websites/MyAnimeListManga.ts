@@ -47,7 +47,7 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const [button] = await FetchCSS<HTMLDivElement>(new Request(new URL(manga.Identifier, this.URI)), 'div.v-manga-store-purchase-bulk-button');
-        const chaptersData: ChaptersJSON = JSON.parse(button.dataset['items']);
+        const chaptersData: ChaptersJSON = JSON.parse(button.dataset.items);
         return chaptersData.filter(({ is_free: free, is_possessed: owned, is_previewable: preview }) => preview || free || owned)
             .filter(({ viewer_url: viewerUrl }) => !viewerUrl.includes('novel_viewer'))
             .map(({ is_free: free, is_possessed: owned, numbering_text: name, preview_url: pUrl, viewer_url: vUrl }) => {
