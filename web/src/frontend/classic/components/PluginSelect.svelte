@@ -197,7 +197,7 @@
                     }}
                 />
             {:else}
-                {header.Value}
+                {header.value}
             {/if}
         </svelte:fragment>
         <!-- @migration-task: migrate this slot by hand, `cell` is an invalid identifier -->
@@ -225,7 +225,7 @@
                 {/each}
             {:else if key === 'overflow'}
                 <div class=" action-cell">
-                    {#if [...Value.Settings].length > 0}
+                    {#if [...value.Settings].length > 0}
                         <Button
                             size="small"
                             kind="secondary"
