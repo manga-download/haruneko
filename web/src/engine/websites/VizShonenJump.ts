@@ -7,6 +7,8 @@ import * as Common from './decorators/Common';
 import exifr from 'exifr';
 import DeScramble from '../transformers/ImageDescrambler';
 import { RateLimit } from '../taskpool/RateLimit';
+import { Exception } from '../Error';
+import { WebsiteResourceKey as R } from '../../i18n/ILocale';
 
 // TODO: Check for possible revision
 
@@ -42,7 +44,7 @@ function VolumeExtractor(row: HTMLTableRowElement) {
 
 function ChapterExtractor(anchor: HTMLAnchorElement) {
     return {
-        id: anchor.dataset.targetUrl.match(/['"](\/(shonenjump|vizmanga)[^']+)['"]/)?.at(1) ?? anchor.dataset.targetUrl,
+        id: anchor.dataset.targetUrl.match(/(['"])(\/(shonenjump|vizmanga)[^'"]+)\1/)?.at(2) ?? anchor.dataset.targetUrl,
         title: (anchor.querySelector<HTMLElement>('.disp-id, tr.o_chapter td > div')?.textContent ?? anchor.text).trim()
     };
 }
@@ -96,19 +98,18 @@ export default class extends DecoratableMangaScraper {
             url.searchParams.set('page', index.toString());
             return new Page(this, chapter, url, { Referer: chapterurl.href });
         });
-
-        //test last page
-        return await this.TestPage(pages.at(-1)) ? pages : pages.slice(0, -1);
+        return this.TestAccessAndDummyPage(pages);
     }
 
-    private async TestPage(page: Page): Promise<boolean> {
-        try {
-            const url = await (await Fetch(new Request(page.Link, { headers: { Referer: page.Parameters.Referer, } }))).text();
-            await Fetch(new Request(url, { method: 'HEAD', headers: { Referer: page.Parameters.Referer } }));
-            return true;
-        } catch {
-            return false;
-        }
+    private async TestAccessAndDummyPage(pages: Page[]): Promise<Page[]> {
+        // If chapter is not accessible : 'url' wont be an url at all => throw Plugin_Common_Chapter_UnavailableError.
+        const lastPage = pages.at(-1);
+        const url = await (await Fetch(new Request(lastPage.Link, { headers: { Referer: lastPage.Parameters.Referer, } }))).text();
+        if (!url.startsWith('http')) throw new Exception(R.Plugin_Common_Chapter_UnavailableError);
+
+        // last page may be a dummy (unavailable) page. In that case strip it from page array.
+        const response = await fetch(new Request(url, { method: 'HEAD', headers: { Referer: lastPage.Parameters.Referer } }));
+        return response.status != 403 ? pages: pages.slice(0, -1);
     }
 
     public override async FetchImage(page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
