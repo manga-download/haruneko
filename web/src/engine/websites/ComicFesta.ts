@@ -22,7 +22,7 @@ type JSONChapters = {
     }[]
 }
 
-@Common.MangaCSS(/^{origin}\/titles\/\d+/, 'section[class*="title-name-section_section__"] h2', Common.WebsiteInfoExtractor({ queryBloat: 'span' }))
+@Common.MangaCSS(/^{origin}\/titles\/\d+/, 'section[class*="title-name-section"] h2', Common.WebsiteInfoExtractor({ queryBloat: 'span' }))
 @Common.MangasNotSupported()
 @ClipStudioReader.PagesSinglePageAJAX()
 @ClipStudioReader.ImageAjax()
@@ -40,9 +40,8 @@ export default class extends DecoratableMangaScraper {
         const scripts = await FetchCSS<HTMLScriptElement>(new Request(new URL(manga.Identifier, this.URI)), 'script:not([src])');
         const { packages } = this.FindJSONObject<JSONChapters>(scripts, /isDisplayVolumeNumber/, 'isDisplayVolumeNumber');
         return packages
-            .map(chapter => {
-                const suffix = chapter.fairInfo.trial ? '/trial_download' : '/free_download';
-                return new Chapter(this, manga, `/volumes/${chapter.id}${suffix}`, chapter.number.toString());
+            .map(({ fairInfo: { trial }, id, number }) => {
+                return new Chapter(this, manga, `/volumes/${id}${trial ? '/trial_download' : '/free_download'}`, `${number}`);
             });
     }
 
@@ -66,7 +65,7 @@ export default class extends DecoratableMangaScraper {
         for (let i in currentElement) {
             if (result) break;
             if (typeof currentElement[i] === 'object')
-                result = result ?? this.FindJSONObject<T>(undefined, undefined, keyName, currentElement[i]);
+                result = this.FindJSONObject<T>(undefined, undefined, keyName, currentElement[i]);
         }
         return result as T;
     }

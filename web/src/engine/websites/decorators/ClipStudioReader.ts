@@ -1,6 +1,6 @@
 //viewer decorators for websites using CLIP STUDIO READER
 // https://www.celsys.com/en/e-booksolution/lab/
-//Pages are scrambled, information is inside XMLs, and php scripts are named like diazepam_hybrid.php / lorezapam
+//Pages are scrambled, information is inside XMLs, and php scripts are named like diazepam_hybrid.php / lorazepam
 
 import { Fetch } from "../../platform/FetchProvider";
 import { Page, type Chapter, type MangaScraper } from "../../providers/MangaPlugin";
@@ -105,7 +105,7 @@ export async function FetchPagesSinglePageAJAX(this: MangaScraper, chapter: Chap
         url.searchParams.set('vm', '4');
         url.searchParams.set('file', pagename);
         url.searchParams.set('param', authkey);
-        pages.push(new Page<PageData>(this, chapter, new URL(url), { ...pagedata }));
+        pages.push(new Page<PageData>(this, chapter, url, { ...pagedata }));
     }
 
     return pages;
@@ -207,7 +207,7 @@ export async function FetchImageAjax(this: MangaScraper, page: Page<PageData>, p
 
             });
         } catch (error) {
-            Promise.reject(error);
+            throw error;
         }
     }, priority, signal);
 }
@@ -226,7 +226,7 @@ export function ImageAjax() {
     };
 }
 
-async function FetchXML(request: Request): Promise < XMLDocument > {
+async function FetchXML(request: Request): Promise<XMLDocument> {
     const response = await Fetch(request);
     const data = await response.text();
     return new DOMParser().parseFromString(data, 'text/xml');
@@ -241,10 +241,9 @@ async function LoadPart(imageUrl: URL, partData: PartData): Promise<ImagePart> {
 
 async function LoadImage(url: URL): Promise<HTMLImageElement> {
     return new Promise((resolve, reject) => {
-        const uri = new URL(url);
         const image = new Image();
         image.onload = () => resolve(image);
         image.onerror = error => reject(error);
-        image.src = uri.href;
+        image.src = url.href;
     });
 }
