@@ -21,7 +21,15 @@ export function CreateStorageController(): StorageController {
     return new StorageControllerBrowser();
 }
 
-export function SanitizeFileName(name: string): string {
+/**
+ * Maximum length for a file/directory name to ensure compatibility across file systems.
+ * Windows has a 260 character limit for the full path (MAX_PATH), so individual path segments
+ * should be kept much shorter to allow for the full path structure.
+ * We use 200 as a conservative limit to ensure the full path stays under 260 characters.
+ */
+const MAX_PATH_SEGMENT_LENGTH = 200;
+
+export function SanitizeFileName(name: string, maxLength: number = MAX_PATH_SEGMENT_LENGTH): string {
     const lookup = {
         '<': '＜', // https://unicode-table.com/en/FF1C/
         '>': '＞', // https://unicode-table.com/en/FF1E/
@@ -36,7 +44,7 @@ export function SanitizeFileName(name: string): string {
     };
 
     // TODO: Reserved names? => CON, PRN, AUX, NUL, COM1, LPT1
-    return name
+    let sanitized = name
         .replace(/[\u0000-\u001F\u007F-\u009F]/gu, '') // https://en.wikipedia.org/wiki/C0_and_C1_control_codes
         .replace(/./g, c => lookup[c] ?? c)
         .replace(/\s+$/, '')
@@ -44,6 +52,16 @@ export function SanitizeFileName(name: string): string {
         .replace(/\.+$/, ({ length }) => '․'.repeat(length)) // Must not end with a `.` dot
         .replace(/^\.{2,}/, ({ length }) => '․'.repeat(length)) // Must not begin with more than a single `.` dot
         || 'untitled';
+
+    // Truncate to maxLength if needed, ensuring we don't break in the middle of a multi-byte character
+    if (sanitized.length > maxLength) {
+        // Use substring which handles Unicode correctly
+        sanitized = sanitized.substring(0, maxLength);
+        // Add ellipsis to indicate truncation
+        sanitized = sanitized.trimEnd() + '…';
+    }
+
+    return sanitized;
 }
 
 /*
