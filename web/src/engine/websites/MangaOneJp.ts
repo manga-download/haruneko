@@ -128,9 +128,9 @@ export default class extends DecoratableMangaScraper {
     public override async FetchPages(chapter: Chapter): Promise<Page<PageParameters>[]> {
         const { id, type }: ItemID = JSON.parse(chapter.Identifier);
 
-        let data = await this.GetWebViewerResponse(chapter.Parent.Identifier, id.toString(), type);
+        let data = await this.GetWebViewerResponse(chapter.Parent.Identifier, `${id}`, type);
         if (!data.pages) {
-            data = await this.GetWebViewerResponse(chapter.Parent.Identifier, id.toString(), type, true);
+            data = await this.GetWebViewerResponse(chapter.Parent.Identifier, `${id}`, type, true);
             if (!data.pages)
                 throw new Exception(R.Plugin_Common_Chapter_UnavailableError);
         }
