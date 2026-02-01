@@ -317,7 +317,7 @@ const translations: VariantResource = {
 
   Plugin_CuuTruyen_Error_NotProcessed: 'This chapter is still processing, please try again later.',
 
-  Plugin_HeanCMS_ErrorNovelsNotSupported: 'Novels are not (yet) supported in Hakuneko !',
+  Plugin_HeanCMS_ErrorNovelsNotSupported: 'Novels are not (yet) supported in HakuNeko!',
 
   Plugin_PocketComics_LanguageMismatchError: 'Unable to find manga {0} for selected language {1}',
 
