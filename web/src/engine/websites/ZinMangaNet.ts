@@ -28,6 +28,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
+        // TODO: Array.fromAsync(...)
         const chapterslist: Array<Chapter> = [];
         for (let page = 1, run = true; run; page++) {
             const chapters = await this.GetChaptersFromPage(page, manga);
