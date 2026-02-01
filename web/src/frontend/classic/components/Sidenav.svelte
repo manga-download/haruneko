@@ -58,9 +58,9 @@
 {#if isBookmarksImportModalOpen}
     <BookmarksImport bind:isModalOpen={isBookmarksImportModalOpen} />
 {/if}
-<SideNav bind:isOpen rail={UISettings.SidenavTrail.value}>
+<SideNav bind:isOpen rail={UISettings.SidenavTrail.Value}>
         <SideNavItems>
-            {#if !UISettings.SidenavIconsOnTop.value}
+            {#if !UISettings.SidenavIconsOnTop.Value}
                 <SideNavLink
                     text={GlobalSettings.Locale.Frontend_Classic_Sidenav_Home()}
                     icon={Home}

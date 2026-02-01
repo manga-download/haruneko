@@ -129,7 +129,7 @@
         if (mediaNameFilter === '') return medias;
         const mediasInPlugin: MediaContainer<MediaChild>[] = medias.filter((item) => item.Parent.Title.toLowerCase().includes(mediaNameFilter.toLowerCase()));
         let filteredMedia: MediaContainer<MediaChild>[] = [];
-        if (Settings.FuzzySearch.value)
+        if (Settings.FuzzySearch.Value)
             filteredMedia = fuse.search(mediaNameFilter).map((item) => item.item);
         else
             filteredMedia = medias.filter((item) =>

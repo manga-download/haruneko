@@ -1,5 +1,4 @@
-
-import {LocaleID, FrontendResourceKey as R } from '../../../i18n/ILocale';
+import {type LocaleID, FrontendResourceKey as R } from '../../../i18n/ILocale';
 import { Check, Choice, Numeric} from '../../../engine/SettingsManager';
 import { LoadSettingStore, SettingCountStore, SettingPersistentStore } from './storesHelpers.svelte';
 import { Key as GlobalKey, Scope as GlobalScope } from '../../../engine/SettingsGlobal';
@@ -39,19 +38,19 @@ export const frontendClassicSettings = HakuNeko.SettingsManager.OpenScope(Fronte
 export const frontendClassicSettingsViewer = HakuNeko.SettingsManager.OpenScope(FrontendClasicScope_Viewer);
 
 export async function Initialize(): Promise<void> {
-    
+
     await frontendClassicSettings.Initialize(
-        Settings.Theme.setting,
-        Settings.ContentPanel.setting,
-        Settings.SidenavTrail.setting,
-        Settings.SidenavIconsOnTop.setting,
-        Settings.FuzzySearch.setting,
+        Settings.Theme.Setting,
+        Settings.ContentPanel.Setting,
+        Settings.SidenavTrail.Setting,
+        Settings.SidenavIconsOnTop.Setting,
+        Settings.FuzzySearch.Setting,
     );
 
     await frontendClassicSettingsViewer.Initialize(
-        Settings.ViewerMode.setting,
-        Settings.ViewerReverseDirection.setting,
-        Settings.ViewerDoublePage.setting,
+        Settings.ViewerMode.Setting,
+        Settings.ViewerReverseDirection.Setting,
+        Settings.ViewerDoublePage.Setting,
     );
 }
 
@@ -122,32 +121,34 @@ class UIClassicStore {
 
     checkNewContent = LoadSettingStore<boolean, Check>(globalScopeSettings, GlobalKey.CheckNewContent);
 
-
     // Non Persistent settings
     /** Viewer **/
 
-    ViewerZoom = new SettingCountStore(new Numeric(
-        null,
-        R.Frontend_Classic_Settings_ViewerZoom,
-        R.Frontend_Classic_Settings_ViewerZoomInfo,
-        0,-100,100),
+    ViewerZoom = new SettingCountStore(
+        new Numeric(
+            null,
+            R.Frontend_Classic_Settings_ViewerZoom,
+            R.Frontend_Classic_Settings_ViewerZoomInfo,
+            0, -100, 100
+        ),
         10
     );
 
-
-    ViewerZoomRatio = $derived((100 + this.ViewerZoom.value) / 100);
-    ViewerPadding = new SettingCountStore(new Numeric(
-        null,
-        R.Frontend_Classic_Settings_ViewerPadding,
-        R.Frontend_Classic_Settings_ViewerPaddingInfo,
-        2,0,Infinity),
+    ViewerZoomRatio = $derived((100 + this.ViewerZoom.Value) / 100);
+    ViewerPadding = new SettingCountStore(
+        new Numeric(
+            null,
+            R.Frontend_Classic_Settings_ViewerPadding,
+            R.Frontend_Classic_Settings_ViewerPaddingInfo,
+            2, 0, Infinity
+        ),
         0.5
     );
 }
 export const Settings = new UIClassicStore();
 
 class GlobalStore {
-    _Locale = LoadSettingStore<string, Choice>(globalScopeSettings,GlobalKey.Language);
-    Locale = $derived(GetLocale(this._Locale.value as LocaleID));
+    private storeLocale = LoadSettingStore<string, Choice>(globalScopeSettings, GlobalKey.Language);
+    Locale = $derived(GetLocale(this.storeLocale.Value as LocaleID));
 }
 export const GlobalSettings = new GlobalStore();

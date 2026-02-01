@@ -77,22 +77,22 @@
                 onNextItem();
                 break;
             case event.key === '*':
-                Settings.ViewerZoom.value = 100;
+                Settings.ViewerZoom.Value = 100;
                 break;
             case event.key === '/':
-                Settings.ViewerZoom.setting.Reset();
+                Settings.ViewerZoom.Setting.Reset();
                 break;
             case event.key === '+' && !event.ctrlKey:
-                Settings.ViewerZoom.increment();
+                Settings.ViewerZoom.Increment();
                 break;
             case event.key === '-' && !event.ctrlKey:
-                Settings.ViewerZoom.decrement();
+                Settings.ViewerZoom.Decrement();
                 break;
             case event.key === '+' && event.ctrlKey:
-                Settings.ViewerPadding.increment();
+                Settings.ViewerPadding.Increment();
                 break;
             case event.key === '-' && event.ctrlKey:
-                Settings.ViewerPadding.decrement();
+                Settings.ViewerPadding.Decrement();
                 break;
             case event.code === 'Escape':
                 viewerclose();
@@ -113,7 +113,7 @@
 
     let previousZoom = Settings.ViewerZoomRatio;
     $effect(() => {
-        switch (Settings.ViewerMode.value) {
+        switch (Settings.ViewerMode.Value) {
             case Key.ViewerMode_Longstrip: {
                 viewer?.scrollTo({
                     top: viewer.scrollTop * (Settings.ViewerZoomRatio / previousZoom),
@@ -155,7 +155,7 @@
     let pos = { top: 0, left: 0, x: 0, y: 0 };
 
     // Dynamic css values
-    let cssvars = $derived({'viewer-padding': `${Settings.ViewerPadding.value}em`});
+    let cssvars = $derived({'viewer-padding': `${Settings.ViewerPadding.Value}em`});
     let cssVarStyles = $derived(Object.entries(cssvars)
         .map(([key, value]) => `--${key}:${value}`)
         .join(';'));
@@ -197,7 +197,7 @@
     tabindex="-1"
     ondblclick={() => toggleFullScreen()}
     transition:fade
-    class="{wide ? 'wide' : 'thumbnail'} {Settings.ViewerMode.value} {Settings.ViewerReverseDirection.value
+    class="{wide ? 'wide' : 'thumbnail'} {Settings.ViewerMode.Value} {Settings.ViewerReverseDirection.Value
         ? 'reverse'
         : ''}"
     style={cssVarStyles}

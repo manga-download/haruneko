@@ -39,7 +39,7 @@
 <UserMessage />
 
 
-<Theme theme={Settings.Theme.value}>
+<Theme theme={Settings.Theme.Value}>
     <AppBar
         onHome={() => {
             UI.selectedItem = null;
@@ -49,11 +49,11 @@
 
     <Content
         id="hakunekoapp"
-        class={Settings.ContentPanel.value ? 'ui-mode-content' : 'ui-mode-download'}
+        class={Settings.ContentPanel.Value ? 'ui-mode-content' : 'ui-mode-download'}
     >
         <MediaSelect />
         <MediaItemSelect />
-        {#if Settings.ContentPanel.value}
+        {#if Settings.ContentPanel.Value}
             <div id="Content" transition:fade>
                 {#if UI.selectedItem}
                     <Viewer item={UI.selectedItem} />

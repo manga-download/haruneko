@@ -4,7 +4,7 @@ import type { IAppWindow } from '../../../engine/platform/AppWindow';
 import { Settings } from './Settings.svelte';
 
 class UIClassicStore {
-    WindowController:IAppWindow  = $state();
+    WindowController:IAppWindow = $state();
     selectedPlugin: MediaContainer<MediaChild> = $state(HakuNeko.BookmarkPlugin);
     selectedMedia: MediaContainer<MediaChild> = $state(null);
     selectedItem: MediaContainer<MediaItem> = $state();
@@ -16,5 +16,5 @@ class UIClassicStore {
 export let Store:UIClassicStore = new UIClassicStore();
 
 async function refreshSuggestions() : Promise<Bookmark[]> {
-    return Settings.checkNewContent.value ? await HakuNeko.BookmarkPlugin.GetEntriesWithUnflaggedContent() : [];
+    return Settings.checkNewContent.Value ? await HakuNeko.BookmarkPlugin.GetEntriesWithUnflaggedContent() : [];
 }

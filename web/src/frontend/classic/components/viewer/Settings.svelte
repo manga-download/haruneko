@@ -5,28 +5,28 @@
 </script>
 
 <SettingItem
-    labelText={GlobalSettings.Locale[Settings.ViewerMode.setting.Label]()}
-    helperText={GlobalSettings.Locale[Settings.ViewerMode.setting.Description]()}
+    labelText={GlobalSettings.Locale[Settings.ViewerMode.Setting.Label]()}
+    helperText={GlobalSettings.Locale[Settings.ViewerMode.Setting.Description]()}
 >
-    <Select bind:selected={Settings.ViewerMode.value}>
-        {#each Settings.ViewerMode.setting.Options as option}
+    <Select bind:selected={Settings.ViewerMode.Value}>
+        {#each Settings.ViewerMode.Setting.Options as option}
             <SelectItem value={option.key} text={GlobalSettings.Locale[option.label]()} />
         {/each}
     </Select>
 </SettingItem>
 
-{#if Settings.ViewerMode.value === Key.ViewerMode_Paginated}
+{#if Settings.ViewerMode.Value === Key.ViewerMode_Paginated}
     <SettingItem
-        labelText={GlobalSettings.Locale[Settings.ViewerReverseDirection.setting.Label]()}
-        helperText={GlobalSettings.Locale[Settings.ViewerReverseDirection.setting.Description]()}
+        labelText={GlobalSettings.Locale[Settings.ViewerReverseDirection.Setting.Label]()}
+        helperText={GlobalSettings.Locale[Settings.ViewerReverseDirection.Setting.Description]()}
     >
-        <Toggle bind:toggled={Settings.ViewerReverseDirection.value} />
+        <Toggle bind:toggled={Settings.ViewerReverseDirection.Value} />
     </SettingItem>
 
     <SettingItem
-        labelText={GlobalSettings.Locale[Settings.ViewerDoublePage.setting.Label]()}
-        helperText={GlobalSettings.Locale[Settings.ViewerDoublePage.setting.Description]()}
+        labelText={GlobalSettings.Locale[Settings.ViewerDoublePage.Setting.Label]()}
+        helperText={GlobalSettings.Locale[Settings.ViewerDoublePage.Setting.Description]()}
     >
-        <Toggle bind:toggled={Settings.ViewerDoublePage.value} />
+        <Toggle bind:toggled={Settings.ViewerDoublePage.Value} />
     </SettingItem>
 {/if}
