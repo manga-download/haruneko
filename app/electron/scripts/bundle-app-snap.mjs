@@ -67,8 +67,6 @@ apps:
     - network
     - network-bind
     - browser-support
-    - desktop
-    - desktop-legacy
     environment:
       # Correct the TMPDIR path for Chromium Framework/Electron to ensure
       # libappindicator has readable resources.
