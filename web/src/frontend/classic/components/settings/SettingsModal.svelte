@@ -8,7 +8,7 @@
     } from 'carbon-components-svelte';
     import SettingsViewer from './SettingsViewer.svelte';
     import ViewerSettings from '../viewer/Settings.svelte';
-    import { Scope as UI_Classic_Scope, Scope_Viewer as UI_Classic_Scope_Viewer } from '../../stores/Settings';
+    import { frontendClassicSettings, frontendClassicSettingsViewer } from '../../stores/Settings.svelte';
     import { Scope as Global_Scope } from '../../../../engine/SettingsGlobal';
 
     interface Props {
@@ -51,7 +51,7 @@
             >
                 <SettingsViewer
                     settings={[
-                        ...window.HakuNeko.SettingsManager.OpenScope(UI_Classic_Scope),
+                        ...frontendClassicSettings,
                     ]}
                 />
             </TabContent>
@@ -60,7 +60,7 @@
             >
                 <SettingsViewer
                     settings={[
-                        ...window.HakuNeko.SettingsManager.OpenScope(UI_Classic_Scope_Viewer),
+                        ...frontendClassicSettingsViewer,
                     ]}
                 />
             </TabContent>

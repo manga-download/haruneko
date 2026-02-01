@@ -2,7 +2,7 @@
     import { onMount, onDestroy } from 'svelte';
     import { PasswordInput } from 'carbon-components-svelte';
     import type { Secret } from '../../../../engine/SettingsManager';
-    import { Locale } from '../../stores/Settings';
+    import { GlobalSettings } from '../../stores/Settings.svelte';
     import SettingItem from './SettingItem.svelte';
 
     export let setting: Secret;
@@ -23,8 +23,8 @@
 </script>
 
 <SettingItem
-    labelText={$Locale[setting.Label]()}
-    helperText={$Locale[setting.Description]()}
+    labelText={GlobalSettings.Locale[setting.Label]()}
+    helperText={GlobalSettings.Locale[setting.Description]()}
 >
     <PasswordInput hideLabel bind:value />
 </SettingItem>

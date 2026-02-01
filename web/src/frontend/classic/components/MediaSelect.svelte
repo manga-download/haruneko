@@ -24,12 +24,8 @@
     import Tracker from './Tracker.svelte';
     import VirtualList from '../lib/VirtualList.svelte';
     // UI : Stores
-    import {
-        selectedPlugin,
-        selectedMedia,
-        selectedItem,
-    } from '../stores/Stores';
-    import { FuzzySearch } from '../stores/Settings';
+    import {Store as UI } from '../stores/Stores.svelte';
+    import { Settings } from '../stores/Settings.svelte';
     // Hakuneko Engine
     import type {
         MediaContainer,
@@ -95,17 +91,17 @@
     });
     let fuse = new Fuse([]);
 
-    loadPlugin = loadMedias($selectedPlugin);
-
-    selectedPlugin.subscribe((newplugin) => {
+    loadPlugin = loadMedias(UI.selectedPlugin);
+    $effect(() => {
         const previousPlugin = currentPlugin;
-        loadPlugin = Promise.resolve(newplugin);
-        currentPlugin = newplugin;
+        loadPlugin = Promise.resolve(UI.selectedPlugin);
+        currentPlugin = UI.selectedPlugin;
         pluginDropdownSelected = currentPlugin?.Identifier;
         if (!disablePluginRefresh && !currentPlugin?.IsSameAs(previousPlugin))
-            loadMedias(newplugin);
+            loadMedias(UI.selectedPlugin);
         disablePluginRefresh = false;
     });
+
 
     async function loadMedias(
         plugin: MediaContainer<MediaChild>,
@@ -133,7 +129,7 @@
         if (mediaNameFilter === '') return medias;
         const mediasInPlugin: MediaContainer<MediaChild>[] = medias.filter((item) => item.Parent.Title.toLowerCase().includes(mediaNameFilter.toLowerCase()));
         let filteredMedia: MediaContainer<MediaChild>[] = [];
-        if ($FuzzySearch)
+        if (Settings.FuzzySearch.value)
             filteredMedia = fuse.search(mediaNameFilter).map((item) => item.item);
         else
             filteredMedia = medias.filter((item) =>
@@ -153,14 +149,14 @@
 
     async function onUpdateMediaEntriesClick() {
         filteredmedias = []
-        $selectedMedia = undefined;
-        $selectedItem = undefined;
-        loadPlugin = updatePlugin($selectedPlugin);
+        UI.selectedMedia = undefined;
+        UI.selectedItem= undefined;
+        loadPlugin = updatePlugin(UI.selectedPlugin);
     }
 
     async function updatePlugin(plugin: MediaContainer<MediaChild>): Promise<MediaContainer<MediaChild>> {
         await plugin.Update();
-        return loadMedias($selectedPlugin);
+        return loadMedias(UI.selectedPlugin);
     }
 
     document.addEventListener('media-paste-url', onMediaPasteURL);
@@ -170,14 +166,14 @@
             for (const website of HakuNeko.PluginController.WebsitePlugins) {
                 const media = await website.TryGetEntry(link);
                 if (media) {
-                    $selectedItem = undefined;
+                    UI.selectedItem= undefined;
                     mediaNameFilter = '';
-                    if (!$selectedPlugin?.IsSameAs(media.Parent)) {
+                    if (!UI.selectedPlugin?.IsSameAs(media.Parent)) {
                         disablePluginRefresh = true;
-                        $selectedPlugin = media.Parent;
+                        UI.selectedPlugin = media.Parent;
                     }
-                    if (!$selectedMedia?.IsSameAs(media)) {
-                        $selectedMedia = media;
+                    if (!UI.selectedMedia?.IsSameAs(media)) {
+                        UI.selectedMedia = media;
                         medias = [media];
                         loadPlugin = Promise.resolve(media.Parent);
                     }
@@ -191,7 +187,7 @@
     }
 
     async function selectPlugin(id: ComboBoxItemId) {
-        $selectedPlugin = [HakuNeko.BookmarkPlugin, ...orderedPlugins].find(
+        UI.selectedPlugin = [HakuNeko.BookmarkPlugin, ...orderedPlugins].find(
             (plugin) => plugin.Identifier === id,
         );
     }
@@ -204,7 +200,7 @@
     <div>
         <Tracker
             {isTrackerModalOpen}
-            media={$selectedMedia}
+            media={UI.selectedMedia}
             tracker={selectedTracker}
             on:close={() => (isTrackerModalOpen = false)}
         />
@@ -228,7 +224,7 @@
             id="PluginSelect"
             placeholder="Select a Plugin"
             bind:selectedId={pluginDropdownSelected}
-            on:clear={async() => ($selectedPlugin = undefined)}
+            on:clear={async() => (UI.selectedPlugin = undefined)}
             on:select={async(event) => selectPlugin(event.detail.selectedId)}
             size="sm"
             clearFilterOnOpen
@@ -236,17 +232,17 @@
             items={pluginsCombo}
             let:item
         >
-            {@const plugin = item as ComboBoxItemWithValue}
-            {#if plugin.value.IsSameAs(HakuNeko.BookmarkPlugin)}
-            <BookmarkFilled class="dropdown icon bookmarks" size={32} />
-                <div class="dropdown title favorite">{plugin.value.Title}</div>
-                <div>Your bookmarked medias</div>
-            {:else}
-                <img class="dropdown icon" alt={plugin.value.Title} src={plugin.value.Icon}/>
-                <div class="dropdown title" class:favorite={plugin.isFavorite}>{plugin.value.Title}</div>
-                <div>{plugin.value.URI}</div>
-            {/if}
-        </ComboBox> 
+                {@const plugin = item as ComboBoxItemWithValue}
+                {#if plugin.value.IsSameAs(HakuNeko.BookmarkPlugin)}
+                <BookmarkFilled class="dropdown icon bookmarks" size={32} />
+                    <div class="dropdown title favorite">{plugin.value.Title}</div>
+                    <div>Your bookmarked medias</div>
+                {:else}
+                    <img class="dropdown icon" alt={plugin.value.Title} src={plugin.value.Icon}/>
+                    <div class="dropdown title" class:favorite={plugin.isFavorite}>{plugin.value.Title}</div>
+                    <div>{plugin.value.URI}</div>
+                {/if}
+                </ComboBox> 
         <Button
             id="MediaUpdateButton"
             icon={UpdateNow}

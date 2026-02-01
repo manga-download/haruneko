@@ -25,22 +25,6 @@
     import View from 'carbon-icons-svelte/lib/View.svelte';
     import ViewFilled from 'carbon-icons-svelte/lib/ViewFilled.svelte';
     import VolumeFileStorage from 'carbon-icons-svelte/lib/VolumeFileStorage.svelte';
-
-    import { Tags, type Tag } from '../../../engine/Tags';
-    const availableLanguageTags = Tags.Language.toArray();
-
-    // NOTE: This relies on all language tags having a unicode flag prefix in their corresponding `Title`
-    function extractUnicodeFlagFromTags(tags: ReadonlyArray<Tag>): string {
-        const languageTagTitleResourceKey = tags.find((tag) =>
-            availableLanguageTags.includes(tag),
-        )?.Title;
-        return (
-            $Locale[languageTagTitleResourceKey]
-                ?.call(undefined)
-                ?.slice(0, 4) ?? '🏴'
-        );
-    }
-
     import type {
         MediaItem,
         MediaContainer,
@@ -50,11 +34,26 @@
         FlagType,
         type EntryFlagEventData,
     } from '../../../engine/ItemflagManager';
-    import { selectedItem } from '../stores/Stores';
-    import { Locale } from '../stores/Settings';
+    import { Store as UI } from '../stores/Stores.svelte';
     import { DownloadTask, Status } from '../../../engine/DownloadTask';
     import { Key as GlobalKey } from '../../../engine/SettingsGlobal';
     import type { Directory } from '../../../engine/SettingsManager';
+    import { GlobalSettings } from '../stores/Settings.svelte';
+    
+    import { Tags, type Tag } from '../../../engine/Tags';
+    const availableLanguageTags = Tags.Language.toArray();
+
+    // NOTE: This relies on all language tags having a unicode flag prefix in their corresponding `Title`
+    function extractUnicodeFlagFromTags(tags: ReadonlyArray<Tag>): string {
+        const languageTagTitleResourceKey = tags.find((tag) =>
+            availableLanguageTags.includes(tag),
+        )?.Title;
+        return (
+            GlobalSettings.Locale[languageTagTitleResourceKey]
+                ?.call(undefined)
+                ?.slice(0, 4) ?? '🏴'
+        );
+    }
 
     let flag: FlagType = $state();
     const flagiconmap = new Map<FlagType, any>([
@@ -123,7 +122,7 @@
     in:fade
     class:selected
     class:hover
-    class:active={$selectedItem?.Identifier === item?.Identifier}
+    class:active={UI.selectedItem?.Identifier === item?.Identifier}
     {onmouseup}
     {onmousedown}
     {onmouseenter}

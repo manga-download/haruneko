@@ -2,20 +2,14 @@
     import { Tile, ClickableTile, Tag } from 'carbon-components-svelte';
     import CaretRight from 'carbon-icons-svelte/lib/CaretRight.svelte';
     import { fade } from 'svelte/transition';
-    import {
-        selectedPlugin,
-        selectedMedia,
-        selectedItem,
-    } from './../../stores/Stores';
+    import {Store as UI } from '../../stores/Stores.svelte';
     import MediaIcon from '../../../../img/media.webp';
     import type { Bookmark } from '../../../../engine/providers/Bookmark';
 
-    //export let onlyNewContent = false;
-
     async function selectBookmark(bookmark: Bookmark) {
-        $selectedPlugin = HakuNeko.BookmarkPlugin;
-        $selectedMedia = bookmark;
-        $selectedItem = undefined;
+        UI.selectedPlugin = HakuNeko.BookmarkPlugin;
+        UI.selectedMedia = bookmark;
+        UI.selectedItem = undefined;
     }
 </script>
 
