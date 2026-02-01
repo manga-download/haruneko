@@ -4,7 +4,7 @@ import * as Common from './decorators/Common';
 import { FetchWindowScript } from '../platform/FetchProvider';
 import { ToomicsBase, WebsiteInfoExtractor } from './templates/ToomicsBase';
 
-@Common.MangaCSS(/^{origin}\/[a-z]+\/webtoon\/episode\/toon\/\d+$/, 'section.ep-body a[data-toon-name]', WebsiteInfoExtractor())
+@Common.MangaCSS(/^{origin}\/[a-z]+\/webtoon\/episode\/toon\/\d+$/, 'section a[data-toon-name]', WebsiteInfoExtractor())
 export default class extends ToomicsBase {
 
     public constructor() {

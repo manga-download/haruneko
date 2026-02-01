@@ -6,7 +6,7 @@ new TestFixture({
         title: 'HotComics'
     },
     container: {
-        url: 'https://hotcomics.me/jp/unquenchable-thirst/V1aiwbI5.html',
+        url: 'https://w1.hotcomics.me/jp/unquenchable-thirst/V1aiwbI5.html',
         id: '/jp/unquenchable-thirst/V1aiwbI5.html',
         title: 'Unquenchable Thirst [jp]'
     },

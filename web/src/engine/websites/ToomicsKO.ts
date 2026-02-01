@@ -1,27 +1,17 @@
 import { Tags } from '../Tags';
 import icon from './ToomicsKO.webp';
-import { type MangaPlugin, DecoratableMangaScraper, Manga } from '../providers/MangaPlugin';
+import { type MangaPlugin, Manga } from '../providers/MangaPlugin';
 import { Fetch, FetchCSS, FetchWindowScript } from '../platform/FetchProvider';
-import * as Toomics from './templates/ToomicsBase';
 import * as Common from './decorators/Common';
+import { PageExtractor, ToomicsBase } from './templates/ToomicsBase';
 
 type TPagingData = {
     iInsertIdx: string
 }
-function ChapterExtractor(anchor: HTMLAnchorElement) {
-    return {
-        id: anchor.pathname,
-        title: [
-            anchor.querySelector<HTMLDivElement>('div.ep__episode').textContent.trim(),
-            anchor.querySelector<HTMLElement>('strong.ep__title').textContent.trim()
-        ].join(' ').trim()
-    };
-}
 
-@Common.ChaptersSinglePageCSS('div.episode__body ul.eps li#eps_not_selected a', undefined, ChapterExtractor)
-@Common.PagesSinglePageCSS('div.viewer__img img', Toomics.PageExtractor)
+@Common.PagesSinglePageCSS('div.viewer__img img', PageExtractor)
 @Common.ImageAjax()
-export default class extends DecoratableMangaScraper {
+export default class extends ToomicsBase {
 
     private readonly mangaRegex1 = new RegExp(`^${this.URI.origin}/webtoon/episode/toon/\\d+$`); //https://www.toomics.com/webtoon/episode/toon/7676 => /webtoon/episode/toon/7676
     private readonly mangaRegex2 = new RegExp(`^${this.URI.origin}/popular/popular_list/cut_list_idx/\\d+$`);//https://www.toomics.com/popular/popular_list/cut_list_idx/1648 => #1648 => /webtoon/episode/toon/7676
@@ -29,6 +19,9 @@ export default class extends DecoratableMangaScraper {
 
     public constructor() {
         super('toomics-ko', 'Toomics (Korean)', 'https://www.toomics.com', Tags.Language.Korean, Tags.Media.Manhwa, Tags.Source.Official);
+        this.queryChapters = 'div.episode__body ul.eps li a';
+        this.queryChapterNum = 'strong.ep__title';
+        this.queryChapterTitle = 'div.ep__episode';
     }
 
     public override get Icon() {

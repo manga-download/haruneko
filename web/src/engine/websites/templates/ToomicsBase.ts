@@ -7,7 +7,7 @@ export function WebsiteInfoExtractor(appendLanguage: boolean = true) {
         const language = ExtractLanguage(url.pathname);
         return {
             id: url.pathname,
-            title: [titleElement.dataset.toonName?.trim() ?? titleElement.textContent.trim(), appendLanguage ? `[${language}]`: ''].join(' ').trim()
+            title: [titleElement.dataset.toonName?.trim() ?? titleElement.textContent.trim(), appendLanguage ? `[${language}]` : ''].join(' ').trim()
         };
     };
 };
@@ -23,7 +23,7 @@ function MangaInfoExtractor(appendLanguage: boolean = true) {
 };
 
 function ExtractLanguage(text: string): string {
-    return text.match(/\/([a-z]{2,3})\//).at(1);
+    return text.match(/^\/([a-z]{2,3})\//)?.at(1) ?? '';
 };
 
 export function PageExtractor(element: HTMLImageElement) {
@@ -37,6 +37,9 @@ export class ToomicsBase extends DecoratableMangaScraper {
     protected mangaPath = '/{language}/webtoon/ranking';
     protected queryMangas = 'div.list-wrap ul li a, div.list_wrap ul li a';
     protected queryChapters = 'ol.list-ep li.normal_ep a, ul.ep__list li a';
+    protected queryChapterTitle = 'div.cell-title strong, div.ep__name';
+    protected queryChapterNum = 'div[class*="ep__turning"], div.cell-num';
+    protected customChapterUrlPattern: RegExp = undefined;
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
         const mangalist: Manga[] = [];
@@ -49,23 +52,28 @@ export class ToomicsBase extends DecoratableMangaScraper {
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const nodes = await FetchCSS<HTMLAnchorElement>(new Request(new URL(manga.Identifier, this.URI)), this.queryChapters);
-        const mangaTitle = this.languages.length > 1 ? manga.Title.replace(/\[.*\]$/, '').trim(): manga.Title;
+        const mangaTitle = this.languages.length > 1 ? manga.Title.replace(/\[.*\]$/, '').trim() : manga.Title;
         return nodes.map(anchor => {
 
-            const chaptertitle = anchor.querySelector('div.cell-title strong, div.ep__name').textContent.trim();
-            const chapterNum = anchor.querySelector('div[class*="ep__turning"], div.cell-num').textContent.trim();
+            const chaptertitle = anchor.querySelector(this.queryChapterTitle).textContent.trim();
+            const chapterNum = anchor.querySelector(this.queryChapterNum).textContent.trim();
             const title = [chapterNum, chaptertitle].join(' ').trim();
 
-            //url extractor
-            const action = anchor.getAttribute('onclick');
-            let id = action.match(/location\.href\s*=\s*'([^']+)/)?.at(1) ?? action.match(/popupLogin\('([^']+)/)?.at(1) ?? anchor.href;
+            //First try to build matching url from dataset element if they exists
+            let id = '';
+            const lang = ExtractLanguage(manga.Identifier);
 
-            if (/javascript/.test(id)) {
-                const lang = ExtractLanguage(manga.Identifier);
-                id = `/${lang}/webtoon/detail/code/${window.atob(anchor.dataset.c)}/ep/${window.atob(anchor.dataset.v)}/toon/${window.atob(anchor.dataset.e)}`;
+            if (anchor.dataset.e && anchor.dataset.c && anchor.dataset.v) {
+                id = lang ? `/${lang}` : '';
+                id += `/webtoon/detail/code/${window.atob(anchor.dataset.c)}/ep/${window.atob(anchor.dataset.v)}/toon/${window.atob(anchor.dataset.e)}`;
             }
-
-            return new Chapter(this, manga, new URL(id, this.URI).pathname, title.replace(mangaTitle, '').trim());
+            else {
+                //look for url pattern in "onclick"
+                const action = anchor.getAttribute('onclick');
+                const regexp = this.customChapterUrlPattern ? this.customChapterUrlPattern : lang ? new RegExp(`/${lang}/webtoon/detail/code/\\d+/ep/\\d+/toon/\\d+`) : new RegExp(`/webtoon/detail/code/\\d+/ep/\\d+/toon/\\d+`);
+                id = action?.match(regexp)?.at(0);
+            }
+            return new Chapter(this, manga, new URL(id ?? anchor.pathname, this.URI).pathname, title.replace(mangaTitle, '').trim());
         });
     }
 }

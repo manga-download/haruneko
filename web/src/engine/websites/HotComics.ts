@@ -4,12 +4,13 @@ import * as Common from './decorators/Common';
 import { ToomicsBase, WebsiteInfoExtractor } from './templates/ToomicsBase';
 import { FetchWindowScript } from '../platform/FetchProvider';
 
-@Common.MangaCSS(/^{origin}\/[a-z]+\/[^/]+\/[^/]+\.html$/, 'div.title_content h2.episode-title', WebsiteInfoExtractor())
+@Common.MangaCSS(/^{origin}\/[a-z]+\/[^/]+\/[^/]+\.html/, 'div.title_content h2.episode-title', WebsiteInfoExtractor())
 export default class extends ToomicsBase {
     public constructor() {
-        super('hotcomics', `HotComics`, 'https://hotcomics.me', Tags.Language.Multilingual, Tags.Media.Manhwa, Tags.Source.Official);
+        super('hotcomics', `HotComics`, 'https://w1.hotcomics.me', Tags.Language.Multilingual, Tags.Media.Manhwa, Tags.Source.Official);
         this.languages = ['en', 'de', 'jp', 'ch', 'tc', 'mx', 'es', 'it', 'por', 'fr', 'ko'];
         this.mangaPath = '/{language}/ranking';
+        this.customChapterUrlPattern = /\/[a-z]{2,3}\/[^/]+\/[^/]+\.html/;
     }
 
     public override get Icon() {
