@@ -6,7 +6,7 @@ new TestFixture({
         title: 'Ikigai Mangas'
     },
     container: {
-        url: 'https://viralikigai.yomod.xyz/series/jinx-manhwa/',
+        url: 'https://viralikigai.milkchoco.online/series/jinx-manhwa/',
         id: '/series/jinx-manhwa/',
         title: 'Jinx'
     },
