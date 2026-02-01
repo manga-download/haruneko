@@ -32,7 +32,7 @@ describe('StorageController', () => {
         it('Should truncate long filenames to default max length', () => {
             const longName = 'a'.repeat(250);
             const result = SanitizeFileName(longName);
-            expect(result.length).toBeLessThanOrEqual(200);
+            expect(result.length).toBeLessThanOrEqual(100);
             expect(result.endsWith('…')).toBe(true);
         });
 
@@ -54,7 +54,7 @@ describe('StorageController', () => {
             // Simulate the reported issue with very long manga titles
             const longMangaTitle = 'Shinjiteita Nakamatachi ni Dungeon Okuchi de Korosarekaketa ga Gift "Mugen Gacha" de Level 9999 no Nakamatachi o Te ni Irete Moto Party Member to Sekai ni Fukushuu & "Zamaa!" Shimasu!';
             const result = SanitizeFileName(longMangaTitle);
-            expect(result.length).toBeLessThanOrEqual(200);
+            expect(result.length).toBeLessThanOrEqual(100);
             expect(result).toContain('Shinjiteita Nakamatachi');
         });
 
@@ -66,8 +66,8 @@ describe('StorageController', () => {
         });
 
         it('Should trim trailing spaces before adding ellipsis', () => {
-            const nameWithSpaces = 'a'.repeat(195) + '     ' + 'b'.repeat(10);
-            const result = SanitizeFileName(nameWithSpaces, 200);
+            const nameWithSpaces = 'a'.repeat(95) + '     ' + 'b'.repeat(10);
+            const result = SanitizeFileName(nameWithSpaces, 100);
             expect(result.endsWith('…')).toBe(true);
             expect(result.charAt(result.length - 2)).not.toBe(' ');
         });

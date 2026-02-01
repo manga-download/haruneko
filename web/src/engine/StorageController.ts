@@ -25,9 +25,11 @@ export function CreateStorageController(): StorageController {
  * Maximum length for a file/directory name to ensure compatibility across file systems.
  * Windows has a 260 character limit for the full path (MAX_PATH), so individual path segments
  * should be kept much shorter to allow for the full path structure.
- * We use 200 as a conservative limit to ensure the full path stays under 260 characters.
+ * We use 100 as a conservative limit to ensure the full path stays under 260 characters,
+ * accounting for: base directory (~40), website (~20), manga title (100), chapter title (100), 
+ * and file name (~10) = ~270 total. Additional trimming may be needed for very deep paths.
  */
-const MAX_PATH_SEGMENT_LENGTH = 200;
+const MAX_PATH_SEGMENT_LENGTH = 100;
 
 export function SanitizeFileName(name: string, maxLength: number = MAX_PATH_SEGMENT_LENGTH): string {
     const lookup = {
