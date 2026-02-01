@@ -70,25 +70,6 @@ export class SettingStore<V extends IValue, S extends ISetting<V>> {
 }
 
 /**
- * A specialized store class that extends `SettingStore` to provide persistence
- * and automatic versioning for a given setting. The store listens for changes
- * in the setting's value and updates its internal state and version accordingly.
- *
- * @typeParam V - The type of the value managed by the setting.
- * @typeParam S - The type of the setting, which must extend `ISetting<V>`.
- */
-export class SettingPersistentStore<V extends IValue, S extends ISetting<V>> extends SettingStore<V, S> {
-
-    constructor(setting: S) {
-        super(setting);
-        this.settingRef.Subscribe(value => {
-            this.version += 1;
-            this.Value = value;
-        });
-    }
-}
-
-/**
  * A specialized store that extends `SettingStore` to manage numeric settings with
  * increment, decrement. This store enforces boundaries
  * for the value and allows for controlled adjustments.
