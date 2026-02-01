@@ -32,14 +32,14 @@ describe('StorageController', () => {
         it('Should truncate long filenames to default max length', () => {
             const longName = 'a'.repeat(250);
             const result = SanitizeFileName(longName);
-            expect(result.length).toBeLessThanOrEqual(201); // 200 + ellipsis
+            expect(result.length).toBeLessThanOrEqual(200);
             expect(result.endsWith('…')).toBe(true);
         });
 
         it('Should truncate long filenames to custom max length', () => {
             const longName = 'Test '.repeat(50); // 250 characters
             const result = SanitizeFileName(longName, 50);
-            expect(result.length).toBeLessThanOrEqual(51); // 50 + ellipsis
+            expect(result.length).toBeLessThanOrEqual(50);
             expect(result.endsWith('…')).toBe(true);
         });
 
@@ -54,14 +54,14 @@ describe('StorageController', () => {
             // Simulate the reported issue with very long manga titles
             const longMangaTitle = 'Shinjiteita Nakamatachi ni Dungeon Okuchi de Korosarekaketa ga Gift "Mugen Gacha" de Level 9999 no Nakamatachi o Te ni Irete Moto Party Member to Sekai ni Fukushuu & "Zamaa!" Shimasu!';
             const result = SanitizeFileName(longMangaTitle);
-            expect(result.length).toBeLessThanOrEqual(201); // 200 + ellipsis
+            expect(result.length).toBeLessThanOrEqual(200);
             expect(result).toContain('Shinjiteita Nakamatachi');
         });
 
         it('Should handle Unicode characters when truncating', () => {
             const unicodeName = '😀'.repeat(100) + 'test';
             const result = SanitizeFileName(unicodeName, 50);
-            expect(result.length).toBeLessThanOrEqual(51); // 50 + ellipsis
+            expect(result.length).toBeLessThanOrEqual(50);
             expect(result.endsWith('…')).toBe(true);
         });
 

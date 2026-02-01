@@ -55,9 +55,9 @@ export function SanitizeFileName(name: string, maxLength: number = MAX_PATH_SEGM
 
     // Truncate to maxLength if needed, ensuring we don't break in the middle of a multi-byte character
     if (sanitized.length > maxLength) {
-        // Use substring which handles Unicode correctly
-        sanitized = sanitized.substring(0, maxLength);
-        // Add ellipsis to indicate truncation
+        // Truncate to maxLength - 1 to leave room for the ellipsis
+        sanitized = sanitized.substring(0, maxLength - 1);
+        // Add ellipsis to indicate truncation (total length will be maxLength)
         sanitized = sanitized.trimEnd() + '…';
     }
 
