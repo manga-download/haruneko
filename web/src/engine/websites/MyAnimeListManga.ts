@@ -77,6 +77,10 @@ export default class extends DecoratableMangaScraper {
             case 'xor': {
                 return GetTypedData(this.XOR(await blob.arrayBuffer()));
             }
+            default: {
+                // Fallback: return the image blob as-is for unknown modes
+                return blob;
+            }
         }
     }
 
