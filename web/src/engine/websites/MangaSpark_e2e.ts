@@ -6,7 +6,7 @@ new TestFixture({
         title: 'مانجا سبارك (MangaSpark)'
     },
     container: {
-        url: 'https://manga-spark.com/manga/baek-xx/',
+        url: 'https://manga-spark.net/manga/baek-xx/',
         id: JSON.stringify({ post: '48423', slug: '/manga/baek-xx/' }),
         title: 'Baek XX'
     },
