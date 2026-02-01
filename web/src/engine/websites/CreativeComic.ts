@@ -71,7 +71,7 @@ export default class extends DecoratableMangaScraper {
         const { uuid, accessToken } = await FetchWindowScript<TokenData>(new Request(this.URI), uuidScript, 500);
         this.uuid = uuid;
         this.accessToken = accessToken ?? 'freeforccc2020reading';
-    };
+    }
 
     public override ValidateMangaURL(url: string): boolean {
         return new RegExpSafe(`^${this.URI.origin}/[^/]+/book/\\d+/content`).test(url);
