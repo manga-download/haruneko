@@ -35,7 +35,7 @@ type PageParameters = {
     chapterId: number;
     mediaId: number;
     token: string;
-} | null;
+};
 
 const excludes = [
     /panda_gif_large/i,
