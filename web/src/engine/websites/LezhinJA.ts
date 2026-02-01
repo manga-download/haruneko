@@ -93,7 +93,7 @@ export default class extends DecoratableMangaScraper {
                     const chapters = volume.chapters.map(({ hash_id: id, name }) => new Chapter(this, manga, JSON.stringify({ id, type: 'chapter' }), name.replace(manga.Title, '').trim() || name));
                     return accumulator.concat(chapters);
                 }, []);
-            };
+            }
             case 'volumes': {
                 return data.map(({ hash_id: id, name }) => new Chapter(this, manga, JSON.stringify({ id, type: 'volume' }), name.replace(manga.Title, '').trim() || name));
             }
