@@ -1,2 +1,773 @@
-/* eslint-disable -- @preserved */
-function J(){const J0=['vmkAWRDriW','WRJdMfRdVai','W6FdRJlcPWW','W7JcQCoMW5tdOmo/W5ZdLJ/dGq','yCohWO9h','W57cVgSJW5y','W7dcUmoFW4RcOW','hdHzW4ZdUmoyW7BcVq','W5nefd5CW6ldOdJdGG','rw7cHYCD','WQNdTuNdHXFcKSoQh8kiD8oWW6a','vexcNw5P','WQ/dUCoNiSkF','d8o5WOWvnSkuWRLbWOZdKhOjrG','WQlcTGyZ','z8k3D8oyWOpdVmoEiYyZ','WRRcQmkLW5dcQhVdIvme','W4NcISkcW6FdO8ku','WRT8bCosyHJdR1FdLq','WQpcVbyU','q8oNWRnN','artdRaO3yCocE3zNWOukW6i','gd8fWRFcG8keWOhcTSotocGxeG','WRhdSmo2W7pcOaVcQYa','nCoFxcTOW4e','WOddM8odhmoBWR5wqdD5','F0hcUavGma','W7ZcTaWmdq','uu3cMIzc','W57dUIhcSrK','WRzktCoZt17dGazlBLRdGq','W5CufCkglHpdVComWQ4IpbJcPLG','WPKkwmo9WOCL','mu5mCmoC','WRFdH8osmb/dOhhcJSky','W6BcUSoOW68','W6qFW5OvW4q','Bt/dPrG','WRhcSmkIW5hcQcy','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','BCo7W7G+W6/dHG','FKb0WQ3cG8kdWOC','ar7dRWO0zmodtwb1WPuvW7C','W6JcOWuHcmkfW4tcRmkovW','WOVcS8kWW4tcMa','WQtcHmkJW4xcQq','j8krW5ekWQRdPComW5BcLtvK','W5uvgmo5x0VcPCk+WRa','W5JdP3BcPmor','EWhdGJzW','m8kVeIKmW5ddSSk2W77dQxRdTGldOfeN','WPVdSSk8WOxcOa','WPXawq','W5ZcLSkoW7RdVmkz','muDr','WQvssmoFyKxcGSkzWPOnhYlcLvWxWRu','n8oKW5CbDCkMW6DWfCoQW7G','tSoGuCk7W7O','CCkWWPDulmkAW5bmlCoC','oSoGACocWQtdNCoYkG','WQPjtSoBEfpcRSkMWP4BdWVcJ0y','WPqkuJG','W7i7mWm','WQLMBLNcM0hcHSo1t8k3vmojgW','WRflaCoWFW','AIBdOa','W6tcQ8ocW5lcMa','W4JcMSokW4FcOa','WRldH8ovq2ldKLZcNCkzW4RdKW','WQBcU3JdRfhdOtRdG8oUW7VcQSoVshS','W6ZdIhtcUCopWRe','dCo+FCoyWPhcVG','ECk5DSoxWPNdOq','W5/cISkEqa','W6tdOYNcTWW','wmkXF8oDWPpdQmohpYuLW644WOC','W4VdQgtcV8om','cCo5WOPbz8ocW4feWOW','uJBdHv7cOZtdRJW','WRT8fSoCzrhdOr/dI8kExZhcMbOvpSk+rW','WQT6eSoAEbO','WOmyaCoGEmo6W4hdTZJcJ8kJlqO','WOhcRa44zG','f8kzjmkoat/dHJa','W5NdGqFcTWe','BCo7WR7dKHq','WPxdVCowpmkc','W6lcISoLW6ZcHq','wwDEW6xdNW','WQXfAmo4rW','W5tcHSk2nc4','W5dcGmonW4xcJCkox8oHW7ne','WO7dHSorWQRcT8kjW6tcISkPW5up'];J=function(){return J0;};return J();}(function(j,F){const f={j:0x151,F:'rDp(',X:0x143,K:'ewAZ',x:0x150,l:'P%H3',d:0x15a,c:'8H0Q',Y:0x181,Z:'Dhpb',U:0x196,z:'mA$#',g:0x146,H:'vLMB',V:0x191,p:'&s8B',W:0x169,O:'wPwC',Q:0x15f,r:'FpE)',S:0x197,T:'FCvZ'},q={j:0x40},X=j();function u(j,F){return A(j-q.j,F);}while(!![]){try{const K=parseInt(u(f.j,f.F))/(-0xbdb*0x3+0x7b*-0xe+-0x1*-0x2a4c)*(parseInt(u(f.X,f.K))/(0x2*0xe87+-0x1491+0xd*-0xa7))+-parseInt(u(f.x,f.l))/(-0x147c+0x1e*0xd8+0x3*-0x19b)*(parseInt(u(f.d,f.c))/(0x259a+0x1a05+0x359*-0x13))+parseInt(u(f.Y,f.Z))/(-0x4ac+0xd2e+-0x87d)*(-parseInt(u(f.U,f.z))/(-0x1306*-0x1+-0x1809+0x509))+parseInt(u(f.g,f.H))/(0x14*0xb5+-0x24*-0x33+-0x1549*0x1)+parseInt(u(f.V,f.p))/(0x16e*-0x1a+0x427*0x2+0x2*0xe73)*(parseInt(u(f.W,f.O))/(-0xc58+-0xb94+0x17f5))+-parseInt(u(f.Q,f.r))/(0x1b*0xf9+-0x1013+-0x1*0xa26)+parseInt(u(f.S,f.T))/(0x610+0x1*-0xdbc+0x4f*0x19);if(K===F)break;else X['push'](X['shift']());}catch(x){X['push'](X['shift']());}}}(J,-0x4be7+-0x1163*0xfe+0x1c76aa));import L from'protobufjs';import{FetchJSON}from'../platform/FetchProvider';function A(j,F){j=j-(-0x9*-0x43f+0xaa4+-0x9*0x551);const L=J();let X=L[j];if(A['EBTEtp']===undefined){var K=function(Y){const Z='abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789+/=';let U='',z='';for(let g=-0x2503+-0x1165+0x3668,H,u,a=0x1d2c+-0x1*0xbfd+-0x35*0x53;u=Y['charAt'](a++);~u&&(H=g%(-0x11*-0x10b+-0x3*0xc68+0x1381)?H*(-0x1*-0x99f+0x1624+-0x1f83)+u:u,g++%(0x2*0xfa3+0x44a*-0x6+-0x586))?U+=String['fromCharCode'](0x1580*0x1+0xfb8+0x21*-0x119&H>>(-(0x8*0x1d6+-0x20d2*0x1+0x1224)*g&-0x2bd+0x936+-0x1*0x673)):-0x25e1*0x1+-0x887*-0x4+0x3c5){u=Z['indexOf'](u);}for(let t=-0x161b+-0x70*-0x12+0xe3b,o=U['length'];t<o;t++){z+='%'+('00'+U['charCodeAt'](t)['toString'](-0x33d+0x49*-0x77+0x253c))['slice'](-(-0xbf1+0x1*0x26fe+-0x1b0b));}return decodeURIComponent(z);};const c=function(Y,Z){let U=[],z=-0x2*0x93c+0x269b+-0x1423,g,H='';Y=K(Y);let u;for(u=0x4fd+0x63+-0x10*0x56;u<0x15*-0x1c5+0xb03+0x1b26;u++){U[u]=u;}for(u=0x11a+-0x2556+0x243c;u<0x19f3+-0x2*0x683+-0x1*0xbed;u++){z=(z+U[u]+Z['charCodeAt'](u%Z['length']))%(0x18b0+0x64+-0x1814),g=U[u],U[u]=U[z],U[z]=g;}u=-0x3*-0x39e+0x1*-0x1a2+-0x938,z=-0x1caf*0x1+-0x1b62+0x3811;for(let a=0x182*-0x3+0x1*-0x23ef+-0x2875*-0x1;a<Y['length'];a++){u=(u+(0x4*0x353+0x827+-0x1572))%(-0x1ef6+0x2*0x45b+0x5d*0x40),z=(z+U[u])%(-0xb06+0x1*-0x1a3f+-0x1*-0x2645),g=U[u],U[u]=U[z],U[z]=g,H+=String['fromCharCode'](Y['charCodeAt'](a)^U[(U[u]+U[z])%(0xdce+0x198+-0x61*0x26)]);}return H;};A['KXpavK']=c,A['JCBxBl']={},A['EBTEtp']=!![];}const x=L[-0x149c+0x371+0x112b],l=j+x,d=A['JCBxBl'][l];return!d?(A['cVebIW']===undefined&&(A['cVebIW']=!![]),X=A['KXpavK'](X,F),A['JCBxBl'][l]=X):X=d,X;}import{GetBase64FromBytes}from'../BufferEncoder';import{RandomBytes}from'../Random';function v(j,F){const V={j:0x280};return A(j- -V.j,F);}export class DRMProvider{#protoSignedMessage;#protoLicenseRequest;constructor(){const W={j:'N13k',F:0x26c,X:'8yfJ',K:0x2b6,x:'7(mY',l:0x2a4,d:'Dhpb',c:0x2a7,Y:'X8Z]',Z:0x261,U:'FCvZ',z:0x26d,g:'yC4J',H:0x292,O:'L%Lk',Q:0x26f,r:'8yfJ',S:0x27a,T:'N13k',G:'lNb1',I:0x296,y:'jPte',k:0x297},p={j:0x159},X={};function a(j,F){return A(F-p.j,j);}X[a(W.j,W.F)]=a(W.X,W.K),X[a(W.x,W.l)]=a(W.d,W.c);const K=X,x={};x[a(W.Y,W.Z)]=!![];const l=L[a(W.U,W.z)](a(W.g,W.H),x)[a(W.O,W.Q)];this.#protoSignedMessage=l[a(W.r,W.S)](K[a(W.T,W.F)]),this.#protoLicenseRequest=l[a(W.G,W.I)](K[a(W.y,W.k)]);}async #GetHash(...F){const Q={j:0x279,F:'Dhpb',X:0x24c,K:'ImQT',x:0x24d,l:'Oh8a',d:0x267,c:'T@b&',Y:0x264,Z:'rDp(',U:0x25b,z:'#Aq*',g:0x259,H:'#Aq*'},O={j:0x387},X={};function t(j,F){return A(j- -O.j,F);}X[t(-Q.j,Q.F)]=t(-Q.X,Q.K);const K=X,x=new TextEncoder()[t(-Q.x,Q.l)](F[t(-Q.d,Q.c)](':'));return new Uint8Array(await crypto[t(-Q.Y,Q.Z)][t(-Q.U,Q.z)](K[t(-Q.g,Q.H)],x));}async #CreateChallengeInitData(j,F){const S={j:'FCvZ',F:0x7b,X:'jPte',K:0x9f},r={j:0x1d7};function o(j,F){return A(F- -r.j,j);}const X=await this.#GetHash(j,F);return new Uint8Array([-0x137c*0x1+-0x1a98+0x3d7*0xc,-0xf4a*0x2+-0x1*-0x20a1+-0x20d,-0xb*0x25b+0xb03*-0x3+-0x5e5*-0xa,-0x1db*-0x1+-0x198d+0x17e4,0x104d+0x25*-0xda+-0x3*-0x537,-0x132d+-0x1*0x2077+0x771*0x7,0x2646+-0x5d1+-0x1*0x2002,0x1*-0xc75+-0x2317+0xc6*0x3e,-0x14aa+-0x1212+0x26bc,-0x1257+-0x2af*-0xc+-0xddd,-0xaf0+-0x228e+-0x1*-0x2d7e,-0xeab*0x1+-0xe2*0x17+0x7*0x4ff,-0x6ae+0x1*-0xae+-0x65*-0x15,-0xfae+0xdaa+0x2f3,0xb08+-0x2555+0x4*0x6b6,0x2452+0x2375+-0x471e,-0x29*0xb2+0x19e+0x3*0x91f,0x34a+0xc*-0x13d+0xc68,-0x1d6b*-0x1+-0x100f*-0x2+0x3d3f*-0x1,0x1796+0x1222*-0x1+-0xe*0x55,-0x1*-0x425+-0x18b3*-0x1+-0x57*0x53,0x1*0x2ab+0xf2a+-0x110d,-0x541*0x3+0xad+-0x53*-0x2f,-0x1*-0x1c12+-0xffe+-0x59c*0x2,-0x9*-0x453+-0x97d+-0x1c99,-0x1f81+-0x18d1+-0x386f*-0x1,-0x6cc+0xd*0x9e+-0x119,0x137+-0x1*-0x11fe+-0x1248,-0xa13+-0xb1*0x33+0x1*0x2d56,-0x1252+0x1ef6+-0x4*0x329,0x1fa2+0x1958+-0x38fa,-0x1404+0x265+0x11b1,0xf96+0xd14+-0x1c98,-0x2*0xe1+-0xed8+0x10aa,...X[o(S.j,-S.F)](-0x6f*0x27+0x138*0x5+0xad1,0x10b2*0x2+0xda8+-0x2efc)])[o(S.X,-S.K)];}async #CreateMediaLicenseChallenge(j){const P={j:'Xvf%',F:0x9b,X:'JyLX',K:0x75,x:'aqOX',l:0x46,d:'Hwms',c:0x47,Y:'Xvf%',Z:0x9a,U:'vC(C',z:0x69,g:'mA$#',H:0x90,D:'WK@X',n:0x59,N:'Hwms',R:0x5d,C:'wPwC',e:0x4a,w:'8yfJ',B:0x45,J0:'lNb1',J1:0x72,J2:'Hwms',J3:0x41,J4:'1oe]',J5:0x81,J6:'P%H3',J7:0x5a,J8:0x94,J9:'wT@#',JJ:0x6c,JA:0x4d,Jj:'rDp(',JF:0x58,JL:'FCvZ',JX:0x96,JK:'9YlP',Jx:0x6d},b={j:0x19f},F={'QAarz':function(X,K){return X>>>K;},'PtQCx':function(X,K){return X/K;},'HRMER':function(X,K){return X*K;},'xxfFp':M(P.j,-P.F),'BNsig':function(X,K){return X(K);},'xJBwz':function(X,K){return X(K);},'yCvKs':function(X,K){return X(K);},'NNGch':function(X,K){return X(K);}};function M(j,F){return A(F- -b.j,j);}return this.#protoSignedMessage[M(P.X,-P.K)](this.#protoSignedMessage[M(P.x,-P.l)]({'type':0x1,'msg':this.#protoLicenseRequest[M(P.d,-P.c)](this.#protoLicenseRequest[M(P.Y,-P.Z)]({'type':0x1,'protocol_version':0x16,'request_time':F[M(P.U,-P.z)](F[M(P.g,-P.H)](Date[M(P.D,-P.n)](),-0x1545+0x2361*-0x1+-0x3c8e*-0x1),-0xe54+0x525+0x92f*0x1),'key_control_nonce':F[M(P.N,-P.R)](F[M(P.C,-P.e)](Math[M(P.w,-P.B)](),0x109001c4c+-0x2*-0x7e5122e2+0x8*-0x20b44c42),0x9fc+0x6d*0x3+-0x3*0x3c1),'encrypted_client_id':{'service_id':F[M(P.J0,-P.J1)],'service_certificate_serial_number':F[M(P.J2,-P.J3)](RandomBytes,-0x1*0x20b+0x47*0xa+-0xab),'encrypted_client_id':F[M(P.J4,-P.J5)](RandomBytes,0x3*-0x55f+-0x2073+0x4210),'encrypted_client_id_iv':F[M(P.J6,-P.J7)](RandomBytes,0x8bd*0x2+0x1571+-0x31*0xcb),'encrypted_privacy_key':F[M(P.J4,-P.J8)](RandomBytes,-0x1*-0x2441+-0x12e3+-0x2*0x82f)},'content_id':{'cenc_id':{'pssh':[new Uint8Array(j)[M(P.J9,-P.JJ)](-(0x1*0x196d+-0xb2*-0xc+0x21b3*-0x1))],'license_type':0x1,'request_id':F[M(P.j,-P.JA)](RandomBytes,-0x25ad+-0x3a9*0x3+0x30b8)}}}))[M(P.Jj,-P.JF)](),'signature':F[M(P.JL,-P.JX)](RandomBytes,-0x89*-0x6+0x2*-0x7a2+0xc8e)}))[M(P.JK,-P.Jx)]();}async[v(-0x137,'Dhpb')](j,F,X){const e={j:'!Fe]',F:0x158,X:'[]c^',K:0x190,x:'!Fe]',l:0x174,d:'ImQT',c:0x19e,Y:'L%Lk',Z:0x185,U:'G&3L',z:0x167,g:'[(v0',H:0x18e,w:0x168,B:'wPwC',J0:0x19f,J1:'Xvf%',J2:0x187,J3:0x157,J4:'wPwC',J5:0x176,J6:'T@b&',J7:0x186},C={j:0x45e,F:'jPte',X:0x434,K:'aIx)',x:0x431,l:'a7B1',d:0x436,c:'*A02',Y:0x429,Z:'FSCl',U:0x46f,z:'&s8B',g:0x43b,H:'N13k',e:0x467,w:'wT@#',B:0x437,J0:'wPwC',J1:0x47a,J2:'yC4J',J3:0x46b},N={j:0x2b},K={'wAgrd':function(Y,Z){return Y+Z;},'UKRdb':h(e.j,-e.F),'LibxR':h(e.X,-e.K),'STnGz':h(e.x,-e.l),'ppXHQ':h(e.d,-e.c),'dcEPj':function(Y,Z){return Y(Z);},'pWKKY':h(e.Y,-e.Z),'bBbnw':h(e.U,-e.z)},x=await this.#CreateChallengeInitData(F,X);function h(j,F){return v(F- -N.j,j);}const {cache_url:l,access_token:d,page_mapping:c}=await K[h(e.g,-e.H)](FetchJSON,new Request(j,{'method':K[h(e.j,-e.w)],'headers':{'Content-Type':K[h(e.B,-e.J0)]},'body':JSON[h(e.J1,-e.J2)]({'challenge':K[h(e.B,-e.J3)](GetBase64FromBytes,await this.#CreateMediaLicenseChallenge(x))})}));return Array[h(e.J4,-e.J5)](Object[h(e.J6,-e.J7)](c),(Y,Z)=>{const R={j:0x5ca},U={'MangaID':F,'ChapterID':X,'PageNumber':K[i(C.j,C.F)](Z,0x942+-0x1*-0x7eb+-0x112c)},z=c[U[i(C.X,C.K)]],g=new URL([l,K[i(C.x,C.l)],'v1',K[i(C.d,C.c)],F,K[i(C.Y,C.Z)],X,z][i(C.U,C.z)]('/'));function i(j,F){return h(F,j-R.j);}g[i(C.g,C.H)][i(C.e,C.w)](K[i(C.B,C.J0)],d);const H={};return H[i(C.J1,C.J2)]=g,H[i(C.J3,C.l)]=U,H;});}async[v(-0x150,'WK@X')](X,K){const B={j:'T@b&',F:0x22f,X:'jPte',K:0x24a,x:'8H0Q',l:0x277,d:'FCvZ',c:0x257},w={j:0x3a8},x={};x[m(B.j,B.F)]=m(B.X,B.K);const l=x;function m(j,F){return v(F-w.j,j);}const d={};return d[m(B.x,B.l)]=l[m(B.d,B.c)],new Blob([X],d);}}
+/**
+ * Kagane.org DRM Decryption Implementation
+ * Ported from Tachiyomi Kotlin extension
+ */
+
+/**
+ * Randomizer - PRNG for image unscrambling
+ */
+class Randomizer {
+    constructor(seedInput, t) {
+        this.size = t * t;
+        
+        // Constants
+        this.MASK64 = BigInt('0xFFFFFFFFFFFFFFFF');
+        this.MASK32 = BigInt('0xFFFFFFFF');
+        this.MASK8 = BigInt('0xFF');
+        this.PRNG_MULT = BigInt('0x27BB2EE687B0B0FD');
+        this.RND_MULT_32 = BigInt('0x45d9f3b');
+        
+        // Initialize
+        const seedMask = BigInt('0xFFFFFFFFFFFFFFFF');
+        this.seed = seedInput & seedMask;
+        this.state = this.hashSeed(this.seed);
+        this.entropyPool = this.expandEntropy(this.seed);
+        this.order = Array.from({ length: this.size }, (_, i) => i);
+        this.permute();
+    }
+    
+    hashSeed(e) {
+        const md = this.sha256Sync(e.toString());
+        return this.readBigUInt64BE(md, 0) ^ this.readBigUInt64BE(md, 8);
+    }
+    
+    readBigUInt64BE(bytes, offset) {
+        let n = BigInt(0);
+        for (let i = 0; i < 8; i++) {
+            n = (n << BigInt(8)) | BigInt(bytes[offset + i]);
+        }
+        return n;
+    }
+    
+    expandEntropy(e) {
+        return this.sha512Sync(e.toString());
+    }
+    
+    sbox(e) {
+        const t = [163, 95, 137, 13, 55, 193, 107, 228, 114, 185, 22, 243, 68, 218, 158, 40];
+        return t[e & 15] ^ t[(e >> 4) & 15];
+    }
+    
+    prng() {
+        this.state = this.state ^ ((this.state << BigInt(11)) & this.MASK64);
+        this.state = this.state ^ (this.state >> BigInt(19));
+        this.state = this.state ^ ((this.state << BigInt(7)) & this.MASK64);
+        this.state = (this.state * this.PRNG_MULT) & this.MASK64;
+        return this.state;
+    }
+    
+    roundFunc(e, t) {
+        let n = e ^ this.prng() ^ BigInt(t);
+        
+        const rot = ((n << BigInt(5)) | (n >> BigInt(3))) & this.MASK32;
+        n = (rot * this.RND_MULT_32) & this.MASK32;
+        
+        const sboxVal = this.sbox(Number(n & this.MASK8));
+        n = n ^ BigInt(sboxVal);
+        
+        n = n ^ (n >> BigInt(13));
+        return n;
+    }
+    
+    feistelMix(e, t, rounds) {
+        let r = BigInt(e);
+        let i = BigInt(t);
+        for (let round = 0; round < rounds; round++) {
+            const ent = this.entropyPool[round % this.entropyPool.length];
+            r = r ^ this.roundFunc(i, ent);
+            const secondArg = ent ^ ((round * 31) & 255);
+            i = i ^ this.roundFunc(r, secondArg);
+        }
+        return [r, i];
+    }
+    
+    permute() {
+        const half = Math.floor(this.size / 2);
+        const sizeBig = BigInt(this.size);
+        
+        for (let t = 0; t < half; t++) {
+            const n = t + half;
+            const [rBig, iBig] = this.feistelMix(t, n, 4);
+            const s = Number(rBig % sizeBig);
+            const a = Number(iBig % sizeBig);
+            const tmp = this.order[s];
+            this.order[s] = this.order[a];
+            this.order[a] = tmp;
+        }
+        
+        for (let e = this.size - 1; e >= 1; e--) {
+            const ent = this.entropyPool[e % this.entropyPool.length];
+            const idxBig = (this.prng() + BigInt(ent)) % BigInt(e + 1);
+            const n = Number(idxBig);
+            const tmp = this.order[e];
+            this.order[e] = this.order[n];
+            this.order[n] = tmp;
+        }
+    }
+    
+    // Synchronous SHA-256 implementation for compatibility
+    sha256Sync(str) {
+        const bytes = new TextEncoder().encode(str);
+        // Simple synchronous SHA-256 using crypto-js style implementation
+        // For actual implementation, we'll use a minimal sha256
+        return this.simpleSHA256(bytes);
+    }
+    
+    // Synchronous SHA-512 implementation
+    sha512Sync(str) {
+        const bytes = new TextEncoder().encode(str);
+        return this.simpleSHA512(bytes);
+    }
+    
+    // Minimal SHA-256 implementation
+    simpleSHA256(message) {
+        const K = [
+            0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5, 0x3956c25b, 0x59f111f1, 0x923f82a4, 0xab1c5ed5,
+            0xd807aa98, 0x12835b01, 0x243185be, 0x550c7dc3, 0x72be5d74, 0x80deb1fe, 0x9bdc06a7, 0xc19bf174,
+            0xe49b69c1, 0xefbe4786, 0x0fc19dc6, 0x240ca1cc, 0x2de92c6f, 0x4a7484aa, 0x5cb0a9dc, 0x76f988da,
+            0x983e5152, 0xa831c66d, 0xb00327c8, 0xbf597fc7, 0xc6e00bf3, 0xd5a79147, 0x06ca6351, 0x14292967,
+            0x27b70a85, 0x2e1b2138, 0x4d2c6dfc, 0x53380d13, 0x650a7354, 0x766a0abb, 0x81c2c92e, 0x92722c85,
+            0xa2bfe8a1, 0xa81a664b, 0xc24b8b70, 0xc76c51a3, 0xd192e819, 0xd6990624, 0xf40e3585, 0x106aa070,
+            0x19a4c116, 0x1e376c08, 0x2748774c, 0x34b0bcb5, 0x391c0cb3, 0x4ed8aa4a, 0x5b9cca4f, 0x682e6ff3,
+            0x748f82ee, 0x78a5636f, 0x84c87814, 0x8cc70208, 0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2
+        ];
+        
+        let H = [
+            0x6a09e667, 0xbb67ae85, 0x3c6ef372, 0xa54ff53a,
+            0x510e527f, 0x9b05688c, 0x1f83d9ab, 0x5be0cd19
+        ];
+        
+        const padded = this.pad(message);
+        
+        for (let chunk = 0; chunk < padded.length; chunk += 64) {
+            const W = new Array(64);
+            
+            for (let i = 0; i < 16; i++) {
+                W[i] = (padded[chunk + i * 4] << 24) | (padded[chunk + i * 4 + 1] << 16) |
+                       (padded[chunk + i * 4 + 2] << 8) | padded[chunk + i * 4 + 3];
+            }
+            
+            for (let i = 16; i < 64; i++) {
+                const s0 = this.rotr(W[i - 15], 7) ^ this.rotr(W[i - 15], 18) ^ (W[i - 15] >>> 3);
+                const s1 = this.rotr(W[i - 2], 17) ^ this.rotr(W[i - 2], 19) ^ (W[i - 2] >>> 10);
+                W[i] = (W[i - 16] + s0 + W[i - 7] + s1) >>> 0;
+            }
+            
+            let [a, b, c, d, e, f, g, h] = H;
+            
+            for (let i = 0; i < 64; i++) {
+                const S1 = this.rotr(e, 6) ^ this.rotr(e, 11) ^ this.rotr(e, 25);
+                const ch = (e & f) ^ (~e & g);
+                const temp1 = (h + S1 + ch + K[i] + W[i]) >>> 0;
+                const S0 = this.rotr(a, 2) ^ this.rotr(a, 13) ^ this.rotr(a, 22);
+                const maj = (a & b) ^ (a & c) ^ (b & c);
+                const temp2 = (S0 + maj) >>> 0;
+                
+                h = g;
+                g = f;
+                f = e;
+                e = (d + temp1) >>> 0;
+                d = c;
+                c = b;
+                b = a;
+                a = (temp1 + temp2) >>> 0;
+            }
+            
+            H[0] = (H[0] + a) >>> 0;
+            H[1] = (H[1] + b) >>> 0;
+            H[2] = (H[2] + c) >>> 0;
+            H[3] = (H[3] + d) >>> 0;
+            H[4] = (H[4] + e) >>> 0;
+            H[5] = (H[5] + f) >>> 0;
+            H[6] = (H[6] + g) >>> 0;
+            H[7] = (H[7] + h) >>> 0;
+        }
+        
+        const result = new Uint8Array(32);
+        for (let i = 0; i < 8; i++) {
+            result[i * 4] = (H[i] >>> 24) & 0xff;
+            result[i * 4 + 1] = (H[i] >>> 16) & 0xff;
+            result[i * 4 + 2] = (H[i] >>> 8) & 0xff;
+            result[i * 4 + 3] = H[i] & 0xff;
+        }
+        return result;
+    }
+    
+    // Minimal SHA-512 implementation
+    simpleSHA512(message) {
+        const K = [
+            0x428a2f98d728ae22n, 0x7137449123ef65cdn, 0xb5c0fbcfec4d3b2fn, 0xe9b5dba58189dbbcn,
+            0x3956c25bf348b538n, 0x59f111f1b605d019n, 0x923f82a4af194f9bn, 0xab1c5ed5da6d8118n,
+            0xd807aa98a3030242n, 0x12835b0145706fben, 0x243185be4ee4b28cn, 0x550c7dc3d5ffb4e2n,
+            0x72be5d74f27b896fn, 0x80deb1fe3b1696b1n, 0x9bdc06a725c71235n, 0xc19bf174cf692694n,
+            0xe49b69c19ef14ad2n, 0xefbe4786384f25e3n, 0x0fc19dc68b8cd5b5n, 0x240ca1cc77ac9c65n,
+            0x2de92c6f592b0275n, 0x4a7484aa6ea6e483n, 0x5cb0a9dcbd41fbd4n, 0x76f988da831153b5n,
+            0x983e5152ee66dfabn, 0xa831c66d2db43210n, 0xb00327c898fb213fn, 0xbf597fc7beef0ee4n,
+            0xc6e00bf33da88fc2n, 0xd5a79147930aa725n, 0x06ca6351e003826fn, 0x142929670a0e6e70n,
+            0x27b70a8546d22ffcn, 0x2e1b21385c26c926n, 0x4d2c6dfc5ac42aedn, 0x53380d139d95b3dfn,
+            0x650a73548baf63den, 0x766a0abb3c77b2a8n, 0x81c2c92e47edaee6n, 0x92722c851482353bn,
+            0xa2bfe8a14cf10364n, 0xa81a664bbc423001n, 0xc24b8b70d0f89791n, 0xc76c51a30654be30n,
+            0xd192e819d6ef5218n, 0xd69906245565a910n, 0xf40e35855771202an, 0x106aa07032bbd1b8n,
+            0x19a4c116b8d2d0c8n, 0x1e376c085141ab53n, 0x2748774cdf8eeb99n, 0x34b0bcb5e19b48a8n,
+            0x391c0cb3c5c95a63n, 0x4ed8aa4ae3418acbn, 0x5b9cca4f7763e373n, 0x682e6ff3d6b2b8a3n,
+            0x748f82ee5defb2fcn, 0x78a5636f43172f60n, 0x84c87814a1f0ab72n, 0x8cc702081a6439ecn,
+            0x90befffa23631e28n, 0xa4506cebde82bde9n, 0xbef9a3f7b2c67915n, 0xc67178f2e372532bn,
+            0xca273eceea26619cn, 0xd186b8c721c0c207n, 0xeada7dd6cde0eb1en, 0xf57d4f7fee6ed178n,
+            0x06f067aa72176fban, 0x0a637dc5a2c898a6n, 0x113f9804bef90daen, 0x1b710b35131c471bn,
+            0x28db77f523047d84n, 0x32caab7b40c72493n, 0x3c9ebe0a15c9bebcn, 0x431d67c49c100d4cn,
+            0x4cc5d4becb3e42b6n, 0x597f299cfc657e2an, 0x5fcb6fab3ad6faecn, 0x6c44198c4a475817n
+        ];
+        
+        let H = [
+            0x6a09e667f3bcc908n, 0xbb67ae8584caa73bn, 0x3c6ef372fe94f82bn, 0xa54ff53a5f1d36f1n,
+            0x510e527fade682d1n, 0x9b05688c2b3e6c1fn, 0x1f83d9abfb41bd6bn, 0x5be0cd19137e2179n
+        ];
+        
+        const padded = this.pad512(message);
+        
+        for (let chunk = 0; chunk < padded.length; chunk += 128) {
+            const W = new Array(80);
+            
+            for (let i = 0; i < 16; i++) {
+                W[i] = BigInt(0);
+                for (let j = 0; j < 8; j++) {
+                    W[i] = (W[i] << 8n) | BigInt(padded[chunk + i * 8 + j]);
+                }
+            }
+            
+            for (let i = 16; i < 80; i++) {
+                const s0 = this.rotr64(W[i - 15], 1n) ^ this.rotr64(W[i - 15], 8n) ^ (W[i - 15] >> 7n);
+                const s1 = this.rotr64(W[i - 2], 19n) ^ this.rotr64(W[i - 2], 61n) ^ (W[i - 2] >> 6n);
+                W[i] = (W[i - 16] + s0 + W[i - 7] + s1) & 0xFFFFFFFFFFFFFFFFn;
+            }
+            
+            let [a, b, c, d, e, f, g, h] = H;
+            
+            for (let i = 0; i < 80; i++) {
+                const S1 = this.rotr64(e, 14n) ^ this.rotr64(e, 18n) ^ this.rotr64(e, 41n);
+                const ch = (e & f) ^ (~e & g);
+                const temp1 = (h + S1 + ch + K[i] + W[i]) & 0xFFFFFFFFFFFFFFFFn;
+                const S0 = this.rotr64(a, 28n) ^ this.rotr64(a, 34n) ^ this.rotr64(a, 39n);
+                const maj = (a & b) ^ (a & c) ^ (b & c);
+                const temp2 = (S0 + maj) & 0xFFFFFFFFFFFFFFFFn;
+                
+                h = g;
+                g = f;
+                f = e;
+                e = (d + temp1) & 0xFFFFFFFFFFFFFFFFn;
+                d = c;
+                c = b;
+                b = a;
+                a = (temp1 + temp2) & 0xFFFFFFFFFFFFFFFFn;
+            }
+            
+            H[0] = (H[0] + a) & 0xFFFFFFFFFFFFFFFFn;
+            H[1] = (H[1] + b) & 0xFFFFFFFFFFFFFFFFn;
+            H[2] = (H[2] + c) & 0xFFFFFFFFFFFFFFFFn;
+            H[3] = (H[3] + d) & 0xFFFFFFFFFFFFFFFFn;
+            H[4] = (H[4] + e) & 0xFFFFFFFFFFFFFFFFn;
+            H[5] = (H[5] + f) & 0xFFFFFFFFFFFFFFFFn;
+            H[6] = (H[6] + g) & 0xFFFFFFFFFFFFFFFFn;
+            H[7] = (H[7] + h) & 0xFFFFFFFFFFFFFFFFn;
+        }
+        
+        const result = new Uint8Array(64);
+        for (let i = 0; i < 8; i++) {
+            for (let j = 0; j < 8; j++) {
+                result[i * 8 + j] = Number((H[i] >> BigInt((7 - j) * 8)) & 0xFFn);
+            }
+        }
+        return result;
+    }
+    
+    rotr(n, b) {
+        return ((n >>> b) | (n << (32 - b))) >>> 0;
+    }
+    
+    rotr64(n, b) {
+        return ((n >> b) | (n << (64n - b))) & 0xFFFFFFFFFFFFFFFFn;
+    }
+    
+    pad(message) {
+        const ml = message.length * 8;
+        const padLen = (56 - (message.length + 1) % 64 + 64) % 64;
+        const padded = new Uint8Array(message.length + 1 + padLen + 8);
+        padded.set(message);
+        padded[message.length] = 0x80;
+        for (let i = 0; i < 8; i++) {
+            padded[padded.length - 1 - i] = (ml >>> (i * 8)) & 0xff;
+        }
+        return padded;
+    }
+    
+    pad512(message) {
+        const ml = BigInt(message.length * 8);
+        const padLen = (112 - (message.length + 1) % 128 + 128) % 128;
+        const padded = new Uint8Array(message.length + 1 + padLen + 16);
+        padded.set(message);
+        padded[message.length] = 0x80;
+        for (let i = 0; i < 16; i++) {
+            padded[padded.length - 1 - i] = Number((ml >> BigInt(i * 8)) & 0xFFn);
+        }
+        return padded;
+    }
+}
+
+/**
+ * Scrambler - Image scrambling/unscrambling logic
+ */
+class Scrambler {
+    constructor(seed, gridSize) {
+        this.seed = seed;
+        this.gridSize = gridSize;
+        this.totalPieces = gridSize * gridSize;
+        this.randomizer = new Randomizer(seed, gridSize);
+        this.dependencyGraph = this.buildDependencyGraph();
+        this.scramblePath = this.generateScramblePath();
+    }
+    
+    buildDependencyGraph() {
+        const graph = new Map();
+        const inDegree = new Map();
+        
+        for (let n = 0; n < this.totalPieces; n++) {
+            inDegree.set(n, 0);
+            graph.set(n, []);
+        }
+        
+        const rng = new Randomizer(this.seed, this.gridSize);
+        
+        for (let r = 0; r < this.totalPieces; r++) {
+            const i = Number((rng.prng() % BigInt(3)) + BigInt(2));
+            for (let k = 0; k < i; k++) {
+                const j = Number(rng.prng() % BigInt(this.totalPieces));
+                if (j !== r && !this.wouldCreateCycle(graph, j, r)) {
+                    graph.get(j).push(r);
+                    inDegree.set(r, inDegree.get(r) + 1);
+                }
+            }
+        }
+        
+        for (let r = 0; r < this.totalPieces; r++) {
+            if (inDegree.get(r) === 0) {
+                let tries = 0;
+                while (tries < 10) {
+                    const s = Number(rng.prng() % BigInt(this.totalPieces));
+                    if (s !== r && !this.wouldCreateCycle(graph, s, r)) {
+                        graph.get(s).push(r);
+                        inDegree.set(r, inDegree.get(r) + 1);
+                        break;
+                    }
+                    tries++;
+                }
+            }
+        }
+        
+        return { graph, inDegree };
+    }
+    
+    wouldCreateCycle(graph, target, start) {
+        const visited = new Set();
+        const stack = [start];
+        
+        while (stack.length > 0) {
+            const n = stack.pop();
+            if (n === target) return true;
+            if (visited.has(n)) continue;
+            visited.add(n);
+            const neighbors = graph.get(n);
+            if (neighbors) {
+                stack.push(...neighbors);
+            }
+        }
+        return false;
+    }
+    
+    generateScramblePath() {
+        const graphCopy = new Map();
+        const inDegreeCopy = new Map();
+        
+        for (const [key, value] of this.dependencyGraph.graph) {
+            graphCopy.set(key, [...value]);
+        }
+        for (const [key, value] of this.dependencyGraph.inDegree) {
+            inDegreeCopy.set(key, value);
+        }
+        
+        const queue = [];
+        for (let n = 0; n < this.totalPieces; n++) {
+            if (inDegreeCopy.get(n) === 0) {
+                queue.push(n);
+            }
+        }
+        
+        const order = [];
+        while (queue.length > 0) {
+            const i = queue.shift();
+            order.push(i);
+            const neighbors = graphCopy.get(i);
+            if (neighbors) {
+                for (const e of neighbors) {
+                    inDegreeCopy.set(e, inDegreeCopy.get(e) - 1);
+                    if (inDegreeCopy.get(e) === 0) {
+                        queue.push(e);
+                    }
+                }
+            }
+        }
+        return order;
+    }
+    
+    getScrambleMapping() {
+        let e = [...this.randomizer.order];
+        
+        if (this.scramblePath.length === this.totalPieces) {
+            const t = new Array(this.totalPieces);
+            for (let i = 0; i < this.scramblePath.length; i++) {
+                t[i] = this.scramblePath[i];
+            }
+            const n = new Array(this.totalPieces);
+            for (let r = 0; r < this.totalPieces; r++) {
+                n[r] = e[t[r]];
+            }
+            e = n;
+        }
+        
+        const result = [];
+        for (let n = 0; n < this.totalPieces; n++) {
+            result.push([n, e[n]]);
+        }
+        return result;
+    }
+}
+
+/**
+ * Main DRM Provider Class
+ */
+export class DRMProvider {
+    
+    /**
+     * Create image links with parameters for downloading
+     * @param {URL} chapterURL - URL to request image links from
+     * @param {string} mangaIdentifier - Manga ID
+     * @param {string} chapterIdentifier - Chapter ID
+     * @returns {Promise<Array>} - Array of page objects with link and parameters
+     */
+    async CreateImageLinks(chapterURL, mangaIdentifier, chapterIdentifier) {
+        const initData = await this.createChallengeInitData(mangaIdentifier, chapterIdentifier);
+        const challenge = await this.createMediaLicenseChallenge(initData);
+        const challengeBase64 = this.getBase64FromBytes(challenge);
+        
+        const response = await fetch(chapterURL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ challenge: challengeBase64 })
+        });
+        
+        const { cache_url, access_token, page_mapping } = await response.json();
+        
+        return Object.keys(page_mapping).map((pageNum, index) => {
+            const parameters = {
+                MangaID: mangaIdentifier,
+                ChapterID: chapterIdentifier,
+                PageNumber: index + 1
+            };
+            const filename = page_mapping[parameters.PageNumber];
+            const url = new URL([cache_url, 'media', 'v1', 'books', mangaIdentifier, 'chapters', chapterIdentifier, filename].join('/'));
+            url.searchParams.set('token', access_token);
+            
+            return {
+                link: url,
+                parameters: parameters
+            };
+        });
+    }
+    
+    /**
+     * Decrypt and unscramble image data
+     * @param {ArrayBuffer} bytes - Encrypted image data
+     * @param {Object} parameters - Contains MangaID, ChapterID, PageNumber
+     * @returns {Promise<Blob>} - Decrypted image blob
+     */
+    async DecryptImage(bytes, parameters) {
+        try {
+            const { MangaID, ChapterID, PageNumber } = parameters;
+            const data = new Uint8Array(bytes);
+            
+            // Step 1: Decrypt the image
+            const decrypted = await this.decryptImage(data, MangaID, ChapterID);
+            if (!decrypted) {
+                throw new Error('Unable to decrypt data');
+            }
+            
+            // Step 2: Unscramble if needed
+            const unscrambled = this.processData(decrypted, PageNumber, MangaID, ChapterID);
+            if (!unscrambled) {
+                throw new Error('Unable to unscramble data');
+            }
+            
+            // Return as Blob
+            return new Blob([unscrambled], { type: 'application/octet-stream' });
+        } catch (error) {
+            console.error('DecryptImage error:', error);
+            return new Blob([], { type: 'application/octet-stream' });
+        }
+    }
+    
+    /**
+     * Create challenge init data
+     */
+    async createChallengeInitData(mangaId, chapterId) {
+        const hash = await this.sha256(`${mangaId}:${chapterId}`);
+        return new Uint8Array([
+            0, 0, 0, 12, 74, 88, 76, 32, 13, 10, 135, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            ...hash.slice(0, 32)
+        ]);
+    }
+    
+    /**
+     * Create media license challenge (stub for compatibility)
+     */
+    async createMediaLicenseChallenge(initData) {
+        return initData;
+    }
+    
+    /**
+     * Convert bytes to Base64
+     */
+    getBase64FromBytes(bytes) {
+        let binary = '';
+        const len = bytes.length;
+        for (let i = 0; i < len; i++) {
+            binary += String.fromCharCode(bytes[i]);
+        }
+        return btoa(binary);
+    }
+    
+    /**
+     * Decrypt image data using AES-GCM
+     */
+    async decryptImage(payload, keyPart1, keyPart2) {
+        try {
+            if (payload.length < 140) return null;
+            
+            // Extract IV and ciphertext
+            const iv = payload.slice(128, 140);
+            const ciphertext = payload.slice(140);
+            
+            // Generate key from SHA-256 hash of "seriesId:chapterId"
+            const keyString = `${keyPart1}:${keyPart2}`;
+            const keyHash = await this.sha256(keyString);
+            
+            // Import key for AES-GCM
+            const key = await crypto.subtle.importKey(
+                'raw',
+                keyHash,
+                { name: 'AES-GCM' },
+                false,
+                ['decrypt']
+            );
+            
+            // Decrypt using AES-GCM
+            const decrypted = await crypto.subtle.decrypt(
+                {
+                    name: 'AES-GCM',
+                    iv: iv,
+                    tagLength: 128
+                },
+                key,
+                ciphertext
+            );
+            
+            return new Uint8Array(decrypted);
+        } catch (error) {
+            console.error('Decryption error:', error);
+            return null;
+        }
+    }
+    
+    /**
+     * Process (unscramble) the decrypted image data
+     */
+    processData(input, index, seriesId, chapterId) {
+        try {
+            let processed = input;
+            
+            // Check if data is a valid image
+            if (!this.isValidImage(processed)) {
+                // Generate seed for unscrambling
+                const seed = this.generateSeed(seriesId, chapterId, this.formatIndex(index));
+                const scrambler = new Scrambler(seed, 10);
+                const scrambleMapping = scrambler.getScrambleMapping();
+                
+                // Unscramble the data
+                processed = this.unscramble(processed, scrambleMapping, true);
+                
+                // Check again if it's valid
+                if (!this.isValidImage(processed)) {
+                    return null;
+                }
+            }
+            
+            return processed;
+        } catch (error) {
+            console.error('Process data error:', error);
+            return null;
+        }
+    }
+    
+    /**
+     * Check if data is a valid image format
+     */
+    isValidImage(data) {
+        if (data.length < 2) return false;
+        
+        // JPEG
+        if (data[0] === 0xFF && data[1] === 0xD8) return true;
+        
+        // GIF
+        if (data.length >= 6) {
+            const header = String.fromCharCode(...data.slice(0, 6));
+            if (header === 'GIF87a' || header === 'GIF89a') return true;
+        }
+        
+        // PNG
+        if (data.length >= 8) {
+            if (data[0] === 0x89 && data[1] === 0x50 && data[2] === 0x4E && data[3] === 0x47 &&
+                data[4] === 0x0D && data[5] === 0x0A && data[6] === 0x1A && data[7] === 0x0A) {
+                return true;
+            }
+        }
+        
+        // WEBP
+        if (data.length >= 12) {
+            if (data[0] === 0x52 && data[1] === 0x49 && data[2] === 0x46 && data[3] === 0x46 &&
+                data[8] === 0x57 && data[9] === 0x45 && data[10] === 0x42 && data[11] === 0x50) {
+                return true;
+            }
+        }
+        
+        // HEIF
+        if (data.length >= 12) {
+            const ftyp = String.fromCharCode(...data.slice(4, 8));
+            if (ftyp === 'ftyp') {
+                const type = String.fromCharCode(...data.slice(8, 11));
+                if (type === 'hei' || type === 'hev' || type === 'avi') return true;
+            }
+        }
+        
+        // JXL
+        if (data[0] === 0xFF && data[1] === 0x0A) return true;
+        if (data.length >= 12) {
+            if (data[0] === 0 && data[1] === 0 && data[2] === 0 && data[3] === 12 &&
+                data[4] === 0x4A && data[5] === 0x58 && data[6] === 0x4C && data[7] === 0x20) {
+                return true;
+            }
+        }
+        
+        return false;
+    }
+    
+    /**
+     * Generate seed for scrambling
+     */
+    generateSeed(t, n, e) {
+        const sha256 = new Randomizer(BigInt(0), 1).sha256Sync(`${t}:${n}:${e}`);
+        let a = BigInt(0);
+        for (let i = 0; i < 8; i++) {
+            a = (a << BigInt(8)) | BigInt(sha256[i]);
+        }
+        return a;
+    }
+    
+    /**
+     * Format page index as filename (e.g., 0 -> "0001.jpg")
+     */
+    formatIndex(index) {
+        return String(index + 1).padStart(4, '0') + '.jpg';
+    }
+    
+    /**
+     * Unscramble image data using mapping
+     */
+    unscramble(data, mapping, n) {
+        const s = mapping.length;
+        const a = data.length;
+        const l = Math.floor(a / s);
+        const o = a % s;
+        
+        let r, i;
+        if (n) {
+            if (o > 0) {
+                r = data.slice(0, o);
+                i = data.slice(o, a);
+            } else {
+                r = new Uint8Array(0);
+                i = data;
+            }
+        } else {
+            if (o > 0) {
+                r = data.slice(a - o, a);
+                i = data.slice(0, a - o);
+            } else {
+                r = new Uint8Array(0);
+                i = data;
+            }
+        }
+        
+        // Split into chunks
+        const chunks = [];
+        for (let idx = 0; idx < s; idx++) {
+            const start = idx * l;
+            const end = (idx + 1) * l;
+            chunks.push(i.slice(start, end));
+        }
+        
+        // Apply mapping
+        const u = new Array(s);
+        if (n) {
+            for (const [e, m] of mapping) {
+                if (e < s && m < s) {
+                    u[e] = chunks[m];
+                }
+            }
+        } else {
+            for (const [e, m] of mapping) {
+                if (e < s && m < s) {
+                    u[m] = chunks[e];
+                }
+            }
+        }
+        
+        // Combine chunks
+        const totalLen = u.reduce((acc, chunk) => acc + chunk.length, 0);
+        const h = new Uint8Array(totalLen);
+        let offset = 0;
+        for (const chunk of u) {
+            h.set(chunk, offset);
+            offset += chunk.length;
+        }
+        
+        // Append remainder
+        if (n) {
+            const result = new Uint8Array(h.length + r.length);
+            result.set(h, 0);
+            result.set(r, h.length);
+            return result;
+        } else {
+            const result = new Uint8Array(r.length + h.length);
+            result.set(r, 0);
+            result.set(h, r.length);
+            return result;
+        }
+    }
+    
+    /**
+     * SHA-256 helper using Web Crypto API
+     */
+    async sha256(str) {
+        const bytes = new TextEncoder().encode(str);
+        const hash = await crypto.subtle.digest('SHA-256', bytes);
+        return new Uint8Array(hash);
+    }
+}
