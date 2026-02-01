@@ -1,6 +1,6 @@
 //viewer decorators for websites using CLIP STUDIO READER
 // https://www.celsys.com/en/e-booksolution/lab/
-//Pages are scrambled, informations are inside XMLs, and php scripts are named like diazepam_hybrid.php / lorezapam
+//Pages are scrambled, information is inside XMLs, and php scripts are named like diazepam_hybrid.php / lorezapam
 
 import { Fetch } from "../../platform/FetchProvider";
 import { Page, type Chapter, type MangaScraper } from "../../providers/MangaPlugin";
