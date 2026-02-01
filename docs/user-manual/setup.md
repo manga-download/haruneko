@@ -56,7 +56,8 @@ Confirm MacOS dialogs about verifying the application or an unknown developer wi
 
 1. Ensure Flatpak is installed on your system
 2. Download the latest `.flatpak` file from [GitHub Releases](https://github.com/manga-download/haruneko/releases)
-3. Install the Flatpak: `flatpak install hakuneko-electron-*.flatpak`
+3. Install the Flatpak: `flatpak install <downloaded-file>.flatpak`
+   (Replace `<downloaded-file>` with the actual filename, e.g., `hakuneko-electron-linux-x64.flatpak`)
 4. Launch HakuNeko from your application menu or use: `flatpak run org.hakuneko.HakuNeko`
 
 ::: info
