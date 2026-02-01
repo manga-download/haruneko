@@ -137,12 +137,13 @@
                         selected={!Settings.ViewerReverseDirection.Value}
                         on:click={() => (Settings.ViewerReverseDirection.Value = false)}
                     >
-                        LeftToRight
+                        Left to Right
                     </Switch>
                     <Switch
                         selected={Settings.ViewerReverseDirection.Value}
                         on:click={() => (Settings.ViewerReverseDirection.Value = true)}
-                        >RightToLeft
+                    >
+                        Right to Left
                     </Switch>
                 </ContentSwitcher>
             </div>
