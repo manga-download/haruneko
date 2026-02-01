@@ -40,7 +40,7 @@
     let loadItem: Promise<MediaContainer<MediaChild>> = $state();
 
     $effect(() => {
-        updateMedia(UI.selectedMedia);
+        loadItem = updateMedia(UI.selectedMedia);
     });
 
     async function updateMedia( media: MediaContainer<MediaChild> ): Promise<MediaContainer<MediaChild>> {
