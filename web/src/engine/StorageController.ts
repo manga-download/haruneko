@@ -25,11 +25,17 @@ export function CreateStorageController(): StorageController {
  * Maximum length for a file/directory name to ensure compatibility across file systems.
  * Windows has a 260 character limit for the full path (MAX_PATH), so individual path segments
  * should be kept much shorter to allow for the full path structure.
- * We use 100 as a conservative limit to ensure the full path stays under 260 characters,
- * accounting for: base directory (~40), website (~20), manga title (100), chapter title (100), 
- * and file name (~10) = ~270 total. Additional trimming may be needed for very deep paths.
+ * We use 80 as a safe limit for the readable prefix. The hash suffix adds ~8 more characters.
  */
-const MAX_PATH_SEGMENT_LENGTH = 100;
+const MAX_PATH_SEGMENT_LENGTH = 80;
+
+/**
+ * Generates a short hash from a string using a simple hash algorithm.
+ * This is used to create unique identifiers for long filenames while keeping them short.
+ */
+function GenerateHash(text: string): string {
+    return text.split('').reduce((hash, c) => 31 * hash + c.charCodeAt(0) | 0, 0).toString(36);
+}
 
 export function SanitizeFileName(name: string, maxLength: number = MAX_PATH_SEGMENT_LENGTH): string {
     const lookup = {
@@ -55,12 +61,13 @@ export function SanitizeFileName(name: string, maxLength: number = MAX_PATH_SEGM
         .replace(/^\.{2,}/, ({ length }) => '․'.repeat(length)) // Must not begin with more than a single `.` dot
         || 'untitled';
 
-    // Truncate to maxLength if needed, ensuring we don't break in the middle of a multi-byte character
+    // If the sanitized name exceeds maxLength, use a prefix + hash approach to preserve uniqueness
+    // while staying within path limits. This keeps the filename readable while ensuring no collisions.
     if (sanitized.length > maxLength) {
-        // Truncate to maxLength - 1 to leave room for the ellipsis
-        sanitized = sanitized.substring(0, maxLength - 1);
-        // Add ellipsis to indicate truncation (total length will be maxLength)
-        sanitized = sanitized.trimEnd() + '…';
+        const hash = GenerateHash(sanitized);
+        const prefixLength = maxLength - hash.length - 1; // -1 for the separator
+        const prefix = sanitized.substring(0, prefixLength).trimEnd();
+        sanitized = `${prefix}_${hash}`;
     }
 
     return sanitized;
