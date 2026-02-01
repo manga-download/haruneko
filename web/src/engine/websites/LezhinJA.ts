@@ -106,7 +106,7 @@ export default class extends DecoratableMangaScraper {
         try {
             const { results } = await this.FetchAPI<APIPages>(`.${chapter.Parent.Identifier}/${type}/${id}/viewer`);
             return results.map(({ image_path: path }) => new Page(this, chapter, new URL(path)));
-        } catch { //in case of chapter unavailable error 400 is thrown :/
+        } catch { // in case of chapter unavailable error 400 is thrown :/
             throw new Exception(R.Plugin_Common_Chapter_UnavailableError);
         }
     }
