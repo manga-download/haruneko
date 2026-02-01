@@ -113,7 +113,6 @@ export default class extends DecoratableMangaScraper {
                 media_id: page.Parameters.mediaId,
                 quality: 'max-quality',
                 token: page.Parameters.token,
-                signal
             }), 'POST');
 
             const response = await Fetch(new Request(data, {
@@ -140,7 +139,7 @@ class DRMProvider {
     constructor(private readonly clientURI: URL, private readonly apiUrl: string) { }
 
     /**
-     * Get Crsf token needed for api directly from page cookies
+     * Get CSRF token needed for api directly from page cookies
      */
     public async UpdateToken() {
         try {
