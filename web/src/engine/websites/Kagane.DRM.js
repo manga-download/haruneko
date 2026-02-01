@@ -490,28 +490,26 @@ export class DRMProvider {
      * @returns {Promise<Blob>} - Decrypted image blob
      */
     async DecryptImage(bytes, parameters) {
-        try {
-            const { MangaID, ChapterID, PageNumber } = parameters;
-            const data = new Uint8Array(bytes);
-            
-            // Step 1: Decrypt the image
-            const decrypted = await this.decryptImage(data, MangaID, ChapterID);
-            if (!decrypted) {
-                throw new Error('Unable to decrypt data');
-            }
-            
-            // Step 2: Unscramble if needed
-            const unscrambled = this.processData(decrypted, PageNumber, MangaID, ChapterID);
-            if (!unscrambled) {
-                throw new Error('Unable to unscramble data');
-            }
-            
-            // Return as Blob
-            return new Blob([unscrambled], { type: 'application/octet-stream' });
-        } catch (error) {
-            console.error('DecryptImage error:', error);
-            return new Blob([], { type: 'application/octet-stream' });
+        const { MangaID, ChapterID, PageNumber } = parameters;
+        const data = new Uint8Array(bytes);
+        
+        // Step 1: Decrypt the image
+        const decrypted = await this.decryptImage(data, MangaID, ChapterID);
+        if (!decrypted) {
+            throw new Error('Unable to decrypt data');
         }
+        
+        // Step 2: Unscramble if needed
+        const unscrambled = this.processData(decrypted, PageNumber, MangaID, ChapterID);
+        if (!unscrambled) {
+            throw new Error('Unable to unscramble data');
+        }
+        
+        // Determine MIME type from image signature
+        const mimeType = this.getImageMimeType(unscrambled) || 'application/octet-stream';
+        
+        // Return as Blob with correct MIME type
+        return new Blob([unscrambled], { type: mimeType });
     }
     
     /**
@@ -618,32 +616,33 @@ export class DRMProvider {
     
     /**
      * Check if data is a valid image format
+     * @returns {string|null} MIME type if valid, null otherwise
      */
-    isValidImage(data) {
-        if (data.length < 2) return false;
+    getImageMimeType(data) {
+        if (data.length < 2) return null;
         
         // JPEG
-        if (data[0] === 0xFF && data[1] === 0xD8) return true;
-        
-        // GIF
-        if (data.length >= 6) {
-            const header = String.fromCharCode(...data.slice(0, 6));
-            if (header === 'GIF87a' || header === 'GIF89a') return true;
-        }
+        if (data[0] === 0xFF && data[1] === 0xD8) return 'image/jpeg';
         
         // PNG
         if (data.length >= 8) {
             if (data[0] === 0x89 && data[1] === 0x50 && data[2] === 0x4E && data[3] === 0x47 &&
                 data[4] === 0x0D && data[5] === 0x0A && data[6] === 0x1A && data[7] === 0x0A) {
-                return true;
+                return 'image/png';
             }
+        }
+        
+        // GIF
+        if (data.length >= 6) {
+            const header = String.fromCharCode(...data.slice(0, 6));
+            if (header === 'GIF87a' || header === 'GIF89a') return 'image/gif';
         }
         
         // WEBP
         if (data.length >= 12) {
             if (data[0] === 0x52 && data[1] === 0x49 && data[2] === 0x46 && data[3] === 0x46 &&
                 data[8] === 0x57 && data[9] === 0x45 && data[10] === 0x42 && data[11] === 0x50) {
-                return true;
+                return 'image/webp';
             }
         }
         
@@ -652,20 +651,27 @@ export class DRMProvider {
             const ftyp = String.fromCharCode(...data.slice(4, 8));
             if (ftyp === 'ftyp') {
                 const type = String.fromCharCode(...data.slice(8, 11));
-                if (type === 'hei' || type === 'hev' || type === 'avi') return true;
+                if (type === 'hei' || type === 'hev' || type === 'avi') return 'image/heif';
             }
         }
         
         // JXL
-        if (data[0] === 0xFF && data[1] === 0x0A) return true;
+        if (data[0] === 0xFF && data[1] === 0x0A) return 'image/jxl';
         if (data.length >= 12) {
             if (data[0] === 0 && data[1] === 0 && data[2] === 0 && data[3] === 12 &&
                 data[4] === 0x4A && data[5] === 0x58 && data[6] === 0x4C && data[7] === 0x20) {
-                return true;
+                return 'image/jxl';
             }
         }
         
-        return false;
+        return null;
+    }
+    
+    /**
+     * Check if data is a valid image format (legacy compatibility)
+     */
+    isValidImage(data) {
+        return this.getImageMimeType(data) !== null;
     }
     
     /**
@@ -682,6 +688,8 @@ export class DRMProvider {
     
     /**
      * Format page index as filename (e.g., 0 -> "0001.jpg")
+     * Note: The extension .jpg is used as a default since the scrambling
+     * algorithm from the Kotlin implementation uses this format
      */
     formatIndex(index) {
         return String(index + 1).padStart(4, '0') + '.jpg';
