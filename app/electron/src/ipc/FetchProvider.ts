@@ -41,11 +41,18 @@ export class FetchProvider {
         const originalCookieHeaderName = Object.keys(headers).find(header => header.toLowerCase() === normalizedCookieHeaderName) ?? normalizedCookieHeaderName;
         const headerCookies = headers[originalCookieHeaderName]?.split(';').filter(cookie => cookie.includes('=')).map(cookie => cookie.trim()) ?? [];
 
-        // Filter cookies by domain (instead of URL) to include partitioned cookies (e.g., cf_clearance)
-        // URL-based filtering excludes partitioned cookies, but domain-based filtering includes them
+        // Get all cookies without filtering to include partitioned cookies (e.g., cf_clearance)
+        // URL-based filtering in Chromium 126+ excludes partitioned cookies
+        // We manually apply RFC 6265 domain/path/secure matching below
         const urlObj = new URL(url);
-        const allCookies = await this.webContents.session.cookies.get({ domain: urlObj.hostname });
+        const allCookies = await this.webContents.session.cookies.get({});
         const browserCookies = allCookies.filter(cookie => {
+            // Apply RFC 6265 domain matching
+            // Cookie domain ".example.com" or "example.com" should match "www.example.com"
+            const cookieDomain = cookie.domain.startsWith('.') ? cookie.domain.substring(1) : cookie.domain;
+            const urlHostname = urlObj.hostname;
+            const domainMatches = urlHostname === cookieDomain || urlHostname.endsWith('.' + cookieDomain);
+
             // Apply RFC 6265 path matching: cookie path must be a prefix of URL path
             // and either match exactly or be followed by '/'
             const pathMatches = urlObj.pathname === cookie.path ||
@@ -55,7 +62,7 @@ export class FetchProvider {
             // Check if cookie's secure flag is compatible with URL protocol
             const secureMatches = !cookie.secure || urlObj.protocol === 'https:';
 
-            return pathMatches && secureMatches;
+            return domainMatches && pathMatches && secureMatches;
         });
 
         for(const browserCookie of browserCookies) {
