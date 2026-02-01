@@ -9,8 +9,7 @@ export default class extends ComiciViewer {
 
     public constructor() {
         super('jenta', 'J-Enta', 'https://comic.j-nbooks.jp/', Tags.Media.Manga, Tags.Language.Japanese, Tags.Source.Official);
-        this.apiUrl = new URL('https://comic.j-nbooks.jp/api/');
-        this.useNewAPI = true;
+        this.WithEndpointAPI('/api/').WithChaptersFromAPI();
     }
 
     public override get Icon() {

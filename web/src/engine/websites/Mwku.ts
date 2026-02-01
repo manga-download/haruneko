@@ -15,12 +15,13 @@ type APIPages = {
 @Common.MangaCSS(/^{origin}\/comic\/\d+$/, 'h2.comic-title')
 @Common.MangasMultiPageCSS<HTMLAnchorElement>('div#dataList div.item a', Common.PatternLinkGenerator('/cate/{page}'), 0,
     anchor => ({ id: anchor.pathname, title: anchor.querySelector<HTMLDivElement>('div.title').textContent.trim() }))
-@Common.ChaptersSinglePageJS(`[...document.querySelectorAll('a.chapter-item')].map( chapter => { return {id: chapter.pathname, title : chapter.dataset.title.trim()}})`, 500)
+@Common.ChaptersSinglePageCSS<HTMLAnchorElement>('#chapter-grid-container > a.chapter-item', undefined,
+    anchor => ({ id: anchor.pathname, title: anchor.dataset.title.trim() }))
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('mwku', 'Mwku', 'https://www.mwmi.cc', Tags.Language.Chinese, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Source.Aggregator);
+        super('mwku', 'Mwku', 'https://www.mwpu.cc', Tags.Language.Chinese, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Source.Aggregator);
     }
 
     public override get Icon() {
