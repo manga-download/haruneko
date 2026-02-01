@@ -297,6 +297,7 @@ export { default as LilyumFansub } from './LilyumFansub';
 export { default as LineWebtoon } from './LineWebtoon';
 export { default as LoversToon } from './LoversToon';
 export { default as LumosKomik } from './LumosKomik';
+export { default as LunarAnimes } from './LunarAnimes';
 export { default as LunaScans } from './LunaScans';
 export { default as LupiTeam } from './LupiTeam';
 export { default as Luscious } from './Luscious';
