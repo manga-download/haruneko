@@ -21,7 +21,31 @@ export function CreateStorageController(): StorageController {
     return new StorageControllerBrowser();
 }
 
-export function SanitizeFileName(name: string): string {
+/**
+ * Maximum length for a file/directory name to ensure compatibility across file systems.
+ * Windows has a 260 character limit for the full path (MAX_PATH), so individual path segments
+ * should be kept much shorter to allow for the full path structure.
+ * We use 80 as a safe limit for the readable prefix. The hash suffix adds ~8 more characters.
+ */
+const MAX_PATH_SEGMENT_LENGTH = 80;
+
+/**
+ * Generates a short hash from a string using a simple hash algorithm.
+ * This is used to create unique identifiers for long filenames while keeping them short.
+ * Uses codePointAt to properly handle Unicode characters including emoji.
+ */
+function GenerateHash(text: string): string {
+    let hash = 0;
+    for (let i = 0; i < text.length; i++) {
+        const code = text.codePointAt(i) ?? 0;
+        hash = ((31 * hash + code) | 0) >>> 0;
+        // Skip the next code unit if this was a surrogate pair
+        if (code > 0xFFFF) i++;
+    }
+    return hash.toString(36);
+}
+
+export function SanitizeFileName(name: string, maxLength: number = MAX_PATH_SEGMENT_LENGTH): string {
     const lookup = {
         '<': '＜', // https://unicode-table.com/en/FF1C/
         '>': '＞', // https://unicode-table.com/en/FF1E/
@@ -36,7 +60,7 @@ export function SanitizeFileName(name: string): string {
     };
 
     // TODO: Reserved names? => CON, PRN, AUX, NUL, COM1, LPT1
-    return name
+    let sanitized = name
         .replace(/[\u0000-\u001F\u007F-\u009F]/gu, '') // https://en.wikipedia.org/wiki/C0_and_C1_control_codes
         .replace(/./g, c => lookup[c] ?? c)
         .replace(/\s+$/, '')
@@ -44,6 +68,17 @@ export function SanitizeFileName(name: string): string {
         .replace(/\.+$/, ({ length }) => '․'.repeat(length)) // Must not end with a `.` dot
         .replace(/^\.{2,}/, ({ length }) => '․'.repeat(length)) // Must not begin with more than a single `.` dot
         || 'untitled';
+
+    // If the sanitized name exceeds maxLength, use a prefix + hash approach to preserve uniqueness
+    // while staying within path limits. This keeps the filename readable while ensuring no collisions.
+    if (sanitized.length > maxLength) {
+        const hash = GenerateHash(sanitized);
+        const prefixLength = maxLength - hash.length - 1; // -1 for the separator
+        const prefix = sanitized.substring(0, prefixLength).trimEnd();
+        sanitized = `${prefix}_${hash}`;
+    }
+
+    return sanitized;
 }
 
 /*
