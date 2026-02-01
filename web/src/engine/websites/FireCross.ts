@@ -55,7 +55,7 @@ export default class extends DecoratableMangaScraper {
             }).toString()
         }));
 
-        const fakechapter = new Chapter(this, chapter.Parent as Manga, redirect, chapter.Title);
-        return (await ClipStudioReader.FetchPagesSinglePageAJAX.call(this, fakechapter)).map(page => new Page(this, chapter, page.Link, page.Parameters));
+        const fakeChapter = new Chapter(this, chapter.Parent as Manga, redirect, chapter.Title);
+        return (await ClipStudioReader.FetchPagesSinglePageAJAX.call(this, fakeChapter)).map(page => new Page(this, chapter, page.Link, page.Parameters));
     }
 }
