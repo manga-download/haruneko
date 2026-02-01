@@ -67,10 +67,18 @@ apps:
     - network
     - network-bind
     - browser-support
+    - desktop
+    - desktop-legacy
+    - wayland
+    - x11
     environment:
       # Correct the TMPDIR path for Chromium Framework/Electron to ensure
       # libappindicator has readable resources.
       TMPDIR: $XDG_RUNTIME_DIR
+      # Force Electron to use system file picker via XDG portals
+      ELECTRON_OZONE_PLATFORM_HINT: auto
+      # Ensure GTK/Qt file dialogs work properly
+      GTK_USE_PORTAL: 1
 
 parts:
   ${pkgConfig.name}:
