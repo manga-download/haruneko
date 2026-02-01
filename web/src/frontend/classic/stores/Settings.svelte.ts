@@ -1,7 +1,7 @@
 
 import {LocaleID, FrontendResourceKey as R } from '../../../i18n/ILocale';
 import { Check, Choice, Numeric} from '../../../engine/SettingsManager';
-import { LoadSettingStore, SettingCountStore, SettingPersistantStore } from './storesHelpers.svelte';
+import { LoadSettingStore, SettingCountStore, SettingPersistentStore } from './storesHelpers.svelte';
 import { Key as GlobalKey, Scope as GlobalScope } from '../../../engine/SettingsGlobal';
 import { GetLocale } from '../../../i18n/Localization';
 
@@ -56,7 +56,7 @@ export async function Initialize(): Promise<void> {
 }
 
 class UIClassicStore {
-    Theme= new SettingPersistantStore<string, Choice>(new Choice(
+    Theme= new SettingPersistentStore<string, Choice>(new Choice(
         Key.Theme,
         R.Frontend_Classic_Settings_Theme,
         R.Frontend_Classic_Settings_ThemeInfo,
@@ -69,35 +69,35 @@ class UIClassicStore {
         { key: Key.Theme_SheepyNeko, label: R.Frontend_Classic_Settings_Theme_SheepyNeko },
     ));
 
-    ContentPanel = new SettingPersistantStore<boolean, Check>(new Check(
+    ContentPanel = new SettingPersistentStore<boolean, Check>(new Check(
         Key.ContentPanel,
         R.Frontend_Classic_Settings_ContentPanel,
         R.Frontend_Classic_Settings_ContentPanelInfo,
         true
     ));
 
-    SidenavTrail = new SettingPersistantStore<boolean, Check>(new Check(
+    SidenavTrail = new SettingPersistentStore<boolean, Check>(new Check(
         Key.SidenavTrail,
         R.Frontend_Classic_Settings_SidenavTrail,
         R.Frontend_Classic_Settings_SidenavTrailInfo,
         true
     ));
 
-    SidenavIconsOnTop = new SettingPersistantStore<boolean, Check>(new Check(
+    SidenavIconsOnTop = new SettingPersistentStore<boolean, Check>(new Check(
         Key.SidenavIconsOnTop,
         R.Frontend_Classic_Settings_SidenavIconsOnTop,
         R.Frontend_Classic_Settings_SidenavIconsOnTopInfo,
         false
     ));
 
-    FuzzySearch= new SettingPersistantStore<boolean, Check>(new Check(
+    FuzzySearch= new SettingPersistentStore<boolean, Check>(new Check(
         Key.FuzzySearch,
         R.Frontend_Classic_Settings_FuzzySearch,
         R.Frontend_Classic_Settings_FuzzySearchInfo,
         false
     ));
 
-    ViewerMode = new SettingPersistantStore<string, Choice>(new Choice(
+    ViewerMode = new SettingPersistentStore<string, Choice>(new Choice(
         Key.ViewerMode,
         R.Frontend_Classic_Settings_ViewerMode,
         R.Frontend_Classic_Settings_ViewerModeInfo,
@@ -106,14 +106,14 @@ class UIClassicStore {
         { key: Key.ViewerMode_Longstrip, label: R.Frontend_Classic_Settings_ViewerMode_Longstrip },
     ));
 
-    ViewerReverseDirection = new SettingPersistantStore<boolean, Check>( new Check(
+    ViewerReverseDirection = new SettingPersistentStore<boolean, Check>( new Check(
         Key.ViewerReverseDirection,
         R.Frontend_Classic_Settings_ViewerReverseDirection,
         R.Frontend_Classic_Settings_ViewerReverseDirectionInfo,
         false
     ));
 
-    ViewerDoublePage = new SettingPersistantStore<boolean, Check>(new Check(
+    ViewerDoublePage = new SettingPersistentStore<boolean, Check>(new Check(
         Key.ViewerDoublePage,
         R.Frontend_Classic_Settings_ViewerDoublePage,
         R.Frontend_Classic_Settings_ViewerDoublePageInfo,
@@ -123,7 +123,7 @@ class UIClassicStore {
     checkNewContent = LoadSettingStore<boolean, Check>(globalScopeSettings, GlobalKey.CheckNewContent);
 
 
-    // Non persistant settings
+    // Non Persistent settings
     /** Viewer **/
 
     ViewerZoom = new SettingCountStore(new Numeric(

@@ -79,7 +79,7 @@ export class SettingStore<V extends IValue, S extends ISetting<V>> {
  *
  * @extends SettingStore<V, S>
  */
-export class SettingPersistantStore<V extends IValue, S extends ISetting<V>> extends SettingStore<V,S> {
+export class SettingPersistentStore<V extends IValue, S extends ISetting<V>> extends SettingStore<V,S> {
 
 	constructor(setting: S) {
         super(setting);
