@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>org.hakuneko.HakuNeko</id>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>Unlicense</project_license>
+  <name>HakuNeko</name>
+  <summary>Manga, Anime &amp; Novel Downloader</summary>
+  <description>
+    <p>
+      HakuNeko is a cross-platform downloader for manga, anime and novels from various online platforms.
+      It allows you to download your favorite content for offline reading and viewing.
+    </p>
+    <p>
+      Features:
+    </p>
+    <ul>
+      <li>Support for hundreds of manga, anime and novel websites</li>
+      <li>Download entire series or individual chapters/episodes</li>
+      <li>Multiple output formats</li>
+      <li>Simple and intuitive user interface</li>
+    </ul>
+  </description>
+  <launchable type="desktop-id">org.hakuneko.HakuNeko.desktop</launchable>
+  <url type="homepage">https://hakuneko.download</url>
+  <url type="bugtracker">https://github.com/manga-download/haruneko/issues</url>
+  <url type="help">https://docs.hakuneko.download/user-manual/</url>
+  <developer_name>HakuNeko Development Team</developer_name>
+  <content_rating type="oars-1.1" />
+  <releases>
+    <release version="latest" date="2026-02-01">
+      <description>
+        <p>Latest development build with newest features and improvements.</p>
+      </description>
+    </release>
+  </releases>
+  <screenshots>
+    <screenshot type="default">
+      <caption>Main application window</caption>
+    </screenshot>
+  </screenshots>
+</component>
