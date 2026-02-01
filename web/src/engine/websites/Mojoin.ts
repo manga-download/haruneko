@@ -50,7 +50,7 @@ type PageParameters = {
 };
 
 export default class extends DecoratableMangaScraper {
-    private readonly drmProvider : DRMProvider;
+    private readonly drmProvider: DRMProvider;
     private readonly apiUrl = 'https://mojoin-api.com/';
 
     public constructor() {
@@ -102,7 +102,7 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchImage(page: Page<PageParameters>, priority: Priority, signal: AbortSignal): Promise<Blob> {
         const blob = await Common.FetchImageAjax.call(this, page, priority, signal);
-        return this.drmProvider.DecrypImage(blob, page.Parameters.keyData);
+        return this.drmProvider.DecryptImage(blob, page.Parameters.keyData);
     }
 }
 
@@ -110,9 +110,9 @@ export default class extends DecoratableMangaScraper {
  * A basic DRM manager with Mojoin specific business logic
  */
 class DRMProvider {
-
-    #token: TokenData = null;
-    #aesParams: AESParams = null;
+    #defaultToken = { uuid: '', access_token: '' };
+    #token: TokenData = this.#defaultToken;
+    #aesParams: AESParams = { iv: '', key: '' };
 
     constructor(private readonly clientURI: URL) { }
 
@@ -125,7 +125,7 @@ class DRMProvider {
             this.#aesParams = await this.ComputeAESParams(this.#token.access_token ?? 'freereadingcomicstar');
         } catch (error) {
             console.warn('UpdateToken()', error);
-            this.#token = null;
+            this.#token = this.#defaultToken;
             this.#aesParams = await this.ComputeAESParams('freereadingcomicstar');
         }
     }
@@ -146,7 +146,7 @@ class DRMProvider {
     /**
      * Decrypt Image data from image blob using provider key (in base64)
      */
-    public async DecrypImage(blob: Blob, base64KeyData: string): Promise<Blob>{
+    public async DecryptImage(blob: Blob, base64KeyData: string): Promise<Blob> {
         const aesParamsData = await this.Decrypt(GetBytesFromBase64(base64KeyData).buffer, this.#aesParams.key, this.#aesParams.iv);
         const [imageKey, imageIv] = aesParamsData.split(':');
         const decryptedBase64ImageData = await this.Decrypt(await blob.arrayBuffer(), imageKey, imageIv);
