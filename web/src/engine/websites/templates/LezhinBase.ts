@@ -20,6 +20,8 @@ function ChapterExtractor(anchor: HTMLAnchorElement) {
 }
 
 function LoginScript(username: string, password: string,): string {
+    const safeUsername = JSON.stringify(username);
+    const safePassword = JSON.stringify(password);
     return `
         new Promise(async (resolve, reject) => {
             try {
@@ -27,8 +29,8 @@ function LoginScript(username: string, password: string,): string {
                 else {
                     const form = document.querySelector('form[class^="login"]');
                     const body = JSON.stringify({
-                        email :  '${username}',
-                        password: '${password}',
+                        email :  '${safeUsername}',
+                        password: '${safePassword}',
                         remember: 'false',
                         provider: 'email',
                         language: JSON.stringify(window.location.pathname.split('/').at(1))
@@ -218,7 +220,7 @@ export class LezhinBase extends DecoratableMangaScraper {
         parameters.subscribed = subscribed;
 
         const extension = this.Settings.forceJPEG.Value ? '.jpg' : '.webp';
-        return (pagesInfo ?? scrollsInfo).map(({path }) => new Page<EpisodeParameters>(this, chapter, new URL(`/v2${path}${extension}`, this.cdnURI), parameters));
+        return (pagesInfo ?? scrollsInfo).map(({ path }) => new Page<EpisodeParameters>(this, chapter, new URL(`/v2${path}${extension}`, this.cdnURI), parameters));
     }
 
     public override async FetchImage(page: Page<EpisodeParameters>, priority: Priority, signal: AbortSignal): Promise<Blob> {
@@ -323,7 +325,7 @@ class TokenProvider {
         this.#language = language;
     }
 
-    public IsLogged(): boolean {
+    get IsLogged(): boolean {
         return !!this.#userID;
     }
 
@@ -335,11 +337,11 @@ class TokenProvider {
 
     public async LoginAttempt(): Promise<void> {
         //if token is defined , or we miss credential infos there is nothing to do.
-        if (this.IsLogged() || !this.#username || !this.#password) {
+        if (this.IsLogged || !this.#username || !this.#password) {
             return;
         }
-        const password = this.#password.replaceAll("'", "\\'");//Escape password because its injected between single quotes
-        const logindata = await FetchWindowScript<LoginResult>(new Request(new URL(`./${this.#language}/login`, this.baseUrl)), LoginScript(this.#username, password), 1500);
+
+        const logindata = await FetchWindowScript<LoginResult>(new Request(new URL(`./${this.#language}/login`, this.baseUrl)), LoginScript(this.#username, this.#password), 1500);
 
         if (logindata?.appConfig) {
             this.#token = logindata.appConfig.accessToken;
