@@ -26,11 +26,6 @@ type APIPages = {
     };
 };
 
-type ChapterID = {
-    chapterNumber: number;
-    language: string;
-};
-
 const chapterLanguageMap = new Map([
     ['zh', Tags.Language.Chinese],
     ['en', Tags.Language.English],
@@ -49,7 +44,7 @@ const chapterLanguageMap = new Map([
 @Common.MangaCSS<HTMLMetaElement>(/^{origin}\/manga\/[^/]+$/, 'meta[property="og:title"]', (element, uri) => ({ id: uri.pathname.split('/').at(-1), title: element.content.trim() }))
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
-    private readonly apiUrl = 'https://api.lunaranime.ru/api/';
+    private readonly apiUrl = 'https://api.lunaranime.ru/api/manga/';
 
     public constructor() {
         super('lunaranimes', 'Lunar Animes', 'https://lunaranime.ru', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Multilingual, Tags.Source.Aggregator);
@@ -60,21 +55,20 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        const { manga } = await FetchJSON<APIMangas>(new Request(new URL('./manga/search?', this.apiUrl)));
+        const { manga } = await FetchJSON<APIMangas>(new Request(new URL('./search?', this.apiUrl)));
         return manga.map(({ slug, title }) => new Manga(this, provider, slug, title));
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const { data } = await FetchJSON<APIChapters>(new Request(new URL(`./manga/${manga.Identifier}`, this.apiUrl)));
+        const { data } = await FetchJSON<APIChapters>(new Request(new URL(`./${manga.Identifier}`, this.apiUrl)));
         return data.map(({ chapter_number: chapterNumber, language }) => {
-            return new Chapter(this, manga, JSON.stringify({ language, chapterNumber }), `Chapter ${ chapterNumber } (${language})`,
+            return new Chapter(this, manga, `./${manga.Identifier}/${chapterNumber}?language=${language}`, `Chapter ${chapterNumber} (${language})`,
                 ...chapterLanguageMap.has(language) ? [chapterLanguageMap.get(language)] : []);
         });
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const { chapterNumber, language }: ChapterID = JSON.parse(chapter.Identifier);
-        const { data: { images } } = await FetchJSON<APIPages>(new Request(new URL(`./manga/${chapter.Parent.Identifier}/${chapterNumber}?language=${language}`, this.apiUrl)));
+        const { data: { images } } = await FetchJSON<APIPages>(new Request(new URL(chapter.Identifier, this.apiUrl)));
         return images.map(page => new Page(this, chapter, new URL(page)));
     }
 }
