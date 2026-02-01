@@ -1,4 +1,4 @@
-﻿import { Tags } from '../Tags';
+import { Tags } from '../Tags';
 import icon from './LezhinJA.webp';
 import { Chapter, DecoratableMangaScraper, Manga, type MangaPlugin, Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
