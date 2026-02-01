@@ -32,9 +32,17 @@ const MAX_PATH_SEGMENT_LENGTH = 80;
 /**
  * Generates a short hash from a string using a simple hash algorithm.
  * This is used to create unique identifiers for long filenames while keeping them short.
+ * Uses codePointAt to properly handle Unicode characters including emoji.
  */
 function GenerateHash(text: string): string {
-    return text.split('').reduce((hash, c) => 31 * hash + c.charCodeAt(0) | 0, 0).toString(36);
+    let hash = 0;
+    for (let i = 0; i < text.length; i++) {
+        const code = text.codePointAt(i) ?? 0;
+        hash = ((31 * hash + code) | 0) >>> 0;
+        // Skip the next code unit if this was a surrogate pair
+        if (code > 0xFFFF) i++;
+    }
+    return hash.toString(36);
 }
 
 export function SanitizeFileName(name: string, maxLength: number = MAX_PATH_SEGMENT_LENGTH): string {

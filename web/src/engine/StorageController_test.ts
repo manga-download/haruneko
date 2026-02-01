@@ -64,6 +64,17 @@ describe('StorageController', () => {
             expect(result).toContain('_');
         });
 
+        it('Should prevent collisions for titles with same prefix but different suffixes', () => {
+            // Two titles that share the same 80-character prefix but differ later
+            const commonPrefix = 'a'.repeat(70);
+            const title1 = commonPrefix + ' Part 1 Extra Content That Makes It Different';
+            const title2 = commonPrefix + ' Part 2 Extra Content That Makes It Different';
+            const result1 = SanitizeFileName(title1, 80);
+            const result2 = SanitizeFileName(title2, 80);
+            // Even though they share the same prefix, the hash should be different
+            expect(result1).not.toBe(result2);
+        });
+
         it('Should preserve uniqueness with hash suffix for similar long names', () => {
             const name1 = 'Very Long Manga Title That Exceeds The Limit Part 1 Chapter 1 Volume 1';
             const name2 = 'Very Long Manga Title That Exceeds The Limit Part 2 Chapter 1 Volume 1';
