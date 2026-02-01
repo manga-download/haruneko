@@ -30,7 +30,7 @@ function CleanTitle(title: string): string {
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('mangaplaza', `MangaPlaza`, ' https://mangaplaza.com', Tags.Language.Japanese, Tags.Media.Manga, Tags.Source.Official);
+        super('mangaplaza', `MangaPlaza`, 'https://mangaplaza.com', Tags.Language.Japanese, Tags.Media.Manga, Tags.Source.Official);
     }
 
     public override get Icon() {
