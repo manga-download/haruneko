@@ -179,11 +179,13 @@ class Scrambler {
             graph.set(i, []);
         }
         
-        const rng = new Randomizer(this.seed, this.gridSize);
+        // Reuse the existing randomizer instance for consistency
+        const rng = this.randomizer;
         
         // Build random dependencies
         for (let node = 0; node < this.totalPieces; node++) {
-            const numDeps = Number((rng.prng() % BigInt(3)) + BigInt(2)); // 2-4 dependencies
+            // Generate 2-4 dependencies per node (modulo 3 gives 0-2, adding 2 gives 2-4)
+            const numDeps = Number((rng.prng() % BigInt(3)) + BigInt(2));
             
             for (let j = 0; j < numDeps; j++) {
                 const target = Number(rng.prng() % BigInt(this.totalPieces));
@@ -447,16 +449,8 @@ export class ImageDecryption {
         const chunkSize = Math.floor(dataSize / numChunks);
         const remainder = dataSize % numChunks;
         
-        let remainderBytes: Uint8Array;
-        let mainData: Uint8Array;
-        
-        if (forward) {
-            remainderBytes = remainder > 0 ? data.slice(0, remainder) : new Uint8Array(0);
-            mainData = remainder > 0 ? data.slice(remainder) : data;
-        } else {
-            remainderBytes = remainder > 0 ? data.slice(dataSize - remainder) : new Uint8Array(0);
-            mainData = remainder > 0 ? data.slice(0, dataSize - remainder) : data;
-        }
+        // Separate remainder and main data based on direction
+        const { remainderBytes, mainData } = this.splitDataByRemainder(data, remainder, forward);
         
         // Split data into chunks
         const chunks: Uint8Array[] = [];
@@ -467,7 +461,39 @@ export class ImageDecryption {
         }
         
         // Apply mapping
+        const reordered = this.applyMapping(chunks, mapping, numChunks, forward);
+        
+        // Reconstruct data
+        return this.reconstructData(reordered, remainderBytes, forward);
+    }
+    
+    /**
+     * Split data into remainder and main chunks
+     */
+    private splitDataByRemainder(data: Uint8Array, remainder: number, forward: boolean): { remainderBytes: Uint8Array; mainData: Uint8Array } {
+        if (remainder === 0) {
+            return { remainderBytes: new Uint8Array(0), mainData: data };
+        }
+        
+        if (forward) {
+            return {
+                remainderBytes: data.slice(0, remainder),
+                mainData: data.slice(remainder)
+            };
+        } else {
+            return {
+                remainderBytes: data.slice(data.length - remainder),
+                mainData: data.slice(0, data.length - remainder)
+            };
+        }
+    }
+    
+    /**
+     * Apply scramble mapping to chunks
+     */
+    private applyMapping(chunks: Uint8Array[], mapping: [number, number][], numChunks: number, forward: boolean): Uint8Array[] {
         const reordered = new Array<Uint8Array>(numChunks);
+        
         if (forward) {
             for (const [from, to] of mapping) {
                 if (from < numChunks && to < numChunks) {
@@ -482,21 +508,29 @@ export class ImageDecryption {
             }
         }
         
-        // Reconstruct data
-        const totalSize = reordered.reduce((acc, chunk) => acc + chunk.length, 0) + remainderBytes.length;
+        return reordered;
+    }
+    
+    /**
+     * Reconstruct data from chunks and remainder
+     */
+    private reconstructData(chunks: Uint8Array[], remainderBytes: Uint8Array, forward: boolean): Uint8Array {
+        const totalSize = chunks.reduce((acc, chunk) => acc + chunk.length, 0) + remainderBytes.length;
         const result = new Uint8Array(totalSize);
         
         let offset = 0;
         if (forward) {
-            for (const chunk of reordered) {
+            // Chunks first, then remainder
+            for (const chunk of chunks) {
                 result.set(chunk, offset);
                 offset += chunk.length;
             }
             result.set(remainderBytes, offset);
         } else {
+            // Remainder first, then chunks
             result.set(remainderBytes, 0);
             offset = remainderBytes.length;
-            for (const chunk of reordered) {
+            for (const chunk of chunks) {
                 result.set(chunk, offset);
                 offset += chunk.length;
             }
