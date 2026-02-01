@@ -1,4 +1,4 @@
-//Portuguese? template using JSZIP to extract chapter pages from zip files
+// template using JSZIP to extract chapter pages from zip files
 
 import JSZip from 'jszip';
 import { Fetch, FetchHTML } from '../../platform/FetchProvider';
