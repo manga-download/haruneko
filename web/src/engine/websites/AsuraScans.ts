@@ -1,9 +1,41 @@
-import { FetchWindowScript } from '../platform/FetchProvider';
-import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import { Tags } from '../Tags';
 import icon from './AsuraScans.webp';
+import { type Chapter, DecoratableMangaScraper, Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import * as MangaStream from './decorators/WordPressMangaStream';
+import { Fetch, FetchJSON, FetchNextJS, FetchWindowScript } from '../platform/FetchProvider';
+import type { Priority } from '../taskpool/DeferredTask';
+
+type APIResult<T> = {
+    success: boolean;
+    data: T;
+};
+
+type HydratedPages = {
+    chapter: {
+        id: number;
+        pages: {
+            url: string;
+        }[];
+    }
+};
+
+type APIPages = APIResult<{
+    unlock_token: string;
+    pages: {
+        id?: number;
+        url?: string;
+    }[]
+}>
+
+type APIMedia = {
+    data: string;
+};
+
+type PageParameters = {
+    chapterId: number;
+    mediaId: number;
+    token: string;
+};
 
 const excludes = [
     /panda_gif_large/i,
@@ -24,31 +56,19 @@ const chapterScript = `
     });
 `;
 
-const pagesScript = `[... document.querySelectorAll('div.items-center div div.center img')].map(image=> image.src);`;
-
-function MangaLinkExtractor(title: HTMLTitleElement, uri: URL) {
-    return {
-        id: uri.pathname.replace(/-[^-]+$/, '-'),
-        title: title.innerText.replace(/-[^-]+$/, '').trim(),
-    };
-}
-
-function MangaInfoExtractor(anchor: HTMLAnchorElement) {
-    return {
+@Common.MangaCSS(/^{origin}\/series\/[^/]+$/, 'head title', (element, uri) => ({ id: uri.pathname.replace(/-[^-]+$/, '-'), title: element.innerText.replace(/-[^-]+$/, '').trim() }))
+@Common.MangasMultiPageCSS<HTMLAnchorElement>('div.grid a', Common.PatternLinkGenerator('/series?page={page}'), 0,
+    anchor => ({
         id: anchor.pathname.replace(/-[^-]+$/, '-'),
-        title: anchor.querySelector('div.items-center span.font-bold').textContent.trim()
-    };
-}
-
-@Common.MangaCSS(/^{origin}\/series\/[^/]+$/, 'head title', MangaLinkExtractor)
-@Common.MangasMultiPageCSS('div.grid a', Common.PatternLinkGenerator('/series?page={page}'), 0, MangaInfoExtractor)
+        title: anchor.querySelector<HTMLDivElement>('div.items-center span.font-bold').textContent.trim()
+    }))
 @Common.ChaptersSinglePageJS(chapterScript, 500)
-@MangaStream.PagesSinglePageJS(excludes, pagesScript, 1000)
-@Common.ImageAjax(true)
 export default class extends DecoratableMangaScraper {
+    private readonly drmProvider: DRMProvider;
 
     public constructor() {
         super('asurascans', 'Asura Scans', 'https://asuracomic.net', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.English, Tags.Source.Scanlator);
+        this.drmProvider = new DRMProvider(this.URI, 'https://gg.asuracomic.net/api/');
     }
 
     public override get Icon() {
@@ -56,7 +76,115 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async Initialize(): Promise<void> {
-        this.URI.href = await FetchWindowScript<string>(new Request(this.URI), 'window.location.origin');
+        this.URI.href = await FetchWindowScript<string>(new Request(this.URI), `window.cookieStore.set('imageQuality', JSON.stringify({'HD': true}));window.location.origin;`);
         console.log(`Assigned URL '${this.URI}' to ${this.Title}`);
+        await this.drmProvider.UpdateToken();
+    }
+
+    public override ValidateMangaURL(url: string): boolean {
+        return new RegExpSafe(`^${this.URI.origin}/series/[^/]+$`).test(url);
+    }
+
+    public override async FetchPages(chapter: Chapter): Promise<Page<PageParameters>[]> {
+        const { chapter: { id: chapterId, pages: chapterPages } } = await FetchNextJS<HydratedPages>(new Request(new URL(chapter.Identifier, this.URI)), data => 'chapter' in data);
+        if (chapterPages.length > 0) {
+            return this.FilterPages(chapterPages.map(({ url }) => new Page(this, chapter, new URL(url))));
+        };
+
+        //pages is empty, chapter may be early access : try to get pages id and unlock token
+        const { data: { unlock_token, pages } } = await this.drmProvider.FetchAPI<APIPages>('./chapter/max-quality', JSON.stringify({ chapterId }), 'POST');
+
+        //if unlock_token is undefined, we have the direct page url
+        if (!unlock_token) {
+            return this.FilterPages(pages.map(({ url }) => new Page(this, chapter, new URL(url))));
+        } else {
+            //otherwise FetchImage will have to request real image url
+            return pages.map(({ id }) => new Page<PageParameters>(this, chapter, new URL(this.URI), { chapterId, mediaId: id, token: unlock_token }));
+        }
+    }
+
+    public override async FetchImage(page: Page<PageParameters>, priority: Priority, signal: AbortSignal): Promise<Blob> {
+        if (!page.Parameters) return Common.FetchImageAjax.call(this, page, priority, signal);
+        return this.imageTaskPool.Add(async () => {
+
+            //get real image url :
+            const { data } = await this.drmProvider.FetchAPI<APIMedia>('./media', JSON.stringify({
+                chapter_id: page.Parameters.chapterId,
+                media_id: page.Parameters.mediaId,
+                quality: 'max-quality',
+                token: page.Parameters.token,
+            }), 'POST');
+
+            const response = await Fetch(new Request(data, {
+                signal: signal,
+                headers: {
+                    Referer: this.URI.href
+                }
+            }));
+            return response.blob();
+        }, priority, signal);
+    }
+
+    private FilterPages(pages: Page<PageParameters>[]): Page<PageParameters>[] {
+        return pages.filter(page => excludes.none(pattern => pattern.test(page.Link.pathname)));
+    }
+}
+
+/**
+ * A basic oAuth token manager with AsuraScans specific business logic
+ */
+class DRMProvider {
+    #crsfToken: string = null;
+
+    constructor(private readonly clientURI: URL, private readonly apiUrl: string) { }
+
+    /**
+     * Get CSRF token needed for api directly from page cookies
+     */
+    public async UpdateToken() {
+        try {
+            this.#crsfToken = await FetchWindowScript<string>(new Request(this.clientURI), `
+               new Promise(async (resolve, reject) => {
+                   try {
+                       resolve(decodeURIComponent((await window.cookieStore.get('XSRF-TOKEN'))?.value));
+                   }
+                   catch {
+                       reject();
+                   }
+               });
+            `);
+        } catch (error) {
+            console.warn('UpdateToken()', error);
+            this.#crsfToken = null;
+        }
+    }
+
+    /**
+     * Determine the crsfToken extracted from the current token and add it as authorization header to the given {@link init} headers (replacing any existing authorization header).
+     * In case the crsfToken could not be extracted from the current token the authorization header will not be added/replaced.
+     */
+    private async ApplyToken(init: HeadersInit): Promise<HeadersInit> {
+        const headers = new Headers(init);
+        if (this.#crsfToken) {
+            //await this.RefreshToken();
+            headers.set('x-xsrf-token', this.#crsfToken);
+        }
+        return headers;
+    }
+
+    public async FetchAPI<T extends JSONElement>(endpoint: string, body: string = undefined, method: string = 'GET') {
+        const request = new Request(new URL(endpoint, this.apiUrl), {
+            method,
+            credentials: 'include',
+            body: body ? body : null,
+            headers: await this.ApplyToken({
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest',
+                Referer: this.clientURI.href,
+                Origin: this.clientURI.origin
+            }),
+        });
+        return FetchJSON<T>(request);
     }
 }
