@@ -57,7 +57,7 @@ export class PeachScan extends DecoratableMangaScraper {
         }, priority, signal);
     }
 
-    private ExtractNumber(fileName): number {
+    private ExtractNumber(fileName: string): number {
         return parseInt(fileName.split(".")[0]);
     }
 }
