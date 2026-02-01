@@ -55,8 +55,8 @@ type IvAndKey = {
 
 export default class extends DecoratableMangaScraper {
     private readonly apiUrl = 'https://api.creative-comic.tw';
-    private uuid: string = undefined;
-    private accessToken: string;
+    private uuid: string = '';
+    private accessToken: string = 'freeforccc2020reading';
 
     public constructor() {
         super('creativecomic', 'Creative Comic', 'https://www.creative-comic.tw', Tags.Media.Manhua, Tags.Language.Chinese, Tags.Source.Official);
