@@ -60,7 +60,7 @@ async function OpenWindow() {
     // Fallback: Show window after 10 seconds if web app hasn't shown it
     // This ensures the window is visible even if the web app fails to load
     let showTimeout: ReturnType<typeof setTimeout> | null = setTimeout(() => {
-        if(!win.isVisible) {
+        if(!win.isVisible()) {
             console.warn('Web app did not show window within timeout, showing window as fallback');
             win.show();
         }
@@ -73,12 +73,6 @@ async function OpenWindow() {
             clearTimeout(showTimeout);
             showTimeout = null;
         }
-    });
-
-    // Show window immediately if web app fails to load
-    win.on('navigation', (frame, url, policy) => {
-        // Navigation event can be used to detect load failures
-        // If web app fails, the window should still be shown
     });
 
     win.on('close', () => {
