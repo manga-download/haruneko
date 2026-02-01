@@ -101,7 +101,7 @@ export default class extends DecoratableMangaScraper {
         return this.imageTaskPool.Add(async () => {
             //get image crypted key
             const { key: imageKey } = await this.FetchAPI<PageKey>(page.Link.href);
-            //decrypt image key and iv using access token
+            // Decrypt image key and iv using access token.
             const { iv, key } = await this.GetRealKey(imageKey, this.accessToken);
             const encryptedPage = await (await Fetch(new Request(new URL(`./fs/chapter_content/encrypt/${page.Link.href.match(/\d+$/).at(-1)}/2`, this.URI)))).arrayBuffer();
             const b64image = await this.AESDecrypt(encryptedPage, key, iv);
