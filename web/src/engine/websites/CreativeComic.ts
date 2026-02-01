@@ -130,7 +130,7 @@ export default class extends DecoratableMangaScraper {
     private async AESDecrypt(message: string | ArrayBuffer, key: string, iv: string): Promise<string> {
         const algorithm = { name: 'AES-CBC', iv: GetBytesFromHex(iv) };
         const AESkey = await crypto.subtle.importKey('raw', GetBytesFromHex(key), algorithm, false, ['decrypt']);
-        const decrypted = await crypto.subtle.decrypt(algorithm, AESkey, typeof message == 'string'? GetBytesFromBase64(message) : message);
+        const decrypted = await crypto.subtle.decrypt(algorithm, AESkey, typeof message == 'string' ? GetBytesFromBase64(message) : message);
         return new TextDecoder().decode(decrypted);
     }
 
