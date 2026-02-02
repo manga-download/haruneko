@@ -37,7 +37,7 @@ export function SanitizeFileName(name: string): string {
 
     // TODO: Reserved names? => CON, PRN, AUX, NUL, COM1, LPT1
     return name
-        .replace(/[\u0000-\u001F\u007F-\u009F]\p{Cf}/gu, '') // https://en.wikipedia.org/wiki/C0_and_C1_control_codes, https://www.compart.com/en/unicode/category/Cf
+        .replace(/[\u0000-\u001F\u007F-\u009F\p{Cf}]/gu, '')// https://en.wikipedia.org/wiki/C0_and_C1_control_codes, https://www.compart.com/en/unicode/category/Cf
         .replace(/./g, c => lookup[c] ?? c)
         .replace(/\s+$/, '')
         .trim()

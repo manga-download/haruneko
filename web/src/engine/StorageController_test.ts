@@ -6,7 +6,7 @@ describe('StorageController', () => {
     describe('SanitizeFileName', () => {
 
         it('Should replace forbidden characters', () => {
-            expect(SanitizeFileName('\u200b< > : " / \\ | ? * ~')).toBe('＜ ＞ ꞉ ＂ ／ ＼ ｜ ？ ＊ ～');
+            expect(SanitizeFileName('\u200b< > : " / \\ | ? * ~\u00ad')).toBe('＜ ＞ ꞉ ＂ ／ ＼ ｜ ？ ＊ ～');
         });
 
         it.each([
