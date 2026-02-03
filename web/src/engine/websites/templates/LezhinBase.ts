@@ -19,9 +19,7 @@ function ChapterExtractor(anchor: HTMLAnchorElement) {
     };
 }
 
-function LoginScript(username: string, password: string): string {
-    const safeUsername = JSON.stringify(username);
-    const safePassword = JSON.stringify(password);
+function LoginScript(username: string, password: string,): string {
     return `
         new Promise(async (resolve, reject) => {
             try {
@@ -29,8 +27,8 @@ function LoginScript(username: string, password: string): string {
                 else {
                     const form = document.querySelector('form[class^="login"]');
                     const body = JSON.stringify({
-                        email: '${safeUsername}',
-                        password: '${safePassword}',
+                        email: '${JSON.stringify(username)}',
+                        password: '${JSON.stringify(password)}',
                         remember: 'false',
                         provider: 'email',
                         language: JSON.stringify(window.location.pathname.split('/').at(1))
@@ -341,11 +339,11 @@ class TokenProvider {
             return;
         }
 
-        const logindata = await FetchWindowScript<LoginResult>(new Request(new URL(`./${this.#language}/login`, this.baseUrl)), LoginScript(this.#username, this.#password), 1500);
+        const { appConfig: { accessToken, id } } = await FetchWindowScript<LoginResult>(new Request(new URL(`./${this.#language}/login`, this.baseUrl)), LoginScript(this.#username, this.#password), 1500);
 
-        if (logindata?.appConfig) {
-            this.#token = logindata.appConfig.accessToken;
-            this.#userID = logindata.appConfig.id.toString();
+        if (accessToken) {
+            this.#token = accessToken;
+            this.#userID = `${id}`;
         }
     }
 
