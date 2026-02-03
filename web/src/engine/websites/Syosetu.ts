@@ -6,7 +6,7 @@ export default class extends Zing92Base {
 
     public constructor () {
         super('syosetu', 'Syosetu', 'https://syosetu.fi', Tags.Media.Manga, Tags.Language.Japanese, Tags.Source.Aggregator);
-        this.decodeImageAjaxAction = 'decode_images_100';
+        this.WithDecodeImageAction('decode_images_100');
     }
 
     public override get Icon() {

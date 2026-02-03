@@ -7,8 +7,7 @@ export default class extends Zing92Base {
 
     public constructor() {
         super('klmangash', 'KLManga(.sh)', 'https://klmanga.fit', Tags.Media.Manga, Tags.Language.Japanese, Tags.Source.Aggregator, Tags.Accessibility.DomainRotation);
-        this.decodeImageAjaxAction = 'decode_images_g';
-        this.nonceParameterName = 'nonce_a';
+        this.WithNonceName('nonce_a').WithDecodeImageAction('decode_images_g');
     }
 
     public override get Icon() {

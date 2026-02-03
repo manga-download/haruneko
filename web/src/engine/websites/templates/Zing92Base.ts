@@ -8,14 +8,14 @@ export type APIResult = {
 };
 
 type ZingParams = {
-    nonce: string,
-    apiURL: string,
+    nonce: string;
+    apiURL: string;
 };
 
 type PageParameters = {
-    sp: string,
-    chapterID: string,
-    imageIndex: number,
+    sp: string;
+    chapterID: string;
+    imageIndex: number;
 };
 
 export function CleanTitle(title: string): string {
@@ -42,11 +42,21 @@ function MangaExtractor(anchor: HTMLAnchorElement) {
 export class Zing92Base extends DecoratableMangaScraper {
 
     protected zingParams: ZingParams;
-    protected nonceParameterName = 'nonce';
-    protected decodeImageAjaxAction = 'decode_images';
+    private nonceParameterName = 'nonce';
+    private decodeImageAjaxAction = 'decode_images';
 
     public override async Initialize(): Promise<void> {
         this.zingParams = await FetchWindowScript(new Request(this.URI), `new Promise(resolve => resolve({ nonce: zing['${this.nonceParameterName}'], apiURL: zing.ajax_url }));`, 500);
+    }
+
+    protected WithNonceName(nonce: string): this {
+        this.nonceParameterName = nonce;
+        return this;
+    }
+
+    protected WithDecodeImageAction(action: string): this {
+        this.decodeImageAjaxAction = action;
+        return this;
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page<PageParameters>[]> {
