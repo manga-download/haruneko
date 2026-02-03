@@ -5,8 +5,12 @@ describe('StorageController', () => {
 
     describe('SanitizeFileName', () => {
 
-        it('Should replace forbidden characters', () => {
-            expect(SanitizeFileName('< > : " / \\ | ? * ~')).toBe('＜ ＞ ꞉ ＂ ／ ＼ ｜ ？ ＊ ～');
+        it.each([
+            ['\u0009\u000aHello\u000d World', 'Hello World'],
+            ['< > : " / \\ | ? * ~', '＜ ＞ ꞉ ＂ ／ ＼ ｜ ？ ＊ ～'],
+            ['\u200bHakuneko \u00adIs\uFEFF Awesome 😎', 'Hakuneko Is Awesome 😎'],
+        ])('Should replace control characters, forbidden characters and control format characters', (input, expected) => {
+            expect(SanitizeFileName(input)).toBe(expected);
         });
 
         it.each([
