@@ -2,11 +2,11 @@ import type { Tag } from '../../Tags';
 import icon from '../Lezhin.webp';
 import { Fetch, FetchJSON, FetchNextJS, FetchWindowScript } from '../../platform/FetchProvider';
 import { type Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from '../../providers/MangaPlugin';
-import { WebsiteResourceKey as W } from '../../../i18n/ILocale';
+import { EngineResourceKey as E, WebsiteResourceKey as W } from '../../../i18n/ILocale';
 import type { Priority } from '../../taskpool/TaskPool';
 import * as Common from '../decorators/Common';
 import DeScramble from '../../transformers/ImageDescrambler';
-import { Check, Secret, Text } from '../../SettingsManager';
+import { Choice, Secret, Text } from '../../SettingsManager';
 import { Exception } from '../../Error';
 
 // TODO : Handle Password and login change in plugin config
@@ -145,7 +145,13 @@ export class LezhinBase extends DecoratableMangaScraper {
         super(identifier, name, url, ...tags);
         this.Settings.username = new Text('username', W.Plugin_Lezhin_Settings_Username, W.Plugin_Lezhin_Settings_UsernameInfo, '');
         this.Settings.password = new Secret('password', W.Plugin_Lezhin_Settings_Password, W.Plugin_Lezhin_Settings_PasswordInfo, '');
-        this.Settings.forceJPEG = new Check('forceJPEG', W.Plugin_Lezhin_Settings_Force_JPEG, W.Plugin_Lezhin_Settings_Force_JPEGInfo, false);
+        this.Settings.imageFormat = new Choice('image.format',
+            W.Plugin_Settings_ImageFormat,
+            W.Plugin_Settings_ImageFormatInfo,
+            '.webp',
+            { key: '.jpeg', label: E.Settings_Global_Format_JPEG },
+            { key: '.webp', label: E.Settings_Global_Format_WEBP },
+        );
         this.tokenProvider = new TokenProvider(this.URI);
     }
 
@@ -216,9 +222,7 @@ export class LezhinBase extends DecoratableMangaScraper {
         parameters.updatedAt = updatedAt;
         parameters.shuffled = !!comic.metadata?.imageShuffle;
         parameters.subscribed = subscribed;
-
-        const extension = this.Settings.forceJPEG.Value ? '.jpg' : '.webp';
-        return (pagesInfo ?? scrollsInfo).map(({ path }) => new Page<EpisodeParameters>(this, chapter, new URL(`/v2${path}${extension}`, this.cdnURI), parameters));
+        return (pagesInfo ?? scrollsInfo).map(({ path }) => new Page<EpisodeParameters>(this, chapter, new URL(`/v2${path}${this.Settings.imageFormat.Value}`, this.cdnURI), parameters));
     }
 
     public override async FetchImage(page: Page<EpisodeParameters>, priority: Priority, signal: AbortSignal): Promise<Blob> {
@@ -303,7 +307,7 @@ class TokenProvider {
         try {
             const { accessToken, id } = await FetchNextJS<AuthData>(new Request(this.baseUrl), data => 'accessToken' in data);
             this.#token = accessToken;
-            this.#userID = id.toString();
+            this.#userID = `${id}`;
         }
 
         catch (error) {
