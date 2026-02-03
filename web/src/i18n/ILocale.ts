@@ -358,8 +358,6 @@ export enum WebsiteResourceKey {
     Plugin_Lezhin_Settings_UsernameInfo = 'Plugin_Lezhin_Settings_UsernameInfo',
     Plugin_Lezhin_Settings_Password = 'Plugin_Lezhin_Settings_Password',
     Plugin_Lezhin_Settings_PasswordInfo = 'Plugin_Lezhin_Settings_PasswordInfo',
-    Plugin_Lezhin_Settings_Force_JPEG = 'Plugin_Lezhin_Settings_Force_JPEG',
-    Plugin_Lezhin_Settings_Force_JPEGInfo = 'Plugin_Lezhin_Settings_Force_JPEGInfo'
 }
 
 // [SECTION]: Website SheepScanlations
