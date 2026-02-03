@@ -319,6 +319,10 @@ export enum TrackerResourceKey {
 
 // [SECTION]: Websites (Common)
 export enum WebsiteResourceKey {
+    Plugin_Settings_Email = 'Plugin_Settings_Email',
+    Plugin_Settings_EmailInfo = 'Plugin_Settings_EmailInfo',
+    Plugin_Settings_Password = 'Plugin_Settings_Password',
+    Plugin_Settings_PasswordInfo = 'Plugin_Settings_PasswordInfo',
     Plugin_Settings_ThrottlingDownloads = 'Plugin_Settings_ThrottlingDownloads',
     Plugin_Settings_ThrottlingDownloadsInfo = 'Plugin_Settings_ThrottlingDownloadsInfo',
     Plugin_Settings_ThrottlingInteraction = 'Plugin_Settings_ThrottlingInteraction',
@@ -350,14 +354,6 @@ export enum WebsiteResourceKey {
 // [SECTION]: Website PocketComics
 export enum WebsiteResourceKey {
     Plugin_PocketComics_LanguageMismatchError = 'Plugin_PocketComics_LanguageMismatchError',
-}
-
-// [SECTION]: Website Lezhin (all)
-export enum WebsiteResourceKey {
-    Plugin_Lezhin_Settings_Username = 'Plugin_Lezhin_Settings_Username',
-    Plugin_Lezhin_Settings_UsernameInfo = 'Plugin_Lezhin_Settings_UsernameInfo',
-    Plugin_Lezhin_Settings_Password = 'Plugin_Lezhin_Settings_Password',
-    Plugin_Lezhin_Settings_PasswordInfo = 'Plugin_Lezhin_Settings_PasswordInfo',
 }
 
 // [SECTION]: Website SheepScanlations

@@ -143,8 +143,8 @@ export class LezhinBase extends DecoratableMangaScraper {
 
     public constructor(identifier: string, name: string, url: string, tags: Tag[]) {
         super(identifier, name, url, ...tags);
-        this.Settings.username = new Text('username', W.Plugin_Lezhin_Settings_Username, W.Plugin_Lezhin_Settings_UsernameInfo, '');
-        this.Settings.password = new Secret('password', W.Plugin_Lezhin_Settings_Password, W.Plugin_Lezhin_Settings_PasswordInfo, '');
+        this.Settings.username = new Text('username', W.Plugin_Settings_Email, W.Plugin_Settings_EmailInfo, '');
+        this.Settings.password = new Secret('password', W.Plugin_Settings_Password, W.Plugin_Settings_PasswordInfo, '');
         this.Settings.imageFormat = new Choice('image.format',
             W.Plugin_Settings_ImageFormat,
             W.Plugin_Settings_ImageFormatInfo,

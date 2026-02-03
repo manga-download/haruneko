@@ -289,6 +289,10 @@ const translations: VariantResource = {
   Tracker_Kitsu_Settings_PasswordInfo: 'Password for automatic account login to Kitsu',
 
   // [SECTION]: Plugins (common)
+  Plugin_Settings_Email: 'Email',
+  Plugin_Settings_EmailInfo: 'Email address',
+  Plugin_Settings_Password: 'Password',
+  Plugin_Settings_PasswordInfo: 'Password for this website',
 
   Plugin_Settings_ThrottlingDownloads: 'Throttle Downloads [ms]',
   Plugin_Settings_ThrottlingDownloadsInfo: '...',
@@ -318,11 +322,6 @@ const translations: VariantResource = {
   Plugin_CuuTruyen_Error_NotProcessed: 'This chapter is still processing, please try again later.',
 
   Plugin_PocketComics_LanguageMismatchError: 'Unable to find manga {0} for selected language {1}',
-
-  Plugin_Lezhin_Settings_Username: 'Email',
-  Plugin_Lezhin_Settings_UsernameInfo: 'Email for Lezhin login',
-  Plugin_Lezhin_Settings_Password: 'Password',
-  Plugin_Lezhin_Settings_PasswordInfo: 'Password for Lezhin login',
 
   Plugin_SheepScanlations_Settings_Username: 'Username',
   Plugin_SheepScanlations_Settings_UsernameInfo: 'Username for automatic account login to Sheep-Scanlations 😉',
