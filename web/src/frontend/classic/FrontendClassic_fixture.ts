@@ -105,7 +105,65 @@ export class TestFixture extends FrontendFixture {
         await super.SetText(selectorMediaItemFilter, search);
     }
 
-    public async SelectMediaItem(_id: string) {
-        throw new Error('Not Implemented!');
+    /**
+     * Search for a media item (chapter) with the matching {@link text} in the current list and click on its text.
+     */
+    public async SelectMediaItem(text: string, timeout = 5000) {
+        const selectorItemList = '#ItemList .listitem';
+        const selectorItemText = '.title';
+        const page = await super.GetPage();
+        await page.waitForSelector(selectorItemList, { timeout });
+        const elements = await page.$$(selectorItemList);
+        for (const element of elements) {
+            const titleElement = await element.$(selectorItemText);
+            if (titleElement) {
+                const innerText = await titleElement.evaluate((el: HTMLElement) => el.innerText);
+                if (innerText === text) {
+                    return titleElement.click();
+                }
+            }
+        }
+        throw new Error(`failed to find element matching selector '${selectorItemList} ${selectorItemText}' with text '${text}'`);
+    }
+
+    /**
+     * Select the first available media item (chapter) in the current list and click on it.
+     */
+    public async SelectFirstMediaItem(timeout = 5000) {
+        const selectorItemList = '#ItemList .listitem';
+        const selectorItemText = '.title';
+        const page = await super.GetPage();
+        await page.waitForSelector(selectorItemList, { timeout });
+        const elements = await page.$$(selectorItemList);
+        if (elements.length === 0) {
+            throw new Error('No media items found in the list');
+        }
+        const firstElement = elements[0];
+        const titleElement = await firstElement.$(selectorItemText);
+        if (!titleElement) {
+            throw new Error(`failed to find element matching selector '${selectorItemText}' in first item`);
+        }
+        return titleElement.click();
+    }
+
+    /**
+     * Wait for preview images to be displayed in the viewer.
+     */
+    public async WaitForPreviewImages(timeout = 10000) {
+        const selectorImageViewer = '#ImageViewer';
+        const selectorPreviewImage = '#ImageViewer .imgpreview';
+        const page = await super.GetPage();
+        await page.waitForSelector(selectorImageViewer, { timeout });
+        await page.waitForSelector(selectorPreviewImage, { timeout });
+    }
+
+    /**
+     * Get the count of preview images displayed in the viewer.
+     */
+    public async GetPreviewImageCount() {
+        const selectorPreviewImage = '#ImageViewer .imgpreview';
+        const page = await super.GetPage();
+        const elements = await page.$$(selectorPreviewImage);
+        return elements.length;
     }
 }
