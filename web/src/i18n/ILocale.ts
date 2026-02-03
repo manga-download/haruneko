@@ -319,6 +319,10 @@ export enum TrackerResourceKey {
 
 // [SECTION]: Websites (Common)
 export enum WebsiteResourceKey {
+    Plugin_Settings_Email = 'Plugin_Settings_Email',
+    Plugin_Settings_EmailInfo = 'Plugin_Settings_EmailInfo',
+    Plugin_Settings_Password = 'Plugin_Settings_Password',
+    Plugin_Settings_PasswordInfo = 'Plugin_Settings_PasswordInfo',
     Plugin_Settings_ThrottlingDownloads = 'Plugin_Settings_ThrottlingDownloads',
     Plugin_Settings_ThrottlingDownloadsInfo = 'Plugin_Settings_ThrottlingDownloadsInfo',
     Plugin_Settings_ThrottlingInteraction = 'Plugin_Settings_ThrottlingInteraction',
