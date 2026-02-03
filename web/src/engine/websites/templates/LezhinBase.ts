@@ -8,6 +8,7 @@ import * as Common from '../decorators/Common';
 import DeScramble from '../../transformers/ImageDescrambler';
 import { Choice, Secret, Text } from '../../SettingsManager';
 import { Exception } from '../../Error';
+import { GetBytesFromBase64 } from '../../BufferEncoder';
 
 // TODO : Handle Password and login change in plugin config
 // TODO : Update CDN & force language after login attempt
@@ -27,8 +28,8 @@ function LoginScript(username: string, password: string,): string {
                 else {
                     const form = document.querySelector('form[class^="login"]');
                     const body = JSON.stringify({
-                        email: '${JSON.stringify(username)}',
-                        password: '${JSON.stringify(password)}',
+                        email: ${JSON.stringify(username)},
+                        password: ${JSON.stringify(password)},
                         remember: 'false',
                         provider: 'email',
                         language: JSON.stringify(window.location.pathname.split('/').at(1))
@@ -127,6 +128,10 @@ type TDimensions = {
 type AuthData = {
     id: number;
     accessToken: string;
+};
+
+type DecodedToken = {
+    exp: number;
 };
 
 type LoginResult = {
@@ -290,12 +295,13 @@ export class LezhinBase extends DecoratableMangaScraper {
  */
 class TokenProvider {
 
-    #token: string = null;
-    #userID: string = null;
+    #token: string = undefined;
+    #userID: string = undefined;
 
-    #username: string = null;
-    #password: string = null;
-    #language: string = null;
+    #username: string = undefined;
+    #password: string = undefined;
+    #expiration: number = undefined;
+    #language: string = undefined;
 
     constructor(private readonly baseUrl: URL) { }
 
@@ -306,14 +312,16 @@ class TokenProvider {
 
         try {
             const { accessToken, id } = await FetchNextJS<AuthData>(new Request(this.baseUrl), data => 'accessToken' in data);
-            this.#token = accessToken;
-            this.#userID = `${id}`;
+            this.#token = accessToken ? accessToken : undefined;
+            this.#userID = id ? `${id}` : undefined;
+            this.#expiration = accessToken ? this.#ExtractExpirationFromToken(accessToken) : undefined;
         }
 
         catch (error) {
             console.warn('UpdateToken()', error);
             this.#token = undefined;
             this.#userID = undefined;
+            this.#expiration = undefined;
         }
     }
 
@@ -348,6 +356,7 @@ class TokenProvider {
         if (accessToken) {
             this.#token = accessToken;
             this.#userID = `${id}`;
+            this.#expiration = this.#ExtractExpirationFromToken(accessToken);
         }
     }
 
@@ -361,6 +370,11 @@ class TokenProvider {
             headers.set('Authorization', 'Bearer ' + this.#token);
         }
         return headers;
+    }
+
+    #ExtractExpirationFromToken(token: string): number {
+        const { exp } = JSON.parse(new TextDecoder().decode(GetBytesFromBase64(token.split('.').at(-1)))) as DecodedToken;
+        return exp;
     }
 }
 
