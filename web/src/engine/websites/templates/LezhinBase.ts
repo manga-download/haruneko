@@ -160,6 +160,16 @@ export class LezhinBase extends DecoratableMangaScraper {
         this.tokenProvider = new TokenProvider(this.URI);
     }
 
+    public WithLocale(locale: string): this {
+        this.locale = locale;
+        return this;
+    }
+
+    public WithPathSegment(segment: string): this {
+        this.languagePath = segment;
+        return this;
+    }
+
     public override get Icon() {
         return icon;
     }
