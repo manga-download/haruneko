@@ -35,9 +35,13 @@ export function SanitizeFileName(name: string): string {
         '~': '～', //https://unicode-explorer.com/c/FF5E //File System API cannot handle trailing hyphens
     };
 
+    const patternControlCodes = /[\p{Cc}]/gu; // https://en.wikipedia.org/wiki/C0_and_C1_control_codes
+    const patternControlFormat = /[\p{Cf}]/gu; // https://www.compart.com/en/unicode/category/Cf
+
     // TODO: Reserved names? => CON, PRN, AUX, NUL, COM1, LPT1
     return name
-        .replace(/[\u0000-\u001F\u007F-\u009F]/gu, '') // https://en.wikipedia.org/wiki/C0_and_C1_control_codes
+        .replace(patternControlCodes, '')
+        .replace(patternControlFormat, '')
         .replace(/./g, c => lookup[c] ?? c)
         .replace(/\s+$/, '')
         .trim()
