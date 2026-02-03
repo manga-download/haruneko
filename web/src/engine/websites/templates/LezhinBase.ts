@@ -140,10 +140,10 @@ type LoginResult = {
 
 @Common.ChaptersSinglePageCSS('div#episode-list div[data-id] a ', undefined, ChapterExtractor)
 export class LezhinBase extends DecoratableMangaScraper {
-    protected locale: string;
+    private locale: string;
     private readonly apiUrl = 'https://www.lezhinus.com/lz-api/v2/';
     private cdnURI: string;
-    protected languagePath: string;
+    private languagePath: string;
     private tokenProvider: TokenProvider;
 
     public constructor(identifier: string, name: string, url: string, tags: Tag[]) {
@@ -160,12 +160,12 @@ export class LezhinBase extends DecoratableMangaScraper {
         this.tokenProvider = new TokenProvider(this.URI);
     }
 
-    public WithLocale(locale: string): this {
+    protected WithLocale(locale: string): this {
         this.locale = locale;
         return this;
     }
 
-    public WithPathSegment(segment: string): this {
+    protected WithPathSegment(segment: string): this {
         this.languagePath = segment;
         return this;
     }
