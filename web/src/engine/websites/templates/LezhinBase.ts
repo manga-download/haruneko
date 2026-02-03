@@ -19,7 +19,7 @@ function ChapterExtractor(anchor: HTMLAnchorElement) {
     };
 }
 
-function LoginScript(username: string, password: string,): string {
+function LoginScript(username: string, password: string): string {
     const safeUsername = JSON.stringify(username);
     const safePassword = JSON.stringify(password);
     return `
@@ -29,7 +29,7 @@ function LoginScript(username: string, password: string,): string {
                 else {
                     const form = document.querySelector('form[class^="login"]');
                     const body = JSON.stringify({
-                        email :  '${safeUsername}',
+                        email: '${safeUsername}',
                         password: '${safePassword}',
                         remember: 'false',
                         provider: 'email',
