@@ -8,7 +8,7 @@ import * as Common from '../decorators/Common';
 import DeScramble from '../../transformers/ImageDescrambler';
 import { Choice, Secret, Text } from '../../SettingsManager';
 import { Exception } from '../../Error';
-import { GetBytesFromBase64 } from '../../BufferEncoder';
+import { GetBytesFromURLBase64 } from '../../BufferEncoder';
 
 // TODO : Handle Password and login change in plugin config
 // TODO : Update CDN & force language after login attempt
@@ -373,7 +373,7 @@ class TokenProvider {
     }
 
     #ExtractExpirationFromToken(token: string): number {
-        const { exp } = JSON.parse(new TextDecoder().decode(GetBytesFromBase64(token.split('.').at(-1)))) as DecodedToken;
+        const { exp } = JSON.parse(new TextDecoder().decode(GetBytesFromURLBase64(token.split('.').at(1)))) as DecodedToken;
         return exp;
     }
 }
