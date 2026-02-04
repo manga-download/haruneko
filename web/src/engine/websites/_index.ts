@@ -24,6 +24,7 @@ export { default as ArcaneFansub } from './ArcaneFansub';
 export { default as ArcaneScans } from './ArcaneScans';
 export { default as ArcRelight } from './ArcRelight';
 export { default as ArcuraFansub } from './ArcuraFansub';
+export { default as ArenaScan } from './ArenaScan';
 export { default as AresManga } from './AresManga';
 export { default as ArgosScan } from './ArgosScan';
 export { default as Armageddon } from './Armageddon';
