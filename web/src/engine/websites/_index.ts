@@ -301,6 +301,7 @@ export { default as LunarAnimes } from './LunarAnimes';
 export { default as LunaScans } from './LunaScans';
 export { default as LupiTeam } from './LupiTeam';
 export { default as Luscious } from './Luscious';
+export { default as Luvyaa } from './Luvyaa';
 export { default as LxHentai } from './LxHentai';
 export { default as MadaraDex } from './MadaraDex';
 export { default as MadaraScans } from './MadaraScans';
