@@ -6,6 +6,7 @@ import { DecoratableMangaScraper, type Manga, Chapter, Page } from '../providers
 import * as Common from './decorators/Common';
 
 import { DRMProvider, type PageParameters } from './Kagane.DRM';
+import { ImageDecryption } from './KaganeImageDecryption';
 
 type APIChapters = {
     content: {
@@ -19,6 +20,7 @@ type APIChapters = {
 export default class extends DecoratableMangaScraper {
 
     readonly #drm = new DRMProvider();
+    readonly #imageDecryption = new ImageDecryption();
     readonly #apiURL = 'https://api.kagane.org/api/v1/';
 
     public constructor() {
@@ -73,6 +75,7 @@ export default class extends DecoratableMangaScraper {
             return response.arrayBuffer();
         }, priority, signal);
 
-        return this.#drm.DecryptImage(bytes, page.Parameters);
+        // Use the new clean ImageDecryption module instead of obfuscated DRM
+        return this.#imageDecryption.decrypt(bytes, page.Parameters);
     }
 }
