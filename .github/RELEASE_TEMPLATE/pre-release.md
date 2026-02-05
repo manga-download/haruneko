@@ -21,6 +21,8 @@
 
 [![](https://img.shields.io/github/downloads/manga-download/haruneko/{TAG}/{LINUX_X64_SNAP}.svg?label=linux%2064-Bit%20x86%20(snap)&logo=snapcraft&logoColor=E95420)](https://github.com/manga-download/haruneko/releases/download/{TAG}/{LINUX_X64_SNAP})
 
+[![](https://img.shields.io/github/downloads/manga-download/haruneko/{TAG}/{LINUX_X64_FLATPAK}.svg?label=linux%2064-Bit%20x86%20(flatpak)&logo=flathub&logoColor=4A90D9)](https://github.com/manga-download/haruneko/releases/download/{TAG}/{LINUX_X64_FLATPAK})
+
 ## Appendix
 
 There is also an alternative client based on [NW.js](https://nwjs.io) (available for download in the _Assets_ below), which can be used in case of trouble with the [Electron](https://www.electronjs.org) client.
