@@ -6,7 +6,7 @@ new TestFixture({
         title: 'TheBlank'
     },
     container: {
-        url: 'https://theblank.net/manga/booby-trap/',
+        url: 'https://beta.theblank.net/manga/booby-trap/',
         id: JSON.stringify({ post: '2657', slug: '/manga/booby-trap/' }),
         title: 'Booby Trap'
     },
