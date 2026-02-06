@@ -21,11 +21,16 @@ type APIPages = {
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('mwku', 'Mwku', 'https://www.mwpu.cc', Tags.Language.Chinese, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Source.Aggregator);
+        super('mwku', 'Mwku', 'https://www.mwwa.cc', Tags.Language.Chinese, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Source.Aggregator, Tags.Accessibility.DomainRotation);
     }
 
     public override get Icon() {
         return icon;
+    }
+
+    public override async Initialize(): Promise<void> {
+        this.URI.href = await FetchWindowScript(new Request(this.URI), `window.location.origin;`, 1500);
+        console.log(`Assigned URL '${this.URI}' to ${this.Title}`);
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
