@@ -16,15 +16,10 @@
     import { fade } from 'svelte/transition';
 
     import MediaComponent from './MediaItem.svelte';
-    import {
-        selectedMedia,
-        selectedItem,
-        selectedItemPrevious,
-        selectedItemNext,
-    } from '../stores/Stores';
+    import { Store as UI } from '../stores/Stores.svelte';
     import { Tags, type Tag } from '../../../engine/Tags';
     const availableLanguageTags = Tags.Language.toArray();
-    import { Locale } from '../stores/Settings';
+    import { GlobalSettings } from '../stores/Settings.svelte';
 
     import type {
         StoreableMediaContainer,
@@ -43,12 +38,12 @@
     let reverseSortOrder: boolean = $state(false);
 
     let loadItem: Promise<MediaContainer<MediaChild>> = $state();
-    loadItem = updateMedia($selectedMedia);
-    selectedMedia.subscribe(() => loadItem = updateMedia($selectedMedia)) ;
 
-    async function updateMedia(
-        media: MediaContainer<MediaChild>,
-    ): Promise<MediaContainer<MediaChild>> {
+    $effect(() => {
+        loadItem = updateMedia(UI.selectedMedia);
+    });
+
+    async function updateMedia( media: MediaContainer<MediaChild> ): Promise<MediaContainer<MediaChild>> {
         items = [];
         selectedItems = [];
         if (media) {
@@ -58,15 +53,15 @@
         return media;
     }
 
-    selectedItem.subscribe((item: MediaContainer<MediaItem>) => {
-        const position = filteredItems.indexOf(item);
-        $selectedItemPrevious = filteredItems[position + 1];
-        $selectedItemNext = filteredItems[position - 1];
+    $effect(() => {
+        const position = filteredItems.indexOf(UI.selectedItem);
+        UI.selectedItemPrevious = filteredItems[position + 1];
+        UI.selectedItemNext = filteredItems[position - 1];
     });
 
     const onItemView = (item: MediaContainer<MediaItem>) => (event) => {
-        if (item === $selectedItem || event.ctrlKey || event.shiftKey) return;
-        $selectedItem = item;
+        if (item === UI.selectedItem || event.ctrlKey || event.shiftKey) return;
+        UI.selectedItem = item;
     };
 
     let itemNameFilter = $state('');
@@ -101,11 +96,11 @@
     let langComboboxItems =
         $derived(MediaLanguages.length > 0
             ? [
-                  { id: '*', text: '*' },
-                  ...MediaLanguages.map((lang) => {
-                      return { id: lang, text: $Locale[lang.Title]() };
-                  }),
-              ]
+                { id: '*', text: '*' },
+                ...MediaLanguages.map((lang) => {
+                    return { id: lang, text: GlobalSettings.Locale[lang.Title]() };
+                }),
+            ]
             : [{ id: '*', text: '*' }]);
 
     let langFilterID: '*' | Tag = $state('*');
@@ -129,7 +124,7 @@
     let multipleSelectionDragTo: number = -1;
     let selectedDragItems: MediaContainer<MediaItem>[] = [];
     let contextItem: MediaContainer<MediaItem> = $state();
-
+    
     function onContextMenuClose() {
         contextItem = null;
     }
@@ -263,7 +258,7 @@
                 labelText="View"
                 shortcutText="⌘V"
                 onclick={() => {
-                    $selectedItem = contextItem;
+                    UI.selectedItem = contextItem;
                 }}
             />
             <ContextMenuOption labelText="Flag as">

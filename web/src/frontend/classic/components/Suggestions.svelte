@@ -3,12 +3,7 @@
     import CaretRight from 'carbon-icons-svelte/lib/CaretRight.svelte';
     import BookmarkAdd from 'carbon-icons-svelte/lib/BookmarkAdd.svelte';
 
-    import {
-        selectedPlugin,
-        selectedMedia,
-        selectedItem,
-        contentscreen,
-    } from '../stores/Stores';
+    import { Store as UI } from '../stores/Stores.svelte';
 
     import type { Bookmark } from '../../../engine/providers/Bookmark';
 
@@ -45,9 +40,9 @@
 
     async function selectBookmark(bookmark: Bookmark) {
         let unFlaggedContent = await bookmark.GetUnflaggedContent();
-        $selectedPlugin = HakuNeko.BookmarkPlugin;
-        $selectedMedia = bookmark;
-        $selectedItem = unFlaggedContent[
+        UI.selectedPlugin = HakuNeko.BookmarkPlugin;
+        UI.selectedMedia = bookmark;
+        UI.selectedItem = unFlaggedContent[
             unFlaggedContent.length - 1
         ] as MediaContainer<MediaItem>;
     }
@@ -57,7 +52,7 @@
     <Tile id="Suggestions" class="border">
         <ClickableTile
             id="Continue"
-            on:click={() => ($contentscreen = '/bookmarks')}
+            on:click={() => (UI.contentscreen = '/bookmarks')}
         >
             <h4 style="text-align:center;">
                 Continue

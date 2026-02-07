@@ -25,15 +25,8 @@
     import ImageViewerWideSettings from './ImageViewerWideSettings.svelte';
     import Image from './Image.svelte';
     // stores
-    import {
-        Key,
-        ViewerMode,
-        ViewerPadding,
-        ViewerZoom,
-        ViewerZoomRatio,
-        ViewerReverseDirection,
-    } from '../../stores/Settings';
-    import { selectedItemNext } from '../../stores/Stores';
+    import { Key, Settings } from '../../stores/Settings.svelte';
+    import { Store as UI } from '../../stores/Stores.svelte';
     // others
     import { scrollSmoothly, scrollMagic, toggleFullScreen } from './utilities';
     import { dragscroll } from '@svelte-put/dragscroll';
@@ -45,7 +38,6 @@
     onDestroy(() => {
         document.removeEventListener('keydown', onKeyDown);
         viewer?.removeEventListener('scroll', onScroll);
-        zoomunsubscribe();
     });
 
     let entries = $state(item.Entries.Value);
@@ -85,22 +77,22 @@
                 onNextItem();
                 break;
             case event.key === '*':
-                $ViewerZoom = 100;
+                Settings.ViewerZoom.Value = 100;
                 break;
             case event.key === '/':
-                ViewerZoom.reset();
+                Settings.ViewerZoom.Setting.Reset();
                 break;
             case event.key === '+' && !event.ctrlKey:
-                ViewerZoom.increment();
+                Settings.ViewerZoom.Increment();
                 break;
             case event.key === '-' && !event.ctrlKey:
-                ViewerZoom.decrement();
+                Settings.ViewerZoom.Decrement();
                 break;
             case event.key === '+' && event.ctrlKey:
-                ViewerPadding.increment();
+                Settings.ViewerPadding.Increment();
                 break;
             case event.key === '-' && event.ctrlKey:
-                ViewerPadding.decrement();
+                Settings.ViewerPadding.Decrement();
                 break;
             case event.code === 'Escape':
                 viewerclose();
@@ -119,31 +111,31 @@
         }
     }
 
-    let previousZoom = $ViewerZoomRatio;
-    const zoomunsubscribe = ViewerZoomRatio.subscribe((newZoom) => {
-        switch ($ViewerMode) {
+    let previousZoom = Settings.ViewerZoomRatio;
+    $effect(() => {
+        switch (Settings.ViewerMode.Value) {
             case Key.ViewerMode_Longstrip: {
                 viewer?.scrollTo({
-                    top: viewer.scrollTop * (newZoom / previousZoom),
+                    top: viewer.scrollTop * (Settings.ViewerZoomRatio / previousZoom),
                     behavior: 'smooth',
                 });
                 break;
             }
             case Key.ViewerMode_Paginated: {
                 viewer?.scrollTo({
-                    left: viewer.scrollLeft * (newZoom / previousZoom),
+                    left: viewer.scrollLeft * (Settings.ViewerZoomRatio / previousZoom),
                     behavior: 'smooth',
                 });
                 break;
             }
         }
-        previousZoom = newZoom;
+        previousZoom = Settings.ViewerZoomRatio;
     });
 
     // Auto next item after reaching end of page
     let autoNextItem = $state(false);
     async function onNextItemCallback() {
-        if (autoNextItem && selectedItemNext) onNextItem();
+        if (autoNextItem && UI.selectedItemNext) onNextItem();
         else {
             autoNextItem = true;
             setTimeout(function () {
@@ -163,14 +155,14 @@
     let pos = { top: 0, left: 0, x: 0, y: 0 };
 
     // Dynamic css values
-    let cssvars = $derived({'viewer-padding': `${$ViewerPadding}em`});
+    let cssvars = $derived({'viewer-padding': `${Settings.ViewerPadding.Value}em`});
     let cssVarStyles = $derived(Object.entries(cssvars)
         .map(([key, value]) => `--${key}:${value}`)
         .join(';'));
 
     // Entering wide mode : scroll to image
     $effect(() => {
-         if (wide) {
+        if (wide) {
             if (currentImageIndex != -1) {
                 // delay because of smooth transition
                 setTimeout(() => {
@@ -205,7 +197,7 @@
     tabindex="-1"
     ondblclick={() => toggleFullScreen()}
     transition:fade
-    class="{wide ? 'wide' : 'thumbnail'} {$ViewerMode} {$ViewerReverseDirection
+    class="{wide ? 'wide' : 'thumbnail'} {Settings.ViewerMode.Value} {Settings.ViewerReverseDirection.Value
         ? 'reverse'
         : ''}"
     style={cssVarStyles}
@@ -247,7 +239,7 @@
         </button>
     {/each}
 </div>
-{#if autoNextItem && $selectedItemNext !== undefined}
+{#if autoNextItem && UI.selectedItemNext !== undefined}
     <div  style="z-index: 20000; position: fixed; bottom: 2em; right: 2em;" transition:fade>
         <InlineNotification
             kind="info"

@@ -1,45 +1,42 @@
 <script lang="ts">
+
     import { InlineNotification, Loading } from 'carbon-components-svelte';
     import type { MediaContainer, MediaItem } from '../../../../engine/providers/MediaPlugin';
     import ImageViewer from './ImageViewer.svelte';
     import VideoViewer from './VideoViewer.svelte';
-    import {
-        selectedItem,
-        selectedItemPrevious,
-        selectedItemNext,
-    } from '../../stores/Stores';
+    import { Store as UI } from '../../stores/Stores.svelte';
     import { FlagType } from '../../../../engine/ItemflagManager';
 
-    export let mode: 'Image' | 'Video' = 'Image';
-    export let item: MediaContainer<MediaItem>;
-    let displayedItem: MediaContainer<MediaItem>;;
-    let currentImageIndex: number = -1;
-
-    let updating: Promise<void> | undefined;
-    $: refresh(item);
-    async function refresh(item: MediaContainer<MediaItem>) {
-        updating = item.Update();
-        updating.catch(() => {
-            displayedItem=undefined;
-        });
-        await updating;
-        displayedItem = item;
+    interface Props {
+        mode?: 'Image' | 'Video';
+        item: MediaContainer<MediaItem>;
     }
+    let { mode = 'Image', item }: Props = $props();
+
+    let displayedItem: MediaContainer<MediaItem> = $state();;
+    let currentImageIndex: number = $state(-1);
+
+    let updating: Promise<void> = $derived.by(async() => {
+        const promise = item.Update()
+        .catch(() => {displayedItem=undefined})
+        .then(() => { displayedItem = item;});
+        return promise;
+    });
 
     function onPreviousItem() {
         currentImageIndex = -1;
-        $selectedItem = $selectedItemPrevious;
+        UI.selectedItem = UI.selectedItemPrevious;
     }
     function onNextItem() {
         currentImageIndex = -1;
-        if (wide && !$selectedItemNext) HakuNeko.ItemflagManager.FlagItem(item, FlagType.Current);
-        $selectedItem = $selectedItemNext;
+        if (wide && !UI.selectedItemNext) HakuNeko.ItemflagManager.FlagItem(item, FlagType.Current);
+        UI.selectedItem = UI.selectedItemNext;
     }
     function onClose() {
         HakuNeko.ItemflagManager.FlagItem(item, FlagType.Current);
     }
 
-    let wide = false;
+    let wide = $state(false);
 </script>
 
 <div id="Viewer" class="{mode} center" class:wide>
@@ -50,7 +47,7 @@
         </div>
     {:catch error}
         <InlineNotification
-        title="{error.name}"
+        title={error.name}
         subtitle="Unable to load item : {error.message}"
         class="info error"
         />

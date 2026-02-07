@@ -14,13 +14,8 @@
     import Subtract from 'carbon-icons-svelte/lib/Subtract.svelte';
     import Sidenav from './Sidenav.svelte';
 
-    import {
-        selectedPlugin,
-        selectedMedia,
-        selectedItem,
-        WindowController,
-    } from '../stores/Stores';
-    import { Locale, SidenavIconsOnTop } from '../stores/Settings';
+    import  {Store as UI } from '../stores/Stores.svelte';
+    import { GlobalSettings, Settings } from '../stores/Settings.svelte';
 
     interface Props {
         onHome?: () => void;
@@ -43,33 +38,25 @@
     window.addEventListener('resize', updateWindowState);
 
     let showWindowControls = $state(false);
-    let minimize: () => void = $state();
-    let maximize: () => void = $state();
-    let restore: () => void = $state();
-    let close: () => void = $state();
+    let minimize = $derived(UI.WindowController?.Minimize.bind(UI.WindowController));
+    let maximize = $derived(UI.WindowController?.Maximize.bind(UI.WindowController));
+    let restore = $derived(UI.WindowController?.Restore.bind(UI.WindowController));
+    let close = $derived(UI.WindowController?.Close.bind(UI.WindowController));
 
-    WindowController.subscribe((controller) => {
-        if (controller) {
-            showWindowControls = controller.HasControls;
-            minimize = controller.Minimize.bind(controller);
-            maximize = controller.Maximize.bind(controller);
-            restore = controller.Restore.bind(controller);
-            close = controller.Close.bind(controller);
-        }
-    });
 </script>
 
 <Header
+    id="Header"
     expandedByDefault={false}
     persistentHamburgerMenu
     bind:isSideNavOpen
 >
     <div slot="platform">
-        {#if $SidenavIconsOnTop}
+        {#if Settings.SidenavIconsOnTop.Value}
             <Button
                 class="clickable"
                 icon={Home}
-                iconDescription={$Locale.Frontend_Classic_Sidenav_Home()}
+                iconDescription={GlobalSettings.Locale.Frontend_Classic_Sidenav_Home()}
                 kind="ghost"
                 tooltipPosition="bottom"
                 tooltipAlignment="center"
@@ -83,15 +70,15 @@
                 tooltipPosition="bottom"
                 tooltipAlignment="center"
                 on:click={() => {
-                    $selectedPlugin = window.HakuNeko.BookmarkPlugin;
-                    $selectedMedia = undefined;
-                    $selectedItem = undefined;
+                    UI.selectedPlugin = window.HakuNeko.BookmarkPlugin;
+                    UI.selectedMedia = undefined;
+                    UI.selectedItem = undefined;
                 }}
             />
         {/if}
-        <div id="AppTitle" class:padding-left={$SidenavIconsOnTop}>
-            {$Locale.Frontend_Product_Title()}
-            <span class="appdesc">{$Locale.Frontend_Product_Description()}</span
+        <div id="AppTitle" class:padding-left={Settings.SidenavIconsOnTop.Value}>
+            {GlobalSettings.Locale.Frontend_Product_Title()}
+            <span class="appdesc">{GlobalSettings.Locale.Frontend_Product_Description()}</span
             >
         </div>
     </div>

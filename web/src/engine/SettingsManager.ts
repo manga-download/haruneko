@@ -56,6 +56,13 @@ class Setting<T extends IValue> extends Observable<T> {
     public Serialize(): IValue {
         return this.Value;
     }
+
+    /**
+     * Reset the {@link Value} to its initial/default value.
+     */
+    public Reset() {
+        this.Value = this.initial;
+    }
 }
 
 export type ISetting<T extends IValue = IValue> = Setting<T>;
