@@ -9,8 +9,7 @@ export default class extends ComiciViewer {
 
     public constructor() {
         super('comicride', `Comic Ride`, 'https://comicride.jp', Tags.Media.Manga, Tags.Language.Japanese, Tags.Source.Official);
-        this.apiUrl = new URL('https://comicride.jp/api/');
-        this.useNewAPI = true;
+        this.WithEndpointAPI('/api/').WithChaptersFromAPI();
     }
 
     public override get Icon() {

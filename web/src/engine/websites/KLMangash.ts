@@ -50,7 +50,7 @@ export default class extends DecoratableMangaScraper {
     private zingParams: ZingParams;
 
     public constructor() {
-        super('klmangash', 'KLManga(.sh)', 'https://klmanga.spot', Tags.Media.Manga, Tags.Language.Japanese, Tags.Source.Aggregator, Tags.Accessibility.DomainRotation);
+        super('klmangash', 'KLManga(.sh)', 'https://klmanga.fit', Tags.Media.Manga, Tags.Language.Japanese, Tags.Source.Aggregator, Tags.Accessibility.DomainRotation);
     }
 
     public override get Icon() {
