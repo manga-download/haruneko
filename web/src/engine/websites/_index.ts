@@ -327,6 +327,7 @@ export { default as MangaBz } from './MangaBz';
 export { default as MangaCanBlog } from './MangaCanBlog';
 export { default as MangaChan } from './MangaChan';
 export { default as MangaClash } from './MangaClash';
+export { default as MangaCloud } from './MangaCloud';
 export { default as MangaCrab } from './MangaCrab';
 export { default as MangaDemon } from './MangaDemon';
 export { default as MangaDenizi } from './MangaDenizi';
