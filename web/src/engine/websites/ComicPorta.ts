@@ -4,16 +4,12 @@ import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import * as SpeedBinb from './decorators/SpeedBinb';
 
-function ChapterExtractor(element: HTMLElement) {
-    return {
-        id: element.querySelector<HTMLAnchorElement>('a').pathname,
-        title: element.parentNode.querySelector<HTMLParagraphElement>('p.title').textContent.trim()
-    };
-}
-
 @Common.MangaCSS(/^{origin}\/series\/\d+\/$/, 'div#breadcrumb li:last-of-type')
 @Common.MangasSinglePageCSS('/series/', 'div.series-list ul li h3.title a')
-@Common.ChaptersSinglePageCSS('ul.episode-list li.episode div.inner div.wrap p.episode-btn', undefined, ChapterExtractor)
+@Common.ChaptersSinglePageCSS('ul.episode-list li.episode div.inner div.wrap p.episode-btn', undefined, element => ({
+    id: element.querySelector<HTMLAnchorElement>('a').pathname,
+    title: element.parentNode.querySelector<HTMLParagraphElement>('p.title').textContent.trim()
+}))
 @SpeedBinb.PagesSinglePageAjax()
 @SpeedBinb.ImageAjax()
 export default class extends DecoratableMangaScraper {
