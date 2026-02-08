@@ -1,6 +1,6 @@
 import { Exception } from '../../Error';
 import { FetchJSON } from '../../platform/FetchProvider';
-import {type MangaPlugin, Manga, Chapter, Page, DecoratableMangaScraper } from '../../providers/MangaPlugin';
+import { type MangaPlugin, Manga, Chapter, Page, DecoratableMangaScraper } from '../../providers/MangaPlugin';
 import type { Priority } from '../../taskpool/TaskPool';
 import * as Common from '../decorators/Common';
 import { WebsiteResourceKey as R } from '../../../i18n/ILocale';
@@ -8,44 +8,43 @@ import { WebsiteResourceKey as R } from '../../../i18n/ILocale';
 // TODO: Add Novel support
 
 type APIManga = {
-    title: string
-    id: number,
-    series_type: string,
-    series_slug: string,
+    title: string;
+    id: number;
+    series_type: string;
+    series_slug: string;
 };
 
 type APIResult<T> = {
-    data: T
+    data: T;
 };
 
 type APIChapter = {
-    index: string,
-    id: number,
-    chapter_name: string,
-    chapter_title: string,
-    chapter_slug: string,
+    index: string;
+    id: number;
+    chapter_name: string;
+    chapter_title: string;
+    chapter_slug: string;
 };
 
 type APIPages = {
-    chapter_type: string,
-    paywall: boolean,
-    data: string[] | string
+    chapter_type: string;
+    paywall: boolean;
+    data: string[] | string;
     chapter: {
-        chapter_type: string,
-        storage: string,
+        chapter_type: string;
+        storage: string;
         chapter_data?: {
-            images?: string[],
+            images?: string[];
             files: {
-                url: string
-            }[]
-
+                url: string;
+            }[];
         }
     }
 };
 
 type APIMediaID = {
-    id: string,
-    slug: string
+    id: string;
+    slug: string;
 };
 
 type PageType = {
@@ -62,40 +61,36 @@ export class HeanCMS extends DecoratableMangaScraper {
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
-        const slug = new URL(url).pathname.split('/').at(-1);
-        const { title, series_slug, id } = await this.FetchAPI<APIManga>(`./series/${slug}`);
+        const { title, series_slug, id } = await this.FetchAPI<APIManga>(`./series/${url.split('/').at(-1)}`);
         return new Manga(this, provider, JSON.stringify({ id: id.toString(), slug: series_slug }), title);
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        const mangaList: Manga[] = [];
-        for (const adult of [true, false]) { //adult flag mean ONLY adult, false mean ONLY all ages... Talk about stupid. Old api ignore that flag
-            for (let page = 1, run = true; run; page++) {
-                const mangas = await this.GetMangaFromPage(provider, page, adult);
-                mangas.length > 0 ? mangaList.push(...mangas) : run = false;
+        type This = typeof this;
+        return (await Array.fromAsync(async function* (this: This) {
+            for (const adult of [true, false]) { //adult flag mean ONLY adult, false mean ONLY all ages... Talk about stupid. Old api ignore that flag
+                for (let page = 1, run = true; run; page++) {
+                    const { data } = await this.FetchAPI<APIResult<APIManga[]>>(`./query?perPage=100&page=${page}&adult=${adult}`);
+                    const mangas = !data.length ? [] : data.map(({ id, series_slug: slug, title }) => new Manga(this, provider, JSON.stringify({ id: `${id}`, slug }), title));
+                    mangas.length > 0 ? yield* mangas : run = false;
+                }
             }
-        }
-        return mangaList.distinct();//filter in case of old api
-    }
-
-    private async GetMangaFromPage(provider: MangaPlugin, page: number, adult: boolean): Promise<Manga[]> {
-        const { data } = await this.FetchAPI<APIResult<APIManga[]>>(`./query?perPage=100&page=${page}&adult=${adult}`);
-        return !data.length ? [] : data.map((manga) => new Manga(this, provider, JSON.stringify({ id: manga.id.toString(), slug: manga.series_slug }), manga.title));
+        }.call(this))).distinct();//filter in case of old api
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const mangaid: APIMediaID = JSON.parse(manga.Identifier);
-        const { data } = await this.FetchAPI<APIResult<APIChapter[]>>(`./chapter/query?series_id=${mangaid.id}&perPage=9999&page=1`);
-        return data.map(chapter => new Chapter(this, manga, JSON.stringify({
-            id: chapter.id.toString(),
-            slug: chapter.chapter_slug,
-        }), `${chapter.chapter_name} ${chapter.chapter_title || ''}`.trim()));
+        const { id: mangaId }: APIMediaID = JSON.parse(manga.Identifier);
+        const { data } = await this.FetchAPI<APIResult<APIChapter[]>>(`./chapter/query?series_id=${mangaId}&perPage=9999&page=1`);
+        return data.map(({ id, chapter_name: name, chapter_slug: slug, chapter_title: title }) => new Chapter(this, manga, JSON.stringify({
+            id: `${id}`,
+            slug,
+        }), `${name} ${title || ''}`.trim()));
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page<PageType>[]> {
-        const chapterid: APIMediaID = JSON.parse(chapter.Identifier);
-        const mangaid: APIMediaID = JSON.parse(chapter.Parent.Identifier);
-        const { data, paywall, chapter: { chapter_type, chapter_data, storage } } = await this.FetchAPI<APIPages>(`./chapter/${mangaid.slug}/${chapterid.slug}`);
+        const { slug: chapterSlug }: APIMediaID = JSON.parse(chapter.Identifier);
+        const { slug: mangaSlug }: APIMediaID = JSON.parse(chapter.Parent.Identifier);
+        const { data, paywall, chapter: { chapter_type, chapter_data, storage } } = await this.FetchAPI<APIPages>(`./chapter/${mangaSlug}/${chapterSlug}`);
 
         if (paywall) {
             throw new Exception(R.Plugin_Common_Chapter_UnavailableError);
