@@ -1,7 +1,7 @@
 import { Tags } from '../Tags';
 import icon from './MangaCloud.webp';
 import { FetchJSON } from '../platform/FetchProvider';
-import { type MangaPlugin, Manga, Chapter, Page, DecoratableMangaScraper } from '../providers/MangaPlugin';
+import { type MangaPlugin, Manga, Chapter, DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 
 type APIResult<T> = {
