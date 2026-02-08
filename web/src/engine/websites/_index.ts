@@ -68,7 +68,6 @@ export { default as ColaManga } from './ColaManga';
 export { default as ColoredManga } from './ColoredManga';
 export { default as ComicAction } from './ComicAction';
 export { default as ComicBorder } from './ComicBorder';
-export { default as ComicBrise } from './ComicBrise';
 export { default as ComicDays } from './ComicDays';
 export { default as ComicEarthStar } from './ComicEarthStar';
 export { default as ComicFans } from './ComicFans';
