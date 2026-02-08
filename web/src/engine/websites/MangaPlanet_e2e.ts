@@ -12,11 +12,11 @@ new TestFixture({
     },
     child: {
         id: '/reader?cid=64f300af38575',
-        title: 'Volume 1 - Free Preview'
+        title: 'Volume 1 - Preview'
     },
     entry: {
         index: 0,
-        size: 1_709_506,
+        size: 1_800_292,
         type: 'image/png'
     }
 }).AssertWebsite();

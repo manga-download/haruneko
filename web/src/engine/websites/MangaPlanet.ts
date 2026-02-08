@@ -6,15 +6,12 @@ import * as SpeedBinb from './decorators/SpeedBinb';
 import { FetchCSS, FetchWindowScript } from '../platform/FetchProvider';
 import { SpeedBindVersion } from './decorators/SpeedBinb';
 
-function MangaExtractor(element: HTMLElement) {
-    return {
+@Common.MangaCSS(/^{origin}\/comic\/[^/]+$/, '.card-body.book-detail h3')
+@Common.MangasMultiPageCSS('div#Title .row.book-list', Common.PatternLinkGenerator('/browse/title?ttlpage={page}'), 0,
+    element => ({
         id: element.querySelector<HTMLAnchorElement>('a').pathname,
         title: element.querySelector<HTMLHeadingElement>('h3').innerText.trim()
-    };
-}
-
-@Common.MangaCSS(/^{origin}\/comic\/[^/]+$/, '.card-body.book-detail h3')
-@Common.MangasMultiPageCSS('div#Title .row.book-list', Common.PatternLinkGenerator('/browse/title?ttlpage={page}'), 0, MangaExtractor)
+    }))
 @SpeedBinb.PagesSinglePageAjax(SpeedBindVersion.v016130, true)
 @SpeedBinb.ImageAjax()
 

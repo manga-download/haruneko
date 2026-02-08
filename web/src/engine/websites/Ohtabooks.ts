@@ -6,15 +6,9 @@ import * as SpeedBinb from './decorators/SpeedBinb';
 import { FetchCSS } from '../platform/FetchProvider';
 import { SpeedBindVersion } from './decorators/SpeedBinb';
 
-function MangaExtractor(anchor: HTMLAnchorElement) {
-    return {
-        id: anchor.pathname,
-        title: anchor.querySelector('.title').textContent.trim()
-    };
-}
-
 @Common.MangaCSS(/^{origin}\/[^/]+\/$/, 'h2.contentTitle')
-@Common.MangasSinglePageCSS('/list/', 'div.bnrList ul li a', MangaExtractor)
+@Common.MangasSinglePageCSS<HTMLAnchorElement>('/list/', 'div.bnrList ul li a', anchor => ({
+    id: anchor.pathname, title: anchor.querySelector('.title').textContent.trim()}))
 @SpeedBinb.ImageAjax()
 export default class extends DecoratableMangaScraper {
 

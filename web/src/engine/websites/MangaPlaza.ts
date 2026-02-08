@@ -8,8 +8,8 @@ import { SpeedBindVersion } from './decorators/SpeedBinb';
 
 type APIChapterResult = {
     data: {
-        html_content: string,
-        html_page: string
+        html_content: string;
+        html_page: string;
     }
 };
 
@@ -43,7 +43,7 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
         //fetch genre list
-        let genres = (await FetchCSS<HTMLAnchorElement>(new Request(new URL('/genre/', this.URI)), 'a[href*="/genre/"]')).filter(link => link.pathname.match(/genre\/\d+\/$/)).map(link => link.pathname.match(/\d+/)[0]);
+        let genres = (await FetchCSS<HTMLAnchorElement>(new Request(new URL('/genre/', this.URI)), 'a[href*="/genre/"]')).filter(link => link.pathname.match(/genre\/\d+\/$/)).map(link => link.pathname.match(/\d+/).at(0));
         genres = Array.from(new Set(genres));
         const mangaList: Manga[] = [];
         for (const genre of genres) {

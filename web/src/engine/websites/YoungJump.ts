@@ -7,9 +7,9 @@ import { FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
 import { SpeedBindVersion } from './decorators/SpeedBinb';
 
 type APIMagazine = {
-    url: string,
-    issue: string,
-    number: string
+    url: string;
+    issue: string;
+    number: string;
 };
 
 @Common.ChaptersUniqueFromManga()
@@ -38,6 +38,6 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
         const data = await FetchJSON<APIMagazine[]>(new Request(new URL('/yj-rest-apis/getBookInfo.php', this.URI)));
-        return data.map(magazine => new Manga(this, provider, magazine.url, `${magazine.issue} - ${magazine.number}`.trim()));
+        return data.map(({ url, issue, number }) => new Manga(this, provider, url, `${issue} - ${number}`.trim()));
     }
 }

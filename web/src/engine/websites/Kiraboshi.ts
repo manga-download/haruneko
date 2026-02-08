@@ -5,22 +5,16 @@ import * as Common from './decorators/Common';
 import * as SpeedBinb from './decorators/SpeedBinb';
 import { FetchHTML, FetchJSON } from '../platform/FetchProvider';
 
-function ChapterExtractor(element: HTMLDivElement) {
-    return {
-        id: element.querySelector<HTMLAnchorElement>('a').pathname,
-        title: element.querySelector<HTMLDivElement>('div.episode-item-left').textContent.trim()
-    };
-}
-
 type APIMangas = {
     data: {
-        url: string,
-        name: string
+        url: string;
+        name: string;
     }[]
 };
 
 @Common.MangaCSS(/^{origin}\/[^/]+\/titles\/[^/]+$/, 'div.breadcrumb ul li:last-of-type')
-@Common.ChaptersSinglePageCSS('div.episode-item:has(a)', undefined, ChapterExtractor)
+@Common.ChaptersSinglePageCSS('div.episode-item:has(a)', undefined, element =>
+    ({ id: element.querySelector<HTMLAnchorElement>('a').pathname, title: element.querySelector<HTMLDivElement>('div.episode-item-left').textContent.trim() }))
 @SpeedBinb.PagesSinglePageAjax()
 @SpeedBinb.ImageAjax()
 export default class extends DecoratableMangaScraper {

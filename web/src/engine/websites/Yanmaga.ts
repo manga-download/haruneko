@@ -5,13 +5,6 @@ import * as Common from './decorators/Common';
 import * as SpeedBinb from './decorators/SpeedBinb';
 import { SpeedBindVersion } from './decorators/SpeedBinb';
 
-function MangaExtractor(anchor: HTMLAnchorElement) {
-    return {
-        id: anchor.pathname,
-        title: anchor.querySelector('.mod-book-title').textContent.trim()
-    };
-}
-
 const chapterScript = `
     new Promise(resolve => {
         const interval = setInterval(() => {
@@ -32,7 +25,7 @@ const chapterScript = `
 `;
 
 @Common.MangaCSS(/^{origin}\/comics\/[^/]+$/, 'h1.detail-header-title, h1.detailv2-outline-title')
-@Common.MangasSinglePageCSS('/comics', 'a.ga-comics-book-item', MangaExtractor)
+@Common.MangasSinglePageCSS<HTMLAnchorElement>('/comics', 'a.ga-comics-book-item', anchor => ({ id: anchor.pathname, title: anchor.querySelector('.mod-book-title').textContent.trim() }))
 @Common.ChaptersSinglePageJS(chapterScript, 200)
 @SpeedBinb.PagesSinglePageAjax(SpeedBindVersion.v016130, true)
 @SpeedBinb.ImageAjax()
