@@ -6,7 +6,7 @@ new TestFixture({
         title: 'コミックシーモア (Cmoa)'
     },
     container: {
-        url: 'https://www.cmoa.jp/title/151961/vol/24/',
+        url: 'https://www.cmoa.jp/title/151961/',
         id: '/title/151961/',
         title: '呪術廻戦'
     },
@@ -16,7 +16,7 @@ new TestFixture({
     },
     entry: {
         index: 0,
-        size: 2_880_733,
+        size: 2_940_987,
         type: 'image/png'
     }
 }).AssertWebsite();
