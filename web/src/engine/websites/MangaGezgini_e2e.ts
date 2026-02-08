@@ -6,17 +6,17 @@ new TestFixture({
         title: 'Manga Gezgini'
     },
     container: {
-        url: 'https://mangagezgini.love/manga/tower-of-god/',
-        id: JSON.stringify({ post: '3087', slug: '/manga/tower-of-god/' }),
-        title: 'Tower of God'
+        url: 'https://mangagezgini.online/manga/secilmis-kisi/',
+        id: JSON.stringify({ post: '5486', slug: '/manga/secilmis-kisi/' }),
+        title: 'Seçilmiş Kişi'
     },
     child: {
-        id: '/manga/tower-of-god/tower-of-god-bolum-609/',
-        title: 'Bölüm 609'
+        id: '/manga/secilmis-kisi/bolum54/',
+        title: 'Bölüm 54'
     },
     entry: {
         index: 0,
-        size: 94_412,
+        size: 962_427,
         type: 'image/jpeg'
     }
 }).AssertWebsite();
