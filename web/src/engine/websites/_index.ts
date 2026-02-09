@@ -827,7 +827,6 @@ export { default as ToomicsSC } from './legacy/ToomicsSC';
 export { default as ToomicsTC } from './legacy/ToomicsTC';
 export { default as TsundokuTraducoes } from './legacy/TsundokuTraducoes';
 export { default as WanPaMan } from './legacy/WanPaMan';
-export { default as WBNovel } from './legacy/WBNovel';
 export { default as WoopRead } from './legacy/WoopRead';
 export { default as WordRain } from './legacy/WordRain';
 export { default as WuxiaWorld } from './legacy/WuxiaWorld';
