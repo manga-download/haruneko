@@ -54,6 +54,7 @@ export { default as BomtoonCN } from './BomtoonCN';
 export { default as Bontoon } from './Bontoon';
 export { default as BoyLoveCC } from './BoyLoveCC';
 export { default as BrainRotComics } from './BrainRotComics';
+export { default as CapibaraTraductor } from './CapibaraTraductor';
 export { default as CatharsisWorld } from './CatharsisWorld';
 export { default as ChampionCross } from './ChampionCross';
 export { default as Chochox } from './Chochox';
