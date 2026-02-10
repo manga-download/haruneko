@@ -1,9 +1,7 @@
 ﻿import { Tags } from '../Tags';
 import icon from './CapibaraTraductor.webp';
 import { FetchJSON } from '../platform/FetchProvider';
-import { MangaScraper, type MangaPlugin, Manga, Chapter, Page, DecoratableMangaScraper } from '../providers/MangaPlugin';
-import { TaskPool, Priority } from '../taskpool/TaskPool';
-import { RateLimit } from '../taskpool/RateLimit';
+import { type MangaPlugin, Manga, DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 
 type APIMangas = {
