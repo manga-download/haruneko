@@ -13,7 +13,6 @@
     import CopyLink from 'carbon-icons-svelte/lib/CopyLink.svelte';
     import type {
         ComboBoxItem,
-        ComboBoxItemId,
     } from 'carbon-components-svelte/src/ComboBox/ComboBox.svelte';
     // Third Party
     import Fuse from 'fuse.js';
@@ -85,7 +84,7 @@
     let filteredmedias: MediaContainer<MediaChild>[] = $state([]);
     $effect(() => {
         medias;
-        filteredmedias = filterMedia(mediaNameFilter).sort((a, b) => 
+        filteredmedias = filterMedia(mediaNameFilter).sort((a, b) =>
             a.Title.localeCompare(b.Title)
         );
     });
@@ -119,7 +118,7 @@
         medias = loadedmedias;
         return plugin;
     }
-    
+
     /**
     * Filters the media items by title or plugin's name
     * @param {string} mediaNameFilter - The filter string to match
@@ -186,7 +185,7 @@
         }
     }
 
-    async function selectPlugin(id: ComboBoxItemId) {
+    async function selectPlugin(id: string) {
         UI.selectedPlugin = [HakuNeko.BookmarkPlugin, ...orderedPlugins].find(
             (plugin) => plugin.Identifier === id,
         );
@@ -232,17 +231,17 @@
             items={pluginsCombo}
             let:item
         >
-                {@const plugin = item as ComboBoxItemWithValue}
-                {#if plugin.value.IsSameAs(HakuNeko.BookmarkPlugin)}
-                <BookmarkFilled class="dropdown icon bookmarks" size={32} />
-                    <div class="dropdown title favorite">{plugin.value.Title}</div>
-                    <div>Your bookmarked medias</div>
-                {:else}
-                    <img class="dropdown icon" alt={plugin.value.Title} src={plugin.value.Icon}/>
-                    <div class="dropdown title" class:favorite={plugin.isFavorite}>{plugin.value.Title}</div>
-                    <div>{plugin.value.URI}</div>
-                {/if}
-                </ComboBox> 
+            {@const plugin = item as ComboBoxItemWithValue}
+            {#if plugin.value.IsSameAs(HakuNeko.BookmarkPlugin)}
+            <BookmarkFilled class="dropdown icon bookmarks" size={32} />
+                <div class="dropdown title favorite">{plugin.value.Title}</div>
+                <div>Your bookmarked medias</div>
+            {:else}
+                <img class="dropdown icon" alt={plugin.value.Title} src={plugin.value.Icon}/>
+                <div class="dropdown title" class:favorite={plugin.isFavorite}>{plugin.value.Title}</div>
+                <div>{plugin.value.URI}</div>
+            {/if}
+        </ComboBox>
         <Button
             id="MediaUpdateButton"
             icon={UpdateNow}
@@ -276,9 +275,9 @@
         <VirtualList items={filteredmedias as MediaContainer2[]} itemHeight={24} container={medialistref} containerHeight={medialistrefHeight}>
             {#snippet children(item)}
                 <div class="media">
-                        <Media 
+                        <Media
                         media={item}
-                        /> 
+                        />
                 </div>
             {/snippet}
         </VirtualList>
@@ -286,13 +285,13 @@
     <div id="MediaCount">
         Medias : {filteredmedias.length}/{medias.length}
     </div>
-    <div 
+    <div
         role="separator"
         aria-orientation="vertical"
         class="resize"
         use:resizeBar={{orientation:'vertical'}}
     > </div>
-    
+
 </div>
 
 <style>
@@ -382,6 +381,6 @@
         cursor: col-resize;
     }
     .resize:hover {
-            background-color:var(--cds-ui-02); 
+            background-color:var(--cds-ui-02);
     }
 </style>
