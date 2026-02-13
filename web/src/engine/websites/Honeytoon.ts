@@ -1,7 +1,7 @@
 import { Tags } from '../Tags';
 import icon from './Honeytoon.webp';
 import { FetchCSS, FetchWindowScript } from '../platform/FetchProvider';
-import { DecoratableMangaScraper, type Chapter, Page } from '../providers/MangaPlugin';
+import { Chapter, DecoratableMangaScraper, Page, type Manga } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import DeScramble from '../transformers/ImageDescrambler';
 import type { Priority } from '../taskpool/DeferredTask';
@@ -10,13 +10,35 @@ type PageData = {
     scrambled: boolean;
 };
 
-@Common.MangaCSS(/^{origin}\/([^/]+\/)?comic\/[^/]+$/, 'h1.comic-book__title')
-@Common.MangasSinglePageCSS('/genres', 'a.preview-card__link', anchor => ({ id: (anchor as HTMLAnchorElement).pathname, title: anchor.querySelector('.preview-card__title').textContent.trim() }))
-@Common.ChaptersSinglePageCSS<HTMLAnchorElement>('a.comic-list__item[href*="/comic/"]', undefined, anchor => ({ id: anchor.pathname, title: anchor.querySelector('.comic-list__title-desc').textContent.trim() }))
+const chapterLanguageMap = new Map([
+    ['en', Tags.Language.English],
+    ['fr', Tags.Language.French],
+    ['de', Tags.Language.German],
+    ['it', Tags.Language.Italian],
+    ['pt', Tags.Language.Portuguese],
+    ['es', Tags.Language.Spanish],
+]);
+
+function ApplyLanguage(title: string, path: string): string {
+    const lang = ExtractLanguage(path);
+    return [title.trim(), `(${lang})`].join(' ').trim();
+}
+
+function ExtractLanguage(path: string): string {
+    return path.match(/^\/([^/]+)\/comic/)?.at(1) ?? 'en';
+}
+
+@Common.MangaCSS(/^{origin}\/([^/]+\/)?comic\/[^/]+$/, 'h1.comic-book__title', (element, uri) => ({ id: uri.pathname, title: ApplyLanguage(element.textContent, uri.pathname) }))
+@Common.MangasMultiPageCSS<HTMLAnchorElement>('a.preview-card__link',
+    Common.StaticLinkGenerator(...['', '/fr', '/de', '/es', '/it', '/pt'].map(el => `${el}/genres`)), 0,
+    anchor => ({
+        id: anchor.pathname,
+        title: ApplyLanguage(anchor.querySelector('.preview-card__title').textContent.trim(), anchor.pathname)
+    }))
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
     public constructor() {
-        super('honeytoon', 'Honeytoon', 'https://honeytoon.com', Tags.Media.Manhwa, Tags.Language.English, Tags.Source.Official);
+        super('honeytoon', 'Honeytoon', 'https://honeytoon.com', Tags.Media.Manhwa, Tags.Language.Multilingual, Tags.Source.Official);
     }
 
     public override get Icon() {
@@ -25,6 +47,16 @@ export default class extends DecoratableMangaScraper {
 
     public override async Initialize(): Promise<void> {
         return FetchWindowScript(new Request(this.URI), `window.cookieStore.set('eighteen', '1')`);
+    }
+
+    public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
+        const elements = await FetchCSS<HTMLAnchorElement>(new Request(new URL(manga.Identifier, this.URI)), 'a.comic-list__item[href*="/comic/"]');
+        return elements.map(anchor => {
+            const languageCode = ExtractLanguage(anchor.pathname);
+            return new Chapter(this, manga, anchor.pathname, anchor.querySelector('.comic-list__title-desc').textContent.replace(/[\r\n]+/g, '').replace(/\s{2,}/g, ' ').trim(),
+                ...chapterLanguageMap.has(languageCode) ? [chapterLanguageMap.get(languageCode)] : []
+            );
+        });
     }
 
     public async FetchPages(chapter: Chapter): Promise<Page<PageData>[]> {
@@ -66,5 +98,4 @@ export default class extends DecoratableMangaScraper {
             });
         }, priority, signal);
     }
-
 }
