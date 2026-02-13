@@ -1,4 +1,4 @@
-import { FetchCSS, FetchJSON } from '../../platform/FetchProvider';
+import { FetchCSS, FetchJSON, FetchWindowScript } from '../../platform/FetchProvider';
 import { DecoratableMangaScraper, type Manga, Chapter, Page } from '../../providers/MangaPlugin';
 import type { Priority } from '../../taskpool/DeferredTask';
 import DeScramble from '../../transformers/ImageDescrambler';
@@ -66,9 +66,28 @@ export class ComiciViewer extends DecoratableMangaScraper {
 
     public override async FetchPages(chapter: Chapter): Promise<Page<ScrambleData>[]> {
         const [viewer] = await FetchCSS(new Request(new URL(chapter.Identifier, this.URI)), '#comici-viewer');
-        const viewerId = viewer.getAttribute('comici-viewer-id') ?? viewer.dataset.comiciViewerId;
-        const { totalPages } = await this.#FetchContentInfo(chapter, viewerId, viewer.dataset.memberJwt, 1);
-        const { result } = await this.#FetchContentInfo(chapter, viewerId, viewer.dataset.memberJwt, totalPages);
+        let viewerId: string, memberJwt: string = undefined;
+
+        // In case we can't get viewer data using Fetch we try using a javascript. It helped with purchased content (and new Comici ??)
+        if (!viewer) {
+            const viewerData = await FetchWindowScript<{ viewerId: number, memberJwt: string }>(new Request(new URL(chapter.Identifier, this.URI)), `
+                new Promise (resolve => {
+                    const viewer = document.querySelector('#comici-viewer');
+                    resolve ({
+                        viewerId: viewer.getAttribute('comici-viewer-id') ?? viewer.dataset.comiciViewerId,
+                        memberJwt: viewer.dataset.memberJwt
+                    });
+                })
+            `, 750);
+            viewerId = `${viewerData.viewerId}`;
+            memberJwt = viewerData.memberJwt;
+        } else {
+            memberJwt = viewer.dataset.memberJwt;
+            viewerId = viewer.getAttribute('comici-viewer-id') ?? viewer.dataset.comiciViewerId;
+        }
+
+        const { totalPages } = await this.#FetchContentInfo(chapter, viewerId, memberJwt, 1);
+        const { result } = await this.#FetchContentInfo(chapter, viewerId, memberJwt, totalPages);
         return result.map(({ imageUrl, scramble }) => new Page<ScrambleData>(this, chapter, new URL(imageUrl), { scramble, Referer: this.URI.href }));
     }
 
