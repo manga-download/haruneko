@@ -5,8 +5,6 @@ import * as Common from './decorators/Common';
 import { FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
 import { GetBytesFromURLBase64/*, GetBytesFromUTF8, GetHexFromBytes*/ } from '../BufferEncoder';
 
-// TODO: Handle token expiration.. Not sure its really necesssary, cookie/token expire after one day
-
 type APIMangas = {
     comics: APIManga[];
 };
@@ -114,6 +112,7 @@ class TokenProvider {
         this.#expiration = this.#token ? this.#ExtractExpirationFromToken(this.#token) : undefined;
     }
 
+    // Cookies expires after one day, so user is automatically logged out
     public async RefreshToken() {
         if (!this.#expiration || this.#expiration < Math.floor(Date.now() / 1000)) {
             await this.UpdateToken();
