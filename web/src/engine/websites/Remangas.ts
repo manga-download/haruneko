@@ -1,9 +1,11 @@
 ﻿import { Tags } from '../Tags';
-import icon from './ACGN.webp';
+import icon from './Remangas.webp';
 import { Chapter, DecoratableMangaScraper, Manga, type MangaPlugin } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import { FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
-import { GetBytesFromURLBase64, GetBytesFromUTF8, GetHexFromBytes } from '../BufferEncoder';
+import { GetBytesFromURLBase64/*, GetBytesFromUTF8, GetHexFromBytes*/ } from '../BufferEncoder';
+
+// TODO: Handle token expiration.. Not sure its really necesssary, cookie/token expire after one day
 
 type APIMangas = {
     comics: APIManga[];
@@ -32,7 +34,7 @@ type DecodedToken = {
 export default class extends DecoratableMangaScraper {
     private readonly apiUrl = 'https://xodneo.site/api/v1/';
     private readonly siteId = '00000000-0000-0000-0000-000000000001';
-    private readonly signatureKey = 'fe7f9e20851be60eb720015918784c68b4216fb05eb8ca4f20bec58ef2d3fffb';
+    //private readonly signatureKey = 'fe7f9e20851be60eb720015918784c68b4216fb05eb8ca4f20bec58ef2d3fffb';
     #tokenProvider: TokenProvider;
 
     public constructor() {
@@ -61,29 +63,37 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const { chapters } = await this.FetchAPI<APIChapters>(`./comics/slug/${manga.Identifier}/chapters?per_page=10000`);
-        return chapters.map(({ number, title, slug }) => new Chapter(this, manga, `./ler/${manga.Identifier}/${slug}`, ['Capítulo', number, title ?? ''].join(' ').trim()));
+        type This = typeof this;
+        return Array.fromAsync(async function* (this: This) {
+            for (let page = 1, run = true; run; page++) {
+                const { chapters: chaptersData } = await this.FetchAPI<APIChapters>(`./comics/slug/${manga.Identifier}/chapters?page=${page}&per_page=500&sort=newest`);
+                const chapters = chaptersData.map(({ number, title, slug }) => new Chapter(this, manga, `./ler/${manga.Identifier}/${slug}`, ['Capítulo', number, title ?? ''].join(' ').trim()));
+                chapters.length > 0 ? yield* chapters : run = false;
+            }
+        }.call(this));
     }
 
-    private async FetchAPI<T extends JSONElement>(endpoint: string): Promise<T> {
-        const timestamp = Math.floor(Date.now() / 1000).toString();
+    private async FetchAPI<T extends JSONElement>(endpoint: string, /*useSignature = false*/): Promise<T> {
+        await this.#tokenProvider.RefreshToken();
+        //    const timestamp = Math.floor(Date.now() / 1000).toString();
         const url = new URL(endpoint, this.apiUrl);
         return FetchJSON<T>(new Request(url, {
             headers: await this.#tokenProvider.ApplyAuthorizationHeader({
                 Referer: this.URI.href,
-                'X-Timestamp': timestamp,
+                Origin: this.URI.origin,
+                //   ...useSignature && { 'X-Timestamp': timestamp },
                 'X-Site-Id': this.siteId,
-                'X-Signature': await this.HMAC256([timestamp, 'GET', url.pathname].join(''))
+                //   ...useSignature && { 'X-Signature': await this.HMAC256([timestamp, 'GET', url.pathname].join('')) }
             })
         }));
     }
-
+    /*
     private async HMAC256(data: string): Promise<string> {
         const algorithm = { name: 'HMAC', hash: { name: 'SHA-256' } };
         const key = await crypto.subtle.importKey('raw', GetBytesFromUTF8(this.signatureKey), algorithm, false, ['sign']);
         const signature = await crypto.subtle.sign(algorithm, key, GetBytesFromUTF8(data));
         return GetHexFromBytes(new Uint8Array(signature));
-    }
+    }*/
 }
 
 /**
@@ -102,6 +112,12 @@ class TokenProvider {
     public async UpdateToken() {
         this.#token = await FetchWindowScript<null | string>(new Request(this.baseUrl), `cookieStore.get('token').then(({ value }) => decodeURIComponent(value) ?? null).catch(error => null)`);
         this.#expiration = this.#token ? this.#ExtractExpirationFromToken(this.#token) : undefined;
+    }
+
+    public async RefreshToken() {
+        if (!this.#expiration || this.#expiration < Math.floor(Date.now() / 1000)) {
+            await this.UpdateToken();
+        }
     }
 
     /**
