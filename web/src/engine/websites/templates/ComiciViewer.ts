@@ -56,28 +56,23 @@ export class ComiciViewer extends DecoratableMangaScraper {
         return this;
     }
 
-    #FetchContentInfo(chapter: Chapter, viewerId: string, userId: string, pageTo: number): Promise<APIPages> {
-        return FetchJSON<APIPages>(new Request(new URL(`./book/contentsInfo?comici-viewer-id=${viewerId}&user-id=${userId}&page-from=0&page-to=${pageTo}`, this.#apiURL), {
-            headers: {
-                Referer: new URL(chapter.Identifier, this.URI).href,
-            },
-        }));
+    async #FetchPages(chapter: Chapter, viewerID: string, userID: string) {
+        const uri = new URL('./book/contentsInfo', this.#apiURL);
+        const init = { headers: { Referer: new URL(chapter.Identifier, this.URI).href } };
+        uri.search = new URLSearchParams({ 'comici-viewer-id': viewerID, 'user-id': userID, 'page-from': '0', 'page-to': '1' }).toString();
+        const { totalPages } = await FetchJSON<APIPages>(new Request(uri, init));
+        uri.searchParams.set('page-to', `${totalPages}`);
+        const { result } = await FetchJSON<APIPages>(new Request(uri, init));
+        return result;
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page<ScrambleData>[]> {
-        const { viewerId, memberJwt } = await FetchWindowScript<{ viewerId: string, memberJwt: string }>(new Request(new URL(chapter.Identifier, this.URI)), `
-            new Promise (resolve => {
-                const viewer = document.querySelector('#comici-viewer');
-                resolve ({
-                    viewerId: (viewer.getAttribute('comici-viewer-id') ?? viewer.dataset.comiciViewerId).toString(),
-                    memberJwt: viewer.dataset.memberJwt
-                });
-            })
-        `, 750);
-
-        const { totalPages } = await this.#FetchContentInfo(chapter, viewerId, memberJwt, 1);
-        const { result } = await this.#FetchContentInfo(chapter, viewerId, memberJwt, totalPages);
-        return result.map(({ imageUrl, scramble }) => new Page<ScrambleData>(this, chapter, new URL(imageUrl), { scramble, Referer: this.URI.href }));
+        const { viewerId, memberJwt } = await FetchWindowScript(new Request(new URL(chapter.Identifier, this.URI)), () => {
+            const { attributes, dataset: { comiciViewerId, memberJwt } } = document.querySelector<HTMLElement>('#comici-viewer');
+            return { memberJwt, viewerId: attributes.getNamedItem('comici-viewer-id')?.value ?? comiciViewerId };
+        }, 750);
+        const pages = await this.#FetchPages(chapter, viewerId, memberJwt);
+        return pages.map(({ imageUrl, scramble }) => new Page<ScrambleData>(this, chapter, new URL(imageUrl), { scramble, Referer: this.URI.href }));
     }
 
     public override async FetchImage(page: Page<ScrambleData>, priority: Priority, signal: AbortSignal): Promise<Blob> {
