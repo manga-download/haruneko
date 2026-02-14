@@ -1,24 +1,23 @@
 ﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'traduccionesmoonlight',
-        title: 'Traducciones Moonlight'
+        title: 'Traducciones Moonlight',
+        timeout: 60000
     },
     container: {
-        url: 'https://traduccionesmoonlight.com/manga/sacrificio-humano/',
-        id: '/manga/sacrificio-humano/',
+        url: 'https://traduccionesmoonlight.com/ver/sacrificio-humano',
+        id: '/ver/sacrificio-humano',
         title: 'SACRIFICIO HUMANO'
     },
     child: {
-        id: '/sacrificio-humano-volumen-1/',
+        id: '/ver/sacrificio-humano/1',
         title: 'Capítulo 1'
     },
     entry: {
-        index: 0,
-        size: 4_442_029,
+        index: 3,
+        size: 1_863_663,
         type: 'image/png'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();
