@@ -1,4 +1,4 @@
-import { FetchCSS, FetchJSON } from '../../platform/FetchProvider';
+import { FetchJSON, FetchWindowScript } from '../../platform/FetchProvider';
 import { DecoratableMangaScraper, type Manga, Chapter, Page } from '../../providers/MangaPlugin';
 import type { Priority } from '../../taskpool/DeferredTask';
 import DeScramble from '../../transformers/ImageDescrambler';
@@ -65,10 +65,18 @@ export class ComiciViewer extends DecoratableMangaScraper {
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page<ScrambleData>[]> {
-        const [viewer] = await FetchCSS(new Request(new URL(chapter.Identifier, this.URI)), '#comici-viewer');
-        const viewerId = viewer.getAttribute('comici-viewer-id') ?? viewer.dataset.comiciViewerId;
-        const { totalPages } = await this.#FetchContentInfo(chapter, viewerId, viewer.dataset.memberJwt, 1);
-        const { result } = await this.#FetchContentInfo(chapter, viewerId, viewer.dataset.memberJwt, totalPages);
+        const { viewerId, memberJwt } = await FetchWindowScript<{ viewerId: string, memberJwt: string }>(new Request(new URL(chapter.Identifier, this.URI)), `
+            new Promise (resolve => {
+                const viewer = document.querySelector('#comici-viewer');
+                resolve ({
+                    viewerId: (viewer.getAttribute('comici-viewer-id') ?? viewer.dataset.comiciViewerId).toString(),
+                    memberJwt: viewer.dataset.memberJwt
+                });
+            })
+        `, 750);
+
+        const { totalPages } = await this.#FetchContentInfo(chapter, viewerId, memberJwt, 1);
+        const { result } = await this.#FetchContentInfo(chapter, viewerId, memberJwt, totalPages);
         return result.map(({ imageUrl, scramble }) => new Page<ScrambleData>(this, chapter, new URL(imageUrl), { scramble, Referer: this.URI.href }));
     }
 
