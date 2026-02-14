@@ -4,7 +4,6 @@ new TestFixture({
     plugin: {
         id: 'traduccionesmoonlight',
         title: 'Traducciones Moonlight',
-        timeout: 60000
     },
     container: {
         url: 'https://traduccionesmoonlight.com/ver/sacrificio-humano',
