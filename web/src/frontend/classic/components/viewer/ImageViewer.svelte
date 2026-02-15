@@ -3,7 +3,7 @@
     import { quintOut } from 'svelte/easing';
     import { onDestroy, onMount } from 'svelte';
     // Events
-    
+
     interface Props {
         item: MediaContainer<MediaItem>;
         currentImageIndex: number;
@@ -12,7 +12,6 @@
         onPreviousItem: () => void;
         onClose: () => void;
     };
-    let { item, currentImageIndex, wide = $bindable(), onNextItem, onPreviousItem, onClose }: Props  = $props();
 
     // UI
     import { InlineNotification } from 'carbon-components-svelte';
@@ -48,7 +47,8 @@
         zoomunsubscribe();
     });
 
-    let entries = $state(item.Entries.Value);
+    let { item, currentImageIndex, wide = $bindable(), onNextItem, onPreviousItem, onClose }: Props = $props();
+    let entries = $derived($state(item.Entries.Value));
     let viewer: HTMLElement;
 
     function viewerclose() {
