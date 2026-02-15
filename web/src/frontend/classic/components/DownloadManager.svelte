@@ -18,9 +18,9 @@
         (elt) => elt.Media.Parent.Identifier,
     ));
 
-    function onUpdate() {
-        // No-op: $derived automatically tracks changes to downloadTasks
-    }
+    // No-op function kept for compatibility with DownloadManagerTask component
+    // $derived() automatically tracks changes to downloadTasks, so manual updates are not needed
+    function onUpdate() {}
 
     function copyErrorToClipBoard(task: DownloadTask) {
         let message = `${task.Media.Title}\r\n`;
