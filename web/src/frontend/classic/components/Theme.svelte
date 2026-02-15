@@ -1,5 +1,8 @@
 <script lang="ts">
-    export let theme: string;
+    interface Props {
+        theme: string;
+    }
+    let { theme }: Props = $props();
 
     $effect(() => {
         document.documentElement.setAttribute("theme", theme);

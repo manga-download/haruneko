@@ -26,8 +26,10 @@
     let mediaSuggestions: Promise<Suggestion[]> = $state();
     let mediaTracked: Info = $state();
 
+    // Only refresh when media.Title changes
     $effect(() => {
-        mediaSuggestions = tracker.Search(media.Title);
+        const title = media.Title;
+        mediaSuggestions = tracker.Search(title);
         mediaTracked = undefined;
     });
 
