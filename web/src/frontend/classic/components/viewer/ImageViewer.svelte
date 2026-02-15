@@ -48,7 +48,7 @@
     });
 
     let { item, currentImageIndex, wide = $bindable(), onNextItem, onPreviousItem, onClose }: Props = $props();
-    let entries = $state(item.Entries.Value);
+    let entries = $derived(item.Entries.Value);
     let viewer: HTMLElement;
 
     function viewerclose() {
