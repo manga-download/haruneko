@@ -44,4 +44,22 @@ Confirm MacOS dialogs about verifying the application or an unknown developer wi
 
 ## Linux
 
-TBD
+### Snap (Ubuntu/Debian/Fedora)
+
+[![Get it from the Snap Store](https://snapcraft.io/static/images/badges/en/snap-store-black.svg)](https://snapcraft.io/hakuneko-electron)
+
+1. Install snapd if not already available
+2. Install HakuNeko using: `snap install hakuneko-electron`
+3. Launch HakuNeko from your application menu
+
+### Flatpak (All Distributions)
+
+1. Ensure Flatpak is installed on your system
+2. Download the latest `.flatpak` file from [GitHub Releases](https://github.com/manga-download/haruneko/releases)
+3. Install the Flatpak: `flatpak install <downloaded-file>.flatpak`
+   (Replace `<downloaded-file>` with the actual filename, e.g., `hakuneko-electron-linux-x64.flatpak`)
+4. Launch HakuNeko from your application menu or use: `flatpak run org.hakuneko.HakuNeko`
+
+::: info
+Flatpak provides better distribution compatibility and sandboxing for enhanced security.
+:::

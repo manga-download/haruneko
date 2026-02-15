@@ -1,0 +1,40 @@
+app-id: org.hakuneko.HakuNeko
+runtime: org.freedesktop.Platform
+runtime-version: '23.08'
+sdk: org.freedesktop.Sdk
+base: org.electronjs.Electron2.BaseApp
+base-version: '23.08'
+command: hakuneko-electron
+separate-locales: false
+finish-args:
+  - --share=ipc
+  - --socket=x11
+  - --socket=wayland
+  - --socket=pulseaudio
+  - --share=network
+  - --device=dri
+  - --filesystem=xdg-download
+  - --filesystem=xdg-documents
+  - --persist=.config/HakuNeko
+  - --env=GTK_USE_PORTAL=1
+modules:
+  - name: hakuneko
+    buildsystem: simple
+    build-commands:
+      # Install the application
+      - install -Dm755 hakuneko-electron /app/bin/hakuneko-electron
+      - cp -r resources /app/
+      # Install desktop file and icons
+      - install -Dm644 org.hakuneko.HakuNeko.desktop /app/share/applications/org.hakuneko.HakuNeko.desktop
+      - install -Dm644 org.hakuneko.HakuNeko.metainfo.xml /app/share/metainfo/org.hakuneko.HakuNeko.metainfo.xml
+      - install -Dm644 icon_16x16.png /app/share/icons/hicolor/16x16/apps/org.hakuneko.HakuNeko.png
+      - install -Dm644 icon_24x24.png /app/share/icons/hicolor/24x24/apps/org.hakuneko.HakuNeko.png
+      - install -Dm644 icon_32x32.png /app/share/icons/hicolor/32x32/apps/org.hakuneko.HakuNeko.png
+      - install -Dm644 icon_48x48.png /app/share/icons/hicolor/48x48/apps/org.hakuneko.HakuNeko.png
+      - install -Dm644 icon_64x64.png /app/share/icons/hicolor/64x64/apps/org.hakuneko.HakuNeko.png
+      - install -Dm644 icon_96x96.png /app/share/icons/hicolor/96x96/apps/org.hakuneko.HakuNeko.png
+      - install -Dm644 icon_128x128.png /app/share/icons/hicolor/128x128/apps/org.hakuneko.HakuNeko.png
+      - install -Dm644 icon_256x256.png /app/share/icons/hicolor/256x256/apps/org.hakuneko.HakuNeko.png
+    sources:
+      - type: dir
+        path: .
