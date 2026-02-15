@@ -16,15 +16,20 @@
         Info,
     } from '../../../engine/trackers/IMediaInfoTracker';
 
-    export let media: MediaContainer<MediaChild>;
-    export let tracker: MediaInfoTracker;
-    export let isTrackerModalOpen = false;
+    interface Props {
+        media: MediaContainer<MediaChild>;
+        tracker: MediaInfoTracker;
+        isTrackerModalOpen?: boolean;
+    }
+    let { media, tracker, isTrackerModalOpen = $bindable(false) }: Props = $props();
 
-    let mediaSuggestions: Promise<Suggestion[]>;
-    let mediaTracked: Info;
+    let mediaSuggestions: Promise<Suggestion[]> = $state();
+    let mediaTracked: Info = $state();
 
-    $: (mediaSuggestions = tracker.Search(media.Title)),
-        (mediaTracked = undefined);
+    $effect(() => {
+        mediaSuggestions = tracker.Search(media.Title);
+        mediaTracked = undefined;
+    });
 
     //Todo: give it some polish !
 </script>

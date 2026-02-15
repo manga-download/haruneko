@@ -6,20 +6,20 @@
     import { DownloadTask, Status } from '../../../engine/DownloadTask';
     import DownloadManagerTask from './DownloadManagerTask.svelte';
 
-    let taskerror: DownloadTask;
-    let downloadTasks: DownloadTask[] = HakuNeko.DownloadManager.Queue.Value;
+    let taskerror: DownloadTask = $state();
+    let downloadTasks: DownloadTask[] = $state(HakuNeko.DownloadManager.Queue.Value);
 
     HakuNeko.DownloadManager.Queue.Subscribe((tasks) => {
         downloadTasks = tasks;
     });
 
-    $: groupedJobs = Object.groupBy(
+    let groupedJobs = $derived(Object.groupBy(
         downloadTasks,
         (elt) => elt.Media.Parent.Identifier,
-    );
+    ));
 
     function onUpdate() {
-        groupedJobs = groupedJobs;
+        // No-op: $derived automatically tracks changes to downloadTasks
     }
 
     function copyErrorToClipBoard(task: DownloadTask) {

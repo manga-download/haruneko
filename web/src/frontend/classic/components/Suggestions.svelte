@@ -23,13 +23,13 @@
     } from '../../../engine/providers/MediaPlugin';
 
     const setting = HakuNeko.SettingsManager.OpenScope().Get<Check>(GlobalKey.CheckNewContent);
-    let checkNewContent = setting.Value;
+    let checkNewContent = $state(setting.Value);
     setting.Subscribe(value => {
         if(value) refreshSuggestions();
         checkNewContent = value;
     });
 
-    let suggestions: Bookmark[] = [];
+    let suggestions: Bookmark[] = $state([]);
     let isRefreshing = false;
     async function refreshSuggestions() {
         if (isRefreshing) return;

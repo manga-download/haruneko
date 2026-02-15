@@ -1,9 +1,7 @@
 <script lang="ts">
-    import { afterUpdate } from "svelte";
-
     export let theme: string;
 
-    afterUpdate(() => {
+    $effect(() => {
         document.documentElement.setAttribute("theme", theme);
     });
 </script>
