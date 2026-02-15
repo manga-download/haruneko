@@ -11,14 +11,8 @@
     let { setting }: Props = $props();
     let value: number = $state(setting.Value);
 
-    // Track if update is from external subscription to avoid infinite loop
-    let isExternalUpdate = false;
-    
     $effect(() => {
-        if (!isExternalUpdate) {
-            setting.Value = value;
-        }
-        isExternalUpdate = false;
+        setting.Value = value;
     });
 
     onMount(() => {
@@ -29,7 +23,6 @@
     });
 
     function OnValueChanged(newValue: number) {
-        isExternalUpdate = true;
         value = newValue;
     }
 </script>
