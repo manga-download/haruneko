@@ -1,4 +1,5 @@
 import '../DatgarScan_e2e';
+import '../KazeScans_e2e';
 import '../MangaOrigin_e2e';
 import '../Mikoroku_e2e';
 import '../Nimemob_e2e';
