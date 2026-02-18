@@ -138,7 +138,6 @@ export { default as EightMusesXXX } from './EightMusesXXX';
 export { default as ElderManga } from './ElderManga';
 export { default as ElevenToon } from './ElevenToon';
 export { default as ElfToon } from './ElfToon';
-export { default as Ero18x } from './Ero18x';
 export { default as ErosScans } from './ErosScans';
 export { default as Eshadow } from './Eshadow';
 export { default as EskiMangalar } from './EskiMangalar';
