@@ -32,7 +32,7 @@ new TestFixture({
         title: '템빨'
     },
     child: {
-        id: '/webtoon/44573542/템빨-260화',
+        id: encodeURI('/webtoon/44573542/템빨-260화'),
         title: '260화'
     },
     entry: {
