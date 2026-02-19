@@ -121,14 +121,12 @@ export default class extends DecoratableMangaScraper {
                 const { data } = await this.#FetchAPI<APIChapters>(`/manga/${manga.Identifier}/chapters`, { limit: '500', page: `${page}`});
                 const chapters = !data ? [] : data.map(({ id, volume, chapter, title, language }) => {
                     title = [
-                        volume ? 'Vol. ' + volume : null,
-                        chapter ? 'Ch. ' + chapter : 'Oneshot',
-                        title ? '- ' + title : null,
-                        language ? '(' + language + ')' : null,
+                        volume ? `Vol. ${volume}` : null,
+                        chapter ? `Ch. ${chapter}` : 'Oneshot',
+                        title ? `- ${title}` : null,
+                        language ? `(${language})` : null,
                     ].filter(segment => segment).join(' ');
-                    return new Chapter(this, manga, id, title,
-                        ...chapterLanguageMap.has(language) ? [chapterLanguageMap.get(language)] : []
-                    );
+                    return new Chapter(this, manga, id, title, ...[chapterLanguageMap.get(language)].filter(Boolean));
                 });
                 chapters.length > 0 ? yield* chapters : run = false;
             }
