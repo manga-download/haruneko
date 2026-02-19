@@ -76,10 +76,12 @@ export default class extends DecoratableMangaScraper {
             const buffer = await response.arrayBuffer();
 
             const blobs: Blob[] = [];
-            for (let position = 0, index = 0; index < 3; index++) {
-                const part = buffer.slice(position, position + scrambleData[index]);
+            let position = 0;
+
+            for (const partSize of scrambleData) {
+                const part = buffer.slice(position, position + partSize);
                 blobs.push(new Blob([part], { type: 'image/webp' }));
-                position += scrambleData[index];
+                position += partSize;
             }
 
             const bitmaps: ImageBitmap[] = await Promise.all(
