@@ -12,108 +12,108 @@ type APIResultError = { data?: never; error: { code: string; }; };
 type APIResult<T> = APIResultSuccess<T> | APIResultError;
 
 type APIManga = {
-    id: number,
-    alias: string,
-    title: string,
-    episodes: APIChapter[],
+    id: number;
+    alias: string;
+    title: string;
+    episodes: APIChapter[];
 };
 
 type APIMangas = {
-    contents?: APIManga[],
+    contents?: APIManga[];
     content?: APIManga[];
 };
 
 type APIChapter = {
-    id: string,
-    alias: string,
-    title: string,
-    subTitle: string,
+    id: string;
+    alias: string;
+    title: string;
+    subTitle: string;
 };
 
 type APIPages = {
-    isScramble: boolean,
-    images: ImageInfo,
+    isScramble: boolean;
+    images: ImageInfo;
 };
 
 type ImageInfo = {
-    imagePath: string,
-    line: string,
-    point: string,
-    defaultHeight: number,
+    imagePath: string;
+    line: string;
+    point: string;
+    defaultHeight: number;
 }[];
 
 type APIUser = {
     user?: {
         accessToken: {
-            token: string,
-            expiredAt: number,
+            token: string;
+            expiredAt: number;
         };
     },
 };
 
 type ScrambleParams = {
-    scrambleIndex: number[],
-    defaultHeight: number,
+    scrambleIndex: number[];
+    defaultHeight: number;
 };
-
-// TODO: Check for possible revision
 
 export class BalconyDRM {
 
     readonly #apiURL: URL;
     readonly #platform = 'WEB';
-    private session: APIUser[ 'user' ][ 'accessToken' ];
+    private session: APIUser['user']['accessToken'] = undefined;
 
-    constructor (private readonly webURL: URL, private readonly scope: string /* 'DELITOON_COM' */) {
+    constructor(private readonly webURL: URL, private readonly scope: string, private readonly timeZone: string) {
         this.#apiURL = new URL('/api/balcony-api-v2/', webURL);
     }
 
     #CreateRequest(endpoint: string, body: JSONElement | undefined = undefined): Request {
-        const uri = new URL(endpoint, this.#apiURL);
-        uri.searchParams.set('isNotLoginAdult', 'true');
-        const request = new Request(uri, body ? undefined : {
-            method: 'POST',
+        const request = new Request(new URL(endpoint, this.#apiURL), {
+            method: body ? 'POST' : 'GET',
             headers: {
                 'Content-Type': 'application/json',
+                Referer: this.webURL.href,
+                'X-Balcony-Id': this.scope,
+                'X-Platform': this.#platform,
+                'X-balcony-timeZone': this.timeZone
             },
-            body: JSON.stringify(body),
+            body: body ? JSON.stringify(body) : undefined,
         });
-        request.headers.set('Referer', this.webURL.origin);
-        request.headers.set('X-Balcony-Id', this.scope);
-        request.headers.set('X-Platform', this.#platform);
-        if (this.#HasValidSession) {
+        if (this.HasValidSession()) {
             request.headers.set('Authorization', 'Bearer ' + this.session.token);
         }
         return request;
     }
 
-    get #HasValidSession() {
-        return this.session?.token && this.session.expiredAt > Date.now() + 60_000;
+    public HasValidSession(): boolean {
+        return (this.session?.token && this.session.expiredAt > Date.now() + 60_000) ?? false;
     }
 
-    private async UpdateSession(force: boolean = false): Promise<void> {
-        if (force || !this.#HasValidSession) {
-            const { user } = await FetchJSON<APIUser>(this.#CreateRequest('/api/auth/session'));
+    private async UpdateSession(): Promise<void> {
+        if (!this.HasValidSession()) {
+            const { user } = await FetchJSON<APIUser>(new Request(new URL('./api/auth/session', this.webURL)));
             this.session = user?.accessToken;
         }
     }
 
-    public async FetchBalconyJSON<T extends JSONElement>(endpoint: string, body: JSONElement = undefined): Promise<APIResult<T>> {
-        await this.UpdateSession();
+    public async FetchBalconyJSON<T extends JSONElement>(endpoint: string, body: JSONElement = undefined, checkSession: boolean = true): Promise<APIResult<T>> {
+        if (checkSession) await this.UpdateSession();
         return FetchJSON<APIResult<T>>(this.#CreateRequest(endpoint, body));
     }
 }
 
 export class DelitoonBase extends DecoratableMangaScraper {
+    private drm: BalconyDRM;
+    private mangaSearchVersion = 2;
 
-    private readonly platform: string = 'WEB';
-    private activeUserSession: APIUser[ 'user' ][ 'accessToken' ] = undefined;
-    private readonly apiUrl = new URL('/api/balcony-api-v2/', this.URI);
-    protected balconyID: string = 'DELITOON_COM';
-    protected pagesEndpoint = './contents/viewer';
-    protected mangaSearchVersion = 1;
+    public SetDRM(baseURI: URL, scope: string, timeZone: string): DelitoonBase {
+        this.drm = new BalconyDRM(baseURI, scope, timeZone);
+        return this;
+    }
 
-    protected drm: BalconyDRM;
+    public WithSearchVersion(version: number): DelitoonBase {
+        this.mangaSearchVersion = version;
+        return this;
+    }
 
     public override ValidateMangaURL(url: string): boolean {
         return new RegExpSafe(`^${this.URI.origin}/detail/[^/]+$`).test(url);
@@ -121,66 +121,35 @@ export class DelitoonBase extends DecoratableMangaScraper {
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
         const mangaid = new URL(url).pathname.split('/').at(-1);
-        const endpoint = new URL(`./contents/${mangaid}`, this.apiUrl);
-        endpoint.searchParams.set('isNotLoginAdult', 'true');
-        const { data } = await this.FetchBalconyJSON<APIManga>(endpoint, false);
-        return new Manga(this, provider, mangaid, data.title.trim());
+        const { data: { title } } = await this.drm.FetchBalconyJSON<APIManga>(`./contents/${mangaid}?isNotLoginAdult=true`);
+        return new Manga(this, provider, mangaid, title);
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
         const promises = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').map(character => {
-            const url = this.mangaSearchVersion === 1 ? new URL('./contents/search', this.apiUrl) : new URL('./search/all', this.apiUrl);
-            url.search = new URLSearchParams({
-                searchText: character,
-                isCheckDevice: 'true',
-                isIncludeAdult: 'true',
-                contentsThumbnailType: 'MAIN'
-            }).toString();
-
-            return this.mangaSearchVersion === 1 ? this.FetchBalconyJSON<APIManga[]>(url) : this.FetchBalconyJSON<APIMangas>(url);
+            const endpoint = this.mangaSearchVersion === 1 ? './contents/search' : './search/all';
+            return this.drm.FetchBalconyJSON<APIMangas | APIManga[]>(`${endpoint}?searchText=${character}&isCheckDevice=true&isIncludeAdult=true&contentsThumbnailType=MAIN`, undefined, false);
         });
-
-        let results: Manga[] = [];
-        switch (this.mangaSearchVersion) {
-            case 1: {
-                results = (await Promise.all(promises)).reduce((accumulator: Manga[], element) => {
-                    const mangas = (element as APIResult<APIManga[]>).data.map(element => new Manga(this, provider, element.alias, element.title.trim()));
-                    accumulator.push(...mangas);
-                    return accumulator;
-                }, []);
-                break;
-            };
-            case 2: {
-                results = (await Promise.all(promises)).reduce((accumulator: Manga[], element) => {
-                    const data = (element as APIResult<APIMangas>).data.content ?? (element as APIResult<APIMangas>).data.contents;
-                    const mangas = data.map(element => new Manga(this, provider, element.alias, element.title.trim()));
-                    accumulator.push(...mangas);
-                    return accumulator;
-                }, []);
-                break;
-            }
-        }
+        const results = (await Promise.all(promises)).reduce((accumulator: Manga[], element) => {
+            const mangasArray = Array.isArray(element.data) ? element.data : element.data.contents ?? element.data.content;
+            const mangas = mangasArray.map(({ alias, title }) => new Manga(this, provider, alias, title));
+            accumulator.push(...mangas);
+            return accumulator;
+        }, []);
         return results.distinct();
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const url = new URL(`./contents/${manga.Identifier}`, this.apiUrl);
-        url.searchParams.set('isNotLoginAdult', 'true');
-        const { data } = await this.FetchBalconyJSON<APIManga>(url);
-        return data.episodes.map(element => {
-            let title = element.title.trim();
-            title += element.subTitle ? ' : ' + element.subTitle.trim() : '';
-            return new Chapter(this, manga, element.alias, title);
-        });
+        const { data: { episodes } } = await this.drm.FetchBalconyJSON<APIManga>(`./contents/${manga.Identifier}?isNotLoginAdult=true`);
+        return episodes.map(({ title, subTitle, alias }) => new Chapter(this, manga, alias, subTitle ? `${title} : ${subTitle}` : title));
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page<ScrambleParams>[]> {
-        const url = new URL(`${this.pagesEndpoint}/${chapter.Parent.Identifier}/${chapter.Identifier}`, this.apiUrl);
-        url.searchParams.set('isNotLoginAdult', 'true');
-        const { error, data } = await this.FetchBalconyJSON<APIPages>(url);
+        const { error, data } = await this.drm.FetchBalconyJSON<APIPages>(`./contents/viewer/${chapter.Parent.Identifier}/${chapter.Identifier}?isNotLoginAdult=true`);
         switch (error?.code) {
             case 'NOT_LOGIN_USER':
             case 'UNAUTHORIZED_CONTENTS':
+            case 'ADULT_ONLY_CONTENTS':
                 throw new Exception(R.Plugin_Common_Chapter_UnavailableError);
         }
         const { images, isScramble } = data;
@@ -188,40 +157,16 @@ export class DelitoonBase extends DecoratableMangaScraper {
     }
 
     private async FetchScrambledPages(chapter: Chapter, images: ImageInfo): Promise<Page<ScrambleParams>[]> {
-        const endpoint = new URL(`./contents/images/${chapter.Parent.Identifier}/${chapter.Identifier}`, this.apiUrl);
-        const { data } = await this.FetchBalconyJSON<string>(endpoint, { line: images[ 0 ].line });
+        const { data } = await this.drm.FetchBalconyJSON<string>(`./contents/images/${chapter.Parent.Identifier}/${chapter.Identifier}`, { line: images[0].line });
         const keyData = GetBytesFromUTF8(data);
         const algorithm = { name: 'AES-CBC', iv: keyData.slice(0, 16), length: 256 };
-        const key = await crypto.subtle.importKey('raw', keyData, algorithm, false, [ 'decrypt' ]);
+        const key = await crypto.subtle.importKey('raw', keyData, algorithm, false, ['decrypt']);
         const promises = images.map(async image => {
             const decrypted = await crypto.subtle.decrypt(algorithm, key, GetBytesFromBase64(image.point));
             const scrambleIndex = JSON.parse(new TextDecoder('utf-8').decode(decrypted)) as number[];
             return new Page<ScrambleParams>(this, chapter, new URL(image.imagePath), { scrambleIndex, defaultHeight: image.defaultHeight });
         });
         return Promise.all(promises);
-    }
-
-    private CreateBalconyRequest(url: URL, body: JSONElement = undefined): Request {
-        return new Request(url, {
-            method: body ? 'POST' : 'GET',
-            headers: {
-                'Referer': this.URI.origin,
-                'X-Balcony-Id': this.balconyID,
-                'X-Platform': this.platform,
-                'Content-Type': body ? 'application/json' : undefined,
-                'Authorization': this.activeUserSession ? ' Bearer ' + this.activeUserSession.token : undefined,
-            },
-            body: body ? JSON.stringify(body) : undefined,
-        });
-    }
-
-    protected async FetchBalconyJSON<T extends JSONElement>(url: URL, body: JSONElement = undefined): Promise<APIResult<T>> {
-        if (!this.activeUserSession || this.activeUserSession.expiredAt < Date.now() - 60_000) {
-            const request = this.CreateBalconyRequest(new URL('./api/auth/session', this.URI));
-            const { user } = await FetchJSON<APIUser>(request);
-            this.activeUserSession = user?.accessToken;
-        }
-        return FetchJSON<APIResult<T>>(this.CreateBalconyRequest(url, body));
     }
 
     public override async FetchImage(page: Page<ScrambleParams>, priority: Priority, signal: AbortSignal): Promise<Blob> {
