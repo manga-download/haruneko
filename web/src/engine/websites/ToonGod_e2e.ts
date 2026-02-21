@@ -1,4 +1,3 @@
-/* NW.js crash on website initialize => CloudFlare
 import { TestFixture } from '../../../test/WebsitesFixture';
 
 new TestFixture({
@@ -9,7 +8,7 @@ new TestFixture({
     container: {
         url: 'https://www.toongod.org/webtoon/i-stole-the-number-one-rankers-soul/',
         id: JSON.stringify({ post: '9019', slug: '/webtoon/i-stole-the-number-one-rankers-soul/' }),
-        title: 'I Stole the Number One Ranker�s Soul'
+        title: 'I Stole the Number One Ranker’s Soul'
     },
     child: {
         id: '/webtoon/i-stole-the-number-one-rankers-soul/chapter-64/',
@@ -21,4 +20,3 @@ new TestFixture({
         type: 'image/jpeg'
     }
 }).AssertWebsite();
-*/
