@@ -105,7 +105,7 @@ export class HeanCMS extends DecoratableMangaScraper {
     }
 
     protected ComputePageUrl(image: string, storage: string): URL {
-        if (/^http(s)?:\/\//.test(image)) return new URL(image);
+        if (new RegExpSafe(/^http(s)?:\/\//).test(image)) return new URL(image);
         switch (storage) {
             case "s3": return new URL(image);
             case "local": return new URL(`${this.mediaUrl}/${image}`);
