@@ -50,7 +50,7 @@ export const pageScript = `
 export default class extends DecoratableMangaScraper {
     protected urlPrefix = 'https://manatoki';
 
-    public constructor(id = 'manatoki', label = 'Manatoki', url = 'https://manatoki468.net', tags = [Tags.Media.Manhwa, Tags.Language.Korean, Tags.Source.Aggregator, Tags.Accessibility.DomainRotation]) {
+    public constructor(id = 'manatoki', label = 'Manatoki', url = 'https://manatoki469.net', tags = [Tags.Media.Manhwa, Tags.Language.Korean, Tags.Source.Aggregator, Tags.Accessibility.DomainRotation]) {
         super(id, label, url, ...tags);
     }
 
