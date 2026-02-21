@@ -6,7 +6,7 @@ new TestFixture({
         title: 'Luvyaa'
     },
     container: {
-        url: 'https://luvyaa.my.id/todays-han-yoil-is-a-woman/',
+        url: 'https://luvyaa.id/todays-han-yoil-is-a-woman/',
         id: '/todays-han-yoil-is-a-woman/',
         title: `Today’s Han Yoil is a Woman`
     },
