@@ -43,7 +43,7 @@ async function LaunchServer(): Promise<ChildProcess> {
         shell: process.platform === 'win32',
     });
     await delay(1000); // TODO: Find better solution to wait until web-app is hosted ...
-    console.log(new Date().toISOString(), '=>', `Started Server (pid: ${vite.pid}):`, vite.exitCode === null);
+    console.log(new Date().toISOString(), '➔', `Started Server (pid: ${vite.pid}):`, vite.exitCode === null);
     return vite;
 }
 
@@ -64,7 +64,7 @@ async function DetectElectron(): Promise<string> {
     for(const electron of search) {
         try {
             if((await fs.stat(path.normalize(electron))).isFile()) {
-                console.log(new Date().toISOString(), '=>', 'Detected Electron:', electron);
+                console.log(new Date().toISOString(), '➔', 'Detected Electron:', electron);
                 return electron;
             }
         } catch {}
@@ -93,7 +93,6 @@ async function LaunchElectron(): Promise<puppeteer.Browser> {
         const pages = await browser.pages();
         const page = pages.find(p => p.url() === AppURL);
         if(page) {
-            await page.reload({ timeout: 5000 });
             await page.waitForSelector(AppSelector, { timeout: 7500 });
             console.log(new Date().toISOString(), '➔', 'Using Page:', [ page.url() ]);
             console.log(new Date().toISOString(), '➔', 'Remote Debugger:', browser.wsEndpoint());
@@ -164,7 +163,7 @@ async function TryStopProcess(processInfo: ChildProcess | null, label: string): 
             default:
                 const signals: NodeJS.Signals[] = [ 'SIGINT', 'SIGTERM', 'SIGKILL' ];
                 for(let index = 0; isRunning() && index < signals.length; index++) {
-                    console.log(new Date().toISOString(), '=>', signals[index], processPath, processInfo.kill(signals[index]));
+                    console.log(new Date().toISOString(), '➔', signals[index], processPath, processInfo.kill(signals[index]));
                     await delay(1000);
                 }
                 break;
@@ -174,6 +173,6 @@ async function TryStopProcess(processInfo: ChildProcess | null, label: string): 
             throw new Error();
         }
     } catch(error) {
-        console.warn(new Date().toISOString(), '=>', `Failed to stop ${label} (pid: ${processInfo.pid}):`, processPath);
+        console.warn(new Date().toISOString(), '➔', `Failed to stop ${label} (pid: ${processInfo.pid}):`, processPath);
     }
 }
