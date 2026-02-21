@@ -21,14 +21,10 @@ type APIMangas = {
     }[]
 };
 
-function MangaExtractor(element: HTMLElement, uri: URL) {
-    return {
-        id: uri.pathname,
-        title: [element.querySelector('.title').textContent.trim(), `(${element.querySelector('.book-locale').textContent.toLowerCase().trim()})`].join(' ').trim()
-    };
-}
-
-@Common.MangaCSS(/^{origin}\/titles\/[^/]+$/, 'div.book-contents', MangaExtractor)
+@Common.MangaCSS(/^{origin}\/titles\/[^/]+$/, 'div.book-contents', (element, uri) => ({
+    id: uri.pathname,
+    title: [element.querySelector('.title').textContent.trim(), `(${element.querySelector('.book-locale').textContent.toLowerCase().trim()})`].join(' ').trim()
+}))
 @Common.ChaptersMultiPageCSS<HTMLAnchorElement>('a.mod-item-series', Common.PatternLinkGenerator('{id}?page={page}'), 0, anchor => ({ id: anchor.pathname, title: anchor.querySelector('.number').textContent.trim() }))
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
