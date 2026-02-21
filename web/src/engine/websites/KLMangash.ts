@@ -6,7 +6,7 @@ import { Zing92Base } from './templates/Zing92Base';
 export default class extends Zing92Base {
 
     public constructor() {
-        super('klmangash', 'KLManga(.sh)', 'https://klmanga.fit', Tags.Media.Manga, Tags.Language.Japanese, Tags.Source.Aggregator, Tags.Accessibility.DomainRotation);
+        super('klmangash', 'KLManga(.sh)', 'https://klmanga.talk', Tags.Media.Manga, Tags.Language.Japanese, Tags.Source.Aggregator, Tags.Accessibility.DomainRotation);
         this.WithNonceName('nonce_a').WithDecodeImageAction('decode_images_g');
     }
 
