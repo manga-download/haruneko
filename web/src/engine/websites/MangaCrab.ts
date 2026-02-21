@@ -35,7 +35,7 @@ export default class extends DecoratableMangaScraper {
         const images = [...body.querySelectorAll('div.page-break img.wp-manga-chapter-img[id^="image-"]')]
             .map(img => [...img.attributes].find(attribute => attribute.value.startsWith('/encript.php'))?.value)
             .filter(img => img);
-        const imgKey = body.innerHTML.match(/Img-Key'\s*:\s*'(.*)'/).at(1);
+        const imgKey = body.innerHTML.match(/Img-X'\s*:\s*'(.*)'/).at(1);
         return images.map(page => new Page<PageKey>(this, chapter, new URL(page, this.URI), { imgKey }));
     }
 
@@ -44,7 +44,7 @@ export default class extends DecoratableMangaScraper {
             return (await Fetch(new Request(page.Link, {
                 headers: {
                     Referer: new URL(page.Parent.Identifier, this.URI).href,
-                    'Img-Key': page.Parameters.imgKey
+                    'Img-X': page.Parameters.imgKey
                 },
             }))).blob();
         }, priority, signal);

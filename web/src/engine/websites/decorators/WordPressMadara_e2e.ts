@@ -6,7 +6,6 @@ import '../AquaManga_e2e';
 import '../ArabToons_e2e';
 import '../ArthurScan_e2e';
 import '../ArvenScans_e2e';
-import '../AstralManga_e2e';
 import '../AsuraScansTR_e2e';
 import '../Atikrost_e2e';
 import '../AzoraWorld_e2e';

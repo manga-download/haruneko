@@ -6,17 +6,17 @@ new TestFixture({
         title: 'TruyenTranhtuan',
     },
     container: {
-        url: 'https://truyentranhtuan.xyz/huyen-thoai-giao-si-tro-lai/',
-        id: '/huyen-thoai-giao-si-tro-lai/',
-        title: 'Huyền Thoại Giáo Sĩ Trở Lại',
+        url: 'https://truyentranhtuan.me/ki-su-hoi-quy/',
+        id: '/ki-su-hoi-quy/',
+        title: 'Kí Sự Hồi Quy',
     },
     child: {
-        id: '/huyen-thoai-giao-si-tro-lai-chuong-98/',
-        title: '98',
+        id: '/ki-su-hoi-quy/chapter-177/',
+        title: 'Chapter 175', //not a typo
     },
     entry: {
-        index: 0,
-        size: 120_129,
+        index: 2,
+        size: 739_493,
         type: 'image/jpeg',
     }
 }).AssertWebsite();
