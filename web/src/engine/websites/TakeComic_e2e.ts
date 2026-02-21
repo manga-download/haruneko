@@ -11,7 +11,7 @@ new TestFixture({
         title: '年齢制限付き乙女ゲーの悪役令嬢ですが、堅物騎士様が優秀過ぎてRイベントが一切おきない'
     },
     child: {
-        id: '/episodes/6466fa4bdbc65',
+        id: '/episodes/b941b8e914058',
         title: '20話'
     },
     entry: {
