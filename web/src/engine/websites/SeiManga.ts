@@ -4,7 +4,7 @@ import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import * as Grouple from './decorators/Grouple';
 
-@Common.MangaCSS(/^{origin}\/[^/]+\/$/, Grouple.queryMangaTitle)
+@Common.MangaCSS(/^{origin}\/[^/]+$/, Grouple.queryMangaTitle)
 @Common.MangasMultiPageCSS(Grouple.queryMangas, Grouple.MangasLinkGenerator, 0, Common.AnchorInfoExtractor(true))
 @Common.ChaptersSinglePageJS(Grouple.chapterScript, 500)
 @Grouple.PagesSinglePageJS()
