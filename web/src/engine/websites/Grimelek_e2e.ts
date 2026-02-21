@@ -6,12 +6,12 @@ new TestFixture({
         title: 'Grimelek'
     },
     container: {
-        url: 'https://siyahmelek.lol/manga/friends/',
+        url: 'https://siyahmelek.mom/manga/friends/',
         id: '/manga/friends/',
         title: 'Friends'
     },
     child: {
-        id: '/manga/revenge-by-harem/bolum-13/',
+        id: '/manga/friends/bolum-40/',
         title: 'Bölüm 40'
     },
     entry: {

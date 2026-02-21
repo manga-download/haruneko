@@ -59,6 +59,7 @@ export default class RemoteBrowserWindow implements IRemoteBrowserWindow {
                 nodeIntegration: false,
                 nodeIntegrationInWorker: false,
                 nodeIntegrationInSubFrames: true, // Enabled to execute pre-load script in all sub-frames: https://github.com/electron/electron/issues/22582
+                backgroundThrottling: false, // Disabled to force timers, observers and animation frames to work in non-visible window: https://www.electronjs.org/docs/latest/api/browser-window#page-visibility
                 disableBlinkFeatures: 'AutomationControlled',
                 preload: preload instanceof Function ? `(${preload})()` : preload,
             }

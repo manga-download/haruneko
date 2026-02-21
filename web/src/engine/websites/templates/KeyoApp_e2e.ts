@@ -4,8 +4,6 @@ import '../GrimScans_e2e';
 import '../KaynScan_e2e';
 import '../MeiToon_e2e';
 import '../NecroScans_e2e';
-import '../ReaperScansFR_e2e';
-import '../RezoScans_e2e';
 import '../RitharScans_e2e';
 import '../SerenityScans_e2e';
 import '../ValirScans_e2e';
