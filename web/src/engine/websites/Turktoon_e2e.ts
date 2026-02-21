@@ -15,8 +15,8 @@ new TestFixture({
         title: 'Bölüm 130'
     },
     entry: {
-        index: 2,
-        size: 101_330,
-        type: 'image/webp'
+        index: 3,
+        size: 493_313,
+        type: 'image/jpeg'
     }
 }).AssertWebsite();

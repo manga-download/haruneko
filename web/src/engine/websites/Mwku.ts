@@ -21,7 +21,7 @@ type APIPages = {
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('mwku', 'Mwku', 'https://www.mwwa.cc', Tags.Language.Chinese, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Source.Aggregator, Tags.Accessibility.DomainRotation);
+        super('mwku', 'Mwku', 'https://www.mwda.cc', Tags.Language.Chinese, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Source.Aggregator, Tags.Accessibility.DomainRotation);
     }
 
     public override get Icon() {
