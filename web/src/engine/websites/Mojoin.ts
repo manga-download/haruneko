@@ -92,12 +92,11 @@ export default class extends DecoratableMangaScraper {
     }
 
     private async FetchAPI<T extends JSONElement>(endpoint: string): Promise<T> {
-        const request = new Request(new URL(endpoint, this.apiUrl), {
+        return (await FetchJSON<APIResult<T>>(new Request(new URL(endpoint, this.apiUrl), {
             headers: await this.drmProvider.ApplyNeededHeaders({
                 device: 'web'
             }),
-        });
-        return (await FetchJSON<APIResult<T>>(request)).data as T;
+        }))).data as T;
     }
 
     public override async FetchImage(page: Page<PageParameters>, priority: Priority, signal: AbortSignal): Promise<Blob> {
