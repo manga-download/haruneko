@@ -14,7 +14,6 @@ async function main() {
 
     // Keep only *_e2e.ts files
     const e2eFiles = files.filter(f => f.endsWith("_e2e.ts"));
-
     const validImports = [];
 
     for (const e2eFile of e2eFiles) {
@@ -23,7 +22,8 @@ async function main() {
         const codePath = join(root, codeFile);
 
         try {
-            const codeContent = await readFile(codePath, "utf8");
+            // eslint-disable-next-line security/detect-non-literal-fs-filename
+            const codeContent = await readFile(codePath, "utf8"); //we control file paths so it safe
 
             // Check if the base file contains "/decorators/WordPressMadara"
             if (codeContent.includes("/decorators/WordPressMadara")) {
