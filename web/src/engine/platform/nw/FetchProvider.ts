@@ -11,6 +11,7 @@ const fetchApiForbiddenHeaders = [
     'Host',
     'Sec-Fetch-Mode',
     'Sec-Fetch-Dest',
+    'Sec-Fetch-Site'
 ];
 
 async function UpdateCookieHeader(url: string, headers: Headers) {
@@ -73,11 +74,12 @@ function ModifyResponseHeaders(details: chrome.webRequest.OnHeadersReceivedDetai
 }
 
 class FetchRequest extends Request {
+    readonly #referrer: string = undefined;
+    public override get referrer() { return this.#referrer; }
     constructor(input: URL | RequestInfo, init?: RequestInit) {
-        if(init?.headers) {
-            init.headers = ConcealHeaders(init.headers);
-        }
+        if(init?.headers) init.headers = ConcealHeaders(init.headers);
         super(input, init);
+        if(init?.referrer) this.#referrer = init.referrer;
     }
 }
 

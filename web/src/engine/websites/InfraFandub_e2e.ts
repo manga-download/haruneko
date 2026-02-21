@@ -1,13 +1,13 @@
 ﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'infrafandub',
         title: 'Infra Fandub'
     },
     container: {
         url: 'https://infrafandub.com/manga/tribu-de-dios/',
-        id: JSON.stringify({ post: '977', slug: '/manga/tribu-de-dios/' }),
+        id: JSON.stringify({ slug: '/manga/tribu-de-dios/' }),
         title: 'Tribu de dios'
     },
     child: {
@@ -19,6 +19,4 @@ const config = {
         size: 1_195_138,
         type: 'image/jpeg'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

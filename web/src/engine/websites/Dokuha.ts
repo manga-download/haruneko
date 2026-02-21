@@ -1,4 +1,4 @@
-﻿import { Tags } from '../Tags';
+import { Tags } from '../Tags';
 import icon from './Dokuha.webp';
 import { type Chapter, DecoratableMangaScraper, Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
@@ -7,16 +7,16 @@ import type { Priority } from '../taskpool/DeferredTask';
 
 type JSONImage = undefined | {
     img: string,
-    rectSrc: string
-}
+    rectSrc: string;
+};
 
 type DecryptingData = {
     size: number,
     decodeRecipes: {
         before: number,
-        after: number
-    }[]
-}
+        after: number;
+    }[];
+};
 
 function ChapterExtractor(anchor: HTMLAnchorElement) {
     return {
@@ -25,9 +25,9 @@ function ChapterExtractor(anchor: HTMLAnchorElement) {
     };
 }
 
-@Common.MangaCSS(/^{origin}\/comicweb\/contents\/comic\/[^/]+$/, 'div.comic-navigation h1.comic-name', Common.ElementLabelExtractor('span'))
-@Common.MangasMultiPageCSS('/comicweb/category/general/list?page={page}', 'div#list-row div.list-comic-info dt.title a')
-@Common.ChaptersSinglePageCSS('section.comic-list ul a', ChapterExtractor)
+@Common.MangaCSS(/^{origin}\/comicweb\/contents\/comic\/[^/]+$/, 'div.comic-navigation h1.comic-name', Common.WebsiteInfoExtractor({ queryBloat: 'span' }))
+@Common.MangasMultiPageCSS('div#list-row div.list-comic-info dt.title a', Common.PatternLinkGenerator('/comicweb/category/general/list?page={page}'))
+@Common.ChaptersSinglePageCSS('section.comic-list ul a', undefined, ChapterExtractor)
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
@@ -65,5 +65,4 @@ export default class extends DecoratableMangaScraper {
 
         return Common.GetTypedData(await new Blob(result).slice(0, size).arrayBuffer());
     }
-
 }

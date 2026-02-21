@@ -4,7 +4,7 @@ import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 
 function ExtractImageLink(element: HTMLImageElement) {
-    return element.dataset.src.replace(/\/t(\d+)\./, '/i$1.').replace(/\/(\d+)t\./, '/$1.');
+    return element.dataset.src.replace(/\/t(\d+)\./, '/i$1.').replace(/\/(\d+)t\./, '/$1.').replace(/(\.[a-z]+){2,}$/, '$1');
 }
 
 @Common.MangaCSS(/^{origin}\/g\/\d+\/$/, 'div#info h1.title')

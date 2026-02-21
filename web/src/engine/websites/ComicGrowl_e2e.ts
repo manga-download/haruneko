@@ -11,12 +11,12 @@ new TestFixture({
         title: '魔法使いの嫁'
     },
     child: {
-        id: '/episodes/100daaf157782/',
+        id: '/episodes/100daaf157782',
         title: '1'
     },
     entry: {
         index: 6,
-        size: 1_685_881,
+        size: 1_895_472,
         type: 'image/png'
     }
 }).AssertWebsite();

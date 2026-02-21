@@ -1,19 +1,18 @@
-/* NW.js crash on website initialize => CloudFlare
 import { TestFixture } from '../../../test/WebsitesFixture';
 
 new TestFixture({
     plugin: {
         id: 'doujindesu',
-        title: 'DoujinDesu'
+        title: 'DoujinDesu',
     },
     container: {
-        url: 'https://doujindesu.tv/manga/hero-villain/',
-        id: '/manga/hero-villain/',
+        url: 'https://doujindesu.tv/manga/hero-villain',
+        id: '/manga/hero-villain',
         title: 'Hero Villain'
     },
     child: {
         id: '/2022/02/19/hero-villain-chapter-01/',
-        title: 'Chapter 01'
+        title: 'Chapter 1'
     },
     entry: {
         index: 1,
@@ -21,4 +20,3 @@ new TestFixture({
         type: 'image/jpeg'
     }
 }).AssertWebsite();
-*/

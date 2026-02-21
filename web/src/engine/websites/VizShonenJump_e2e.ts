@@ -1,6 +1,6 @@
 import { TestFixture } from '../../../test/WebsitesFixture';
 
-//ShonenJump
+// CASE: ShonenJump
 new TestFixture({
     plugin: {
         id: 'vizshonenjump',
@@ -22,7 +22,7 @@ new TestFixture({
     }
 }).AssertWebsite();
 
-//VIZ
+// CASE: VIZ
 new TestFixture({
     plugin: {
         id: 'vizshonenjump',

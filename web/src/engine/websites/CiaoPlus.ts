@@ -8,49 +8,46 @@ import type { Priority } from '../taskpool/DeferredTask';
 import DeScramble from '../transformers/ImageDescrambler';
 import { GetHexFromBytes, GetBytesFromUTF8 } from '../BufferEncoder';
 
-type APIMangas = {
-    title_list: {
-        title_id: number,
-        title_name: string
-        episode_id_list: number[]
-    }[]
-
-}
-
-export type MangaData = {
-    id: string,
-    title: string,
-    episode_list: number[]
-}
+type APIManga = {
+    title_list: [{
+        title_id: number;
+        title_name: string;
+        episode_id_list: number[];
+    }];
+};
 
 type APIChapters = {
     episode_list: {
-        episode_id: number,
-        episode_name: string
-    }[]
-}
+        episode_id: number;
+        episode_name: string;
+    }[];
+};
 
 type APIPages = {
-    scramble_seed: number,
-    page_list: string[]
-}
+    scramble_seed?: number;
+    scramble_ver?: number;
+    page_list: string[];
+};
 
-export type TDimension = {
-    width: number,
-    height: number
-}
+type PageInfo = {
+    seed: number;
+    version: number;
+};
 
-type PageSeed = {
-    seed: number
-}
+// TODO: Check for possible revision
 
 @Common.MangasNotSupported()
 export default class extends DecoratableMangaScraper {
-    protected apiUrl = 'https://api.ciao.shogakukan.co.jp/';
-    protected requestHashProperty = 'x-bambi-hash';
-    protected requestHashAppend: string = '';
 
-    public constructor(id = 'ciaoplus', label = 'Ciao Plus', url = 'https://ciao.shogakukan.co.jp', tags = [Tags.Media.Manga, Tags.Language.Japanese, Tags.Source.Aggregator]) {
+    protected readonly drm = new DRMProvider('https://api.ciao.shogakukan.co.jp/', {
+        name: 'X-Bambi-Hash',
+        seed: '',
+    },
+    { headers: { 'x-bambi-is-crawler': 'false' } }, //headers for all requests
+    { version: '6.0.0', platform: '3' } //urlparams for all requests
+    );
+
+    public constructor(id = 'ciaoplus', label = 'Ciao Plus', url = 'https://ciao.shogakukan.co.jp', tags = [Tags.Media.Manga, Tags.Language.Japanese, Tags.Source.Official]) {
         super(id, label, url, ...tags);
     }
 
@@ -58,175 +55,184 @@ export default class extends DecoratableMangaScraper {
         return icon;
     }
 
+    async #FetchMangaInfo(mangaID: string): Promise<APIManga> {
+        return this.drm.FetchAPI<APIManga>('./title/list', {
+            title_id_list: parseInt(mangaID).toString()//to remove leading 0,
+        });
+    }
+
     public override ValidateMangaURL(url: string): boolean {
-        return new RegExpSafe(`^${this.URI.origin}/comics/title/\\d+/episode/\\d+$`).test(url);
+        return new RegExpSafe(`^${this.URI.origin}/comics/title/\\d+/.*`).test(url);
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
-        const mangaid = parseInt(url.split('/').at(-3));
-        const manga = await this.GetMangaDatas(mangaid.toString());
-        return new Manga(this, provider, manga.id, manga.title);
-
+        const { title_list: [{ title_id, title_name }] } = await this.#FetchMangaInfo(new URL(url).pathname.split('/').at(3));
+        return new Manga(this, provider, title_id.toString(), title_name.trim());
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const { episode_list } = await this.GetMangaDatas(manga.Identifier);
+        const { title_list: [{ episode_id_list }] } = await this.#FetchMangaInfo(manga.Identifier);
+        return this.FetchChapterList(manga, episode_id_list);
+    }
+
+    protected async FetchChapterList(manga: Manga, chapterIDs: number[]): Promise<Chapter[]> {
         const chapters: Chapter[] = [];
-
-        //request is limited to 50 chapters
-        const chunkSize = 50;
-        const chaptersChunks: Array<Array<number>> = [];
-        for (let i = 0; i < episode_list.length; i += chunkSize) {
-            const chunk = episode_list.slice(i, i + chunkSize);
-            chaptersChunks.push(chunk);
-        }
-
-        for (const chapterChunk of chaptersChunks) {
-            const request = await this.CreatePostRequest(`./episode/list`, new URLSearchParams({
-                platform: '3',
-                episode_id_list: chapterChunk.toString()
-            }));
-
-            const { episode_list } = await FetchJSON<APIChapters>(request);
+        while (chapterIDs.length > 0) {
+            const { episode_list } = await this.drm.FetchAPI<APIChapters>(`./episode/list`, {
+                episode_id_list: chapterIDs.splice(0, 50).join(','),
+            });
             chapters.push(...episode_list.map(chapter => new Chapter(this, manga, chapter.episode_id.toString(), chapter.episode_name.trim())));
         };
         return chapters;
     }
 
-    protected GetPieceDimension(width: number, height: number, numCol: number): TDimension {
-        if (width < numCol || height < numCol) return null;
-        const s = this.Cs(numCol, 8);
-        return width > s && height > s && (width = Math.floor(width / s) * s, height = Math.floor(height / s) * s),
-        {
-            width: Math.floor(width / numCol),
-            height: Math.floor(height / numCol)
-        };
+    public override async FetchPages(chapter: Chapter): Promise<Page<PageInfo>[]> {
+        const { page_list, scramble_ver, scramble_seed } = await this.drm.FetchAPI<APIPages>('./web/episode/viewer', {
+            episode_id: chapter.Identifier,
+        });
+        // ShonenMagazine uses the same scrambling algorithm as CiaoPlus v2, but reports scramble_version as 1.
+        // Set version to -1 here to force the correct descrambling function.
+        return page_list.map(page => new Page<PageInfo>(this, chapter, new URL(page), { seed: scramble_seed ?? 1, version: scramble_ver ?? -1 }));
     }
 
-    private Cs(numCol: number, scale: number): number {
-        numCol > scale && ([numCol, scale] = [scale, numCol]);
-        const t = (s: number, o: number) => s ? t(o % s, s) : o;
-        return numCol * scale / t(numCol, scale);
-    }
-
-    public override async FetchPages(chapter: Chapter): Promise<Page<PageSeed>[]> {
-        const request = await this.CreateRequest(`./web/episode/viewer?0&platform=3&episode_id=${chapter.Identifier}`);
-        const { page_list, scramble_seed } = await FetchJSON<APIPages>(request);
-        return page_list.map(page => new Page<PageSeed>(this, chapter, new URL(page), { seed: scramble_seed }));
-    }
-
-    public override async FetchImage(page: Page<PageSeed>, priority: Priority, signal: AbortSignal): Promise<Blob> {
+    public override async FetchImage(page: Page<PageInfo>, priority: Priority, signal: AbortSignal): Promise<Blob> {
         const blob = await Common.FetchImageAjax.call(this, page, priority, signal);
-        const COL_NUM = 4;
-
         return DeScramble(blob, async (image, ctx) => {
-
-            const pieceGenerator = function* (e: number, i: number) {
-                yield* GetUnscrambledData([...Array(e ** 2)].map((s, o) => o), i).map(
-                    (s, o) => ({
-                        source: {
-                            x: s % e,
-                            y: Math.floor(s / e)
-                        },
-                        dest: {
-                            x: o % e,
-                            y: Math.floor(o / e)
-                        }
-                    })
-                );
-            };
-            function GetUnscrambledData(e: number[], seed: number): number[] {
-                const dataGenerator = UnscramblerFn(seed);
-                return e.map(o => [dataGenerator.next().value, o]).sort((o, r) => + (o[0] > r[0]) - + (r[0] > o[0])).map(o => o[1]);
-            }
-
-            const UnscramblerFn = function* (seed: number) {
-                const i = Uint32Array.of(seed);
-                for (; ;) i[0] ^= i[0] << 13,
-                i[0] ^= i[0] >>> 17,
-                i[0] ^= i[0] << 5,
-                yield i[0];
-            };
-
             ctx.drawImage(image, 0, 0);
-            const dimensions = this.GetPieceDimension(image.width, image.height, COL_NUM);
-            ctx.clearRect(0, 0, dimensions.width * COL_NUM, dimensions.height * COL_NUM);
-            for (const piece of pieceGenerator(COL_NUM, page.Parameters.seed ?? 1)) {
+            // source code: const i = r === 1 ? tt(e.width, e.height, t) : nt(e.width, e.height, t);
+            const i = page.Parameters.version === 1 ? ComputeLCMBlockDimensions(image.width, image.height, COL_NUM) : ComputeGridBlockDimensions(image.width, image.height, COL_NUM);
+            for (const c of GenerateScrambleMapping(COL_NUM, page.Parameters.seed)) {
                 ctx.drawImage(
                     image,
-                    piece.source.x * dimensions.width,
-                    piece.source.y * dimensions.height,
-                    dimensions.width,
-                    dimensions.height,
-                    piece.dest.x * dimensions.width,
-                    piece.dest.y * dimensions.height,
-                    dimensions.width,
-                    dimensions.height
+                    c.source.x * i.width,
+                    c.source.y * i.height,
+                    i.width, i.height,
+                    c.dest.x * i.width,
+                    c.dest.y * i.height,
+                    i.width, i.height
                 );
             }
-
         });
     }
+}
 
-    protected async GetMangaDatas(mangaId: string): Promise<MangaData> {
-        const request = await this.CreateRequest(`./title/list?platform=3&title_id_list=${mangaId}`);
-        const { title_list: [manga] } = await FetchJSON<APIMangas>(request);
-        return {
-            id: manga.title_id.toString(),
-            title: manga.title_name.trim(),
-            episode_list: manga.episode_id_list
-        };
+export class DRMProvider {
+
+    constructor(private readonly apiURL: string, readonly requestHeaderHash: { name: string, seed: string; },
+        readonly fixedHeaders: RequestInit = {}, readonly fixedUrlParams: Record<string, string> = {}) { }
+
+    public async FetchAPI<T extends JSONElement>(endpoint: string, parameters: Record<string, string>, init: RequestInit = { method: 'GET' }): Promise<T> {
+        const request = await this.#CreateRequest(endpoint, init, parameters);
+        return FetchJSON<T>(request);
     }
 
-    protected async CreateRequest(endpoint: string): Promise<Request> {
-        const url = new URL(endpoint, this.apiUrl);
-        const requestHash = await this.ComputeHash(url.searchParams);
-        return new Request(url, {
-            method: 'GET',
-            headers: {
-                [this.requestHashProperty]: requestHash,
-                Origin: this.URI.origin,
-                Referer: this.URI.href
-            }
-        });
-    }
+    async #CreateRequest(endpoint: string, init: RequestInit, parameters: Record<string, string>) {
+        const payload = new URLSearchParams(parameters);
+        const uri = new URL(endpoint, this.apiURL);
+        uri.search = payload.toString();
 
-    private async CreatePostRequest(endpoint: string, variables: URLSearchParams): Promise<Request> {
-        const url = new URL(endpoint, this.apiUrl);
-        const requestHash = await this.ComputeHash(variables);
-        return new Request(url, {
-            method: 'POST',
-            body: variables.toString(),
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-                [this.requestHashProperty]: requestHash,
-                Origin: this.URI.origin,
-                Referer: this.URI.href
-            }
-        });
-    }
-
-    private async ComputeHash(variables: URLSearchParams): Promise<string> {
-        const params = Object.fromEntries(variables);
-        const dictionary = {};
-        for (const [key, value] of Object.entries(params)) typeof value != 'string' &&
-            typeof value != 'number' || (dictionary[key] = value.toString());
-        const hashtable: string[] = [];
-        for (const key of Object.keys(dictionary).sort()) {
-            hashtable.push(await this.DoubleSHA(key, dictionary[key]));
+        for (let key in this.fixedUrlParams) {
+            uri.searchParams.set(key, this.fixedUrlParams[key]);
         }
-        const hash = await this.SHA(hashtable.toString(), 'SHA-256');
-        return await this.SHA(`${hash}${this.requestHashAppend}`, 'SHA-512');
+
+        const request = new Request(uri, { ...init, ...this.fixedHeaders });
+        request.headers.set(this.requestHeaderHash.name, await this.#ComputeHash(uri.searchParams, this.requestHeaderHash.seed));
+        return request;
     }
 
-    protected async DoubleSHA(key: string, value: string): Promise<string> {
-        const keyHash = await this.SHA(key, 'SHA-256');
-        const valueHash = await this.SHA(value, 'SHA-512');
-        return [keyHash, valueHash].join('_');
+    async #ComputeHash(parameters: URLSearchParams, seed: string): Promise<string> {
+        parameters.sort();
+        const parameterHashes = await Promise.all([...parameters.entries()].map(async ([key, value]) => [
+            await this.#ComputeSHA(key, 'SHA-256'),
+            await this.#ComputeSHA(value, 'SHA-512'),
+        ].join('_')));
+        const aggreagteHash = await this.#ComputeSHA(parameterHashes.join(','), 'SHA-256');
+        return this.#ComputeSHA(aggreagteHash + seed, 'SHA-512');
     }
 
-    private async SHA(text: string, algorithm: AlgorithmIdentifier): Promise<string> {
+    async #ComputeSHA(text: string, algorithm: 'SHA-256' | 'SHA-512'): Promise<string> {
         const hash = await crypto.subtle.digest(algorithm, GetBytesFromUTF8(text));
         return GetHexFromBytes(new Uint8Array(hash));
     }
 }
+
+// Copy & Paste from Website
+
+const COL_NUM = 4;
+const O = 8;
+
+// ot
+const CreateXorShift32 = function* (seed: number) {
+    const e = Uint32Array.of(seed);
+    for (; ;) {
+        e[0] ^= e[0] << 13;
+        e[0] ^= e[0] >>> 17;
+        e[0] ^= e[0] << 5;
+        yield e[0];
+    }
+};
+
+// at
+const ShuffleArrayWithPRNG = (array: any[], seed: number) => {
+    const t = CreateXorShift32(seed);
+    return array
+        .map((r) => [t.next().value, r])
+        .sort((r, i) => +(r[0] > i[0]) - +(i[0] > r[0]))
+        .map((r) => r[1]);
+};
+
+// it
+const GenerateScrambleMapping = function* (gridSize: number, seed: number) {
+    yield* ShuffleArrayWithPRNG(
+        [...Array(gridSize ** 2)].map((s, r) => r),
+        seed
+    ).map((s, r) => ({
+        source: {
+            x: s % gridSize,
+            y: Math.floor(s / gridSize),
+        },
+        dest: {
+            x: r % gridSize,
+            y: Math.floor(r / gridSize),
+        },
+    }));
+};
+
+// st
+const GetLeastCommonMultiple = (a: number, b: number) => {
+    const t = function t(s: number, r: number): number {
+        return s ? t(r % s, s) : r;
+    };
+    return a * b / t(a, b);
+};
+
+// tt
+const ComputeLCMBlockDimensions = (width: number, height: number, gridSize: number) => {
+    if (width < gridSize || height < gridSize) {
+        return null;
+    }
+    const s = GetLeastCommonMultiple(gridSize, O);
+    if (width > s && height > s) {
+        width = Math.floor(width / s) * s;
+        height = Math.floor(height / s) * s;
+    }
+    return {
+        width: Math.floor(width / gridSize),
+        height: Math.floor(height / gridSize),
+    };
+};
+
+// nt
+const ComputeGridBlockDimensions = (width: number, height: number, gridSize: number) => {
+    if (width < gridSize * O || height < gridSize * O) {
+        return null;
+    }
+    const s = Math.floor(width / O);
+    const r = Math.floor(height / O);
+    const i = Math.floor(s / gridSize);
+    const c = Math.floor(r / gridSize);
+    return {
+        width: i * O,
+        height: c * O
+    };
+};

@@ -15,7 +15,7 @@ type PageData = {
 }
 
 @Common.MangaCSS(/^https?:\/\/comikey\.com\/comics\/[^/]+\/\d+\/$/, 'div.series-info span.title')
-@Common.MangasMultiPageCSS('/comics/ajax?order=name&page={page}', '[data-view="list"] ul li > div.series-data span.title a')
+@Common.MangasMultiPageCSS('[data-view="list"] ul li > div.series-data span.title a', Common.PatternLinkGenerator('/comics/ajax?order=name&page={page}'))
 export default class extends DecoratableMangaScraper {
 
     readonly #drm = new DRMProvider();

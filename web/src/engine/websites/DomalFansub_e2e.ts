@@ -6,7 +6,7 @@ new TestFixture({
         title: 'Domal Fansub'
     },
     container: {
-        url: 'https://d0malfansub.com.tr/manga/code-of-silence/',
+        url: 'https://dom4lfansub.online/manga/code-of-silence/',
         id: JSON.stringify({ post: '5675', slug: '/manga/code-of-silence/'}),
         title: 'Code of Silence'
     },

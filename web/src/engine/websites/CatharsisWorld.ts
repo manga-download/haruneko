@@ -1,9 +1,10 @@
 import { Tags } from '../Tags';
 import icon from './CatharsisWorld.webp';
-import { Kosaku, PageScript } from './templates/Kosaku';
+import { Kosaku } from './templates/Kosaku';
 import * as Common from './decorators/Common';
+import { WPMangaProtectorPagesExtractorScript } from './decorators/WordPressMadara';
 
-@Common.PagesSinglePageJS(PageScript, 2500)
+@Common.PagesSinglePageJS(WPMangaProtectorPagesExtractorScript, 2500)
 export default class extends Kosaku {
 
     public constructor() {

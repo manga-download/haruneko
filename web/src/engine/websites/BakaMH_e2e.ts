@@ -1,8 +1,8 @@
-﻿import { TestFixture, type Config } from '../../../test/WebsitesFixture';
+﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
 const mangaName = encodeURI('秘密教学');
 
-const config: Config = {
+new TestFixture({
     plugin: {
         id: 'bakamh',
         title: 'BakaMH',
@@ -21,6 +21,4 @@ const config: Config = {
         size: 452_647,
         type: 'image/jpeg'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

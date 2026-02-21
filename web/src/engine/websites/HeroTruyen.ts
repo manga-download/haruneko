@@ -22,7 +22,7 @@ const chapterScript = `
 `;
 
 @Common.MangaCSS(/^{origin}\/[^/]+$/, 'ol li:last-of-type a[itemprop="item"]')
-@Common.MangasMultiPageCSS('/tim-truyen?page={page}', 'div.grid div.col-span-1 a:has(img)', 1, 1, 0, Common.AnchorInfoExtractor(true))
+@Common.MangasMultiPageCSS('div.grid div.col-span-1 a:has(img)', Common.PatternLinkGenerator('/tim-truyen?page={page}'), 0, Common.AnchorInfoExtractor(true))
 @Common.ChaptersSinglePageJS(chapterScript, 1500)
 @Common.PagesSinglePageCSS('div.relative img[loading="lazy"]')
 @Common.ImageAjax(true)

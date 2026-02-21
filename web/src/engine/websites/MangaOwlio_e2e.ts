@@ -7,7 +7,7 @@ new TestFixture({
     },
     container: {
         url: 'https://mangaowl.io/read-1/the-newbie-is-too-strong/',
-        id: JSON.stringify({ post: '7645', slug: '/read-1/the-newbie-is-too-strong/' }),
+        id: JSON.stringify({ post: '9493', slug: '/read-1/the-newbie-is-too-strong/' }),
         title: 'The Newbie is Too Strong'
     },
     child: {

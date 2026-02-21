@@ -1,6 +1,6 @@
 type ImageLinks = {
     url: string;
-    key?: string;
+    keyData?: string;
 }[];
 export declare class DRMProvider {
     CreateImageLinks(chapterURL: URL): Promise<ImageLinks>;

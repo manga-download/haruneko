@@ -104,7 +104,9 @@ export default class extends DecoratableMangaScraper {
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         await fetch(new URL('/reset', manga.Identifier));
         const entry = botchecks.find(entry => entry.url === manga.Identifier);
+        console.debug(`>>> ${new Date().toISOString()} - FetchChapters::FetchWindowScript [BEFORE]`);
         const bypassed = await FetchWindowScript<boolean>(new Request(entry.url), entry.script);
+        console.debug(`<<< ${new Date().toISOString()} - FetchChapters::FetchWindowScript [AFTER]`);
         return [
             new Chapter(this, manga, manga.Identifier, bypassed ? '✅ SUCCESS' : '❌ FAILED'),
         ];

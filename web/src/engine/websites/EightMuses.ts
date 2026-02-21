@@ -9,7 +9,7 @@ function ImageExtractor(element: HTMLImageElement): string {
 }
 @Common.MangaCSS(/^{origin}\/comics\/album\/[^/]+\/[^/]+$/, 'div#content meta[itemprop="name"]')
 @Common.MangasNotSupported()
-@Common.ChaptersSinglePageCSS('div#content div.gallery a.c-tile', extractor)
+@Common.ChaptersSinglePageCSS('div#content div.gallery a.c-tile', undefined, extractor)
 @Common.PagesSinglePageCSS('div.gallery div.image img', ImageExtractor)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {

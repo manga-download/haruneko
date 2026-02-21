@@ -31,6 +31,7 @@ type APIManga = {
 type APIChapter = {
     id: string
     attributes: {
+        isUnavailable?: boolean
         volume?: string
         chapter?: string
         pages: number
@@ -162,7 +163,7 @@ export default class extends MangaScraper {
         const { data } = await FetchJSON<APIContainer<APIChapter[]>>(request);
 
         return !data ? [] : data
-            .filter(entry => entry.attributes.pages)
+            .filter(entry => entry.attributes.pages && !entry.attributes.isUnavailable)
             .map(entry => {
                 const groups = entry.relationships.filter(relation => relation.type === 'scanlation_group' && relation.attributes?.name);
                 const title = [

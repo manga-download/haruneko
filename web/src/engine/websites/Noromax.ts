@@ -12,14 +12,14 @@ export function MangaExtractor(anchor: HTMLAnchorElement) {
 }
 
 @MangaStream.MangaCSS(/^{origin}\/Komik\/[^/]+\/$/)
-@Common.MangasSinglePagesCSS([ '/Komik/list-mode/' ], 'div#content div.soralist ul li a.series', MangaExtractor)
+@Common.MangasSinglePageCSS('/Komik/list-mode/', 'div#content div.soralist ul li a.series', MangaExtractor)
 @MangaStream.ChaptersSinglePageCSS()
 @MangaStream.PagesSinglePageJS()
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('noromax', 'Noromax', 'https://noromax01.my.id', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Turkish, Tags.Source.Aggregator, Tags.Accessibility.DomainRotation);
+        super('noromax', 'Noromax', 'https://noromax02.my.id', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Turkish, Tags.Source.Aggregator, Tags.Accessibility.DomainRotation);
     }
 
     public override get Icon() {

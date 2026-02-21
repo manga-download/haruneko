@@ -60,9 +60,8 @@
 </script>
 
 <Header
-    id="Header"
     expandedByDefault={false}
-    persistentHamburgerMenu={true}
+    persistentHamburgerMenu
     bind:isSideNavOpen
 >
     <div slot="platform">
@@ -125,15 +124,15 @@
 <Sidenav bind:isOpen={isSideNavOpen} {onHome} />
 
 <style>
-    :global(#Header) {
-        padding-left: 0;
-    }
     div[slot='platform'] :global(.clickable) {
         -webkit-app-region: no-drag;
     }
     div[slot='platform'] :global(button) {
         padding-right: 0.2em;
         padding-left: 0.2em;
+    }
+    #AppTitle {
+        -webkit-app-region: drag;
     }
     #AppTitle:global(.padding-left) {
         padding-left: 1em;

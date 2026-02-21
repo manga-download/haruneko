@@ -1,9 +1,10 @@
 ﻿import { FetchRegex, FetchCSS } from '../../platform/FetchProvider';
-import { type DecoratableMangaScraper, type Manga, Chapter, Page } from '../../providers/MangaPlugin';
+import { type DecoratableMangaScraper, type MangaPlugin, type Manga, Chapter, Page } from '../../providers/MangaPlugin';
+import * as Common from '../decorators/Common';
 
 export const pathManga = /^{origin}\/[^/]+\.html$/;
 export const queryMangaTitle = 'ul.manga-info :is(h1, h3)';
-export const pathMangasMultiPage = '/manga-list.html?page={page}';
+export const MangasLinkGenerator = Common.PatternLinkGenerator<MangaPlugin>('/manga-list.html?page={page}');
 export const pathMangasSinglePage = '/manga-list.html?listType=allABC';
 export const queryMangas = 'div.series-title a';
 export const queryChapters = 'ul.list-chapters > a';

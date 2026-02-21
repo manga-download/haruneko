@@ -4,12 +4,22 @@ import type { Priority } from '../taskpool/TaskPool';
 import { RateLimit } from '../taskpool/RateLimit';
 import { DecoratableMangaScraper, type Chapter, Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
+
 import { DRMProvider } from './CrunchyScan.DRM';
 
-const ExtractTitle = (element: HTMLElement) => element.innerText.replace(/^\s*\(\s*adulte[^\)]*\)\s*/i, '');
+function CleanTitle(text: string) {
+    return text.replace(/^\s*\(\s*adulte[^\)]*\)\s*/i, '');
+}
 
-@Common.MangaCSS(/^{origin}\/lecture-en-ligne\/[^/]+$/, 'main.container .baseManga h2', ExtractTitle)
-@Common.MangasMultiPageCSS('/api/getLastManga?method=grid&page={page}', 'a[class*="text"][href*="/lecture-en-ligne/"]', 1, 1, 0, (a: HTMLAnchorElement) => ({ id: a.pathname, title: ExtractTitle(a) }))
+function MangaLinkExtractor(head: HTMLHeadingElement, uri: URL) {
+    return {
+        id: uri.pathname,
+        title: CleanTitle(head.innerText),
+    };
+}
+
+@Common.MangaCSS(/^{origin}\/lecture-en-ligne\/[^/]+$/, 'main.container .baseManga h2', MangaLinkExtractor)
+@Common.MangasMultiPageCSS<HTMLAnchorElement>('a[class*="text"][href*="/lecture-en-ligne/"]', Common.PatternLinkGenerator('/api/getLastManga?method=grid&page={page}'), 0, a => ({ id: a.pathname, title: CleanTitle(a.text) }))
 @Common.ChaptersSinglePageCSS('#ChapterWrap a.chapter-link[href*="/read/"]')
 export default class extends DecoratableMangaScraper {
 
@@ -26,7 +36,7 @@ export default class extends DecoratableMangaScraper {
 
     public async FetchPages(chapter: Chapter): Promise<Page[]> {
         // TODO: Enable when implementation is complete ...
-        const data = []; // await this.#drm.CreateImageLinks(new URL(chapter.Identifier, this.URI));
+        const data = new Array(-1); // await this.#drm.CreateImageLinks(new URL(chapter.Identifier, this.URI));
         return data.map(image => new Page(this, chapter, new URL(image.url, this.URI), { Referer: image.referer }));
     }
 

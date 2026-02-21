@@ -6,13 +6,14 @@ import * as Common from './decorators/Common';
 
 @Madara.MangaCSS(/^{origin}\/manga\/[^/]+\/$/, 'ol.breadcrumb li:last-of-type a')
 @Madara.MangasMultiPageAJAX()
-@Madara.ChaptersSinglePageAJAXv2()
-@Madara.PagesSinglePageCSS()
+@Madara.ChaptersSinglePageAJAXv2('span.chapter-text-content', element => ({ id: new URL(window.atob(element.dataset.originalHref)).pathname, title: element.textContent.trim() }))
+@Common.PagesSinglePageCSS('div.page-break img[data-obfuscated]', img => new URL(window.atob(img.dataset.obfuscated)).href)
+
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('barmanga', 'BarManga', 'https://libribar.com', Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Language.Spanish, Tags.Source.Aggregator);
+        super('barmanga', 'BarManga', 'https://archiviumbar.com', Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Language.Spanish, Tags.Source.Aggregator);
     }
 
     public override get Icon() {

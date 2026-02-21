@@ -86,8 +86,8 @@
                 }
                 return !rejectconditions.length;
             },
-        ).map((item) => createDataRow(item)));
-        
+        ).map(createDataRow));
+
     // Pagination
     let page = $state(1);
     let pageSize = $state(10);
@@ -170,8 +170,8 @@
         pageSize={pageSize}
         page={page}
         rows={filteredPluginlist}
-        on:click:row={(event) => {
-            $selectedPlugin = event.detail.overflow;
+        on:click:row={event => {
+            $selectedPlugin = event.detail.row.overflow;
             isPluginModalOpen = false;
         }}
     >
@@ -254,8 +254,8 @@
         </div>
     </DataTable>
     <Pagination
-        bind:pageSize={pageSize} 
-        pageSizes={pageSizes} 
+        bind:pageSize={pageSize}
+        pageSizes={pageSizes}
         bind:page={page}
         {totalItems}
     />

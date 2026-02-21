@@ -1,11 +1,11 @@
-import { FASTElement, type ViewTemplate, type ElementStyles, customElement, html, css, observable, when, repeat } from '@microsoft/fast-element';
+import { FASTElement, html, css, observable, when, repeat } from '@microsoft/fast-element';
 import type { MediaContainer, MediaItem } from '../../../engine/providers/MediaPlugin';
 import { Chapter } from '../../../engine/providers/MangaPlugin';
-import S from '../services/StateService';
+import { LocalizationProviderRegistration, type ILocalizationProvider } from '../services/LocalizationProvider';
 
 import IconClose from '@fluentui/svg-icons/icons/dismiss_20_regular.svg?raw';
 
-const styles: ElementStyles = css`
+const styles = css`
 
     :host {
         display: flex;
@@ -13,9 +13,9 @@ const styles: ElementStyles = css`
     }
 
     #heading {
-        background-color: var(--neutral-layer-1);
-        padding: calc(var(--design-unit) * 1px);
-        gap: calc(var(--base-height-multiplier) * 1px);
+        background-color: var(--colorNeutralBackground2);
+        padding: var(--spacingHorizontalXS);
+        gap: var(--spacingHorizontalS);
         display: grid;
         align-items: center;
         grid-template-columns: max-content 1fr max-content;
@@ -35,12 +35,12 @@ const styles: ElementStyles = css`
     }
 `;
 
-const templatePage: ViewTemplate<MediaItem> = html`<fluent-media-item-page :Item=${model => model}></fluent-media-item-page>`;
-const templateChapter: ViewTemplate<MediaItemPreview> = html`${repeat(model => model.items, templatePage, { recycle: false })}`;
+const templatePage = html<MediaItem> `<fluent-media-item-page :Item=${model => model}></fluent-media-item-page>`;
+const templateChapter = html<MediaItemPreview>`${repeat(model => model.items, templatePage, { recycle: false })}`;
 
-const template: ViewTemplate<MediaItemPreview> = html`
+const template = html<MediaItemPreview>`
     <div id="heading">
-        <fluent-button appearance="stealth" title="${() => S.Locale.Frontend_FluentCore_Preview_CloseButton_Description()}" :innerHTML=${() => IconClose} @click=${model => model.Entry = undefined}></fluent-button>
+        <fluent-button icon-only appearance="transparent" title="${model => model.Localization.Locale.Frontend_FluentCore_Preview_CloseButton_Description()}" :innerHTML=${() => IconClose} @click=${model => model.Entry = undefined}></fluent-button>
         <div id="caption">${model => model.Entry?.Title ?? ''}</div>
         <div></div>
     </div>
@@ -49,14 +49,15 @@ const template: ViewTemplate<MediaItemPreview> = html`
     </div>
 `;
 
-@customElement({ name: 'fluent-media-item-preview', template, styles })
 export class MediaItemPreview extends FASTElement {
+
+    @LocalizationProviderRegistration Localization: ILocalizationProvider;
 
     @observable items: ReadonlyArray<MediaItem>;
 
     @observable Entry: MediaContainer<MediaItem>;
     async EntryChanged() {
-        if(this.Entry?.Entries?.Value.length === 0) {
+        if (this.Entry?.Entries?.Value.length === 0) {
             this.items = [];
             await this.Entry?.Update();
         }
@@ -64,3 +65,5 @@ export class MediaItemPreview extends FASTElement {
         this.$emit('entryChanged', this.Entry);
     }
 }
+
+MediaItemPreview.define({ name: 'fluent-media-item-preview', template, styles });

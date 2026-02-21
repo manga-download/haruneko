@@ -3,19 +3,19 @@
 new TestFixture({
     plugin: {
         id: 'merlinscans',
-        title: 'Merlin Scans'
+        title: 'MerlinToon'
     },
     container: {
-        url: 'https://merlinscans.com/series/akademinin-dehasi',
-        id: '/series/akademinin-dehasi',
+        url: 'https://merlintoon.com/seri/akademinin-dehasi/',
+        id: '/seri/akademinin-dehasi/',
         title: 'Akademinin Dehası'
     },
     child: {
-        id: '/series/akademinin-dehasi/chapter-65.00',
-        title: '65. Bölüm'
+        id: '/seri/akademinin-dehasi/bolum-65/',
+        title: 'Bölüm 65'
     },
     entry: {
-        index: 2,
+        index: 1,
         size: 553_600,
         type: 'image/webp'
     }

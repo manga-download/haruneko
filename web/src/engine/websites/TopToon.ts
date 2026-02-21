@@ -9,13 +9,13 @@ import { FetchWindowScript } from '../platform/FetchProvider';
 const clearMangaLimitScript = `localStorage.removeItem('freeComicCount');`;
 
 type APIComic = {
-    id: number,
-    idx: string,
+    id: number;
+    idx: string;
     meta: {
-        title: string,
-        comicsListUrl: string,
-    },
-}
+        title: string;
+        comicsListUrl: string;
+    };
+};
 
 function ChapterExtractor(anchor: HTMLAnchorElement) {
     const id = `/comic/ep_view/${anchor.dataset.comicId}/${anchor.dataset.episodeId}`;
@@ -26,11 +26,11 @@ function ChapterExtractor(anchor: HTMLAnchorElement) {
 }
 
 @Common.MangaCSS(/^{origin}\/comic\/ep_list\/[^/]+/, 'div.ep_comic_info span.comic_tit span')
-@Common.ChaptersSinglePageCSS('div.eplist ul a.episode-items', ChapterExtractor)
+@Common.ChaptersSinglePageCSS('div.eplist ul a.episode-items', undefined, ChapterExtractor)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
-    public constructor() {
+    public constructor () {
         super('toptoon', `TOPTOON (탑툰)`, 'https://toptoon.com', Tags.Language.Korean, Tags.Media.Manhwa, Tags.Source.Official);
     }
 
@@ -46,7 +46,6 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
         await FetchWindowScript(new Request(this.URI), clearMangaLimitScript); //clear free chapter limit
-        return Common.FetchPagesSinglePageCSS.call(this, chapter, 'div#viewerContentsWrap img.document_img');
+        return Common.FetchPagesSinglePageCSS.call(this, chapter, 'div#viewerContentsWrap .document_img');
     }
-
 }

@@ -5,91 +5,92 @@ import * as Common from './decorators/Common';
 import { FetchJSON } from '../platform/FetchProvider';
 
 type APIResult<T> = {
-    errno: number,
-    errmsg: string,
-    data: T
-}
+    errno: number;
+    data: T;
+};
 
-type APIComicList = {
-    comicList: APIManga[]
-}
+type APIManga = APIResult<{
+    comicInfo: {
+        title: string;
+    };
+}>;
 
-type APIComicSingle = {
-    comicInfo: APIManga
-}
+type APIMangas = APIResult<{
+    comicList: {
+        id: number;
+        name: string;
+        title: string;
+        comic_py: string;
+    }[];
+}>;
 
-type APIChapterInfo = {
-    chapterInfo: APIChapter
-}
+type APIChapters = APIResult<{
+    comicInfo: {
+        id: number;
+        chapterList: {
+            data: {
+                chapter_id: number;
+                chapter_title: string;
+            }[];
+        }[];
+    };
+}>;
 
-type APIManga = {
-    id: number,
-    name: string,
-    title: string
-    comicPy: string,
-    comic_py: string, //yes api is dumb like that
-    chapterList: APIChapter[]
-}
-
-type APIChapter = {
-    title: string,
-    data: {
-        chapter_id: number,
-        chapter_title: string
-    }[]
-    page_url_hd: string[],
-    page_url: string[]
-}
+type APIPages = APIResult<{
+    chapterInfo: {
+        page_url_hd?: string[];
+        page_url: string[];
+    }
+}>;
 
 type ChapterID = {
-    comicId: number,
-    chapterId: number
-}
+    comicId: number;
+    chapterId: number;
+};
 
+//TODO: @Common.MangaCSS(/-/, '...', (element, uri) => ({ id: uri.pathname.split('/').at(-1).replace('.html', ''), title: '...'}))
 @Common.ImageAjax(true)
-export default class extends DecoratableMangaScraper {
+export default class Scraper extends DecoratableMangaScraper {
+
+    private readonly apiURL = 'https://www.idmzj.com/api/v1/comic1/';
+
     public constructor() {
         super('dmzj', `动漫之家(DMZJ)`, 'https://www.idmzj.com', Tags.Language.Chinese, Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Source.Aggregator);
     }
+
     public override get Icon() {
         return icon;
     }
 
     public override ValidateMangaURL(url: string) {
-        return new RegExpSafe(`^${this.URI.origin}/info/\\S+.html$`).test(url);
+        return new RegExpSafe(`^${this.URI.origin}/info/\[^/]+.html$`).test(url);
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
-        const comicPy = url.match(/\/info\/(\S+)\.html$/)[1];
-        const request = new Request(new URL(`/api/v1/comic1/comic/detail?comic_py=${comicPy}`, this.URI).href);
-        const data = await FetchJSON<APIResult<APIComicSingle>>(request);
-        return new Manga(this, provider, data.data.comicInfo.comicPy, data.data.comicInfo.title.trim());
+        const id = url.match(/\/info\/([^/]+)\.html$/).at(1);
+        const { data: { comicInfo: { title } } } = await FetchJSON<APIManga>(new Request(new URL(`./comic/detail?comic_py=${id}`, this.apiURL)));
+        return new Manga(this, provider, id, title);
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        const mangaList: Manga[] = [];
-        for (let page = 1, run = true; run; page++) {
-            const mangas = await this.GetMangasFromPage(page, provider);
-            mangas.length > 0 ? mangaList.push(...mangas) : run = false;
-        }
-        return mangaList;
-    }
-    private async GetMangasFromPage(page: number, provider: MangaPlugin): Promise<Manga[]> {
-        const request = new Request(new URL(`/api/v1/comic1/filter?page=${page}&size=100`, this.URI).href);
-        const data = await FetchJSON<APIResult<APIComicList>>(request);
-        return data.errno != 0 || !data.data.comicList ? [] : data.data.comicList.map(manga => new Manga(this, provider, manga.comic_py, manga.name.trim()));
+        type This = typeof this;
+        return Array.fromAsync(async function* (this: This) {
+            for (let page = 1, run = true; run; page++) {
+                const { data: { comicList }, errno } = await FetchJSON<APIMangas>(new Request(new URL(`./filter?page=${page}&size=100`, this.apiURL)));
+                const mangas = errno !== 0 || !comicList ? [] : comicList.map(({ comic_py: id, name }) => new Manga(this, provider, id, name));
+                mangas.length > 0 ? yield* mangas : run = false;
+            }
+        }.call(this));
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const request = new Request(new URL(`/api/v1/comic1/comic/detail?comic_py=${manga.Identifier}`, this.URI).href);
-        const data = await FetchJSON<APIResult<APIComicSingle>>(request);
-        return data.errno != 0 ? [] : data.data.comicInfo.chapterList[0].data.map(chapter => new Chapter(this, manga, JSON.stringify({ comicId: data.data.comicInfo.id, chapterId: chapter.chapter_id }), chapter.chapter_title.trim()));
+        const { data: { comicInfo: { chapterList, id } }, errno } = await FetchJSON<APIChapters>(new Request(new URL(`./comic/detail?comic_py=${manga.Identifier}`, this.apiURL)));
+        return errno !== 0 ? [] : chapterList[0].data.map(({ chapter_id: chapterId, chapter_title: chapterTitle }) => new Chapter(this, manga, JSON.stringify({ comicId: id, chapterId }), chapterTitle));
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const chapterId: ChapterID = JSON.parse(chapter.Identifier);
-        const request = new Request(new URL(`/api/v1/comic1/chapter/detail?comic_id=${chapterId.comicId}&chapter_id=${chapterId.chapterId}`, this.URI).href);
-        const data = await FetchJSON<APIResult<APIChapterInfo>>(request);
-        return data.errno != 0 ? [] : (data.data.chapterInfo.page_url_hd || data.data.chapterInfo.page_url).map(page => new Page(this, chapter, new URL(page)));
+        const { comicId, chapterId }: ChapterID = JSON.parse(chapter.Identifier);
+        const { data: { chapterInfo: { page_url_hd, page_url } } } = await FetchJSON<APIPages>(new Request(new URL(`./chapter/detail?comic_id=${comicId}&chapter_id=${chapterId}`, this.apiURL)));
+        return (page_url_hd || page_url).map(page => new Page(this, chapter, new URL(page)));
     }
 }

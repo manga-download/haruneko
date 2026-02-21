@@ -7,7 +7,7 @@ import { FetchCSS, FetchJSON } from '../platform/FetchProvider';
 function MangaExtractor(element: HTMLDivElement) {
     const anchor = element.querySelector<HTMLAnchorElement>('a');
     const id = anchor.pathname.match(/(\/[^/]+\/contents\/\d+\/)/)[1];
-    const title = element.querySelector <HTMLHeadingElement>('h3').textContent.trim();
+    const title = element.querySelector<HTMLHeadingElement>('h3').textContent.trim();
     return { id, title };
 }
 
@@ -39,13 +39,12 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        let mangaList: Manga[]= [];
-        for (let page = 0, run = true; run; page += 20) {
-            const mangas = await Common.FetchMangasSinglePagesCSS.call(this, provider, [ `/schedule/${page}/` ], 'div.row div.col div.box', MangaExtractor);
-            mangas.length > 0 ? mangaList.push(...mangas) : run = false;
-        }
+        const mangas = [
+            ...await Common.FetchMangasSinglePageCSS.call(this, provider, '/schedule/0/', 'div.row div.col div.box', MangaExtractor),
+            ...await Common.FetchMangasMultiPageCSS.call(this, provider, 'div.row div.col div.box', Common.PatternLinkGenerator('/schedule/{page}/', 40, 20), 0, MangaExtractor),
+        ];
         // NOTE: Only mangas with ID >= 1000000 have chapters for online reading
-        return mangaList.filter(manga => /\d{7}\/$/.test(manga.Identifier)).distinct();
+        return mangas.filter(manga => /\d{7}\/$/.test(manga.Identifier)).distinct();
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {

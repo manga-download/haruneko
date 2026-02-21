@@ -77,6 +77,7 @@ export default class extends DecoratableMangaScraper {
 
     private readonly languageOption = 'ja-JP';
     private readonly mangaPaths = [ 'new_release', 'read_for_free' ];
+    private readonly keyData = GetBytesFromUTF8('a7fc9dc89f2c873d79397f8a0028a4cd');
     protected api = 'https://api.comico.jp';
     protected mangaLanguages = [ this.languageOption ];
 
@@ -147,18 +148,9 @@ export default class extends DecoratableMangaScraper {
     }
 
     private async DecryptPictureUrl(page: ApiImage): Promise<string> {
-        const secretKey = await crypto.subtle.importKey(
-            'raw',
-            GetBytesFromUTF8('a7fc9dc89f2c873d79397f8a0028a4cd'),
-            { name: 'AES-CBC', length: 128 },
-            true,
-            [ 'decrypt' ]
-        );
-
-        const decrypted = await crypto.subtle.decrypt({
-            name: 'AES-CBC',
-            iv: new Uint8Array(16).buffer,
-        }, secretKey, GetBytesFromBase64(page.url));
+        const algorithm = { name: 'AES-CBC', iv: new Uint8Array(16).buffer };
+        const secretKey = await crypto.subtle.importKey('raw', this.keyData, algorithm, false, [ 'decrypt' ]);
+        const decrypted = await crypto.subtle.decrypt(algorithm, secretKey, GetBytesFromBase64(page.url));
 
         return new TextDecoder('utf-8').decode(decrypted) + '?' + page.parameter;
     }

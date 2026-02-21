@@ -1,11 +1,6 @@
-export const pagesScript = `
-	new Promise ( resolve => {
-		resolve( [...document.querySelectorAll('.myImage')].map(image => {
-			 loadImage(image, 1);
-			 return new URL(image.getAttribute('src'), window.location.href).href;
-	    }));
-	});
-`;
+export function PagesScript(host: string = 'https://image.meowing.org/uploads/') {
+    return `[ ...document.querySelectorAll('img.myImage') ].map(img => '${host}' + img.getAttribute('uid'))`;
+}
 export const queryMangaTitle = 'meta[property="og:title"]';
 export const queryMangaPath = '/series';
 export const queryManga = 'div#searched_series_page button a.grid';

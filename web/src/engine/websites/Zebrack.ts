@@ -11,94 +11,96 @@ import { WebsiteResourceKey as R } from '../../i18n/ILocale';
 type ZebrackResponse = {
     titleDetailView: TitleDetailView,
     magazineViewerView: MagazineViewerView,
-    volumeListView: VolumeListView
-}
+    volumeListView: VolumeListView;
+};
 
 type VolumeListView = {
-    volumes: Volume[]
-}
+    volumes: Volume[];
+};
 
 type Volume = {
     titleId: number,
     volumeId: number,
     titleName: string,
-    volumeName: string
-}
+    volumeName: string;
+};
 
 type TitleDetailView = {
     titleId: number,
-    titleName: string
-}
+    titleName: string;
+};
 
 type TitleChapterListViewV3 = {
     titleId: number,
     groups: ChapterGroupV3[],
-    titleName: string
-}
+    titleName: string;
+};
 
 type ChapterGroupV3 = {
     volumeId: number,
-    chapters: ChapterV3[]
-}
+    chapters: ChapterV3[];
+};
 
 type ChapterV3 = {
     id: number,
     titleId: number,
-    mainName: string
-}
+    mainName: string;
+};
 
 type MagazineViewerView = {
     images: ZebrackImage[];
-}
+};
 
 type ZebrackImage = {
     imageUrl: string,
-    encryptionKey: string
-}
+    encryptionKey: string;
+};
 
 type ChapterViewerViewV3 = {
-    pages: ChapterPageV3[]
-}
+    pages: ChapterPageV3[];
+};
 type ChapterPageV3 = {
     image: ImageV3;
-}
+};
 
 type ImageV3 = {
     imageUrl: string,
-    encryptionKey: string
-}
+    encryptionKey: string;
+};
 
 type GravureDetailViewV3 = {
-    gravure: GravureV3
-}
+    gravure: GravureV3;
+};
 
 type GravureV3 = {
-    name: string
-}
+    name: string;
+};
 
 type GravureViewerViewV3 = {
-    images: ImageV3[]
-}
+    images: ImageV3[];
+};
 
 type MagazineDetailViewV3 = {
     magazine: MagazineIssue;
-}
+};
 type MagazineIssue = {
     magazineName: string,
-    issueName: string
-}
+    issueName: string;
+};
 
 type VolumeViewerViewV3 = {
-  pages: VolumePageV3[];
-}
+    pages: VolumePageV3[];
+};
 
 type VolumePageV3 = {
     image: ImageV3;
-}
+};
 
 type PageParam = {
-    encryptionKey: string
-}
+    encryptionKey: string;
+};
+
+// TODO: Check for possible revision
 
 @Common.MangasNotSupported()
 export default class extends DecoratableMangaScraper {
@@ -107,7 +109,7 @@ export default class extends DecoratableMangaScraper {
     private readonly oldApiUrl = 'https://api.zebrack-comic.com';
     private readonly responseRootType = 'Zebrack.Response';
 
-    public constructor() {
+    public constructor () {
         super('zebrack', 'Zebrack(ゼブラック)', 'https://zebrack-comic.shueisha.co.jp', Tags.Media.Manga, Tags.Language.Japanese, Tags.Source.Official);
     }
 
@@ -122,18 +124,18 @@ export default class extends DecoratableMangaScraper {
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
         const uri = new URL(url);
         if (/^\/magazine\//.test(uri.pathname)) {
-            const magazineId = uri.pathname.match(/\/magazine\/(\d+)/)[1];
-            const magazineIssueId = uri.pathname.match(/\/issue\/(\d+)/)[1];
+            const magazineId = uri.pathname.match(/\/magazine\/(\d+)/).at(-1);
+            const magazineIssueId = uri.pathname.match(/\/issue\/(\d+)/).at(-1);
             const { magazine: { magazineName, issueName } } = await this.FetchMagazineDetail(magazineId, magazineIssueId);
             return new Manga(this, provider, uri.pathname, `${magazineName} ${issueName}`);
 
         } else if (/^\/gravure\//.test(uri.pathname)) {
-            const gravureId = uri.pathname.match(/\/gravure\/(\d+)$/)[1];
+            const gravureId = uri.pathname.match(/\/gravure\/(\d+)$/).at(-1);
             const { gravure: { name } } = await this.FetchGravureDetail(gravureId);
             return new Manga(this, provider, uri.pathname, name.trim());
         }
 
-        const titleId = uri.pathname.match(/\/title\/(\d+)/)[1];
+        const titleId = uri.pathname.match(/\/title\/(\d+)/).at(-1);
         const { titleDetailView: { titleName } } = await this.FetchTitleDetail(titleId);
         return new Manga(this, provider, uri.pathname, titleName.trim());
 
@@ -162,13 +164,13 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const parts = manga.Identifier.split('/');
-        let type = parts[3] || 'chapter';
-        if (['magazine', 'gravure'].includes(parts[1])) {
-            type = parts[1];
+        const [ , path1, path2, path3, path4 ] = manga.Identifier.split('/');
+        let type = path3 || 'chapter';
+        if ([ 'magazine', 'gravure' ].includes(path1)) {
+            type = path1;
         }
         if (type === 'chapter') {
-            const id = parts[2];
+            const id = path2;
             const { groups } = await this.FetchChapterList(id);
             return groups.reduce((chaptersAccumulator: Chapter[], currentGroup) => {
                 const chapters = currentGroup.chapters.map(chapter => new Chapter(this, manga, `chapter/${chapter.titleId}/${chapter.id}`, chapter.mainName.replace(manga.Title, '').trim()));
@@ -178,18 +180,18 @@ export default class extends DecoratableMangaScraper {
         }
 
         if (type === 'gravure') {
-            return [new Chapter(this, manga, manga.Identifier.slice(1), manga.Title)];
+            return [ new Chapter(this, manga, manga.Identifier.slice(1), manga.Title) ];
         }
 
         if (type === 'magazine') {
-            const magazineId = parts[2];
-            const magazineIssueId = parts[4];
-            return [new Chapter(this, manga, `magazine/${magazineId}/${magazineIssueId}`, manga.Title)];
+            const magazineId = path2;
+            const magazineIssueId = path4;
+            return [ new Chapter(this, manga, `magazine/${magazineId}/${magazineIssueId}`, manga.Title) ];
         }
 
         if (type === 'volume_list' || type === 'volume') {
-            const id = parts[2];
-            const { volumeListView: { volumes }} = await this.FetchVolumeList(id);
+            const id = path2;
+            const { volumeListView: { volumes } } = await this.FetchVolumeList(id);
             return volumes.map(volume => new Chapter(this, manga, `volume/${volume.titleId}/${volume.volumeId}`, volume.volumeName.replace(manga.Title, '').trim()));
         }
         return [];
@@ -210,7 +212,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const [type, titleId, chapterId] = chapter.Identifier.split('/');
+        const [ type, titleId, chapterId ] = chapter.Identifier.split('/');
         const secretKey = await FetchWindowScript<string>(new Request(this.URI), `localStorage.getItem('device_secret_key') || ''`);
 
         if (type === 'chapter') {
@@ -250,7 +252,7 @@ export default class extends DecoratableMangaScraper {
         throw new Exception(R.Plugin_Common_Chapter_InvalidError);
     }
 
-    private async FetchVolumeViewer(titleId: string, volumeId: string, secretKey : string) {
+    private async FetchVolumeViewer(titleId: string, volumeId: string, secretKey: string) {
         const uri = new URL('/api/v3/manga_volume_viewer', this.apiURL);
         uri.searchParams.set('secret', secretKey);
         uri.searchParams.set('is_trial', '0');
@@ -317,17 +319,16 @@ export default class extends DecoratableMangaScraper {
         if (!page.Parameters.encryptionKey) return blob;
         const encrypted = await new Response(blob).arrayBuffer();
         const decrypted = XORDecrypt(new Uint8Array(encrypted), page.Parameters.encryptionKey);
-        return new Blob([decrypted], { type: blob.type });
+        return new Blob([ decrypted ], { type: blob.type });
     }
-
 }
 
-function XORDecrypt(encrypted: Uint8Array, key: string) {
+function XORDecrypt(encrypted: Uint8Array<ArrayBuffer>, key: string) {
     if (key) {
         const t = new Uint8Array(key.match(/.{1,2}/g).map(e => parseInt(e, 16)));
         const s = new Uint8Array(encrypted);
         for (let n = 0; n < s.length; n++) {
-            s[n] ^= t[n % t.length];
+            s[ n ] ^= t[ n % t.length ];
         }
         return s;
     } else {

@@ -1,5 +1,4 @@
-﻿/* NW.js crash on website initialize => CloudFlare
-import { TestFixture } from '../../../test/WebsitesFixture';
+﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
 new TestFixture({
     plugin: {
@@ -12,13 +11,12 @@ new TestFixture({
         title: 'Ta Trời Sinh Đã Là Nhân Vật Phản Diện'
     },
     child: {
-        id: '/truyen-tranh/ta-troi-sinh-da-la-nhan-vat-phan-dien/chuong-01',
+        id: '/truyen-tranh/ta-troi-sinh-da-la-nhan-vat-phan-dien/chapter-1',
         title: 'Chapter 1'
     },
     entry: {
         index: 2,
-        size: 745_804,
-        type: 'image/png'
+        size: 153_588,
+        type: 'image/jpeg'
     }
 }).AssertWebsite();
-*/

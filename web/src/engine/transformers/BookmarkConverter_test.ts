@@ -9,11 +9,10 @@ import { Key } from '../SettingsGlobal';
 import { GetLocale } from '../../i18n/Localization';
 
 const legacyWebsiteIdentifierMapTestCases = [
+    { sourceID: 'allanimesite', targetID: 'allmanga' },
     { sourceID: 'apolltoons', targetID: 'mundomanhwa' },
     { sourceID: 'azoramanga', targetID: 'azoraworld' },
-    { sourceID: 'bacamangaorg', targetID: 'bacamanga' },
     { sourceID: 'bananascan', targetID: 'harmonyscan' },
-    { sourceID: 'blogtruyen', targetID: 'blogtruyenmoi' },
     { sourceID: 'cocomanhua', targetID: 'colamanga' },
     { sourceID: 'comicbushi', targetID: 'comicgrowl' },
     { sourceID: 'comicwalker', targetID: 'kadocomi' },
@@ -21,7 +20,6 @@ const legacyWebsiteIdentifierMapTestCases = [
     { sourceID: 'firstkiss', targetID: 'likemanga' },
     { sourceID: 'flamescans-org', targetID: 'flamecomics' },
     { sourceID: 'galaxyaction', targetID: 'galaxymanga' },
-    { sourceID: 'gateanimemanga', targetID: 'gatemanga' },
     { sourceID: 'imperioscans', targetID: 'neroxus' },
     { sourceID: 'instamanhwa', targetID: 'xmanhwa' },
     { sourceID: 'kissaway', targetID: 'klmanga' },
@@ -37,9 +35,7 @@ const legacyWebsiteIdentifierMapTestCases = [
     { sourceID: 'mangaraw', targetID: 'mangageko' },
     { sourceID: 'mangatale', targetID: 'ikiru' },
     { sourceID: 'manhuascan', targetID: 'kaliscan' },
-    { sourceID: 'nitroscans', targetID: 'nitromanga' },
     { sourceID: 'neteasecomic', targetID: 'bilibilimanhua'},
-    { sourceID: 'prismascans', targetID: 'demonsect' },
     { sourceID: 'reaperscansid', targetID: 'shinigamiid' },
     { sourceID: 'scanhentaimenu', targetID: 'xmanga' },
     { sourceID: 'shonenmagazine-pocket', targetID: 'shonenmagazine' },
@@ -113,5 +109,7 @@ describe('BookmarkConverter', () => {
             });
             expect(actual.Media.ProviderID).toStrictEqual(data.targetID);
         });
+
+        // TODO: All target identifiers must exist
     });
 });

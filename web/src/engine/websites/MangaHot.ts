@@ -1,4 +1,4 @@
-﻿import { Tags } from '../Tags';
+import { Tags } from '../Tags';
 import icon from './MangaHot.webp';
 import { Chapter, DecoratableMangaScraper, Manga, type MangaPlugin, Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
@@ -22,7 +22,7 @@ function MangaExtractor(element: HTMLAnchorElement) {
 
 }
 
-@Common.MangasSinglePagesCSS([ '/ranking' ], 'div.ranking a.parent', MangaExtractor)
+@Common.MangasSinglePageCSS('/ranking', 'div.ranking a.parent', MangaExtractor)
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
@@ -79,7 +79,7 @@ export default class extends DecoratableMangaScraper {
             });
 
             const { result } = await FetchJSON<APIResult<string[] | PageResult>>(request); //result can be an array or a json object list
-            if(!result || Object.keys(result).length === 0) {
+            if (!result || Object.keys(result).length === 0) {
                 run = false;
                 continue;
             }
@@ -99,6 +99,8 @@ export default class extends DecoratableMangaScraper {
         const scrambletype = this.GetScrambleType(page.Link.href);
         return DeScramble(blob, async (image, ctx) => {
 
+            // TODO: Use more appropriate variable names, or extract the functions when copied directly from website
+
             const CELL_SIZE = 50;
             const iWidth = image.width;
             const iHeight = image.height;
@@ -109,9 +111,6 @@ export default class extends DecoratableMangaScraper {
             let puzzleData = InitPotList();
             puzzleData = scrambletype == 1 ? GetPuzzleColData(GetPuzzleRowData(puzzleData)) : GetPuzzleRowData(GetPuzzleColData(puzzleData));
 
-            //***********************************************/
-            //DRAW
-            //************************************************/
             for (let i = 0; i < puzzleData.length; i++)
                 for (let r = puzzleData[i], e = 0; e < r.length; e++)
                     ctx.drawImage(image, r[e][0], r[e][1], CELL_SIZE, CELL_SIZE, e * CELL_SIZE, i * CELL_SIZE, CELL_SIZE, CELL_SIZE);

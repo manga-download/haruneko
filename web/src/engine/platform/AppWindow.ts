@@ -4,6 +4,7 @@ import NodeWebkitAppWindow from './nw/AppWindow';
 import ElectronAppWindow from './electron/AppWindow';
 import { GetLocale } from '../../i18n/Localization';
 import GetIPC from './InterProcessCommunication';
+import type { IObservable } from '../Observable';
 
 export interface IAppWindow {
     /**
@@ -15,6 +16,7 @@ export interface IAppWindow {
      */
     HideSplash(): Promise<void>;
     readonly HasControls: boolean;
+    readonly Maximized: IObservable<boolean, IAppWindow>;
     Minimize(): void;
     Maximize(): void;
     Restore(): void;

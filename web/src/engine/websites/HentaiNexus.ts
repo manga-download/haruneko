@@ -4,12 +4,12 @@ import { Chapter, DecoratableMangaScraper, type Manga } from '../providers/Manga
 import * as Common from './decorators/Common';
 
 @Common.MangaCSS(/^{origin}\/view\/\d+$/, 'div.column h1.title')
-@Common.MangasMultiPageCSS('/page/{page}', 'div.column > a',)
+@Common.MangasMultiPageCSS('div.column > a', Common.PatternLinkGenerator('/page/{page}'))
 @Common.PagesSinglePageJS(`pageData.map(page => page.image);`, 500)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
-    public constructor() {
+    public constructor () {
         super('hentainexus', 'HentaiNexus', 'https://hentainexus.com', Tags.Language.English, Tags.Media.Manga, Tags.Rating.Pornographic, Tags.Source.Aggregator);
     }
 
@@ -18,7 +18,6 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        return [new Chapter(this, manga, manga.Identifier.replace('/view/', '/read/'), manga.Title)];
+        return [ new Chapter(this, manga, manga.Identifier.replace('/view/', '/read/'), manga.Title) ];
     }
-
 }

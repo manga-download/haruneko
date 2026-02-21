@@ -8,11 +8,11 @@ import type { Priority } from '../taskpool/DeferredTask';
 import { DRMProvider } from './ColaManga.DRM.js';
 
 type PageParameters = {
-    key?: string;
+    keyData?: string;
 };
 
 @Common.MangaCSS(/^{origin}\/manga-[^/]+\//, 'dl.fed-deta-info dd.fed-deta-content h1.fed-part-eone')
-@Common.MangasMultiPageCSS('/show?page={page}', 'ul.fed-list-info li.fed-list-item a.fed-list-title')
+@Common.MangasMultiPageCSS('ul.fed-list-info li.fed-list-item a.fed-list-title', Common.PatternLinkGenerator('/show?page={page}'))
 @Common.ChaptersSinglePageCSS('div.all_data_list ul li a')
 export default class extends DecoratableMangaScraper {
 
@@ -28,7 +28,7 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchPages(chapter: Chapter): Promise<Page<PageParameters>[]> {
         const images = await this.#drm.CreateImageLinks(new URL(chapter.Identifier, this.URI));
-        return images.map(image => new Page<PageParameters>(this, chapter, new URL(image.url, this.URI), { key: image.key }));
+        return images.map(image => new Page<PageParameters>(this, chapter, new URL(image.url, this.URI), { keyData: image.keyData }));
     }
 
     public override async FetchImage(page: Page<PageParameters>, priority: Priority, signal: AbortSignal): Promise<Blob> {
@@ -42,8 +42,8 @@ export default class extends DecoratableMangaScraper {
 
             const response = await Fetch(request);
 
-            if(page.Parameters.key) {
-                const decrypted = await this.#drm.DecryptImage(await response.arrayBuffer(), page.Parameters.key);
+            if (page.Parameters.keyData) {
+                const decrypted = await this.#drm.DecryptImage(await response.arrayBuffer(), page.Parameters.keyData);
                 return Common.GetTypedData(decrypted);
             } else {
                 return response.blob();

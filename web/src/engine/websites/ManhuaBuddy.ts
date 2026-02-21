@@ -1,10 +1,10 @@
-﻿import { Tags } from '../Tags';
+import { Tags } from '../Tags';
 import icon from './ManhuaBuddy.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 
 @Common.MangaCSS(/^{origin}\/manhwa\/[^/]+$/, 'div.title_content h1')
-@Common.MangasMultiPageCSS('/?page={page}', 'div.item h3.title a')
+@Common.MangasMultiPageCSS('div.item h3.title a', Common.PatternLinkGenerator('/?page={page}'))
 @Common.ChaptersSinglePageCSS('ul#chapter-list li a')
 @Common.PagesSinglePageCSS('div.chapter-content div.item-photo img')
 @Common.ImageAjax()
@@ -17,5 +17,4 @@ export default class extends DecoratableMangaScraper {
     public override get Icon() {
         return icon;
     }
-
 }

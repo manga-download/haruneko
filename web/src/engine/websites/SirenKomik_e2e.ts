@@ -1,25 +1,22 @@
-import { TestFixture, type Config } from '../../../test/WebsitesFixture';
+import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config: Config = {
+new TestFixture({
     plugin: {
         id: 'sirenkomik',
         title: 'SirenKomik'
     },
     container: {
-        url: 'https://sirenkomik.my.id/manga/undead-king-teihen-bouken-sha-mamono-no-chikara-de-shinka-musou/',
-        id: '/manga/undead-king-teihen-bouken-sha-mamono-no-chikara-de-shinka-musou/',
-        title: 'Undead King ~Teihen Bouken-sha, Mamono no Chikara de Shinka Musou~'
+        url: 'https://sirenkomik.xyz/manga/boku-no-kokoro-no-yabai-yatsu',
+        id: '/manga/boku-no-kokoro-no-yabai-yatsu',
+        title: 'Boku no Kokoro no Yabai yatsu'
     },
     child: {
-        id: '/undead-king-teihen-bouken-sha-mamono-no-chikara-de-shinka-musou-chapter-1/',
-        title: 'Chapter 1',
-        //timeout: 15000
+        id: '/chapter/boku-no-kokoro-no-yabai-yatsu-chapter-168',
+        title: 'Chapter 168',
     },
     entry: {
-        index: 1,
-        size: 1_274_763,
+        index: 0,
+        size: 248_710,
         type: 'image/jpeg'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

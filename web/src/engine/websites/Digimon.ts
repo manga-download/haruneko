@@ -21,7 +21,7 @@ const chapterScript = `
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
-    public constructor() {
+    public constructor () {
         super('digimon', 'Digimon', 'https://digimon.net', Tags.Media.Manga, Tags.Language.Japanese, Tags.Source.Official);
     }
 
@@ -40,7 +40,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        const paths = ['/digimoncomic/', '/digimoncomic/en/'];
+        const paths = [ '/digimoncomic/', '/digimoncomic/en/' ];
         const mangaList: Manga[] = [];
         for (const path of paths) {
             const data = await FetchCSS<HTMLDivElement>(new Request(new URL(path, this.URI)), 'div.digimoncomic div.pg-container > div[data-inview]');
@@ -48,5 +48,4 @@ export default class extends DecoratableMangaScraper {
         };
         return mangaList;
     }
-
 }

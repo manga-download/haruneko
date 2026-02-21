@@ -12,11 +12,11 @@ new TestFixture({
     },
     child: {
         id: '/episodes/13d4bf3743424/',
-        title: '第1話　「桜が舞った日のこと」'
+        title: '第1話 「桜が舞った日のこと」'
     },
     entry: {
         index: 0,
-        size: 2_691_707,
+        size: 2_994_116,
         type: 'image/png'
     }
 }).AssertWebsite();

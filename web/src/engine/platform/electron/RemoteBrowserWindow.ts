@@ -59,6 +59,7 @@ export default class RemoteBrowserWindow implements IRemoteBrowserWindow {
                 nodeIntegration: false,
                 nodeIntegrationInWorker: false,
                 nodeIntegrationInSubFrames: true, // Enabled to execute pre-load script in all sub-frames: https://github.com/electron/electron/issues/22582
+                backgroundThrottling: false, // Disabled to force timers, observers and animation frames to work in non-visible window: https://www.electronjs.org/docs/latest/api/browser-window#page-visibility
                 disableBlinkFeatures: 'AutomationControlled',
                 preload: preload instanceof Function ? `(${preload})()` : preload,
             }
@@ -73,9 +74,14 @@ export default class RemoteBrowserWindow implements IRemoteBrowserWindow {
         */
 
         const loadOptions: LoadURLOptions = {
-            userAgent: request.headers.get('User-Agent') ?? navigator.userAgent,
-            httpReferrer: request.headers.get('Referer') ?? request.referrer ?? request.url,
+            userAgent: navigator.userAgent,
+            httpReferrer: request.referrer,
         };
+
+        // NOTE: Keep in mind that forbidden headers are concealed with the prefix 'X-FetchAPI-'
+        if(request.headers) loadOptions.extraHeaders = Array.from(request.headers, ([key, value]) => `${key}: ${value}`).join('\n');
+        // TODO: Add body for POST request e.g., in case of submitting a form ...
+        // if(/^POST$/i.test(request.method)) loadOptions.postData = ... // Array<(UploadRawData) | (UploadFile)>;
 
         await this.ipc.Send<void>(Channels.App.LoadURL, this.windowID, request.url, JSON.stringify(loadOptions));
     }

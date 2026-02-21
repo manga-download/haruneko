@@ -84,6 +84,7 @@
         padding: 0.5em;
         gap: 0.3em 0.3em;
         grid-template-rows: 1fr fit-content(0.5em);
+        margin-left: 3rem!important;
     }
     :global(.ui-mode-content) {
         grid-template-columns: min-content min-content 1fr;

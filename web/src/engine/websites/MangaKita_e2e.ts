@@ -1,6 +1,6 @@
-import { TestFixture, type Config } from '../../../test/WebsitesFixture';
+import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config: Config = {
+new TestFixture({
     plugin: {
         id: 'mangakita',
         title: 'MangaKita'
@@ -17,9 +17,7 @@ const config: Config = {
     },
     entry: {
         index: 0,
-        size: 93552,
+        size: 93_552,
         type: 'image/jpeg'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

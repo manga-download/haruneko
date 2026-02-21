@@ -12,14 +12,14 @@ function MangaExtractor(element: HTMLLIElement) {
 }
 
 @Common.MangaCSS(/^{origin}\/episode\/\d+$/, CoreView.queryMangaTitleFromURI)
-@Common.MangasSinglePagesCSS([ '/series', '/series/oneshot', '/series/manga-action' ], 'ul[class*="Common_series_list"] li[class*="SeriesListItem_item"]', MangaExtractor)
-@CoreView.ChaptersSinglePageAJAXV1()
+@Common.MangasMultiPageCSS('ul[class*="Common_series_list"] li[class*="SeriesListItem_item"]', Common.StaticLinkGenerator('/series', '/series/oneshot', '/series/manga-action'), 0, MangaExtractor)
+@CoreView.ChaptersMultiPageAJAXV2()
 @CoreView.PagesSinglePageJSON()
 @CoreView.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('comicaction', `webアクション (Comic Action)`, 'https://comic-action.com', Tags.Language.Japanese, Tags.Source.Official, Tags.Media.Manga);
+        super('comicaction', 'webアクション (Comic Action)', 'https://comic-action.com', Tags.Language.Japanese, Tags.Source.Official, Tags.Media.Manga);
     }
 
     public override get Icon() {

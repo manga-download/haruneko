@@ -15,7 +15,7 @@ function MangaInfoExtractor(anchor: HTMLAnchorElement) {
 }
 
 @Common.MangaCSS(/^{origin}\/g\/\d+$/, 'div.comic-description h1')
-@Common.MangasMultiPageCSS('/gpage/{page}', 'ul.comics-grid li.item div.comic-inner a', 1, 1, 0, MangaInfoExtractor)
+@Common.MangasMultiPageCSS('ul.comics-grid li.item div.comic-inner a', Common.PatternLinkGenerator('/gpage/{page}'), 0, MangaInfoExtractor)
 @Common.ChaptersUniqueFromManga()
 @Common.PagesSinglePageCSS('ul.comics-grid li.item div.comic-inner div.comic-thumb img', PageLinkExtractor)
 @Common.ImageAjax()

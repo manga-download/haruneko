@@ -1,11 +1,10 @@
-import { TestFixture, type Config } from '../../../test/WebsitesFixture';
+import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config: Config = {
+new TestFixture({
     plugin: {
         id: 'sushiscans',
-        title: 'Sushi Scans'
+        title: 'Sushi Scans (NET)'
     },
-    /* CloudFlare
     container: {
         url: 'https://sushiscan.net/catalogue/a-fantasy-lazy-life/',
         id: '/catalogue/a-fantasy-lazy-life/',
@@ -17,9 +16,7 @@ const config: Config = {
     },
     entry: {
         index: 0,
-        size: 1_092_370,
+        size: 571_843,
         type: 'image/jpeg'
-    }*/
-};
-
-new TestFixture(config).AssertWebsite();
+    }
+}).AssertWebsite();

@@ -6,7 +6,7 @@ new TestFixture({
         title: 'Ulas Comic',
     },
     container: {
-        url: 'https://www.ulascomic00.xyz/2024/05/god-of-blackfield.html',
+        url: 'https://www.ulascomic01.xyz/2024/05/god-of-blackfield.html',
         id: '/2024/05/god-of-blackfield.html',
         title: 'God Of Blackfield',
     },

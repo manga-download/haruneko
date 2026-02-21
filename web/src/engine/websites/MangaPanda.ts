@@ -16,7 +16,7 @@ const chapterScript = `
 `;
 
 @Common.MangaCSS(/^{origin}\/manga\/[^/]+$/, 'ol.breadcrumb li:last-of-type a')
-@Common.MangasMultiPageCSS('?page={page}', 'div.media div.media-body > a')
+@Common.MangasMultiPageCSS('div.media div.media-body > a', Common.PatternLinkGenerator('?page={page}'))
 @Common.ChaptersSinglePageJS(chapterScript, 2500)
 @Common.PagesSinglePageJS(`document.querySelector('p#arraydata').textContent.trim().split(',');`, 250)
 @Common.ImageAjax()

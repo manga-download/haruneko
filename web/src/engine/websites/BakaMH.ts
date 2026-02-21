@@ -1,12 +1,12 @@
+import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import { Tags } from '../Tags';
 import icon from './BakaMH.webp';
-import { DecoratableMangaScraper } from '../providers/MangaPlugin';
-import * as Madara from './decorators/WordPressMadara';
 import * as Common from './decorators/Common';
+import * as Madara from './decorators/WordPressMadara';
 
 @Madara.MangaCSS(/^{origin}\/manga\/[^/]+\/$/, 'ol.breadcrumb li:last-of-type a')
 @Madara.MangasMultiPageAJAX()
-@Madara.ChaptersSinglePageAJAXv2()
+@Madara.ChaptersSinglePageCSS('ul li a[storage-chapter-url]', (element: HTMLAnchorElement) => ({ id: new URL(element.getAttribute('storage-chapter-url')).pathname, title: element.text.trim() }))
 @Madara.PagesSinglePageCSS()
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {

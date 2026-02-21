@@ -4,7 +4,7 @@ import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 
 @Common.MangaCSS(/^{origin}\/webtoon\/[^/]+$/, 'ol.breadcrumb li:last-of-type a')
-@Common.MangasMultiPageCSS('/page/{page}', 'div.manga-item div.data a:not([class])')
+@Common.MangasMultiPageCSS('div.manga-item div.data a:not([class])', Common.PatternLinkGenerator('/page/{page}'))
 @Common.ChaptersSinglePageCSS('div#chapterlist li a')
 @Common.PagesSinglePageCSS('div.read-manga div.read-content img')
 @Common.ImageAjax()

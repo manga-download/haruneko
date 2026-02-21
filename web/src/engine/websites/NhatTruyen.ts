@@ -5,7 +5,7 @@ import * as MojoPortalComic from './templates/MojoPortalComic';
 import * as Common from './decorators/Common';
 
 @Common.MangaCSS(/^{origin}\/truyen-tranh\/[^/]+$/, MojoPortalComic.queryManga)
-@Common.MangasMultiPageCSS(MojoPortalComic.patternMangas, MojoPortalComic.queryMangas)
+@Common.MangasMultiPageCSS(MojoPortalComic.queryMangas, MojoPortalComic.MangasLinkGenerator)
 @MojoPortalComic.ChaptersSinglePageAJAX()
 @Common.PagesSinglePageCSS(MojoPortalComic.queryPages, (img: HTMLImageElement) => img.src || img.dataset.src)
 @Common.ImageAjax()
@@ -18,5 +18,4 @@ export default class extends DecoratableMangaScraper {
     public override get Icon() {
         return icon;
     }
-
 }

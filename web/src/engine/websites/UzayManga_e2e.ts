@@ -1,24 +1,22 @@
 ﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'uzaymanga',
         title: 'Uzay Manga'
     },
     container: {
-        url: 'https://uzaymanga.com/manga/52/olumsuzun-yolu',
-        id: '/manga/52/olumsuzun-yolu',
-        title: 'Ölümsüzün Yolu'
+        url: 'https://uzaymanga.com/manga/51/olumsuzun-geri-donusu',
+        id: '/manga/51/olumsuzun-geri-donusu',
+        title: 'Ölümsüzün Geri Dönüşü'
     },
     child: {
-        id: '/manga/52/olumsuzun-yolu/2793/1-bolum',
-        title: 'Bölüm 1'
+        id: '/manga/51/olumsuzun-geri-donusu/2964/127-bolum',
+        title: 'Bölüm 127'
     },
     entry: {
         index: 1,
-        size: 1_264_702,
+        size: 788_007,
         type: 'image/jpeg'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

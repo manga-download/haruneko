@@ -6,7 +6,7 @@ import * as Common from './decorators/Common';
 
 @MangaStream.MangaCSS(/^{origin}\/comics\/[^/]+\/$/)
 @MangaStream.MangasSinglePageCSS(undefined, '/comics/list-mode/')
-@Common.ChaptersSinglePageCSS('div#chapterlist ul li a[href]', Common.AnchorInfoExtractor(false, 'span:not([class="chapternum"])'))
+@Common.ChaptersSinglePageCSS('div#chapterlist ul li a[href]', undefined, Common.AnchorInfoExtractor(false, 'span:not([class="chapternum"])'))
 @MangaStream.PagesSinglePageJS()
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {

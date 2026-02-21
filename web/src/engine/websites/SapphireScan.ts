@@ -1,18 +1,13 @@
 import { Tags } from '../Tags';
 import icon from './SapphireScan.webp';
-import { DecoratableMangaScraper } from '../providers/MangaPlugin';
-import * as Madara from './decorators/WordPressMadara';
 import * as Common from './decorators/Common';
+import { PageLinkExtractor, ZeistManga } from './templates/ZeistManga';
 
-@Madara.MangaCSS(/^{origin}\/manga\/[^/]+\/$/, 'div.post-title h1')
-@Madara.MangasMultiPageAJAX()
-@Madara.ChaptersSinglePageAJAXv2()
-@Madara.PagesSinglePageCSS()
-@Common.ImageAjax()
-export default class extends DecoratableMangaScraper {
-
+@Common.MangaCSS<HTMLImageElement>(/^{origin}\/\d+\/\d+\/[^/]+\.html$/, 'figure a img', (img, uri) => ({ id: uri.pathname, title: img.alt.trim() }))
+@Common.PagesSinglePageCSS('div.check-box div.separator a img', PageLinkExtractor)
+export default class extends ZeistManga {
     public constructor() {
-        super('sapphirescan', 'Sapphire Scan', 'https://sapphirescan.com', Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Language.Spanish, Tags.Source.Scanlator);
+        super('sapphirescan', 'Sapphire Scan', 'https://www.sapphirescan.com', Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Language.Spanish, Tags.Source.Scanlator);
     }
 
     public override get Icon() {

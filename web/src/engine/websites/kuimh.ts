@@ -5,8 +5,8 @@ import * as Common from './decorators/Common';
 import * as MH from './templates/MH';
 
 @Common.MangaCSS(/^{origin}\/book\/[^/]+$/, MH.queryMangaTitleFromURI)
-@Common.MangasMultiPageCSS(MH.mangaPath, MH.queryMangas)
-@Common.ChaptersSinglePageCSS('div#chapterlistload ul#detail-list-select li:not([style]) a', MH.ChapterExtractor)
+@Common.MangasMultiPageCSS(MH.queryMangas, MH.MangasLinkGenerator)
+@Common.ChaptersSinglePageCSS('div#chapterlistload ul#detail-list-select li:not([style]) a', undefined, MH.ChapterExtractor)
 @Common.PagesSinglePageCSS(MH.queryPages, MH.PageLinkExtractor)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {

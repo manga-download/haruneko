@@ -8,7 +8,7 @@ function PageLinkExtractor(anchor: HTMLAnchorElement) {
 }
 
 @Common.MangaCSS(/^{origin}\/gallery/, 'div.entry-inner header h1')
-@Common.MangasMultiPageCSS('/multporn-net/page/{page}/', 'div.entry-body header h3 a')
+@Common.MangasMultiPageCSS('div.entry-body header h3 a', Common.PatternLinkGenerator('/multporn-net/page/{page}/'))
 @Common.ChaptersUniqueFromManga()
 @Common.PagesSinglePageCSS('figure a', PageLinkExtractor)
 @Common.ImageAjax()
@@ -21,5 +21,4 @@ export default class extends DecoratableMangaScraper {
     public override get Icon() {
         return icon;
     }
-
 }

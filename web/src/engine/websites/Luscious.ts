@@ -2,46 +2,46 @@ import { Tags } from '../Tags';
 import icon from './Luscious.webp';
 import { type Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { FetchCSS, FetchJSON } from '../platform/FetchProvider';
+import { FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
+
+type APIResult<T> = {
+    data: T;
+};
 
 type APIMangaPage = {
-    data: {
-        album: {
-            list: {
-                items: APIManga[]
-            }
+    album: {
+        list: {
+            items: APIManga[]
         }
     }
 };
 
 type APIManga = {
-    id: number,
-    title: string,
-    slug: string,
-    url: string
+    id: number;
+    title: string;
+    slug: string;
+    url: string;
 };
 
 type PagesResult = {
-    data: {
-        picture: {
-            list: {
-                info: {
-                    has_next_page: boolean
-                },
-                items: { url_to_original: string }[]
-            }
+    picture: {
+        list: {
+            info: {
+                has_next_page: boolean
+            },
+            items: { url_to_original: string }[]
         }
     }
-}
+};
 
 @Common.ChaptersUniqueFromManga()
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
-    private readonly apiUrl = 'https://apicdn.luscious.net/graphql/nobatch/';
+    private readonly apiUrl = 'https://www.luscious.net/graphql/nobatch/';
 
     public constructor() {
-        super('luscious', `Luscious`, 'https://www.luscious.net', Tags.Media.Comic, Tags.Media.Manga, Tags.Language.Multilingual, Tags.Source.Aggregator, Tags.Rating.Pornographic);
+        super('luscious', 'Luscious', 'https://www.luscious.net', Tags.Media.Comic, Tags.Media.Manga, Tags.Language.Multilingual, Tags.Source.Aggregator, Tags.Rating.Pornographic);
     }
 
     public override get Icon() {
@@ -49,110 +49,90 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override ValidateMangaURL(url: string): boolean {
-        return new RegExpSafe(`^${this.URI.origin}/albums/`).test(url);
+        return new RegExpSafe(`^${this.URI.origin}/albums/[^/]+/$`).test(url);
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
-        const uri = new URL(url);
-        const name = (await FetchCSS(new Request(url), 'main h1.album-heading')).at(-1).textContent.trim();
-        return new Manga(this, provider, uri.pathname.match(/_(\d+)\/?$/).at(1), name);
+        const mangaUrl = new URL(url);
+        const title = await FetchWindowScript<string>(new Request(mangaUrl), 'document.querySelector("main h1.album-heading").textContent.trim();', 1500);
+        return new Manga(this, provider, mangaUrl.pathname.match(/_(\d+)\/?$/).at(1), title);
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        const mangaList: Manga[] = [];
-        for (let page = 1, run = true; run; page++) {
-            const mangas = await this.GetMangasFromPage(page, provider);
-            mangas.length > 0 ? mangaList.push(...mangas) : run = false;
-        }
-        return mangaList;
-    }
-
-    private async GetMangasFromPage(page: number, provider: MangaPlugin): Promise<Manga[]> {
-        const url = new URL(this.apiUrl);
-        url.searchParams.set('operationName', 'AlbumList');
-        const query = `query AlbumList($input: AlbumListInput!) {
-                  album {
+        type This = typeof this;
+        const query = `
+            query AlbumList($input: AlbumListInput!) {
+                album {
                     list(input: $input) {
-                      items {
-                        ...AlbumInSearchList
-                      }
+                        items {
+                            ...AlbumInSearchList
+                        }
                     }
-                  }
                 }
-                fragment AlbumInSearchList on Album {
-                  __typename
-                  id
-                  title
-                  slug
-                  language {
-                    id
-                    title
-                    url
-                  }
-                }
-`;
-        url.searchParams.set('query', query);
-
-        const variables = {
-            input: {
-                display: 'date_trending',
-                filters: [{ name: 'album_type', value: 'manga' }, { name: 'restrict_genres', value: 'loose' }],
-                page: page,
-                items_per_page: 30//dont change items_per_page to more than 30
             }
-        };
-
-        url.searchParams.set('variables', JSON.stringify(variables));
-        const request = new Request(url, { headers: { 'content-type': 'application/json', 'accept': '*/*' } });
-        const { data: { album: { list: { items } } } } = await FetchJSON<APIMangaPage>(request);
-        return items.map(manga => new Manga(this, provider, manga.id.toString(), manga.title.trim()));
-
+            fragment AlbumInSearchList on Album {
+                id
+                title
+            }
+        `;
+        return Array.fromAsync(async function* (this: This) {
+            for (let page = 1, run = true; run; page++) {
+                const { album: { list: { items } } } = await this.FetchAPI<APIMangaPage>('AlbumList', {
+                    input: {
+                        display: 'date_trending',
+                        filters: [{ name: 'album_type', value: 'manga' }, { name: 'restrict_genres', value: 'loose' }],
+                        page,
+                        items_per_page: 30//dont change items_per_page to more than 30
+                    }
+                }, query);
+                const mangas = items.map(({ id, title }) => new Manga(this, provider, `${ id }`, title.trim()));
+                mangas.length > 0 ? yield* mangas : run = false;
+            }
+        }.call(this));
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const pagelist: Page[]= [];
-        for (let page = 1, run = true; run; page++) {
-            const pagesResults = await this.GetPagesFromChapterPage(page, chapter);
-            if (pagesResults.data.picture.list.items.length > 0) {
-                pagesResults.data.picture.list.items.forEach(element => pagelist.push(new Page(this, chapter, new URL(element.url_to_original))));
-            }
-            run = pagesResults.data.picture.list.info.has_next_page;
-        }
-        return pagelist;
-    }
-
-    private async GetPagesFromChapterPage(page: number, chapter: Chapter): Promise<PagesResult> {
-        const url = new URL(this.apiUrl);
-        url.searchParams.set('operationName', 'AlbumListOwnPictures');
+        type This = typeof this;
         const query = `
-                query AlbumListOwnPictures($input: PictureListInput!) {
-                  picture {
+            query AlbumListOwnPictures($input: PictureListInput!) {
+                picture {
                     list(input: $input) {
-                      info {
-                        ...FacetCollectionInfo
-                      }
-                      items {
-                        __typename
-                        url_to_original
-                      }
+                        info {
+                            ...FacetCollectionInfo
+                        }
+                        items {
+                            url_to_original
+                        }
                     }
-                  }
                 }
-                fragment FacetCollectionInfo on FacetCollectionInfo {
-                  has_next_page
-                }
+            }
+            fragment FacetCollectionInfo on FacetCollectionInfo {
+                has_next_page
+            }
         `;
-        url.searchParams.set('query', query);
         const variables = {
             input: {
                 filters: [{ name: 'album_id', value: chapter.Identifier }],
                 display: 'position',
                 items_per_page: 50, //dont change items_per_page to more than 50
-                page: page
+                page: 1
             }
         };
+        return Array.fromAsync(async function* (this: This) {
+            for (let page = 1, run = true; run; page++) {
+                variables.input.page = page;
+                const { picture: { list: { items, info: { has_next_page } } } } = await this.FetchAPI<PagesResult>('AlbumListOwnPictures', variables, query);
+                const pages = items.map(({ url_to_original: url }) => new Page(this, chapter, new URL(url)));
+                yield* pages, run = has_next_page;
+            }
+        }.call(this));
+    }
+
+    private async FetchAPI<T extends JSONElement>(operationName: string, variables: JSONObject, query: string): Promise<T> {
+        const url = new URL(this.apiUrl);
+        url.searchParams.set('query', query);
+        url.searchParams.set('operationName', operationName);
         url.searchParams.set('variables', JSON.stringify(variables));
-        const request = new Request(url, { headers: { 'content-type': 'application/json', 'accept': '*/*' } });
-        return await FetchJSON<PagesResult>(request);
+        return (await FetchJSON<APIResult<T>>(new Request(url))).data;
     }
 }

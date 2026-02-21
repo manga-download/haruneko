@@ -69,13 +69,13 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const { included } = await FetchJSON<APIResult>(new Request(new URL(`/api/v1/comics/${manga.Identifier}?includes%5B%5D=episodes`, this.URI)));
+        const { included } = await FetchJSON<APIResult>(new Request(new URL(`/api/v1/comics/${manga.Identifier}?includes[]=episodes`, this.URI)));
         return included.map(chapter => new Chapter(this, manga, chapter.id, chapter.attributes.name.trim()));
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
         const authToken = await FetchWindowScript<string>(new Request(this.URI), auhTokenScript, 500);
-        const request = new Request(new URL(`/api/v1/episodes/${chapter.Identifier}?params%5Bcookie_signer%5D=true&params%5Bpages%5D=true`, this.URI));
+        const request = new Request(new URL(`/api/v1/episodes/${chapter.Identifier}?params[cookie_signer]=true&params[pages]=true`, this.URI));
         if (authToken) request.headers.set('Authorization', authToken);
         const { data } = await FetchJSON<APIResult>(request);
         const cookies = (data as APIItem).attributes.cookie_signer;
@@ -110,33 +110,26 @@ export default class extends DecoratableMangaScraper {
 
         return DeScramble(blob, async (image, ctx) => {
             ctx.drawImage(image, 0, 0);
-            const numCols = Math.floor(image.width / this.partsWidth);
-            const numLines = Math.floor(image.height / this.partsHeight);
-            const numPieces = numCols * numLines;
-            const m: string[] = [];
+            const columnCount = Math.floor(image.width / this.partsWidth);
+            const rowCount = Math.floor(image.height / this.partsHeight);
 
             async function sha256(text: string): Promise<string> {
                 const buffer = await crypto.subtle.digest('SHA-256', GetBytesFromUTF8(text));
                 return GetHexFromBytes(new Uint8Array(buffer));
             }
 
-            for (let i = 0; i <= numPieces - 1; i++) {
-                m.push(await sha256(''.concat(i.toString(), '_').concat(this.decodeKey)));
-            }
-            const v = Array.from(m).sort();
-            const f: number[] = [];
-            m.forEach(function (t, i) {
-                f[i] = v.indexOf(t);
-            });
-
-            for (let index = 0; index <= numPieces - 1; index++) {
-                const value = f[index];
-                const sourceX = this.partsWidth * (index % numCols);
-                const sourceY = this.partsHeight * Math.floor(index / numCols);
-                const destX = this.partsWidth * (value % numCols);
-                const destY = this.partsHeight * Math.floor(value / numCols);
-                ctx.drawImage(image, sourceX, sourceY, this.partsWidth, this.partsHeight, destX, destY, this.partsWidth, this.partsHeight);
-            }
+            (await Promise.all([ ...new Array(columnCount * rowCount) ].map(async (_, index) => ({
+                hash: await sha256(`${index}_${this.decodeKey}`),
+                index,
+            }))))
+                .sort((self, other) => self.hash.localeCompare(other.hash))
+                .forEach((sourceBlock, targetBlockIndex) => {
+                    const sourceX = this.partsWidth * (sourceBlock.index % columnCount);
+                    const sourceY = this.partsHeight * Math.floor(sourceBlock.index / columnCount);
+                    const destX = this.partsWidth * (targetBlockIndex % columnCount);
+                    const destY = this.partsHeight * Math.floor(targetBlockIndex / columnCount);
+                    ctx.drawImage(image, sourceX, sourceY, this.partsWidth, this.partsHeight, destX, destY, this.partsWidth, this.partsHeight);
+                });
         });
     }
 }

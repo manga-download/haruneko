@@ -11,7 +11,7 @@ new TestFixture({
         title: '武炼巅峰'
     },
     child: {
-        id: JSON.stringify({ mangaid: '12', id: '1690342' }),
+        id: './chapter/getinfo?m=12&c=1690342',
         title: '世界终源篇-封印印起'
     },
     entry: {

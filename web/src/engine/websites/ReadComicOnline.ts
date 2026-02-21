@@ -24,7 +24,7 @@ const pageScript = `
 `;
 
 @Common.MangaCSS(/^{origin}\/Comic\/[^/]+$/, 'div.barContent a.bigChar')
-@Common.MangasMultiPageCSS('/ComicList?page={page}', '.list-comic .item > a')
+@Common.MangasMultiPageCSS('.list-comic .item > a', Common.PatternLinkGenerator('/ComicList?page={page}'))
 @Common.ChaptersSinglePageCSS('div.episodeList table.listing tr td:first-of-type a, div.section ul.list li a')
 @Common.PagesSinglePageJS(pageScript, 2500)
 @Common.ImageAjax()
@@ -44,5 +44,4 @@ export default class extends DecoratableMangaScraper {
             window.cookieStore.set('rco_quality', 'hq');
         `);
     }
-
 }

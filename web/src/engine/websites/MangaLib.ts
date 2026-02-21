@@ -120,6 +120,7 @@ export default class extends DecoratableMangaScraper {
     private readonly tokenProvider: TokenProvider;
     private readonly apiUrl = 'https://api.cdnlibs.org/api/';
     private imageServerURL: string = 'https://img2.imglib.info';
+    private siteID : number = 1;
 
     public constructor() {
         super('mangalib', 'MangaLib', 'https://mangalib.org', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Russian, Tags.Source.Aggregator);
@@ -132,7 +133,7 @@ export default class extends DecoratableMangaScraper {
 
     public override async Initialize(): Promise<void> {
         const { data: { imageServers } } = await FetchJSON<ImageServers>(new Request(new URL('./constants?fields[]=imageServers', this.apiUrl)));
-        this.imageServerURL = imageServers.find(server => server.id === 'main' && server.site_ids.includes(1))?.url ?? this.imageServerURL;
+        this.imageServerURL = imageServers.find(server => server.id === 'main' && server.site_ids.includes(this.siteID))?.url ?? this.imageServerURL;
         // TODO: Update the token whenever the user performs a login/logout through manual website interaction
         await this.tokenProvider.UpdateToken();
     }
@@ -151,7 +152,7 @@ export default class extends DecoratableMangaScraper {
         const mangaList: Manga[] = [];
         for (let page = 1, run = true; run; page++) {
             await Delay(500);
-            const { data, meta: { has_next_page } } = await this.FetchAPI<APIMangas>(`./manga?page=${page}&site_id[]=1`);
+            const { data, meta: { has_next_page } } = await this.FetchAPI<APIMangas>(`./manga?page=${page}&site_id[]=${this.siteID}`);
             mangaList.push(...data.map(manga => new Manga(this, provider, manga.slug_url, manga.rus_name || manga.name)));
             run = has_next_page;
         }
@@ -182,7 +183,9 @@ export default class extends DecoratableMangaScraper {
 
     private async FetchAPI<T extends JSONElement>(endpoint: string) {
         const request = new Request(new URL(endpoint, this.apiUrl), {
-            headers: await this.tokenProvider.ApplyAuthorizationHeader({}),
+            headers: await this.tokenProvider.ApplyAuthorizationHeader({
+                'Site-Id': this.siteID.toString()
+            }),
         });
         return FetchJSON<T>(request);
     }

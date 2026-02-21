@@ -12,9 +12,9 @@ function MangaAndChapterExtractor(anchor: HTMLAnchorElement) {
 
 const pageScript = `imageArray.map(image => new URL(window.location.pathname+image, window.location.origin));`;
 
-@Common.MangaCSS(/^{origin}\/Computer\/\?manga=[^#]+$/, 'div.nomeserie a', Common.ElementLabelExtractor(), true)
-@Common.MangasSinglePagesCSS([ '/Computer/' ], 'div.theList div.nomeserie > a', MangaAndChapterExtractor)
-@Common.ChaptersSinglePageCSS('div.theList a[title = "Capitolo Italiano"]', MangaAndChapterExtractor)
+@Common.MangaCSS(/^{origin}\/Computer\/\?manga=[^#]+$/, 'div.nomeserie a', Common.WebsiteInfoExtractor({ includeSearch: true }))
+@Common.MangasSinglePageCSS('/Computer/', 'div.theList div.nomeserie > a', MangaAndChapterExtractor)
+@Common.ChaptersSinglePageCSS('div.theList a[title = "Capitolo Italiano"]', undefined, MangaAndChapterExtractor)
 @Common.PagesSinglePageJS(pageScript)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {

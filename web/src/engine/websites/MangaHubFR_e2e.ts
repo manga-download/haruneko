@@ -1,26 +1,22 @@
 ﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture( {
     plugin: {
         id: 'mangahubfr',
         title: 'MangaHubFR'
     },
-    /* CloudFlare
     container: {
-        url: 'https://mangahub.fr/manga/black-winter/',
-        id: JSON.stringify({ post: '19040', slug: '/manga/black-winter/' }),
-        title: 'Black Winter'
+        url: 'https://mangahub.fr/manga/keikakuteki-pavlov-maker/',
+        id: JSON.stringify({ post: '61824', slug: '/manga/keikakuteki-pavlov-maker/' }),
+        title: 'Keikakuteki Pavlov Maker'
     },
     child: {
-        id: '/manga/black-winter/chapitre-1/',
+        id: '/manga/keikakuteki-pavlov-maker/chapitre-1/',
         title: 'Chapitre 1'
     },
     entry: {
-        index: 1,
-        size: 1_092_114,
+        index: 0,
+        size: 1_483_210,
         type: 'image/png'
     }
-    */
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

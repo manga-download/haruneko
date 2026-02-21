@@ -11,8 +11,8 @@ new TestFixture({
         title: 'Misión: Romance Sincero'
     },
     child: {
-        id: '/serie/mision-romance-sincero/chapter-1/',
-        title: 'Chapter 1'
+        id: '/serie/mision-romance-sincero/capitulo-1/',
+        title: 'Capitulo 1'
     },
     entry: {
         index: 0,

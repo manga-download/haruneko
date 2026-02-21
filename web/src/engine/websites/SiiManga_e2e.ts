@@ -6,17 +6,17 @@ new TestFixture({
         title: 'SiiManga'
     },
     container: {
-        url: 'https://siikomik.org/manga/i-have-90-billion-licking-gold/',
-        id: '/manga/i-have-90-billion-licking-gold/',
-        title: 'I Have 90 Billion Licking Gold'
+        url: 'https://siikomik.net/komik/tears-on-a-withered-flower/',
+        id: JSON.stringify({ post: '218', slug: '/komik/tears-on-a-withered-flower/' }),
+        title: 'Tears on a Withered Flower'
     },
     child: {
-        id: '/i-have-90-billion-licking-gold-chapter-365/',
-        title: 'Chapter 365'
+        id: '/komik/tears-on-a-withered-flower/chapter-86/',
+        title: 'Chapter 86'
     },
     entry: {
-        index: 2,
-        size: 150_237,
-        type: 'image/jpeg'
+        index: 0,
+        size: 271_486,
+        type: 'image/webp'
     }
 }).AssertWebsite();

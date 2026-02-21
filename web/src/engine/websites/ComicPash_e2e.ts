@@ -11,12 +11,12 @@ new TestFixture({
         title: '恋文指南'
     },
     child: {
-        id: '/episodes/b17beac58b99e/',
+        id: '/episodes/b17beac58b99e',
         title: '合わせ鏡の恋'
     },
     entry: {
         index: 0,
-        size: 572_415,
+        size: 658_870,
         type: 'image/png'
     }
 }).AssertWebsite();

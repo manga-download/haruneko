@@ -15,8 +15,8 @@ function ChapterExtractor(anchor: HTMLAnchorElement) {
 }
 
 @Common.MangaCSS(/^{origin}\/hentai\/[^/]+\/$/, 'div.manga-titles h1')
-@Common.MangasMultiPageCSS('/hentai/page/{page}/', 'div.manga-grid div.manga-item div.manga-item__bottom a', 1, 1, 150)
-@Common.ChaptersSinglePageCSS('section#mangaSummary a.block', ChapterExtractor)
+@Common.MangasMultiPageCSS('div.manga-grid div.manga-item div.manga-item__bottom a', Common.PatternLinkGenerator('/hentai/page/{page}/'), 150)
+@Common.ChaptersSinglePageCSS('section#mangaSummary a.block', undefined, ChapterExtractor)
 @Common.PagesSinglePageJS(pageScript, 500)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {

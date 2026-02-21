@@ -4,7 +4,7 @@ import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 
 @Common.MangaCSS(/^{origin}\/[^/]+\/$/, 'div.content div.posts h1.titl')
-@Common.MangasMultiPageCSS('/porno/page/{page}/', 'h2.information a', 1, 1, 0, Common.AnchorInfoExtractor(true))
+@Common.MangasMultiPageCSS('h2.information a', Common.PatternLinkGenerator('/porno/page/{page}/'), 0, Common.AnchorInfoExtractor(true))
 @Common.ChaptersUniqueFromManga()
 @Common.PagesSinglePageCSS('div.wp-content figure img')
 @Common.ImageAjax()

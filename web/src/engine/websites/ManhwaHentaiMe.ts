@@ -6,9 +6,9 @@ import * as Common from './decorators/Common';
 import { FetchCSS, FetchHTML } from '../platform/FetchProvider';
 
 type MangaID = {
-     post: string;
-     slug: string;
-}
+    post: string;
+    slug: string;
+};
 
 const AnchorInfoExtractor = Common.AnchorInfoExtractor(false, 'span');
 
@@ -18,12 +18,12 @@ function CleanTitle(title: string): string {
 
 function MangaInfoExtractor(anchor: HTMLAnchorElement) {
     const container = anchor.closest<HTMLElement>('div.page-item-detail, div.manga');
-    const post = container?.querySelector<HTMLElement>('div[id*="manga-item-"]')?.getAttribute('id').match(/(\d+$)/)[1] || '';
+    const post = container?.querySelector<HTMLElement>('div[id*="manga-item-"]')?.getAttribute('id').match(/(\d+$)/).at(-1) || '';
     const id = JSON.stringify({ post, slug: anchor.pathname });
-    return { id, title: CleanTitle(anchor.text)};
+    return { id, title: CleanTitle(anchor.text) };
 }
 
-@Common.MangasMultiPageCSS('/home/page/{page}/', 'div.post-title h3 a, div.post-title h5 a', 1, 1, 0, MangaInfoExtractor)
+@Common.MangasMultiPageCSS('div.post-title h3 a, div.post-title h5 a', Common.PatternLinkGenerator('/home/page/{page}/'), 0, MangaInfoExtractor)
 @Madara.PagesSinglePageCSS()
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
@@ -44,8 +44,8 @@ export default class extends DecoratableMangaScraper {
         const uri = new URL(url);
         const data = await FetchHTML(new Request(uri));
         const post = data.querySelector<HTMLElement>('div#star[data-id]')?.dataset?.id;
-        const element = data.querySelector<HTMLElement>('div.post-title h1');
-        const title = CleanTitle(AnchorInfoExtractor.call(this, element).title);
+        const element = data.querySelector<HTMLHeadingElement>('div.post-title h1');
+        const title = CleanTitle(AnchorInfoExtractor.call(this, element, uri).title);
         return new Manga(this, provider, JSON.stringify({ post, slug: uri.pathname }), title);
     }
 
@@ -63,11 +63,10 @@ export default class extends DecoratableMangaScraper {
             }
         });
 
-        const data = await FetchCSS(request, 'ul li.wp-manga-chapter > a');
+        const data = await FetchCSS<HTMLAnchorElement>(request, 'ul li.wp-manga-chapter > a');
         return data.map(element => {
-            const { id, title } = AnchorInfoExtractor.call(this, element);
+            const { id, title } = AnchorInfoExtractor.call(this, element, new URL(request.url));
             return new Chapter(this, manga, id, title.replace(manga.Title, '').trim());
         });
     }
-
 }

@@ -6,8 +6,8 @@ new TestFixture({
         title: 'HentaiVN'
     },
     container: {
-        url: 'https://hentaivn.cx/truyen-hentai/dong-ho-ngung-dong-thoi-gian/',
-        id: JSON.stringify({ post: '10351', slug: '/truyen-hentai/dong-ho-ngung-dong-thoi-gian/'}),
+        url: 'https://hentaivn.show/truyen-hentai/dong-ho-ngung-dong-thoi-gian/',
+        id: JSON.stringify({ post: '10351', slug: '/truyen-hentai/dong-ho-ngung-dong-thoi-gian/' }),
         title: 'Đồng Hồ Ngưng Đọng Thời Gian'
     },
     child: {
@@ -16,7 +16,7 @@ new TestFixture({
     },
     entry: {
         index: 1,
-        size: 398_788,
+        size: 447_678,
         type: 'image/jpeg'
     }
 }).AssertWebsite();

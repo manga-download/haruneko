@@ -4,7 +4,7 @@ import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 
 @Common.MangaCSS(/^{origin}\/[^/]+\/$/, 'h1.page-title')
-@Common.MangasSinglePagesCSS([ '' ], 'div.posts ul.row li a')
+@Common.MangasSinglePageCSS('/', 'div.posts ul.row li a')
 @Common.ChaptersSinglePageCSS('header.page-header h2 a[rel="bookmark"]')
 @Common.PagesSinglePageCSS('section.entry-content img')
 @Common.ImageAjax()

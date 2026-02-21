@@ -5,40 +5,40 @@ import { type MangaPlugin, Manga, Chapter, Page, DecoratableMangaScraper } from 
 import * as Common from './decorators/Common';
 
 type APIResult<T> = {
-    body: T
-}
+    body: T;
+};
 
 type APIIlust = {
-    illustId: string,
-    illustTitle: string,
-}
+    illustId: string;
+    illustTitle: string;
+};
 
 type APISerie = {
     illustSeries: {
-        id: string,
-        title: string
-    }[]
-}
+        id: string;
+        title: string;
+    }[];
+};
 
 type APIChapters = {
     thumbnails: {
         illust: {
-            id: string,
-            title: string
-        }[]
+            id: string;
+            title: string;
+        }[];
     },
     page: {
         series: {
-            workId: string
-        }[]
-    }
-}
+            workId: string;
+        }[];
+    };
+};
 
 type APIPage = {
     urls: {
-        original: string
-    }
-}
+        original: string;
+    };
+};
 
 @Common.MangasNotSupported()
 @Common.ImageAjax()
@@ -46,7 +46,7 @@ export default class extends DecoratableMangaScraper {
 
     private readonly apiURL = 'https://www.pixiv.net/ajax/';
 
-    public constructor() {
+    public constructor () {
         super('pixiv', 'Pixiv', 'https://www.pixiv.net', Tags.Media.Manga, Tags.Language.Japanese, Tags.Source.Official);
     }
 
@@ -65,38 +65,33 @@ export default class extends DecoratableMangaScraper {
             const { body: { illustId, illustTitle } } = await FetchJSON<APIResult<APIIlust>>(new Request(new URL(`./illust/${id}?lang=en`, this.apiURL)));
             return new Manga(this, provider, `artwork-${illustId}`, illustTitle.trim());
         } else {
-            const id = mangaUrl.pathname.match(/\/series\/(\d+)/)[1];
+            const id = mangaUrl.pathname.match(/\/series\/(\d+)/).at(-1);
             const { body: { illustSeries } } = await FetchJSON<APIResult<APISerie>>(new Request(new URL(`./series/${id}?p=1&lang=en`, this.apiURL)));
-            const title = illustSeries.filter(s => s.id === id).map(s => s.title.trim()).pop();
+            const title = illustSeries.filter(s => s.id === id).map(s => s.title.trim()).at(-1);
             return new Manga(this, provider, id, title.trim());
         }
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const chapterList: Chapter[] = [];
         if (manga.Identifier.startsWith('artwork-')) {
-            return [new Chapter(this, manga, manga.Identifier.match(/artwork-(\d+)$/).at(1), manga.Title)];
+            return [ new Chapter(this, manga, manga.Identifier.match(/artwork-(\d+)$/).at(-1), manga.Title) ];
         } else {
-            for (let page = 1, run = true; run; page++) {
-                const chapters = await this.FetchChaptersFromPage(manga, page);
-                chapters.length > 0 ? chapterList.push(...chapters) : run = false;
-            }
+            type This = typeof this;
+            return Array.fromAsync(async function* (this: This) {
+                for (let page = 1, run = true; run ; page++) {
+                    const { body: { thumbnails: { illust }, page: { series } } } = await FetchJSON<APIResult<APIChapters>>(new Request(new URL(`./series/${manga.Identifier}?p=${page}&lang=en`, this.apiURL)));
+                    const chapters = series.map(({workId }) => {
+                        const chapterContents = illust.find(c => c.id === workId);
+                        if (chapterContents) return new Chapter(this, manga, chapterContents.id, chapterContents.title);
+                    });
+                    chapters.length > 0 ? yield* chapters : run = false;
+                }
+            }.call(this));
         }
-        return chapterList;
-    }
-
-    private async FetchChaptersFromPage(manga: Manga, page: number): Promise<Chapter[]> {
-        const { body: { thumbnails: { illust }, page: { series } } } = await FetchJSON<APIResult<APIChapters>>(new Request(new URL(`./series/${manga.Identifier}?p=${page}&lang=en`, this.apiURL)));
-
-        return series.map(chapter => {
-            const chapterContents = illust.find(c => c.id === chapter.workId);
-            if (chapterContents) return new Chapter(this, manga, chapterContents.id, chapterContents.title.trim());
-        });
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
         const { body } = await FetchJSON<APIResult<APIPage[]>>(new Request(new URL(`./illust/${chapter.Identifier}/pages?lang=en`, this.apiURL)));
         return body.map(image => new Page(this, chapter, new URL(image.urls.original)));
     }
-
 }

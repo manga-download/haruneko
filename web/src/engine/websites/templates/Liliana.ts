@@ -1,8 +1,9 @@
 // Seems to be based on MangaReader or MangaStream
 
+import { type MangaPlugin } from '../../providers/MangaPlugin';
 import * as Common from '../decorators/Common';
 
-export const mangaPath ='/all-manga/{page}/';
+export const MangasLinkGenerator = Common.PatternLinkGenerator<MangaPlugin>('/all-manga/{page}/');
 export const queryMangaTitleFromURI = 'div.anisc-detail .manga-name';
 export const queryMangas = 'div.item div.manga-detail .manga-name a';
 export const queryChapters = [

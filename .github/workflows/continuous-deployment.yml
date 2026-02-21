@@ -32,17 +32,21 @@ jobs:
         run: npm run build --workspace=web
       - name: Deploy App to CloudFlare
         uses: cloudflare/wrangler-action@v3
+        env:
+          WRANGLER_SEND_METRICS: false
         with:
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          command: |
-            pages deploy ./web/build --project-name=hakuneko --commit-dirty=true
+          wranglerVersion: 4
+          command: deploy --assets=./web/build --name=hakuneko-app --latest=true
       - name: Build Documentation
         run: npm run build --workspace=docs
       - name: Deploy Docs to CloudFlare
         uses: cloudflare/wrangler-action@v3
+        env:
+          WRANGLER_SEND_METRICS: false
         with:
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          command: |
-            pages deploy ./docs/.vitepress/dist --project-name=hakuneko-docs --commit-dirty=true
+          wranglerVersion: 4
+          command: deploy --assets=./docs/.vitepress/dist --name=hakuneko-docs --latest=true

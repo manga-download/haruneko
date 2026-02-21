@@ -8,36 +8,36 @@ import DeScramble from '../transformers/ImageDescrambler';
 
 type APIResult<T> = {
     data: T,
-    is_success: boolean
-}
+    is_success: boolean;
+};
 
 type APIManga = {
     book: {
-        name: string
-    }
-}
+        name: string;
+    };
+};
 
 type APIChapters = {
     episodes: {
         id: number,
-        name: string
-    }[]
-}
+        name: string;
+    }[];
+};
 
 type APIPages = {
     pages: {
         manga_page: {
-            page_image_url: string
-        }
-    }[]
-}
+            page_image_url: string;
+        };
+    }[];
+};
 
 @Common.MangasNotSupported()
 export default class extends DecoratableMangaScraper {
 
     private readonly apiUrl = 'https://webapi.ynjn.jp';
 
-    public constructor() {
+    public constructor () {
         super('ynjn', `ヤンジャン！(ynjn)`, 'https://ynjn.jp', Tags.Language.Japanese, Tags.Source.Official, Tags.Media.Manga);
     }
 
@@ -94,5 +94,4 @@ export default class extends DecoratableMangaScraper {
             }
         });
     }
-
 }

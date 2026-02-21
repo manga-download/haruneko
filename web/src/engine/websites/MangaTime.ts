@@ -1,4 +1,4 @@
-﻿import { Tags } from '../Tags';
+import { Tags } from '../Tags';
 import icon from './MangaTime.webp';
 import { type Chapter, DecoratableMangaScraper, Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
@@ -10,7 +10,7 @@ function ReplaceNameWithDash(inputString: string): string {
 
 function MangaInfoExtractor(anchor: HTMLAnchorElement) {
     return {
-        id: `/manga/${ ReplaceNameWithDash(anchor.dataset.mangaName.trim())}/`,
+        id: `/manga/${ReplaceNameWithDash(anchor.dataset.mangaName.trim())}/`,
         title: anchor.dataset.mangaName.trim()
     };
 }
@@ -27,7 +27,7 @@ const chapterScript = `
 `;
 
 @Common.MangaCSS(/^{origin}\/manga\/[^/]+\/$/, 'div.anime__details__title h3')
-@Common.MangasSinglePagesCSS(['/categories/0/9999/'], 'a.manga-link-3', MangaInfoExtractor)
+@Common.MangasSinglePageCSS('/categories/0/9999/', 'a.manga-link-3', MangaInfoExtractor)
 @Common.ChaptersSinglePageJS(chapterScript, 1500)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {

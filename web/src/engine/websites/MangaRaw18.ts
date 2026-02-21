@@ -1,14 +1,14 @@
 import { Tags } from '../Tags';
 import icon from './MangaRaw18.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
-import * as Liliana from './templates/Liliana';
 import * as MojoPortalComic from './templates/MojoPortalComic';
+import * as Liliana from './templates/Liliana';
 import * as Common from './decorators/Common';
 
 @Common.MangaCSS(/^{origin}\/manga\/[^/]+$/, MojoPortalComic.queryManga)
-@Common.MangasMultiPageCSS(Liliana.mangaPath, MojoPortalComic.queryMangas)
+@Common.MangasMultiPageCSS(MojoPortalComic.queryMangas, Liliana.MangasLinkGenerator)
 @Common.ChaptersSinglePageCSS('ul li div.chapter a')
-@Liliana.PagesSinglePageJS(undefined, 'img', (element) => element.dataset.original )
+@Liliana.PagesSinglePageJS(undefined, 'img', (element) => element.dataset.original)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 

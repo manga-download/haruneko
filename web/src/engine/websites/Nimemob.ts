@@ -11,5 +11,4 @@ export default class extends ZeistManga {
     public override get Icon() {
         return icon;
     }
-
 }

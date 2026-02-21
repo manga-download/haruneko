@@ -3,13 +3,6 @@ import icon from './MangaOni.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 
-function MangaExtractor(anchor: HTMLAnchorElement) {
-    return {
-        id: anchor.pathname,
-        title: anchor.querySelector('span').textContent.trim()
-    };
-}
-
 const pageScript = `
     new Promise((resolve) => {
         resolve(hojas.map(img => dir + img));
@@ -17,9 +10,11 @@ const pageScript = `
 `;
 
 @Common.MangaCSS(/^{origin}\/manga\/[^/]+\/$/, 'article.manga h1.post-title')
-@Common.MangasMultiPageCSS('/directorio?p={page}', 'div#content div#content-left div#article-div a', 1, 1, 0, MangaExtractor)
-@Common.ChaptersSinglePageCSS('div#entry-manga div#c_list a', Common.AnchorInfoExtractor(false, 'span, b'))
-@Common.PagesSinglePageJS(pageScript, 2500) //Note : chapter is behind cloudflare turnstyle
+@Common.MangasMultiPageCSS<HTMLAnchorElement>('div#content div#content-left div#article-div a', Common.PatternLinkGenerator('/directorio?p={page}'), 0, anchor => ({
+    id: anchor.pathname, title: anchor.querySelector<HTMLSpanElement>('span').textContent.trim()
+}))
+@Common.ChaptersSinglePageCSS('div#entry-manga div#c_list a', undefined, Common.AnchorInfoExtractor(false, 'span, b'))
+@Common.PagesSinglePageJS(pageScript, 2500) // NOTE : chapter is behind cloudflare turnstile
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 

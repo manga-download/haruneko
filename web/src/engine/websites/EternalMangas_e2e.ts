@@ -6,17 +6,17 @@ new TestFixture({
         title: 'Eternal Mangas'
     },
     container: {
-        url: 'https://eternalmangas.com/ver/lo-siento-por-ser-una-tonta',
-        id: '/ver/lo-siento-por-ser-una-tonta',
-        title: 'Lo siento por ser una tonta'
+        url: 'https://eternalmangas.org/series/winterfield',
+        id: '3229',
+        title: 'Winterfield'
     },
     child: {
-        id: '/ver/lo-siento-por-ser-una-tonta/capitulo-14',
-        title: 'Capítulo 14'
+        id: '/series/winterfield/chapter-8',
+        title: 'Chapter 8'
     },
     entry: {
-        index: 0,
-        size: 304_618,
+        index: 4,
+        size: 645_514,
         type: 'image/webp'
     }
 }).AssertWebsite();

@@ -1,4 +1,4 @@
-﻿import { Tags } from '../Tags';
+import { Tags } from '../Tags';
 import icon from './KuManga.webp';
 import * as Common from './decorators/Common';
 import { DecoratableMangaScraper, Manga, Page, type MangaPlugin, type Chapter } from '../providers/MangaPlugin';
@@ -40,7 +40,7 @@ const chapterScript = `
     ];
 `;
 
-@Common.MangaCSS(/^{origin}\/manga\/\d+\/[^/]+$/, 'h1.media-name__main', Common.ElementLabelExtractor('small,div,span'))
+@Common.MangaCSS(/^{origin}\/manga\/\d+\/[^/]+$/, 'h1.media-name__main', Common.WebsiteInfoExtractor({ queryBloat: 'small,div,span' }))
 @Common.ChaptersSinglePageJS(chapterScript, 2500)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {

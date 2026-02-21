@@ -5,8 +5,8 @@ import * as Common from './decorators/Common';
 import * as MH from './templates/MH';
 
 @Common.MangaCSS(/^{origin}\/cartoon\/\d+$/, MH.queryMangaTitleFromURI)
-@Common.MangasMultiPageCSS(MH.mangaPath, MH.queryMangas)
-@Common.ChaptersSinglePageCSS(MH.queryChapters, MH.ChapterExtractor)
+@Common.MangasMultiPageCSS(MH.queryMangas, MH.MangasLinkGenerator)
+@Common.ChaptersSinglePageCSS(MH.queryChapters, undefined, MH.ChapterExtractor)
 @Common.PagesSinglePageCSS(MH.queryPages, MH.PageLinkExtractor)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {

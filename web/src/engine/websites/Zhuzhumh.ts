@@ -6,11 +6,11 @@ import { FetchJSON } from '../platform/FetchProvider';
 
 type APIChapter = {
     chaptername: string,
-    chapterurl: string
-}
+    chapterurl: string;
+};
 
 @Common.MangaCSS(/^{origin}\/book\/[^/]+\.html$/, 'div.cy_title h1')
-@Common.MangasMultiPageCSS('/sort/1-{page}.html', 'div.cy_list_mh ul li.title a')
+@Common.MangasMultiPageCSS('div.cy_list_mh ul li.title a', Common.PatternLinkGenerator('/sort/1-{page}.html'))
 @Common.PagesSinglePageJS('newImgs', 1500)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
@@ -25,10 +25,9 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const chapterslist = await Common.FetchChaptersSinglePageCSS.call(this, manga, 'ul#mh-chapter-list-ol-0 li a');
-        const mangaid = manga.Identifier.match(/\/book\/([^.]+)\.html$/)[1];
+        const mangaid = manga.Identifier.match(/\/book\/([^.]+)\.html$/).at(-1);
         const data = await FetchJSON<APIChapter[]>(new Request(new URL(`/api/bookchapter?id=${mangaid}&id2=1`, this.URI)));
         chapterslist.push(...data.map(chapter => new Chapter(this, manga, new URL(chapter.chapterurl).pathname, chapter.chaptername.trim())));
         return chapterslist;
     }
-
 }

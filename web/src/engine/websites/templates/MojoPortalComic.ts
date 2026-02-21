@@ -1,11 +1,11 @@
 // Seems to be based on MangaReader or MangaStream
 
 import * as Common from '../decorators/Common';
-import { Chapter, type Manga, type MangaScraper } from "../../providers/MangaPlugin";
+import { type MangaScraper, type MangaPlugin, type Manga, Chapter } from "../../providers/MangaPlugin";
 import { FetchJSON } from '../../platform/FetchProvider';
 
 export const queryManga = 'article#item-detail h1.title-detail';
-export const patternMangas = '/?page={page}';
+export const MangasLinkGenerator = Common.PatternLinkGenerator<MangaPlugin>('/?page={page}');
 export const queryMangas = 'div.items div.item figcaption h3 a.jtip';
 export const queryChapters = 'ul li div.chapter a[data-id]';
 export const queryPages = 'div.page-chapter > img';

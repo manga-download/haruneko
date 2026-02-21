@@ -1,5 +1,4 @@
 <script lang="ts">
-    import { fade } from 'svelte/transition';
     import {
         Button,
         ClickableTile,
@@ -21,7 +20,6 @@
     import { onDestroy, onMount } from 'svelte';
     import type { MediaContainer2 } from '../Types';
 
-
     interface Props {
         style?: string;
         // TODO: Instead of conditional pollution, split component into one for showing containers and one for showing bookmarks
@@ -36,6 +34,7 @@
     let isMediaOrphanedBookmark = $state(true);
     $effect(() => {
         if(!media) return;
+        findMediaUnFlaggedContent(media);
         isBookmarked = HakuNeko.BookmarkPlugin.IsBookmarked(media);
         isMediaOrphanedBookmark = media instanceof Bookmark && media.IsOrphaned;
     });
@@ -49,10 +48,9 @@
     let unFlaggedItems: MediaContainer<MediaChild>[] = $state([]);
     let delayedContentCheck;
 
-
     async function findMediaUnFlaggedContent(updatedmedia:MediaContainer<MediaChild>) {
         if (!updatedmedia.IsSameAs(media)) return;
-        
+
         unFlaggedItems = [];
         const delay = !$selectedMedia || $selectedMedia?.IsSameAs(HakuNeko.BookmarkPlugin) ? 0 : 800;
         delayedContentCheck = setTimeout(
@@ -62,11 +60,9 @@
             )) as MediaContainer<MediaChild>[];
         },delay);
     }
-    findMediaUnFlaggedContent(media);
 
     onMount(() => {
         HakuNeko.ItemflagManager.ContainerFlagsEventChannel.Subscribe(findMediaUnFlaggedContent);
-       
     });
 
     onDestroy(() => {
@@ -84,16 +80,15 @@
             document.removeEventListener('contextmenu', outsideClickListener);
         }
     }
+
     function menuOpens() {
         document.addEventListener('contextmenu', outsideClickListener);
     }
-    
-
 </script>
 
 <div bind:this={mediadiv} class="media" {style} class:selected>
     <ContextMenu target={[mediadiv]} bind:open={menuOpen} on:open={menuOpens}>
-        <ContextMenuOption indented labelText="Browse Chapters" shortcutText="⌘B" 
+        <ContextMenuOption indented labelText="Browse Chapters" shortcutText="⌘B"
             onclick={() => {$selectedMedia = media;}}
         />
         <ContextMenuOption
@@ -143,7 +138,7 @@
         </span>
     {/if}
     {#if !isMediaOrphanedBookmark}
-        <button 
+        <button
             class="website"
             onclick={() => window.open(media.Parent.URI.href, '_blank')}
             title="Open {media.Parent.URI.href}"
@@ -211,7 +206,7 @@
         border: none;
         background: none;
         background-color: unset;
-        margin-right: 0.4em; 
+        margin-right: 0.4em;
         cursor: pointer;
     }
     .media .pluginIcon {
