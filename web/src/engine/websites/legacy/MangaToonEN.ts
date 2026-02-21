@@ -1,14 +1,11 @@
-// Auto-Generated export from HakuNeko Legacy
-// See: https://gist.github.com/ronny1982/0c8d5d4f0bd9c1f1b21dbf9a2ffbfec9
-
-//import { Tags } from '../../Tags';
+import { Tags } from '../../Tags';
 import icon from './MangaToonEN.webp';
-import { DecoratableMangaScraper } from '../../providers/MangaPlugin';
+import MangaToon from '../templates/MangaToon';
 
-export default class extends DecoratableMangaScraper {
+export default class extends MangaToon {
 
     public constructor() {
-        super('mangatoon-pt', `MangaToon (Portuguese)`, 'https://mangatoon.mobi/pt' /*, Tags.Language.English, Tags ... */);
+        super('mangatoon-en', `MangaToon (English)`, Tags.Language.English);
     }
 
     public override get Icon() {
