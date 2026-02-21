@@ -1,24 +1,22 @@
 ﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'mangaokutr',
         title: 'Manga Oku TR'
     },
     container: {
-        url: 'https://mangaokutr.com/manga/youngest-scion-of-the-mages/',
-        id: '/manga/youngest-scion-of-the-mages/',
-        title: 'Youngest Scion of the Mages'
+        url: 'https://mangaokutr.net/manga/baekssisega-sihanbu-gongja/',
+        id: '/manga/baekssisega-sihanbu-gongja/',
+        title: 'Baekssisega Sihanbu Gongja'
     },
     child: {
-        id: '/youngest-scion-of-the-mages-bolum-1/',
+        id: '/baekssisega-sihanbu-gongja-1/',
         title: 'Bölüm 1'
     },
     entry: {
         index: 0,
-        size: 275_764,
-        type: 'image/jpeg'
+        size: 118_763,
+        type: 'image/avif'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();
