@@ -99,34 +99,32 @@ export class BalconyDRM {
     }
 
     private async UpdateSession(): Promise<void> {
-        // if session is valid? Return
-        if (this.#HasValidSession()) return;
-
-        // We dont have tokens? try to get them
-        if (!this.tokens) {
+        try {
+            // Update tokens. This will take care of logout and expiration from website itself
             const { user } = await FetchJSON<APIUser>(new Request(new URL('./api/auth/session', this.webURL)));
             this.tokens = user;
-        }
 
-        // if we have tokens, and accesstoken is expired
-        if (this.tokens && !this.#HasValidSession()) {
-            // if refreshToken is expired, clear everything
-            if (this.tokens?.refreshToken.expiredAt < Date.now() + 60_000) {
-                this.tokens = undefined;
-                return;
-            } else { // else renew the token
-                try {
+            // if session is valid? Return
+            if (this.#HasValidSession()) return;
+
+            // if we have tokens here it means its expired
+            if (this.tokens) {
+                // if refreshToken is expired, clear everything
+                if (this.tokens?.refreshToken.expiredAt < Date.now() + 60_000) {
+                    this.tokens = undefined;
+                    return;
+                } else { // else renew tokens
                     const { result } = await FetchJSON<RefreshTokenResult>(this.#CreateRequest('./api/balcony/auth/refresh',
-                        { accessToken: this.tokens.accessToken.token,
+                        {
+                            accessToken: this.tokens.accessToken.token,
                             clientIp: '',
                             refreshToken: this.tokens.refreshToken.token
                         }, this.webURL));
                     this.tokens = result;
                 }
-                catch {
-                    this.tokens = undefined;
-                }
             }
+        } catch {
+            this.tokens = undefined;
         }
     }
 
