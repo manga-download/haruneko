@@ -6,7 +6,7 @@ new TestFixture({
         title: 'Manga168'
     },
     container: {
-        url: 'https://manga1688.com/manga/overgeared-remake/',
+        url: 'https://www2.manga1688.com/manga/overgeared-remake/',
         id: '/manga/overgeared-remake/',
         title: 'Overgeared (Remake)'
     },

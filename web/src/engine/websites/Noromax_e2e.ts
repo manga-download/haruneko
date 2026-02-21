@@ -1,12 +1,12 @@
 ﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'noromax',
         title: 'Noromax'
     },
     container: {
-        url: 'https://noromax01.my.id/Komik/all-hail-the-sect-leader-bahasa-indonesia/',
+        url: 'https://noromax02.my.id/Komik/all-hail-the-sect-leader-bahasa-indonesia/',
         id: '/Komik/all-hail-the-sect-leader-bahasa-indonesia/',
         title: 'All Hail the Sect Leader'
     },
@@ -19,6 +19,4 @@ const config = {
         size: 225_081,
         type: 'image/jpeg'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

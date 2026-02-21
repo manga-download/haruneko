@@ -1,7 +1,7 @@
 import { Tags } from '../Tags';
 import icon from './ComixTo.webp';
-import { FetchJSON } from '../platform/FetchProvider';
-import { type MangaPlugin, Manga, Chapter, DecoratableMangaScraper } from '../providers/MangaPlugin';
+import { FetchJSON, FetchNextJS } from '../platform/FetchProvider';
+import { type MangaPlugin, Manga, Chapter, DecoratableMangaScraper, Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 
 type APIResult<T> = {
@@ -26,17 +26,13 @@ type APIChapter = {
     name: string;
 };
 
+type HydratedImages = {
+    images: {
+        url: string;
+    }[]
+};
+
 @Common.MangaCSS(/^{origin}\/title\/[^/]+$/, 'section.comic-info h1.title')
-@Common.PagesSinglePageJS(`
-    new Promise(resolve => {
-        const containers = [ ...document.querySelectorAll('div.viewer-wrapper div.page') ];
-        setInterval(() => {
-            containers.forEach(container => container.scrollIntoView());
-            const sources = containers.map(container => container.querySelector('img')?.src ?? '');
-            if(!sources.some(src=> src  === '')) resolve(sources);
-        }, 250);
-    });
-`, 750)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
     private readonly apiUrl = `${this.URI.origin}/api/v2/`;
@@ -64,11 +60,16 @@ export default class extends DecoratableMangaScraper {
         const hash = manga.Identifier.match(/\/title\/([^/-]+)-/).at(1);
         type This = typeof this;
         return Array.fromAsync(async function* (this: This) {
-            for (let page = 1, run = true; run ; page++) {
+            for (let page = 1, run = true; run; page++) {
                 const { result: { items } } = await FetchJSON<APIChapters>(new Request(new URL(`./manga/${hash}/chapters?limit=100&page=${page}&order[number]=desc`, this.apiUrl)));
-                const chapters = items.map(({ chapter_id: id, number, name }) => new Chapter(this, manga, `${manga.Identifier}/${id}-chapter-${number}`, [number, name? `- ${name}`: ''].join(' ').trim()));
+                const chapters = items.map(({ chapter_id: id, number, name }) => new Chapter(this, manga, `${manga.Identifier}/${id}-chapter-${number}`, [number, name ? `- ${name}` : ''].join(' ').trim()));
                 chapters.length > 0 ? yield* chapters : run = false;
             }
         }.call(this));
+    }
+
+    public override async FetchPages(chapter: Chapter): Promise<Page[]> {
+        const { images } = await FetchNextJS<HydratedImages>(new Request(new URL(chapter.Identifier, this.URI)), data => 'images' in data);
+        return images.map(({ url }) => new Page(this, chapter, new URL(url)));
     }
 }
