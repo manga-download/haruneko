@@ -31,10 +31,10 @@ type APIChapter = {
 
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
-    private readonly apiUrl = 'https://v2.dilar.tube/api/';
+    private readonly apiUrl = 'https://dilar.tube/api/';
 
     public constructor() {
-        super('dilar', `Dilar`, 'https://v2.dilar.tube', Tags.Language.Arabic, Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Source.Aggregator);
+        super('dilar', `Dilar`, 'https://dilar.tube', Tags.Language.Arabic, Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Source.Aggregator);
     }
     public override get Icon() {
         return icon;

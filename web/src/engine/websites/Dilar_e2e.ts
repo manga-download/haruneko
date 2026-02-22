@@ -6,7 +6,7 @@ new TestFixture({
         title: 'Dilar'
     },
     container: {
-        url: 'https://v2.dilar.tube/series/11089/the-regressed-villainess-makes-a-vow-of-chastity',
+        url: 'https://dilar.tube/series/11089/the-regressed-villainess-makes-a-vow-of-chastity',
         id: '11089',
         title: 'The Regressed Villainess Makes a Vow of Chastity'
     },
