@@ -13,13 +13,6 @@ type APIChapterResult = {
     }
 };
 
-function MangaInfoExtractor(anchor: HTMLAnchorElement) {
-    return {
-        id: anchor.pathname,
-        title: CleanTitle(anchor.textContent.trim()),
-    };
-}
-
 function CleanTitle(title: string): string {
     return title.replace(/^<.*>/i, '').trim();
 }
@@ -47,7 +40,9 @@ export default class extends DecoratableMangaScraper {
         genres = Array.from(new Set(genres));
         const mangaList: Manga[] = [];
         for (const genre of genres) {
-            mangaList.push(... await Common.FetchMangasMultiPageCSS.call(this, provider, 'ul.listBox li div.titleName a', Common.PatternLinkGenerator(`/genre/${genre}/?page={page}`), 0, MangaInfoExtractor));
+            mangaList.push(... await Common.FetchMangasMultiPageCSS.call(this, provider, 'ul.listBox li div.titleName a', Common.PatternLinkGenerator(`/genre/${genre}/?page={page}`), 0, anchor => (
+                { id: (anchor as HTMLAnchorElement).pathname, title: CleanTitle(anchor.textContent.trim()) }
+            )));
         }
         return mangaList.distinct();
     }
@@ -55,25 +50,19 @@ export default class extends DecoratableMangaScraper {
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const chapters: Chapter[] = [];
         const mangaid = manga.Identifier.match(/title\/(\d+)/).at(1);
-        let page = 1;
-        let pageMax = 1;
 
-        while (page <= pageMax) {
-            const request = new Request(new URL(`/api/title/content_list/?title_id=${mangaid}&content_id=0&page=${page}&order=down&_=${Date.now().toString()}`, this.URI));
-            const { data } = await FetchJSON<APIChapterResult>(request);
-            const chaptersNodes = [...new DOMParser().parseFromString(data.html_content, 'text/html').querySelectorAll<HTMLElement>('ul.detailBox div.inner_table')];
+        for (let page = 1, pageMax = 1; page <= pageMax; page++) {
+            const { data: { html_content, html_page } } = await FetchJSON<APIChapterResult>(new Request(new URL(`./api/title/content_list/?title_id=${mangaid}&content_id=0&page=${page}&order=down&_=${Date.now().toString()}`, this.URI)));
+            const chaptersNodes = [...new DOMParser().parseFromString(html_content, 'text/html').querySelectorAll<HTMLElement>('ul.detailBox div.inner_table')];
             for (const chapterNode of chaptersNodes) {
                 const title = chapterNode.querySelector<HTMLParagraphElement>('p.titleName').textContent.trim();
                 const linkNode = chapterNode.querySelector<HTMLAnchorElement>('div.btnBox a');
                 if (linkNode) chapters.push(new Chapter(this, manga, linkNode.pathname + linkNode.search, title));
             }
-
-            if (page == 1 && data.html_page != '') {
-                pageMax = parseInt(new DOMParser().parseFromString(data.html_page, 'text/html').querySelector<HTMLAnchorElement>('ul#_pages li:nth-last-of-type(2) a').dataset.page);
+            if (page === 1 && html_page) {
+                pageMax = parseInt(new DOMParser().parseFromString(html_page, 'text/html').querySelector<HTMLAnchorElement>('ul#_pages li:nth-last-of-type(2) a').dataset.page);
             }
-            page++;
         }
-
         return chapters.distinct();
     }
 }

@@ -5,24 +5,13 @@ import * as Common from './decorators/Common';
 import * as SpeedBinb from './decorators/SpeedBinb';
 import { SpeedBindVersion } from './decorators/SpeedBinb';
 
-function MangaExtractor(element: HTMLElement) {
-    return {
-        id: element.querySelector<HTMLAnchorElement>('a').pathname,
-        title: element.querySelector<HTMLDivElement>('div.book-box4-title').textContent.trim()
-    };
-}
-
-function ChapterExtractor(element: HTMLElement) {
-    const anchor = element.querySelector<HTMLAnchorElement>('a');
-    return {
-        id: anchor.pathname + anchor.search,
-        title: element.querySelector<HTMLSpanElement>('span').textContent.trim()
-    };
-}
-
 @Common.MangaCSS(/^{origin}\/titles\/\d+\//, 'div.intr-title')
-@Common.MangasMultiPageCSS('div.book-box4', Common.PatternLinkGenerator('/titles/?page_num={page}'), 0, MangaExtractor)
-@Common.ChaptersSinglePageCSS('div.episode-list', undefined, ChapterExtractor)
+@Common.MangasMultiPageCSS('div.book-box4', Common.PatternLinkGenerator('/titles/?page_num={page}'), 0, element => (
+    { id: element.querySelector<HTMLAnchorElement>('a').pathname, title: element.querySelector<HTMLDivElement>('div.book-box4-title').textContent.trim() }
+))
+@Common.ChaptersSinglePageCSS<HTMLAnchorElement>('div.episode-list a', undefined, anchor => (
+    { id: anchor.pathname + anchor.search, title: anchor.parentNode.querySelector<HTMLSpanElement>('span').textContent.trim() }
+))
 @SpeedBinb.PagesSinglePageAjax(SpeedBindVersion.v016130, true)
 @SpeedBinb.ImageAjax()
 export default class extends DecoratableMangaScraper {
