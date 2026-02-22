@@ -293,6 +293,7 @@ export { default as LianScans } from './LianScans';
 export { default as LikeManga } from './LikeManga';
 export { default as LilyManga } from './LilyManga';
 export { default as LilyumFansub } from './LilyumFansub';
+export { default as LimonManga } from './LimonManga';
 export { default as LineWebtoon } from './LineWebtoon';
 export { default as LoversToon } from './LoversToon';
 export { default as LumosKomik } from './LumosKomik';
