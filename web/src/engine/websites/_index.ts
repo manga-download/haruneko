@@ -520,7 +520,6 @@ export { default as NicoManga } from './NicoManga';
 export { default as NicoNicoSeiga } from './NicoNicoSeiga';
 export { default as NihonKuni } from './NihonKuni';
 export { default as NijiTranslations } from './NijiTranslations';
-export { default as Nimemob } from './Nimemob';
 export { default as NineMangaBR } from './NineMangaBR';
 export { default as NineMangaDE } from './NineMangaDE';
 export { default as NineMangaEN } from './NineMangaEN';
