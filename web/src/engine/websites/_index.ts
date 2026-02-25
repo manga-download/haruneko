@@ -544,6 +544,7 @@ export { default as Oremanga } from './Oremanga';
 export { default as OrigamiOrpheans } from './OrigamiOrpheans';
 export { default as Otsugami } from './Otsugami';
 export { default as OurFeel } from './OurFeel';
+export { default as ParadoxScans } from './ParadoxScans';
 export { default as PatiManga } from './PatiManga';
 export { default as PawManga } from './PawManga';
 export { default as PelaTeam } from './PelaTeam';
