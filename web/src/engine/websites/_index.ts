@@ -753,6 +753,7 @@ export { default as XManga } from './XManga';
 export { default as XManhwa } from './XManhwa';
 export { default as XoxoComics } from './XoxoComics';
 export { default as XXXYaoi } from './XXXYaoi';
+export { default as YakshaComics } from './YakshaComics';
 export { default as YakshaScans } from './YakshaScans';
 export { default as YaoiChan } from './YaoiChan';
 export { default as YaoiHavenReborn } from './YaoiHavenReborn';
