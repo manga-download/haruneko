@@ -289,6 +289,10 @@ const translations: VariantResource = {
   Tracker_Kitsu_Settings_PasswordInfo: 'Password for automatic account login to Kitsu',
 
   // [SECTION]: Plugins (common)
+  Plugin_Settings_Email: 'Email',
+  Plugin_Settings_EmailInfo: 'Email address',
+  Plugin_Settings_Password: 'Password',
+  Plugin_Settings_PasswordInfo: 'Password for this website',
 
   Plugin_Settings_ThrottlingDownloads: 'Throttle Downloads [ms]',
   Plugin_Settings_ThrottlingDownloadsInfo: '...',
