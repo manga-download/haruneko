@@ -664,6 +664,7 @@ export { default as SundayWebry } from './SundayWebry';
 export { default as SuratManga } from './SuratManga';
 export { default as SushiScans } from './SushiScans';
 export { default as SushiScansFR } from './SushiScansFR';
+export { default as Syosetu } from './Syosetu';
 export { default as TakeComic } from './TakeComic';
 export { default as Tapas } from './Tapas';
 export { default as TappyToon } from './TappyToon';

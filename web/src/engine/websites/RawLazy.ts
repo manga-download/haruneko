@@ -1,36 +1,13 @@
-import { Tags } from '../Tags';
+﻿import { Tags } from '../Tags';
 import icon from './RawLazy.webp';
-import { DecoratableMangaScraper, Manga, type MangaPlugin } from '../providers/MangaPlugin';
+import { Manga, type MangaPlugin } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
+import { FetchJSON } from '../platform/FetchProvider';
+import { ChapterExtractor, CleanTitle, Zing92Base, type APIResult } from './templates/Zing92Base';
 
-function CleanupTitle(text: string) {
-    return text.replace(/\(Raw.*Free\)/i, '').trim();
-}
-
-function MangaLinkExtractor(title: HTMLTitleElement, uri: URL) {
-    return {
-        id: uri.pathname,
-        title: CleanupTitle(title.innerText.split('|')[0].trim()),
-    };
-}
-
-function ChapterInfoExtractor(anchor: HTMLAnchorElement) {
-    return {
-        id: anchor.pathname,
-        title: anchor.querySelector<HTMLSpanElement>('span').innerText.trim()
-    };
-}
-
-type APIResult = {
-    mes: string;
-}
-
-@Common.MangaCSS(/^{origin}\/manga-lazy\/[^/]+\/$/, 'title', MangaLinkExtractor)
-@Common.ChaptersSinglePageCSS('div.chapters-list a', undefined, ChapterInfoExtractor)
-@Common.PagesSinglePageCSS('.chapter_popup img')
-@Common.ImageAjax(true)
-export default class extends DecoratableMangaScraper {
+@Common.MangaCSS(/^{origin}\/manga-lazy\/[^/]+\/$/, 'title', (element, uri) => ({ id: uri.pathname, title: CleanTitle(element.textContent.split('|').at(0)) }))
+@Common.ChaptersSinglePageCSS('div.chapters-list a', undefined, ChapterExtractor)
+export default class extends Zing92Base {
 
     public constructor() {
         super('rawlazy', 'RawLazy', 'https://rawlazy.io', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Japanese, Tags.Source.Aggregator);
@@ -42,36 +19,29 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
         const mangaList: Manga[] = [];
-        const uri = new URL('/wp-admin/admin-ajax.php', this.URI);
-        const nonce = await FetchWindowScript<string>(new Request(this.URI), 'zing.nonce');
-
         for (let page = 1, run = true; run; page++) {
-            const mangas = await this.GetMangasFromPage(provider, uri, nonce, page);
+            const mangas = await this.GetMangasFromPage(provider, page);
             mangas.length > 0 ? mangaList.push(...mangas) : run = false;
         }
         return mangaList;
     }
 
-    private async GetMangasFromPage(provider: MangaPlugin, uri: URL, nonce: string, page: number) {
-
-        const request = new Request(uri, {
+    private async GetMangasFromPage(provider: MangaPlugin, page: number) {
+        const { mes: html } = await FetchJSON<APIResult>(new Request(new URL(this.zingParams.apiURL, this.URI), {
             credentials: 'include',
             method: 'POST',
             body: new URLSearchParams({
                 action: 'z_do_ajax',
-                _action: 'loadmore',
-                nonce: nonce,
-                p: page.toString(),
+                _action: 'loadmore_tr',
+                nonce: this.zingParams.nonce,
+                p: `${page}`,
                 category_id: '0'
             }).toString(),
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
             }
-        });
-
-        const { mes: html } = await FetchJSON<APIResult>(request);
-        const dom = new DOMParser().parseFromString(html, 'text/html');
-        const links = [...dom.querySelectorAll<HTMLAnchorElement>('div.entry-tag h2 a')];
-        return links.map(link => new Manga(this, provider, link.pathname, CleanupTitle(link.text)));
+        }));
+        const links = [...new DOMParser().parseFromString(html, 'text/html').querySelectorAll<HTMLAnchorElement>('div.entry-tag h2 a')];
+        return links.map(link => new Manga(this, provider, link.pathname, CleanTitle(link.text)));
     }
 }
