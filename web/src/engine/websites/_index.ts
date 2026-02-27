@@ -627,6 +627,7 @@ export { default as SekteKomik } from './SekteKomik';
 export { default as SelfManga } from './SelfManga';
 export { default as Senkuro } from './Senkuro';
 export { default as SenManga } from './SenManga';
+export { default as SereinScan } from './SereinScan';
 export { default as SerenityScans } from './SerenityScans';
 export { default as SetsuScans } from './SetsuScans';
 export { default as Seven8te } from './Seven8te';
