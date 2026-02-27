@@ -42,6 +42,16 @@ const legacyWebsiteIdentifierMapTestCases = [
     { sourceID: 'siyahmelek', targetID: 'grimelek' },
     { sourceID: 'suryatoon', targetID: 'genztoon' },
     { sourceID: 'sushiscanfr', targetID: 'animesama' },
+    { sourceID: 'toomics-de', targetID: 'toomics' }, //old id contains manga language ie /en/webtoon/etc..... so they are unique and can be merged into global toomics
+    { sourceID: 'toomics-en', targetID: 'toomics' }, // Toomics Korean works differently, no id change and special plugin
+    { sourceID: 'toomics-es', targetID: 'toomics' },
+    { sourceID: 'toomics-fr', targetID: 'toomics' },
+    { sourceID: 'toomics-it', targetID: 'toomics' },
+    { sourceID: 'toomics-jp', targetID: 'toomics' },
+    { sourceID: 'toomics-mx', targetID: 'toomics' },
+    { sourceID: 'toomics-pt', targetID: 'toomics' },
+    { sourceID: 'toomics-sc', targetID: 'toomics' },
+    { sourceID: 'toomics-tc', targetID: 'toomics' },
     { sourceID: 'vermanhwas', targetID: 'vermanhwa' },
     { sourceID: 'visualikigai', targetID: 'ikigaimangas' },
     { sourceID: 'webtoontrcom', targetID: 'webtoontrnet' },
