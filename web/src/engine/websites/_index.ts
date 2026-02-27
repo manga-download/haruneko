@@ -490,6 +490,7 @@ export { default as MiniTwoScan } from './MiniTwoScan';
 export { default as MintManga } from './MintManga';
 export { default as MirrorKomik } from './MirrorKomik';
 export { default as mkzhan } from './mkzhan';
+export { default as Mojoin } from './Mojoin';
 export { default as MonochromeScans } from './MonochromeScans';
 export { default as MonzeeKomik } from './MonzeeKomik';
 export { default as MugiwarasOficial } from './MugiwarasOficial';
