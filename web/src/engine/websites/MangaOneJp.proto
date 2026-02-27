@@ -1,0 +1,67 @@
+package MangaOneJp;
+syntax = "proto3";
+
+//Common 
+message WebTitle {
+	optional Title title = 1;
+	optional uint32 openChapterId = 2;
+}
+
+message Title {
+	optional uint32 titleId = 1;
+	optional string titleName = 2;
+}
+
+//Manga list
+message WebRensaiListResponse {
+	repeated DayOfWeekTitleList dayOfWeekTitleLists = 1;
+}
+
+message DayOfWeekTitleList {
+	repeated WebTitle titles = 2;
+}
+
+//Chapters and volumes
+message WebChapterListForViewerResponse {
+	optional WebChapterListUsedByPaging chapterList = 1;
+	optional WebVolumeListUsedByPaging volumeList = 3;
+}
+
+message WebChapterListUsedByPaging {
+	repeated ChapterProto chapterList = 1;
+}
+
+message WebVolumeListUsedByPaging {
+	repeated WebVolume volumeList = 1;
+}
+
+message ChapterProto {
+	optional uint32 chapterId = 1;
+	optional string chapterName = 2;
+	optional string description = 3;
+}
+
+message WebVolume {
+	optional Volume volume = 1;
+}
+
+message Volume {
+	optional uint32 id = 1;
+	optional string name = 2;
+}
+
+//Pages
+message WebViewerResponse {
+	optional string aesKey = 3;
+	optional string aesIv = 4;
+	repeated PageProto pages = 1;
+	optional WebTitle currentTitle = 5;
+}
+
+message PageProto {
+	optional ImageProto image = 1;
+}
+
+message ImageProto {
+	optional string imageUrl = 1;
+}
