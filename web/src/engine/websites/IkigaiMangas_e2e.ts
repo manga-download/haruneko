@@ -6,7 +6,7 @@ new TestFixture({
         title: 'Ikigai Mangas'
     },
     container: {
-        url: 'https://visualikigai.radiot.space/series/jinx-manhwa/',
+        url: 'https://zonaikigai.simsownerdetails.com/series/jinx-manhwa/',
         id: '/series/jinx-manhwa/',
         title: 'Jinx'
     },
