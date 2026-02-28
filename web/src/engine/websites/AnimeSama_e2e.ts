@@ -1,24 +1,22 @@
-import { TestFixture, type Config } from '../../../test/WebsitesFixture';
+import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config: Config = {
+new TestFixture({
     plugin: {
         id: 'animesama',
         title: 'Anime-Sama'
     },
     container: {
-        url: 'https://anime-sama.me/manga/sakamoto-days/',
-        id: '/manga/sakamoto-days/',
-        title: 'Sakamoto Days'
+        url: 'https://anime-sama.si/catalogue/alice-in-borderland/',
+        id: '/catalogue/alice-in-borderland/',
+        title: 'Alice in Borderland'
     },
     child: {
-        id: '/sakamoto-days-chapitre-136/',
-        title: 'Chapitre 136'
+        id: '1',
+        title: 'Chapitre 1'
     },
     entry: {
-        index: 0,
-        size: 333_194,
+        index: 1,
+        size: 1_037_175,
         type: 'image/jpeg'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();
