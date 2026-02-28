@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Name=HakuNeko
+GenericName=Manga Downloader
+Comment=Manga, Anime & Novel Downloader
+Icon=org.hakuneko.HakuNeko
+Exec=hakuneko-electron
+Terminal=false
+Categories=Network;FileTransfer;
+Keywords=manga;anime;novel;download;
+StartupWMClass=HakuNeko
