@@ -1,8 +1,12 @@
 <script lang="ts">
     import { Tooltip } from 'carbon-components-svelte';
-    export let labelText: string = '';
-    export let helperText: string = '';
-    export let type: 'sub-menu' | 'item' = 'item';
+    
+    interface Props {
+        labelText?: string;
+        helperText?: string;
+        type?: 'sub-menu' | 'item';
+    }
+    let { labelText = '', helperText = '', type = 'item' }: Props = $props();
 </script>
 
 <div class={`menu-left-panel-${type}-container`}>

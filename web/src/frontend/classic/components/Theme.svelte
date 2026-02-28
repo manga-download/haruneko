@@ -1,9 +1,10 @@
 <script lang="ts">
-    import { afterUpdate } from "svelte";
+    interface Props {
+        theme: string;
+    }
+    let { theme }: Props = $props();
 
-    export let theme: string;
-
-    afterUpdate(() => {
+    $effect(() => {
         document.documentElement.setAttribute("theme", theme);
     });
 </script>

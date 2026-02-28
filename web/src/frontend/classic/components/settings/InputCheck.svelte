@@ -5,10 +5,15 @@
     import { Locale } from '../../stores/Settings';
     import SettingItem from './SettingItem.svelte';
 
-    export let setting: Check;
-    let value: boolean = setting.Value;
+    interface Props {
+        setting: Check;
+    }
+    let { setting }: Props = $props();
+    let value: boolean = $state(setting.Value);
 
-    $: setting.Value = value;
+    $effect(() => {
+        setting.Value = value;
+    });
 
     onMount(() => {
         setting.Subscribe(OnValueChanged);
