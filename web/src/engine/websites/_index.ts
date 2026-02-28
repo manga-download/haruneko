@@ -593,6 +593,7 @@ export { default as ReadKomik } from './ReadKomik';
 export { default as ReadManga } from './ReadManga';
 export { default as ReadToon } from './ReadToon';
 export { default as Remanga } from './Remanga';
+export { default as Remangas } from './Remangas';
 export { default as ResetScans } from './ResetScans';
 export { default as Retsu } from './Retsu';
 export { default as Reyume } from './Reyume';
