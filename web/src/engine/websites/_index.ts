@@ -214,6 +214,7 @@ export { default as HniScanTrad } from './HniScanTrad';
 export { default as HoiFansub } from './HoiFansub';
 export { default as HolonoMetria } from './HolonoMetria';
 export { default as HolyScans } from './HolyScans';
+export { default as Honeytoon } from './Honeytoon';
 export { default as HorrorFC } from './HorrorFC';
 export { default as HqNow } from './HqNow';
 export { default as HunterScan } from './HunterScan';
