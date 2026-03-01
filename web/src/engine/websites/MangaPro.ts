@@ -58,7 +58,7 @@ type ImageToken = {
 
 type ScrambleDecryptionData = {
     m: 'browser' | 'browser_session';
-    v: number;
+    //v: number;
     iv: string;
     tag: string;
     data: string;
@@ -194,8 +194,8 @@ export default class extends DecoratableMangaScraper {
             }
             case 'browser_session': {
                 // UNTESTED
-                const { data, key: sessionKey } = await this.FetchAPI<SessionKey>(`./chapter-map-session-key/${cid}`, this.URI.origin);
-                keyData = GetBytesFromURLBase64(data?.key ?? sessionKey).buffer;
+                const { data, key } = await this.FetchAPI<SessionKey>(`./chapter-map-session-key/${cid}`, this.URI.origin);
+                keyData = GetBytesFromURLBase64(data?.key ?? key).buffer;
                 break;
             }
         };
