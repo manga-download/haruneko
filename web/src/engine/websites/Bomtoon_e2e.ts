@@ -4,7 +4,8 @@ import { TestFixture } from '../../../test/WebsitesFixture';
 new TestFixture({
     plugin: {
         id: 'bomtoon',
-        title: 'Bomtoon'
+        title: 'Bomtoon',
+        timeout: 20000
     },
     container: {
         url: 'https://www.bomtoon.com/detail/not_friend_all',
@@ -26,7 +27,8 @@ new TestFixture({
 new TestFixture({
     plugin: {
         id: 'bomtoon',
-        title: 'Bomtoon'
+        title: 'Bomtoon',
+        timeout: 20000
     },
     container: {
         url: 'https://www.bomtoon.com/detail/spinach_fl',
