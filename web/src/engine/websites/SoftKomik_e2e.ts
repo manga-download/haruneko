@@ -6,7 +6,7 @@ new TestFixture({
         title: 'Softkomik'
     },
     container: {
-        url: 'https://softkomik.com/black-abyss-at-dawn-bahasa-indonesia',
+        url: 'https://softkomik.co/black-abyss-at-dawn-bahasa-indonesia',
         id: 'black-abyss-at-dawn-bahasa-indonesia',
         title: 'Black Abyss at Dawn'
     },
