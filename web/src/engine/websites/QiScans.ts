@@ -8,7 +8,7 @@ import * as Common from './decorators/Common';
 export default class extends VTheme {
 
     public constructor() {
-        super('quantumscans', 'Qi Scans', 'https://qiscans.org', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.English, Tags.Source.Scanlator);
+        super('quantumscans', 'Qi Scans', 'https://qimanhwa.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.English, Tags.Source.Scanlator);
     }
 
     public override get Icon() {
