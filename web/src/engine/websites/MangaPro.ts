@@ -1,7 +1,7 @@
 import { GetBytesFromURLBase64 } from '../BufferEncoder';
 import { Tags } from '../Tags';
 import { FetchJSON, FetchNextJS } from '../platform/FetchProvider';
-import { Chapter, DecoratableMangaScraper, Manga, type MangaPlugin, Page } from '../providers/MangaPlugin';
+import { Chapter, DecoratableMangaScraper, type Manga, /*type MangaPlugin , */ Page } from '../providers/MangaPlugin';
 import type { Priority } from '../taskpool/TaskPool';
 import DeScramble from '../transformers/ImageDescrambler';
 import icon from './MangaPro.webp';
@@ -10,13 +10,13 @@ import * as Common from './decorators/Common';
 type APIResult<T> = {
     data: T;
 };
-
+/*
 type APIManga = {
     id: number;
     title: string;
     slug: string;
     type: string;
-};
+};*/
 
 type APIChapter = {
     id: number;
@@ -72,6 +72,7 @@ type SessionKey = {
     key?: string;
 };
 
+@Common.MangasNotSupported()
 @Common.MangaCSS<HTMLMetaElement>(/^{origin}\/series\/(manga|manhua|manhwa)\/\d+\/[^/]+$/, 'meta[property="og:image:alt"]')
 export default class extends DecoratableMangaScraper {
     private readonly apiUrl = 'https://prochan.net/api/';
@@ -84,6 +85,7 @@ export default class extends DecoratableMangaScraper {
         return icon;
     }
 
+    /* // API need a new turnstile token for each request, so disabled for now
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
         type This = typeof this;
         return Array.fromAsync(async function* (this: This) {
@@ -94,7 +96,7 @@ export default class extends DecoratableMangaScraper {
                 mangas.length > 0 ? yield* mangas : run = false;
             }
         }.call(this));
-    }
+    }*/
 
     public override FetchChapters(manga: Manga): Promise<Chapter[]> {
         const [, , type, mangaId] = manga.Identifier.split('/');
@@ -193,7 +195,7 @@ export default class extends DecoratableMangaScraper {
                 break;
             }
             case 'browser_session': {
-                // UNTESTED
+                // UNTESTED (perhaps its for premium content ? )
                 const { data, key } = await this.FetchAPI<SessionKey>(`./chapter-map-session-key/${cid}`, this.URI.origin);
                 keyData = GetBytesFromURLBase64(data?.key ?? key).buffer;
                 break;
