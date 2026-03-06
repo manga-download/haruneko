@@ -68,6 +68,7 @@ message MagazineDetailViewV3 {
 
 message MagazineBacknumberView {
   repeated MagazineIssue issues = 3;
+  repeated uint32 tabs = 1 [packed = true];
 }
 
 message Magazine {
@@ -100,5 +101,21 @@ message GravureViewerViewV3 {
 }
 
 message GravureV3 {
+  optional uint32 id = 1;
   optional string name = 2;
+}
+
+// Search feature
+
+message SearchResultViewV3 {
+  repeated SearchResultViewV3Item mangas  = 1;
+}
+
+message SearchResultViewV3Item {
+  optional string transitionUrl = 2;
+  optional string mainText = 3;
+}
+
+message GravureListViewV3 {
+  repeated GravureV3 gravures = 1;
 }

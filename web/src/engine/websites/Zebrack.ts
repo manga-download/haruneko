@@ -25,6 +25,10 @@ type ImageV3 = {
     encryptionKey: string;
 };
 
+type PageParam = {
+    encryptionKey: string;
+};
+
 // Chapter
 
 type TitleChapterListViewV3 = {
@@ -76,6 +80,8 @@ type MagazineDetailViewV3 = {
 
 type MagazineBacknumberView = {
     issues: MagazineIssue[];
+    issuesYear: number;
+    tabs: number[];
 };
 
 type Magazine = {
@@ -99,6 +105,7 @@ type GravureDetailViewV3 = {
 };
 
 type GravureV3 = {
+    id: number;
     name: string;
 };
 
@@ -106,11 +113,21 @@ type GravureViewerViewV3 = {
     images: ImageV3[];
 };
 
-type PageParam = {
-    encryptionKey: string;
+// Search
+
+type SearchResultViewV3 = {
+    mangas?: SearchResultViewV3Item[];
 };
 
-@Common.MangasNotSupported()
+type SearchResultViewV3Item = {
+    transitionUrl: string;
+    mainText: string;
+};
+
+type GravureListViewV3 = {
+    gravures?: GravureV3[];
+};
+
 export default class extends DecoratableMangaScraper {
 
     private readonly apiURL = 'https://api2.zebrack-comic.com/api/';
@@ -147,6 +164,28 @@ export default class extends DecoratableMangaScraper {
         return new Manga(this, provider, uri.pathname, titleName);
     }
 
+    public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
+        const results: Manga[] = [];
+
+        for (const character of '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('')) {
+            ///search mangas & magazines
+            const { mangas: mangasData } = await FetchProto<SearchResultViewV3>(new Request(new URL(`./v3/title_search?os=browser&search_order=related&keyword=${character}`, this.apiURL)), protoTypes, 'Zebrack.SearchResultViewV3');
+
+            //Urls use custom protocol i.e garaku://magazine_detail?magazineId=1"
+            const mangas = !mangasData ? [] : mangasData.map(({ mainText, transitionUrl }) => {
+                const url = new URL(transitionUrl);
+                return new Manga(this, provider, url.searchParams.has('magazineId') ? `/magazine/${url.searchParams.get('magazineId')}` : `/title/${url.searchParams.get('titleId')}`, mainText);
+            });
+            results.push(...mangas);
+
+            ///search gravures
+            const { gravures: gravuresData } = await FetchProto<GravureListViewV3>(new Request(new URL(`./v3/gravure_search?os=browser&keyword=${character}&search_order=related`, this.oldApiUrl)), protoTypes, 'Zebrack.GravureListViewV3');
+            const gravures = !gravuresData ? [] : gravuresData.map(({ id, name }) => new Manga(this, provider, `/gravure/${id}`, name));
+            results.push(...gravures);
+        }
+        return results.distinct();
+    }
+
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const [, mangaType, mangaId] = manga.Identifier.split('/');
         switch (mangaType) {
@@ -154,26 +193,27 @@ export default class extends DecoratableMangaScraper {
                 // Grab chapters
                 const { groups } = await FetchProto<TitleChapterListViewV3>(new Request(new URL(`./v3/title_chapter_list?os=browser&title_id=${mangaId}`, this.apiURL)), protoTypes, 'Zebrack.TitleChapterListViewV3');
                 const chapters = !groups ? [] : groups.reduce((chaptersAccumulator: Chapter[], currentGroup) => {
-                    const groupChapters = currentGroup.chapters.map(({ id, mainName }) => new Chapter(this, manga, `chapter/${id}`, mainName.replace(manga.Title, '').trim()));
+                    const groupChapters = currentGroup.chapters.map(({ id, mainName }) => new Chapter(this, manga, `chapter/${id}`, this.ReplaceNotEmpty(mainName, manga.Title)));
                     chaptersAccumulator.push(...groupChapters);
                     return chaptersAccumulator;
                 }, []);
 
                 // Grab volumes
                 const { volumeListView: { volumes } } = await FetchProto<ZebrackResponse>(new Request(new URL(`./browser/title_volume_list?os=browser&title_id=${mangaId}`, this.apiURL)), protoTypes, this.responseRootType);
-                const mangaVolumes = volumes.map(({ volumeId, volumeName }) => new Chapter(this, manga, `volume/${volumeId}`, volumeName.replace(manga.Title, '').trim()));
+                const mangaVolumes = volumes.map(({ volumeId, volumeName }) => new Chapter(this, manga, `volume/${volumeId}`, this.ReplaceNotEmpty(volumeName, manga.Title)));
                 return [...chapters, ...mangaVolumes];
             }
 
             case 'magazine': {
-                type This = typeof this;
-                return Array.fromAsync(async function* (this: This) {
-                    for (let year = new Date().getFullYear(), run = true; run; year--) {
-                        const { magazineBacknumberView: { issues } } = await FetchProto<ZebrackResponse>(new Request(new URL(`./browser/magazine_backnumbers?os=browser&magazine_id=${mangaId}&year=${year}`, this.oldApiUrl)), protoTypes, this.responseRootType);
-                        const magazines = !issues ? [] : issues.map(({ issueId, issueName }) => new Chapter(this, manga, `${mangaType}/${issueId}`, issueName));
-                        magazines.length > 0 ? yield* magazines : run = false;
-                    }
-                }.call(this));
+                // gather years
+                const { magazineBacknumberView: { tabs: years } } = await FetchProto<ZebrackResponse>(new Request(new URL(`./browser/magazine_backnumbers?os=browser&magazine_id=${mangaId}&year=`, this.oldApiUrl)), protoTypes, this.responseRootType);
+
+                //fetch all years
+                const promises = years.map(async (year: number) => {
+                    const { magazineBacknumberView: { issues } } = await FetchProto<ZebrackResponse>(new Request(new URL(`./browser/magazine_backnumbers?os=browser&magazine_id=${mangaId}&year=${year}`, this.oldApiUrl)), protoTypes, this.responseRootType);
+                    return !issues ? [] : issues.map(({ issueId, issueName }) => new Chapter(this, manga, `${mangaType}/${issueId}`, this.ReplaceNotEmpty(issueName, manga.Title)));
+                });
+                return (await Promise.all(promises)).flat();
             }
 
             case 'gravure': {
@@ -277,5 +317,9 @@ export default class extends DecoratableMangaScraper {
         for (let n = 0; n < bytes.length; n++)
             bytes[n] = bytes[n] ^ xorkey[n % xorkey.length];
         return GetTypedData(bytes.buffer);
+    }
+
+    private ReplaceNotEmpty(source: string, replaceFrom: string): string {
+        return source.replace(replaceFrom, '').trim() || source;
     }
 }
