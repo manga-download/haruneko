@@ -742,7 +742,6 @@ export { default as WeebDex } from './WeebDex';
 export { default as WeLoMa } from './WeLoMa';
 export { default as WeLoveManga } from './WeLoveManga';
 export { default as WestManga } from './WestManga';
-export { default as WinterScan } from './WinterScan';
 export { default as Wnacg } from './Wnacg';
 export { default as WritersScans } from './WritersScans';
 export { default as XlecX } from './XlecX';
