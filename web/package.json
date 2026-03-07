@@ -14,7 +14,7 @@
     "devDependencies": {
         "@fluentui/svg-icons": "1.1.320",
         "@fluentui/web-components": "beta",
-        "@microsoft/fast-element": "2.10.0",
+        "@microsoft/fast-element": "2.10.1",
         "@svelte-put/dragscroll": "4.0.0",
         "@sveltejs/vite-plugin-svelte": "6.2.4",
         "@tsconfig/svelte": "5.0.8",
@@ -30,7 +30,7 @@
         "lit": "3.3.2",
         "react": "19.2.4",
         "react-dom": "19.2.4",
-        "svelte": "5.53.6",
+        "svelte": "5.53.7",
         "svelte-check": "4.4.4",
         "vue": "3.5.29",
         "vue-tsc": "3.2.5"
