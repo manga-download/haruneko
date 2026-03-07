@@ -647,6 +647,7 @@ export { default as SiiManga } from './SiiManga';
 export { default as SilenceScan } from './SilenceScan';
 export { default as SirenKomik } from './SirenKomik';
 export { default as SkyManga } from './SkyManga';
+export { default as SlashLib } from './SlashLib';
 export { default as SoftKomik } from './SoftKomik';
 export { default as SoulScans } from './SoulScans';
 export { default as SpiderScans } from './SpiderScans';
