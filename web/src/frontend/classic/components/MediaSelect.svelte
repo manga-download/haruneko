@@ -213,6 +213,7 @@
     <div id="MediaTitle">
         <h5>Media List</h5>
         <Button
+            role="paste"
             icon={CopyLink}
             size="small"
             kind="ghost"
