@@ -34,12 +34,14 @@ jobs:
         run: npm run check
       - name: Unit & Component Tests
         run: npm run test
-      - name: End-To-End Tests
-        env:
-          DISPLAY: ':99'
-        run: npm run test:e2e -- Frontend --testNamePattern=SmokeTests
       - name: Build Web-Application
         run: npm run build --workspace=web
+      - name: End-To-End Smoke Tests
+        env:
+          DISPLAY: ':99'
+        run: |
+            npm run build --workspace=app/electron
+            npx vitest run --config=test/vitest.e2e.js Frontend --testNamePattern=SmokeTests
       - name: Deploy App to CloudFlare
         uses: cloudflare/wrangler-action@v3
         env:
