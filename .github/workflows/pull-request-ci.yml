@@ -57,12 +57,16 @@ jobs:
         if: steps.packages.outcome == 'success' && (success() || failure())
         env:
           DISPLAY: ':99'
-        run: npm run test:e2e
+        run: |
+            export DBUS_SESSION_BUS_ADDRESS=/dev/null
+            npm run test:e2e
       - name: Website Tests (Selection)
         if: steps.packages.outcome == 'success' && (success() || failure())
         env:
           DISPLAY: ':99'
-        run: npm run test:websites -- MangaDex
+        run: |
+            export DBUS_SESSION_BUS_ADDRESS=/dev/null
+            npm run test:websites -- MangaDex
       - name: Upload Test Results
         if: failure()
         uses: actions/upload-artifact@v4
