@@ -40,9 +40,9 @@ jobs:
       - name: End-To-End Smoke Tests
         env:
           DISPLAY: ':99'
+          DBUS_SESSION_BUS_ADDRESS: '/dev/null'
         run: |
             npm run build --workspace=app/electron
-            export DBUS_SESSION_BUS_ADDRESS=/dev/null
             npx vitest run --reporter=dot --config=test/vitest.e2e.js "Frontend" --testNamePattern="SmokeTests"
       - name: Deploy App to CloudFlare
         uses: cloudflare/wrangler-action@v3
