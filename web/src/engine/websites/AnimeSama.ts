@@ -20,7 +20,7 @@ function pageScript(chapterIndex: number) {
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('animesama', 'Anime-Sama', 'https://anime-sama.si', Tags.Media.Manga, Tags.Language.French, Tags.Source.Aggregator);
+        super('animesama', 'Anime-Sama', 'https://anime-sama.to', Tags.Media.Manga, Tags.Language.French, Tags.Source.Aggregator);
     }
 
     public override get Icon() {
@@ -28,12 +28,12 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const data = await FetchWindowScript<{ id: string, title: string }[]>(new Request(new URL(`${manga.Identifier}scan/vf`, this.URI)), 'Object.keys(dataOeuvre).filter(key => parseInt(key)).map(key => ({id: key, title : "Chapitre " +key}))', 500);
+        const data = await FetchWindowScript<{ id: string, title: string }[]>(new Request(new URL(`${manga.Identifier}scan/vf/`, this.URI)), 'Object.keys(dataOeuvre).filter(key => parseInt(key)).map(key => ({id: key, title : "Chapitre " +key}))', 500);
         return data.map(({ id, title }) => new Chapter(this, manga, id, title));
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const data = await FetchWindowScript<string[]>(new Request(new URL(`${chapter.Parent.Identifier}scan/vf`, this.URI)), pageScript(parseInt(chapter.Identifier)), 500);
+        const data = await FetchWindowScript<string[]>(new Request(new URL(`${chapter.Parent.Identifier}scan/vf/`, this.URI)), pageScript(parseInt(chapter.Identifier)), 500);
         return data.map(page => new Page(this, chapter, new URL(page, this.URI)));
     }
 }
