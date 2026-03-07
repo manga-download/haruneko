@@ -1,3 +1,4 @@
+import type { Dialog } from 'puppeteer-core';
 import { PuppeteerFixture } from '../../test/PuppeteerFixture';
 import type { IValue } from '../src/engine/SettingsManager';
 
@@ -17,21 +18,26 @@ export class FrontendFixture extends PuppeteerFixture {
     /**
      * Clear all stored data (incl. settings, bookmarks, cache) and reload the app
      */
-    public async Reset(_frontend: string = 'classic'): Promise<void> {
+    public async Reset(frontend: string = 'classic'): Promise<void> {
         const page = await this.GetPage();
         await page.evaluate(() => new Promise((resolve, reject) => {
             try {
                 const operation = indexedDB.deleteDatabase('HakuNeko');
                 operation.addEventListener('success', resolve);
                 operation.addEventListener('error', reject);
-            } catch (err) {
-                reject(err);
+            } catch (error) {
+                reject(error);
             }
         }));
-        //await this.UpdateSetting('*', 'frontend', frontend);
+        const dismiss = async (dialog: Dialog) => dialog.dismiss();
+        page.once('dialog', dismiss);
+        try {
+            await this.UpdateSetting('*', 'frontend', frontend);
+        } finally {
+            page.off('dialog', dismiss);
+        }
         await page.reload();
         await this.Delay(500);
-        // TODO: Confirm restart prompt if any ...
     }
 
     public async WaitForSelectors(timeout: number, ... selectors: string[]) {
@@ -44,8 +50,9 @@ export class FrontendFixture extends PuppeteerFixture {
      */
     public async UpdateSetting(scope: string, key: string, value: IValue): Promise<void> {
         const page = await super.GetPage();
-        // TODO: Use variables in evaluated script ...
-        await page.evaluate((scope, key, value) => HakuNeko.SettingsManager.OpenScope(scope).Get(key).Value = value, scope, key, value);
+        await page.evaluate((scope, key, value) => {
+            HakuNeko.SettingsManager.OpenScope(scope).Get(key).Value = value;
+        }, scope, key, value);
     }
 
     /**
