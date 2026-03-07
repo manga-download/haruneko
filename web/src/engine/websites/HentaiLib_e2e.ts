@@ -9,7 +9,7 @@ new TestFixture({
         url: 'https://hentailib.me/ru/manga/206329--seteueob',
         id: '206329--seteueob',
         title: 'Подача'
-    },/* need login
+    }, /* need login
     child: {
         id: './manga/206329--seteueob/chapter?volume=1&number=75',
         title: '75'
