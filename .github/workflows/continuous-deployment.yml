@@ -14,6 +14,12 @@ jobs:
     name: Publish Web-Application
     runs-on: ubuntu-latest
     steps:
+      - name: Starting X Virtual Frame Buffer (Port 99)
+        run: |
+          #sudo apt-get update
+          #sudo apt-get install -y libxkbfile-dev pkg-config libsecret-1-dev libxss1 dbus xvfb libgtk-3-0 libgconf-2-4
+          sudo /usr/bin/Xvfb -ac :99 -screen 0 1920x1080x24 > /dev/null 2>&1 &
+          disown -ar # remove all running jobs (e.g. xvfb) from the job table of this bash process
       - name: Checkout ${{ github.repository }} @ ${{ github.ref }}
         uses: actions/checkout@v4
         with:
@@ -28,6 +34,10 @@ jobs:
         run: npm run check
       - name: Unit & Component Tests
         run: npm run test
+      - name: End-To-End Tests
+        env:
+          DISPLAY: ':99'
+        run: npm run test:e2e -- Frontend --testNamePattern=SmokeTests
       - name: Build Web-Application
         run: npm run build --workspace=web
       - name: Deploy App to CloudFlare

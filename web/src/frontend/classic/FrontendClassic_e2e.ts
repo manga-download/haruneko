@@ -7,7 +7,7 @@ describe.sequential('Front-End (Classic)', { timeout: 60_000 }, () => {
 
     beforeEach(() => fixture.Reset('classic'));
 
-    describe('Startup', async () => {
+    describe('SmokeTests', async () => {
 
         it('Should render basic layout', async () => {
             await fixture.WaitForSelectors(5000,
