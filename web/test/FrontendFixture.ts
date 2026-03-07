@@ -1,4 +1,5 @@
 import { PuppeteerFixture } from '../../test/PuppeteerFixture';
+import type { IValue } from '../src/engine/SettingsManager';
 
 /**
  * A fixture providing shared functionality for front-end testing.
@@ -11,6 +12,40 @@ export class FrontendFixture extends PuppeteerFixture {
      */
     public async Delay(timespan: number): Promise<void> {
         return new Promise(resolve => setTimeout(resolve, timespan));
+    }
+
+    /**
+     * Clear all stored data (incl. settings, bookmarks, cache) and reload the app
+     */
+    public async Reset(_frontend: string = 'classic'): Promise<void> {
+        const page = await this.GetPage();
+        await page.evaluate(() => new Promise((resolve, reject) => {
+            try {
+                const operation = indexedDB.deleteDatabase('HakuNeko');
+                operation.addEventListener('success', resolve);
+                operation.addEventListener('error', reject);
+            } catch (err) {
+                reject(err);
+            }
+        }));
+        //await this.UpdateSetting('*', 'frontend', frontend);
+        await page.reload();
+        await this.Delay(500);
+        // TODO: Confirm restart prompt if any ...
+    }
+
+    public async WaitForSelectors(timeout: number, ... selectors: string[]) {
+        const page = await this.GetPage();
+        return Promise.all(selectors.map(selector => page.waitForSelector(selector, { timeout })));
+    }
+
+    /**
+     * Directly change a setting in the HakuNeko app via its settings manager.
+     */
+    public async UpdateSetting(scope: string, key: string, value: IValue): Promise<void> {
+        const page = await super.GetPage();
+        // TODO: Use variables in evaluated script ...
+        await page.evaluate((scope, key, value) => HakuNeko.SettingsManager.OpenScope(scope).Get(key).Value = value, scope, key, value);
     }
 
     /**
