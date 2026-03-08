@@ -134,8 +134,59 @@ export class Manga extends MediaContainer<Chapter> {
         return new Chapter(this.scraper, this, identifier, title);
     }
 
-    protected PerformUpdate(): Promise<Chapter[]> {
-        return this.scraper.FetchChapters(this);
+    protected async PerformUpdate(): Promise<Chapter[]> {
+        const chapters = await this.scraper.FetchChapters(this);
+        this.CheckChaptersStored(chapters);
+        return chapters;
+    }
+
+    /**
+     * Try to get a subdirectory by exact name, falling back to case-insensitive match.
+     */
+    private static async FindDirectoryHandle(parent: FileSystemDirectoryHandle, name: string): Promise<FileSystemDirectoryHandle | null> {
+        try {
+            return await parent.getDirectoryHandle(name);
+        } catch { /* exact match not found */ }
+        const nameLower = name.toLowerCase();
+        for await (const [entryName, handle] of parent as any) {
+            if (handle.kind === 'directory' && entryName.toLowerCase() === nameLower) {
+                return handle as FileSystemDirectoryHandle;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Check which chapters already exist on disk (fire-and-forget).
+     * Scans the manga directory once and checks all chapters against the results.
+     */
+    private async CheckChaptersStored(chapters: Chapter[]): Promise<void> {
+        try {
+            const settings = HakuNeko.SettingsManager.OpenScope(Scope);
+            const directory = settings.Get<Directory>(Key.MediaDirectory);
+            if (!directory.Value) return;
+            await directory.EnsureAccess();
+            let output = directory.Value;
+            if (settings.Get<Check>(Key.UseWebsiteSubDirectory).Value && this.Parent) {
+                const website = SanitizeFileName(this.Parent.Title);
+                const websiteDir = await Manga.FindDirectoryHandle(output, website);
+                if (!websiteDir) return;
+                output = websiteDir;
+            }
+            const manga = SanitizeFileName(this.Title);
+            const mangaDir = await Manga.FindDirectoryHandle(output, manga);
+            if (!mangaDir) return;
+            // Scan directory once, build a set of lowercase entry names
+            const diskEntries = new Set<string>();
+            for await (const [name] of mangaDir as any) {
+                diskEntries.add(name.toLowerCase());
+            }
+            for (const chapter of chapters) {
+                chapter.CheckIsStoredAgainst(diskEntries);
+            }
+        } catch {
+            // Media directory not set or no permission, skip silently
+        }
     }
 }
 
@@ -156,6 +207,43 @@ export class Chapter extends StoreableMediaContainer<Page> {
         return this.isStored;
     }
 
+    /**
+     * Check whether this chapter already exists on disk in any supported export format.
+     * Sets {@link isStored} to `true` if a matching file or directory is found.
+     */
+    public async CheckIsStored(mangaDirectory: FileSystemDirectoryHandle): Promise<void> {
+        const sanitized = SanitizeFileName(this.Title);
+        try {
+            await mangaDirectory.getDirectoryHandle(sanitized);
+            this.isStored.Value = true;
+            return;
+        } catch { /* not found */ }
+        for (const ext of ['.cbz', '.epub', '.pdf']) {
+            try {
+                await mangaDirectory.getFileHandle(SanitizeFileName(this.Title + ext));
+                this.isStored.Value = true;
+                return;
+            } catch { /* not found */ }
+        }
+    }
+
+    /**
+     * Check whether this chapter exists in a pre-scanned set of directory entry names (lowercase).
+     */
+    public CheckIsStoredAgainst(diskEntries: Set<string>): void {
+        const sanitized = SanitizeFileName(this.Title).toLowerCase();
+        if (diskEntries.has(sanitized)) {
+            this.isStored.Value = true;
+            return;
+        }
+        for (const ext of ['.cbz', '.epub', '.pdf']) {
+            if (diskEntries.has(SanitizeFileName(this.Title + ext).toLowerCase())) {
+                this.isStored.Value = true;
+                return;
+            }
+        }
+    }
+
     public async Store(resources: Map<number, string>): Promise<void> {
         // TODO: Inject settings manager and global scope identifier?
         const settings = HakuNeko.SettingsManager.OpenScope(Scope);
@@ -174,6 +262,7 @@ export class Chapter extends StoreableMediaContainer<Page> {
         // TODO: Find more appropriate way to inject the storage dependency
         const registry = CreateChapterExportRegistry(this.Parent?.Parent['storageController']);
         await registry[settings.Get<Choice>(Key.MangaExportFormat).Value].Export(resources, output, this.Title, this.Parent?.Title);
+        this.isStored.Value = true;
     }
 }
 

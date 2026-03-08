@@ -56,6 +56,18 @@
     import { Key as GlobalKey } from '../../../engine/SettingsGlobal';
     import type { Directory } from '../../../engine/SettingsManager';
 
+    let isStored: boolean = $state(false);
+
+    function onIsStoredChanged(value: boolean) {
+        isStored = value;
+    }
+
+    const storeableItem = item as StoreableMediaContainer<MediaItem>;
+    if ('IsStored' in storeableItem) {
+        isStored = storeableItem.IsStored.Value;
+        storeableItem.IsStored.Subscribe(onIsStoredChanged);
+    }
+
     let flag: FlagType = $state();
     const flagiconmap = new Map<FlagType, any>([
         [FlagType.Viewed, ViewFilled],
@@ -83,6 +95,9 @@
         );
         downloadTask?.Status.Unsubscribe(refreshDownloadStatus);
         HakuNeko.DownloadManager.Queue.Unsubscribe(taskQueueChanged);
+        if ('IsStored' in storeableItem) {
+            storeableItem.IsStored.Unsubscribe(onIsStoredChanged);
+        }
     });
 
     let downloadTask: DownloadTask = $state();
@@ -128,7 +143,18 @@
     {onmousedown}
     {onmouseenter}
 >
-    {#if !downloadTaskStatus}
+    {#if !downloadTaskStatus && isStored}
+        <Button
+            size="small"
+            kind="ghost"
+            tooltipPosition="right"
+            tooltipAlignment="end"
+            iconDescription="Already downloaded"
+            onclick={() => addDownload(item as StoreableMediaContainer<MediaItem>)}
+        >
+            <FolderOpen fill="var(--cds-support-03)" />
+        </Button>
+    {:else if !downloadTaskStatus}
         <Button
             role="download"
             size="small"
