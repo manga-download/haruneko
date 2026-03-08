@@ -115,7 +115,6 @@ export { default as Dilar } from './Dilar';
 export { default as DingManhua } from './DingManhua';
 export { default as Dm5 } from './Dm5';
 export { default as Dmzj } from './Dmzj';
-export { default as Dokuha } from './Dokuha';
 export { default as DomalFansub } from './DomalFansub';
 export { default as DongManManhua } from './DongManManhua';
 export { default as Doujin69 } from './Doujin69';
