@@ -167,6 +167,8 @@ export enum FrontendResourceKey {
     Frontend_Classic_Settings_ViewerReverseDirectionInfo = 'Frontend_Classic_Settings_ViewerReverseDirectionInfo',
     Frontend_Classic_Settings_ViewerDoublePage = 'Frontend_Classic_Settings_ViewerDoublePage',
     Frontend_Classic_Settings_ViewerDoublePageInfo = 'Frontend_Classic_Settings_ViewerDoublePageInfo',
+    Frontend_Classic_Settings_ExternalViewer = 'Frontend_Classic_Settings_ExternalViewer',
+    Frontend_Classic_Settings_ExternalViewerInfo = 'Frontend_Classic_Settings_ExternalViewerInfo',
     Frontend_Classic_Sidenav_Home = 'Frontend_Classic_Sidenav_Home',
     Frontend_Classic_Sidenav_Settings_General = 'Frontend_Classic_Sidenav_Settings_General',
     Frontend_Classic_Sidenav_Settings_Interface = 'Frontend_Classic_Sidenav_Settings_Interface',

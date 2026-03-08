@@ -1,8 +1,10 @@
 import { FileExplorer as Channels } from '../../../../../app/src/ipc/Channels';
 import { SanitizeFileName } from '../../StorageController';
 import { Key, Scope } from '../../SettingsGlobal';
-import type { Check, Directory } from '../../SettingsManager';
+import { MangaExportFormat } from '../../exporters/MangaExporterRegistry';
+import type { Check, Choice, Directory, Text } from '../../SettingsManager';
 import GetIPC from '../InterProcessCommunication';
+import { Scope_Viewer, Key as ViewerKey } from '../../../frontend/classic/stores/Settings';
 
 const MediaPathStorageKey = 'FileExplorer::MediaDirectoryPath';
 
@@ -62,4 +64,42 @@ export async function ShowMangaInFolder(websiteTitle: string | undefined, mangaT
  */
 export function ClearStoredMediaPath(): void {
     localStorage.removeItem(MediaPathStorageKey);
+}
+
+/**
+ * Open a native file picker to select an executable.
+ * Returns the selected file path, or null if cancelled.
+ */
+export async function PickExternalViewer(): Promise<string | null> {
+    return GetIPC().Send<string | null>(Channels.App.PickFile);
+}
+
+const ExportFormatExtensions: Record<string, string> = {
+    [MangaExportFormat.RAWs]: '',
+    [MangaExportFormat.CBZ]: '.cbz',
+    [MangaExportFormat.EPUB]: '.epub',
+    [MangaExportFormat.PDF]: '.pdf',
+};
+
+/**
+ * Launch a chapter in the configured external viewer program.
+ * Returns true if the external viewer was launched, false if not configured.
+ */
+export async function LaunchExternalViewer(websiteTitle: string | undefined, mangaTitle: string, chapterTitle: string): Promise<boolean> {
+    const viewerSettings = HakuNeko.SettingsManager.OpenScope(Scope_Viewer);
+    const externalViewer = viewerSettings.Get<Text>(ViewerKey.ExternalViewer)?.Value;
+    if (!externalViewer) return false;
+
+    const basePath = await EnsureMediaPath();
+    if (!basePath) return false;
+
+    const settings = HakuNeko.SettingsManager.OpenScope(Scope);
+    const exportFormat = settings.Get<Choice>(Key.MangaExportFormat).Value;
+    const extension = ExportFormatExtensions[exportFormat] ?? '';
+    const chapterFileName = SanitizeFileName(chapterTitle + extension);
+
+    const mangaFolderPath = BuildFolderPath(basePath, websiteTitle, mangaTitle);
+    const chapterPath = mangaFolderPath + '/' + chapterFileName;
+    await GetIPC().Send(Channels.App.LaunchProgram, externalViewer, chapterPath);
+    return true;
 }

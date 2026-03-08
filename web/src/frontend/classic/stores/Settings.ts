@@ -1,7 +1,7 @@
 import { writable, derived } from 'svelte/store';
 import { type ILocale, FrontendResourceKey as R } from '../../../i18n/ILocale';
 import { GetLocale } from '../../../i18n/Localization';
-import { Check, Choice} from '../../../engine/SettingsManager';
+import { Check, Choice, Text } from '../../../engine/SettingsManager';
 import { Key as GlobalKey } from '../../../engine/SettingsGlobal';
 import { CreateCountStore, CreateSettingStore, CreateExistingSettingStore } from './storesHelpers';
 
@@ -36,6 +36,8 @@ export const enum Key {
     ViewerReverseDirection = 'viewer-reverse-direction',
     //
     ViewerDoublePage = 'viewer-double-page',
+    //
+    ExternalViewer = 'external-viewer',
 }
 
 export async function Initialize(): Promise<void> {
@@ -43,7 +45,7 @@ export async function Initialize(): Promise<void> {
     await settings.Initialize(Theme.setting, ContentPanel.setting, SidenavTrail.setting, SidenavIconsOnTop.setting, FuzzySearch.setting);
     HakuNeko.SettingsManager.OpenScope().Get<Choice>(GlobalKey.Language).Subscribe(() => Locale.set(GetLocale()));
     const settingsViewer = HakuNeko.SettingsManager.OpenScope(Scope_Viewer);
-    await settingsViewer.Initialize(ViewerMode.setting, ViewerReverseDirection.setting, ViewerDoublePage.setting);
+    await settingsViewer.Initialize(ViewerMode.setting, ViewerReverseDirection.setting, ViewerDoublePage.setting, ExternalViewer.setting);
 }
 
 // Available Settings
@@ -112,6 +114,13 @@ export const ViewerDoublePage = CreateSettingStore<boolean, Check>(new Check(
     R.Frontend_Classic_Settings_ViewerDoublePage,
     R.Frontend_Classic_Settings_ViewerDoublePageInfo,
     false
+));
+
+export const ExternalViewer = CreateSettingStore<string, Text>(new Text(
+    Key.ExternalViewer,
+    R.Frontend_Classic_Settings_ExternalViewer,
+    R.Frontend_Classic_Settings_ExternalViewerInfo,
+    ''
 ));
 
 export const checkNewContent = CreateExistingSettingStore<boolean, Check>(GlobalKey.CheckNewContent);

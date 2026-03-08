@@ -14,9 +14,12 @@
     import InputDirectory from './InputDirectory.svelte';
     import InputSecret from './InputSecret.svelte';
     import InputText from './InputText.svelte';
+    import InputFilePath from './InputFilePath.svelte';
+    import { Key } from '../../stores/Settings';
 
     export let settings: ISetting[];
 
+    const filePathSettings: string[] = [Key.ExternalViewer];
 </script>
 <form>
     {#each settings as setting (setting.ID)}
@@ -24,6 +27,8 @@
             <InputChoice {setting} />
         {:else if setting instanceof Check}
             <InputCheck {setting} />
+        {:else if setting instanceof Text && filePathSettings.includes(setting.ID)}
+            <InputFilePath {setting} />
         {:else if setting instanceof Text}
             <InputText {setting} />
         {:else if setting instanceof Secret}

@@ -47,6 +47,18 @@
         }
     }
 
+    async function tryLaunchExternalViewer(item: MediaContainer<MediaItem>): Promise<boolean> {
+        if (!isElectron) return false;
+        const storeableItem = item as StoreableMediaContainer<MediaItem>;
+        if (!('IsStored' in storeableItem) || !storeableItem.IsStored.Value) return false;
+        const { LaunchExternalViewer } = await import('../../../engine/platform/electron/FileExplorer');
+        const websiteTitle = item?.Parent?.Parent?.Title;
+        const mangaTitle = item?.Parent?.Title ?? $selectedMedia?.Title;
+        const chapterTitle = item?.Title;
+        if (!mangaTitle || !chapterTitle) return false;
+        return LaunchExternalViewer(websiteTitle, mangaTitle, chapterTitle);
+    }
+
     let items: MediaContainer<MediaItem>[] = $state([]);
     let filteredItems: MediaContainer<MediaItem>[] = $state([]);
     let selectedItems: MediaContainer<MediaItem>[] = $state([]);
@@ -74,9 +86,12 @@
         $selectedItemNext = filteredItems[position - 1];
     });
 
-    const onItemView = (item: MediaContainer<MediaItem>) => (event) => {
+    const onItemView = (item: MediaContainer<MediaItem>) => async (event) => {
         if (item === $selectedItem || event.ctrlKey || event.shiftKey) return;
-        $selectedItem = item;
+        const launched = await tryLaunchExternalViewer(item);
+        if (!launched) {
+            $selectedItem = item;
+        }
     };
 
     let itemNameFilter = $state('');
@@ -272,8 +287,11 @@
             <ContextMenuOption
                 labelText="View"
                 shortcutText="⌘V"
-                onclick={() => {
-                    $selectedItem = contextItem;
+                onclick={async () => {
+                    const launched = await tryLaunchExternalViewer(contextItem);
+                    if (!launched) {
+                        $selectedItem = contextItem;
+                    }
                 }}
             />
             <ContextMenuOption labelText="Flag as">

@@ -120,6 +120,10 @@ export namespace FileExplorer {
         ShowInFolder = 'FileExplorer::ShowInFolder',
         /** Channel for IPC callback with signature: `() => Promise<string | null>` */
         PickDirectory = 'FileExplorer::PickDirectory',
+        /** Channel for IPC callback with signature: `() => Promise<string | null>` */
+        PickFile = 'FileExplorer::PickFile',
+        /** Channel for IPC callback with signature: `(program: string, folderPath: string) => Promise<void>` */
+        LaunchProgram = 'FileExplorer::LaunchProgram',
     }
 }
 
