@@ -27,6 +27,7 @@
         selectedPlugin,
         selectedMedia,
         selectedItem,
+        pluginFavorites,
     } from '../stores/Stores';
     import { FuzzySearch } from '../stores/Settings';
     // Hakuneko Engine
@@ -46,23 +47,23 @@
 
     let disablePluginRefresh = false;
 
-    // TODO: implement favorites
-    let pluginsFavorites = ['sheep-scanlations'];
-
     type ComboBoxItemWithValue = ComboBoxItem & {
         value: MediaContainer<MediaChild>;
         isFavorite: boolean;
     }
-    const orderedPlugins: MediaContainer<MediaChild>[] = HakuNeko.PluginController.WebsitePlugins.toSorted((a, b) => {
+    const allPlugins = HakuNeko.PluginController.WebsitePlugins;
+    let orderedPlugins: MediaContainer<MediaChild>[] = $derived(
+        allPlugins.toSorted((a, b) => {
             return (
                 // sort by favorite
-                (pluginsFavorites.includes(a.Identifier) ? 0 : 1) -
-                    (pluginsFavorites.includes(b.Identifier) ? 0 : 1) ||
+                ($pluginFavorites.includes(a.Identifier) ? 0 : 1) -
+                    ($pluginFavorites.includes(b.Identifier) ? 0 : 1) ||
                 //sort by string
                 a.Title.localeCompare(b.Title)
             );
-        });
-    const pluginsCombo: ComboBoxItemWithValue[] = [
+        })
+    );
+    let pluginsCombo: ComboBoxItemWithValue[] = $derived([
         {
             id: HakuNeko.BookmarkPlugin.Identifier,
             text: HakuNeko.BookmarkPlugin.Title,
@@ -74,10 +75,10 @@
                 id: plugin.Identifier,
                 text: plugin.Title,
                 value: plugin,
-                isFavorite: pluginsFavorites.includes(plugin.Identifier),
+                isFavorite: $pluginFavorites.includes(plugin.Identifier),
             };
         }),
-    ];
+    ]);
 
     let pluginDropdownSelected: string = $state();
 

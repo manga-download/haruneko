@@ -27,7 +27,7 @@
     import SettingsViewer from './settings/SettingsViewer.svelte';
     // UI : Stores
     import { Locale } from '../stores/Settings';
-    import { selectedPlugin } from '../stores/Stores';
+    import { selectedPlugin, pluginFavorites, togglePluginFavorite } from '../stores/Stores';
     // Hakuneko Engine
     import { TagCategoryResourceKey as R } from '../../../i18n/ILocale';
 
@@ -70,6 +70,8 @@
     let filterFavorites = $state(false);
     let filteredPluginlist: ReturnType<typeof createDataRow>[] = $derived(HakuNeko.PluginController.WebsitePlugins.filter(
             (plugin) => {
+                if (filterFavorites && !$pluginFavorites.includes(plugin.Identifier))
+                    return false;
                 let rejectconditions: Array<boolean> = [];
                 if (
                     pluginNameFilter !== '' &&
@@ -184,11 +186,11 @@
                 />
             </ToolbarContent>
         </Toolbar>
-    <!-- @migration-task: migrate this slot by hand, `cell-header` is an invalid identifier -->
-    <svelte:fragment slot="cell-header" let:header>
+    <svelte:fragment slot="cellHeader" let:header>
             {#if header.key === 'favorite'}
                 <Button
-                    kind="secondary"
+                    kind="ghost"
+                    size="small"
                     iconDescription="Filter favorites"
                     icon={filterFavorites ? StarFilled : Star}
                     on:click={(e) => {
@@ -200,16 +202,15 @@
                 {header.value}
             {/if}
         </svelte:fragment>
-        <!-- @migration-task: migrate this slot by hand, `cell` is an invalid identifier -->
         <div class="plugin-row" slot="cell" let:cell={{key,value}} in:fade>
             {#if key === 'favorite'}
                 <Button
                     kind="ghost"
                     size="small"
-                    iconDescription="Add to favorites"
-                    icon={true ? StarFilled : Star}
+                    iconDescription={$pluginFavorites.includes(value.Identifier) ? "Remove from favorites" : "Add to favorites"}
+                    icon={$pluginFavorites.includes(value.Identifier) ? StarFilled : Star}
                     on:click={(e) => {
-                        // TODO: trigger plugin favorite
+                        togglePluginFavorite(value.Identifier);
                         e.stopPropagation();
                     }}
                 />
