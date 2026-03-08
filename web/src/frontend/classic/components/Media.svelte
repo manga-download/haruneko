@@ -10,6 +10,7 @@
     import PlayFilled from 'carbon-icons-svelte/lib/PlayFilled.svelte';
     import WarningAltInverted from 'carbon-icons-svelte/lib/WarningAltInverted.svelte';
     import { selectedMedia } from '../stores/Stores';
+    import { OpenLinksExternal } from '../stores/Settings';
     import { coinflip } from '../lib/transitions';
 
     import type {
@@ -19,6 +20,16 @@
     import { Bookmark } from '../../../engine/providers/Bookmark';
     import { onDestroy, onMount } from 'svelte';
     import type { MediaContainer2 } from '../Types';
+
+    const isElectron = !!globalThis.ipcRenderer;
+    async function openConnectorURL(url: string) {
+        if (isElectron && $OpenLinksExternal) {
+            const { OpenExternal } = await import('../../../engine/platform/electron/FileExplorer');
+            await OpenExternal(url);
+        } else {
+            window.open(url, '_blank');
+        }
+    }
 
     interface Props {
         style?: string;
@@ -142,7 +153,7 @@
     {#if !isMediaOrphanedBookmark}
         <button
             class="website"
-            onclick={() => window.open(media.Parent.URI.href, '_blank')}
+            onclick={() => openConnectorURL(media.Parent.URI.href)}
             title="Open {media.Parent.URI.href}"
             aria-label="Open {media.Parent.URI.href}"
         >

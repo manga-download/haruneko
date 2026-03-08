@@ -11,6 +11,7 @@ export class FileExplorer {
         ipc.Listen(Channels.App.PickDirectory, this.PickDirectory.bind(this));
         ipc.Listen(Channels.App.PickFile, this.PickFile.bind(this));
         ipc.Listen(Channels.App.LaunchProgram, this.LaunchProgram.bind(this));
+        ipc.Listen(Channels.App.OpenExternal, this.OpenExternal.bind(this));
     }
 
     private async ShowInFolder(folderPath: string): Promise<void> {
@@ -45,5 +46,9 @@ export class FileExplorer {
             stdio: 'ignore',
         });
         child.unref();
+    }
+
+    private async OpenExternal(url: string): Promise<void> {
+        await shell.openExternal(url);
     }
 }

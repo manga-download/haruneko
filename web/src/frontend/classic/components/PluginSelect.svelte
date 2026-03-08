@@ -26,10 +26,20 @@
     } from '../../../engine/providers/MediaPlugin';
     import SettingsViewer from './settings/SettingsViewer.svelte';
     // UI : Stores
-    import { Locale } from '../stores/Settings';
+    import { Locale, OpenLinksExternal } from '../stores/Settings';
     import { selectedPlugin, pluginFavorites, togglePluginFavorite } from '../stores/Stores';
     // Hakuneko Engine
     import { TagCategoryResourceKey as R } from '../../../i18n/ILocale';
+
+    const isElectron = !!globalThis.ipcRenderer;
+    async function openConnectorURL(url: string) {
+        if (isElectron && $OpenLinksExternal) {
+            const { OpenExternal } = await import('../../../engine/platform/electron/FileExplorer');
+            await OpenExternal(url);
+        } else {
+            window.open(url, '_blank');
+        }
+    }
 
     function createDataRow(item: MediaContainer<MediaChild>) {
         return {
@@ -247,7 +257,7 @@
                         iconDescription="Open website URL"
                         on:click={(e) => {
                             e.stopPropagation();
-                            window.open(value.URI);
+                            openConnectorURL(value.URI.href ?? value.URI.toString());
                         }}
                     />
                 </div>

@@ -29,6 +29,8 @@ export const enum Key {
     //
     FuzzySearch ='fuzzy-search',
     //
+    OpenLinksExternal = 'open-links-external',
+    //
     ViewerMode = 'viewer-mode',
     ViewerMode_Paginated = 'paginated',
     ViewerMode_Longstrip = 'longstrip',
@@ -42,7 +44,7 @@ export const enum Key {
 
 export async function Initialize(): Promise<void> {
     const settings = HakuNeko.SettingsManager.OpenScope(Scope);
-    await settings.Initialize(Theme.setting, ContentPanel.setting, SidenavTrail.setting, SidenavIconsOnTop.setting, FuzzySearch.setting);
+    await settings.Initialize(Theme.setting, ContentPanel.setting, SidenavTrail.setting, SidenavIconsOnTop.setting, FuzzySearch.setting, OpenLinksExternal.setting);
     HakuNeko.SettingsManager.OpenScope().Get<Choice>(GlobalKey.Language).Subscribe(() => Locale.set(GetLocale()));
     const settingsViewer = HakuNeko.SettingsManager.OpenScope(Scope_Viewer);
     await settingsViewer.Initialize(ViewerMode.setting, ViewerReverseDirection.setting, ViewerDoublePage.setting, ExternalViewer.setting);
@@ -90,6 +92,13 @@ export const FuzzySearch= CreateSettingStore<boolean, Check>(new Check(
     Key.FuzzySearch,
     R.Frontend_Classic_Settings_FuzzySearch,
     R.Frontend_Classic_Settings_FuzzySearchInfo,
+    false
+));
+
+export const OpenLinksExternal = CreateSettingStore<boolean, Check>(new Check(
+    Key.OpenLinksExternal,
+    R.Frontend_Classic_Settings_OpenLinksExternal,
+    R.Frontend_Classic_Settings_OpenLinksExternalInfo,
     false
 ));
 

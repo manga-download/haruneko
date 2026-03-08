@@ -78,6 +78,8 @@ const translations: VariantResource = {
   Frontend_Classic_Settings_ViewerReverseDirectionInfo: 'Show pages/images in reverse order (like in tradional Manga)',
   Frontend_Classic_Settings_ViewerDoublePage: 'Show Double Pages',
   Frontend_Classic_Settings_ViewerDoublePageInfo: 'Show two pages/images at once (like in tradional Manga)',
+  Frontend_Classic_Settings_OpenLinksExternal: 'Open Links in External Browser',
+  Frontend_Classic_Settings_OpenLinksExternalInfo: 'Open connector homepage links in the system default browser instead of an in-app window',
   Frontend_Classic_Settings_ExternalViewer: 'External Viewer',
   Frontend_Classic_Settings_ExternalViewerInfo: 'Path to an external program for viewing chapters (leave empty to use built-in viewer)',
   Frontend_Classic_Sidenav_Home: 'Home',

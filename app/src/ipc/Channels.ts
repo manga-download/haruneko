@@ -124,6 +124,8 @@ export namespace FileExplorer {
         PickFile = 'FileExplorer::PickFile',
         /** Channel for IPC callback with signature: `(program: string, folderPath: string) => Promise<void>` */
         LaunchProgram = 'FileExplorer::LaunchProgram',
+        /** Channel for IPC callback with signature: `(url: string) => Promise<void>` */
+        OpenExternal = 'FileExplorer::OpenExternal',
     }
 }
 

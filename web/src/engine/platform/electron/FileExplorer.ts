@@ -67,6 +67,13 @@ export function ClearStoredMediaPath(): void {
 }
 
 /**
+ * Open a URL in the system's default browser.
+ */
+export async function OpenExternal(url: string): Promise<void> {
+    await GetIPC().Send(Channels.App.OpenExternal, url);
+}
+
+/**
  * Open a native file picker to select an executable.
  * Returns the selected file path, or null if cancelled.
  */
