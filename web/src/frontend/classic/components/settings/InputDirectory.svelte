@@ -25,6 +25,11 @@
         });
         if (directory) {
             setting.Value = directory;
+            // Clear the stored explorer path so it's re-prompted on next "Show in Folder"
+            if (globalThis.ipcRenderer) {
+                const { ClearStoredMediaPath } = await import('../../../../engine/platform/electron/FileExplorer');
+                ClearStoredMediaPath();
+            }
         }
     }
 </script>

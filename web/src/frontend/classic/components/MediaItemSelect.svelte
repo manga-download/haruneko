@@ -37,6 +37,16 @@
     import { Key as GlobalKey } from '../../../engine/SettingsGlobal';
     import type { Directory } from '../../../engine/SettingsManager';
 
+    const isElectron = !!globalThis.ipcRenderer;
+    async function showInFolder() {
+        const { ShowMangaInFolder } = await import('../../../engine/platform/electron/FileExplorer');
+        const websiteTitle = contextItem?.Parent?.Parent?.Title;
+        const mangaTitle = contextItem?.Parent?.Title ?? $selectedMedia?.Title;
+        if (mangaTitle) {
+            await ShowMangaInFolder(websiteTitle, mangaTitle);
+        }
+    }
+
     let items: MediaContainer<MediaItem>[] = $state([]);
     let filteredItems: MediaContainer<MediaItem>[] = $state([]);
     let selectedItems: MediaContainer<MediaItem>[] = $state([]);
@@ -70,7 +80,7 @@
     };
 
     let itemNameFilter = $state('');
-    
+
     $effect(() => {
         filteredItems = items?.filter((item) => {
             let conditions: boolean[] = [];
@@ -306,6 +316,13 @@
                     />
                 </ContextMenuGroup>
             </ContextMenuOption>
+            {#if isElectron}
+                <ContextMenuDivider />
+                <ContextMenuOption
+                    labelText="Show in Folder"
+                    onclick={showInFolder}
+                />
+            {/if}
         {/if}
     </ContextMenu>
 {/if}
@@ -374,7 +391,7 @@
             style="float:right; padding:0; height:1.5em; min-height:1.5em">
         </Button>
     </div>
-    <div 
+    <div
         role="separator"
         aria-orientation="vertical"
         class="resize"
@@ -435,6 +452,6 @@
         cursor: col-resize;
     }
     .resize:hover {
-            background-color:var(--cds-ui-02); 
+            background-color:var(--cds-ui-02);
     }
 </style>

@@ -108,6 +108,21 @@ export namespace RemoteProcedureCallContract {
     export type App = never;
 }
 
+/** Supported IPC Channels for opening folders in the system file explorer. */
+export namespace FileExplorer {
+
+    /** Send from the Main process and received in the Render process. */
+    export type Web = never;
+
+    /** Send from the Render process and received in the Main process. */
+    export const enum App {
+        /** Channel for IPC callback with signature: `(path: string) => Promise<void>` */
+        ShowInFolder = 'FileExplorer::ShowInFolder',
+        /** Channel for IPC callback with signature: `() => Promise<string | null>` */
+        PickDirectory = 'FileExplorer::PickDirectory',
+    }
+}
+
 export namespace BloatGuard {
 
     /**

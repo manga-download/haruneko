@@ -56,6 +56,17 @@
     import { Key as GlobalKey } from '../../../engine/SettingsGlobal';
     import type { Directory } from '../../../engine/SettingsManager';
 
+    const isElectron = !!globalThis.ipcRenderer;
+    async function showInFolder() {
+        if (!isElectron) return;
+        const { ShowMangaInFolder } = await import('../../../engine/platform/electron/FileExplorer');
+        const websiteTitle = item?.Parent?.Parent?.Title;
+        const mangaTitle = item?.Parent?.Title;
+        if (mangaTitle) {
+            await ShowMangaInFolder(websiteTitle, mangaTitle);
+        }
+    }
+
     let isStored: boolean = $state(false);
 
     function onIsStoredChanged(value: boolean) {
