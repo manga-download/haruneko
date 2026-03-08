@@ -149,8 +149,8 @@
             kind="ghost"
             tooltipPosition="right"
             tooltipAlignment="end"
-            iconDescription="Already downloaded"
-            onclick={() => addDownload(item as StoreableMediaContainer<MediaItem>)}
+            iconDescription="Already downloaded (click to re-download)"
+            onclick={() => { if (confirm('This chapter is already downloaded. Re-download?')) addDownload(item as StoreableMediaContainer<MediaItem>); }}
         >
             <FolderOpen fill="var(--cds-support-03)" />
         </Button>
@@ -224,8 +224,8 @@
             kind="ghost"
             tooltipPosition="right"
             tooltipAlignment="end"
-            iconDescription="Download complete"
-            onclick={() => alert('Download complete. TODO: open folder using system explorer')}
+            iconDescription="Download complete (click to re-download)"
+            onclick={() => { if (confirm('This chapter is already downloaded. Re-download?')) addDownload(item as StoreableMediaContainer<MediaItem>); }}
         >
             <FolderOpen fill="var(--cds-support-03)" />
         </Button>
