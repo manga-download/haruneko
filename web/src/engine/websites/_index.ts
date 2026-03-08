@@ -340,7 +340,6 @@ export { default as MangaForest } from './MangaForest';
 export { default as MangaForFree } from './MangaForFree';
 export { default as MangaFox } from './MangaFox';
 export { default as MangaFoxFun } from './MangaFoxFun';
-export { default as MangaFr } from './MangaFr';
 export { default as MangaFreak } from './MangaFreak';
 export { default as MangaFury } from './MangaFury';
 export { default as MangaGeko } from './MangaGeko';
