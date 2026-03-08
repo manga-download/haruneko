@@ -726,7 +726,6 @@ export { default as VNSharing } from './VNSharing';
 export { default as VortexScans } from './VortexScans';
 export { default as Voyce } from './Voyce';
 export { default as VyManga } from './VyManga';
-export { default as WebAce } from './WebAce';
 export { default as WebComicsApp } from './WebComicsApp';
 export { default as WebDexScans } from './WebDexScans';
 export { default as WebMangaOku } from './WebMangaOku';
