@@ -12,7 +12,7 @@ new TestFixture({
     },
     child: {
         id: '/read/yuuna-and-the-haunted-hot-springs/209',
-        title: 'Bölüm 209: Yuuna [SON]'
+        title: 'Bölüm 209 - Yuuna [SON]'
     },
     entry: {
         index: 1,
