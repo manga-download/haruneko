@@ -16,6 +16,7 @@
     import StarFilled from 'carbon-icons-svelte/lib/StarFilled.svelte';
     import ContentDeliveryNetwork from 'carbon-icons-svelte/lib/ContentDeliveryNetwork.svelte';
     // Svelte
+    import { onDestroy } from 'svelte';
     import { fade } from 'svelte/transition';
     // UI: Components
     import Chip from '../lib/Tag.svelte';
@@ -67,9 +68,16 @@
         pluginTagsFilter = pluginTagsFilter.filter((value) => tag !== value);
     }
 
+    let pluginsFavorites: string[] = $state(HakuNeko.PluginController.Favorites.Value);
+    const onFavoritesChanged = (value: string[]) => pluginsFavorites = value;
+    HakuNeko.PluginController.Favorites.Subscribe(onFavoritesChanged);
+    onDestroy(() => HakuNeko.PluginController.Favorites.Unsubscribe(onFavoritesChanged));
+
     let filterFavorites = $state(false);
     let filteredPluginlist: ReturnType<typeof createDataRow>[] = $derived(HakuNeko.PluginController.WebsitePlugins.filter(
             (plugin) => {
+                if (filterFavorites && !pluginsFavorites.includes(plugin.Identifier))
+                    return false;
                 let rejectconditions: Array<boolean> = [];
                 if (
                     pluginNameFilter !== '' &&
@@ -205,10 +213,10 @@
                 <Button
                     kind="ghost"
                     size="small"
-                    iconDescription="Add to favorites"
-                    icon={true ? StarFilled : Star}
+                    iconDescription={pluginsFavorites.includes(value.Identifier) ? "Remove from favorites" : "Add to favorites"}
+                    icon={pluginsFavorites.includes(value.Identifier) ? StarFilled : Star}
                     on:click={(e) => {
-                        // TODO: trigger plugin favorite
+                        HakuNeko.PluginController.ToggleFavorite(value.Identifier);
                         e.stopPropagation();
                     }}
                 />

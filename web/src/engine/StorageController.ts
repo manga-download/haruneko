@@ -6,6 +6,7 @@ export const enum Store {
     Itemflags = 'Itemflags',
     TagManager = 'CustomTags',
     MediaLists = 'MediaLists',
+    PluginFavorites = 'PluginFavorites',
 }
 
 export interface StorageController {
