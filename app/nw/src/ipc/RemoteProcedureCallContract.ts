@@ -1,11 +1,10 @@
 import * as fs from 'node:fs/promises';
 import type { Contract } from '../../../src/rpc/Contract';
-import type { IPC } from './InterProcessCommunication';
-import { RemoteProcedureCallContract as Channels } from '../../../src/ipc/Channels';
+import { type IPC, Channels } from './InterProcessCommunication';
 
 export class RemoteProcedureCallContract implements Contract {
 
-    constructor(private readonly ipc: IPC<Channels.Web, Channels.App>) {}
+    constructor (private readonly ipc: IPC) { }
 
     public async SetCloudFlareBypass(userAgent: string, cookies: chrome.cookies.Cookie[]): Promise<void> {
         for(const cookie of cookies) {
@@ -39,6 +38,6 @@ export class RemoteProcedureCallContract implements Contract {
     }
 
     public async LoadMediaContainerFromURL(url: string): Promise<void> {
-        return this.ipc.Send(Channels.Web.LoadMediaContainerFromURL, url);
+        return this.ipc.Send(Channels.RemoteProcedureCallContract.Web.LoadMediaContainerFromURL, url);
     }
 }

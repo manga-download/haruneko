@@ -5,96 +5,84 @@ import type {
     OnBeforeSendHeadersListenerDetails,
     OnHeadersReceivedListenerDetails,
 } from 'electron';
-import type { IPC } from './InterProcessCommunication';
-import { FetchProvider as Channels } from '../../../src/ipc/Channels';
+import { type IPC, Channels } from './InterProcessCommunication';
 
 export class FetchProvider {
 
-    private fetchApiSupportedPrefix = 'X-FetchAPI-'.toLowerCase();
+    private appHostname = '';
+    private fetchApiSupportedPrefix: string;
 
-    constructor(private readonly ipc: IPC<Channels.Web, Channels.App>, private readonly webContents: WebContents) {
-        this.ipc.Listen(Channels.App.Initialize, this.Initialize.bind(this));
+    constructor (private readonly ipc: IPC, private readonly webContents: WebContents) {
+        this.ipc.Listen(Channels.FetchProvider.Initialize, this.Initialize.bind(this));
     }
 
-    private async Initialize(fetchApiSupportedPrefix: string): Promise<void> {
-        this.fetchApiSupportedPrefix = fetchApiSupportedPrefix.toLowerCase();
-        this.webContents.session.webRequest.onBeforeSendHeaders(async (details, callback) => callback(await this.ModifyRequestHeaders(details)));
+    private Initialize(fetchApiSupportedPrefix: string): void {
+        this.fetchApiSupportedPrefix = fetchApiSupportedPrefix;
+        this.appHostname = new URL(this.webContents.getURL()).hostname;
+        this.webContents.session.webRequest.onBeforeSendHeaders(async (details, callback) => callback(await this.ipc.Send(Channels.FetchProvider.OnBeforeSendHeaders, details.url, details.requestHeaders)));
         this.webContents.session.webRequest.onHeadersReceived((details, callback) => callback(this.ModifyResponseHeaders(details)));
-        this.Initialize = () => Promise.resolve();
+        this.Initialize = () => { };
     }
 
-    private IsMatchingAppHost(url: string) {
-        try {
-            const uri = new URL(this.webContents.getURL());
-            return new URL(url).hostname === uri.hostname;
-        } catch {
-            return false;
-        }
+    private async GetSessionCookies(url: string): Promise<string> {
+        const sessionCookies = await this.webContents.session.cookies.get({ url, /* partitionKey: {} */ }); // TODO: When filter by URL partioned cookies may not be found (e.g., cf_clearance)
+        return sessionCookies.map(({ name, value }) => `${name}=${value}`).join(';'); // TODO: Maybe use `encodeURIComponent(cookie.value)`
     }
 
-    private async UpdateCookieHeader(url: string, headers: Record<string, string>) {
-        // TODO: Skip cookie assignment in browser window e.g., when `sec-fetch-dest: empty`?
-        const normalizedCookieHeaderName = (this.fetchApiSupportedPrefix + 'Cookie').toLowerCase();
-        const originalCookieHeaderName = Object.keys(headers).find(header => header.toLowerCase() === normalizedCookieHeaderName) ?? normalizedCookieHeaderName;
-        const headerCookies = headers[originalCookieHeaderName]?.split(';').filter(cookie => cookie.includes('=')).map(cookie => cookie.trim()) ?? [];
-        const browserCookies = await this.webContents.session.cookies.get({ url/*, partitionKey: {}*/ }); // TODO: When filter by URL partioned cookies may not be found (e.g., cf_clearance)
-        for(const browserCookie of browserCookies) {
-            if(!headerCookies.some(cookie => cookie.startsWith(browserCookie.name + '='))) {
-                headerCookies.push(`${browserCookie.name}=${browserCookie.value}`);
-            }
-        }
-        if(headerCookies.length > 0) {
-            headers[originalCookieHeaderName] = headerCookies.join('; ');
-        }
+    private RevealHeaders(headers: Headers): Headers {
+        const result = new Headers();
+        const patternConcealedHeaderName = new RegExp('^' + this.fetchApiSupportedPrefix, 'i');
+        const IsHeaderNameConcealed = (name: string) => patternConcealedHeaderName.test(name);
+        const GetRevealedHeaderName = (name: string) => name.replace(patternConcealedHeaderName, '');
+
+        Object.entries(headers)
+            .filter(([ name, value ]) => name && value && !IsHeaderNameConcealed(name))
+            .forEach(([ name, value ]) => result.append(name, value));
+
+        Object.entries(headers)
+            .filter(([ name, value ]) => name && value && IsHeaderNameConcealed(name))
+            .forEach(([ name, value ]) => result.set(GetRevealedHeaderName(name), value));
+
+        return result;
     }
 
+    // TODO: Invoke via IPC in WEB
     private async ModifyRequestHeaders(details: OnBeforeSendHeadersListenerDetails): Promise<BeforeSendResponse> {
-        const uri = new URL(details.url);
-        await this.UpdateCookieHeader(uri.href, details.requestHeaders);
-        const updatedHeaders: typeof details.requestHeaders = {
-            //origin: uri.origin,
-            //referer: uri.href,
-        };
+        const requestHeaders = new Headers(details.requestHeaders ?? {});
+        requestHeaders.set('cookie', await this.GetSessionCookies(details.url));
+        const headers = this.RevealHeaders(requestHeaders);
 
-        for (const originalHeaderName in details.requestHeaders) {
-            const normalizedHeaderName = originalHeaderName.toLowerCase();
-            const originalHeaderValue = details.requestHeaders[originalHeaderName];
-            if (normalizedHeaderName.startsWith(this.fetchApiSupportedPrefix)) {
-                const revealedHeaderName = normalizedHeaderName.replace(this.fetchApiSupportedPrefix, '');
-                updatedHeaders[revealedHeaderName] = originalHeaderValue;
-            } else {
-                updatedHeaders[normalizedHeaderName] = updatedHeaders[normalizedHeaderName] ?? originalHeaderValue;
-            }
-        }
+        // Remove certain headers when empty
+        [ 'cookie' ].forEach(name => headers.has(name) && !headers.get(name)?.trim() ? headers.delete(name) : null);
 
         // Prevent leaking HakuNeko's host in certain headers
-        [ 'origin', 'referer' ].forEach(key => {
-            if(key in updatedHeaders && this.IsMatchingAppHost(updatedHeaders[key])) {
-                updatedHeaders[key] = uri.origin;
-            }
-        });
+        [ 'origin', 'referer' ].forEach(name => headers.get(name)?.includes(this.appHostname) ? headers.delete(name) : null);
 
         return {
             cancel: false,
-            requestHeaders: updatedHeaders,
+            requestHeaders: Object.fromEntries(headers.entries()),
         };
     }
 
+    // TODO: Invoke via IPC in WEB
     private ModifyResponseHeaders(details: OnHeadersReceivedListenerDetails): HeadersReceivedResponse {
         const responseHeaders: typeof details.responseHeaders = {};
         for (const originalHeader in details.responseHeaders) {
             const normalizedHeader = originalHeader.toLowerCase();
-            // remove the `link` header to prevent prefetch/preload and a corresponding warning about 'resource preloaded but not used',
+
+            // Remove the `link` header to prevent prefetch/preload and a corresponding warning about 'resource preloaded but not used',
             // especially when scraping with headless requests (see: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Link)
             if (normalizedHeader === 'link') {
                 continue;
             }
+
             // Currently electron des not include partitioned cookies when filtering with `session.cookies.get({ url })`
             // => Workaround: Remove the partitioned flag from the server response
             if(normalizedHeader === 'set-cookie') {
-                details.responseHeaders[originalHeader] = details.responseHeaders[originalHeader].map(cookie => cookie.replace(/partitioned/gi, ''));
+                details.responseHeaders[ normalizedHeader ] = details.responseHeaders[ originalHeader ].map(cookie => cookie.replace(/partitioned/gi, ''));
             }
-            responseHeaders[originalHeader] = details.responseHeaders[originalHeader];
+
+            responseHeaders[ normalizedHeader ] = details.responseHeaders[ originalHeader ];
         }
 
         /*
@@ -102,6 +90,7 @@ export class FetchProvider {
             responseHeaders['Access-Control-Allow-Origin'] = [ '*' ];
             responseHeaders['Access-Control-Allow-Methods'] = [ '*' ];
             responseHeaders['Access-Control-Allow-Headers'] = [ '*' ];
+            responseHeaders['Access-Control-Allow-Credentials'] = [ 'true' ];
         }
         */
 
