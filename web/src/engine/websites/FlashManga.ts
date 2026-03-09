@@ -12,7 +12,7 @@ import { FetchRegex } from '../platform/FetchProvider';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('flashmanga', 'Flash Manga', 'https://www.flash-manga.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Thai, Tags.Source.Aggregator);
+        super('flashmanga', 'Flash Manga', 'https://www.flash-manga.net', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Thai, Tags.Source.Aggregator);
     }
 
     public override get Icon() {
