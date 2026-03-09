@@ -8,6 +8,8 @@ import IconSettings from '@fluentui/svg-icons/icons/settings_20_regular.svg?raw'
 import IconBrowse from '@fluentui/svg-icons/icons/open_20_regular.svg?raw';
 import IconAddFavorite from '@fluentui/svg-icons/icons/star_off_20_regular.svg?raw';
 import IconRemoveFavorite from '@fluentui/svg-icons/icons/star_20_filled.svg?raw';
+import _IconFavoriteStar from '@fluentui/svg-icons/icons/star_20_filled.svg?raw';
+const IconFavoriteStar = _IconFavoriteStar.replace(/width="\d+"/, 'width="100%"').replace(/height="\d+"/, 'height="100%"').replace('<path', '<path fill="#DAA520"');
 
 const styles: ElementStyles = css`
 
@@ -139,7 +141,7 @@ function CreateItemTemplate<T extends MediaContainer<MediaChild>>(onSelectCallba
     return html<T>`
         <div  style="${model => canSelectCallback(model) ? styleEntry : styleEntryDisabled}" onmouseover="this.style.backgroundColor = getComputedStyle(this).getPropertyValue('--colorNeutralBackground1Hover')" onmouseout="this.style.backgroundColor = ''" @click=${model => onSelectCallback(model)}>
             <img style="${styleEntryIcon}" src="${model => model.Icon}"></img>
-            <div style="${styleEntryTitle}">${model => model.Title}</div>
+            <div style="${styleEntryTitle}"><span style="${model => HakuNeko.PluginController.IsFavorite(model.Identifier) ? 'display:inline-block;width:16px;height:16px;vertical-align:-2px;margin-right:4px' : 'display:none'}" :innerHTML=${model => HakuNeko.PluginController.IsFavorite(model.Identifier) ? IconFavoriteStar : ''}></span>${model => model.Title}</div>
             <div style="${styleEntryHint}">${model => model.Identifier}</div>
         </div>
     `;
@@ -172,7 +174,9 @@ export class WebsiteSelect extends FASTElement {
     readonly searchbox: SearchBox;
 
     @observable Entries: MediaContainer<MediaChild>[] = [];
+    private sorted: MediaContainer<MediaChild>[] = [];
     EntriesChanged() {
+        this.SortEntries();
         this.FilterEntries();
     }
     @observable Match: (text: string) => boolean = () => true;
@@ -184,6 +188,7 @@ export class WebsiteSelect extends FASTElement {
     SelectedChanged(previous: MediaContainer<MediaChild>, current: MediaContainer<MediaChild>) {
         if ((current || previous) && !current?.IsSameAs(previous)) {
             this.$emit('selectedChanged', this.Selected);
+            this.favorite = this.Selected ? HakuNeko.PluginController.IsFavorite(this.Selected.Identifier) : false;
         }
     }
     @observable Expanded = false;
@@ -196,8 +201,28 @@ export class WebsiteSelect extends FASTElement {
     @observable updating = false;
     @observable favorite = false;
 
+    override connectedCallback(): void {
+        super.connectedCallback();
+        HakuNeko.PluginController.Favorites.Subscribe(this.FavoritesChanged);
+    }
+
+    override disconnectedCallback(): void {
+        super.disconnectedCallback();
+        HakuNeko.PluginController.Favorites.Unsubscribe(this.FavoritesChanged);
+    }
+
+    private FavoritesChanged = () => {
+        this.favorite = this.Selected ? HakuNeko.PluginController.IsFavorite(this.Selected.Identifier) : false;
+        this.SortEntries();
+        this.FilterEntries();
+    };
+
+    private SortEntries() {
+        this.sorted = [...this.Entries.filter(e => HakuNeko.PluginController.IsFavorite(e.Identifier)), ...this.Entries.filter(e => !HakuNeko.PluginController.IsFavorite(e.Identifier))];
+    }
+
     public async FilterEntries() {
-        this.filtered = this.Entries.filter(entry => this.Match(entry.Title));
+        this.filtered = this.sorted.filter(entry => this.Match(entry.Title));
     }
 
     public SelectEntry(entry: MediaContainer<MediaChild>) {
@@ -208,14 +233,12 @@ export class WebsiteSelect extends FASTElement {
 
     public AddFavorite(event: Event) {
         event.stopPropagation();
-        this.favorite = true;
-        console.log('Added Favorite', this.Selected?.Identifier);
+        HakuNeko.PluginController.ToggleFavorite(this.Selected.Identifier);
     }
 
     public RemoveFavorite(event: Event) {
         event.stopPropagation();
-        this.favorite = false;
-        console.log('Removed Favorite', this.Selected?.Identifier);
+        HakuNeko.PluginController.ToggleFavorite(this.Selected.Identifier);
     }
 
     public OpenSettings(event: Event) {

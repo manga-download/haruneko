@@ -17,6 +17,7 @@
     // Third Party
     import Fuse from 'fuse.js';
     // Svelte
+    import { onDestroy } from 'svelte';
     import { fade } from 'svelte/transition';
     // UI: Components
     import Media from './Media.svelte';
@@ -46,14 +47,19 @@
 
     let disablePluginRefresh = false;
 
-    // TODO: implement favorites
-    let pluginsFavorites = ['sheep-scanlations'];
+    let pluginsFavorites: string[] = $state(HakuNeko.PluginController.Favorites.Value);
+    const onFavoritesChanged = (value: string[]) => pluginsFavorites = value;
+    HakuNeko.PluginController.Favorites.Subscribe(onFavoritesChanged);
+    onDestroy(() => HakuNeko.PluginController.Favorites.Unsubscribe(onFavoritesChanged));
 
     type ComboBoxItemWithValue = ComboBoxItem & {
         value: MediaContainer<MediaChild>;
         isFavorite: boolean;
     }
-    const orderedPlugins: MediaContainer<MediaChild>[] = HakuNeko.PluginController.WebsitePlugins.toSorted((a, b) => {
+
+    const allPlugins = HakuNeko.PluginController.WebsitePlugins;
+    let orderedPlugins: MediaContainer<MediaChild>[] = $derived(
+        allPlugins.toSorted((a, b) => {
             return (
                 // sort by favorite
                 (pluginsFavorites.includes(a.Identifier) ? 0 : 1) -
@@ -61,8 +67,9 @@
                 //sort by string
                 a.Title.localeCompare(b.Title)
             );
-        });
-    const pluginsCombo: ComboBoxItemWithValue[] = [
+        })
+    );
+    let pluginsCombo: ComboBoxItemWithValue[] = $derived([
         {
             id: HakuNeko.BookmarkPlugin.Identifier,
             text: HakuNeko.BookmarkPlugin.Title,
@@ -77,7 +84,7 @@
                 isFavorite: pluginsFavorites.includes(plugin.Identifier),
             };
         }),
-    ];
+    ]);
 
     let pluginDropdownSelected: string = $state();
 
