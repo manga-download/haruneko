@@ -8,8 +8,45 @@ import { NotImplementedError } from '../Error';
 import { CreateChapterExportRegistry } from '../exporters/MangaExporterRegistry';
 import { Observable } from '../Observable';
 import type { Tag } from '../Tags';
+import JSZip from 'jszip';
 
 const settingsKeyPrefix = 'plugin.';
+
+const extensionToMime: Record<string, string> = {
+    '.avif': 'image/avif',
+    '.webp': 'image/webp',
+    '.jpg': 'image/jpeg',
+    '.jpeg': 'image/jpeg',
+    '.png': 'image/png',
+    '.gif': 'image/gif',
+    '.bmp': 'image/bmp',
+};
+
+function imageExtension(name: string): string | undefined {
+    const dot = name.lastIndexOf('.');
+    return dot >= 0 ? name.substring(dot).toLowerCase() : undefined;
+}
+
+function isImageFile(name: string): boolean {
+    const ext = imageExtension(name);
+    return ext !== undefined && ext in extensionToMime;
+}
+
+/**
+ * Try to get a subdirectory by exact name, falling back to case-insensitive match.
+ */
+async function FindDirectoryHandle(parent: FileSystemDirectoryHandle, name: string): Promise<FileSystemDirectoryHandle | null> {
+    try {
+        return await parent.getDirectoryHandle(name);
+    } catch { /* exact match not found */ }
+    const nameLower = name.toLowerCase();
+    for await (const [entryName, handle] of parent as any) {
+        if (handle.kind === 'directory' && entryName.toLowerCase() === nameLower) {
+            return handle as FileSystemDirectoryHandle;
+        }
+    }
+    return null;
+}
 
 /**
  * The abstract base class that any custom manga scraper must implement.
@@ -141,22 +178,6 @@ export class Manga extends MediaContainer<Chapter> {
     }
 
     /**
-     * Try to get a subdirectory by exact name, falling back to case-insensitive match.
-     */
-    private static async FindDirectoryHandle(parent: FileSystemDirectoryHandle, name: string): Promise<FileSystemDirectoryHandle | null> {
-        try {
-            return await parent.getDirectoryHandle(name);
-        } catch { /* exact match not found */ }
-        const nameLower = name.toLowerCase();
-        for await (const [entryName, handle] of parent as any) {
-            if (handle.kind === 'directory' && entryName.toLowerCase() === nameLower) {
-                return handle as FileSystemDirectoryHandle;
-            }
-        }
-        return null;
-    }
-
-    /**
      * Scan the manga directory on disk, mark which online chapters are stored,
      * and return offline-only chapter entries for files that don't match any online chapter.
      */
@@ -169,12 +190,12 @@ export class Manga extends MediaContainer<Chapter> {
             let output = directory.Value;
             if (settings.Get<Check>(Key.UseWebsiteSubDirectory).Value && this.Parent) {
                 const website = SanitizeFileName(this.Parent.Title);
-                const websiteDir = await Manga.FindDirectoryHandle(output, website);
+                const websiteDir = await FindDirectoryHandle(output, website);
                 if (!websiteDir) return [];
                 output = websiteDir;
             }
             const manga = SanitizeFileName(this.Title);
-            const mangaDir = await Manga.FindDirectoryHandle(output, manga);
+            const mangaDir = await FindDirectoryHandle(output, manga);
             if (!mangaDir) return [];
             // Scan directory once, build a lowercase set for matching and a map to original names
             const diskEntries = new Set<string>();
@@ -234,7 +255,11 @@ export class Chapter extends StoreableMediaContainer<Page> {
         return chapter;
     }
 
-    protected PerformUpdate(): Promise<Page[]> {
+    protected async PerformUpdate(): Promise<Page[]> {
+        if (this.isStored.Value) {
+            const localPages = await this.FetchLocalPages();
+            if (localPages && localPages.length > 0) return localPages as unknown as Page[];
+        }
         return this.scraper.FetchPages(this);
     }
 
@@ -282,6 +307,76 @@ export class Chapter extends StoreableMediaContainer<Page> {
         return null;
     }
 
+    /**
+     * Try to load chapter pages from the local filesystem.
+     * Returns LocalPage[] if found, or null to fall back to remote fetching.
+     */
+    private async FetchLocalPages(): Promise<LocalPage[] | null> {
+        try {
+            const settings = HakuNeko.SettingsManager.OpenScope(Scope);
+            const directory = settings.Get<Directory>(Key.MediaDirectory);
+            if (!directory.Value) return null;
+            await directory.EnsureAccess();
+            let output = directory.Value;
+            if (settings.Get<Check>(Key.UseWebsiteSubDirectory).Value && this.Parent?.Parent) {
+                const website = SanitizeFileName(this.Parent.Parent.Title);
+                const websiteDir = await FindDirectoryHandle(output, website);
+                if (!websiteDir) return null;
+                output = websiteDir;
+            }
+            if (this.Parent) {
+                const manga = SanitizeFileName(this.Parent.Title);
+                const mangaDir = await FindDirectoryHandle(output, manga);
+                if (!mangaDir) return null;
+                output = mangaDir;
+            }
+            const sanitized = SanitizeFileName(this.Title);
+            // Try image directory (RAWs format)
+            try {
+                const chapterDir = await output.getDirectoryHandle(sanitized);
+                return this.ReadImageDirectory(chapterDir);
+            } catch { /* not a directory */ }
+            // Try archive formats (CBZ, EPUB)
+            for (const ext of ['.cbz', '.epub']) {
+                try {
+                    const file = await output.getFileHandle(SanitizeFileName(this.Title + ext));
+                    return this.ReadArchiveImages(file);
+                } catch { /* not found */ }
+            }
+            return null;
+        } catch {
+            return null;
+        }
+    }
+
+    private async ReadImageDirectory(dir: FileSystemDirectoryHandle): Promise<LocalPage[]> {
+        const files: { name: string, handle: FileSystemFileHandle }[] = [];
+        for await (const [name, handle] of dir as any) {
+            if (handle.kind === 'file' && isImageFile(name)) {
+                files.push({ name, handle });
+            }
+        }
+        files.sort((a, b) => a.name.localeCompare(b.name));
+        return files.map(f => new LocalPage(this, () => f.handle.getFile()));
+    }
+
+    private async ReadArchiveImages(fileHandle: FileSystemFileHandle): Promise<LocalPage[]> {
+        const file = await fileHandle.getFile();
+        const zip = await JSZip.loadAsync(file);
+        const entries: { name: string, entry: JSZip.JSZipObject }[] = [];
+        zip.forEach((path, entry) => {
+            if (!entry.dir && isImageFile(path)) {
+                entries.push({ name: path, entry });
+            }
+        });
+        entries.sort((a, b) => a.name.localeCompare(b.name));
+        return entries.map(e => new LocalPage(this, async () => {
+            const data = await e.entry.async('arraybuffer');
+            const mime = extensionToMime[imageExtension(e.name)] || 'application/octet-stream';
+            return new Blob([data], { type: mime });
+        }));
+    }
+
     public async Store(resources: Map<number, string>): Promise<void> {
         // TODO: Inject settings manager and global scope identifier?
         const settings = HakuNeko.SettingsManager.OpenScope(Scope);
@@ -320,5 +415,16 @@ export class Page<T extends JSONObject = JSONObject> extends MediaItem {
 
     public async Fetch(priority: Priority, signal: AbortSignal): Promise<Blob> {
         return this.scraper.FetchImage(this, priority, signal);
+    }
+}
+
+class LocalPage extends MediaItem {
+
+    constructor(parent: Chapter, private readonly getBlob: () => Promise<Blob>) {
+        super(parent);
+    }
+
+    public async Fetch(_priority: Priority, _signal: AbortSignal): Promise<Blob> {
+        return this.getBlob();
     }
 }
