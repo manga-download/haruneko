@@ -184,11 +184,11 @@
                 />
             </ToolbarContent>
         </Toolbar>
-    <!-- @migration-task: migrate this slot by hand, `cell-header` is an invalid identifier -->
-    <svelte:fragment slot="cell-header" let:header>
+    <svelte:fragment slot="cellHeader" let:header>
             {#if header.key === 'favorite'}
                 <Button
-                    kind="secondary"
+                    kind="ghost"
+                    size="small"
                     iconDescription="Filter favorites"
                     icon={filterFavorites ? StarFilled : Star}
                     on:click={(e) => {
@@ -200,7 +200,6 @@
                 {header.value}
             {/if}
         </svelte:fragment>
-        <!-- @migration-task: migrate this slot by hand, `cell` is an invalid identifier -->
         <div class="plugin-row" slot="cell" let:cell={{key,value}} in:fade>
             {#if key === 'favorite'}
                 <Button
