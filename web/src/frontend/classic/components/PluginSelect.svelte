@@ -77,6 +77,12 @@
         pluginTagsFilter = pluginTagsFilter.filter((value) => tag !== value);
     }
 
+    function selectPlugin(id: string) {
+        $selectedPlugin = HakuNeko.PluginController.WebsitePlugins.find(
+            (plugin) => plugin.Identifier === id,
+        );
+    }
+
     let filterFavorites = $state(false);
     let filteredPluginlist: ReturnType<typeof createDataRow>[] = $derived(HakuNeko.PluginController.WebsitePlugins.filter(
             (plugin) => {
@@ -182,8 +188,10 @@
         pageSize={pageSize}
         page={page}
         rows={filteredPluginlist}
-        on:click:row={event => {
-            $selectedPlugin = event.detail.row.overflow;
+        on:click={event => {
+            const row = event.detail?.row;
+            if (!row) return;
+            selectPlugin(row.id);
             isPluginModalOpen = false;
         }}
     >
