@@ -68,6 +68,7 @@
     }
 
     let isStored: boolean = $state(false);
+    let isOffline: boolean = 'IsOffline' in item && (item as any).IsOffline;
 
     function onIsStoredChanged(value: boolean) {
         isStored = value;
@@ -154,7 +155,18 @@
     {onmousedown}
     {onmouseenter}
 >
-    {#if !downloadTaskStatus && isStored}
+    {#if !downloadTaskStatus && isStored && isOffline}
+        <Button
+            size="small"
+            kind="ghost"
+            tooltipPosition="right"
+            tooltipAlignment="end"
+            iconDescription={isElectron ? "Offline file (click to show in folder)" : "Offline file (not available online)"}
+            onclick={() => { if (isElectron) showInFolder(); }}
+        >
+            <FolderOpen fill="var(--cds-support-04)" />
+        </Button>
+    {:else if !downloadTaskStatus && isStored}
         <Button
             size="small"
             kind="ghost"
@@ -268,7 +280,7 @@
                 {extractUnicodeFlagFromTags(item.Tags.Value)}
             </span>
         {/if}
-        <span title={item.Title}>{item.Title}</span>
+        <span title={isOffline ? `${item.Title} [OFFLINE]` : item.Title} class:offline={isOffline} class:not-stored={!isOffline && !isStored}>{item.Title}</span>
     </ClickableTile>
 </div>
 
@@ -314,6 +326,12 @@
     }
     .listitem :global(button:hover) {
         --cds-icon-01: var(--cds-hover-secondary);
+    }
+    .offline {
+        color: var(--cds-support-04);
+    }
+    .not-stored {
+        opacity: 0.6;
     }
     .multilang {
         opacity: 0.7;

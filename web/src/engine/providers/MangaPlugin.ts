@@ -136,8 +136,8 @@ export class Manga extends MediaContainer<Chapter> {
 
     protected async PerformUpdate(): Promise<Chapter[]> {
         const chapters = await this.scraper.FetchChapters(this);
-        this.CheckChaptersStored(chapters);
-        return chapters;
+        const offlineChapters = await this.FindOfflineChapters(chapters);
+        return [...chapters, ...offlineChapters];
     }
 
     /**
@@ -157,35 +157,58 @@ export class Manga extends MediaContainer<Chapter> {
     }
 
     /**
-     * Check which chapters already exist on disk (fire-and-forget).
-     * Scans the manga directory once and checks all chapters against the results.
+     * Scan the manga directory on disk, mark which online chapters are stored,
+     * and return offline-only chapter entries for files that don't match any online chapter.
      */
-    private async CheckChaptersStored(chapters: Chapter[]): Promise<void> {
+    private async FindOfflineChapters(chapters: Chapter[]): Promise<Chapter[]> {
         try {
             const settings = HakuNeko.SettingsManager.OpenScope(Scope);
             const directory = settings.Get<Directory>(Key.MediaDirectory);
-            if (!directory.Value) return;
+            if (!directory.Value) return [];
             await directory.EnsureAccess();
             let output = directory.Value;
             if (settings.Get<Check>(Key.UseWebsiteSubDirectory).Value && this.Parent) {
                 const website = SanitizeFileName(this.Parent.Title);
                 const websiteDir = await Manga.FindDirectoryHandle(output, website);
-                if (!websiteDir) return;
+                if (!websiteDir) return [];
                 output = websiteDir;
             }
             const manga = SanitizeFileName(this.Title);
             const mangaDir = await Manga.FindDirectoryHandle(output, manga);
-            if (!mangaDir) return;
-            // Scan directory once, build a set of lowercase entry names
+            if (!mangaDir) return [];
+            // Scan directory once, build a lowercase set for matching and a map to original names
             const diskEntries = new Set<string>();
+            const originalNames = new Map<string, string>();
             for await (const [name] of mangaDir as any) {
-                diskEntries.add(name.toLowerCase());
+                const lower = name.toLowerCase();
+                diskEntries.add(lower);
+                originalNames.set(lower, name);
             }
+            // Mark online chapters that exist on disk
+            const matchedEntries = new Set<string>();
             for (const chapter of chapters) {
-                chapter.CheckIsStoredAgainst(diskEntries);
+                const matched = chapter.CheckIsStoredAgainst(diskEntries);
+                if (matched) matchedEntries.add(matched);
             }
+            // Create offline chapters for unmatched disk entries
+            const offlineChapters: Chapter[] = [];
+            for (const entry of diskEntries) {
+                if (matchedEntries.has(entry)) continue;
+                // Strip known extensions to get the chapter title
+                let title = originalNames.get(entry);
+                for (const ext of ['.cbz', '.epub', '.pdf']) {
+                    if (title.toLowerCase().endsWith(ext)) {
+                        title = title.slice(0, -ext.length);
+                        break;
+                    }
+                }
+                const chapter = Chapter.CreateOffline(this, title);
+                offlineChapters.push(chapter);
+            }
+            return offlineChapters;
         } catch {
             // Media directory not set or no permission, skip silently
+            return [];
         }
     }
 }
@@ -193,10 +216,22 @@ export class Manga extends MediaContainer<Chapter> {
 export class Chapter extends StoreableMediaContainer<Page> {
 
     private readonly isStored = new Observable<boolean, Chapter>(false);
+    private _isOffline = false;
 
     constructor(private readonly scraper: MangaScraper, parent: Manga, identifier: string, title: string, ...tags: Tag[]) {
         super(identifier, title, parent);
         this.tags.Value = tags;
+    }
+
+    public get IsOffline(): boolean {
+        return this._isOffline;
+    }
+
+    public static CreateOffline(parent: Manga, title: string): Chapter {
+        const chapter = new Chapter(parent['scraper'], parent, `offline:${title}`, title);
+        chapter._isOffline = true;
+        chapter.isStored.Value = true;
+        return chapter;
     }
 
     protected PerformUpdate(): Promise<Page[]> {
@@ -229,19 +264,22 @@ export class Chapter extends StoreableMediaContainer<Page> {
 
     /**
      * Check whether this chapter exists in a pre-scanned set of directory entry names (lowercase).
+     * Returns the matched entry name, or null if not found.
      */
-    public CheckIsStoredAgainst(diskEntries: Set<string>): void {
+    public CheckIsStoredAgainst(diskEntries: Set<string>): string | null {
         const sanitized = SanitizeFileName(this.Title).toLowerCase();
         if (diskEntries.has(sanitized)) {
             this.isStored.Value = true;
-            return;
+            return sanitized;
         }
         for (const ext of ['.cbz', '.epub', '.pdf']) {
-            if (diskEntries.has(SanitizeFileName(this.Title + ext).toLowerCase())) {
+            const withExt = SanitizeFileName(this.Title + ext).toLowerCase();
+            if (diskEntries.has(withExt)) {
                 this.isStored.Value = true;
-                return;
+                return withExt;
             }
         }
+        return null;
     }
 
     public async Store(resources: Map<number, string>): Promise<void> {

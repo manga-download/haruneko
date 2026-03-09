@@ -90,6 +90,7 @@
         if (item === $selectedItem || event.ctrlKey || event.shiftKey) return;
         const launched = await tryLaunchExternalViewer(item);
         if (!launched) {
+            if ('IsOffline' in item && (item as any).IsOffline) return;
             $selectedItem = item;
         }
     };
@@ -290,6 +291,7 @@
                 onclick={async () => {
                     const launched = await tryLaunchExternalViewer(contextItem);
                     if (!launched) {
+                        if ('IsOffline' in contextItem && (contextItem as any).IsOffline) return;
                         $selectedItem = contextItem;
                     }
                 }}
