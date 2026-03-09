@@ -12,7 +12,7 @@ new TestFixture({
     },
     child: {
         id: '/2022/02/19/hero-villain-chapter-01/',
-        title: 'Chapter 01'
+        title: 'Chapter 1'
     },
     entry: {
         index: 1,

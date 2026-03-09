@@ -129,11 +129,10 @@
     let multipleSelectionDragTo: number = -1;
     let selectedDragItems: MediaContainer<MediaItem>[] = [];
     let contextItem: MediaContainer<MediaItem> = $state();
-    let contextMenuOpen = $state(false);
-    $effect(() => {
-        if (!contextMenuOpen) contextItem = null;
-    });
 
+    function onContextMenuClose() {
+        contextItem = null;
+    }
     const mouseHandler = (item: MediaContainer<MediaItem>) => (event: any) => {
         if (event.button === 2) {
             contextItem = item;
@@ -238,7 +237,7 @@
 </script>
 
 {#if filteredItems.length > 0}
-    <ContextMenu bind:open={contextMenuOpen} target={[itemsdiv]}>
+    <ContextMenu target={[itemsdiv]} onclose={onContextMenuClose}>
         {#if contextItem}
             <ContextMenuOption
                 labelText="Download - {contextItem?.Title}"

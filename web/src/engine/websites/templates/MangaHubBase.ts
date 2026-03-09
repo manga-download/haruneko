@@ -43,7 +43,7 @@ export class MangaHubBase extends DecoratableMangaScraper {
     private readonly cdnURL = 'https://imgx.mghcdn.com';
     private token = '';
 
-    public constructor (identifier: string, title: string, url: string, private readonly scope: string, ...tags: Tag[]) {
+    public constructor(identifier: string, title: string, url: string, private readonly scope: string, ...tags: Tag[]) {
         super(identifier, title, url, ...tags);
     }
 
@@ -67,11 +67,17 @@ export class MangaHubBase extends DecoratableMangaScraper {
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        const { search: { rows } } = await this.FetchGQL<GQLMangas>(`
-            query ($scope: MangaSource) {
-            search(x: $scope, q: "", genre: "all", mod: ALPHABET, limit: 99999) { rows { id, slug, title } }
-        }`, { scope: this.scope });
-        return rows.map(manga => new Manga(this, provider, manga.slug, new DOMParser().parseFromString(manga.title, 'text/html').body.innerText.trim()));
+        type This = typeof this;
+        return Array.fromAsync(async function* (this: This) {
+            for (let offset = 0, run = true; run; offset+= 50) {
+                const { search: { rows } } = await this.FetchGQL<GQLMangas>(`
+                    query ($scope: MangaSource) {
+                        search(x: $scope, q: "", genre: "all", mod: ALPHABET, limit: 50, offset: ${offset}) { rows { id, slug, title } }
+                    }`, { scope: this.scope });
+                const mangas = rows.map(manga => new Manga(this, provider, manga.slug, new DOMParser().parseFromString(manga.title, 'text/html').body.innerText.trim()));
+                mangas.length > 0 ? yield* mangas : run = false;
+            }
+        }.call(this));
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {

@@ -1,4 +1,3 @@
-import '../KLManga_e2e';
 import '../MangaTR_e2e';
 import '../Manhwa18_e2e';
 import '../ManhwaEighteen_e2e';

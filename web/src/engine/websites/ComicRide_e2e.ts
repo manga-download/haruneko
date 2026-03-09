@@ -11,7 +11,7 @@ new TestFixture({
         title: '呪われ侯爵様の訳ありメイド',
     },
     child: {
-        id: '/episodes/c0ee21c1e9472/',
+        id: '/episodes/c0ee21c1e9472',
         title: '第1話',
     },
     entry: {

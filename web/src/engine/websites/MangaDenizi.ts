@@ -1,20 +1,15 @@
 import { Tags } from '../Tags';
 import icon from './MangaDenizi.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
-import * as MangaReader from './templates/MangaReaderCMS';
 import * as Common from './decorators/Common';
 
-function ChapterInfoExtractor(element: HTMLHeadingElement) {
-    return {
-        id: element.querySelector<HTMLAnchorElement>('a:last-of-type').pathname,
-        title: element.innerText.replace(' - Bölüm', 'Bölüm').replace(/:\s*$/, '').trim(),
-    };
-}
-
-@Common.MangaCSS(/^{origin}\/manga\/[^/]+$/, MangaReader.queryManga)
-@Common.MangasSinglePageCSS(MangaReader.patternMangas, MangaReader.queryMangas)
-@Common.ChaptersSinglePageCSS('ul li h5', undefined, ChapterInfoExtractor)
-@Common.PagesSinglePageCSS(MangaReader.queryPages)
+@Common.MangaCSS(/^{origin}\/manga\/[^/]+$/, 'h1.manga-detail-title')
+@Common.MangasMultiPageCSS('div.manga-card-info h3.manga-card-title a', Common.PatternLinkGenerator('./filterList?page={page}&sortBy=name'))
+@Common.ChaptersSinglePageCSS<HTMLAnchorElement>('a.chapter-card-new', undefined, anchor => ({
+    id: anchor.pathname,
+    title: `Bölüm ${anchor.querySelector<HTMLDivElement>('div.chapter-num-badge').textContent.trim()}: ${anchor.querySelector<HTMLHeadingElement>('h4.chapter-card-title').textContent.trim()}`
+}))
+@Common.PagesSinglePageCSS('div#longstripMode img')
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 

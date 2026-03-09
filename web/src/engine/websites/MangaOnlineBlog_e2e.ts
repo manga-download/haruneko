@@ -6,7 +6,7 @@ new TestFixture({
         title: 'Manga Online Blog'
     },
     container: {
-        url: 'https://mangaonline.app/manga/solo-max-level-newbie/',
+        url: 'https://mangaonline.red/manga/solo-max-level-newbie/',
         id: JSON.stringify({ post: '1895', slug: '/manga/solo-max-level-newbie/' }),
         title: 'Solo Max-Level Newbie',
     },

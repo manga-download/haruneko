@@ -1,8 +1,13 @@
 import { Tags } from '../Tags';
 import icon from './MangaGeko.webp';
-import { Chapter, DecoratableMangaScraper, type MangaPlugin, type Manga } from '../providers/MangaPlugin';
+import { Chapter, DecoratableMangaScraper, type MangaPlugin, Manga } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { FetchCSS } from '../platform/FetchProvider';
+import { FetchCSS, FetchJSON } from '../platform/FetchProvider';
+
+type APIMangas = {
+    results_html: string;
+    num_pages: number;
+}
 
 @Common.MangaCSS(/^{origin}\/manga\/[^/]+\/$/, 'div.main-head h1[itemprop="name"]')
 @Common.PagesSinglePageCSS('section.page-in div img[onerror]')
@@ -18,11 +23,16 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        const request = new Request(`${this.URI.origin}/browse-comics/?results=1`);
-        const [data] = await FetchCSS<HTMLSpanElement>(request, 'span.mg-pagination-last');
-        const lastPageNumber = parseInt(data.textContent.match(/\d+/)[0]);
-        const endpoints = new Array(lastPageNumber).fill(0).map((_, index) => index + 1).map(page => `/browse-comics/?results=${page}`);
-        return Common.FetchMangasMultiPageCSS.call(this, provider, 'li.novel-item a', Common.StaticLinkGenerator(...endpoints), 0, Common.AnchorInfoExtractor(true));
+        type This = typeof this;
+        return Array.fromAsync(async function* (this: This) {
+            for (let page = 1, run = true; run; page++) {
+                const { results_html, num_pages } = await FetchJSON<APIMangas>(new Request(new URL(`./browse-comics/data/?results=1&page=${page}`, this.URI)));
+                const elements = [...new DOMParser().parseFromString(results_html, 'text/html').querySelectorAll<HTMLAnchorElement>('h3.comic-card__title a')];
+                const mangas = elements.map(anchor => new Manga(this, provider, anchor.pathname, anchor.text.trim()));
+                yield* mangas;
+                run = page <= num_pages;
+            }
+        }.call(this));
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {

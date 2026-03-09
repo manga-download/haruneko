@@ -160,7 +160,7 @@ export default class extends DecoratableMangaScraper {
         let { pictureUrlHead, pictureUrls } = edges.at(0);
         pictureUrlHead = pictureUrlHead ?? this.URI.origin;
         const domain = (/^https?:\/\//).test(pictureUrlHead) ? pictureUrlHead : 'https://' + pictureUrlHead;
-        return pictureUrls.map(({ url }) => new Page(this, chapter, new URL(url, domain)));
+        return pictureUrls.map(({ url }) => new Page(this, chapter, new URL(url, domain), { Referer: this.URI.href }));
     }
 
     private async FetchAPI<T extends JSONElement>(query: string, variables: JSONObject): Promise<T> {

@@ -12,7 +12,7 @@ export default class extends DecoratableMangaScraper {
     readonly #drm = new DRMProvider();
 
     public constructor() {
-        super('japscan', 'JapScan', 'https://www.japscan.vip', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.French, Tags.Source.Aggregator);
+        super('japscan', 'JapScan', 'https://www.japscan.foo', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.French, Tags.Source.Aggregator);
     }
 
     public override get Icon(): string {

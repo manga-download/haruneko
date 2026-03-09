@@ -6,7 +6,7 @@ new TestFixture({
         title: 'مانجا ليك (Mangalek)'
     },
     container: {
-        url: 'https://lek-manga.net/manga/against-the-gods/',
+        url: 'https://lekmanga.net/manga/against-the-gods/',
         id: JSON.stringify({ post: '47', slug: '/manga/against-the-gods/' }),
         title: 'Against The Gods'
     },

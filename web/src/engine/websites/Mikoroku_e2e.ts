@@ -6,13 +6,13 @@ new TestFixture({
         title: 'Mikoroku'
     },
     container: {
-        url: 'https://www.mikoroku.com/2025/01/harem-ou-no-isekai-press-manyuuki_12.html',
-        id: '/2025/01/harem-ou-no-isekai-press-manyuuki_12.html',
+        url: 'https://www.mikoroku.my.id/2025/01/ou-no-isekai-press-manyuuki.html',
+        id: '/2025/01/ou-no-isekai-press-manyuuki.html',
         title: 'Harem Ou no Isekai Press Manyuuki'
     },
     child: {
-        id: '/2024/07/harem-ou-no-isekai-press-manyuuki_22.html',
-        title: 'Chapter 01'
+        id: 'https://www.mikodrive.my.id/2024/07/harem-ou-no-isekai-press-manyuuki_22.html',
+        title: 'Chapter 1'
     },
     entry: {
         index: 1,

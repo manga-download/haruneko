@@ -6,7 +6,7 @@ new TestFixture({
         title: 'UmeTruyen'
     },
     container: {
-        url: 'https://umetruyenz.net/truyen-vet-do.html',
+        url: 'https://umetruyenz.org/truyen-vet-do.html',
         id: '/truyen-vet-do.html',
         title: 'Vết Đỏ'
     },
@@ -16,7 +16,7 @@ new TestFixture({
     },
     entry: {
         index: 0,
-        size: 1_266_999,
+        size: 970_896,
         type: 'image/jpeg'
     }
 }).AssertWebsite();

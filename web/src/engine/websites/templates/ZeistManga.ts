@@ -8,16 +8,16 @@ type FeedResults = {
     feed: {
         entry: {
             link: {
-                rel: string,
-                href: string,
+                rel: string;
+                href: string;
                 title: string;
-            }[],
+            }[];
         }[];
     };
 };
 
 type MediaEntry = {
-    pathname: string,
+    pathname: string;
     title: string;
 };
 
@@ -30,16 +30,26 @@ export function PageLinkExtractor(image: HTMLImageElement): string {
 @Common.ImageAjax()
 export class ZeistManga extends DecoratableMangaScraper {
 
-    protected mangaSlugScript = `clwd.settings.cat;`;
-    protected mangaEntriesSlug = 'Series';
+    private mangaSlugScript = `clwd.settings.cat;`;
+    private mangaEntriesSlug = 'Series';
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
         return (await this.FetchEntries(this.mangaEntriesSlug)).map(entry => new Manga(this, provider, entry.pathname, entry.title));
     }
 
+    public WithMangaEntriesSlug(slug: string) {
+        this.mangaEntriesSlug = slug;
+        return this;
+    }
+
+    public WithMangaSlugScript(script: string) {
+        this.mangaSlugScript = script;
+        return this;
+    }
+
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const chaptersList: Chapter[] = [];
-        const mangaSlug = await FetchWindowScript<string>(new Request(new URL(manga.Identifier, this.URI)), this.mangaSlugScript, 1000);
+        const mangaSlug = await FetchWindowScript<string>(new Request(new URL(manga.Identifier, this.URI)), this.mangaSlugScript, 1500);
         for (let run = true, index = 1; run;) {
             const chapters = (await this.FetchEntries(mangaSlug, index, manga)).map(entry => new Chapter(this, manga, entry.pathname, entry.title));
             chapters.length > 0 ? chaptersList.push(...chapters) : run = false;

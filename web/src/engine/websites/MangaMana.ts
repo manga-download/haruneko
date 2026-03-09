@@ -5,8 +5,8 @@ import * as Common from './decorators/Common';
 import { FetchCSS, FetchJSON } from '../platform/FetchProvider';
 
 type APIMangas = {
-    html: string
-}
+    html: string;
+};
 
 const pageScript = `
     new Promise(resolve => {
@@ -29,30 +29,22 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        const token = (await FetchCSS<HTMLMetaElement>(new Request(new URL('/liste-mangas', this.URI)), 'meta[name="csrf-token"]'))[0].content;
-        const mangaList: Manga[] = [];
-        for (let page = 1, run = true; run; page++) {
-            const mangas = await this.GetMangasFromPage(page, provider, token);
-            mangas.length > 0 ? mangaList.push(...mangas) : run = false;
-        }
-        return mangaList.distinct();
-    }
-
-    private async GetMangasFromPage(page: number, provider: MangaPlugin, token: string): Promise<Manga[]> {
-        const endpoint = new URL('/liste-mangas', this.URI);
-        const request = new Request(endpoint, {
-            method: 'POST',
-            headers: {
-                'Content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
-                'X-CSRF-TOKEN': token,
-                'X-Requested-With': 'XMLHttpRequest',
-                'Referer': endpoint.href
-            },
-            body: `page=${page}`
-        });
-        const { html } = await FetchJSON<APIMangas>(request);
-        const dom = new DOMParser().parseFromString(html, 'text/html');
-        const nodes = [...dom.querySelectorAll<HTMLAnchorElement>('a[class= ""]')];
-        return nodes.map(manga => new Manga(this, provider, manga.pathname, manga.text.trim()));
+        type This = typeof this;
+        const token = (await FetchCSS<HTMLMetaElement>(new Request(new URL('/liste-mangas', this.URI)), 'meta[name="csrf-token"]')).at(0).content;
+        return Array.fromAsync(async function* (this: This) {
+            for (let page = 1, run = true; run ; page++) {
+                const { html } = await FetchJSON<APIMangas>(new Request(new URL('/liste-mangas', this.URI), {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': token,
+                        'X-Requested-With': 'XMLHttpRequest',
+                    },
+                    body: `page=${page}`
+                }));
+                const nodes = [...new DOMParser().parseFromString(html, 'text/html').querySelectorAll<HTMLAnchorElement>('a[class= ""]')];
+                const mangas = nodes.map(({ pathname, text }) => new Manga(this, provider, pathname, text.trim()));
+                mangas.length > 0 ? yield* mangas : run = false;
+            }
+        }.call(this));
     }
 }

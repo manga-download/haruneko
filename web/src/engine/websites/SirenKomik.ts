@@ -30,7 +30,7 @@ const chapterScript = `
 `;
 
 @Common.ChaptersSinglePageJS(chapterScript, 2500)
-@Common.PagesSinglePageJS(`[...document.querySelectorAll('div.bg-gray-800 div img')].map(img => img.src)`, 2500)
+@Common.PagesSinglePageJS(`[...document.querySelectorAll('div.bg-gray-800 div img.select-none ')].map(img => img.src)`, 2500)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
@@ -61,19 +61,15 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        const mangaList: Manga[] = [];
-        for (let page = 1, run = true; run; page++) {
-            const mangas = await this.GetMangasFromPage(page, provider);
-            mangas.length > 0 ? mangaList.push(...mangas) : run = false;
-        }
-        return mangaList;
-    }
-
-    private async GetMangasFromPage(page: number, provider: MangaPlugin): Promise<Manga[]> {
-        const request = new Request(new URL(`./manga/list?page=${page}&per_page=12&status=All&type=All&sort=project`, this.apiUrl), {
-            headers: await this.#drm.GetHeaders(),
-        });
-        const { data: { manga } } = await FetchJSON<APIMangas>(request);
-        return manga.map(({ slug, title }) => new Manga(this, provider, `/manga/${slug}`, title));
+        type This = typeof this;
+        return Array.fromAsync(async function* (this: This) {
+            for (let page = 1, run = true; run; page++) {
+                const { data: { manga } } = await FetchJSON<APIMangas>(new Request(new URL(`./manga/list?page=${page}&per_page=12&status=All&type=All&sort=project`, this.apiUrl), {
+                    headers: await this.#drm.GetHeaders(),
+                }));
+                const mangas = manga.map(({ slug, title }) => new Manga(this, provider, `/manga/${slug}`, title));
+                mangas.length > 0 ? yield* mangas : run = false;
+            }
+        }.call(this));
     }
 }

@@ -43,7 +43,7 @@ export default class extends DecoratableMangaScraper {
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
         type This = typeof this;
         return Array.fromAsync(async function* (this: This) {
-            for (let page = 0, run = true; run && page < 1000; page++) {
+            for (let page = 0, run = true; run ; page++) {
                 await Delay(500);
                 const body = {
                     filter: {
@@ -71,7 +71,6 @@ export default class extends DecoratableMangaScraper {
                 const mangas = items.map(({ id, title }) => new Manga(this, provider, id, title));
                 mangas.length > 0 ? yield* mangas : run = false;
             }
-
         }.call(this));
     }
 

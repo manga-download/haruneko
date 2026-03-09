@@ -11,7 +11,7 @@ new TestFixture({
         title: 'Ziggurat',
     },
     child: {
-        id: '/episodes/6a80a48fefa39/',
+        id: '/episodes/6a80a48fefa39',
         title: 'Relic:001',
     },
     entry: {

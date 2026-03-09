@@ -12,7 +12,7 @@ new TestFixture({
     },
     child: {
         id: '/read/97e46180-964c-43df-a73a-b9ce281a7d1d',
-        title: 'Ch. 8 (pt-br)'
+        title: 'Ch. 8 (pt-BR)'
     },
     entry: {
         index: 1,

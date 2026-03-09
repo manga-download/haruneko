@@ -6,17 +6,17 @@ new TestFixture({
         title: 'Maid Scan'
     },
     container: {
-        url: 'https://novo.empreguetes.site/manga/deus-tigre-de-jangsan/',
-        id: JSON.stringify({ post: '1243', slug: '/manga/deus-tigre-de-jangsan/'}),
+        url: 'https://empreguetes.xyz/obra/deus-tigre-de-jangsan-1',
+        id: 'deus-tigre-de-jangsan-1',
         title: 'Deus tigre de Jangsan'
     },
     child: {
-        id: '/manga/deus-tigre-de-jangsan/capitulo-37/',
+        id: '/capitulo/239389',
         title: 'Capítulo 37'
     },
     entry: {
-        index: 0,
-        size: 507_912,
+        index: 4,
+        size: 1_523_950,
         type: 'image/webp'
     }
 }).AssertWebsite();

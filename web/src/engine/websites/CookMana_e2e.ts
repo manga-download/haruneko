@@ -1,12 +1,12 @@
 ﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'cookmana',
         title: 'CookMana'
     },
     container: {
-        url: 'https://cookmana.com/episode/3015/1/1',
+        url: 'https://cookmana.com/episode/3015',
         id: '3015',
         title: '장난을 잘치는 타카기 양'
     },
@@ -19,6 +19,4 @@ const config = {
         size: 237_067,
         type: 'image/jpeg'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

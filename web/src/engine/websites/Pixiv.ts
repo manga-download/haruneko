@@ -9,13 +9,13 @@ type APIResult<T> = {
 };
 
 type APIIlust = {
-    illustId: string,
-    illustTitle: string,
+    illustId: string;
+    illustTitle: string;
 };
 
 type APISerie = {
     illustSeries: {
-        id: string,
+        id: string;
         title: string;
     }[];
 };
@@ -23,7 +23,7 @@ type APISerie = {
 type APIChapters = {
     thumbnails: {
         illust: {
-            id: string,
+            id: string;
             title: string;
         }[];
     },
@@ -73,25 +73,21 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const chapterList: Chapter[] = [];
         if (manga.Identifier.startsWith('artwork-')) {
             return [ new Chapter(this, manga, manga.Identifier.match(/artwork-(\d+)$/).at(-1), manga.Title) ];
         } else {
-            for (let page = 1, run = true; run; page++) {
-                const chapters = await this.FetchChaptersFromPage(manga, page);
-                chapters.length > 0 ? chapterList.push(...chapters) : run = false;
-            }
+            type This = typeof this;
+            return Array.fromAsync(async function* (this: This) {
+                for (let page = 1, run = true; run ; page++) {
+                    const { body: { thumbnails: { illust }, page: { series } } } = await FetchJSON<APIResult<APIChapters>>(new Request(new URL(`./series/${manga.Identifier}?p=${page}&lang=en`, this.apiURL)));
+                    const chapters = series.map(({workId }) => {
+                        const chapterContents = illust.find(c => c.id === workId);
+                        if (chapterContents) return new Chapter(this, manga, chapterContents.id, chapterContents.title);
+                    });
+                    chapters.length > 0 ? yield* chapters : run = false;
+                }
+            }.call(this));
         }
-        return chapterList;
-    }
-
-    private async FetchChaptersFromPage(manga: Manga, page: number): Promise<Chapter[]> {
-        const { body: { thumbnails: { illust }, page: { series } } } = await FetchJSON<APIResult<APIChapters>>(new Request(new URL(`./series/${manga.Identifier}?p=${page}&lang=en`, this.apiURL)));
-
-        return series.map(chapter => {
-            const chapterContents = illust.find(c => c.id === chapter.workId);
-            if (chapterContents) return new Chapter(this, manga, chapterContents.id, chapterContents.title.trim());
-        });
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {

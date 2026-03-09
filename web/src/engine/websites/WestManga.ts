@@ -34,14 +34,14 @@ function CleanTitle(title: string): string {
 export default class extends DecoratableMangaScraper {
 
     private readonly api = {
-        url: 'https://data.westmanga.me/api/',
+        url: 'https://data.westmanga.tv/api/',
         nonce: 'wm-api-request',
         accessKey: 'WM_WEB_FRONT_END',
         secretKey: 'xxxoidj',
     };
 
     public constructor () {
-        super('westmanga', 'WestManga', 'https://westmanga.me', Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Language.Indonesian, Tags.Source.Aggregator);
+        super('westmanga', 'WestManga', 'https://westmanga.tv', Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Language.Indonesian, Tags.Source.Aggregator);
     }
 
     public override get Icon() {
@@ -58,17 +58,14 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        const mangaList: Manga[] = [];
-        for (let page = 1, run = true; run; page++) {
-            const mangas = await this.GetMangasFromPage(provider, page);
-            mangas.length > 0 ? mangaList.push(...mangas) : run = false;
-        }
-        return mangaList;
-    }
-
-    private async GetMangasFromPage(provider: MangaPlugin, page: number): Promise<Manga[]> {
-        const { data } = await this.FetchAPI<APIManga[]>(`./contents?page=${page}`);
-        return data ? data.map(({ slug, title}) => new Manga(this, provider, slug, CleanTitle(title))) : [];
+        type This = typeof this;
+        return Array.fromAsync(async function* (this: This) {
+            for (let page = 1, run = true; run ; page++) {
+                const { data } = await this.FetchAPI<APIManga[]>(`./contents?page=${page}`);
+                const mangas = data ? data.map(({ slug, title }) => new Manga(this, provider, slug, CleanTitle(title))) : [];
+                mangas.length > 0 ? yield* mangas : run = false;
+            }
+        }.call(this));
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {

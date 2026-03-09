@@ -5,8 +5,8 @@ import * as Common from './decorators/Common';
 import { FetchJSON } from '../platform/FetchProvider';
 
 type ChapterData = {
-    list_chap: string
-}
+    list_chap: string;
+};
 
 const pagescript = `
     new Promise(resolve => {
@@ -36,19 +36,16 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const chapterslist = [];
-        for (let page = 1, run = true; run; page++) {
-            const chapters = await this.GetChaptersFromPage(page, manga);
-            chapters.length > 0 ? chapterslist.push(...chapters) : run = false;
-        }
-        return chapterslist;
-    }
-
-    private async GetChaptersFromPage(page: number, manga: Manga): Promise<Chapter[]> {
+        type This = typeof this;
         const mangaid = manga.Identifier.match(/-(\d+)\/$/)[1];
-        const request = new Request(new URL(`?act=ajax&code=load_list_chapter&manga_id=${mangaid}&page_num=${page}`, this.URI));
-        const { list_chap } = await FetchJSON<ChapterData>(request);
-        const nodes = [...new DOMParser().parseFromString(list_chap, 'text/html').querySelectorAll<HTMLAnchorElement>('li.wp-manga-chapter a')];
-        return nodes.map(element => new Chapter(this, manga, new URL(element.href, request.url).pathname, element.text.trim()));
+        return Array.fromAsync(async function* (this: This) {
+            for (let page = 1, run = true; run; page++) {
+                const request = new Request(new URL(`?act=ajax&code=load_list_chapter&manga_id=${mangaid}&page_num=${page}`, this.URI));
+                const { list_chap } = await FetchJSON<ChapterData>(request);
+                const nodes = [...new DOMParser().parseFromString(list_chap, 'text/html').querySelectorAll<HTMLAnchorElement>('li.wp-manga-chapter a')];
+                const chapters = nodes.map(element => new Chapter(this, manga, new URL(element.href, request.url).pathname, element.text.trim()));
+                chapters.length > 0 ? yield* chapters : run = false;
+            }
+        }.call(this));
     }
 }

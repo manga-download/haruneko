@@ -4,10 +4,10 @@ import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Madara from './decorators/WordPressMadara';
 import * as Common from './decorators/Common';
 
-@Madara.MangaCSS(/^{origin}\/series\/[^/]+\/$/, 'div.post-title h1')
+@Madara.MangaCSS(/^{origin}\/read\/[^/]+\/$/, 'div.post-title h1')
 @Madara.MangasMultiPageAJAX()
 @Madara.ChaptersSinglePageAJAXv2()
-@Madara.PagesSinglePageCSS()
+@Common.PagesSinglePageJS(`_HuntersOpts.imgs.map(img => decodeURIComponent(new URL(img).searchParams.get('src')));`, 1500)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
     public constructor () {
