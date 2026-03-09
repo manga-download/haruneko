@@ -1,4 +1,3 @@
-import type { IPC } from '../InterProcessCommunication';
 import { Observable, type IObservable } from '../../Observable';
 import type { IAppWindow } from '../AppWindow';
 import { GetIPC } from './InterProcessCommunication';
