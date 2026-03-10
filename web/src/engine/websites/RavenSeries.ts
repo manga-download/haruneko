@@ -4,20 +4,6 @@ import { type Chapter, DecoratableMangaScraper, Page } from '../providers/MangaP
 import * as Common from './decorators/Common';
 import { FetchJSON } from '../platform/FetchProvider';
 
-function MangaLinkExtractor(title: HTMLTitleElement, uri: URL) {
-    return {
-        id: uri.pathname,
-        title: title.innerText.split('|').at(0).trim(),
-    };
-}
-
-function ChapterExtractor(anchor: HTMLAnchorElement) {
-    return {
-        id: anchor.pathname,
-        title: anchor.querySelector<HTMLDivElement>('div#name').innerText.trim()
-    };
-}
-
 type APIPages = {
     response: {
         pages: {
@@ -26,9 +12,15 @@ type APIPages = {
     };
 };
 
-@Common.MangaCSS(/^{origin}\/sr2\/[^/]+$/, 'title', MangaLinkExtractor)
+@Common.MangaCSS(/^{origin}\/sr2\/[^/]+$/, 'title', (title, uri) => ({
+    id: uri.pathname,
+    title: title.innerText.split('|').at(0).trim(),
+}))
 @Common.MangasMultiPageCSS('div#projectsDiv figure div a', Common.PatternLinkGenerator('/comics?page={page}'))
-@Common.ChaptersSinglePageCSS('section#section-list-cap div.grid a.group', undefined, ChapterExtractor)
+@Common.ChaptersSinglePageCSS<HTMLAnchorElement>('section#section-list-cap div.grid a.group', undefined, anchor => ({
+    id: anchor.pathname,
+    title: anchor.querySelector<HTMLDivElement>('div#name').innerText.trim()
+}))
 @Common.ImageAjax(true, true)
 export default class extends DecoratableMangaScraper {
 
