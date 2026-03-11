@@ -122,8 +122,6 @@ export class DRMProvider {
         readonly fixedHeaders: RequestInit = {}, readonly fixedUrlParams: Record<string, string> = {}) { }
 
     public async FetchAPI<T extends JSONElement>(endpoint: string, parameters: Record<string, string>, init: RequestInit = { method: 'GET' }): Promise<T> {
-        const request = await this.#CreateRequest(endpoint, init, parameters);
-        return FetchJSON<T>(request);
     }
 
     async #CreateRequest(endpoint: string, init: RequestInit, parameters: Record<string, string>) {
