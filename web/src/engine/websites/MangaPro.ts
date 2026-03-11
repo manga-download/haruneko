@@ -124,11 +124,9 @@ export default class extends DecoratableMangaScraper {
                 (async function () {
                     try {
                         for (let page = 1; ; page++) {
-                            const result = await requestWithTurnstile(
+                            const { data } = await requestWithTurnstile(
                                 "/api/public/series/search?status=approved&limit=50&page=" + page + "&sort=latest"
                             );
-
-                            const data = result.data;
 
                             if (data.length === 0) break;
 
