@@ -240,6 +240,7 @@ export default class extends DecoratableMangaScraper {
                     reject(err);
                 }
             });
+        `;
         const { data: { images: deferredImages, maps } } = await FetchWindowScript<APIResult<DeferredData>>(new Request(chapterUrl), pageScript, 3000, 10_000);
         //const { data: { images: deferredImages, maps } } = await this.FetchAPI<APIResult<DeferredData>>(`./chapter-deferred-media/${chapterUrl.pathname.split('/').at(-2) }?token=${encodeURIComponent(token)}`, this.URI.origin);
 
