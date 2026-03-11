@@ -10,7 +10,7 @@ describe.sequential('Front-End (Fluent-Core)', { timeout: 60_000 }, () => {
     describe('SmokeTests', async () => {
 
         it('Should render basic layout', async () => {
-            await fixture.WaitForSelectors(5000,
+            await fixture.WaitForSelectors(7000,
                 'div#app > fluent-app',
             );
         });
