@@ -11,7 +11,7 @@ type APIResult = [
 ];
 
 @Common.MangaCSS(/^{origin}\/[^/]+/, 'div#manga_right div.title')
-@Common.MangasSinglePagesCSS([ '/reader/series' ], 'div#series_list ul li.manga_block ul li.manga_info div.manga_title a')
+@Common.MangasSinglePageCSS('/reader/series', 'div#series_list ul li.manga_block ul li.manga_info div.manga_title a')
 @Common.ChaptersSinglePageCSS('div.chapter_list ul li div.ch_top a')
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
@@ -35,7 +35,7 @@ export default class extends DecoratableMangaScraper {
         uri = new URL('/reader/c_i', this.URI);
         request = new Request(uri.href, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded'},
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
             body: new URLSearchParams({
                 'info[manga]': chapter.Parent.Identifier.split('/').at(-1),
                 'info[chapter]': chapter.Identifier.split('/').slice(-2)[0],

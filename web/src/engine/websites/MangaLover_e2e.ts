@@ -1,24 +1,22 @@
 ﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'mangalover',
         title: '3asq (مانجا العاشق)'
     },
     container: {
-        url: 'https://3asq.org/manga/gokurakugai/',
-        id: JSON.stringify({ post: '12936', slug: '/manga/gokurakugai/' }),
-        title: 'Gokurakugai'
+        url: 'https://3asq.org/manga/shinobi-goto/',
+        id: JSON.stringify({ post: '18972', slug: '/manga/shinobi-goto/' }),
+        title: 'Shinobi Goto'
     },
     child: {
-        id: '/manga/gokurakugai/1/',
-        title: '1 - مكتب مقاطعة غوكوراكو لحل المشاكل'
+        id: '/manga/shinobi-goto/34/',
+        title: '34 - كُن متأهِّبًا'
     },
     entry: {
-        index: 0,
-        size: 2_536_608,
+        index: 1,
+        size: 2_391_553,
         type: 'image/jpeg'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

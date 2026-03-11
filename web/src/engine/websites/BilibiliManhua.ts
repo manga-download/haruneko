@@ -42,11 +42,16 @@ type APIImageTokens = APIResult<{
     url: string,
     token: string,
     complete_url: string,
+    hit_encrpyt: boolean
 }[]>;
+
+type PageParam = {
+    index: number
+}
 
 export default class extends DecoratableMangaScraper {
 
-    #drm: DRMProvider;
+    #drm: DRMProvider = new DRMProvider();
     private readonly mangasSequentialTaskPool = new TaskPool(1, new RateLimit(4, 1));
     private readonly imageFormat = new Choice('image.format',
         W.Plugin_Settings_ImageFormat,
@@ -60,14 +65,11 @@ export default class extends DecoratableMangaScraper {
     public constructor() {
         super('bilibilimanhua', `哔哩哔哩 漫画 (Bilibili Manhua)`, 'https://manga.bilibili.com', Tags.Language.Chinese, Tags.Media.Manga, Tags.Source.Official);
         this.Settings.imageFormat = this.imageFormat;
+        this.imageTaskPool.RateLimit = new RateLimit(1, 1);
     }
 
     public override get Icon() {
         return icon;
-    }
-
-    public override async Initialize(): Promise<void> {
-        this.#drm = new DRMProvider();
     }
 
     public override ValidateMangaURL(url: string): boolean {
@@ -76,7 +78,7 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
         const { data: { id, title } } = await this.#drm.FetchTwirp<APIChapters>(new URL(url), 'ComicDetail', {
-            comic_id: parseInt(url.match(/\/mc(\d+)/)[1])
+            comic_id: parseInt(url.match(/\/mc(\d+)/).at(1))
         });
         return new Manga(this, provider, id.toString(), title);
     }
@@ -86,7 +88,7 @@ export default class extends DecoratableMangaScraper {
         try {
             const mangaList: Manga[] = [];
             for (let page = 1, run = true; run; page++) {
-                const mangas = await this.mangasSequentialTaskPool .Add(() => this.GetMangasFromPage(page, provider), Priority.Low, cancellator.signal);
+                const mangas = await this.mangasSequentialTaskPool.Add(() => this.GetMangasFromPage(page, provider), Priority.Low, cancellator.signal);
                 mangas.length > 0 ? mangaList.push(...mangas) : run = false;
             }
             return mangaList;
@@ -96,7 +98,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     private async GetMangasFromPage(page: number, provider: MangaPlugin): Promise<Manga[]> {
-        const { data } = await this.#drm.FetchTwirp<APIMangas>(new URL('/classify', this.URI), 'ClassPage', {
+        const { data } = await this.#drm.FetchTwirp<APIMangas>(new URL('/classify?styles=-1&areas=-1&status=-1&prices=-1&orders=0&special=0', this.URI), 'ClassPage', {
             style_id: -1,
             area_id: -1,
             is_free: -1,
@@ -117,22 +119,25 @@ export default class extends DecoratableMangaScraper {
             .map(entry => new Chapter(this, manga, entry.id.toString(), [entry.short_title, entry.title].join(' - ').trim()));
     }
 
-    public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const mangaUrl = new URL(`/detail/mc${chapter.Parent.Identifier}`, this.URI);
-        const { data: { images } } = await this.#drm.FetchTwirp<APIPages>(mangaUrl, 'GetImageIndex', { ep_id: chapter.Identifier });
-        const { data } = await this.#drm.FetchTwirp<APIImageTokens>(mangaUrl, 'ImageToken', {
+    public override async FetchPages(chapter: Chapter): Promise<Page<PageParam>[]> {
+        const chapterUrl = new URL(`/detail/mc${chapter.Parent.Identifier}/${chapter.Identifier}`, this.URI);
+        const { data: { images } } = await this.#drm.FetchTwirp<APIPages>(chapterUrl, 'GetImageIndex', { ep_id: chapter.Identifier });
+        const { data } = await this.#drm.FetchTwirp<APIImageTokens>(chapterUrl, 'ImageToken', {
             m1: await this.#drm.GetPublicKey(),
-            urls: this.#drm.CreateImageLinks(this.URI.origin, this.imageFormat.Value, images),
-        });
-        return data.map(({ complete_url: x, url, token }) => {
+            urls: this.#drm.CreateImageLinks(this.URI.origin, this.imageFormat.Value, images)
+        }, false);
+        return data.map(({ complete_url: x, url, token }, index) => {
             const pageurl = new URL(x ?? `${url}?token=${token}`);
-            pageurl.searchParams.set('code', 'HeartRepo');
-            return new Page(this, chapter, pageurl);
+            pageurl.searchParams.set('code', 'DanmakuInfo');
+            return new Page<PageParam>(this, chapter, pageurl, { index });
         });
     }
 
-    public override async FetchImage(page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
-        const response = await this.imageTaskPool.Add(() => Fetch(new Request(page.Link)), priority, signal);
-        return response.headers.get('Content-Type').startsWith('image/') ? response.blob() : Common.GetTypedData(await this.#drm.ExtractImageData(response));
+    public override async FetchImage(page: Page<PageParam>, priority: Priority, signal: AbortSignal): Promise<Blob> {
+        const chapterUrl = new URL(`/mc${page.Parent.Parent.Identifier}/${page.Parent.Identifier}`, this.URI).href;
+        return this.imageTaskPool.Add(async () => {
+            const blob = await (await Fetch(new Request(page.Link))).blob();
+            return blob.type.startsWith('image/') ? blob : Common.GetTypedData(await this.#drm.FetchImageData(page.Link.href, page.Parameters.index, chapterUrl));
+        }, priority, signal);
     }
 }

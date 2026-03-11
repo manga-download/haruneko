@@ -1,6 +1,6 @@
 ﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'niverafansub',
         title: 'Nivera Fansub'
@@ -13,12 +13,10 @@ const config = {
     child: {
         id: '/manga/xian-chan-nu/101-bolum/',
         title: '101. Bölüm'
-    },
+    }, /* Need Login
     entry: {
         index: 1,
         size: 1_536_881,
         type: 'image/jpeg'
-    }
-};
-
-new TestFixture(config).AssertWebsite();
+    }*/
+}).AssertWebsite();

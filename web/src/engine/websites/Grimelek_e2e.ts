@@ -5,19 +5,18 @@ new TestFixture({
         id: 'grimelek',
         title: 'Grimelek'
     },
-    /* NEED LOGIN FOR EVERYTHING
     container: {
-        url: 'https://grimelek.online/seri/revenge-by-harem/',
-        id: JSON.stringify({ slug: '/seri/revenge-by-harem/' }),
-        title: 'Revenge By Harem'
+        url: 'https://siyahmelek.mom/manga/friends/',
+        id: '/manga/friends/',
+        title: 'Friends'
     },
     child: {
-        id: '/seri/revenge-by-harem/bolum-13/',
-        title: 'Bölüm 13'
+        id: '/manga/friends/bolum-40/',
+        title: 'Bölüm 40'
     },
     entry: {
-        index: 1,
-        size: 2_567_425,
+        index: 2,
+        size: 55_509,
         type: 'image/jpeg'
-    }*/
+    }
 }).AssertWebsite();

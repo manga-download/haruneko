@@ -11,6 +11,7 @@ const fetchApiForbiddenHeaders = [
     'Host',
     'Sec-Fetch-Mode',
     'Sec-Fetch-Dest',
+    'Sec-Fetch-Site'
 ];
 
 async function UpdateCookieHeader(url: string, headers: Headers) {
@@ -51,7 +52,7 @@ function RevealHeaders(headers: chrome.webRequest.HttpHeader[]): chrome.webReque
     return headers;
 }
 
-function ModifyRequestHeaders(details: chrome.webRequest.WebRequestHeadersDetails): chrome.webRequest.BlockingResponse {
+function ModifyRequestHeaders(details: chrome.webRequest.OnBeforeSendHeadersDetails): chrome.webRequest.BlockingResponse {
 
     let headers = RevealHeaders(details.requestHeaders ?? []);
 
@@ -64,7 +65,7 @@ function ModifyRequestHeaders(details: chrome.webRequest.WebRequestHeadersDetail
     };
 }
 
-function ModifyResponseHeaders(details: chrome.webRequest.WebResponseHeadersDetails): chrome.webRequest.BlockingResponse {
+function ModifyResponseHeaders(details: chrome.webRequest.OnHeadersReceivedDetails): chrome.webRequest.BlockingResponse {
     return {
         // remove the `link` header to prevent prefetch/preload and a corresponding warning about 'resource preloaded but not used',
         // especially when scraping with headless requests (see: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Link)
@@ -73,11 +74,12 @@ function ModifyResponseHeaders(details: chrome.webRequest.WebResponseHeadersDeta
 }
 
 class FetchRequest extends Request {
+    readonly #referrer: string = undefined;
+    public override get referrer() { return this.#referrer; }
     constructor(input: URL | RequestInfo, init?: RequestInit) {
-        if(init?.headers) {
-            init.headers = ConcealHeaders(init.headers);
-        }
+        if(init?.headers) init.headers = ConcealHeaders(init.headers);
         super(input, init);
+        if(init?.referrer) this.#referrer = init.referrer;
     }
 }
 

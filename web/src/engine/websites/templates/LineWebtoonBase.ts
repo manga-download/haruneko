@@ -1,6 +1,6 @@
-import { Chapter, DecoratableMangaScraper, type Manga, type MangaPlugin, Page } from '../../providers/MangaPlugin';
+import { DecoratableMangaScraper, type MangaPlugin, type Manga, type Chapter, Page } from '../../providers/MangaPlugin';
 import * as Common from '../decorators/Common';
-import { FetchCSS, FetchWindowScript } from '../../platform/FetchProvider';
+import { FetchWindowScript } from '../../platform/FetchProvider';
 import { Priority } from '../../taskpool/DeferredTask';
 import DeScramble from '../../transformers/ImageDescrambler';
 import { TaskPool } from '../../taskpool/TaskPool';
@@ -76,18 +76,16 @@ function ChapterExtractor(element: HTMLAnchorElement) {
     const chapter = element.querySelector('span.tx');
     let title = chapter ? chapter.textContent.trim() + ' - ' : '';
     title += element.querySelector('span.subj span').textContent.trim();
-    // extrack link from javascript:checkAgeAgreement('path');
-    // But, ' can be in url as %27, its encoded form > we use decodeURIComponent to make sure the regex work
     const id = /'/.test(element.href) ? decodeURIComponent(element.href).match(/'([^']+)'/)[1] : element.pathname + element.search;
     return { id, title };
 }
 
 @Common.MangasNotSupported()
+@Common.ChaptersMultiPageCSS('div.detail_body div.detail_lst ul li > a', Common.PatternLinkGenerator('{id}&page={page}'), 0, ChapterExtractor)
 export class LineWebtoonBase extends DecoratableMangaScraper {
+
     protected mangaRegexp = /[a-z]{2}\/[^/]+\/[^/]+\/list\?title_no=\d+$/;
-    protected queryMangaTitleURI = 'div.info .subj';
-    protected mangaLabelExtractor = Common.ElementLabelExtractor();
-    protected queryChapters = 'div.detail_body div.detail_lst ul li > a';
+    private queryMangaTitleURI = 'div.info .subj';
     protected pageScript = defaultPageScript;
     private readonly interactionTaskPool = new TaskPool(1, RateLimit.PerMinute(30));
 
@@ -96,24 +94,7 @@ export class LineWebtoonBase extends DecoratableMangaScraper {
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
-        return this.interactionTaskPool.Add(async () => Common.FetchMangaCSS.call(this, provider, url, this.queryMangaTitleURI, this.mangaLabelExtractor, true, false), Priority.Normal);
-    }
-
-    public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const chapterList: Chapter[] = [];
-        for (let page = 1, run = true; run; page++) {
-            const chapters = await this.GetChaptersFromPage(manga, page);
-            chapterList.isMissingLastItemFrom(chapters) ? chapterList.push(...chapters) : run = false;
-        }
-        return chapterList.distinct();
-    }
-
-    private async GetChaptersFromPage(manga: Manga, page: number): Promise<Chapter[]> {
-        const data = await this.interactionTaskPool.Add(async () => FetchCSS<HTMLAnchorElement>(new Request(new URL(`${manga.Identifier}&page=${page}`, this.URI)), this.queryChapters), Priority.Normal);
-        return data.map(element => {
-            const { id, title } = ChapterExtractor.call(this, element);
-            return new Chapter(this, manga, id, title);
-        });
+        return this.interactionTaskPool.Add(async () => Common.FetchMangaCSS.call(this, provider, url, this.queryMangaTitleURI, Common.WebsiteInfoExtractor({ includeSearch: true })), Priority.Normal);
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {

@@ -1,19 +1,14 @@
 import * as puppeteer from 'puppeteer-core';
 import { AppURL } from './PuppeteerGlobal';
-import type { Evasion } from './AutomationEvasions';
 
 export class PuppeteerFixture {
 
-    static #browser = puppeteer.connect({ browserWSEndpoint: process.env.browserWS });
+    static #browser = puppeteer.connect({ browserWSEndpoint: process.env.browserWS, defaultViewport: null });
     static #page = this.#browser.then(browser => browser.pages()).then(async pages => {
         const page = pages.find(page => page.url() === AppURL);
-        await page.setCacheEnabled(false);
+        await page!.setCacheEnabled(false);
         return page;
     });
-
-    private GetBrowser() {
-        return PuppeteerFixture.#browser;
-    }
 
     public GetPage() {
         return PuppeteerFixture.#page;
@@ -28,15 +23,5 @@ export class PuppeteerFixture {
         });
     }
 
-    protected async OpenPage(url: string, ...evasions: Evasion[]): Promise<puppeteer.Page> {
-        const page = await (await this.GetBrowser()).newPage();
-        await Promise.all(evasions.map(setupEvasion => setupEvasion(page)));
-        await page.setCacheEnabled(false);
-        await page.goto(url);
-        return page;
-    }
-
-    protected EvaluateHandle: typeof puppeteer.Page.prototype.evaluateHandle = async (pageFunction, ...args) => {
-        return (await PuppeteerFixture.#page)!.evaluateHandle(pageFunction, ...args);
-    }
+    protected EvaluateHandle: typeof puppeteer.Page.prototype.evaluateHandle = async (pageFunction, ...args) => (await PuppeteerFixture.#page)!.evaluateHandle(pageFunction, ...args);
 }

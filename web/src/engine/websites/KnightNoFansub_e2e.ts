@@ -1,12 +1,12 @@
 ﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'knightnofansub',
         title: 'Knight no Fansub'
     },
     container: {
-        url: 'https://kns.wordoco.com/sr/solo-subo-de-nivel/',
+        url: 'https://lectorknight.com/sr/solo-subo-de-nivel/',
         id: JSON.stringify({ post: '1876', slug: '/sr/solo-subo-de-nivel/' }),
         title: 'Solo Level'
     },
@@ -15,10 +15,8 @@ const config = {
         title: 'Side Story Capítulo 21 - Fin'
     },
     entry: {
-        index: 1,
-        size: 1_238_366,
+        index: 25,
+        size: 228_367,
         type: 'image/jpeg'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

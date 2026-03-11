@@ -6,17 +6,17 @@ new TestFixture({
         title: 'Arven Scans'
     },
     container: {
-        url: 'https://arvencomics.com/series/baeac6b0188/',
-        id: '/series/baeac6b0188/',
-        title: 'Solo Necromancy'
+        url: 'https://arvencomics.com/comic/the-only-one-with-level-down-the-strongest-awakened/',
+        id: JSON.stringify({ post: '511', slug: '/comic/the-only-one-with-level-down-the-strongest-awakened/'}),
+        title: 'The Only One with Level Down: The Strongest Awakened'
     },
     child: {
-        id: '/chapter/baeac6b0188-a37a0a5eeb0/',
-        title: 'Chapter 146'
+        id: '/comic/the-only-one-with-level-down-the-strongest-awakened/9/',
+        title: '9'
     },
     entry: {
-        index: 1,
-        size: 250_796,
-        type: 'image/webp'
+        index: 0,
+        size: 699_255,
+        type: 'image/jpeg'
     }
 }).AssertWebsite();

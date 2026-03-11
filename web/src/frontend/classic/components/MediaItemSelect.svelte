@@ -34,6 +34,8 @@
     } from '../../../engine/providers/MediaPlugin';
     import { FlagType } from '../../../engine/ItemflagManager';
     import { resizeBar } from '../lib/actions';
+    import { Key as GlobalKey } from '../../../engine/SettingsGlobal';
+    import type { Directory } from '../../../engine/SettingsManager';
 
     let items: MediaContainer<MediaItem>[] = $state([]);
     let filteredItems: MediaContainer<MediaItem>[] = $state([]);
@@ -127,11 +129,10 @@
     let multipleSelectionDragTo: number = -1;
     let selectedDragItems: MediaContainer<MediaItem>[] = [];
     let contextItem: MediaContainer<MediaItem> = $state();
-    let contextMenuOpen = $state(false);
-    $effect(() => {
-        if (!contextMenuOpen) contextItem = null;
-    });
 
+    function onContextMenuClose() {
+        contextItem = null;
+    }
     const mouseHandler = (item: MediaContainer<MediaItem>) => (event: any) => {
         if (event.button === 2) {
             contextItem = item;
@@ -219,12 +220,15 @@
         }
     };
 
-    function downloadItems(items: MediaContainer<MediaItem>[]) {
-        items.forEach((item) => {
-            window.HakuNeko.DownloadManager.Enqueue(
-                item as StoreableMediaContainer<MediaItem>,
-            );
-        });
+    async function downloadItems(items: MediaContainer<MediaItem>[]) {
+        try {
+            await HakuNeko.SettingsManager.OpenScope().Get<Directory>(GlobalKey.MediaDirectory).EnsureAccess();
+        } catch(error) {
+            // TODO: Use appropriate error visualization ...
+            alert(error?.message ?? error);
+            return;
+        }
+        items.forEach(item => window.HakuNeko.DownloadManager.Enqueue(item as StoreableMediaContainer<MediaItem>));
     }
 
     function reverseSort() {
@@ -233,7 +237,7 @@
 </script>
 
 {#if filteredItems.length > 0}
-    <ContextMenu bind:open={contextMenuOpen} target={[itemsdiv]}>
+    <ContextMenu target={[itemsdiv]} onclose={onContextMenuClose}>
         {#if contextItem}
             <ContextMenuOption
                 labelText="Download - {contextItem?.Title}"

@@ -24,7 +24,7 @@
 
     function copyErrorToClipBoard(task: DownloadTask) {
         let message = `${task.Media.Title}\r\n`;
-        message += task.Errors.map((error) => {
+        message += task.Errors.Value.map((error) => {
             return `${error.message}\r\n > ${error.stack}`;
         }).join('\r\n-------------------\r\n');
 
@@ -125,7 +125,7 @@
                 ></CopyButton>
                 <h4>{taskerror.Media.Title}</h4>
             </div>
-            {#each taskerror.Errors as error}
+            {#each taskerror.Errors.Value as error}
                 <div>{error.message}</div>
                 <pre>{error.stack}</pre>
                 <hr />

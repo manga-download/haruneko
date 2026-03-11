@@ -1,24 +1,22 @@
 import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'setsuscans',
         title: 'SetsuScans'
     },
     container: {
-        url: 'https://setsuscans.com/manga/the-story-of-this-scary-consignee-girl/',
-        id: JSON.stringify({ post: '163', slug: '/manga/the-story-of-this-scary-consignee-girl/' }),
-        title: 'The Story of this Scary Consignee Girl'
+        url: 'https://manga.saytsu.com/manga/the-story-of-a-scary-consignee-girl',
+        id: 'the-story-of-a-scary-consignee-girl',
+        title: 'The Story of a Scary Consignee Girl'
     },
     child: {
-        id: '/manga/the-story-of-this-scary-consignee-girl/chapter-1/',
+        id: 'chapter-1',
         title: 'Chapter 1'
     },
     entry: {
         index: 0,
-        size: 819_373,
+        size: 1_712_149,
         type: 'image/jpeg'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

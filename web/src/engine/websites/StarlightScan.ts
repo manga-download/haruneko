@@ -11,7 +11,7 @@ const chapterScript = `[...document.querySelectorAll('a.mangaDetails__episodeTit
 `;
 
 @Common.MangaCSS(/^{origin}\/mangas\/[^/]+(\/)?$/, 'h1.mangaDetails__title')
-@Common.MangasMultiPageCSS('/mangas/?page-current={page}', 'a.bulkMangaCard__title')
+@Common.MangasMultiPageCSS('a.bulkMangaCard__title', Common.PatternLinkGenerator('/mangas/?page-current={page}'))
 @Common.ChaptersSinglePageJS(chapterScript, 500)
 @Common.PagesSinglePageCSS('div.scanImagesContainer img')
 @Common.ImageAjax()
@@ -24,5 +24,4 @@ export default class extends DecoratableMangaScraper {
     public override get Icon() {
         return icon;
     }
-
 }

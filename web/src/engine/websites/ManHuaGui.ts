@@ -19,7 +19,7 @@ const queryPagesScript = `
 `;
 
 @Common.MangaCSS(/^https?:\/\/(?:www\.)?(mhgui|manhuagui).com\/comic\/\d+\/$/, SinMH.queryManga)
-@Common.MangasNotSupported()
+@Common.MangasMultiPageCSS(SinMH.queryMangas, Common.PatternLinkGenerator('/list/index_p{page}.html'))
 @SinMH.ChaptersSinglePageJS(SinMH.queryChaptersScript, 'div.chapter-list ul li a')
 @Common.PagesSinglePageJS(queryPagesScript, 1500)
 @Common.ImageAjax()

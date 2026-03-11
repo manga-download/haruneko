@@ -6,18 +6,17 @@ new TestFixture({
         title: 'KaliScan'
     },
     container: {
-        url: 'https://kaliscan.io/manga/35647-taoist-master-hoguk',
-        id: '/manga/35647-taoist-master-hoguk',
-        title: 'Taoist Master Hoguk'
+        url: 'https://kaliscan.io/manga/43342-i-can-have-infinite-epiphanies',
+        id: '/manga/43342-i-can-have-infinite-epiphanies',
+        title: 'I Can Have Infinite Epiphanies'
     },
     child: {
-        id: '/manga/35647-taoist-master-hoguk/chapter-67',
-        title: 'Chapter 67',
-        timeout: 10000
+        id: '/manga/43342-i-can-have-infinite-epiphanies/chapter-115',
+        title: 'Chapter 115',
     },
     entry: {
         index: 0,
-        size: 237_942,
+        size: 423_424,
         type: 'image/webp'
     }
 }).AssertWebsite();

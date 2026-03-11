@@ -1,6 +1,6 @@
 import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'kissmangain',
         title: 'Kissmanga'
@@ -12,13 +12,11 @@ const config = {
     },
     child: {
         id: '/kissmanga/one-piece-kpp/chapter-1-romance-dawn/',
-        title: 'Chapter 1  Romance Dawn'
+        title: 'Chapter 1 Romance Dawn'
     },
     entry: {
         index: 0,
         size: 167_502,
         type: 'image/jpeg'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

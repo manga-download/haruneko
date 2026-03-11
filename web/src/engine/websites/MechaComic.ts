@@ -1,26 +1,33 @@
 import { Tags } from '../Tags';
 import icon from './MechaComic.webp';
-import { Chapter, DecoratableMangaScraper, Page, type Manga } from '../providers/MangaPlugin';
-import * as Common from './decorators/Common';
-import { Fetch, FetchCSS, FetchJSON } from '../platform/FetchProvider';
-import type { Priority } from '../taskpool/DeferredTask';
 import { GetBytesFromHex } from '../BufferEncoder';
+import type { Priority } from '../taskpool/DeferredTask';
+import { Fetch, FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
+import { DecoratableMangaScraper, type Chapter, Page } from '../providers/MangaPlugin';
+import * as Common from './decorators/Common';
 
 type ContentData = {
-    images: Record<string, ImageData[]>;
-}
+    images: Record<string, { src: string }[]>;
+};
 
-type ImageData = {
-    src: string,
-    format : string
-}
+type PageParameters = {
+    keyData?: string;
+};
 
-type CryptoKey = {
-    cryptoKey : string
+function ChapterInfoExtractor(anchor: HTMLAnchorElement) {
+    const div = anchor.closest('div.p-chapterInfo');
+    return {
+        id: anchor.pathname,
+        title: [
+            div.querySelector('.p-chapterList_no').childNodes.item(0).textContent.trim(),
+            div.querySelector('.p-chapterList_name').textContent.trim(),
+        ].filter(entry => entry).join(' - ').trim()
+    };
 }
 
 @Common.MangaCSS(/^{origin}\/books\/\d+$/, 'div.p-bookInfo_title h1')
-@Common.MangasMultiPageCSS('/free/list?page={page}', 'div.p-book_detail dt.p-book_title a')
+@Common.MangasMultiPageCSS('div.p-book_detail dt.p-book_title a', Common.PatternLinkGenerator('/free/list?page={page}'))
+@Common.ChaptersMultiPageCSS('ol.p-chapterList li div.p-chapterInfo a.p-btn-chapter:not([href*="register"])', Common.PatternLinkGenerator('{id}?page={page}'), 0, ChapterInfoExtractor)
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
@@ -31,67 +38,39 @@ export default class extends DecoratableMangaScraper {
         return icon;
     }
 
-    public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const chapterList : Chapter[] = [];
-        for (let page = 1, run = true; run; page++) {
-            const chapters = await this.GetChaptersFromPage(manga, page);
-            chapters.length > 0 ? chapterList.push(...chapters) : run = false;
-        }
-        return chapterList;
-    }
-
-    private async GetChaptersFromPage(manga: Manga, page: number): Promise<Chapter[]> {
-        const data = await FetchCSS(new Request(new URL(`${manga.Identifier}?page=${page}`, this.URI)), 'li.p-chapterList_item div.p-chapterInfo-comic');
-        return data.map(chapter => {
-            const title = [
-                Common.ElementLabelExtractor('span').call(this, chapter.querySelector('.p-chapterList_no')).trim(),
-                chapter.querySelector('.p-chapterList_name').textContent.trim()]
-                .join(' ').trim();
-            const link = chapter.querySelector<HTMLAnchorElement>('a');
-            return new Chapter(this, manga, link.pathname, title);
-        });
+    public override async Initialize(): Promise<void> {
+        return FetchWindowScript(new Request(this.URI), `window.cookieStore.set('_confirmed_adult', '1')`);
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const chapterUrl = new URL(chapter.Identifier, this.URI);
-        const response = await Fetch(new Request(chapterUrl));
-        const url = response.redirected ? new URL(response.url) : chapterUrl;
+        const response = await Fetch(new Request(new URL(chapter.Identifier, this.URI)));
+        const params = new URL(response.url).searchParams;
+        const cryptoKeyURL = params.get('cryptokey');
+        const baseURL = params.get('directory');
+        const ver = params.get('ver');
+        const keyData = cryptoKeyURL ? await (await Fetch(new Request(new URL(cryptoKeyURL, this.URI)))).text() : null;
+        const contentURI = new URL(params.get('contents') || params.get('contents_vertical') || params.get('contents_page'), response.url);
+        contentURI.searchParams.set('ver', ver);
+        const { images } = await FetchJSON<ContentData>(new Request(contentURI));
 
-        const rasterScriptURL = url.searchParams.get('contents');
-        const verticalScriptURL = url.searchParams.get('contents_vertical');
-        const pageScriptURL = url.searchParams.get('contents_page');
-        const cryptokeyURL = url.searchParams.get('cryptokey');
-        const baseUrl = url.searchParams.get('directory');
-        const ver = url.searchParams.get('ver');
-
-        const cryptoKey = cryptokeyURL ? await (await Fetch(new Request(new URL(cryptokeyURL, this.URI)))).text() : '';
-
-        const contentUrl = new URL(rasterScriptURL || verticalScriptURL || pageScriptURL, chapterUrl);
-        contentUrl.searchParams.set('ver', ver);
-        const { images } = await FetchJSON<ContentData>(new Request(contentUrl));
-        return Object.values(images).map(page => {
-            const url = new URL(page.shift().src, baseUrl);
-            url.searchParams.set('ver', ver);
-            return new Page<CryptoKey>(this, chapter, url, { cryptoKey });
+        return Object.values(images).map(srcset => {
+            const uri = new URL(srcset.at(0).src, baseURL);
+            uri.searchParams.set('ver', ver);
+            return new Page<PageParameters>(this, chapter, uri, { keyData });
         });
     }
 
-    public override async FetchImage(page: Page<CryptoKey>, priority: Priority, signal: AbortSignal): Promise<Blob> {
-        const blob = await Common.FetchImageAjax.call(this, page, priority, signal);
-        const cryptoKey = page.Parameters.cryptoKey;
-        return cryptoKey ? await DecryptImage(blob, cryptoKey) : blob;
+    public override async FetchImage(page: Page<PageParameters>, priority: Priority, signal: AbortSignal): Promise<Blob> {
+        const { keyData } = page.Parameters;
+        const response = await this.imageTaskPool.Add(() => Fetch(new Request(page.Link, { signal })), priority, signal);
+        return keyData ? this.DecryptImage(await response.arrayBuffer(), keyData) : response.blob();
     }
-}
 
-async function DecryptImage(blob: Blob, cryptoKey: string): Promise<Blob> {
-    const data = new Uint8Array(await blob.arrayBuffer());
-    const cipherText = data.slice(16);
-    const iv = data.slice(0, 16);
-    const aesKey = await crypto.subtle.importKey('raw', GetBytesFromHex(cryptoKey), 'AES-CBC', false, ['decrypt']);
-    const decrypted = await crypto.subtle.decrypt({
-        name: 'AES-CBC',
-        iv: iv
-    }, aesKey, cipherText);
-
-    return Common.GetTypedData(decrypted);
+    private async DecryptImage(encrypted: ArrayBuffer, keyData: string): Promise<Blob> {
+        const data = new Uint8Array(encrypted);
+        const algorithm = { name: 'AES-CBC', iv: data.slice(0, 16) };
+        const key = await crypto.subtle.importKey('raw', GetBytesFromHex(keyData), algorithm, false, ['decrypt']);
+        const decrypted = await crypto.subtle.decrypt(algorithm, key, data.slice(16));
+        return Common.GetTypedData(decrypted);
+    }
 }

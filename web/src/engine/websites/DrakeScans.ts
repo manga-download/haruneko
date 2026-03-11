@@ -11,8 +11,8 @@ import * as Common from './decorators/Common';
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
-    public constructor() {
-        super('drakescans', 'DrakeScans', 'https://drakecomic.org', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.English, Tags.Source.Scanlator);
+    public constructor () {
+        super('drakescans', 'Drake Scans', 'https://drakecomic.org', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.English, Tags.Source.Scanlator);
     }
 
     public override get Icon() {

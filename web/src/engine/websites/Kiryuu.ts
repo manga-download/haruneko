@@ -1,21 +1,20 @@
 import { Tags } from '../Tags';
+import { FetchWindowScript } from '../platform/FetchProvider';
 import icon from './Kiryuu.webp';
-import { DecoratableMangaScraper } from '../providers/MangaPlugin';
-import * as MangaStream from './decorators/WordPressMangaStream';
-import * as Common from './decorators/Common';
+import NatsuID from './NatsuID';
 
-@MangaStream.MangaCSS(/^{origin}\/manga\/[^/]+\/$/)
-@MangaStream.MangasSinglePageCSS()
-@MangaStream.ChaptersSinglePageCSS()
-@MangaStream.PagesSinglePageCSS()
-@Common.ImageAjax(true)
-export default class extends DecoratableMangaScraper {
+export default class extends NatsuID {
 
     public constructor() {
-        super('kiryuu', 'Kiryuu', 'https://kiryuu01.com', Tags.Media.Manga, Tags.Language.Indonesian, Tags.Source.Aggregator);
+        super('kiryuu', 'Kiryuu', 'https://v1.kiryuu.to', [Tags.Media.Manga, Tags.Language.Indonesian, Tags.Source.Aggregator, Tags.Accessibility.DomainRotation]);
     }
 
     public override get Icon() {
         return icon;
+    }
+
+    public override async Initialize(): Promise<void> {
+        this.URI.href = await FetchWindowScript(new Request(this.URI), 'window.location.origin;', 0);
+        console.log(`Assigned URL '${this.URI}' to ${this.Title}`);
     }
 }

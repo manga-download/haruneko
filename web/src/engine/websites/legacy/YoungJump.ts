@@ -7,7 +7,7 @@ import { DecoratableMangaScraper } from '../../providers/MangaPlugin';
 
 export default class extends DecoratableMangaScraper {
 
-    public constructor() {
+    public constructor () {
         super('youngjump', `ヤングジャンプ / ウルトラジャンプ (young jump/ultra jump)`, 'https://www.youngjump.world' /*, Tags.Language.English, Tags ... */);
     }
 
@@ -61,6 +61,5 @@ class YoungJump extends SpeedBinb {
 
         return chapters;
     }
-
 }
 */

@@ -21,12 +21,13 @@ const manifest = {
     url: pkgConfig.url,
     'node-remote': [
         'http://localhost/*',
-        'https://*.pages.dev/*',
+        'https://localhost/*',
         'https://app.hakuneko.ovh/*',
         'https://app.hakuneko.download/*',
+        'https://*.hakuneko.workers.dev/*',
         `${new URL(pkgConfig.url).origin}/*`,
     ],
-    'chromium-args': null,
+    'user-data-dir': null,
     'user-agent': targetConfig['user-agent'] ?? null,
     dependencies: pkgConfig.dependencies
 };

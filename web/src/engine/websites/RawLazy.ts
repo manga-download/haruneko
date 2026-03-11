@@ -1,18 +1,24 @@
-﻿import { Tags } from '../Tags';
+import { Tags } from '../Tags';
 import icon from './RawLazy.webp';
-import { DecoratableMangaScraper, Manga, type MangaPlugin, type MangaScraper } from '../providers/MangaPlugin';
+import { DecoratableMangaScraper, Manga, type MangaPlugin } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import { FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
 
-function MangaLabelExtractor(element: HTMLElement) {
-    const text = element instanceof HTMLAnchorElement ? element.text : element.textContent.split('|')[0].trim();
+function CleanupTitle(text: string) {
     return text.replace(/\(Raw.*Free\)/i, '').trim();
 }
 
-function ChapterExtractor(this: MangaScraper, anchor: HTMLAnchorElement) {
+function MangaLinkExtractor(title: HTMLTitleElement, uri: URL) {
+    return {
+        id: uri.pathname,
+        title: CleanupTitle(title.innerText.split('|')[0].trim()),
+    };
+}
+
+function ChapterInfoExtractor(anchor: HTMLAnchorElement) {
     return {
         id: anchor.pathname,
-        title: anchor.querySelector('span').textContent.trim()
+        title: anchor.querySelector<HTMLSpanElement>('span').innerText.trim()
     };
 }
 
@@ -20,14 +26,14 @@ type APIResult = {
     mes: string;
 }
 
-@Common.MangaCSS(/^{origin}\/manga-lazy\/[^/]+\/$/, 'title', MangaLabelExtractor)
-@Common.ChaptersSinglePageCSS('div.chapters-list a', ChapterExtractor)
+@Common.MangaCSS(/^{origin}\/manga-lazy\/[^/]+\/$/, 'title', MangaLinkExtractor)
+@Common.ChaptersSinglePageCSS('div.chapters-list a', undefined, ChapterInfoExtractor)
 @Common.PagesSinglePageCSS('.chapter_popup img')
 @Common.ImageAjax(true)
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('rawlazy', 'RawLazy', 'https://rawlazy.to', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Japanese, Tags.Source.Aggregator);
+        super('rawlazy', 'RawLazy', 'https://rawlazy.io', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Japanese, Tags.Source.Aggregator);
     }
 
     public override get Icon() {
@@ -66,6 +72,6 @@ export default class extends DecoratableMangaScraper {
         const { mes: html } = await FetchJSON<APIResult>(request);
         const dom = new DOMParser().parseFromString(html, 'text/html');
         const links = [...dom.querySelectorAll<HTMLAnchorElement>('div.entry-tag h2 a')];
-        return links.map(link => new Manga(this, provider, link.pathname, MangaLabelExtractor.call(this, link)));
+        return links.map(link => new Manga(this, provider, link.pathname, CleanupTitle(link.text)));
     }
 }

@@ -6,13 +6,13 @@ import * as Common from './decorators/Common';
 
 @Madara.MangaCSS(/^{origin}\/manga\/[^/]+\/$/, 'div.post-title h1')
 @Madara.MangasMultiPageAJAX()
-@Madara.ChaptersSinglePageAJAXv1()
+@Madara.ChaptersSinglePageAJAXv2()
 @Madara.PagesSinglePageCSS()
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('mangakiss', 'Mangakiss', 'https://mangakiss.org', Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Language.English);
+        super('mangakiss', 'Mangakiss', 'https://mangakiss.org', Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Language.English, Tags.Source.Aggregator);
     }
 
     public override get Icon() {

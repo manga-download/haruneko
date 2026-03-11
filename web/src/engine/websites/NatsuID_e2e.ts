@@ -1,24 +1,22 @@
 ﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'natsuid',
         title: 'NatsuID'
     },
     container: {
-        url: 'https://natsu.id/manga/99-reinforced-wooden-stick/',
-        id: '/manga/99-reinforced-wooden-stick/',
-        title: '+99 Reinforced Wooden Stick'
+        url: 'https://natsu.tv/manga/spare-me-great-lord/',
+        id: '/manga/spare-me-great-lord/',
+        title: 'Spare Me, Great Lord!'
     },
     child: {
-        id: '/99-reinforced-wooden-stick-chapter-133/',
-        title: 'Chapter 133'
+        id: '/manga/spare-me-great-lord/chapter-705.120694/',
+        title: 'Chapter 705'
     },
     entry: {
-        index: 1,
-        size: 132_617,
-        type: 'image/jpeg'
+        index: 0,
+        size: 25_156,
+        type: 'image/webp'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

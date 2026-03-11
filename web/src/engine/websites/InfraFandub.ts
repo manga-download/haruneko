@@ -6,7 +6,7 @@ import * as Common from './decorators/Common';
 
 @Madara.MangaCSS(/^{origin}\/manga\/[^/]+\/$/, 'meta[property="og:title"]:not([content*="Infra Fandub"])')
 @Madara.MangasMultiPageAJAX()
-@Madara.ChaptersSinglePageAJAXv2()
+@Madara.ChaptersSinglePageCSS('a.chapter-item', (anchor: HTMLAnchorElement) => ({ id: anchor.pathname, title: anchor.querySelector<HTMLSpanElement>('span.chapter-number').textContent.trim() }))
 @Madara.PagesSinglePageCSS()
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {

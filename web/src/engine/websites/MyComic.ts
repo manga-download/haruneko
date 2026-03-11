@@ -5,19 +5,13 @@ import * as Common from './decorators/Common';
 import { FetchRegex } from '../platform/FetchProvider';
 
 type JSONChapter = {
-    id: string,
-    title: string
-}
-
-function MangaExtractor(element: HTMLDivElement) {
-    return {
-        id: element.querySelector<HTMLAnchorElement>('a').pathname,
-        title: element.querySelector<HTMLDivElement>('div[data-flux-subheading]').textContent.trim()
-    };
-}
+    id: string;
+    title: string;
+};
 
 @Common.MangaCSS(/^{origin}\/comics\/\d+$/, 'div[data-flux-breadcrumbs] > div:last-of-type')
-@Common.MangasMultiPageCSS('/comics?page={page}', 'div.grid div.group.relative', 1, 1, 0, MangaExtractor)
+@Common.MangasMultiPageCSS('div.grid div.group.relative', Common.PatternLinkGenerator('/comics?page={page}'), 0,
+    element => ({ id: element.querySelector<HTMLAnchorElement>('a').pathname, title: element.querySelector<HTMLDivElement>('div[data-flux-subheading]').textContent.trim() }))
 @Common.PagesSinglePageCSS('img.page')
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
@@ -35,9 +29,8 @@ export default class extends DecoratableMangaScraper {
         const matchedStringsArray = await FetchRegex(new Request(new URL(manga.Identifier, this.URI)), /chapters\s*:\s*(\[.*\])/g);
         for (const strMatch of matchedStringsArray) {
             const chapters: JSONChapter[] = JSON.parse(strMatch);
-            result.push(...chapters.map(chapter => new Chapter(this, manga, `/chapters/${chapter.id}`, chapter.title.trim())));
+            result.push(...chapters.map(({ id, title }) => new Chapter(this, manga, `/chapters/${id}`, title.trim())));
         }
         return result;
     }
-
 }

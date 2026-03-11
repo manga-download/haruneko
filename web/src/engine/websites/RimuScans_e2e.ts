@@ -1,24 +1,22 @@
-﻿import { TestFixture } from '../../../test/WebsitesFixture';
+import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture( {
     plugin: {
         id: 'rimuscans',
         title: 'RimuScans'
     },
     container: {
-        url: 'https://rimuscans.fr/manga/bones/',
-        id: '/manga/bones/',
-        title: 'Bones'
+        url: 'https://rimu-scans.fr/manga/top-tier-providence',
+        id: 'top-tier-providence',
+        title: 'Top Tier Providence'
     },
     child: {
-        id: '/bones-chapitre-1/',
+        id: 'cmjvpdto90b0x1455jqyq4g0e',
         title: 'Chapitre 1'
     },
     entry: {
-        index: 1,
-        size: 1_963_861,
+        index: 0,
+        size: 282_827,
         type: 'image/jpeg'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

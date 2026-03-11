@@ -13,7 +13,7 @@ function PageExtractor(element: HTMLDivElement) {
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
-    public constructor() {
+    public constructor () {
         super('acgn', '動漫戲說(ACGN.cc) - 免費線上漫畫,遊戲', 'https://comic.acgn.cc', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Chinese, Tags.Source.Aggregator);
     }
 
@@ -24,10 +24,9 @@ export default class extends DecoratableMangaScraper {
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
         const mangasList: Manga[] = [];
         for (let category = 1; category <= 34; category++) {
-            const mangas = await Common.FetchMangasMultiPageCSS.call(this, provider, `/cate-${category}.htm?page={page}`, 'ul#display div.list_r a');
+            const mangas = await Common.FetchMangasMultiPageCSS.call(this, provider, 'ul#display div.list_r a', Common.PatternLinkGenerator(`/cate-${category}.htm?page={page}`));
             mangasList.push(...mangas);
         }
         return mangasList.distinct();
     }
-
 }

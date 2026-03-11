@@ -1,4 +1,4 @@
-﻿import { TestFixture } from '../../../test/WebsitesFixture';
+import { TestFixture } from '../../../test/WebsitesFixture';
 
 new TestFixture({
     plugin: {
@@ -6,17 +6,17 @@ new TestFixture({
         title: 'Ikigai Mangas'
     },
     container: {
-        url: 'https://visualikigai.colombiasinpalabras.com/series/el-sacerdote-sanador-del-sol/',
-        id: '/series/el-sacerdote-sanador-del-sol/',
-        title: 'El Sacerdote Sanador del Sol'
+        url: 'https://zonaikigai.reinopromaster.com/series/jinx-manhwa/',
+        id: '/series/jinx-manhwa/',
+        title: 'Jinx'
     },
     child: {
-        id: '/capitulo/917826995654492162/',
-        title: 'Capítulo 68'
+        id: '/capitulo/1097548914620071937/',
+        title: 'Capítulo 74'
     },
     entry: {
-        index: 0,
-        size: 689_586,
-        type: 'image/webp'
+        index: 13,
+        size: 881_469,
+        type: 'image/jpeg'
     }
 }).AssertWebsite();

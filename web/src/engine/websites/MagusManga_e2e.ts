@@ -1,5 +1,4 @@
-﻿/* NW.js crash on website initialize => CloudFlare
-import { TestFixture } from '../../../test/WebsitesFixture';
+﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
 new TestFixture({
     plugin: {
@@ -7,18 +6,17 @@ new TestFixture({
         title: 'MagusManga'
     },
     container: {
-        url: 'https://magustoon.net/series/01536939fbb/',
-        id: '/series/01536939fbb/',
-        title: 'I Became A Level 999 Mastermind Demon King'
+        url: 'https://magustoon.org/series/the-merman-trapped-in-my-lake',
+        id: '206',
+        title: 'The Merman Trapped in My Lake'
     },
     child: {
-        id: '/chapter/01536939fbb-b99c3c5ce14/',
-        title: 'Chapter 25'
+        id: '/series/the-merman-trapped-in-my-lake/chapter-1',
+        title: 'Chapter 1 - Chapter 1'
     },
     entry: {
-        index: 1,
-        size: 784_872,
+        index: 12,
+        size: 156_884,
         type: 'image/jpeg'
     }
 }).AssertWebsite();
-*/

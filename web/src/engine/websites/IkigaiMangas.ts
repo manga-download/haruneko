@@ -1,42 +1,41 @@
 import { Tags } from '../Tags';
 import icon from './IkigaiMangas.webp';
-import { Chapter, DecoratableMangaScraper, type Manga } from '../providers/MangaPlugin';
+import { FetchWindowScript } from '../platform/FetchProvider';
+import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { FetchCSS } from '../platform/FetchProvider';
 
 // TODO: Add Novel support
-function MangaInfoExtractor(anchor: HTMLAnchorElement) {
-    return {
+
+function CreateInfoExtractor(query: string) {
+    return (anchor: HTMLAnchorElement) => ({
         id: anchor.pathname,
-        title: anchor.querySelector<HTMLHeadingElement>('h2.font-semibold').innerText.trim()
-    };
+        title: anchor.querySelector<HTMLHeadingElement>(query).innerText.trim(),
+    });
 }
 
-@Common.MangaCSS(/^{origin}\/series\/[^/]+\/$/, 'article > img', (element: HTMLImageElement) => element.alt.trim())
-@Common.MangasMultiPageCSS('/series/?pagina={page}', 'section ul.grid li > a', 1, 1, 0, MangaInfoExtractor)
-@Common.PagesSinglePageCSS('div.w-full img[alt*="Page"]')
+@Common.MangaCSS<HTMLImageElement>(/^{origin}\/series\/[^/]+\/$/, 'article figure > img', (img, uri) => ({ id: uri.pathname, title: img.alt.trim() }))
+@Common.MangasMultiPageCSS('section ul.grid li > a', Common.PatternLinkGenerator('/series/?pagina={page}'), 0, CreateInfoExtractor('h3.font-semibold'))
+@Common.ChaptersMultiPageCSS('ul li.w-full a', Common.PatternLinkGenerator('{id}?pagina={page}'), 0, CreateInfoExtractor('h3.card-title'))
+@Common.PagesSinglePageCSS('section.container div.img img[alt*="Página"]') // FIXME
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('ikigaimangas', 'Ikigai Mangas', 'https://visualikigai.colombiasinpalabras.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Spanish, Tags.Source.Aggregator);
+        super('ikigaimangas', 'Ikigai Mangas', 'https://zonaikigai.reinopromaster.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Spanish, Tags.Source.Aggregator, Tags.Accessibility.DomainRotation);
     }
 
     public override get Icon() {
         return icon;
     }
 
-    public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const chapterList: Chapter[] = [];
-        for (let page = 1, run = true; run; page++) {
-            const chapters = await this.GetChaptersFromPage(manga, page);
-            chapters.length > 0 ? chapterList.push(...chapters) : run = false;
-        }
-        return chapterList;
-    }
-
-    private async GetChaptersFromPage(manga: Manga, page: number): Promise<Chapter[]>{
-        const data = await FetchCSS<HTMLAnchorElement>(new Request(new URL(`${manga.Identifier}?pagina=${page}`, this.URI)), 'ul li.w-full a');
-        return data.map(chapter => new Chapter(this, manga, chapter.pathname, chapter.querySelector('h3.font-semibold').textContent.trim()));
+    public override async Initialize(): Promise<void> {
+        /*
+        this.URI.href = await FetchWindowScript(new Request('https://ikigaimangas.com'), `new Promise(resolve => {
+            window.open = (url, target) => resolve(url);
+            document.querySelectorAll('div[' + CSS.escape('on:click') + ']').forEach(div => div.click());
+        })`, 0);
+        */
+        this.URI.href = await FetchWindowScript(new Request('https://visualikigai.com'), `window.cookieStore.set('nsfw-mode', 'true'); window.location.origin;`, 0);
+        console.log(`Assigned URL '${this.URI}' to ${this.Title}`);
     }
 }

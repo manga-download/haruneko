@@ -6,7 +6,7 @@ new TestFixture({
         title: 'MangaLivre'
     },
     container: {
-        url: 'https://mangalivre.ru/manga/solo-max-level-newbie/',
+        url: 'https://mangalivre.tv/manga/solo-max-level-newbie/',
         id: '/manga/solo-max-level-newbie/',
         title: 'Solo Max-Level Newbie'
     },

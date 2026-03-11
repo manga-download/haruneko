@@ -1,6 +1,6 @@
-import { TestFixture, type Config } from '../../../test/WebsitesFixture';
+import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config: Config = {
+new TestFixture({
     plugin: {
         id: 'lelscanvf',
         title: 'LELSCAN-VF'
@@ -20,6 +20,4 @@ const config: Config = {
         size: 126_472,
         type: 'image/webp'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

@@ -9,23 +9,23 @@ import DeScramble from '../transformers/ImageDescrambler';
 
 type AJAXResponse = {
     status: boolean,
-    html: string
-}
+    html: string;
+};
 
 type TSlice = {
     x: number,
     y: number,
     width: number,
-    height: number
-}
+    height: number;
+};
 
 type TGroup = {
     slices: number,
     cols: number,
     rows: number,
     x: number,
-    y: number
-}
+    y: number;
+};
 
 const chapterLanguageMap = new Map([
     ['de', Tags.Language.German],
@@ -43,7 +43,7 @@ const chapterLanguageMap = new Map([
 ]);
 
 @Common.MangaCSS(/^{origin}\/[^/]+-\d+$/, 'div#ani_detail div.anisc-detail h2.manga-name')
-@Common.MangasMultiPageCSS('/az-list?page={page}', '#main-content div.manga-detail h3 a', 1, 1, 0, Common.AnchorInfoExtractor(true))
+@Common.MangasMultiPageCSS('#main-content div.manga-detail h3 a', Common.PatternLinkGenerator('/az-list?page={page}'), 0, Common.AnchorInfoExtractor(true))
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
@@ -71,7 +71,7 @@ export default class extends DecoratableMangaScraper {
 
         const uri = new URL(`ajax/image/list/${chapterurl.href.includes('chapter') ? 'chap' : 'vol'}/${readingId}?quality=high`, this.URI);
         const { status, html } = await FetchJSON<AJAXResponse>(new Request(uri));
-        if (status !== true ) return [];
+        if (status !== true) return [];
 
         const dom = new DOMParser().parseFromString(html, 'text/html');
         const imagesArr = [...dom.querySelectorAll<HTMLDivElement>('div.iv-card')];
@@ -119,11 +119,8 @@ export default class extends DecoratableMangaScraper {
                     );
                 });
             }
-
         });
-
     }
-
 }
 
 function unShuffle(numArray: number[], seed: string): number[] {

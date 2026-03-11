@@ -9,11 +9,10 @@ import * as Common from './decorators/Common';
 @Madara.ChaptersSinglePageAJAXv2()
 @Madara.PagesSinglePageCSS()
 @Common.ImageAjax()
-
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('traduccionesamistosas', 'Traducciones Amistosas', 'https://traduccionesamistosas.cookni.net', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Spanish, Tags.Source.Scanlator);
+        super('traduccionesamistosas', 'Traducciones Amistosas', 'https://traduccionesamistosas.topmanhuas.org', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Spanish, Tags.Source.Scanlator);
     }
 
     public override get Icon() {

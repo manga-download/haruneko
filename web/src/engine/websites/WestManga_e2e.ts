@@ -1,24 +1,22 @@
-﻿import { TestFixture, type Config } from '../../../test/WebsitesFixture';
+﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config: Config = {
+new TestFixture({
     plugin: {
         id: 'westmanga',
         title: 'WestManga'
     },
     container: {
-        url: 'https://westmanga.fun/manga/henkyou-gurashi-no-maou-tensei-shite-saikyou-no-majutsushi-ni-naru-%e3%80%9caisarenagara-nariagaru-moto-mao-wa-ningen-o-shiritai%e3%80%9c/',
-        id: '/manga/henkyou-gurashi-no-maou-tensei-shite-saikyou-no-majutsushi-ni-naru-%e3%80%9caisarenagara-nariagaru-moto-mao-wa-ningen-o-shiritai%e3%80%9c/',
-        title: 'Henkyou Gurashi no Maou, Tensei Shite Saikyou no Majutsushi ni naru 〜Aisarenagara Nariagaru Moto Maō wa, Ningen o Shiritai〜'
+        url: 'https://westmanga.tv/comic/bad-born-blood',
+        id: 'bad-born-blood',
+        title: 'Bad Born Blood'
     },
     child: {
-        id: '/henkyou-gurashi-no-maou-tensei-shite-saikyou-no-majutsushi-ni-naru-%e3%80%9caisarenagara-nariagaru-moto-mao-wa-ningen-o-shiritai%e3%80%9c-chapter-1-1-bahasa-indonesia/',
-        title: 'Chapter 1.1'
+        id: 'bad-born-blood-chapter-70-bahasa-indonesia',
+        title: '70'
     },
     entry: {
-        index: 0,
-        size: 90_536,
-        type: 'image/jpeg'
+        index: 1,
+        size: 152_636,
+        type: 'image/webp'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

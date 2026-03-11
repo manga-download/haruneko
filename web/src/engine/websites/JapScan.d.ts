@@ -1,4 +1,4 @@
-import type { Chapter, Page } from '../providers/MangaPlugin';
+import type { Chapter, Page} from '../providers/MangaPlugin';
 import { DecoratableMangaScraper, type Manga } from '../providers/MangaPlugin';
 export default class extends DecoratableMangaScraper {
     constructor();

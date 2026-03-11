@@ -1,24 +1,22 @@
 import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'mangaruhu',
         title: 'MangaRuhu'
     },
     container: {
-        url: 'https://mangaruhu.com/manga/hunter-academys-strongest-battle-god/',
-        id: JSON.stringify({ post: '81', slug: '/manga/hunter-academys-strongest-battle-god/' }),
-        title: `Avcı Akademisi'nin En Güçlü Savaş Tanrısı`
+        url: 'https://mangaruhu.com/manga/boslugun-hukumdari/',
+        id: '/manga/boslugun-hukumdari/',
+        title: 'Boşluğun Hükümdarı'
     },
     child: {
-        id: '/manga/hunter-academys-strongest-battle-god/bolum-7/',
-        title: 'Bölüm 7'
+        id: '/manga/boslugun-hukumdari/bolum-1/',
+        title: 'Bölüm 1',
     },
     entry: {
         index: 0,
-        size: 822_846,
+        size: 715_642,
         type: 'image/jpeg'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

@@ -1,24 +1,22 @@
-import { TestFixture, type Config } from '../../../test/WebsitesFixture';
+import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config: Config = {
+new TestFixture({
     plugin: {
         id: 'drakescans',
-        title: 'DrakeScans'
+        title: 'Drake Scans'
     },
     container: {
-        url: 'https://drakecomic.org/manga/im-stuck-on-the-same-day-for-a-thousand-years/',
-        id: '/manga/im-stuck-on-the-same-day-for-a-thousand-years/',
-        title: 'I’m Stuck On The Same Day For A Thousand Years'
+        url: 'https://drakecomic.org/manga/idle-player-returns-as-a-god/',
+        id: '/manga/idle-player-returns-as-a-god/',
+        title: 'Idle Player Returns as a God'
     },
     child: {
-        id: '/im-stuck-on-the-same-day-for-a-thousand-years-chapter-1/',
+        id: '/idle-player-returns-as-a-god-chapter-1/',
         title: 'Chapter 1'
     },
     entry: {
         index: 0,
-        size: 684_501,
+        size: 701_367,
         type: 'image/jpeg'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

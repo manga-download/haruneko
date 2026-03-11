@@ -16,10 +16,15 @@ export class ApplicationWindow extends BrowserWindow {
         ipc.Listen(Channels.App.HideWindow, super.hide.bind(this));
         ipc.Listen(Channels.App.Minimize, super.minimize.bind(this));
         ipc.Listen(Channels.App.Maximize, super.maximize.bind(this));
-        ipc.Listen(Channels.App.Restore, super.restore.bind(this));
+        ipc.Listen(Channels.App.Restore, this.Restore.bind(this));
         ipc.Listen(Channels.App.Close, super.close.bind(this));
         ipc.Listen(Channels.App.OpenSplash, this.OpenSplash.bind(this));
         ipc.Listen(Channels.App.CloseSplash, this.CloseSplash.bind(this));
+    }
+
+    private async Restore() {
+        if (super.isMinimized) super.restore();
+        if (super.isMaximized) super.unmaximize();
     }
 
     private async OpenSplash(url: string) {

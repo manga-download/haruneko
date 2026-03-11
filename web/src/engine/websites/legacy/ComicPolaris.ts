@@ -8,7 +8,7 @@ import { DecoratableMangaScraper } from '../../providers/MangaPlugin';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('comicpolaris', `COMICポラリス (COMIC Polaris)`, 'https://comic-polaris.jp' /*, Tags.Language.English, Tags ... */);
+        super('comicpolaris', `COMICポラリス (COMIC Polaris)`, 'https://kirapo.jp/polaris' /*, Tags.Language.English, Tags ... */);
     }
 
     public override get Icon() {

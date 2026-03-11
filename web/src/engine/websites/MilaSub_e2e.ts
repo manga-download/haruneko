@@ -6,17 +6,17 @@ new TestFixture({
         title: 'Mila Sub'
     },
     container: {
-        url: 'https://www.milascans.com/manga/i-didnt-lull-you-to-sleep/',
-        id: JSON.stringify({ post: '3609', slug: '/manga/i-didnt-lull-you-to-sleep/'}),
-        title: 'I Didn’t Lull You To Sleep Only For You To Be Obsessed With Me'
+        url: 'https://www.millascan.com/manga/ilkask/',
+        id: JSON.stringify({ post: '39329', slug: '/manga/ilkask/' }),
+        title: '#İlkAşk'
     },
     child: {
-        id: '/manga/i-didnt-lull-you-to-sleep/5-bolum/',
-        title: '5..Bölüm'
-    },
+        id: '/manga/ilkask/6-bolum/',
+        title: '6.Bölüm'
+    }, /* Need Login
     entry: {
-        index: 10,
-        size: 2_094_015,
+        index: 2,
+        size: 843_939,
         type: 'image/jpeg'
-    }
+    }*/
 }).AssertWebsite();

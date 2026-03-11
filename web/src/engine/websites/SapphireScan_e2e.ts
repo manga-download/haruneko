@@ -1,24 +1,22 @@
 import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'sapphirescan',
         title: 'Sapphire Scan'
     },
     container: {
-        url: 'https://sapphirescan.com/manga/el-yerno-mas-fuerte-de-la-historia/',
-        id: JSON.stringify({ post: '1879', slug: '/manga/el-yerno-mas-fuerte-de-la-historia/' }),
+        url: 'https://www.sapphirescan.com/2022/09/el-yerno-mas-fuerte-de-la-historia.html',
+        id: '/2022/09/el-yerno-mas-fuerte-de-la-historia.html',
         title: 'El yerno más fuerte de la historia.'
     },
     child: {
-        id: '/manga/el-yerno-mas-fuerte-de-la-historia/capitulo-214/',
-        title: 'Capítulo 214'
+        id: '/2022/11/capitulo-27.html',
+        title: 'Capítulo 27'
     },
     entry: {
-        index: 7,
-        size: 1_113_413,
+        index: 1,
+        size: 103_231,
         type: 'image/jpeg'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

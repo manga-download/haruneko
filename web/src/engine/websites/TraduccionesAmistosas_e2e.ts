@@ -1,12 +1,12 @@
 import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'traduccionesamistosas',
         title: 'Traducciones Amistosas'
     },
     container: {
-        url: 'https://traduccionesamistosas.cookni.net/manga/entrenador-de-mascotas/',
+        url: 'https://traduccionesamistosas.topmanhuas.org/manga/entrenador-de-mascotas/',
         id: JSON.stringify({ post: '90', slug: '/manga/entrenador-de-mascotas/' }),
         title: 'Entrenador de Mascotas'
     },
@@ -19,6 +19,4 @@ const config = {
         size: 1_869_563,
         type: 'image/jpeg'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

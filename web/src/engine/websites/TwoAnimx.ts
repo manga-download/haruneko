@@ -16,7 +16,7 @@ const pageScript = `
 `;
 
 @Common.MangaCSS(/^{origin}\/index-comic-name-[^/]+$/, 'div.position strong')
-@Common.MangasMultiPageCSS('/index.php?s=%2Findex-html&page={page}', 'ul.liemh li > a[title]', 1, 1, 0, Common.AnchorInfoExtractor(true))
+@Common.MangasMultiPageCSS('ul.liemh li > a[title]', Common.PatternLinkGenerator('/index.php?s=%2Findex-html&page={page}'), 0, Common.AnchorInfoExtractor(true))
 @Common.ChaptersSinglePageCSS('div#oneCon1 ul.b1 li a')
 @Common.PagesSinglePageJS(pageScript, 500)
 @Common.ImageAjaxFromHTML('img#ComicPic')

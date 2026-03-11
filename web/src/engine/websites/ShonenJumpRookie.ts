@@ -4,15 +4,11 @@ import { DecoratableMangaScraper, Manga, type MangaPlugin } from '../providers/M
 import * as Common from './decorators/Common';
 import { Fetch, FetchHTML } from '../platform/FetchProvider';
 
-function ChapterExtractor(anchor: HTMLAnchorElement) {
-    return {
-        id: anchor.pathname,
-        title: anchor.querySelector('span.episode-title').textContent.trim()
-    };
-}
-
 @Common.MangaCSS(/^{origin}\/series\/[^/]+$/, 'div.series-title-container h1.series-title')
-@Common.ChaptersSinglePageCSS('ul#episode-list li a.episode-content', ChapterExtractor)
+@Common.ChaptersSinglePageCSS<HTMLAnchorElement>('ul#episode-list li a.episode-content', undefined, anchor => ({
+    id: anchor.pathname,
+    title: anchor.querySelector('span.episode-title').textContent.trim()
+}))
 @Common.PagesSinglePageCSS('div.image-container p.page-area img.js-page-image')
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
@@ -27,30 +23,26 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
         const doc = await FetchHTML(new Request(this.URI));
-        const mangaList: Manga[] = [...doc.querySelectorAll<HTMLAnchorElement>('section#popular-series ol.series-box-list li section.series-contents a')].map(manga => {
-            return new Manga(this, provider, manga.pathname, manga.title.trim());
-        });
+        type This = typeof this;
+        return Array.fromAsync(async function* (this: This) {
+            const extract = (dom: Document, firstPage: boolean) => {
+                const selector = firstPage
+                    ? 'section#popular-series ol.series-box-list li section.series-contents a'
+                    : 'li section.series-contents a'; // different selector for paginated pages
+                return [...dom.querySelectorAll<HTMLAnchorElement>(selector)]
+                    .map(manga => new Manga(this, provider, manga.pathname, (manga.querySelector('h1.series-title')?.textContent ?? manga.title).trim()));
+            };
 
-        //get first "more" url
-        let cursor = doc.querySelector<HTMLOListElement>('ol[data-series-read-more-url]').dataset.seriesReadMoreUrl;
+            yield* extract(doc, true);
 
-        while (cursor) {
-            const request = new Request(new URL(cursor, this.URI), {
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest'
-                }
-            });
-
-            const response = await Fetch(request);
-            const body = await response.text();
-            const dom = new DOMParser().parseFromString(body, 'text/html');
-
-            const mangas: Manga[] = await [...dom.querySelectorAll<HTMLAnchorElement>('li section.series-contents a')].map(manga => {
-                return new Manga(this, provider, manga.pathname, manga.querySelector('h1.series-title').textContent.trim());
-            });
-            mangaList.push(...mangas);
-            cursor = response.headers.get('tky-link-rel-next');
-        }
-        return mangaList.distinct();
+            for (let cursor = doc.querySelector<HTMLOListElement>('ol[data-series-read-more-url]')?.dataset.seriesReadMoreUrl; cursor;) {
+                const response = await Fetch(new Request(new URL(cursor, this.URI), {
+                    headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                }));
+                const dom = new DOMParser().parseFromString(await response.text(), 'text/html');
+                yield* extract(dom, false);
+                cursor = response.headers.get('tky-link-rel-next');
+            }
+        }.call(this));
     }
 }

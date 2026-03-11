@@ -1,24 +1,22 @@
 ﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'aquamanga',
         title: 'AquaManga'
     },
     container: {
-        url: 'https://aquareader.net/manga/another-beginning-with-the-guhuo-bird/',
-        id: JSON.stringify({post: '2601', slug: '/manga/another-beginning-with-the-guhuo-bird/'}),
-        title: 'Another beginning with the Guhuo bird'
+        url: 'https://aquareader.net/manga/only-for-love/',
+        id: JSON.stringify({ post: '3016', slug: '/manga/only-for-love/' }),
+        title: 'Only for Love'
     },
     child: {
-        id: '/manga/another-beginning-with-the-guhuo-bird/another-beginning-with-the-guhuo-bird/ch-242-chapter-242/',
-        title: 'Ch. 242 - Chapter 242'
+        id: '/manga/only-for-love/only-for-love/ch-53-chapter-53/',
+        title: 'Ch. 53 - Chapter 53'
     },
     entry: {
         index: 0,
-        size: 38_586,
+        size: 484_245,
         type: 'image/jpeg'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

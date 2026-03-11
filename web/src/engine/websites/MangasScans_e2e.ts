@@ -1,10 +1,10 @@
 ﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'mangassscans',
         title: 'Mangas-Scans'
-    }, /* CloudFlare
+    },
     container: {
         url: 'https://mangas-scans.com/manga/the-rebirth-of-an-8th-circled-wizard/',
         id: '/manga/the-rebirth-of-an-8th-circled-wizard/',
@@ -18,7 +18,5 @@ const config = {
         index: 1,
         size: 720_735,
         type: 'image/jpeg'
-    }*/
-};
-
-new TestFixture(config).AssertWebsite();
+    }
+}).AssertWebsite();

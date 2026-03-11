@@ -1,24 +1,22 @@
-import { TestFixture, type Config } from '../../../test/WebsitesFixture';
+import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config: Config = {
+new TestFixture({
     plugin: {
         id: 'dragontranslation',
         title: 'DragonTranslation'
     },
     container: {
-        url: 'https://dragontranslation.net/manga/tissue-thief',
-        id: '/manga/tissue-thief',
+        url: 'https://dragontranslation.org/manga/tissue-thief/',
+        id: JSON.stringify({ post: '2146', slug: '/manga/tissue-thief/' }),
         title: 'Tissue Thief'
     },
     child: {
-        id: '/leer/tissue-thief-1.00',
-        title: 'Capitulo 1.00'
+        id: '/manga/tissue-thief/capitulo-1/',
+        title: 'Capitulo 1'
     },
     entry: {
         index: 1,
-        size: 82_768,
+        size: 67_683,
         type: 'image/jpeg'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

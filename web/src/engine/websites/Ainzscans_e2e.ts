@@ -1,12 +1,12 @@
-import { TestFixture, type Config } from '../../../test/WebsitesFixture';
+import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config: Config = {
+new TestFixture({
     plugin: {
         id: 'ainzscans',
         title: 'Ainzscans'
     },
     container: {
-        url: 'https://ainzscans.net/series/disastrous-necromancer/',
+        url: 'https://ainzscans01.com/series/disastrous-necromancer/',
         id: '/series/disastrous-necromancer/',
         title: 'Disastrous Necromancer'
     },
@@ -19,6 +19,4 @@ const config: Config = {
         size: 995_872,
         type: 'image/jpeg'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

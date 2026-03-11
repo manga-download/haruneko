@@ -1,12 +1,12 @@
 ﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'umetruyen',
         title: 'UmeTruyen'
     },
     container: {
-        url: 'https://umetruyenhay.com/truyen-vet-do.html',
+        url: 'https://umetruyenz.org/truyen-vet-do.html',
         id: '/truyen-vet-do.html',
         title: 'Vết Đỏ'
     },
@@ -16,9 +16,7 @@ const config = {
     },
     entry: {
         index: 0,
-        size: 1_266_999,
+        size: 970_896,
         type: 'image/jpeg'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

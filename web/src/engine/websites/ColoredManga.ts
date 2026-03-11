@@ -3,46 +3,46 @@ import icon from './ColoredManga.webp';
 import { Chapter, DecoratableMangaScraper, Manga, type MangaPlugin, Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import { FetchJSON } from '../platform/FetchProvider';
-import type { Priority } from '../taskpool/DeferredTask';
+
+type APIMangas = {
+    id: string,
+    name: string
+}[];
 
 type APIManga = {
-    name: string
-    chapters: APIChapter[]
-    volume: APIVolume[];
-}
+    _id: string,
+    name: string,
+    chapters: APIChapter[],
+    volumes: APIVolume[]
+    email: string
+};
 
 type APIChapter = {
-    id: string,
-    title: string,
+    _id: string,
     number: string,
-    totalImage: number,
-    volume?: string;
-}
+    title: string,
+};
 
 type APIVolume = {
     number: string,
     chapters: APIChapter[]
-}
+};
 
-type APIImage = {
-    image : string //base64 image data URI
-}
+type APIPages = {
+    paths: {
+        path: string
+    }[]
+};
 
-function MangaInfoExtractor(anchor: HTMLAnchorElement) {
-
-    return {
-        id: anchor.pathname.match(/\/manga\/([^/]+)/)[1],
-        title: anchor.text.trim()
-    };
-}
-
-@Common.MangasSinglePagesCSS([ '/manga' ], 'div#themes_outside__WCut6 a:not([id])', MangaInfoExtractor)
+@Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
     private readonly apiUrl = `${this.URI.origin}/api/`;
+    private readonly dbUrl = `${this.URI.origin.replace('https://', 'https://db.')}/api/`;
+    private readonly cdnUrl = `${this.URI.origin.replace('https://', 'https://cdn.')}/api/`;
 
     public constructor() {
-        super('coloredmanga', 'Colored Manga', 'https://coloredmanga.net', Tags.Media.Manhwa, Tags.Media.Manga, Tags.Language.English, Tags.Source.Scanlator);
+        super('coloredmanga', 'Colored Manga', 'https://coloredmanga.com', Tags.Media.Manhwa, Tags.Media.Manga, Tags.Language.English, Tags.Source.Scanlator);
     }
 
     public override get Icon() {
@@ -55,65 +55,56 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
         const mangaSlug = url.split('/').at(-1);
-        const { name } = await this.GetMangaData(mangaSlug);
+        const { name } = await this.GetCollection<APIManga>({ collection: 'Manga', data: mangaSlug });
         return new Manga(this, provider, mangaSlug, name);
     }
 
+    public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
+        const mangaList: Manga[] = [];
+        for (let page = 1, run = true; run; page++) {
+            const mangas = await this.GetMangasFromPage(page, provider);
+            mangaList.isMissingLastItemFrom(mangas) ? mangaList.push(...mangas) : run = false;
+        }
+        return mangaList;
+    }
+
+    private async GetMangasFromPage(page: number, provider: MangaPlugin) {
+        const mangas = await this.FetchAPI<APIMangas>(new URL('./utils/mangaByIndex', this.apiUrl), { index: page.toString() }, 'POST');
+        return mangas.map(manga => new Manga(this, provider, manga.id, manga.name));
+    }
+
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const mangaData = await this.GetMangaData(manga.Identifier);
+        const mangaData = await this.GetCollection<APIManga>({ collection: 'Manga', data: manga.Identifier });
         return this.ExtractChaptersData(mangaData).map(chapter => {
             const title = [
                 chapter.number,
                 chapter.title ? '-' : '',
                 chapter.title,
             ].join(' ').trim();
-            return new Chapter(this, manga, chapter.id, title);
+            return new Chapter(this, manga, chapter._id, title);
         });
     }
 
     private ExtractChaptersData(mangaData: APIManga): APIChapter[] {
-        return mangaData.chapters.length > 0 ? mangaData.chapters : mangaData.volume.reduce((chaptersAccumulator: APIChapter[], currentVolume) => {
-            currentVolume.chapters.forEach(chapter => chapter.volume = currentVolume.number);
+        return mangaData.chapters.length > 0 ? mangaData.chapters : mangaData.volumes.reduce((chaptersAccumulator: APIChapter[], currentVolume) => {
             chaptersAccumulator.push(...currentVolume.chapters);
             return chaptersAccumulator;
         }, []);
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const mangaData = await this.GetMangaData(chapter.Parent.Identifier);
-        const { totalImage, volume } = this.ExtractChaptersData(mangaData).find(item => item.id === chapter.Identifier);
-        const path = volume ? `/images/content/${mangaData.name}/${volume}/${chapter.Title}` : `/images/content/${mangaData.name}/${chapter.Title}`;
-        return new Array(totalImage).fill(0).map((_, index) => new Page(this, chapter, this.URI, { path, number: (index + 1).toString().padStart(4, '0') }));
+        const { email } = await this.GetCollection<APIManga>({ collection: 'Manga', data: chapter.Parent.Identifier });
+        const { paths } = await this.GetCollection<APIPages>({ collection: 'Chapter', data: `${email}/${chapter.Identifier}` });
+        return paths.map(image => new Page(this, chapter, new URL(`./shared/dynamicImage?path=${image.path}`, this.cdnUrl)));
     }
 
-    public override async FetchImage(page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
-
-        return await this.imageTaskPool.Add(async () => {
-
-            const request = this.CreateRequest('dynamicImages', {
-                path: page.Parameters['path'] as string,
-                number: page.Parameters['number'] as string
-            });
-
-            const { image } = await FetchJSON<APIImage>(request);
-            const response = await fetch(image);
-            return Common.GetTypedData(await response.arrayBuffer());
-
-        }, priority, signal);
+    private async GetCollection<T extends JSONElement>(form: Record<string, string | Blob>): Promise<T> {
+        return this.FetchAPI<T>(new URL('./core/getData', this.dbUrl), form, 'PUT');
     }
 
-    private async GetMangaData(mangaSlug: string): Promise<APIManga> {
-        return await FetchJSON<APIManga>(this.CreateRequest('selectedManga', {
-            id: mangaSlug
-        }));
-    }
-
-    private CreateRequest(endpoint: string, records: Record<string, string>): Request {
-        const formData = new FormData();
-        Object.keys(records).forEach(key => formData.set(key, records[key]));
-        return new Request(new URL(endpoint, this.apiUrl), {
-            method: 'PUT',
-            body: formData
-        });
+    private async FetchAPI<T extends JSONElement>(uri: URL, form: Record<string, string | Blob>, method: 'POST' | 'PUT'): Promise<T> {
+        const body = new FormData();
+        Object.entries(form).forEach(([key, value]) => body.set(key, value));
+        return FetchJSON<T>(new Request(uri, { method, body }));
     }
 }

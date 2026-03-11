@@ -1,6 +1,6 @@
 ﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-// CASE: Provided in Volumes
+// CASE: Chapter
 new TestFixture({
     plugin: {
         id: 'cycomi',
@@ -12,7 +12,7 @@ new TestFixture({
         title: 'あなたは私におとされたい'
     },
     child: {
-        id: '/chapter/page/list?titleId=156&chapterId=12036',
+        id: JSON.stringify({ id: 12036, type: 1 }),
         title: '第１話 - ジュウネンメノボクタチ'
     },
     entry: {
@@ -22,7 +22,7 @@ new TestFixture({
     }
 }).AssertWebsite();
 
-// CASE: Provided in Chapters
+// CASE: Volume
 new TestFixture({
     plugin: {
         id: 'cycomi',
@@ -34,7 +34,7 @@ new TestFixture({
         title: 'JACK FOX　キツネ男と鋼鉄の女'
     },
     child: {
-        id: '/singleBook/detail?singleBookId=363',
+        id: JSON.stringify({ id: 363, type: 2 }),
         title: '第１巻 - (1-10話)'
     },
     entry: {
@@ -43,3 +43,5 @@ new TestFixture({
         type: 'image/jpeg'
     }
 }).AssertWebsite();
+
+// CASE: Unencrypted Image (e.g., https://cycomi.com/title/191)

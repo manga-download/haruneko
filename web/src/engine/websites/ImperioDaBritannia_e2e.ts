@@ -1,6 +1,6 @@
 ﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'imperiodabritania',
         title: 'Imperio Da Britannia'
@@ -11,14 +11,12 @@ const config = {
         title: 'Profissão sem Valor: Domador de Dragões'
     },
     child: {
-        id: '/manga/profissao-sem-valor-domador-de-dragoes/capitulo-52/',
-        title: 'Capítulo 52'
+        id: '/manga/profissao-sem-valor-domador-de-dragoes/cap-52/',
+        title: 'Cap. 52'
     },
     entry: {
-        index: 0,
-        size: 900_462,
+        index: 5,
+        size: 2_005_104,
         type: 'image/jpeg'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

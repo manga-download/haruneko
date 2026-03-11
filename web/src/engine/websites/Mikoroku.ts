@@ -1,56 +1,19 @@
 import { Tags } from '../Tags';
 import icon from './Mikoroku.webp';
-import { DecoratableMangaScraper, type MangaPlugin, Manga } from '../providers/MangaPlugin';
+import { PageLinkExtractor, ZeistManga } from './templates/ZeistManga';
 import * as Common from './decorators/Common';
-import { FetchJSON } from '../platform/FetchProvider';
 
-const pagesScript = `[...document.querySelectorAll('article#reader img')].map(img => img.src);`;
+@Common.MangaCSS(/^{origin}\/\d+\/\d+\/[^/]+\.html$/, 'title', (element, uri) => ({ id: uri.pathname, title: element.textContent.split(' - Baca Komik').at(0).trim() }))
+@Common.ChaptersSinglePageCSS<HTMLAnchorElement>('div#chapterContainer a.chap-btn', undefined, anchor => ({ id: anchor.href, title: anchor.querySelector('.chap-num').textContent.trim() }))
+@Common.PagesSinglePageCSS('div.check-box a img', PageLinkExtractor)
 
-type RSS = {
-    feed: {
-        entry: {
-            link: {
-                rel: string
-                title: string,
-                href: string
-            }[]
-        }[]
-    }
-}
-
-const chapterScript = `
-    new Promise ( resolve =>
-        resolve (clwd.arr.filter(chapter => chapter.link != window.location.href)
-            .map(chapter => {
-                return {
-                    id: new URL(chapter.link).pathname,
-                    title : chapter.title.trim()
-                };
-            })
-        )
-    );
-`;
-
-@Common.MangaCSS(/^{origin}\/\d+\/\d+\/[^/]+\.html$/, 'header h1[itemprop="name"]')
-@Common.ChaptersSinglePageJS(chapterScript, 1500)
-@Common.PagesSinglePageJS(pagesScript, 1500)
-@Common.ImageAjax()
-export default class extends DecoratableMangaScraper {
+export default class extends ZeistManga {
 
     public constructor() {
-        super('mikoroku', 'Mikoroku', 'https://www.mikoroku.com', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Indonesian, Tags.Source.Scanlator);
+        super('mikoroku', 'Mikoroku', 'https://www.mikoroku.my.id', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Indonesian, Tags.Source.Scanlator);
     }
 
     public override get Icon() {
         return icon;
     }
-
-    public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        const { feed: { entry } } = await FetchJSON<RSS>(new Request(new URL('/feeds/posts/default/-/Series?orderby=published&alt=json&max-results=999', this.URI)));
-        return entry.map(manga => {
-            const goodLink = manga.link.find(link => link.rel === 'alternate');
-            return new Manga(this, provider, new URL(goodLink.href).pathname, goodLink.title.trim());
-        });
-    }
-
 }

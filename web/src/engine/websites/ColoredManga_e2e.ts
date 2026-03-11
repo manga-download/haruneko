@@ -1,45 +1,22 @@
 ﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-// CASE: Provided in Chapters
 new TestFixture({
     plugin: {
         id: 'coloredmanga',
         title: 'Colored Manga'
     },
     container: {
-        url: 'https://coloredmanga.net/manga/BvguMqKouwqnxtcAASsYG7mbE3bfLq',
-        id: 'BvguMqKouwqnxtcAASsYG7mbE3bfLq',
-        title: 'The Beginning After the End (Coloured)'
+        url: 'https://coloredmanga.com/manga/E49xjKSeqY2PQybGGc4bEyiIuoMq0t28QWg9PFHbRnALhebZqq',
+        id: 'E49xjKSeqY2PQybGGc4bEyiIuoMq0t28QWg9PFHbRnALhebZqq',
+        title: 'Demon Slayer꞉ Kimetsu no Yaiba'
     },
     child: {
-        id: 'oVQ96zDSgqnRQxPhXYUr2MX33GnCg5',
+        id: 'Au9tJVeFvcYsYqu8vW9ty0AoZmGOzX',
         title: 'Chapter 001'
     },
     entry: {
         index: 1,
-        size: 288_810,
-        type: 'image/jpeg'
-    }
-}).AssertWebsite();
-
-// CASE: Provided in Volumes
-new TestFixture({
-    plugin: {
-        id: 'coloredmanga',
-        title: 'Colored Manga'
-    },
-    container: {
-        url: 'https://coloredmanga.net/manga/ajntqpDeIHFFNifCpPhLopB6Fsairc',
-        id: 'ajntqpDeIHFFNifCpPhLopB6Fsairc',
-        title: 'Blame! [Master Edition] (B&W)'
-    },
-    child: {
-        id: 'XXTfGCrCOOVpFRg41BMZBkMDbb2VHa',
-        title: 'Chapter 001'
-    },
-    entry: {
-        index: 0,
-        size: 1_481_859,
+        size: 831_325,
         type: 'image/jpeg'
     }
 }).AssertWebsite();

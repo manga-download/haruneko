@@ -1,25 +1,26 @@
 import { Tags } from '../Tags';
 import icon from './RaijinScans.webp';
+import { FetchWindowScript } from '../platform/FetchProvider';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Madara from './decorators/WordPressMadara';
 import * as Common from './decorators/Common';
 
-function PageExtractor(img: HTMLImageElement) {
-    return (img.dataset.src ?? img.src).trim().replace(/^http:/, 'https:');
-}
-
-@Madara.MangaCSS(/^{origin}\/manga\/[^/]+\/$/, 'meta[property="og:title"]:not([content*="Raijin Scans"])')
+@Madara.MangaCSS(/^{origin}\/manga\/[^/]+\/$/, 'div.serie-info h1.serie-title')
 @Madara.MangasMultiPageAJAX()
 @Madara.ChaptersSinglePageAJAXv2()
-@Common.PagesSinglePageCSS('div.page-break div.image-wrapper img[id]', PageExtractor)
+@Common.PagesSinglePageJS(`[...document.querySelectorAll('div.image-skeleton img')].map( img => img.dataset.src ?? img.src );`, 1500)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('raijinscans', 'RaijinScans', 'https://raijinscan.fr', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Media.Manga, Tags.Language.French, Tags.Source.Scanlator);
+        super('raijinscans', 'RaijinScans', 'https://raijin-scans.fr', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Media.Manga, Tags.Language.French, Tags.Source.Scanlator);
     }
 
     public override get Icon() {
         return icon;
+    }
+
+    public override Initialize(): Promise<void> {
+        return FetchWindowScript(new Request(new URL('manga/-/', this.URI)), '');
     }
 }

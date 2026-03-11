@@ -5,7 +5,7 @@ import * as MangaStream from './decorators/WordPressMangaStream';
 import * as Common from './decorators/Common';
 
 @MangaStream.MangaCSS(/^https?:\/\/manhuascan\.us\/manga\/[^/]+$/)
-@Common.MangasMultiPageCSS('/manga-list?page={page}', 'div.bs div.bsx div.bigor > a')
+@Common.MangasMultiPageCSS('div.bs div.bsx div.bigor > a', Common.PatternLinkGenerator('/manga-list?page={page}'))
 @MangaStream.ChaptersSinglePageCSS()
 @MangaStream.PagesSinglePageCSS()
 @Common.ImageAjax()

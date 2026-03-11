@@ -1,12 +1,12 @@
-import { TestFixture, type Config } from '../../../test/WebsitesFixture';
+import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config: Config = {
+new TestFixture({
     plugin: {
         id: 'bacakomik',
         title: 'BacaKomik'
     },
     container: {
-        url: 'https://bacakomik.one/komik/tokyo卍revengers/',
+        url: 'https://bacakomik.my/komik/tokyo卍revengers/',
         id: encodeURI('/komik/tokyo卍revengers/'),
         title: 'Tokyo卍Revengers'
     },
@@ -19,6 +19,4 @@ const config: Config = {
         size: 243_154,
         type: 'image/jpeg'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

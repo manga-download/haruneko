@@ -25,15 +25,17 @@ const scriptPageListLinks = `ts_reader_control.getImages();`;
  ******** Manga from URL Extraction Methods ********
  ***************************************************/
 
-export function MangaLabelExtractor(this: MangaScraper, element: HTMLElement) {
-    return [
+export function DefaultLinkInfoExtractor(this: MangaScraper, element: HTMLElement, uri: URL) {
+    const result = Common.DefaultLinkInfoExtractor.call(this, element, uri);
+    [
         /^Comic\s+/i,
         /^Komik\s+/i,
         /^Manga\s+/i,
         /^Manhwa\s+/i,
         /^Manhua\s+/i,
         /\s+Bahasa\s+Indonesia$/i,
-    ].reduce((aggregator, pattern) => aggregator.replace(pattern, ''), (element instanceof HTMLMetaElement ? element.content : element.textContent).trim());
+    ].forEach(pattern => result.title = result.title.replace(pattern, ''));
+    return result;
 }
 
 /**
@@ -46,7 +48,7 @@ export function MangaLabelExtractor(this: MangaScraper, element: HTMLElement) {
  * @param query - A CSS query to locate the element from which the manga title shall be extracted
  */
 export async function FetchMangaCSS(this: MangaScraper, provider: MangaPlugin, url: string, query: string = queryMangaTitle): Promise<Manga> {
-    return Common.FetchMangaCSS.call(this, provider, url, query, MangaLabelExtractor);
+    return Common.FetchMangaCSS.call(this, provider, url, query, DefaultLinkInfoExtractor);
 }
 
 /**
@@ -57,7 +59,7 @@ export async function FetchMangaCSS(this: MangaScraper, provider: MangaPlugin, u
  * @param query - A CSS query to locate the element from which the manga title shall be extracted
  */
 export function MangaCSS(pattern: RegExp, query: string = queryMangaTitle) {
-    return Common.MangaCSS(pattern, query, MangaLabelExtractor);
+    return Common.MangaCSS(pattern, query, DefaultLinkInfoExtractor);
 }
 
 /***********************************************
@@ -65,10 +67,7 @@ export function MangaCSS(pattern: RegExp, query: string = queryMangaTitle) {
  ***********************************************/
 
 function MangaInfosExtractor(this: MangaScraper, anchor: HTMLAnchorElement) {
-    return {
-        id: anchor.pathname,
-        title: MangaLabelExtractor.call(this, anchor)
-    };
+    return DefaultLinkInfoExtractor.call(this, anchor, new URL(anchor.href));
 }
 
 /**
@@ -79,7 +78,7 @@ function MangaInfosExtractor(this: MangaScraper, anchor: HTMLAnchorElement) {
  * @param query - A CSS query to locate the elements from which the manga identifier and title shall be extracted
  */
 export async function FetchMangasSinglePageCSS(this: MangaScraper, provider: MangaPlugin, path = pathname, query = queryMangaListLinks): Promise<Manga[]> {
-    return Common.FetchMangasSinglePagesCSS.call(this, provider, [ path ], query, MangaInfosExtractor);
+    return Common.FetchMangasSinglePageCSS.call(this, provider, path, query, MangaInfosExtractor);
 }
 
 /**
@@ -88,7 +87,7 @@ export async function FetchMangasSinglePageCSS(this: MangaScraper, provider: Man
  * @param path - The path relative to the scraper's base url from which the mangas shall be extracted
  */
 export function MangasSinglePageCSS(query: string = queryMangaListLinks, path: string = pathname) {
-    return Common.MangasSinglePagesCSS([ path ], query, MangaInfosExtractor);
+    return Common.MangasSinglePageCSS(path, query, MangaInfosExtractor);
 }
 
 /*************************************************
@@ -97,11 +96,11 @@ export function MangasSinglePageCSS(query: string = queryMangaListLinks, path: s
 
 function CreateChapterInfoExtractor<T extends HTMLAnchorElement>(manga: Manga, queryTitle?: string, queryBloat?: string) {
     return (anchor: T) => {
-        if(anchor.hostname === 'nofil.net' && anchor.pathname.includes('safeme')) {
+        if (anchor.hostname === 'nofil.net' && anchor.pathname.includes('safeme')) {
             anchor.href = new URL(anchor.href).searchParams.get('url');
         }
         if (queryBloat) {
-            for(const bloat of anchor.querySelectorAll(queryBloat)) {
+            for (const bloat of anchor.querySelectorAll(queryBloat)) {
                 if (bloat.parentElement) {
                     bloat.parentElement.removeChild(bloat);
                 }
@@ -123,7 +122,7 @@ function CreateChapterInfoExtractor<T extends HTMLAnchorElement>(manga: Manga, q
  * @param queryTitle - A CSS sub-query performed on each element found with {@link query} to extract the chapter title
  */
 export async function FetchChaptersSinglePageCSS(this: MangaScraper, manga: Manga, query = queryChapterListLinks, queryTitle = queryChapterListTitle): Promise<Chapter[]> {
-    return Common.FetchChaptersSinglePageCSS.call(this, manga, query, CreateChapterInfoExtractor(manga, queryTitle, queryChapterListBloat));
+    return Common.FetchChaptersSinglePageCSS.call(this, manga, query, undefined, CreateChapterInfoExtractor(manga, queryTitle, queryChapterListBloat));
 }
 
 /**

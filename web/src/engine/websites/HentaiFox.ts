@@ -9,9 +9,11 @@ const scriptPages = `
             const extensions = { p: '.png', b: '.bmp', g: '.gif', w: '.webp' };
             const dir = $('#load_dir').val();
             const id = $('#load_id').val();
+            const uniqid = window.location.pathname.match(/gallery\\/(\\d+)/).at(1);
+            const cdn = parseInt(uniqid) > 140236 ? 'https://i3.hentaifox.com' : 'https://i.hentaifox.com';
             const images = Object.values(g_th).map((item, index) => {
                 const file = (index + 1) + (extensions[item[0]] ?? '.jpg');
-                return [ 'https://i.hentaifox.com', dir, id, file ].join('/');
+                return [ cdn, dir, id, file ].join('/');
             });
             resolve(images);
         } catch(error) {

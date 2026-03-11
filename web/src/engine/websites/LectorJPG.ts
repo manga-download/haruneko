@@ -1,29 +1,25 @@
 import { Tags } from '../Tags';
 import icon from './LectorJPG.webp';
+import { FetchJSON } from '../platform/FetchProvider';
 import { DecoratableMangaScraper, Manga, type MangaPlugin } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { FetchJSON } from '../platform/FetchProvider';
 
 type APIMangas = {
-    response: {
-        name: string,
-        slug: string
+    data: {
+        id: number;
+        name: string;
+        slug: string;
     }[]
-}
+};
 
-function ChapterExtractor(anchor: HTMLAnchorElement) {
-    return {
-        id: anchor.pathname,
-        title: anchor.querySelector<HTMLSpanElement>('span[class*="sm:text-base"]').textContent.trim()
-    };
-}
-
-@Common.MangaCSS(/^{origin}\/ver\/[^/]+$/, 'meta[property="og:title"]')
-@Common.ChaptersSinglePageCSS('div.grid a[href*="/ver/"]', ChapterExtractor)
-@Common.PagesSinglePageCSS('main.contenedor img')
+@Common.MangaCSS<HTMLTitleElement>(/^{origin}\/series\/[^/]+$/, 'title', (title, uri) => ({ id: uri.pathname, title: title.innerText.split('|').at(0).trim() }))
+@Common.ChaptersSinglePageCSS<HTMLAnchorElement>('div.grid a.group[href*="/read/"]', undefined, anchor => ({
+    id: anchor.pathname,
+    title: anchor.querySelector<HTMLSpanElement>('span').innerText.trim().replaceAll(/[\n\t\r]/g, '')
+}))
+@Common.PagesSinglePageCSS('div.grid img')
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
-    private readonly apiUrl = 'https://apis.pichulasjpg.xyz/api/';
 
     public constructor() {
         super('lectorjpg', 'LectorJPG', 'https://lectorjpg.com', Tags.Media.Manhwa, Tags.Media.Manga, Tags.Language.Spanish, Tags.Source.Aggregator);
@@ -34,7 +30,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        const { response } = await FetchJSON<APIMangas>(new Request(new URL('./searchProject', this.apiUrl)));
-        return response.map(manga => new Manga(this, provider, `/ver/${manga.slug}`, manga.name));
+        const { data } = await FetchJSON<APIMangas>(new Request(new URL('./serie-query?y?cursor=&perPage=9999&type=query&genres=&name=', this.URI)));
+        return data.map(manga => new Manga(this, provider, `/series/${manga.slug}`, manga.name));
     }
 }

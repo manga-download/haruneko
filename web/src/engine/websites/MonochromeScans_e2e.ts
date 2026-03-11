@@ -1,6 +1,6 @@
-﻿import { TestFixture, type Config } from '../../../test/WebsitesFixture';
+﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config: Config = {
+new TestFixture( {
     plugin: {
         id: 'monochromescans',
         title: 'Monochrome Scans'
@@ -12,13 +12,11 @@ const config: Config = {
     },
     child: {
         id: 'b0997c88-1b72-47d6-99b9-6ff40a43c7c0',
-        title: 'Volume 1 Chapter 8 - The Eighth Company - A Goddess\'s Prayer',
+        title: `Volume 1 Chapter 8 - The Eighth Company - A Goddess's Prayer`,
     },
     entry: {
         index: 1,
         size: 264_727,
         type: 'image/jpeg'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

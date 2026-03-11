@@ -1,4 +1,5 @@
 import type { StorageController } from '../StorageController';
+import type { MangaExporter } from './MangaExporter';
 import { ImageDirectoryExporter } from './ImageDirectoryExporter';
 import { ComicBookArchiveExporter } from './ComicBookArchiveExporter';
 import { ElectronicPublicationExporter } from './ElectronicPublicationExporter';
@@ -35,7 +36,7 @@ export enum MangaExportFormat {
     PDF = 'application/pdf',
 }
 
-export function CreateChapterExportRegistry(storageController: StorageController) {
+export function CreateChapterExportRegistry(storageController: StorageController): Record<string, MangaExporter> {
     return {
         [MangaExportFormat.RAWs]: new ImageDirectoryExporter(storageController),
         [MangaExportFormat.CBZ]: new ComicBookArchiveExporter(storageController),

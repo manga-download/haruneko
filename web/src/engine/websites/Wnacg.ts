@@ -5,7 +5,7 @@ import * as Common from './decorators/Common';
 import { FetchCSS } from '../platform/FetchProvider';
 
 @Common.MangaCSS(/^{origin}\/photos-index/, 'div#bodywrap > h2')
-@Common.MangasMultiPageCSS('/albums-index-page-{page}.html', 'ul li.gallary_item div.info div.title a')
+@Common.MangasMultiPageCSS('ul li.gallary_item div.info div.title a', Common.PatternLinkGenerator('/albums-index-page-{page}.html'))
 @Common.ChaptersUniqueFromManga()
 @Common.ImageAjaxFromHTML('img#picarea')
 export default class extends DecoratableMangaScraper {

@@ -1,4 +1,3 @@
-/* NW.js crash on website initialize => CloudFlare
 import { TestFixture } from '../../../test/WebsitesFixture';
 
 new TestFixture({
@@ -7,7 +6,7 @@ new TestFixture({
         title: 'NetTruyen OK',
     },
     container: {
-        url: 'https://nettruyendex.com/manga/ta-co-90-ty-tien-liem-cau',
+        url: 'https://nettruyenindex.com/manga/ta-co-90-ty-tien-liem-cau',
         id: '/manga/ta-co-90-ty-tien-liem-cau',
         title: 'Ta Có 90 Tỷ Tiền Liếm Cẩu!',
     },
@@ -17,8 +16,7 @@ new TestFixture({
     },
     entry: {
         index: 1,
-        size: 193_514,
-        type: 'image/jpeg',
+        size: 327_470,
+        type: 'image/webp',
     }
 }).AssertWebsite();
-*/

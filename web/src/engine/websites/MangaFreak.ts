@@ -4,7 +4,7 @@ import { DecoratableMangaScraper, type Manga, type MangaPlugin } from '../provid
 import { FetchWindowScript } from '../platform/FetchProvider';
 import * as Common from './decorators/Common';
 
-@Common.MangasMultiPageCSS('/Mangalist/All/{page}', 'div.list_item div.list_item_info h3 a')
+@Common.MangasMultiPageCSS('div.list_item div.list_item_info h3 a', Common.PatternLinkGenerator('/Mangalist/All/{page}'))
 @Common.ChaptersSinglePageCSS('div.manga_series_list table tbody tr td:first-of-type a')
 @Common.PagesSinglePageCSS('div.read_image div.mySlides img')
 @Common.ImageAjax()

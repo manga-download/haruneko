@@ -1,4 +1,4 @@
-﻿import { Tags } from '../Tags';
+import { Tags } from '../Tags';
 import icon from './MangaHack.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
@@ -20,7 +20,7 @@ const chapterScript = `
 `;
 
 @Common.MangaCSS(/^{origin}\/comics\/\d+$/, 'div.comicTitle_toppage h1')
-@Common.MangasMultiPageCSS('/search/comics?page={page}', 'div.comicList_box .title a')
+@Common.MangasMultiPageCSS('div.comicList_box .title a', Common.PatternLinkGenerator('/search/comics?page={page}'))
 @Common.ChaptersSinglePageJS(chapterScript, 2500)
 @Common.PagesSinglePageCSS('div.episodeViewer div.comic_img img')
 @Common.ImageAjax()

@@ -1,12 +1,12 @@
-import { TestFixture, type Config } from '../../../test/WebsitesFixture';
+import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config: Config = {
+new TestFixture({
     plugin: {
         id: 'komikstation',
         title: 'KomikStation'
     },
     container: {
-        url: 'https://komikstation.co/manga/hack-g-u/',
+        url: 'https://komikstation.org/manga/hack-g-u/',
         id: '/manga/hack-g-u/',
         title: '.hack//G.U.+'
     },
@@ -19,6 +19,4 @@ const config: Config = {
         size: 110_866,
         type: 'image/jpeg'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

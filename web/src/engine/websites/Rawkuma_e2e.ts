@@ -1,25 +1,22 @@
-import { TestFixture, type Config } from '../../../test/WebsitesFixture';
+import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config: Config = {
+new TestFixture({
     plugin: {
         id: 'rawkuma',
         title: 'Rawkuma'
     },
     container: {
-        url: 'https://rawkuma.com/manga/jujutsu-kaisen/',
+        url: 'https://rawkuma.net/manga/jujutsu-kaisen/',
         id: '/manga/jujutsu-kaisen/',
-        title: 'Jujutsu Kaisen Raw'
+        title: 'Jujutsu Kaisen'
     },
     child: {
-        id: '/jujutsu-kaisen-chapter-1/',
+        id: '/manga/jujutsu-kaisen/chapter-1.101436/',
         title: 'Chapter 1',
-        timeout: 15000
     },
     entry: {
         index: 0,
         size: 158_262,
         type: 'image/jpeg'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

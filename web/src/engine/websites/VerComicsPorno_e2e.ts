@@ -1,10 +1,10 @@
 ﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'vercomicsporno',
         title: 'VerComicsPorno'
-    }, /* CloudFlare
+    },
     container: {
         url: 'https://vercomicsporno.com/ghostlessm-hot-lessons-chapter-1-justice-league',
         id: '/ghostlessm-hot-lessons-chapter-1-justice-league',
@@ -18,7 +18,5 @@ const config = {
         index: 0,
         size: 235_831,
         type: 'image/jpeg'
-    }*/
-};
-
-new TestFixture(config).AssertWebsite();
+    }
+}).AssertWebsite();

@@ -14,6 +14,13 @@ jobs:
     name: Publish Web-Application
     runs-on: ubuntu-latest
     steps:
+      - name: Starting X Virtual Frame Buffer (Port 99)
+        run: |
+          #sudo apt-get update
+          #sudo apt-get install -y libxkbfile-dev pkg-config libsecret-1-dev libxss1 dbus xvfb libgtk-3-0 libgconf-2-4
+          sudo /usr/bin/Xvfb -ac :99 -screen 0 1920x1080x24 > /dev/null 2>&1 &
+          # remove all running jobs (e.g. xvfb) from the job table of this bash process
+          disown -ar
       - name: Checkout ${{ github.repository }} @ ${{ github.ref }}
         uses: actions/checkout@v4
         with:
@@ -30,21 +37,30 @@ jobs:
         run: npm run test
       - name: Build Web-Application
         run: npm run build --workspace=web
+      - name: End-To-End Smoke Tests
+        env:
+          DISPLAY: ':99'
+          DBUS_SESSION_BUS_ADDRESS: '/dev/null'
+        run: |
+            npm run build --workspace=app/electron
+            npx vitest run --reporter=dot --config=test/vitest.e2e.js "Frontend" --testNamePattern="SmokeTests"
       - name: Deploy App to CloudFlare
         uses: cloudflare/wrangler-action@v3
+        env:
+          WRANGLER_SEND_METRICS: false
         with:
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          command: |
-            pages deploy ./web/build --project-name=hakuneko --commit-dirty=true
-            pages deploy ./web/build --project-name=haruneko --commit-dirty=true
+          wranglerVersion: 4
+          command: deploy --assets=./web/build --name=hakuneko-app --latest=true
       - name: Build Documentation
         run: npm run build --workspace=docs
       - name: Deploy Docs to CloudFlare
         uses: cloudflare/wrangler-action@v3
+        env:
+          WRANGLER_SEND_METRICS: false
         with:
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          command: |
-            pages deploy ./docs/.vitepress/dist --project-name=hakuneko-docs --commit-dirty=true
-            pages deploy ./docs/.vitepress/dist --project-name=haruneko-docs --commit-dirty=true
+          wranglerVersion: 4
+          command: deploy --assets=./docs/.vitepress/dist --name=hakuneko-docs --latest=true

@@ -1,8 +1,8 @@
-import { FASTElement, type ViewTemplate, type ElementStyles, customElement, html, css, observable, repeat } from '@microsoft/fast-element';
+import { FASTElement, html, css, observable, repeat } from '@microsoft/fast-element';
 import type { DownloadTask } from '../../../engine/DownloadTask';
-import S from '../services/StateService';
+import { LocalizationProviderRegistration, type ILocalizationProvider } from '../services/LocalizationProvider';
 
-const styles: ElementStyles = css`
+const styles = css`
 
     :host {
         display: grid;
@@ -11,8 +11,8 @@ const styles: ElementStyles = css`
     }
 
     #header {
-        padding: calc(var(--base-height-multiplier) * 1px);
-        background-color: var(--neutral-layer-2);
+        padding: var(--spacingHorizontalS);
+        background-color: var(--colorNeutralBackground4);
         display: grid;
         align-items: center;
         grid-template-rows: auto;
@@ -28,14 +28,14 @@ const styles: ElementStyles = css`
     }
 
     .hint {
-        color: var(--neutral-foreground-hint);
+        color: var(--colorNeutralForeground4);
     }
 
     #searchcontrol {
-        padding: calc(var(--base-height-multiplier) * 1px);
-        border-top: calc(var(--stroke-width) * 1px) solid var(--neutral-stroke-divider-rest);
-        border-bottom: calc(var(--stroke-width) * 1px) solid var(--neutral-stroke-divider-rest);
-        background-color: var(--neutral-layer-2);
+        padding: var(--spacingHorizontalS);
+        border-top: var(--strokeWidthThin) solid var(--colorNeutralStrokeSubtle);
+        border-bottom: var(--strokeWidthThin) solid var(--colorNeutralStrokeSubtle);
+        background-color: var(--colorNeutralBackground4);
     }
 
     #entries {
@@ -44,25 +44,28 @@ const styles: ElementStyles = css`
     }
 `;
 
-const listitem: ViewTemplate<DownloadTask> = html`
-    <fluent-download-manager-task :Entry=${model => model}></fluent-download-manager-task>
-`;
+function CreateItemTemplate(_container: DownloadManager) {
+    return html<DownloadTask>`<fluent-download-manager-task :Entry=${model => model}></fluent-download-manager-task>`;
+}
 
-const template: ViewTemplate<DownloadManager> = html`
+const template = html<DownloadManager>`
     <div id="header">
-        <div id="title">${() => S.Locale.Frontend_FluentCore_DownloadManager_Heading()}</div>
+        <div id="title">${model => model.Localization.Locale.Frontend_FluentCore_DownloadManager_Heading()}</div>
         <div class="hint">${model => model.filtered?.length ?? '┄'}／${model => model.Entries?.length ?? '┄'}</div>
     </div>
     <div id="searchcontrol">
         <fluent-searchbox placeholder="" @predicate=${(model, ctx) => model.Match = (ctx.event as CustomEvent<(text: string) => boolean>).detail}></fluent-searchbox>
     </div>
     <div id="entries">
-        ${repeat(model => model.filtered, listitem)}
+        ${repeat(model => model.filtered, CreateItemTemplate)}
     </div>
 `;
 
-@customElement({ name: 'fluent-download-manager', template, styles })
+// TODO: Lazy Scroll?
+
 export class DownloadManager extends FASTElement {
+
+    @LocalizationProviderRegistration Localization: ILocalizationProvider;
 
     override connectedCallback(): void {
         super.connectedCallback();
@@ -93,3 +96,5 @@ export class DownloadManager extends FASTElement {
         this.Entries = HakuNeko.DownloadManager.Queue.Value.slice();
     };
 }
+
+DownloadManager.define({ name: 'fluent-download-manager', template, styles });

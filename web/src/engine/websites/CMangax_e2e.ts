@@ -1,4 +1,3 @@
-﻿/* NW.js crash on website initialize => CloudFlare
 import { TestFixture } from '../../../test/WebsitesFixture';
 
 new TestFixture({
@@ -7,18 +6,17 @@ new TestFixture({
         title: 'CMangax'
     },
     container: {
-        url: 'https://cmangaax.com/album/trong-sinh-chi-quan-chu-80929',
+        url: 'https://cmangax14.com/album/trong-sinh-chi-quan-chu-80929',
         id: '80929',
-        title: 'trọng sinh chi quân chủ'
+        title: 'Trọng Sinh Chi Quân Chủ'
     },
     child: {
         id: '2198086',
-        title: '11'
+        title: 'Chapter 11'
     },
     entry: {
         index: 2,
-        size: 94_988,
-        type: 'image/jpeg'
+        size: 32_766,
+        type: 'image/webp'
     }
 }).AssertWebsite();
-*/

@@ -22,5 +22,5 @@ export abstract class MangaExporter {
         return { name, data };
     }
 
-    public abstract Export(sourceFileList: Map<number, string>, targetDirectory: FileSystemDirectoryHandle, targetBaseName: string): Promise<void>;
+    public abstract Export(sourceFileList: Map<number, string>, targetDirectory: FileSystemDirectoryHandle, chapterTitle: string, mangaTitle?: string): Promise<void>;
 }

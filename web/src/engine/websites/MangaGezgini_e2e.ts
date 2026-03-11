@@ -6,17 +6,17 @@ new TestFixture({
         title: 'Manga Gezgini'
     },
     container: {
-        url: 'https://mangagezgini.site/manga/limit-breaker/',
-        id: JSON.stringify({ post: '873', slug: '/manga/limit-breaker/' }),
-        title: 'Limit Breaker'
+        url: 'https://mangagezgini.online/manga/secilmis-kisi/',
+        id: JSON.stringify({ post: '5486', slug: '/manga/secilmis-kisi/' }),
+        title: 'Seçilmiş Kişi'
     },
     child: {
-        id: '/manga/limit-breaker/limit-breaker-blm-79978c98a1f18c581632860ef90900709a/',
-        title: 'Bölüm 79'
+        id: '/manga/secilmis-kisi/bolum54/',
+        title: 'Bölüm 54'
     },
     entry: {
-        index: 1,
-        size: 748_849,
+        index: 0,
+        size: 962_427,
         type: 'image/jpeg'
     }
 }).AssertWebsite();

@@ -1,12 +1,12 @@
-import { TestFixture, type Config } from '../../../test/WebsitesFixture';
+import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config: Config = {
+new TestFixture({
     plugin: {
         id: 'sektekomik',
         title: 'SEKTEKOMIK.XYZ'
     },
     container: {
-        url: 'https://sektekomik.xyz/manga/existence',
+        url: 'https://sektekomik.id/manga/existence',
         id: '/manga/existence',
         title: 'Existence'
     },
@@ -19,6 +19,4 @@ const config: Config = {
         size: 526_546,
         type: 'image/jpeg'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();
