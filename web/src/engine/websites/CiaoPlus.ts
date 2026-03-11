@@ -24,7 +24,7 @@ type APIChapters = {
 };
 
 type APIPages = {
-    scramble_seed?: number;
+    scramble_seed?: number | string;
     scramble_ver?: number;
     page_list: string[];
 };
@@ -38,6 +38,8 @@ type PageInfo = {
 
 @Common.MangasNotSupported()
 export default class extends DecoratableMangaScraper {
+    private CHARSET_EVEN: string;
+    private CHARSET_ODD: string;
 
     protected readonly drm = new DRMProvider('https://api.ciao.shogakukan.co.jp/', {
         name: 'X-Bambi-Hash',
@@ -55,6 +57,16 @@ export default class extends DecoratableMangaScraper {
         return icon;
     }
 
+    public WithCharsetEVEN(charset: string) {
+        this.CHARSET_EVEN = charset;
+        return this;
+    }
+
+    public WithCharsetODD(charset: string) {
+        this.CHARSET_ODD = charset;
+        return this;
+    }
+
     async #FetchMangaInfo(mangaID: string): Promise<APIManga> {
         return this.drm.FetchAPI<APIManga>('./title/list', {
             title_id_list: parseInt(mangaID).toString()//to remove leading 0,
@@ -67,7 +79,7 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
         const { title_list: [{ title_id, title_name }] } = await this.#FetchMangaInfo(new URL(url).pathname.split('/').at(3));
-        return new Manga(this, provider, title_id.toString(), title_name.trim());
+        return new Manga(this, provider, `${title_id}`, title_name.trim());
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
@@ -81,7 +93,7 @@ export default class extends DecoratableMangaScraper {
             const { episode_list } = await this.drm.FetchAPI<APIChapters>(`./episode/list`, {
                 episode_id_list: chapterIDs.splice(0, 50).join(','),
             });
-            chapters.push(...episode_list.map(chapter => new Chapter(this, manga, chapter.episode_id.toString(), chapter.episode_name.trim())));
+            chapters.push(...episode_list.map(({ episode_id: id, episode_name: name }) => new Chapter(this, manga, `${id}`, name.trim())));
         };
         return chapters;
     }
@@ -92,7 +104,13 @@ export default class extends DecoratableMangaScraper {
         });
         // ShonenMagazine uses the same scrambling algorithm as CiaoPlus v2, but reports scramble_version as 1.
         // Set version to -1 here to force the correct descrambling function.
-        return page_list.map(page => new Page<PageInfo>(this, chapter, new URL(page), { seed: scramble_seed ?? 1, version: scramble_ver ?? -1 }));
+
+        // ShonenMagazine also use a string as seed, so we need to compute the correct seed (as a number)
+        const mangaId = parseInt(chapter.Parent.Identifier);
+        const charset = mangaId % 2 === 0 ? this.CHARSET_EVEN : this.CHARSET_ODD;
+
+        const seed = typeof scramble_seed === 'string' ? ComputeSeed32(scramble_seed, charset, mangaId, parseInt(chapter.Identifier)) : scramble_seed as number ?? 1;
+        return page_list.map(page => new Page<PageInfo>(this, chapter, new URL(page), { seed, version: scramble_ver ?? -1 }));
     }
 
     public override async FetchImage(page: Page<PageInfo>, priority: Priority, signal: AbortSignal): Promise<Blob> {
@@ -122,6 +140,7 @@ export class DRMProvider {
         readonly fixedHeaders: RequestInit = {}, readonly fixedUrlParams: Record<string, string> = {}) { }
 
     public async FetchAPI<T extends JSONElement>(endpoint: string, parameters: Record<string, string>, init: RequestInit = { method: 'GET' }): Promise<T> {
+        return FetchJSON<T>(await this.#CreateRequest(endpoint, init, parameters));
     }
 
     async #CreateRequest(endpoint: string, init: RequestInit, parameters: Record<string, string>) {
@@ -144,8 +163,8 @@ export class DRMProvider {
             await this.#ComputeSHA(key, 'SHA-256'),
             await this.#ComputeSHA(value, 'SHA-512'),
         ].join('_')));
-        const aggreagteHash = await this.#ComputeSHA(parameterHashes.join(','), 'SHA-256');
-        return this.#ComputeSHA(aggreagteHash + seed, 'SHA-512');
+        const aggregateHash = await this.#ComputeSHA(parameterHashes.join(','), 'SHA-256');
+        return this.#ComputeSHA(aggregateHash + seed, 'SHA-512');
     }
 
     async #ComputeSHA(text: string, algorithm: 'SHA-256' | 'SHA-512'): Promise<string> {
@@ -157,7 +176,7 @@ export class DRMProvider {
 // Copy & Paste from Website
 
 const COL_NUM = 4;
-const O = 8;
+const MULTIPLE_NUM = 8;
 
 // ot
 const CreateXorShift32 = function* (seed: number) {
@@ -209,7 +228,7 @@ const ComputeLCMBlockDimensions = (width: number, height: number, gridSize: numb
     if (width < gridSize || height < gridSize) {
         return null;
     }
-    const s = GetLeastCommonMultiple(gridSize, O);
+    const s = GetLeastCommonMultiple(gridSize, MULTIPLE_NUM);
     if (width > s && height > s) {
         width = Math.floor(width / s) * s;
         height = Math.floor(height / s) * s;
@@ -222,15 +241,37 @@ const ComputeLCMBlockDimensions = (width: number, height: number, gridSize: numb
 
 // nt
 const ComputeGridBlockDimensions = (width: number, height: number, gridSize: number) => {
-    if (width < gridSize * O || height < gridSize * O) {
+    if (width < gridSize * MULTIPLE_NUM || height < gridSize * MULTIPLE_NUM) {
         return null;
     }
-    const s = Math.floor(width / O);
-    const r = Math.floor(height / O);
+    const s = Math.floor(width / MULTIPLE_NUM);
+    const r = Math.floor(height / MULTIPLE_NUM);
     const i = Math.floor(s / gridSize);
     const c = Math.floor(r / gridSize);
     return {
-        width: i * O,
-        height: c * O
+        width: i * MULTIPLE_NUM,
+        height: c * MULTIPLE_NUM
     };
+};
+
+// Compute seed from initial seed (string)
+const ComputeSeed32= (seed: string, charset: string, titleId: number, episodeId: number) => {
+    // Convert string to base-10 number using charset
+    let parsedInt = 0n;
+    for (const char of seed) {
+        const index = charset.indexOf(char);
+        if (index !== -1) {
+            parsedInt = parsedInt * 10n + BigInt(index);
+        } else {
+            break;
+        }
+    }
+    // Keep only lowest 32 bits
+    const parsedUInt32 = Number(parsedInt & 0xFFFFFFFFn);
+
+    // Compute titleId + episodeId as unsigned 32-bit
+    const combined = (titleId >>> 0) + (episodeId >>> 0);
+
+    // XOR and ensure result is unsigned 32-bit
+    return (parsedUInt32 ^ combined) >>> 0;
 };
