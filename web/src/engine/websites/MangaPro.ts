@@ -1,7 +1,7 @@
 import { GetBytesFromURLBase64 } from '../BufferEncoder';
 import { Tags } from '../Tags';
-import { FetchJSON, FetchNextJS } from '../platform/FetchProvider';
-import { Chapter, DecoratableMangaScraper, type Manga, /*type MangaPlugin , */ Page } from '../providers/MangaPlugin';
+import { FetchJSON, FetchNextJS, FetchWindowScript } from '../platform/FetchProvider';
+import { Chapter, DecoratableMangaScraper, Manga, type MangaPlugin, Page } from '../providers/MangaPlugin';
 import type { Priority } from '../taskpool/TaskPool';
 import DeScramble from '../transformers/ImageDescrambler';
 import icon from './MangaPro.webp';
@@ -72,10 +72,10 @@ type SessionKey = {
     key?: string;
 };
 
-@Common.MangasNotSupported()
 @Common.MangaCSS<HTMLMetaElement>(/^{origin}\/series\/(manga|manhua|manhwa)\/\d+\/[^/]+$/, 'meta[property="og:image:alt"]')
 export default class extends DecoratableMangaScraper {
     private readonly apiUrl = 'https://prochan.net/api/';
+    private readonly turnstileApiKey = '0x4AAAAAACk1d7qWJi_of2qU';
 
     public constructor() {
         super('mangapro', 'ProChan', 'https://prochan.net', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Arabic, Tags.Source.Scanlator);
@@ -83,6 +83,77 @@ export default class extends DecoratableMangaScraper {
 
     public override get Icon() {
         return icon;
+    }
+
+    public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
+        const mangascript =`
+            new Promise(function (resolve, reject) {
+                const element = document.createElement('div');
+                document.body.appendChild(element);
+
+                const mangalist = [];
+
+                // Turnstile wrapper
+                function requestWithTurnstile(url) {
+                    return new Promise(function (resolve, reject) {
+                        turnstile.render(element, {
+                            sitekey: '${this.turnstileApiKey}',
+                            callback: async function (token) {
+                                try {
+                                    const res = await fetch(url, {
+                                        method: "GET",
+                                        headers: {
+                                            "Content-Type": "application/json",
+                                            "x-turnstile-token": token
+                                        }
+                                    });
+
+                                    if (!res.ok) throw new Error("HTTP " + res.status);
+
+                                    const json = await res.json();
+                                    resolve(json);
+                                } catch (err) {
+                                    reject(err);
+                                }
+                            }
+                        });
+                    });
+                }
+
+                // Async IIFE for pagination
+                (async function () {
+                    try {
+                        for (let page = 1; ; page++) {
+                            const result = await requestWithTurnstile(
+                                "/api/public/series/search?status=approved&limit=50&page=" + page + "&sort=latest"
+                            );
+
+                            const data = result.data;
+
+                            if (data.length === 0) break;
+
+                            const mangas = data
+                                .filter(function (item) { return item.type !== "novel"; })
+                                .map(function (item) {
+                                    return {
+                                        id: "/series/" + item.type + "/" + item.id + "/" + item.slug,
+                                        title: item.title
+                                    };
+                                });
+
+                            mangalist.push(...mangas);
+                        }
+
+                        resolve(mangalist);
+                    } catch (err) {
+                        reject(err);
+                    }
+                })();
+            });
+        `;
+
+        const mangas = await FetchWindowScript<{ id: string, title: string }[]>(new Request(new URL('/series', this.URI)), mangascript, 3000, 60_000);
+        return mangas.map(manga => new Manga(this, provider, manga.id, manga.title));
     }
 
     /* // API need a new turnstile token for each request, so disabled for now
@@ -112,12 +183,65 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchPages(chapter: Chapter): Promise<Page<PageData>[]> {
         const chapterUrl = new URL(chapter.Identifier, this.URI);
+        const chapterId = chapterUrl.pathname.split('/').at(-2);
         const { images, deferredMedia: { token } } = await FetchNextJS<ImagesData>(new Request(chapterUrl), data => 'deferredMedia' in data);
 
         // Regular images
         const pages = images.map(image => new Page<PageData>(this, chapter, new URL(image, this.URI), { Referer: chapterUrl.href }));
 
-        const { data: { images: deferredImages, maps } } = await this.FetchAPI<APIResult<DeferredData>>(`./chapter-deferred-media/${chapterUrl.pathname.split('/').at(-2)}?token=${encodeURIComponent(token)}`, this.URI.origin);
+        // deffered images
+
+        const pageScript = `
+            new Promise(async (resolve, reject) => {
+                try {
+                    if (!window.turnstile) throw new Error("Turnstile is not loaded");
+
+                    // Temporary container for the widget
+                    const container = document.createElement("div");
+                    document.body.appendChild(container);
+
+                    // Render the Turnstile widget
+                    turnstile.render(container, {
+                        sitekey: '${this.turnstileApiKey}',
+                        callback: async function(token) {
+                            try {
+                                document.body.removeChild(container);
+
+                                // Build URL without template strings
+                                const url = '/chapter-deferred-media/' + ${JSON.stringify(chapterId)} + '?token=' + ${JSON.stringify(encodeURIComponent(token))};
+
+                                // Use token in fetch request
+                                const response = await fetch(url, {
+                                    method: "GET",
+                                    headers: {
+                                        "Content-Type": "application/json",
+                                        "X-Turnstile-Token": token
+                                    },
+                                });
+
+                                if (!response.ok) throw new Error("HTTP error! status: " + response.status);
+
+                                const json = await response.json();
+                                resolve(json); // resolves the promise with JSON
+                            } catch (err) {
+                                reject(err);
+                            }
+                        },
+                        "error-callback": function() {
+                            document.body.removeChild(container);
+                            reject(new Error("Turnstile failed to generate a token"));
+                        },
+                        "expired-callback": function() {
+                            document.body.removeChild(container);
+                            reject(new Error("Turnstile token expired"));
+                        }
+                    });
+                } catch (err) {
+                    reject(err);
+                }
+            });
+        const { data: { images: deferredImages, maps } } = await FetchWindowScript<APIResult<DeferredData>>(new Request(chapterUrl), pageScript, 3000, 10_000);
+        //const { data: { images: deferredImages, maps } } = await this.FetchAPI<APIResult<DeferredData>>(`./chapter-deferred-media/${chapterUrl.pathname.split('/').at(-2) }?token=${encodeURIComponent(token)}`, this.URI.origin);
 
         // Delayed images: regular images
         for (let image of deferredImages) {
