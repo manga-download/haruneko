@@ -155,15 +155,36 @@ export class Directory extends Setting<FileSystemDirectoryHandle> {
 
     /**
      * Check if the directory is accessible and optionally tries to elevate permissions (user prompt).
-     * This method must be invoked through user interaction (e.g., click event).
+     * This method should be invoked through user interaction (e.g., click event) when requesting new permissions.
+     * When called outside of user interaction, it will attempt to verify existing permissions.
      * @throws {@link Exception} if the directory is not set or the permission for write access was denied
      */
     public async EnsureAccess(): Promise<void> {
         if(!this.Value) {
             throw new Exception(EngineResourceKey.Settings_Global_MediaDirectory_UnsetError);
         }
-        if(await this.Value.queryPermission({ mode: 'readwrite' }) !== 'granted' && await this.Value.requestPermission({ mode: 'readwrite' }) !== 'granted') {
-            throw new Exception(EngineResourceKey.Settings_Global_MediaDirectory_PermissionError);
+        
+        // Try to request permission directly first
+        // If permission is already granted, this returns immediately without a prompt
+        // If permission is not granted, this will prompt the user (requires user activation)
+        try {
+            const permission = await this.Value.requestPermission({ mode: 'readwrite' });
+            if(permission !== 'granted') {
+                throw new Exception(EngineResourceKey.Settings_Global_MediaDirectory_PermissionError);
+            }
+        } catch(error) {
+            // If requestPermission fails due to lack of user activation (SecurityError),
+            // fall back to checking if we already have permissions
+            if(error instanceof DOMException && error.name === 'SecurityError') {
+                // Check if we already have the required permission
+                const permission = await this.Value.queryPermission({ mode: 'readwrite' });
+                if(permission === 'granted') {
+                    return; // Permission already granted, no user interaction needed
+                }
+                // Permission not granted and we can't request it - throw error
+                throw new Exception(EngineResourceKey.Settings_Global_MediaDirectory_PermissionError);
+            }
+            throw error;
         }
     }
 }
