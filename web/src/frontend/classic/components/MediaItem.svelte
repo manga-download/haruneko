@@ -128,8 +128,9 @@
     {onmousedown}
     {onmouseenter}
 >
-    {#if !downloadTaskStatus} 
+    {#if !downloadTaskStatus}
         <Button
+            role="download"
             size="small"
             kind="ghost"
             tooltipPosition="right"
@@ -171,7 +172,7 @@
         >
             <Download fill="var(--cds-support-info)" />
         </Button>
-        
+
     {:else if downloadTaskStatus === Status.Processing}
         <Button
             size="small"
@@ -215,6 +216,7 @@
         </Button>
     {/if}
     <Button
+        role="preview"
         size="small"
         kind="ghost"
         icon={flagicon}

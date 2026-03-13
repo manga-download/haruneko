@@ -7,22 +7,15 @@ import type { Priority } from '../taskpool/DeferredTask';
 import DeScramble from '../transformers/ImageDescrambler';
 
 type APIResult<T> = {
-    result: null | T
-}
+    result: null | T;
+};
 
 type PageResult = {
-    [id: string]: string
-}
+    [id: string]: string;
+};
 
-function MangaExtractor(element: HTMLAnchorElement) {
-    return {
-        id: new URL(element.href).searchParams.get('work_code'),
-        title: element.querySelector('div.work_name').textContent.trim()
-    };
-
-}
-
-@Common.MangasSinglePageCSS('/ranking', 'div.ranking a.parent', MangaExtractor)
+@Common.MangasSinglePageCSS<HTMLAnchorElement>('/ranking/', 'div.ranking a.parent',
+    anchor => ({ id: new URL(anchor.href).searchParams.get('work_code'), title: anchor.querySelector('div.work_name').textContent.trim() }))
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
@@ -48,7 +41,7 @@ export default class extends DecoratableMangaScraper {
         url.search = new URLSearchParams({
             work_code: manga.Identifier,
             mode: 'ajax_stories',
-            _: Date.now().toString()
+            _: `${Date.now()}`
         }).toString();
 
         const { result } = await FetchJSON<APIResult<string>>(new Request(url, {
@@ -60,7 +53,7 @@ export default class extends DecoratableMangaScraper {
         const dom = new DOMParser().parseFromString(result, 'text/html');
         const nodes = [...dom.querySelectorAll<HTMLAnchorElement>('a[id].parent')];
         return nodes.map(node => {
-            const chapterid = new URL(node.href, this.URI).searchParams.get('story_id') ?? node.href.match(/dialog\('(\d+)'\)/)[1];
+            const chapterid = new URL(node.href, this.URI).searchParams.get('story_id') ?? node.href.match(/dialog\('(\d+)'\)/).at(1);
             return new Chapter(this, manga, chapterid, node.querySelector('div.episode_name').textContent.trim());
         });
     }
@@ -181,7 +174,7 @@ export default class extends DecoratableMangaScraper {
         });
     }
 
-    GetScrambleType(href: string): number {
+    private GetScrambleType(href: string): number {
         let t = 0;
         href = href.split('/').at(-1);
         const ptn: RegExp = /^[0-9]$/;

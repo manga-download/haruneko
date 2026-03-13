@@ -32,7 +32,7 @@ export default class extends DecoratableMangaScraper {
     private readonly apiUrl = 'https://api.shngm.io/v1/';
 
     public constructor() {
-        super('shinigamiid', `Shinigami ID`, 'https://09.shinigami.asia', Tags.Language.Indonesian, Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Source.Scanlator, Tags.Accessibility.DomainRotation);
+        super('shinigamiid', `Shinigami ID`, 'https://b.shinigami.asia', Tags.Language.Indonesian, Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Source.Scanlator, Tags.Accessibility.DomainRotation);
     }
 
     public override get Icon() {
@@ -45,7 +45,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override ValidateMangaURL(url: string): boolean {
-        return new RegExpSafe(`^https?://\\d+.shinigami.asia/series/[^/]+$`).test(url);
+        return new RegExpSafe(`^https?://[^/.]+.shinigami.asia/series/[^/]+$`).test(url);
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
