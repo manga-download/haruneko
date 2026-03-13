@@ -10,13 +10,18 @@
     } from '../../stores/Stores';
     import { FlagType } from '../../../../engine/ItemflagManager';
 
-    export let mode: 'Image' | 'Video' = 'Image';
-    export let item: MediaContainer<MediaItem>;
-    let displayedItem: MediaContainer<MediaItem>;;
-    let currentImageIndex: number = -1;
+    interface Props {
+        mode?: 'Image' | 'Video';
+        item: MediaContainer<MediaItem>;
+    }
+    let { mode = 'Image', item }: Props = $props();
+    let displayedItem: MediaContainer<MediaItem> = $state();;
+    let currentImageIndex: number = $state(-1);
 
-    let updating: Promise<void> | undefined;
-    $: refresh(item);
+    let updating: Promise<void> | undefined = $state();
+    $effect(() => {
+        refresh(item);
+    });
     async function refresh(item: MediaContainer<MediaItem>) {
         updating = item.Update();
         updating.catch(() => {
