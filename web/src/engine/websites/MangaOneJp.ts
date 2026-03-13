@@ -62,7 +62,7 @@ type WebViewerResponse = {
 
 type PageProto = {
     image?: {
-        imageUrl: string
+        imageUrl: string;
     }
 };
 
@@ -107,9 +107,9 @@ export default class extends DecoratableMangaScraper {
         ];
     }
 
-    private async FetchMediaItem(manga: Manga, mediatype: 'chapter' | 'volume'): Promise<Chapter[]> {
-        const url = new URL(`?rq=viewer/chapter_list&title_id=${manga.Identifier}&page=1&limit=9999&sort_type=desc&type=${mediatype}`, this.apiUrl);
-        switch (mediatype) {
+    private async FetchMediaItem(manga: Manga, mediaType: 'chapter' | 'volume'): Promise<Chapter[]> {
+        const url = new URL(`?rq=viewer/chapter_list&title_id=${manga.Identifier}&page=1&limit=9999&sort_type=desc&type=${mediaType}`, this.apiUrl);
+        switch (mediaType) {
             case 'chapter': {
                 const { chapterList: { chapterList } } = await FetchProto<WebChapterListForViewerResponse>(new Request(url), protoTypes, 'MangaOneJp.WebChapterListForViewerResponse');
                 return chapterList.map(({ chapterId, chapterName, description }) => {
