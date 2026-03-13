@@ -6,7 +6,7 @@ new TestFixture({
         title: 'CMangax'
     },
     container: {
-        url: 'https://cmangax14.com/album/trong-sinh-chi-quan-chu-80929',
+        url: 'https://cmangax15.com/album/trong-sinh-chi-quan-chu-80929',
         id: '80929',
         title: 'Trọng Sinh Chi Quân Chủ'
     },
