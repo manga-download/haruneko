@@ -57,7 +57,7 @@ type WebViewerResponse = {
     aesIv: string;
     aesKey: string;
     currentTitle: APITitle;
-    pages: PageProto[];
+    pages?: PageProto[];
 };
 
 type PageProto = {
@@ -67,8 +67,8 @@ type PageProto = {
 };
 
 type PageParameters = {
-    key: string;
-    iv: string;
+    aesKey: string;
+    aesIv: string;
 };
 
 export default class extends DecoratableMangaScraper {
@@ -127,27 +127,31 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchPages(chapter: Chapter): Promise<Page<PageParameters>[]> {
         const { id, type }: ItemID = JSON.parse(chapter.Identifier);
+        const { pages, aesIv, aesKey } = await this.GetWebViewerResponse(chapter.Parent.Identifier, `${id}`, type, data => 'pages' in data);
+        if (!pages)
+            throw new Exception(R.Plugin_Common_Chapter_UnavailableError);
 
-        let data = await this.GetWebViewerResponse(chapter.Parent.Identifier, `${id}`, type);
-        if (!data.pages) {
-            data = await this.GetWebViewerResponse(chapter.Parent.Identifier, `${id}`, type, true);
-            if (!data.pages)
-                throw new Exception(R.Plugin_Common_Chapter_UnavailableError);
-        }
-        return data.pages.filter(page => page.image)
-            .map(({ image: { imageUrl } }) => new Page<PageParameters>(this, chapter, new URL(imageUrl), { key: data.aesKey, iv: data.aesIv }));
+        return pages.filter(page => page.image)
+            .map(({ image: { imageUrl } }) => new Page<PageParameters>(this, chapter, new URL(imageUrl), { aesKey, aesIv }));
     }
 
-    private async GetWebViewerResponse(mangaId: string, itemId: string, type: string, isTrial: boolean = false): Promise<WebViewerResponse> {
-        const url = new URL(`?rq=viewer_v2&title_id=${mangaId}&viewer_type=${type}&is_trial=${isTrial}`, this.apiUrl);
+    private async GetWebViewerResponse(mangaId: string, itemId: string, type: string, validator: (data: JSONObject<JSONElement> | JSONArray<JSONElement>) => unknown = undefined): Promise<WebViewerResponse> {
+        const url = new URL(`?rq=viewer_v2&title_id=${mangaId}&viewer_type=${type}&is_trial=false`, this.apiUrl);
         url.searchParams.set(type === 'volume' ? 'volume_id_for_read' : 'chapter_id', itemId);
-        return await FetchProto<WebViewerResponse>(new Request(url, { method: 'POST' }), protoTypes, 'MangaOneJp.WebViewerResponse');
+
+        const result = await FetchProto<WebViewerResponse>(new Request(url, { method: 'POST' }), protoTypes, 'MangaOneJp.WebViewerResponse');
+        if (!validator || validator(result)) {
+            return result;
+        }
+
+        url.searchParams.set('is_trial', 'true');
+        return FetchProto<WebViewerResponse>(new Request(url, { method: 'POST' }), protoTypes, 'MangaOneJp.WebViewerResponse');
     }
 
     public override async FetchImage(page: Page<PageParameters>, priority: Priority, signal: AbortSignal): Promise<Blob> {
         const blob = await Common.FetchImageAjax.call(this, page, priority, signal, true);
-        const { key, iv } = page.Parameters;
-        return key && iv ? this.DecryptPicture(blob, key, iv) : blob;
+        const { aesKey, aesIv } = page.Parameters;
+        return aesKey && aesIv ? this.DecryptPicture(blob, aesKey, aesIv) : blob;
     }
 
     private async DecryptPicture(encrypted: Blob, key: string, iv: string): Promise<Blob> {
