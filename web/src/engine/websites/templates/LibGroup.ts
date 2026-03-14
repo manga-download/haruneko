@@ -139,9 +139,9 @@ export class LibGroup extends DecoratableMangaScraper {
     public override async Initialize(): Promise<void> {
         const { data: { imageServers } } = await FetchJSON<APIServers>(new Request(new URL('./constants?fields[]=imageServers', this.apiUrl)));
 
-        this.Servers.main = imageServers.find(({ id, site_ids: siteIds }) => id === 'main' && siteIds.includes(this.siteID))?.url;
-        this.Servers.secondary = imageServers.find(({ id, site_ids: siteIds }) => id === 'secondary' && siteIds.includes(this.siteID))?.url;
-        this.Servers.compress = imageServers.find(({ id, site_ids: siteIds }) => id === 'compress' && siteIds.includes(this.siteID))?.url;
+        for (const serverName of ['main', 'secondary', 'compress']) {
+            this.Servers[serverName] = imageServers.find(({ id, site_ids: siteIds }) => id === serverName && siteIds.includes(this.siteID))?.url;
+        }
 
         // TODO: Update the token whenever the user performs a login/logout through manual website interaction
         await this.tokenProvider.UpdateToken();
