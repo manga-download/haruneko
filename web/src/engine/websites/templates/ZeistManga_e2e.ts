@@ -1,3 +1,4 @@
+import '../AesirScans_e2e';
 import '../DatgarScan_e2e';
 import '../KazeScans_e2e';
 import '../MangaOrigin_e2e';

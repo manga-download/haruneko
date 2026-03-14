@@ -1,6 +1,7 @@
 // Implemented Websites
 export { default as ACGN } from './ACGN';
 export { default as AdonisFansub } from './AdonisFansub';
+export { default as AesirScans } from './AesirScans';
 export { default as AethraScans } from './AethraScans';
 export { default as AGCScanlation } from './AGCScanlation';
 export { default as Ainzscans } from './Ainzscans';
