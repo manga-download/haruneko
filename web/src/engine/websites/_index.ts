@@ -135,6 +135,7 @@ export { default as EighteenComic } from './EighteenComic';
 export { default as EightMuses } from './EightMuses';
 export { default as EightMusesXXX } from './EightMusesXXX';
 export { default as ElderManga } from './ElderManga';
+export { default as EldraScans } from './EldraScans';
 export { default as ElevenToon } from './ElevenToon';
 export { default as ElfToon } from './ElfToon';
 export { default as ErosScans } from './ErosScans';
