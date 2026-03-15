@@ -150,6 +150,7 @@ export { default as FireComics } from './FireComics';
 export { default as FlameComics } from './FlameComics';
 export { default as FlashManga } from './FlashManga';
 export { default as FlowerComics } from './FlowerComics';
+export { default as FlowerMangas } from './FlowerMangas';
 export { default as FMTeam } from './FMTeam';
 export { default as FoxTruyen } from './FoxTruyen';
 export { default as FuryoSociety } from './FuryoSociety';
