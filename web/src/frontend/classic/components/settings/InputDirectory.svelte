@@ -5,8 +5,11 @@
     import { Locale } from '../../stores/Settings';
     import SettingItem from './SettingItem.svelte';
 
-    export let setting: Directory;
-    let value: FileSystemDirectoryHandle = setting.Value;
+    interface Props {
+        setting: Directory;
+    }
+    let { setting }: Props = $props();
+    let value: FileSystemDirectoryHandle = $state(setting.Value);
 
     onMount(() => {
         setting.Subscribe(OnValueChanged);
