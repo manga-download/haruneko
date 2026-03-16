@@ -57,7 +57,29 @@ async function OpenWindow() {
         win.showDevTools();
     }
 
+    // Fallback: Show window after 10 seconds if web app hasn't shown it
+    // This ensures the window is visible even if the web app fails to load
+    let showTimeout: ReturnType<typeof setTimeout> | null = setTimeout(() => {
+        if(!win.isVisible()) {
+            console.warn('Web app did not show window within timeout, showing window as fallback');
+            win.show();
+        }
+        showTimeout = null;
+    }, 10000);
+
+    // Clear timeout when web app loads successfully
+    win.on('loaded', () => {
+        if(showTimeout) {
+            clearTimeout(showTimeout);
+            showTimeout = null;
+        }
+    });
+
     win.on('close', () => {
+        if(showTimeout) {
+            clearTimeout(showTimeout);
+            showTimeout = null;
+        }
         rpc.Stop();
         nw.App.closeAllWindows();
         nw.App.quit();
