@@ -3,92 +3,96 @@ import { type MangaScraper, type Chapter, Page } from '../../providers/MangaPlug
 import type { Priority } from '../../taskpool/TaskPool';
 import * as Common from './Common';
 import DeScramble from '../../transformers/ImageDescrambler';
+import { GetTypedData } from './Common';
+import { GetBytesFromBase64 } from '../../BufferEncoder';
 
 type ViewerData = {
     viewerUrl: URL;
-    SBHtmlElement: HTMLElement
-}
+    SBHtmlElement: HTMLElement;
+};
 
 type SpeedBinbParameters = {
-    viewerUrl : URL,
-    cid: string,
-    sharingKey: string,
-    dmytime,
-    u0: string,
-    u1: string,
-    config: ContentConfiguration
-}
+    viewerUrl: URL;
+    cid: string;
+    sharingKey: string;
+    dmytime: string;
+    u0: string;
+    u1: string;
+    config: ContentConfiguration;
+};
 
 type JSONPageData = {
-    items: ContentConfiguration[]
-}
+    items: ContentConfiguration[];
+};
 
 type ContentConfiguration = {
-    ContentID: string,
-    ctbl: string | string[],
-    ptbl: string | string[],
-    ServerType: number | string
-    ContentsServer: string,
-    p: string,
-    ViewMode: number,
-    ContentDate: string
-}
+    ContentID: string;
+    ctbl: string | string[];
+    ptbl: string | string[];
+    ServerType: number | string;
+    ContentsServer: string;
+    p: string;
+    ViewMode: number;
+    ContentDate: string;
+};
 
 type JSONImageData = {
     resources: {
         i: {
-            src: string
+            src: string;
         }
     }
-    views: {
-        coords: string[],
-        width: number,
-        height: number
-    }[]
-}
+    views: View[];
+};
+
+type View = {
+    coords: string[];
+    width: number;
+    height: number;
+};
 
 type PageViewv016130 = {
     transfers: {
-        index: number,
-        coords: DrawImageCoords[]
+        index: number;
+        coords: DrawImageCoords[];
     }[],
-    width: number,
-    height: number
-}
+    width: number;
+    height: number;
+};
 
 type DrawImageCoords = {
-    height: number,
-    width: number,
-    xdest: number,
-    xsrc: number,
-    ydest: number,
-    ysrc: number
-}
+    height: number;
+    width: number;
+    xdest: number;
+    xsrc: number;
+    ydest: number;
+    ysrc: number;
+};
 
 type SBCDATA = {
     ttx: string;
-}
+};
 
 type DescrambleKP = {
-    s: string,
-    u: string
-}
+    s: string;
+    u: string;
+};
 
 type Dimensions = {
-    width: number,
-    height: number
-}
+    width: number;
+    height: number;
+};
 
 const JsonFetchScript = `
-    new Promise((resolve, reject) => {
+    new Promise(async (resolve, reject) => {
         try {
-            fetch('{URI}')
-                .then(response => response.json())
-                .then(json => resolve(json))
+            const response = await fetch('{URI}');
+            const json = await response.json();
+            resolve(json);
         } catch (error) {
             reject(error);
         }
-    });
+    })
 `;
 
 export enum SpeedBindVersion { v016061, v016452, v016201, v016130 };
@@ -106,13 +110,11 @@ function getSanitizedURL(base: string, append: string): URL {
  */
 async function GetViewerInformations(this: MangaScraper, chapter: Chapter): Promise<ViewerData> {
     let viewerUrl = new URL(chapter.Identifier, this.URI);
-    const request = new Request(viewerUrl, {
+    const response = await Fetch(new Request(viewerUrl, {
         headers: {
             Referer: this.URI.href
         }
-    });
-
-    const response = await Fetch(request);
+    }));
     const dom = new DOMParser().parseFromString(await response.text(), 'text/html');
     const SBHtmlElement = dom.querySelector<HTMLElement>('div#content.pages');
     //handle redirection. Sometimes chapter is redirected
@@ -147,13 +149,11 @@ async function GetSBParameters(viewerUrl: URL, sbHtmlElement: HTMLElement, needC
     if (u0) uri.searchParams.set('u0', u0);
     if (u1) uri.searchParams.set('u1', u1);
 
-    const request = new Request(uri, {
+    const { items } = !needCookies ? await FetchJSON<JSONPageData>(new Request(uri, {
         headers: {
             Referer: viewerUrl.href
         }
-    });
-
-    const { items } = !needCookies ? await FetchJSON<JSONPageData>(request) :
+    })) :
         await FetchWindowScript<JSONPageData>(new Request(viewerUrl), JsonFetchScript.replace('{URI}', uri.href), 2000);
 
     return { viewerUrl, cid, sharingKey, dmytime, u0, u1, config: items.at(0) };
@@ -178,7 +178,7 @@ export async function FetchPagesSinglePageAjax(this: MangaScraper, chapter: Chap
 
     //easy mode : pages are just an array of div
     if (version == SpeedBindVersion.v016061) {
-        //ComicBrise, Kirapo, ComicPorta, ComicValKyrie, MichiKusa, OneTwoThreeHon, TKSuperheroComics
+        //Kirapo, ComicPorta, Kimicomi, MichiKusa, OneTwoThreeHon, TKSuperheroComics
         const [...imageConfigurations] = SBHtmlElement.querySelectorAll<HTMLDivElement>('div[data-ptimg$="ptimg.json"]');
         return imageConfigurations.map(element => new Page(this, chapter, new URL(element.dataset.ptimg, viewerUrl.href)));
     }
@@ -256,7 +256,7 @@ async function FetchPagesLinks(this: MangaScraper, params: SpeedBinbParameters, 
     return Promise.reject(new Error('Content server type not supported!'));
 }
 
-async function ExtractPages(uri: URL, replaceFrom : string, replaceto: string, configuration: ContentConfiguration, chapter: Chapter, setSrc = false): Promise<Page[]> {
+async function ExtractPages(uri: URL, replaceFrom: string, replaceto: string, configuration: ContentConfiguration, chapter: Chapter, setSrc = false): Promise<Page[]> {
     const response = await Fetch(new Request(uri, { headers: { Referer: this.URI.href } }));
     const data = await response.text();
     const { ttx }: SBCDATA = data.startsWith('DataGet_Content(') ? JSON.parse(data.slice(16, -1)) : JSON.parse(data);
@@ -290,47 +290,53 @@ async function ExtractPages(uri: URL, replaceFrom : string, replaceto: string, c
  */
 export async function FetchImageAjax(this: MangaScraper, page: Page, priority: Priority, signal: AbortSignal, detectMimeType = false): Promise<Blob> {
     switch (true) {
-        case page.Link.href.endsWith('ptimg.json'):
-            return await descramble_v016061(this, page, priority, signal, detectMimeType);
+        case page.Link.href.endsWith('ptimg.json'): {
+        // descramble_v016061
+            return this.imageTaskPool.Add(async () => {
+                //Fetch JSON
+                const { resources: { i: { src } }, views } = await FetchJSON<JSONImageData>(new Request(page.Link));
+                //Fetch IMAGE
+                const response = await Fetch(new Request(new URL(src, page.Link.href), {
+                    signal,
+                    headers: {
+                        'Referer': page.Parameters?.Referer ?? page.Link.origin,
+                    }
+                }));
+                const blob = detectMimeType ? await GetTypedData(await response.arrayBuffer()) : await response.blob();
+                return DeScramble(blob, async (image, ctx) => {
+                    for (const part of views.at(0).coords) {
+                        /*const num = part.split(/[:,+>]/);
+                        const sourceX = parseInt(num[1]);
+                        const sourceY = parseInt(num[2]);
+                        const targetX = parseInt(num[5]);
+                        const targetY = parseInt(num[6]);
+                        const partWidth = parseInt(num[3]);
+                        const partHeight = parseInt(num[4]);
+                        */
+                        const [, sourceX, sourceY, partWidth, partHeight, targetX, targetY] = part.split(/[:,+>]/).map(num => parseInt(num));
+                        ctx.drawImage(image, sourceX, sourceY, partWidth, partHeight, targetX, targetY, partWidth, partHeight);
+                    }
+                });
+            }, priority, signal);
+        }
+
         case page.Link.href.includes('sbcGetImg'):
         case page.Link.href.includes('M_L.jpg'):
         case page.Link.href.includes('M_H.jpg'):
-        case page.Link.href.includes('/img/'):
-            return await descramble_v016130(this, page, priority, signal, detectMimeType);
+        case page.Link.href.includes('/img/'): { //descramble_v016130
+
+            const blob: Blob = await Common.FetchImageAjax.call(this, page, priority, signal, detectMimeType);
+            const { s, u }: DescrambleKP = JSON.parse(new TextDecoder().decode(GetBytesFromBase64(page.Link.hash.slice(1))));
+            return DeScramble(blob, async (image, ctx) => {
+                const view = getImageDescrambleCoords(s, u, image.width, image.height);
+                for (const part of view.transfers[0].coords) {
+                    ctx.drawImage(image, part.xsrc, part.ysrc, part.width, part.height, part.xdest, part.ydest, part.width, part.height);
+                }
+            });
+        }
+
     }
     throw new Error('Unsupported version of SpeedBinb reader!');
-}
-
-async function descramble_v016061(scraper: MangaScraper, page: Page, priority: Priority, signal: AbortSignal, detectMimeType = false): Promise<Blob> {
-    const { resources: { i: { src } }, views } = await FetchJSON<JSONImageData>(new Request(page.Link));
-    const fakepage = new Page(scraper, page.Parent as Chapter, new URL(src, page.Link.href));
-    const imagedata: Blob = await Common.FetchImageAjax.call(scraper, fakepage, priority, signal, detectMimeType);
-
-    return DeScramble(imagedata, async (image, ctx) => {
-
-        for (const part of views.at(0).coords) {
-            const num = part.split(/[:,+>]/);
-            const sourceX = parseInt(num[1]);
-            const sourceY = parseInt(num[2]);
-            const targetX = parseInt(num[5]);
-            const targetY = parseInt(num[6]);
-            const partWidth = parseInt(num[3]);
-            const partHeight = parseInt(num[4]);
-            ctx.drawImage(image, sourceX, sourceY, partWidth, partHeight, targetX, targetY, partWidth, partHeight);
-        }
-    });
-}
-
-async function descramble_v016130(scraper: MangaScraper, page: Page, priority: Priority, signal: AbortSignal, detectMimeType: boolean): Promise<Blob> {
-    const imagedata: Blob = await Common.FetchImageAjax.call(scraper, page, priority, signal, detectMimeType);
-    const descrambleKeyPair: DescrambleKP = JSON.parse(window.atob(page.Link.hash.slice(1)));
-
-    return DeScramble(imagedata, async (image, ctx) => {
-        const view = getImageDescrambleCoords(descrambleKeyPair.s, descrambleKeyPair.u, image.width, image.height);
-        for (const part of view.transfers[0].coords) {
-            ctx.drawImage(image, part.xsrc, part.ysrc, part.width, part.height, part.xdest, part.ydest, part.width, part.height);
-        }
-    });
 }
 
 /**
