@@ -56,6 +56,11 @@ base: core24
 grade: devel
 confinement: strict
 
+plugs:
+  dbus:
+    bus: session
+    name: org.freedesktop.portal.Desktop
+
 apps:
   ${pkgConfig.name}:
     command: ${pkgConfig.name} --no-sandbox
@@ -67,6 +72,7 @@ apps:
     - network
     - network-bind
     - browser-support
+    - dbus
     environment:
       # Correct the TMPDIR path for Chromium Framework/Electron to ensure
       # libappindicator has readable resources.
