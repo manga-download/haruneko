@@ -13,13 +13,16 @@ export class FetchProvider {
     private fetchApiSupportedPrefix = 'X-FetchAPI-'.toLowerCase();
 
     constructor(private readonly ipc: IPC<Channels.Web, Channels.App>, private readonly webContents: WebContents) {
+        // Set up the response header handler immediately to strip partitioned cookies
+        // This must be done before any requests are made to ensure CloudFlare cookies work properly
+        this.webContents.session.webRequest.onHeadersReceived((details, callback) => callback(this.ModifyResponseHeaders(details)));
         this.ipc.Listen(Channels.App.Initialize, this.Initialize.bind(this));
     }
 
     private async Initialize(fetchApiSupportedPrefix: string): Promise<void> {
         this.fetchApiSupportedPrefix = fetchApiSupportedPrefix.toLowerCase();
         this.webContents.session.webRequest.onBeforeSendHeaders(async (details, callback) => callback(await this.ModifyRequestHeaders(details)));
-        this.webContents.session.webRequest.onHeadersReceived((details, callback) => callback(this.ModifyResponseHeaders(details)));
+        // Response handler already set up in constructor, no need to set it again
         this.Initialize = () => Promise.resolve();
     }
 
@@ -37,7 +40,31 @@ export class FetchProvider {
         const normalizedCookieHeaderName = (this.fetchApiSupportedPrefix + 'Cookie').toLowerCase();
         const originalCookieHeaderName = Object.keys(headers).find(header => header.toLowerCase() === normalizedCookieHeaderName) ?? normalizedCookieHeaderName;
         const headerCookies = headers[originalCookieHeaderName]?.split(';').filter(cookie => cookie.includes('=')).map(cookie => cookie.trim()) ?? [];
-        const browserCookies = await this.webContents.session.cookies.get({ url/*, partitionKey: {}*/ }); // TODO: When filter by URL partioned cookies may not be found (e.g., cf_clearance)
+
+        // Get all cookies without filtering to include partitioned cookies (e.g., cf_clearance)
+        // URL-based filtering in Chromium 126+ excludes partitioned cookies
+        // We manually apply RFC 6265 domain/path/secure matching below
+        const urlObj = new URL(url);
+        const allCookies = await this.webContents.session.cookies.get({});
+        const browserCookies = allCookies.filter(cookie => {
+            // Apply RFC 6265 domain matching
+            // Cookie domain ".example.com" or "example.com" should match "www.example.com"
+            const cookieDomain = cookie.domain.startsWith('.') ? cookie.domain.substring(1) : cookie.domain;
+            const urlHostname = urlObj.hostname;
+            const domainMatches = urlHostname === cookieDomain || urlHostname.endsWith('.' + cookieDomain);
+
+            // Apply RFC 6265 path matching: cookie path must be a prefix of URL path
+            // and either match exactly or be followed by '/'
+            const pathMatches = urlObj.pathname === cookie.path ||
+                urlObj.pathname.startsWith(cookie.path) &&
+                 (cookie.path.endsWith('/') || urlObj.pathname[cookie.path.length] === '/');
+
+            // Check if cookie's secure flag is compatible with URL protocol
+            const secureMatches = !cookie.secure || urlObj.protocol === 'https:';
+
+            return domainMatches && pathMatches && secureMatches;
+        });
+
         for(const browserCookie of browserCookies) {
             if(!headerCookies.some(cookie => cookie.startsWith(browserCookie.name + '='))) {
                 headerCookies.push(`${browserCookie.name}=${browserCookie.value}`);
@@ -89,8 +116,10 @@ export class FetchProvider {
             if (normalizedHeader === 'link') {
                 continue;
             }
-            // Currently electron des not include partitioned cookies when filtering with `session.cookies.get({ url })`
-            // => Workaround: Remove the partitioned flag from the server response
+            // Strip the 'partitioned' attribute from Set-Cookie headers as a workaround
+            // This ensures cookies are stored as non-partitioned in the session store
+            // Combined with domain-based filtering in UpdateCookieHeader(), this enables
+            // proper retrieval and transmission of CloudFlare cookies (e.g., cf_clearance)
             if(normalizedHeader === 'set-cookie') {
                 details.responseHeaders[originalHeader] = details.responseHeaders[originalHeader].map(cookie => cookie.replace(/partitioned/gi, ''));
             }
