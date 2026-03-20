@@ -12,11 +12,11 @@ new TestFixture({
     },
     child: {
         id: '/user/page_direct?comic_id=wotianmingdafanpai-tianmingfanpaiyuanzhuhuizhudongman&section_slot=0&chapter_slot=53',
-        title: '第53話 坦誠？'
+        title: '第54話 就緒！'
     },
     entry: {
         index: 5,
-        size: 151_930,
+        size: 142_678,
         type: 'image/jpeg'
     }
 }).AssertWebsite();
