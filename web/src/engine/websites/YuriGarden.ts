@@ -8,6 +8,8 @@ import type { Priority } from '../taskpool/DeferredTask';
 import DeScramble from '../transformers/ImageDescrambler';
 import { GetBytesFromBase64, GetBytesFromHex, GetBytesFromUTF8, GetHexFromBytes } from '../BufferEncoder';
 
+// TODO : Properly detect Turnstile on chapters, DONT PUSH T MASTER WITHOUT THAT
+
 type APIMangas = {
     comics: APIManga[];
 };
