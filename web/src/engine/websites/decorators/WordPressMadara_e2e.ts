@@ -84,6 +84,7 @@ import '../MangaOnlineBlog_e2e';
 import '../MangaOwlio_e2e';
 import '../MangaReadCO_e2e';
 import '../MangaRead_e2e';
+import '../MangasBrasuka_e2e';
 import '../MangaScantrad_e2e';
 import '../MangaSehriNet_e2e';
 import '../MangaSehri_e2e';
