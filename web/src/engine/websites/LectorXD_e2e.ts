@@ -6,17 +6,17 @@ new TestFixture({
         title: 'LectorXD'
     },
     container: {
-        url: 'https://lectorxd.com/manhwa/streaming-de-la-guia-oculta-del-retornado',
-        id: '/manhwa/streaming-de-la-guia-oculta-del-retornado',
-        title: 'Streaming de la guia oculta del retornado'
+        url: 'https://lectorxd.com/manhua/mygirlfriendisazombie',
+        id: '/manhua/mygirlfriendisazombie',
+        title: 'My Girlfriend is a Zombie'
     },
     child: {
-        id: '/manhwa/streaming-de-la-guia-oculta-del-retornado/leer/20',
-        title: 'Capítulo 20'
+        id: '/manhua/mygirlfriendisazombie/leer/241',
+        title: 'Capítulo 241'
     },
     entry: {
-        index: 1,
-        size: 89_570,
+        index: 2,
+        size: 25_654,
         type: 'image/webp'
     }
 }).AssertWebsite();
