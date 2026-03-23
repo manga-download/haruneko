@@ -7,6 +7,8 @@ import { GetBytesFromBase64, GetBytesFromUTF8 } from '../../BufferEncoder';
 import DeScramble from '../../transformers/ImageDescrambler';
 import type { Priority } from '../../taskpool/DeferredTask';
 
+// TODO: Handle manual Logout from webview
+
 type APIResultSuccess<T> = { data: T; error?: never; };
 type APIResultError = { data?: never; error: { code: string; }; };
 type APIResult<T> = APIResultSuccess<T> | APIResultError;
@@ -42,13 +44,23 @@ type ImageInfo = {
     defaultHeight: number;
 }[];
 
+type Token = {
+    token: string;
+    expiredAt: number;
+};
+
 type APIUser = {
     user?: {
-        accessToken: {
-            token: string;
-            expiredAt: number;
-        };
+        accessToken: Token;
+        refreshToken: Token;
     },
+};
+
+type RefreshTokenResult = {
+    result: {
+        accessToken: Token;
+        refreshToken: Token;
+    };
 };
 
 type ScrambleParams = {
@@ -60,38 +72,61 @@ export class BalconyDRM {
 
     readonly #apiURL: URL;
     readonly #platform = 'WEB';
-    private session: APIUser['user']['accessToken'] = undefined;
+    private tokens: APIUser['user'] = undefined;
 
     constructor(private readonly webURL: URL, private readonly scope: string, private readonly timeZone: string) {
         this.#apiURL = new URL('/api/balcony-api-v2/', webURL);
     }
 
-    #CreateRequest(endpoint: string, body: JSONElement | undefined = undefined): Request {
-        const request = new Request(new URL(endpoint, this.#apiURL), {
+    #CreateRequest(endpoint: string, body: JSONElement | undefined = undefined, baseURL: URL = this.#apiURL): Request {
+        const request = new Request(new URL(endpoint, baseURL), {
             method: body ? 'POST' : 'GET',
             headers: {
                 'Content-Type': 'application/json',
                 Referer: this.webURL.href,
                 'X-Balcony-Id': this.scope,
                 'X-Platform': this.#platform,
-                'X-balcony-timeZone': this.timeZone
+                'X-balcony-timeZone': this.timeZone,
+                ...this.tokens?.accessToken && { 'Authorization': `Bearer ${this.tokens.accessToken.token}` }
             },
             body: body ? JSON.stringify(body) : undefined,
         });
-        if (this.HasValidSession()) {
-            request.headers.set('Authorization', 'Bearer ' + this.session.token);
-        }
         return request;
     }
 
-    public HasValidSession(): boolean {
-        return (this.session?.token && this.session.expiredAt > Date.now() + 60_000) ?? false;
+    #HasValidSession(): boolean {
+        return (this.tokens && this.tokens.accessToken.expiredAt > Date.now() + 60_000) ?? false;
     }
 
     private async UpdateSession(): Promise<void> {
-        if (!this.HasValidSession()) {
+        // if session is valid? Return
+        if (this.#HasValidSession()) return;
+
+        // We dont have tokens? try to get them
+        if (!this.tokens) {
             const { user } = await FetchJSON<APIUser>(new Request(new URL('./api/auth/session', this.webURL)));
-            this.session = user?.accessToken;
+            this.tokens = user;
+        }
+
+        // if we have tokens, and accesstoken is expired
+        if (this.tokens && !this.#HasValidSession()) {
+            // if refreshToken is expired, clear everything
+            if (this.tokens?.refreshToken.expiredAt < Date.now() + 60_000) {
+                this.tokens = undefined;
+                return;
+            } else { // else renew the token
+                try {
+                    const { result } = await FetchJSON<RefreshTokenResult>(this.#CreateRequest('./api/balcony/auth/refresh',
+                        { accessToken: this.tokens.accessToken.token,
+                            clientIp: '',
+                            refreshToken: this.tokens.refreshToken.token
+                        }, this.webURL));
+                    this.tokens = result;
+                }
+                catch {
+                    this.tokens = undefined;
+                }
+            }
         }
     }
 
