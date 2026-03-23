@@ -1,5 +1,5 @@
 ﻿import { Tags } from '../Tags';
-import icon from './Remangas.webp';
+import icon from './NoxManga.webp';
 import { Chapter, DecoratableMangaScraper, Manga, type MangaPlugin } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import { FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
@@ -31,12 +31,12 @@ type DecodedToken = {
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
     private readonly apiUrl = 'https://xodneo.site/api/v1/';
-    private readonly siteId = '00000000-0000-0000-0000-000000000001';
+    private readonly siteId = '00000000-0000-0000-0000-000000000003';
     //private readonly signatureKey = 'fe7f9e20851be60eb720015918784c68b4216fb05eb8ca4f20bec58ef2d3fffb';
     #tokenProvider: TokenProvider;
 
     public constructor() {
-        super('remangas', 'Remangas', 'https://remangas.site', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Portuguese, Tags.Source.Aggregator, Tags.Accessibility.RegionLocked);
+        super('noxmanga', 'NoxManga', 'https://noxmanga.co', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Portuguese, Tags.Source.Aggregator);
         this.#tokenProvider = new TokenProvider(this.URI);
     }
 
@@ -65,7 +65,7 @@ export default class extends DecoratableMangaScraper {
         return Array.fromAsync(async function* (this: This) {
             for (let page = 1, run = true; run; page++) {
                 const { chapters: chaptersData } = await this.FetchAPI<APIChapters>(`./comics/slug/${manga.Identifier}/chapters?page=${page}&per_page=500&sort=newest`);
-                const chapters = chaptersData.map(({ number, title, slug }) => new Chapter(this, manga, `./ler/${manga.Identifier}/${slug}`, ['Capítulo', number, title ?? ''].join(' ').trim()));
+                const chapters = chaptersData.map(({ number, title, slug }) => new Chapter(this, manga, `/ler/${manga.Identifier}/${slug}`, ['Capítulo', number, title ?? ''].join(' ').trim()));
                 chapters.length > 0 ? yield* chapters : run = false;
             }
         }.call(this));
