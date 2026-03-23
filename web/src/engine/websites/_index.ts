@@ -269,6 +269,7 @@ export { default as LamiManga } from './LamiManga';
 export { default as LaviniaFansub } from './LaviniaFansub';
 export { default as LectorJPG } from './LectorJPG';
 export { default as LectorMangaLat } from './LectorMangaLat';
+export { default as LectorXD } from './LectorXD';
 export { default as LeerCapitulo } from './LeerCapitulo';
 export { default as LegionScans } from './LegionScans';
 export { default as LELManga } from './LELManga';
