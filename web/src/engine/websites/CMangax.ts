@@ -19,7 +19,7 @@ type MangaInfo = {
 
 type APIChapters = {
     data: {
-        id_chapter: string;
+        id_chapter: number;
         info: string;
     }[]
 };
@@ -43,7 +43,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public constructor() {
-        super('cmangax', 'CMangax', 'https://cmangax13.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Vietnamese, Tags.Source.Aggregator, Tags.Accessibility.DomainRotation);
+        super('cmangax', 'CMangax', 'https://cmangax15.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Vietnamese, Tags.Source.Aggregator, Tags.Accessibility.DomainRotation);
     }
 
     public override get Icon() {
@@ -74,7 +74,7 @@ export default class extends DecoratableMangaScraper {
         const { data } = await FetchJSON<APIChapters>(new Request(new URL(`./chapter_list?limit=9999&album=${manga.Identifier}`, this.ResourceURL)));
         return data.map(({ id_chapter: id, info }) => {
             const { num } = JSON.parse(info) as ChapterInfo;
-            return new Chapter(this, manga, id, 'Chapter ' + num.trim());
+            return new Chapter(this, manga, `${id}`, 'Chapter ' + num.trim());
         });
     }
 

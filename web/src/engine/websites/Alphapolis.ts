@@ -14,31 +14,30 @@ type APIPages = {
     }
 };
 
-const tokenScript = `
-    new Promise(resolve => {
-        window.cookieStore.get('XSRF-TOKEN')
-            .then(cookie => !cookie ? resolve(cookie) : resolve(decodeURIComponent(cookie.value))) ;
-    });
-`;
+const tokenScript = `cookieStore.get('XSRF-TOKEN').then(({ value }) => decodeURIComponent( value ) ?? null).catch(error => null);`;
 
 AddAntiScrapingDetection(async (invoke) => {
     const result = await invoke<boolean>(`document.documentElement.innerHTML.includes('window.awsWafCookieDomainList')`);
     return result ? FetchRedirection.Automatic : undefined;
 });
 
-function ChaptersExtractor(element: HTMLElement) {
-    const id = element instanceof HTMLAnchorElement ? element.pathname : element.querySelector<HTMLAnchorElement>('a.read-episode').pathname;
-    const title = element.querySelector('.title').textContent.trim();
-    return { id, title };
-}
-
 @Common.MangaCSS(/^{origin}\/manga\/(official|\d+)\/\d+/, 'div.manga-detail-description > div.title, div.content-main > h1.title')
-@Common.ChaptersSinglePageCSS('div.episode-unit, div.episodes div.episode a', undefined, ChaptersExtractor)
+@Common.ChaptersSinglePageJS(`
+    new Promise(resolve => {
+        resolve(
+            [...document.querySelectorAll('li.episode-unit, div.episodes div.episode a')].map(chapter => {
+                const id = chapter instanceof HTMLAnchorElement ? chapter.pathname : chapter.querySelector('a.read-episode').pathname;
+                const title = chapter.querySelector('.title').textContent.trim();
+                return { id, title };
+            })
+        );
+    });
+`, 750)
 @Grouple.ImageWithMirrors()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('alphapolis', `ALPHAPOLIS (アルファポリス)`, 'https://www.alphapolis.co.jp', Tags.Language.Japanese, Tags.Media.Manga, Tags.Source.Official);
+        super('alphapolis', 'ALPHAPOLIS (アルファポリス)', 'https://www.alphapolis.co.jp', Tags.Language.Japanese, Tags.Media.Manga, Tags.Source.Official);
     }
 
     public override get Icon() {
@@ -92,6 +91,6 @@ export default class extends DecoratableMangaScraper {
             },
             body: JSON.stringify(body),
         }));
-        return images.map(image => image.url);
+        return images.map(({ url }) => url);
     }
 }
