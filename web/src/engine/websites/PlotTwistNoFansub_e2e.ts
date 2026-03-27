@@ -6,17 +6,17 @@ new TestFixture({
         title: 'Plot Twist No Fansub'
     },
     container: {
-        url: 'https://plotnf.com/plotwist/manga/koibumi-to-13-sai-no-actress/',
-        id: '/plotwist/manga/koibumi-to-13-sai-no-actress/',
-        title: 'Koibumi to 13-sai no Actress'
+        url: 'https://plotnf.com/plotwist/manga/guarda-fantasmas/',
+        id: '/plotwist/manga/guarda-fantasmas/',
+        title: 'Guarda-Fantasmas'
     },
     child: {
-        id: '/reader/koibumi-to-13-sai-no-actress/chapter-9.00/',
-        title: 'Capítulo 9.00: Capítulo 9'
+        id: '/reader/guarda-fantasmas/chapter-5.00/',
+        title: 'Capítulo 5.00: No tengo miedo'
     },
     entry: {
         index: 0,
-        size: 774_159,
-        type: 'image/jpeg'
+        size: 884_617,
+        type: 'image/png'
     }
 }).AssertWebsite();
