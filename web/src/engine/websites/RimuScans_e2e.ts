@@ -6,7 +6,7 @@ new TestFixture( {
         title: 'RimuScans'
     },
     container: {
-        url: 'https://rimuscans.com/manga/top-tier-providence',
+        url: 'https://rimu-scans.fr/manga/top-tier-providence',
         id: 'top-tier-providence',
         title: 'Top Tier Providence'
     },
