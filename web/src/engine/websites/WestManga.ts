@@ -34,14 +34,14 @@ function CleanTitle(title: string): string {
 export default class extends DecoratableMangaScraper {
 
     private readonly api = {
-        url: 'https://data.westmanga.me/api/',
+        url: 'https://data.westmanga.tv/api/',
         nonce: 'wm-api-request',
         accessKey: 'WM_WEB_FRONT_END',
         secretKey: 'xxxoidj',
     };
 
     public constructor () {
-        super('westmanga', 'WestManga', 'https://westmanga.me', Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Language.Indonesian, Tags.Source.Aggregator);
+        super('westmanga', 'WestManga', 'https://westmanga.tv', Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Language.Indonesian, Tags.Source.Aggregator);
     }
 
     public override get Icon() {

@@ -6,17 +6,17 @@ new TestFixture({
         title: 'Imperio Da Britannia'
     },
     container: {
-        url: 'https://imperiodabritannia.com/manga/profissao-sem-valor-domador-de-dragoes/',
-        id: JSON.stringify({ post: '3742', slug: '/manga/profissao-sem-valor-domador-de-dragoes/' }),
-        title: 'Profissão sem Valor: Domador de Dragões'
+        url: 'https://imperiodabritannia.net/manga/shinobigoto',
+        id: 'shinobigoto',
+        title: 'Shinobigoto'
     },
     child: {
-        id: '/manga/profissao-sem-valor-domador-de-dragoes/cap-52/',
-        title: 'Cap. 52'
+        id: '2254/71',
+        title: 'Capítulo 71'
     },
     entry: {
-        index: 5,
-        size: 2_005_104,
+        index: 1,
+        size: 304_722,
         type: 'image/jpeg'
     }
 }).AssertWebsite();
