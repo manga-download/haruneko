@@ -6,7 +6,7 @@ new TestFixture({
         title: 'Qi Scans'
     },
     container: {
-        url: 'https://qiscans.org/series/celestial-phenomenon',
+        url: 'https://qimanhwa.com/series/celestial-phenomenon',
         id: '5',
         title: 'Celestial Phenomenon'
     },

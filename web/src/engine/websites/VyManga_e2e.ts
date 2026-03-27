@@ -9,7 +9,7 @@ new TestFixture({
         url: 'https://vymanga.com/manga/soul-land-iv--the-ultimate-combat',
         id: '/manga/soul-land-iv--the-ultimate-combat',
         title: 'Soul Land IV - The Ultimate Combat'
-    },
+    }, /* Chapter url is random
     child: {
         id: '/read/soul-land-iv--the-ultimate-combat/2487071',
         title: 'Chapter 500'
@@ -18,5 +18,5 @@ new TestFixture({
         index: 0,
         size: 202_301,
         type: 'image/jpeg'
-    }
+    }*/
 }).AssertWebsite();
