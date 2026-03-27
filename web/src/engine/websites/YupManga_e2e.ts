@@ -6,18 +6,17 @@ new TestFixture({
         title: 'YupManga',
     },
     container: {
-        url: 'https://www.yupmanga.com/series.php?id=QHAVBVLSSSJ7H',
-        id: '/series.php?id=QHAVBVLSSSJ7H',
-        title: 'Deadman Wonderland'
+        url: 'https://www.yupmanga.com/series.php?id=0MHCAH4EG46B6',
+        id: '/series.php?id=0MHCAH4EG46B6',
+        title: 'Grey'
     },
-    /* Chapter have tokens
     child: {
-        id: '/reader_v2.php?chapter=3F5D93FF85B347&token=XXXXXXXXXXXXXXX&page=1',
-        title: 'Tomo - 01'
+        id: '/reader_v2.php?chapter=0MHCAH4EM49W4',
+        title: 'Tomo 09'
     },
     entry: {
-        index: 4,
-        size: 71_762,
+        index: 0,
+        size: 223_998,
         type: 'image/webp'
-    }*/
+    }
 }).AssertWebsite();
