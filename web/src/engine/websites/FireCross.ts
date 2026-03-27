@@ -6,15 +6,16 @@ import { FetchJSON } from '../platform/FetchProvider';
 import * as ClipStudioReader from './decorators/ClipStudioReader';
 
 type ChapterID = {
-    id: string,
-    token: string
-}
+    id: string;
+    token: string;
+};
 
 type APIResponse = {
-    redirect: string
-}
+    redirect: string;
+};
+
 function ChapterExtractor(element: HTMLElement) {
-    const form = element.querySelector<HTMLFormElement>('form[data-Api="reader"]');
+    const form = element.querySelector<HTMLFormElement>('form[data-api="reader"]');
     return {
         id: JSON.stringify({
             token: form.querySelector<HTMLInputElement>('input[name="_token"]').value,
@@ -26,7 +27,7 @@ function ChapterExtractor(element: HTMLElement) {
 
 @Common.MangaCSS(/^{origin}\/ebook\/series\/\d+$/, 'div.ebook-series-grid-left h1.ebook-series-title')
 @Common.MangasMultiPageCSS('li.seriesList_item a.seriesList_itemTitle', Common.PatternLinkGenerator('/ebook/comics?page={page}'))
-@Common.ChaptersSinglePageCSS('ul.shop-list li.shop-item--episode:has(form)', undefined, ChapterExtractor)
+@Common.ChaptersMultiPageCSS('div.ebookSeries_episodeList div.shop-item--episode:has(form)', Common.PatternLinkGenerator('{id}?page={page}'), 0, ChapterExtractor)
 @ClipStudioReader.ImageAjax()
 
 export default class extends DecoratableMangaScraper {
