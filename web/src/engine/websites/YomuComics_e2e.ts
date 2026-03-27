@@ -4,19 +4,19 @@ new TestFixture({
     plugin: {
         id: 'yomucomics',
         title: 'Yomu Comics',
-    }, /* Nothing works without login
+    },
     container: {
         url: 'https://yomu.com.br/obra/a-31-peca-que-virou-o-tabuleiro',
-        id: '88',
+        id: 'a-31-peca-que-virou-o-tabuleiro',
         title: 'A 31ª Peça Que virou o Tabuleiro',
     },
     child: {
-        id: '01',
-        title: 'Capítulo 01',
+        id: 'cmm0v5ql600a1vo6oe75844y9',
+        title: 'CAPÍTULO 101 - Capítulo 101',
     },
     entry: {
-        index: 2,
-        size: 3_381_681,
-        type: 'image/jpeg',
-    }*/
+        index: 0,
+        size: 1_970_702,
+        type: 'image/webp',
+    }
 }).AssertWebsite();
