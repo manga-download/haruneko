@@ -3,10 +3,10 @@ import icon from './VerMangasPorno.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 
-@Common.MangaCSS(/^{origin}\/doujin\/\d+\.html$/, 'div.content div.posts h1.titl')
+@Common.MangaCSS(/^{origin}\/doujin\/[^/]+\/$/, 'div.content div.posts h1.titl')
 @Common.MangasMultiPageCSS('div.blog-list-items h2.information a', Common.PatternLinkGenerator('/xxx/page/{page}'), 0, Common.AnchorInfoExtractor(true))
 @Common.ChaptersUniqueFromManga()
-@Common.PagesSinglePageCSS('div.wp-content p noscript img:not([src*="download.png"])')
+@Common.PagesSinglePageCSS('div.wp-content div.post-imgs img:not([src*="download.png"])')
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 

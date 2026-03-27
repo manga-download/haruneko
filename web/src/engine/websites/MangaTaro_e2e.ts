@@ -13,10 +13,10 @@ new TestFixture({
     child: {
         id: '/read/kaibutsu-shoujo-wa-hatsukoi-no-yume-wo-miru-ka/ch21-1-469378',
         title: 'Ch. 21.1 N/A'
-    },
+    }, /* Login Required
     entry: {
         index: 0,
         size: 207_258,
         type: 'image/webp'
-    }
+    }*/
 }).AssertWebsite();

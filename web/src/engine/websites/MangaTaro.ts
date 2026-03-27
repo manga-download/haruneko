@@ -29,7 +29,7 @@ type APIChapters = {
 };
 
 @Common.MangaCSS<HTMLButtonElement>(/^{origin}\/manga\/[^/]+$/, 'button[data-manga-title]', (button, uri) => ({ id: uri.pathname, title: button.dataset.mangaTitle.trim() }))
-@Common.PagesSinglePageCSS('img.comic-image')
+@Common.PagesSinglePageJS(`[...document.querySelectorAll('img.comic-image')].map(el => el.dataset.src ?? el.src)`, 1500)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 

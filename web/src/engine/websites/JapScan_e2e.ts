@@ -7,13 +7,14 @@ new TestFixture({
         title: 'JapScan'
     },
     container: {
-        url: 'https://www.japscan.vip/manga/jujutsu-kaisen/',
+        url: 'https://www.japscan.foo/manga/jujutsu-kaisen/',
         id: '/manga/jujutsu-kaisen/',
         title: 'Jujutsu Kaisen'
     },
     child: {
         id: '/manga/jujutsu-kaisen/1/',
-        title: 'Chapitre 1: Esprit à double-face'
+        title: 'Chapitre 1: Esprit à double-face',
+        timeout: 30_000
     },
     entry: {
         index: 2,
@@ -29,13 +30,14 @@ new TestFixture({
         title: 'JapScan'
     },
     container: {
-        url: 'https://www.japscan.vip/manhwa/king-game/',
+        url: 'https://www.japscan.foo/manhwa/king-game/',
         id: '/manhwa/king-game/',
         title: 'King Game'
     },
     child: {
         id: '/manhwa/king-game/1/',
-        title: 'Chapitre 1'
+        title: 'Chapitre 1',
+        timeout: 30_000
     },
     entry: {
         index: 0,

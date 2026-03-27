@@ -1,12 +1,12 @@
 ﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture( {
     plugin: {
         id: 'manhwalatino',
         title: 'Manhwa-Latino'
     },
     container: {
-        url: 'https://manhwa-latino.com/manga/gunsmith-cats-burst-espanol/',
+        url: 'https://manhwa-es.com/manga/gunsmith-cats-burst-espanol/',
         id: JSON.stringify({ post: '10221', slug: '/manga/gunsmith-cats-burst-espanol/' }),
         title: 'Gunsmith Cats Burst - español'
     },
@@ -19,6 +19,4 @@ const config = {
         size: 50_534,
         type: 'image/webp'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

@@ -1,0 +1,63 @@
+import JSZip from 'jszip';
+import { Tags } from '../Tags';
+import icon from './RfDragonScan.webp';
+import { type Chapter, DecoratableMangaScraper, Page } from '../providers/MangaPlugin';
+import * as Common from './decorators/Common';
+import type { Priority } from '../taskpool/DeferredTask';
+import { Fetch, FetchHTML } from '../platform/FetchProvider';
+
+type PageKey = {
+    key: string;
+} | undefined;
+
+@Common.MangaCSS(/^{origin}\/[^/]+\/$/, 'h1.desc__titulo__comic')
+@Common.MangasSinglePageCSS('/todas-as-obras/', 'div.comics__all__box a.titulo__comic__allcomics')
+@Common.ChaptersSinglePageCSS<HTMLAnchorElement>('ul.capitulos__lista a.link__capitulos', undefined, anchor => ({ id: anchor.pathname, title: anchor.querySelector<HTMLDivElement>('div.info__capitulo__obras span.numero__capitulo').textContent.trim() }))
+export default class extends DecoratableMangaScraper {
+
+    public constructor() {
+        super('rfdragonscan', 'RF Dragon Scan', 'https://rfdragonscan.com', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Language.Portuguese, Tags.Source.Scanlator);
+    }
+
+    public override get Icon() {
+        return icon;
+    }
+
+    public override async FetchPages(chapter: Chapter): Promise<Page[]> {
+        const doc = await FetchHTML(new Request(new URL(chapter.Identifier, this.URI)));
+
+        //NOT using script because their anti-adblock triggers a messagebox and disrupts the process
+        const filesZip = doc.documentElement.innerHTML.match(/const\s+urls\s*=\s*\[(.*?)]\s*;/)?.at(1);
+        const files = filesZip ? filesZip.split(',').map(element => element.replaceAll("'", '').trim())
+            : [...doc.querySelectorAll<HTMLImageElement>('div#imageContainer img')].map(image => new URL(image.src, this.URI).href);
+
+        if (files.at(0)?.endsWith('.zip')) {
+            const pages: Page[] = [];
+            for (const zipurl of files) {
+                const response = await Fetch(new Request(new URL(zipurl, this.URI), { cache: 'reload', headers: { Referer: this.URI.href } }));
+                const zipfile = await JSZip.loadAsync(await response.arrayBuffer());
+                const fileNames = Object.keys(zipfile.files)
+                    .sort((a, b) => this.ExtractNumber(a) - this.ExtractNumber(b))
+                    .filter(key => [/jpe?g$/i, /png$/i, /webp$/i, /avif$/i].some(pattern => pattern.test(key)))
+                    .map(key => new Page<PageKey>(this, chapter, new URL(zipurl, this.URI), { key }));
+                pages.push(...fileNames);
+            }
+            return pages;
+
+        } else { //we have normal pictures links
+            return files.map(file => new Page(this, chapter, new URL(file)));
+        }
+    }
+
+    public override async FetchImage(page: Page<PageKey>, priority: Priority, signal: AbortSignal): Promise<Blob> {
+        return !page.Parameters.key ? await Common.FetchImageAjax.call(this, page, priority, signal, true) : this.imageTaskPool.Add(async () => {
+            const response = await Fetch(new Request(page.Link, { cache: 'force-cache', headers: { Referer: this.URI.href } }));
+            const zip = await JSZip.loadAsync(await response.arrayBuffer());
+            return Common.GetTypedData(await zip.files[(page as Page<PageKey>).Parameters.key].async('arraybuffer'));
+        }, priority, signal);
+    }
+
+    private ExtractNumber(fileName: string): number {
+        return parseInt(fileName.split(".")[0]);
+    }
+}

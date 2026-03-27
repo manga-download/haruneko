@@ -8,7 +8,7 @@ import * as Common from './decorators/Common';
 export default class extends ZeistManga {
     public constructor() {
         super('datgarscan', 'Datgar Scan', 'https://datgarscanlation.blogspot.com', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Spanish, Tags.Source.Scanlator);
-        this.mangaSlugScript = 'label;';
+        this.WithMangaSlugScript('label;');
     }
 
     public override get Icon() {

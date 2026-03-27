@@ -34,7 +34,7 @@ type GQLPages = {
 type JSONPages = {
     i: string[];
     p: string;
-};
+} | string[];
 
 @Common.ImageAjax()
 export class MangaHubBase extends DecoratableMangaScraper {
@@ -43,7 +43,7 @@ export class MangaHubBase extends DecoratableMangaScraper {
     private readonly cdnURL = 'https://imgx.mghcdn.com';
     private token = '';
 
-    public constructor (identifier: string, title: string, url: string, private readonly scope: string, ...tags: Tag[]) {
+    public constructor(identifier: string, title: string, url: string, private readonly scope: string, ...tags: Tag[]) {
         super(identifier, title, url, ...tags);
     }
 
@@ -67,11 +67,17 @@ export class MangaHubBase extends DecoratableMangaScraper {
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        const { search: { rows } } = await this.FetchGQL<GQLMangas>(`
-            query ($scope: MangaSource) {
-            search(x: $scope, q: "", genre: "all", mod: ALPHABET, limit: 99999) { rows { id, slug, title } }
-        }`, { scope: this.scope });
-        return rows.map(manga => new Manga(this, provider, manga.slug, new DOMParser().parseFromString(manga.title, 'text/html').body.innerText.trim()));
+        type This = typeof this;
+        return Array.fromAsync(async function* (this: This) {
+            for (let offset = 0, run = true; run; offset+= 50) {
+                const { search: { rows } } = await this.FetchGQL<GQLMangas>(`
+                    query ($scope: MangaSource) {
+                        search(x: $scope, q: "", genre: "all", mod: ALPHABET, limit: 50, offset: ${offset}) { rows { id, slug, title } }
+                    }`, { scope: this.scope });
+                const mangas = rows.map(manga => new Manga(this, provider, manga.slug, new DOMParser().parseFromString(manga.title, 'text/html').body.innerText.trim()));
+                mangas.length > 0 ? yield* mangas : run = false;
+            }
+        }.call(this));
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
@@ -80,10 +86,10 @@ export class MangaHubBase extends DecoratableMangaScraper {
                 manga(x: $scope, slug: $slug) { chapters { number, title } }
             }
         `, { scope: this.scope, slug: manga.Identifier });
-        return chapters.map(chapter => {
-            let title = `Ch.${chapter.number}`;
-            title += chapter.title ? ` - ${chapter.title}` : '';
-            return new Chapter(this, manga, chapter.number.toString(), title.trim());
+        return chapters.map(({ number, title: chaptertitle }) => {
+            let title = `Ch.${number}`;
+            title += chaptertitle ? ` - ${chaptertitle}` : '';
+            return new Chapter(this, manga, `${number}`, title.trim());
         });
     }
 
@@ -97,8 +103,11 @@ export class MangaHubBase extends DecoratableMangaScraper {
             manga: chapter.Parent.Identifier,
             chapter: parseFloat(chapter.Identifier),
         });
-        const { i: pageNumbers, p: pagePath }: JSONPages = JSON.parse(pages);
-        return pageNumbers.map(pageNumber => new Page(this, chapter, new URL(`${pagePath}${pageNumber}`, this.cdnURL)));
+        const jsonPages: JSONPages = JSON.parse(pages);
+        return jsonPages['i'] ?
+            jsonPages['i'].map(pageNumber => new Page(this, chapter, new URL(`${jsonPages['p']}${pageNumber}`, this.cdnURL)))
+            :
+            Object.values(jsonPages as string[]).map(page => new Page(this, chapter, new URL(page, this.cdnURL)));
     }
 
     private async FetchGQL<T extends JSONElement>(query: string, variables: JSONObject, remainingRetryAttempts = 3): Promise<T> {

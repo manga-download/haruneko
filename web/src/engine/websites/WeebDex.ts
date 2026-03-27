@@ -20,7 +20,7 @@ type APIChapters = {
         title: string;
         volume: string;
         chapter: string;
-        language: 'en'/* | 'jp'*/;
+        language: string;
     }[];
 };
 
@@ -30,6 +30,48 @@ type APIPages = {
         name: string; // https://s13.notdelta.xyz/data/ypasjpztxy/1-d479e62e2863f0ed9b4447cd63956cec3ac89d709615311c362e482494c8639a.webp
     }[];
 }
+
+const chapterLanguageMap = new Map([
+    ['ar', Tags.Language.Arabic],
+    // [ 'bn', Tags.Language.Bengali ],
+    // [ 'bg', Tags.Language.Bulgarian ],
+    // [ 'my', Tags.Language.Burmese ],
+    // [ 'ca', Tags.Language.Catalan ],
+    ['zh', Tags.Language.Chinese],
+    ['zh-hk', Tags.Language.Chinese],
+    // [ 'da', Tags.Language.Danish ],
+    // [ 'nl', Tags.Language.Dutch ],
+    ['en', Tags.Language.English],
+    // [ 'fi', Tags.Language.Finnish ],
+    ['fr', Tags.Language.French],
+    ['de', Tags.Language.German],
+    // [ 'el', Tags.Language.Greek ],
+    // [ 'he', Tags.Language.Hebrew ],
+    // [ 'hi', Tags.Language.Hindi ],
+    // [ 'hu', Tags.Language.Hungarian ],
+    ['id', Tags.Language.Indonesian],
+    ['it', Tags.Language.Italian],
+    ['ja', Tags.Language.Japanese],
+    ['ko', Tags.Language.Korean],
+    // [ 'lt', Tags.Language.Lithuanian ],
+    // [ 'ms', Tags.Language.Malay ],
+    // [ 'mn', Tags.Language.Mongolian ],
+    // [ 'ne', Tags.Language.Nepali ],
+    // [ 'no', Tags.Language.Norwegian ],
+    // [ 'fa', Tags.Language.Persian ],
+    ['pl', Tags.Language.Polish],
+    ['pt-br', Tags.Language.Portuguese],
+    // [ 'ro', Tags.Language.Romanian ],
+    ['ru', Tags.Language.Russian],
+    // [ 'sh', Tags.Language.Serbo-Croatian ],
+    ['es', Tags.Language.Spanish],
+    ['es-la', Tags.Language.Spanish],
+    // [ 'sv', Tags.Language.Swedish ],
+    ['th', Tags.Language.Thai],
+    ['tr', Tags.Language.Turkish],
+    // [ 'uk', Tags.Language.Ukrainian ],
+    ['vi', Tags.Language.Vietnamese],
+]);
 
 @Common.MangaCSS(/^{origin}\/title\/[^/]+\/[^/]+$/, 'meta[property="og:title"]', (meta: HTMLMetaElement, uri) => ({
     id: uri.pathname.split('/').at(2),
@@ -41,7 +83,7 @@ export default class extends DecoratableMangaScraper {
     readonly #apiTaskPool = new TaskPool(1, new RateLimit(4, 1));
 
     public constructor() {
-        super('weebdex', 'WeebDex', 'https://weebdex.org', Tags.Media.Manga, Tags.Language.Multilingual, Tags.Source.Aggregator);
+        super('weebdex', 'WeebDex', 'https://weebdex.org', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Language.Multilingual, Tags.Source.Aggregator);
     }
 
     public override get Icon() {
@@ -79,12 +121,12 @@ export default class extends DecoratableMangaScraper {
                 const { data } = await this.#FetchAPI<APIChapters>(`/manga/${manga.Identifier}/chapters`, { limit: '500', page: `${page}`});
                 const chapters = !data ? [] : data.map(({ id, volume, chapter, title, language }) => {
                     title = [
-                        volume ? 'Vol. ' + volume : null,
-                        chapter ? 'Ch. ' + chapter : 'Oneshot',
-                        title ? '- ' + title : null,
-                        language ? '(' + language + ')' : null,
+                        volume ? `Vol. ${volume}` : null,
+                        chapter ? `Ch. ${chapter}` : 'Oneshot',
+                        title ? `- ${title}` : null,
+                        language ? `(${language})` : null,
                     ].filter(segment => segment).join(' ');
-                    return new Chapter(this, manga, id, title);
+                    return new Chapter(this, manga, id, title, ...[chapterLanguageMap.get(language)].filter(Boolean));
                 });
                 chapters.length > 0 ? yield* chapters : run = false;
             }

@@ -6,12 +6,12 @@ new TestFixture({
         title: 'Minda Fansub'
     },
     container: {
-        url: 'https://mindafansub.lol/manga/painter-of-the-night/',
-        id: JSON.stringify({ post: '112', slug: '/manga/painter-of-the-night/'}),
+        url: 'https://mindafansub.lat/manga/painter-of-the-night-5/',
+        id: JSON.stringify({ post: '112', slug: '/manga/painter-of-the-night-5/'}),
         title: 'Painter of the Night'
     },
     child: {
-        id: '/manga/painter-of-the-night/bolum-1/',
+        id: '/manga/painter-of-the-night-5/bolum-1/',
         title: 'Bölüm 1'
     },
     entry: {

@@ -9,8 +9,8 @@ import { ZeistManga } from './templates/ZeistManga';
 export default class extends ZeistManga {
 
     public constructor() {
-        super('ulascomic', 'Ulas Comic', 'https://www.ulascomic00.xyz', Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Language.Indonesian, Tags.Source.Scanlator);
-        this.mangaSlugScript = `document.querySelector('#chapterlist').dataset.postTitle.trim();`;
+        super('ulascomic', 'Ulas Comic', 'https://www.ulascomic01.xyz', Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Language.Indonesian, Tags.Source.Scanlator);
+        this.WithMangaSlugScript(`document.querySelector('#chapterlist').dataset.postTitle.trim();`);
     }
 
     public override get Icon() {

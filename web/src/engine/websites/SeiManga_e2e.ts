@@ -6,12 +6,12 @@ new TestFixture({
         title: 'SeiManga'
     },
     container: {
-        url: 'https://1.seimanga.me/sword_art_online__progressiv___skerco_glubokoi_nochi/',
-        id: '/sword_art_online__progressiv___skerco_glubokoi_nochi/',
-        title: 'Sword Art Online: Прогрессив - Скерцо глубокой ночи',
+        url: 'https://1.seimanga.me/mastera_mecha_onlain__progressiv___skerco_glubokoi_nochi',
+        id: '/mastera_mecha_onlain__progressiv___skerco_glubokoi_nochi',
+        title: 'Мастера меча онлайн: Прогрессив — Скерцо глубокой ночи',
     },
     child: {
-        id: '/sword_art_online__progressiv___skerco_glubokoi_nochi/vol3/19?mtr=1',
+        id: '/mastera_mecha_onlain__progressiv___skerco_glubokoi_nochi/vol3/19?mtr=1',
         title: '3 - 19 Эпилог',
     },
     entry: {

@@ -1,14 +1,14 @@
 ﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'manhwadashraw',
         title: 'Manhwa-Raw'
-    }, /* CloudFlare
+    },
     container: {
         url: 'https://manhwa-raw.com/manga/sisters-taste-raw/',
         id: '/manga/sisters-taste-raw/',
-        title: `Sister's Taste`
+        title: `Sister’s Taste`
     },
     child: {
         id: '/manga/sisters-taste-raw/chapter-8/',
@@ -18,7 +18,5 @@ const config = {
         index: 0,
         size: 272_956,
         type: 'image/webp'
-    }*/
-};
-
-new TestFixture(config).AssertWebsite();
+    }
+}).AssertWebsite();
