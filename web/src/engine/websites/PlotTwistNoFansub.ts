@@ -2,16 +2,16 @@ import { Tags } from '../Tags';
 import icon from './PlotTwistNoFansub.webp';
 import { Chapter, DecoratableMangaScraper, type MangaPlugin, Manga } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
+import { FetchCSS, FetchJSON } from '../platform/FetchProvider';
 
 type APISearchResult = {
-    td_data: string
-}
+    td_data: string;
+};
 
 type APIChapter = {
-    post_name: string,
-    chapter_number: string,
-    chapter_name: string
+    post_name: string;
+    chapter_number: string;
+    chapter_name: string;
 }
 
 const pageScript = `
@@ -67,7 +67,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const mangaId = await FetchWindowScript<string>(new Request(new URL(manga.Identifier, this.URI)), 'obj.manid');
+        const mangaId = (await FetchCSS(new Request(new URL(manga.Identifier, this.URI)), 'p.listcap')).at(0).dataset.mangaid;
         const chapterList: Chapter[] = [];
         for (let page = 1, run = true; run; page++) {
             const chapters = await this.GetChaptersFromPage(manga, page, mangaId);
@@ -86,7 +86,7 @@ export default class extends DecoratableMangaScraper {
             body: new URLSearchParams({
                 manga_id: mangaId,
                 action: 'lcapl6',
-                pageNumber: page.toString()
+                pageNumber: `${page}`
             }).toString()
         }));
         return data.map(chapter => {
