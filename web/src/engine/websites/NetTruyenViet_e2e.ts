@@ -12,16 +12,16 @@ function config(url: string): Config {
             title: 'Ta Có 90 Tỷ Tiền Liếm Cẩu!',
         },
         child: {
-            id: '/truyen-tranh/ta-co-90-ty-tien-liem-cau/chuong-200',
-            title: 'Chapter 200',
+            id: '/truyen-tranh/ta-co-90-ty-tien-liem-cau/chuong-529',
+            title: 'Chapter 529',
         },
         entry: {
             index: 0,
-            size: 113_441,
+            size: 501_617,
             type: 'image/jpeg',
         }
     };
 }
 
-new TestFixture(config('https://nettruyenviet1.com/truyen-tranh/ta-co-90-ty-tien-liem-cau')).AssertWebsite();
+new TestFixture(config('https://nettruyenviet3.com/truyen-tranh/ta-co-90-ty-tien-liem-cau')).AssertWebsite();
 new TestFixture(config('https://nettruyenar.com/truyen-tranh/ta-co-90-ty-tien-liem-cau-16581')).AssertWebsite();
