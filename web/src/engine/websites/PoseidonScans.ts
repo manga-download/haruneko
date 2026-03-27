@@ -1,4 +1,4 @@
-import { FetchNextJS } from '../platform/FetchProvider';
+import { FetchNextJS, FetchWindowScript } from '../platform/FetchProvider';
 import { Chapter, DecoratableMangaScraper, Manga, type MangaPlugin, Page } from '../providers/MangaPlugin';
 import { Tags } from '../Tags';
 import * as Common from './decorators/Common';
@@ -6,8 +6,8 @@ import icon from './PoseidonScans.webp';
 
 type HydratedManga = {
     manga: {
-        slug: string,
-        title: string,
+        slug: string;
+        title: string;
     };
 };
 
@@ -25,11 +25,16 @@ type HydratedPages = {
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('poseidonscans', 'Poseidon Scans', 'https://poseidon-scans.co', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Media.Manga, Tags.Language.French, Tags.Source.Aggregator);
+        super('poseidonscans', 'Poseidon Scans', 'https://poseidon-scans.net', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Media.Manga, Tags.Language.French, Tags.Source.Aggregator);
     }
 
     public override get Icon() {
         return icon;
+    }
+
+    public override async Initialize(): Promise<void> {
+        //trigger Cloudflare at initialization
+        return await FetchWindowScript(new Request(new URL('/series/-/', this.URI)), '');
     }
 
     public override ValidateMangaURL(url: string): boolean {

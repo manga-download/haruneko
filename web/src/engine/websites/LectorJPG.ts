@@ -6,22 +6,17 @@ import * as Common from './decorators/Common';
 
 type APIMangas = {
     data: {
-        id: number,
-        name: string,
-        slug: string
+        id: number;
+        name: string;
+        slug: string;
     }[]
-
-}
-
-function ChapterExtractor(anchor: HTMLAnchorElement) {
-    return {
-        id: anchor.pathname,
-        title: anchor.querySelector<HTMLSpanElement>('span').innerText.trim().replaceAll(/[\n\t\r]/g, '')
-    };
-}
+};
 
 @Common.MangaCSS<HTMLTitleElement>(/^{origin}\/series\/[^/]+$/, 'title', (title, uri) => ({ id: uri.pathname, title: title.innerText.split('|').at(0).trim() }))
-@Common.ChaptersSinglePageCSS('div.grid a.group[href*="/read/"]', undefined, ChapterExtractor)
+@Common.ChaptersSinglePageCSS<HTMLAnchorElement>('div.grid a.group[href*="/read/"]', undefined, anchor => ({
+    id: anchor.pathname,
+    title: anchor.querySelector<HTMLSpanElement>('span').innerText.trim().replaceAll(/[\n\t\r]/g, '')
+}))
 @Common.PagesSinglePageCSS('div.grid img')
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {

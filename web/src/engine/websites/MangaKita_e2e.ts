@@ -6,7 +6,7 @@ new TestFixture({
         title: 'MangaKita'
     },
     container: {
-        url: 'https://mangakita.id/manga/closer/',
+        url: 'https://mangakita.me/manga/closer/',
         id: '/manga/closer/',
         title: '[C]LOSER'
     },

@@ -8,26 +8,21 @@ import { FetchJSON } from '../platform/FetchProvider';
 type APIChapters = {
     data: {
         episodes: {
-            episodeId: number,
-            episodeOrder: number,
+            episodeId: number;
+            episodeOrder: number;
             episodeTitle: string;
         }[];
     };
 };
 
-function MangaExtractor(anchor: HTMLAnchorElement) {
-    const id = anchor.pathname;
-    const title = anchor.nextElementSibling.textContent.trim();
-    return { id, title };
-}
-
 @Common.MangaCSS(/^{origin}\/manhua\/detail_[^/]+\.html$/, '.detail-tit h1')
-@Common.MangasMultiPageCSS('ul.cartoon-hot-ul li.cartoon-hot-list a.cartoon-cover', Common.PatternLinkGenerator('/manhua/category/%E5%85%A8%E9%83%A8_-1_-1_9_{page}'), 0, MangaExtractor)
+@Common.MangasMultiPageCSS<HTMLAnchorElement>('ul.cartoon-hot-ul li.cartoon-hot-list a.cartoon-cover', Common.PatternLinkGenerator('/manhua/category/%E5%85%A8%E9%83%A8_-1_-1_9_{page}'), 0,
+    anchor => ({ id: anchor.pathname, title: anchor.nextElementSibling.textContent.trim() }))
 @Common.PagesSinglePageCSS('ul.main-container li.main-item img', MH.PageLinkExtractor)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
-    public constructor () {
+    public constructor() {
         super('iqiyi', 'iqiyi', 'https://www.iqiyi.com', Tags.Language.Chinese, Tags.Media.Manhua, Tags.Media.Manga, Tags.Source.Aggregator);
     }
 
@@ -36,9 +31,8 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const manhuaId = new URL(manga.Identifier, this.URI).href.match(/_(([a-z]|[0-9])*)/).at(-1);
-        const requestChaps = new Request(new URL(`/manhua/catalog/${manhuaId}/`, this.URI));
-        const { data: { episodes } } = await FetchJSON<APIChapters>(requestChaps);
-        return episodes.map(element => new Chapter(this, manga, `/manhua/reader/${manhuaId}_${element.episodeId}.html`, [ element.episodeOrder, element.episodeTitle.trim() ].join(' ')));
+        const manhuaId = manga.Identifier.match(/\/detail_([a-z0-9]+)/).at(1);
+        const { data: { episodes } } = await FetchJSON<APIChapters>(new Request(new URL(`/manhua/catalog/${manhuaId}/`, this.URI)));
+        return episodes.map(({ episodeId, episodeOrder, episodeTitle }) => new Chapter(this, manga, `/manhua/reader/${manhuaId}_${episodeId}.html`, [episodeOrder, episodeTitle.trim()].join(' ')));
     }
 }

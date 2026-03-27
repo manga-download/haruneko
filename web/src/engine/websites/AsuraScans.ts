@@ -13,42 +13,41 @@ const excludes = [
     /EndDesignPSD/i
 ];
 
+const pagesScript = `
+    new Promise(resolve => {
+        const element = document.querySelector('astro-island[component-url*="ChapterReader"]');
+        element.hydrator = () => (_, props) => {
+            resolve(props.pages.map(( { url }) => url)); 
+        };
+        element.hydrate();
+    });
+`;
+
 const chapterScript = `
     new Promise( resolve => {
-        resolve( [...document.querySelectorAll('a[href*="/chapter/"]:has(h3.text-xs)')].map(chapter => {
+        const element = document.querySelector('astro-island[component-url*="ChapterListReact"]');
+        resolve(JSON.parse(element.getAttribute('props')).chapters[1].map(chapter => {
             return {
-                id: chapter.pathname.replace(/(-[^-]+\\/chapter)/, '-/chapter'),
-                title : chapter.querySelector('h3').innerText.replace('\\n', ' ').trim()
+               id: '/comics/'+ chapter[1].series_slug[1] + '/chapter/'+ chapter[1].number[1],
+               title : ['Chapter', chapter[1].number[1], chapter[1].title?.at(1)].join(' ').trim()
             };
         }));
     });
 `;
 
-const pagesScript = `[... document.querySelectorAll('div.items-center div div.center img')].map(image=> image.src);`;
+function CleanPathName(uri: URL | HTMLAnchorElement) {
+    return uri.pathname.replace(/-[a-f0-9]+$/, '');
+};
 
-function MangaLinkExtractor(title: HTMLTitleElement, uri: URL) {
-    return {
-        id: uri.pathname.replace(/-[^-]+$/, '-'),
-        title: title.innerText.replace(/-[^-]+$/, '').trim(),
-    };
-}
-
-function MangaInfoExtractor(anchor: HTMLAnchorElement) {
-    return {
-        id: anchor.pathname.replace(/-[^-]+$/, '-'),
-        title: anchor.querySelector('div.items-center span.font-bold').textContent.trim()
-    };
-}
-
-@Common.MangaCSS(/^{origin}\/series\/[^/]+$/, 'head title', MangaLinkExtractor)
-@Common.MangasMultiPageCSS('div.grid a', Common.PatternLinkGenerator('/series?page={page}'), 0, MangaInfoExtractor)
-@Common.ChaptersSinglePageJS(chapterScript, 500)
+@Common.MangaCSS(/^{origin}\/comics\/[^/]+$/, 'article h1', (element, uri) => ({ id: CleanPathName(uri), title: element.textContent.trim() }))
+@Common.MangasMultiPageCSS<HTMLAnchorElement>('div#series-grid div.series-card div a', Common.PatternLinkGenerator('/browse?page={page}'), 0, anchor => ({ id: CleanPathName(anchor), title: anchor.textContent.trim() }))
+@Common.ChaptersSinglePageJS(chapterScript, 1000)
 @MangaStream.PagesSinglePageJS(excludes, pagesScript, 1000)
 @Common.ImageAjax(true)
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('asurascans', 'Asura Scans', 'https://asuracomic.net', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.English, Tags.Source.Scanlator);
+        super('asurascans', 'Asura Scans', 'https://asurascans.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.English, Tags.Source.Scanlator);
     }
 
     public override get Icon() {
