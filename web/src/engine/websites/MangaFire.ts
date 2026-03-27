@@ -12,6 +12,15 @@ type PageParameters = {
     ScramblingOffset?: number;
 };
 
+const chapterLanguageMap = new Map([
+    ['en', Tags.Language.English],
+    ['es', Tags.Language.Spanish],
+    ['es-la', Tags.Language.Spanish],
+    ['fr', Tags.Language.French],
+    ['ja', Tags.Language.Japanese],
+    ['pt-br', Tags.Language.Portuguese]
+]);
+
 @Common.MangaCSS(/^{origin}\/manga\/[^/]+$/, 'div.info h1[itemprop="name"]', (head, uri) => ({ id: uri.pathname, title: head.innerText.trim() }))
 @Common.MangasMultiPageCSS<HTMLAnchorElement>('div.info > a', Common.PatternLinkGenerator('/az-list?page={page}'), 250, anchor => ({ id: anchor.pathname.split('.').at(-1), title: anchor.text.trim() }))
 export default class extends DecoratableMangaScraper {
@@ -35,7 +44,7 @@ export default class extends DecoratableMangaScraper {
                     const uri = new URL(`/ajax/manga/${id}/${type}/${language}`, this.URI);
                     const { result } = await FetchJSON<{ result: string }>(new Request(uri));
                     const entries = [...parser.parseFromString(result, 'text/html').documentElement.querySelectorAll<HTMLSpanElement>('.item[data-number] > a > span:first-of-type')];
-                    yield* entries.map(span => new Chapter(this, manga, span.closest('a').pathname, `${span.innerText.trim()} (${language})`));
+                    yield* entries.map(span => new Chapter(this, manga, span.closest('a').pathname, `${span.innerText.trim()} (${language})`, ...[chapterLanguageMap.get(language)].filter(Boolean)));
                 }
             }
         }.call(this));

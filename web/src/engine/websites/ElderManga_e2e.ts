@@ -6,12 +6,12 @@ new TestFixture({
         title: 'ElderManga'
     },
     container: {
-        url: 'https://eldermanga.com/manga/18/antik-cag-kadim-nehirin-varisi',
-        id: '/manga/18/antik-cag-kadim-nehirin-varisi',
-        title: `Antik Çağ: Kadim Nehir'in Varisi`
+        url: 'https://eldermanga.com/manga/18/antik-cag-kadim-irmakin-varisi',
+        id: '/manga/18/antik-cag-kadim-irmakin-varisi',
+        title: `Antik Çağ: Kadim Irmak'ın Varisi`
     },
     child: {
-        id: '/manga/18/antik-cag-kadim-nehirin-varisi/1041/50-bolum',
+        id: '/manga/18/antik-cag-kadim-irmakin-varisi/1041/50-bolum',
         title: 'Bölüm 50'
     },
     entry: {

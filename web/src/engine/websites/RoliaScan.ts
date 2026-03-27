@@ -12,7 +12,7 @@ import * as MangaStream from './decorators/WordPressMangaStream';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('roliascan', 'Rolia Scan', 'https://roliascan.com', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Language.English, Tags.Source.Scanlator);
+        super('roliascan', 'Rolia Scan', 'https://roliascan.com', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Language.English, Tags.Source.Aggregator);
     }
 
     public override get Icon() {
