@@ -81,7 +81,17 @@ async function LaunchElectron(): Promise<puppeteer.Browser> {
         defaultViewport: null,
         ignoreDefaultArgs: true,
         executablePath: await DetectElectron(),
-        args: [ electronApp, '--remote-debugging-port=0', '--disable-blink-features=AutomationControlled', '--ignore-certificate-errors', '--no-sandbox', '--disable-gpu', '--trace-warnings', '--origin=' + AppURL ],
+        args: [
+            electronApp,
+            '--no-sandbox',
+            '--disable-gpu',
+            '--trace-warnings',
+            '--remote-debugging-port=0', // Use a random port to avoid anti-bot detection
+            '--disable-features=UseDBus', // Suppress warnings/errors when electron tries to connect to D-Bus session in CI/CD pipeline
+            '--ignore-certificate-errors',
+            '--disable-blink-features=AutomationControlled', // Suppress certain automation flags to avoid anti-bot detection
+            '--origin=' + AppURL
+        ],
         userDataDir: userDir,
         dumpio: true,
     });

@@ -6,17 +6,17 @@ new TestFixture({
         title: 'Mikoroku'
     },
     container: {
-        url: 'https://www.mikoroku.my.id/2025/01/ou-no-isekai-press-manyuuki.html',
-        id: '/2025/01/ou-no-isekai-press-manyuuki.html',
-        title: 'Harem Ou no Isekai Press Manyuuki'
+        url: 'https://www.mikoroku.top/2023/04/the-hero-wants-milf-as-reward.html',
+        id: '/2023/04/the-hero-wants-milf-as-reward.html',
+        title: 'The Hero Wants a Milf As a Reward'
     },
     child: {
-        id: 'https://www.mikodrive.my.id/2024/07/harem-ou-no-isekai-press-manyuuki_22.html',
-        title: 'Chapter 1'
+        id: '/2026/03/the-hero-wants-milf-as-reward-chapter-30.html',
+        title: 'Chapter 30'
     },
     entry: {
         index: 1,
-        size: 186_568,
+        size: 41_770,
         type: 'image/jpeg'
     }
 }).AssertWebsite();
