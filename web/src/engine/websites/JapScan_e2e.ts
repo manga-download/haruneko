@@ -13,7 +13,8 @@ new TestFixture({
     },
     child: {
         id: '/manga/jujutsu-kaisen/1/',
-        title: 'Chapitre 1: Esprit à double-face'
+        title: 'Chapitre 1: Esprit à double-face',
+        timeout: 30_000
     },
     entry: {
         index: 2,
@@ -35,7 +36,8 @@ new TestFixture({
     },
     child: {
         id: '/manhwa/king-game/1/',
-        title: 'Chapitre 1'
+        title: 'Chapitre 1',
+        timeout: 30_000
     },
     entry: {
         index: 0,
