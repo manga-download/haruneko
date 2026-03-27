@@ -12,8 +12,6 @@ type APIManga = {
 };
 
 // TODO: Check for possible revision
-
-// TODO: Integration => https://github.com/manga-download/haruneko/commit/72a42dc5b3615af0c01588bc1c8d4db14a36a799#diff-0f4fdeca648eb4546349d45ef81d6abca1844a3dc84b0863ce3073832853792a
 export default class extends CiaoPlus {
 
     protected override readonly drm = new DRMProvider('https://api.pocket.shonenmagazine.com/', {
@@ -31,6 +29,7 @@ export default class extends CiaoPlus {
 
     public constructor() {
         super('shonenmagazine', '週刊少年マガジ (Weekly Shonen Magazine & Pocket Magazine)', 'https://pocket.shonenmagazine.com', [Tags.Media.Manga, Tags.Language.Japanese, Tags.Source.Official]);
+        this.WithCharsetEVEN('svdk0m7acl').WithCharsetODD('q6jtf2xnog');
     }
 
     public override get Icon() {
@@ -39,7 +38,7 @@ export default class extends CiaoPlus {
 
     async #FetchMangaInfo(mangaID: string): Promise<APIManga> {
         return this.drm.FetchAPI<APIManga>('./web/title/detail', {
-            title_id: mangaID,
+            title_id: mangaID
         });
     }
 
@@ -49,7 +48,7 @@ export default class extends CiaoPlus {
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
         const { web_title: { title_id, title_name } } = await this.#FetchMangaInfo(new URL(url).pathname.split('/').at(2));
-        return new Manga(this, provider, title_id.toString(), title_name.trim());
+        return new Manga(this, provider, `${title_id}`, title_name.trim());
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {

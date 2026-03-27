@@ -114,6 +114,7 @@
     {:else if isBookmarked}
         <span in:coinflip={{ duration: 200 }}>
             <Button
+                role="bookmark"
                 class="bookmarked"
                 size="small"
                 kind="ghost"
@@ -127,6 +128,7 @@
     {:else}
         <span in:coinflip={{ duration: 200 }}>
             <Button
+                role="bookmark"
                 size="small"
                 kind="ghost"
                 icon={Star}

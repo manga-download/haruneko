@@ -11,8 +11,8 @@ import * as Common from './decorators/Common';
 @Common.ImageAjax(true)
 export default class extends DecoratableMangaScraper {
 
-    public constructor () {
-        super('cosmicscansid', 'Cosmic Scans Indonesia', 'https://lc4.cosmicscans.asia', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Indonesian, Tags.Source.Scanlator);
+    public constructor() {
+        super('cosmicscansid', 'Cosmic Scans Indonesia', 'https://lc5.cosmicscans.asia', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Indonesian, Tags.Source.Scanlator, Tags.Accessibility.RegionLocked);
     }
 
     public override get Icon() {
