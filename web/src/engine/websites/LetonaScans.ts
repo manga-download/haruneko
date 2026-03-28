@@ -1,43 +1,40 @@
 import { Tags } from '../Tags';
 import icon from './LetonaScans.webp';
-import { FetchGraphQL, FetchNextJS } from '../platform/FetchProvider';
+import { FetchJSON } from '../platform/FetchProvider';
 import { Chapter, DecoratableMangaScraper, Manga, type MangaPlugin, Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 
-type HydratedChapter = {
-    images: {
-        url: string
-    }[]
+type APIMangas = {
+    contents: APIManga[];
 };
 
 type APIMangaDetails = {
-    novelBySlug: APIManga;
-};
-
-type APIMangas = {
-    novels: {
-        novels: APIManga[];
-    }
+    content: APIManga;
 };
 
 type APIManga = {
     title: string;
     slug: string;
     chapters: APIChapter[];
-}
+};
 
 type APIChapter = {
     number: number;
+    images: {
+        url: string;
+    }[]
 };
 
-// TODO: Check for possible revision
+type APIPages = {
+    chapter: APIChapter;
+};
 
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
-    private readonly apiUrl = `${this.URI.origin}/graphql`;
+    private readonly apiUrl = `${this.URI.origin}/api/`;
 
-    public constructor(id = 'letonascans', label = 'Letona Scans', url= 'https://letonascans.com', tags = [Tags.Media.Manhwa, Tags.Media.Manga, Tags.Language.Turkish, Tags.Source.Scanlator]) {
-        super(id, label, url, ...tags);
+    public constructor() {
+        super('letonascans', 'Letona Scans', 'https://letonascans.net', Tags.Media.Manhwa, Tags.Media.Manga, Tags.Language.Turkish, Tags.Source.Scanlator);
     }
 
     public override get Icon() {
@@ -49,72 +46,22 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
-        const slug = url.split('/').at(-1);
-        const query = `
-            query GetSeriesInfo($slug: String!) {
-              novelBySlug(slug: $slug) {
-                title
-                contentType
-              }
-            }
-        `;
-        const { novelBySlug: { title } } = await this.FetchAPI<APIMangaDetails>('GetSeriesInfo', query, { slug });
+        const { content: { slug, title } } = await FetchJSON<APIMangaDetails>(new Request(new URL(`./content?slug=${url.split('/').at(-1)}`, this.apiUrl)));
         return new Manga(this, provider, slug, title);
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        const query = `
-            query GetAllNovelsPaginated(
-              $page: Int
-              $limit: Int
-              $sort: NovelSortInput
-              $filter: NovelFilterInput
-            ) {
-              novels(page: $page, limit: $limit, sort: $sort, filter: $filter) {
-                novels {
-                  title
-                  slug
-                }
-              }
-            }
-        `;
-        const { novels: { novels } } = await this.FetchAPI<APIMangas>('GetAllNovelsPaginated', query, {
-            filter: {},
-            limit: 9999,
-            page: 1,
-            sort: {
-                ascending: false,
-                field: 'updatedAt'
-            }
-        });
-        return novels.map(({ slug, title }) => new Manga(this, provider, slug, title));
+        const { contents } = await FetchJSON<APIMangas>(new Request(new URL('./content?limit=9999&contentType=MANGA', this.apiUrl)));
+        return contents.map(({ slug, title }) => new Manga(this, provider, slug, title));
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const query = `
-            query GetSeriesInfo($slug: String!) {
-              novelBySlug(slug: $slug) {
-                chapters {
-                    number
-                }
-              }
-            }
-        `;
-        const { novelBySlug: { chapters } } = await this.FetchAPI<APIMangaDetails>('GetSeriesInfo', query, { slug: manga.Identifier });
+        const { chapters } = await FetchJSON<APIManga>(new Request(new URL(`./chapters?slug=${manga.Identifier}&limit=9999`, this.apiUrl)));
         return chapters.map(({ number }) => new Chapter(this, manga, `/manga/${manga.Identifier}/bolum/${number}`, number.toString()));
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const { images } = await FetchNextJS<HydratedChapter>(new Request(new URL(chapter.Identifier, this.URI)), data => 'images' in data);
+        const { chapter: { images } } = await FetchJSON<APIPages>(new Request(new URL(`./chapters?slug=${chapter.Parent.Identifier}&chapterNumber=${chapter.Identifier.split('/').at(-1)}`, this.apiUrl)));
         return images.map(({ url }) => new Page(this, chapter, new URL(url, this.URI)));
-    }
-
-    private async FetchAPI<T extends JSONElement>(operationName: string, query: string, variables: JSONObject): Promise<T> {
-        return FetchGraphQL<T>(new Request(new URL(this.apiUrl)), operationName, query, variables, {
-            clientLibrary: {
-                name: '@apollo/client',
-                version: '4.0.9'
-            }
-        });
     }
 }
