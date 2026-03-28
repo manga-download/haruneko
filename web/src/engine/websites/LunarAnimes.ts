@@ -1,8 +1,9 @@
 import { Tags } from '../Tags';
 import icon from './LunarAnimes.webp';
-import { FetchJSON } from '../platform/FetchProvider';
+import { FetchJSON, FetchNextJS } from '../platform/FetchProvider';
 import { type MangaPlugin, Manga, Chapter, Page, DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
+import { GetBytesFromBase64, GetBytesFromUTF8 } from '../BufferEncoder';
 
 type APIMangas = {
     manga: APIManga[];
@@ -23,6 +24,7 @@ type APIChapters = {
 type APIPages = {
     data: {
         images: string[];
+        session_data: string;
     };
 };
 
@@ -55,8 +57,14 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        const { manga } = await FetchJSON<APIMangas>(new Request(new URL('./search?', this.apiUrl)));
-        return manga.map(({ slug, title }) => new Manga(this, provider, slug, title));
+        type This = typeof this;
+        return Array.fromAsync(async function* (this: This) {
+            for (let page = 1, run = true; run; page++) {
+                const { manga } = await FetchJSON<APIMangas>(new Request(new URL(`./search?page=${page}&limit=100&sort=relevance`, this.apiUrl)));
+                const mangas = manga.map(({ slug, title }) => new Manga(this, provider, slug, title));
+                mangas.length > 0 ? yield* mangas : run = false;
+            }
+        }.call(this));
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
@@ -68,7 +76,18 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const { data: { images } } = await FetchJSON<APIPages>(new Request(new URL(chapter.Identifier, this.apiUrl)));
-        return images.map(page => new Page(this, chapter, new URL(page)));
+        const { secretKey } = await FetchNextJS<{secretKey: string}>(new Request(new URL(`/manga${chapter.Identifier.replace(/^\./, '')}`, this.URI)), data => 'secretKey' in data);
+        const { data: { images, session_data: encryptedData } } = await FetchJSON<APIPages>(new Request(new URL(chapter.Identifier, this.apiUrl)));
+        return (encryptedData ? (await this.Decrypt<APIPages>(encryptedData, secretKey)).data.images : images)
+            .map(page => new Page(this, chapter, new URL(page), { Referer: this.URI.href }));
     }
+
+    private async Decrypt<T extends JSONElement>(data: string, secretKey: string): Promise<T> {
+        const keyData = await crypto.subtle.digest('SHA-256', GetBytesFromUTF8(secretKey));
+        const algorithm = { name: 'AES-CBC', iv: new Uint8Array(16) };
+        const key = await crypto.subtle.importKey('raw', keyData, algorithm, false, ['decrypt']);
+        const decrypted = await crypto.subtle.decrypt(algorithm, key, GetBytesFromBase64(data));
+        return JSON.parse(new TextDecoder().decode(decrypted)) as T;
+    }
+
 }
