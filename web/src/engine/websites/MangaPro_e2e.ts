@@ -7,7 +7,7 @@ new TestFixture({
         title: 'ProChan'
     },
     container: {
-        url: 'https://prochan.net/series/manhua/399/awakening-sss-rank-skill-after-a-kiss',
+        url: 'https://procomic.net/series/manhua/399/awakening-sss-rank-skill-after-a-kiss',
         id: '/series/manhua/399/awakening-sss-rank-skill-after-a-kiss',
         title: 'Awakening SSS-Rank skill after a Kiss'
     },
@@ -30,7 +30,7 @@ new TestFixture({
         title: 'ProChan'
     },
     container: {
-        url: 'https://prochan.net/series/manhwa/492/the-villain-wants-to-live',
+        url: 'https://procomic.net/series/manhwa/492/the-villain-wants-to-live',
         id: '/series/manhwa/492/the-villain-wants-to-live',
         title: 'The Villain Wants to Live.'
     },

@@ -74,11 +74,11 @@ type SessionKey = {
 
 @Common.MangaCSS<HTMLMetaElement>(/^{origin}\/series\/(manga|manhua|manhwa)\/\d+\/[^/]+$/, 'meta[property="og:image:alt"]')
 export default class extends DecoratableMangaScraper {
-    private readonly apiUrl = 'https://prochan.net/api/';
+    private readonly apiUrl = 'https://procomic.net/api/';
     private readonly turnstileApiKey = '0x4AAAAAACk1d7qWJi_of2qU';
 
     public constructor() {
-        super('mangapro', 'ProChan', 'https://prochan.net', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Arabic, Tags.Source.Scanlator);
+        super('mangapro', 'ProChan', 'https://procomic.net', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Arabic, Tags.Source.Scanlator);
     }
 
     public override get Icon() {
