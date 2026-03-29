@@ -735,6 +735,7 @@ export { default as WritersScans } from './WritersScans';
 export { default as XlecX } from './XlecX';
 export { default as XManga } from './XManga';
 export { default as XManhwa } from './XManhwa';
+export { default as XoManga } from './XoManga';
 export { default as XoxoComics } from './XoxoComics';
 export { default as XXXYaoi } from './XXXYaoi';
 export { default as YakshaComics } from './YakshaComics';
