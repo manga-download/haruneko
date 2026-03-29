@@ -143,6 +143,7 @@ export { default as EuphoriaScan } from './EuphoriaScan';
 export { default as EvilFlowers } from './EvilFlowers';
 export { default as FalcoScan } from './FalcoScan';
 export { default as FastestManga } from './FastestManga';
+export { default as FavComic } from './FavComic';
 export { default as FbSquads } from './FbSquads';
 export { default as FeelWeb } from './FeelWeb';
 export { default as FireComics } from './FireComics';
