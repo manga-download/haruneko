@@ -62,7 +62,6 @@ export class VTheme extends DecoratableMangaScraper {
                 const mangas = posts.map(({ id, postTitle }) => new Manga(this, provider, `${id}`, postTitle));
                 mangas.length > 0 ? yield* mangas : run = false;
             }
-
         }.call(this));
     }
 
@@ -79,17 +78,6 @@ export class VTheme extends DecoratableMangaScraper {
                     });
                 chapters.length > 0 ? yield* chapters : run = false;
             }
-
         }.call(this));
-    }
-
-    private async GetChaptersFromPage(page: number, manga: Manga): Promise<Chapter[]> {
-        const { post: { chapters } } = await FetchJSON<APIChapters>(new Request(new URL(`./chapters?postId=${manga.Identifier}&take=999&skip=${page * 999}`, this.apiURL)));
-        return chapters
-            .filter(({ isLocked, chapterPurchased }) => !isLocked || chapterPurchased)
-            .map(({ number, title, slug: chapterSlug, mangaPost: { slug: mangaSlug } }) => {
-                title = 'Chapter ' + number + (title ? ` - ${title}` : '');
-                return new Chapter(this, manga, `/series/${mangaSlug}/${chapterSlug}`, title);
-            });
     }
 }
