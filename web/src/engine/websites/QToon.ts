@@ -165,9 +165,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     private async GenerateSignature(didCookievalue: string, data: string | JSONElement = undefined): Promise<string> {
-        const hash = MD5(didCookievalue);
-        const key = hash.slice(0, 16);
-        const iv = hash.slice(16);
+        const { key, iv } = this.GetCryptoParams(MD5(didCookievalue));
         typeof data == 'object' && data !== null && (data = JSON.stringify(data));
         return this.AESEncrypt(key, iv, data as string);
     }
@@ -187,19 +185,22 @@ export default class extends DecoratableMangaScraper {
     }
 
     private async DecryptResult<T extends JSONElement>(timestamp: string, data: string): Promise<T> {
-        const hash = MD5(`${MD5(`${this.tokens.did}${timestamp}`)}${this.pubAesKey}`);
-        const key = hash.slice(0, 16);
-        const iv = hash.slice(16);
+        const { key, iv } = this.GetCryptoParams(MD5(`${MD5(`${this.tokens.did}${timestamp}`)}${this.pubAesKey}`));
         return JSON.parse(await this.AESDecrypt(key, iv, data)) as T;
     }
 
     private async DecryptImageUrl(text: string): Promise<URL> {
-        const hash = MD5(`${MD5(`${this.tokens.did}`)}9tv86uBwmOYs7QZ0`);
-        const key = hash.slice(0, 16);
-        const iv = hash.slice(16);
+        const { key, iv } = this.GetCryptoParams(MD5(`${MD5(`${this.tokens.did}`)}9tv86uBwmOYs7QZ0`));
         const url = new URL(await this.AESDecrypt(key, iv, text));
         url.search = '';
         return url;
+    }
+
+    private GetCryptoParams(hash: string): { key: string, iv: string } {
+        return {
+            key: hash.slice(0, 16),
+            iv: hash.slice(16)
+        };
     }
 }
 
