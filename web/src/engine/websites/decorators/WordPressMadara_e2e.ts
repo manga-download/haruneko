@@ -20,7 +20,6 @@ import '../CovenScan_e2e';
 import '../DecadenceScans_e2e';
 import '../DiamondFansub_e2e';
 import '../DomalFansub_e2e';
-import '../DoujinHentai_e2e';
 import '../DoujinZa_e2e';
 import '../DragonTea_e2e';
 import '../DragonTranslation_e2e';
