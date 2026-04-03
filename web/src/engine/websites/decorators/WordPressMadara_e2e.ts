@@ -125,7 +125,6 @@ import '../NoIndexScan_e2e';
 import '../Opiatoon_e2e';
 import '../PawManga_e2e';
 import '../PinkSeaUnicorn_e2e';
-import '../PlatinumScans_e2e';
 import '../PortalYaoi_e2e';
 import '../RaijinScans_e2e';
 import '../RawXZ_e2e';

@@ -7,7 +7,7 @@ import * as Common from './decorators/Common';
 export default class extends VTheme {
 
     public constructor() {
-        super('vortexscans', 'Vortex Scans', 'https://vortexscans.org', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Language.English, Tags.Source.Scanlator);
+        super('vortexscans', 'Vortex Scans', 'https://vortexcomics.org', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Language.English, Tags.Source.Scanlator);
     }
 
     public override get Icon() {

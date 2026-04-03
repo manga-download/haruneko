@@ -6,7 +6,7 @@ new TestFixture({
         title: 'NetTruyen OK',
     },
     container: {
-        url: 'https://nettruyen5s.com/manga/ta-co-90-ty-tien-liem-cau',
+        url: 'https://nettruyen6s.com/manga/ta-co-90-ty-tien-liem-cau',
         id: '/manga/ta-co-90-ty-tien-liem-cau',
         title: 'Ta Có 90 Tỷ Tiền Liếm Cẩu!',
     },

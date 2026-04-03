@@ -12,7 +12,7 @@ import { FetchWindowScript } from '../platform/FetchProvider';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('haremu18', 'Raw18', 'https://raw18.plus', Tags.Media.Manhwa, Tags.Media.Manga, Tags.Language.Japanese, Tags.Source.Aggregator, Tags.Rating.Pornographic, Tags.Accessibility.DomainRotation);
+        super('haremu18', 'Raw18', 'https://raw18.bid', Tags.Media.Manhwa, Tags.Media.Manga, Tags.Language.Japanese, Tags.Source.Aggregator, Tags.Rating.Pornographic, Tags.Accessibility.DomainRotation);
     }
 
     public override get Icon() {
