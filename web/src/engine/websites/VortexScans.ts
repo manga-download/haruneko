@@ -8,6 +8,7 @@ export default class extends VTheme {
 
     public constructor() {
         super('vortexscans', 'Vortex Scans', 'https://vortexcomics.org', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Language.English, Tags.Source.Scanlator);
+        this.WithApiUrl(new URL('https://api.vortexscans.org/api/'));
     }
 
     public override get Icon() {

@@ -43,7 +43,12 @@ type APIChapters = {
 @Common.ImageAjax(true)
 export class VTheme extends DecoratableMangaScraper {
 
-    private readonly apiURL = new URL('//api.' + this.URI.hostname + '/api/', this.URI);
+    private apiURL = new URL('//api.' + this.URI.hostname + '/api/', this.URI);
+
+    public WithApiUrl(url: URL): VTheme {
+        this.apiURL = url;
+        return this;
+    }
 
     public override ValidateMangaURL(url: string): boolean {
         return new RegExpSafe(`^${this.URI.origin}/series/[^/]+$`).test(url);
