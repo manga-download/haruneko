@@ -22,6 +22,16 @@ export default class extends ZeistManga {
         return new RegExpSafe(`^${this.URI.origin}/detail\\?slug=`).test(url);
     }
 
+    public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
+        const { feed: { entry } } = await FetchJSON<FeedResults>(new Request(new URL(`https://www.mikoroku.top/feeds/posts/default?alt=json&max-results=9999`)));
+        return entry
+            .filter(({ category }) => category && category.some(({ term }) => ["Manga", "Manhua", "Manhwa"].includes(term)))
+            .map(({ link, title: { $t } }) => {
+                const goodLink = link.find(link => link.rel === 'alternate').href;
+                return new Manga(this, provider, goodLink.split('/').at(-1).replace('.html', '').trim(), $t.trim() );
+            });
+    }
+
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
         const { id, title } = await FetchWindowScript<{ id: string, title: string }>(new Request(new URL(url)), `
             new Promise ( resolve => {
