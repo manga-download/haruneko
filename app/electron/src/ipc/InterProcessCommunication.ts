@@ -67,15 +67,24 @@ export class IPC {
 
     constructor (private readonly webContents: Electron.WebContents) { }
 
-    //On(channel: Channels..., callback: (nonce: string, result: JSONElement) => void): void;
-
     /**
-     * Register a {@link callback} to handle an event received from a sender (e.g., from _Render_ process via `ipcRender.send(channel, ...args)`).
-     * The handler must not respond to the request of the sender.
+     * Register a {@link callback} to handle a message from the _Render_ process via `ipcRenderer.send(channel, ...args)`.
+     * The sender does not receive a response (fire & forget).
      */
     public On<TParameters extends JSONArray>(channel: string, callback: (...parameters: TParameters) => void): void {
-        //
-        ipcMain.on(channel, (_, ...parameters: TParameters) => callback(...parameters));
+        ipcMain.on(channel, (_, ...args: TParameters) => callback(...args));
+    }
+
+    Send(channel: Channels.RemoteBrowserWindowController.OnDomReady, windowID: number): void;
+    Send(channel: Channels.RemoteBrowserWindowController.OnBeforeNavigate, windowID: number, url: string, isMainFrame: boolean, isSameDocument: boolean): void;
+    Send(channel: Channels.RemoteProcedureCallContract.LoadMediaContainerFromURL, url: string): void;
+
+    /**
+     * Send a message to the _Render_ process handled by `ipcRenderer.on(channel, listener)`.
+     * The sender does not receive a response (fire & forget).
+     */
+    public Send<TParameters extends JSONArray>(channel: string, ...parameters: TParameters): void {
+        this.webContents.send(channel, ...parameters);
     }
 
     // ApplicationWindow
@@ -104,41 +113,18 @@ export class IPC {
     Handle(channel: Channels.RemoteProcedureCallManager.Restart, callback: (port: number, secret: string) => Promise<void>): void;
 
     /**
-     * Register a {@link callback} to handle a request received from a sender (e.g., Render process).
-     * The handler will also reply to the request of the sender with the response from the {@link callback}.
-     * @description The sender may invoke the handler via `ipcRender.invoke(channel, ...args)`.
+     * Register a {@link callback} to handle a request from the _Render_ process via `ipcRenderer.invoke(channel, ...args)`.
+     * The sender receives a response with the result from the {@link callback}.
      */
     public Handle<TParameters extends JSONArray, TReturn extends JSONElement>(channel: string, callback: (...parameters: TParameters) => TReturn | PromiseLike<TReturn>): void {
-        ipcMain.handle(channel, (_, ...parameters: TParameters) => callback(...parameters));
+        ipcMain.handle(channel, (_, ...args: TParameters) => callback(...args));
     }
-
-    Send(channel: Channels.RemoteBrowserWindowController.OnDomReady, windowID: number): void;
-    Send(channel: Channels.RemoteBrowserWindowController.OnBeforeNavigate, windowID: number, url: string, isMainFrame: boolean, isSameDocument: boolean): void;
-    Send(channel: Channels.RemoteProcedureCallContract.LoadMediaContainerFromURL, url: string): void;
 
     /**
-     * Provide a method that sends an event to a reciepient (e.g., Render process) without expecting a response.
-     * @remarks This message will trigger the `ipcRender.on(channel, ...args)` handler
+     * Send a request to the _Render_ process handled by `ipcRenderer.handle(channel, listener)`.
+     * The sender receives a response with the result from the handler.
      */
-    public Send(channel: string, ...parameters: JSONArray): void {
-        this.webContents.send(channel, ...parameters);
+    public Invoke<TParameters extends JSONArray, TReturn extends JSONElement>(_channel: string, ..._parameters: TParameters): TReturn | PromiseLike<TReturn> {
+        throw new Error('Not natively supported by Electron!');
     }
-
-    //Invoke(channel: Channels.FetchProvider.OnBeforeSendHeaders, url: string, requestHeaders: Electron.OnBeforeSendHeadersListenerDetails[ 'requestHeaders' ]): Promise<Electron.BeforeSendResponse>;
-    //Invoke(channel: Channels.FetchProvider.OnHeadersReceived, url: string, responseHeaders: Electron.OnHeadersReceivedListenerDetails[ 'responseHeaders' ]): Promise<Electron.HeadersReceivedResponse>;
-
-    /**
-     * Provide a method that sends a request to a reciepient (e.g., Render process) and returns the replied response.
-     * @remarks This message will trigger the `ipcRender.handle(channel, ...args)`
-     */
-    /*
-    public Invoke<T extends JSONElement>(channel: string, ...parameters: JSONArray): Promise<T> {
-        // TODO: Implement mechanism to receive a response ...
-        const nonce = `${Date.now()}${Math.random()}`;
-        return new Promise<T>(resolve => {
-            this.#replyResolvers.set(nonce, (value: T) => resolve(value));
-            this.webContents.send(channel, nonce, ...parameters);
-        });
-    }
-    */
 }
