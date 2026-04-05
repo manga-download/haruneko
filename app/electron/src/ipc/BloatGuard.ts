@@ -4,7 +4,7 @@ import { type IPC, Channels } from './InterProcessCommunication';
 export class BloatGuard {
 
     constructor (private readonly ipc: IPC, private readonly webContents: WebContents) {
-        this.ipc.Listen(Channels.BloatGuard.App.Initialize, this.Initialize.bind(this));
+        this.ipc.Handle(Channels.BloatGuard.Initialize, this.Initialize.bind(this));
     }
 
     private async Initialize(patterns: string[]): Promise<void> {
