@@ -65,6 +65,10 @@ export class HakuNeko {
         return this.#settingsManager;
     }
 
+    /**
+     * @deprecated
+     * Use `HakuNeko.PluginController.Bookmarks` instead
+     */
     public get BookmarkPlugin(): BookmarkPlugin {
         return this.#bookmarkPlugin;
     }

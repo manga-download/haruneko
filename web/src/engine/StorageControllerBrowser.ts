@@ -29,6 +29,15 @@ const VersionUpgrades = [
     function V5(db: IDBDatabase) {
         db.createObjectStore(Store.Itemflags);
     },
+    // V5 => V6
+    function V6(db: IDBDatabase) {
+        db.createObjectStore('PluginFavorites');
+    },
+    // V6 => V7
+    function V7(db: IDBDatabase) {
+        db.deleteObjectStore('PluginFavorites');
+        db.createObjectStore(Store.Favorites);
+    },
 ];
 
 const Version = VersionUpgrades.length;
