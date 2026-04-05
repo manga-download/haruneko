@@ -6,7 +6,7 @@ new TestFixture({
         title: 'Vortex Scans'
     },
     container: {
-        url: 'https://vortexcomics.org/series/regenerate-top-players-0cn52tcd',
+        url: 'https://vortexscans.org/series/regenerate-top-players-0cn52tcd',
         id: '8',
         title: 'Regenerate Top Players'
     },
