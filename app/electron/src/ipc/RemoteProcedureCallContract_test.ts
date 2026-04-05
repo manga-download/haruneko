@@ -10,7 +10,7 @@ class TestFixture {
     } as unknown as IPC<string, string>;
 
     public CreatTestee(): RemoteProcedureCallContract {
-        return new RemoteProcedureCallContract(this.mockIPC, null);
+        return new RemoteProcedureCallContract(this.mockIPC, null as unknown as Electron.WebContents);
     }
 }
 

@@ -74,5 +74,7 @@ const patterns = [
     '*://valuerabjure.com/*',
     '*://voltoishime.top/*',
     '*://www.facebook.com/*/plugins/comments.php*',
-    '*://www.facebook.net/*/plugins/comments.php*'
+    '*://www.facebook.net/*/plugins/comments.php*',
+    '*://www.facebook.com/plugins/like.php*',
+    '*://www.facebook.net/plugins/like.php*'
 ];

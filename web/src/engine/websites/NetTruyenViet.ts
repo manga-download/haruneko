@@ -3,9 +3,10 @@ import icon from './NetTruyen.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as MojoPortalComic from './templates/MojoPortalComic';
 import * as Common from './decorators/Common';
+import * as MangaStream from './decorators/WordPressMangaStream';
 import { FetchWindowScript } from '../platform/FetchProvider';
 
-const primaryDomain = 'nettruyenviet1.com';
+const primaryDomain = 'nettruyenviet10.com';
 const patternAliasDomains = [
     primaryDomain,
     'nettruyenar.com',
@@ -14,7 +15,7 @@ const patternAliasDomains = [
 @Common.MangaCSS(new RegExp(`^https?://(${patternAliasDomains})/truyen-tranh/[^/]+$`), MojoPortalComic.queryManga)
 @Common.MangasMultiPageCSS(MojoPortalComic.queryMangas, MojoPortalComic.MangasLinkGenerator, 2500)
 @MojoPortalComic.ChaptersSinglePageAJAX()
-@Common.PagesSinglePageCSS(MojoPortalComic.queryPages, (img: HTMLImageElement) => img.dataset.src)
+@MangaStream.PagesSinglePageCSS([/nettruyenviet\.webp$/], MojoPortalComic.queryPages)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 

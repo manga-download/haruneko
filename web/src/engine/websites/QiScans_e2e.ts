@@ -7,11 +7,11 @@ new TestFixture({
     },
     container: {
         url: 'https://qimanhwa.com/series/celestial-phenomenon',
-        id: '5',
+        id: 'celestial-phenomenon',
         title: 'Celestial Phenomenon'
     },
     child: {
-        id: '/series/celestial-phenomenon/chapter-76',
+        id: 'chapter-76',
         title: 'Chapter 76'
     },
     entry: {

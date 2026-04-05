@@ -12,7 +12,7 @@ new TestFixture({
     },
     child: {
         id: '/title/k7yg7-the-spark-in-your-eyes/7271789-chapter-225',
-        title: '225'
+        title: '225 [UTOON]'
     },
     entry: {
         index: 0,

@@ -36,7 +36,7 @@ const patternAliasDomains = [
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
-    private readonly keyData = GetBytesFromUTF8('op0zzpvv.nzn.ocp');
+    private readonly keyData = GetBytesFromUTF8('op0zzpvv.nmn.o0p');
 
     public constructor() {
         super('copymanga', 'CopyManga', uri.origin, Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Chinese, Tags.Source.Aggregator);

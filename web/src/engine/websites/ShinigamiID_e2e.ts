@@ -6,7 +6,7 @@ new TestFixture({
         title: 'Shinigami ID',
     },
     container: {
-        url: 'https://09.shinigami.asia/series/73a836fe-373e-4645-a5d9-a517922be4d3',
+        url: 'https://d.shinigami.asia/series/73a836fe-373e-4645-a5d9-a517922be4d3',
         id: '73a836fe-373e-4645-a5d9-a517922be4d3',
         title: 'SSS-Class Suicide Hunter'
     },

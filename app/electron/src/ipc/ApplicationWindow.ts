@@ -18,8 +18,8 @@ export class ApplicationWindow extends BrowserWindow {
     }
 
     private async Restore() {
-        if (super.isMinimized) super.restore();
-        if (super.isMaximized) super.unmaximize();
+        if (super.isMinimized()) super.restore();
+        if (super.isMaximized()) super.unmaximize();
     }
 
     private async OpenSplash(url: string) {
