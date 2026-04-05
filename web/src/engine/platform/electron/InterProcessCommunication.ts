@@ -30,6 +30,31 @@ class IPC {
         throw new Error('Not natively supported by Electron!');
     }
 
+    // ApplicationWindow
+    Invoke(channel: Channels.ApplicationWindow.ShowWindow): void;
+    Invoke(channel: Channels.ApplicationWindow.HideWindow): void;
+    Invoke(channel: Channels.ApplicationWindow.Minimize): void;
+    Invoke(channel: Channels.ApplicationWindow.Maximize): void;
+    Invoke(channel: Channels.ApplicationWindow.Restore): void;
+    Invoke(channel: Channels.ApplicationWindow.Close): void;
+    Invoke(channel: Channels.ApplicationWindow.OpenSplash, url: string): void;
+    Invoke(channel: Channels.ApplicationWindow.CloseSplash): void;
+    // BloatGuard
+    Invoke(channel: Channels.BloatGuard.Initialize, patterns: string[]): Promise<void>;
+    // FetchProvider
+    Invoke(channel: Channels.FetchProvider.Initialize, fetchApiSupportedPrefix: string): Promise<void>;
+    Invoke(channel: Channels.FetchProvider.GetSessionCookies, filter: Electron.CookiesGetFilter): Promise<Electron.Cookie[]>;
+    // RemoteBrowserWindowController
+    Invoke(channel: Channels.RemoteBrowserWindowController.OpenWindow, options: string): Promise<number>;
+    Invoke(channel: Channels.RemoteBrowserWindowController.CloseWindow, windowID: number): Promise<void>
+    Invoke(channel: Channels.RemoteBrowserWindowController.SetVisibility, windowID: number, show: boolean): Promise<void>;
+    Invoke<T extends JSONElement>(channel: Channels.RemoteBrowserWindowController.ExecuteScript, windowID: number, script: string): Promise<T>;
+    //Invoke<T extends never | JSONElement>(channel: Channels.RemoteBrowserWindowController.SendDebugCommand, windowID: number, channel: string, parameters?: JSONObject): Promise<T>
+    Invoke(channel: Channels.RemoteBrowserWindowController.LoadURL, windowID: number, url: string, options: string):Promise<void>;
+    // RemoteProcedureCallManager
+    Invoke(channel: Channels.RemoteProcedureCallManager.Stop): Promise<void>;
+    Invoke(channel: Channels.RemoteProcedureCallManager.Restart, port: number, secret: string): Promise<void>;
+
     /**
      * Send a request to the _Main_ process handled by `ipcMain.handle(channel, listener)`.
      * The sender receives a response with the result from the handler.
