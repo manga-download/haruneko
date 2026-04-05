@@ -3,7 +3,7 @@ import { type IPC, Channels } from './InterProcessCommunication';
 
 export class ApplicationWindow extends BrowserWindow {
 
-    private splash?: BrowserWindow = null;
+    private splash?: BrowserWindow = undefined;
 
     public async RegisterChannels(ipc: IPC) {
         // TODO: Prevent duplicate registrations
