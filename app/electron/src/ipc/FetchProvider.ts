@@ -69,7 +69,7 @@ export class FetchProvider {
                 continue;
             }
 
-            // Currently electron des not include partitioned cookies when filtering with `session.cookies.get({ url })`
+            // Currently electron does not include partitioned cookies when filtering with `session.cookies.get({ url })`
             // => Workaround: Remove the partitioned flag from the server response
             if(normalizedHeader === 'set-cookie') {
                 originalHeaders[normalizedHeader] = originalHeaders[originalHeader].map(cookie => cookie.replace(/partitioned/gi, ''));
