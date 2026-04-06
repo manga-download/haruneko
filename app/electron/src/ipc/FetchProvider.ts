@@ -18,48 +18,57 @@ export class FetchProvider {
         this.Initialize = () => { };
     }
 
-    private async GetSessionCookies(url: string): Promise<string> {
-        const sessionCookies = await this.webContents.session.cookies.get({ url, /* partitionKey: {} */ }); // TODO: When filter by URL partioned cookies may not be found (e.g., cf_clearance)
-        return sessionCookies.map(({ name, value }) => `${name}=${value}`).join(';'); // TODO: Maybe use `encodeURIComponent(cookie.value)`
-    }
+    private async GetSessionCookies(url: string, ...customCookieHeaders: string[]): Promise<string> {
+        const sessionCookieSet = await this.webContents.session.cookies.get({ url, /* partitionKey: {} */ }); // TODO: When filter by URL partioned cookies may not be found (e.g., cf_clearance)
+        const customCookieSets = customCookieHeaders.map(customCookieHeader => customCookieHeader
+            .split(';')
+            .filter(cookie => cookie.includes('='))
+            .map(cookie => cookie.split('='))
+            .map(([name, value]) => ({ name: name.trim(), value: value.trim() }))
+            .filter(({ name, value }) => name && value));
 
-    private RevealHeaders(headers: Headers): Headers {
-        const result = new Headers();
-        const patternConcealedHeaderName = new RegExp('^' + this.fetchApiSupportedPrefix, 'i');
-        const GetRevealedHeaderName = (name: string) => name.replace(patternConcealedHeaderName, '');
+        const result: Record<string, string> = {};
 
-        for (const name in headers) {
-            result.set(GetRevealedHeaderName(name), headers.get(name) ?? '');
+        for (const cookies of [sessionCookieSet, ...customCookieSets]) {
+            for (const { name, value } of cookies) {
+                result[name] = value;
+            }
         }
 
-        return result;
+        return Object.entries(result).map(([ name, value ]) => `${name}=${value}`).join('; '); // TODO: Maybe use `encodeURIComponent(cookie.value)`
     }
 
     // TODO: Invoke via IPC in WEB
-    private async ModifyRequestHeaders(url: string, originalHeaders: Record<string, string>): Promise<BeforeSendResponse> {
-        const headers = new Headers(originalHeaders);
-        headers.set('cookie', await this.GetSessionCookies(url));
-        const requestHeaders = this.RevealHeaders(headers);
+    private async ModifyRequestHeaders(url: string, originalHeaders: Record<string, string | string[]>): Promise<BeforeSendResponse> {
 
-        // Remove certain headers when empty
-        for (const name of ['cookie']) {
-            if (requestHeaders.get(name)?.trim() === '') requestHeaders.delete(name);
+        const patternConcealedHeaderName = new RegExp('^' + this.fetchApiSupportedPrefix, 'i');
+        const IsConcealed = (name: string) => patternConcealedHeaderName.test(name);
+        const GetRevealedHeaderName = (name: string) => name.replace(patternConcealedHeaderName, '').toLowerCase();
+
+        const all: Array<[string, string | string[]]> = Object.entries(originalHeaders);
+        const result = Object.fromEntries(all.filter(([name]) => !IsConcealed(name)).map(([name, value]) => [name.toLowerCase(), value]));
+        const replacements = Object.fromEntries(all.filter(([name]) => IsConcealed(name)).map(([name, value]) => [GetRevealedHeaderName(name), value]));
+        replacements['cookie'] = await this.GetSessionCookies(url, <string>result['cookie'] ?? '', <string>replacements['cookie'] ?? '');
+
+        for (const name in replacements) {
+            result[name] = replacements[name];
         }
 
+        // Remove cookie header when empty
+        if ((<string>result['cookie'])?.trim() === '') delete result['cookie'];
         // Prevent leaking HakuNeko's host in certain headers
-        for (const name of [ 'origin', 'referer' ]) {
-            if (requestHeaders.get(name)?.includes(this.appHostname)) requestHeaders.delete(name);
-        }
+        if ((<string>result['origin'])?.includes(this.appHostname)) delete result['origin'];
+        if ((<string>result['referer'])?.includes(this.appHostname)) delete result['referer'];
 
         return {
             cancel: false,
-            requestHeaders: Object.fromEntries(requestHeaders.entries()),
+            requestHeaders: result,
         };
     }
 
     // TODO: Invoke via IPC in WEB
-    private ModifyResponseHeaders(originalHeaders?: Record<string, string[]>): HeadersReceivedResponse {
-        const responseHeaders: Record<string, string[]> = {};
+    private ModifyResponseHeaders(originalHeaders?: Record<string, string | string[]>): HeadersReceivedResponse {
+        const responseHeaders: Record<string, string | string[]> = {};
         for (const originalHeader in originalHeaders) {
             const normalizedHeader = originalHeader.toLowerCase();
 

@@ -38,6 +38,6 @@ export class RemoteProcedureCallContract implements Contract {
     }
 
     public async LoadMediaContainerFromURL(url: string): Promise<void> {
-        return this.ipc.Send(Channels.RemoteProcedureCallContract.Web.LoadMediaContainerFromURL, url);
+        return this.ipc.Send(Channels.RemoteProcedureCallContract.LoadMediaContainerFromURL, url);
     }
 }

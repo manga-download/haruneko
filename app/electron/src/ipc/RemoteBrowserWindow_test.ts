@@ -1,13 +1,12 @@
 import { vi, describe, it, expect } from 'vitest';
-import type { IPC } from './InterProcessCommunication';
+import { type IPC, Channels } from './InterProcessCommunication';
 import { RemoteBrowserWindowController } from './RemoteBrowserWindow';
-import { RemoteBrowserWindowController as Channels } from '../../../src/ipc/Channels';
 
 class TestFixture {
 
     public readonly mockIPC = {
-        Listen: vi.fn(),
-    } as unknown as IPC<string, string>;
+        Handle: vi.fn(),
+    } as unknown as IPC;
 
     public CreatTestee(): RemoteBrowserWindowController {
         return new RemoteBrowserWindowController(this.mockIPC);
@@ -22,13 +21,13 @@ describe('RemoteBrowserWindowController', () => {
             const fixture = new TestFixture();
             const testee = fixture.CreatTestee();
             expect(testee).toBeDefined();
-            expect(fixture.mockIPC.Listen).toHaveBeenCalledTimes(6);
-            expect(fixture.mockIPC.Listen).toHaveBeenCalledWith(Channels.App.OpenWindow, expect.anything());
-            expect(fixture.mockIPC.Listen).toHaveBeenCalledWith(Channels.App.CloseWindow, expect.anything());
-            expect(fixture.mockIPC.Listen).toHaveBeenCalledWith(Channels.App.SetVisibility, expect.anything());
-            expect(fixture.mockIPC.Listen).toHaveBeenCalledWith(Channels.App.ExecuteScript, expect.anything());
-            expect(fixture.mockIPC.Listen).toHaveBeenCalledWith(Channels.App.SendDebugCommand, expect.anything());
-            expect(fixture.mockIPC.Listen).toHaveBeenCalledWith(Channels.App.LoadURL, expect.anything());
+            expect(fixture.mockIPC.Handle).toHaveBeenCalledTimes(6);
+            expect(fixture.mockIPC.Handle).toHaveBeenCalledWith(Channels.RemoteBrowserWindowController.OpenWindow, expect.anything());
+            expect(fixture.mockIPC.Handle).toHaveBeenCalledWith(Channels.RemoteBrowserWindowController.CloseWindow, expect.anything());
+            expect(fixture.mockIPC.Handle).toHaveBeenCalledWith(Channels.RemoteBrowserWindowController.SetVisibility, expect.anything());
+            expect(fixture.mockIPC.Handle).toHaveBeenCalledWith(Channels.RemoteBrowserWindowController.ExecuteScript, expect.anything());
+            expect(fixture.mockIPC.Handle).toHaveBeenCalledWith(Channels.RemoteBrowserWindowController.SendDebugCommand, expect.anything());
+            expect(fixture.mockIPC.Handle).toHaveBeenCalledWith(Channels.RemoteBrowserWindowController.LoadURL, expect.anything());
         });
     });
 });
