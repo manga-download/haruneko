@@ -2,7 +2,6 @@
 export { default as ACGN } from './ACGN';
 export { default as AdonisFansub } from './AdonisFansub';
 export { default as AesirScans } from './AesirScans';
-export { default as AethraScans } from './AethraScans';
 export { default as AGCScanlation } from './AGCScanlation';
 export { default as Ainzscans } from './Ainzscans';
 export { default as Akuma } from './Akuma';
@@ -36,7 +35,6 @@ export { default as AstralManga } from './AstralManga';
 export { default as AstraToons } from './AstraToons';
 export { default as AsuraScans } from './AsuraScans';
 export { default as AsuraScansTR } from './AsuraScansTR';
-export { default as Atemporal } from './Atemporal';
 export { default as Atikrost } from './Atikrost';
 export { default as Atsumaru } from './Atsumaru';
 export { default as Aymry } from './Aymry';
