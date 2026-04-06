@@ -1,35 +1,60 @@
 import { Tags } from '../Tags';
+import { FetchJSON } from '../platform/FetchProvider';
+import { Chapter, DecoratableMangaScraper, Manga, type MangaPlugin, Page } from '../providers/MangaPlugin';
 import icon from './XoManga.webp';
-import { ZeistManga } from './templates/ZeistManga';
 import * as Common from './decorators/Common';
-import { FetchWindowScript } from '../platform/FetchProvider';
-import { Page, type Chapter } from '../providers/MangaPlugin';
 
-@Common.MangaCSS(/^{origin}\/\d+\/\d+\/[^/]+\.html$/, 'h1[itemprop="name"]')
-export default class extends ZeistManga {
+type JSONMangas = {
+    latest: JSONManga[];
+};
+
+type JSONManga = {
+    title: string;
+    link: string;
+    chapters_list: JSONChapter[];
+};
+
+type JSONChapter = {
+    chapter: number;
+};
+
+type JSONPages = {
+    images: string[];
+};
+
+@Common.ImageAjax()
+export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('xomanga', 'XoManga', 'https://xomanga.blogspot.com', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.English, Tags.Source.Aggregator);
-        this.WithMangaSlugScript('document.getElementById("chapterlist").dataset.label.trim();');
+        super('xomanga', 'XoManga', 'https://xomanga.site', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.English, Tags.Source.Aggregator);
     }
 
     public override get Icon() {
         return icon;
     }
 
-    public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const pages: string[] = await FetchWindowScript(new Request(new URL(chapter.Identifier, this.URI)), () => {
-            const elements = [...document.querySelectorAll("[data-post-body]")];
-            const chapterImages = [];
-            for (const element of elements) {
-                const doc = new DOMParser().parseFromString(JSON.parse("\"" + element['dataset']['postBody'] + "\""), 'text/html');
-                const imageData = doc.querySelector('script')?.textContent?.match(/\[(?:\s*"https?:\/\/[^"]+"\s*,?)+\]/)?.at(0);
-                const images = imageData ? JSON.parse(imageData) : [...doc.querySelectorAll('img')].map(img => img.src);
-                chapterImages.push(...images.map(image => image.replace(/\/s\d+[^/]*(\/[^/]+$)/, '/s0$1')));
-            }
-            return chapterImages;
-        }, 1500);
-        return pages.map(page => new Page(this, chapter, new URL(page)));
+    public override ValidateMangaURL(url: string): boolean {
+        return new RegExpSafe(`^${this.URI.origin}/details\\?id=`).test(url);
     }
 
+    public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
+        const slug = new URL(url).searchParams.get('id');
+        const { title } = await FetchJSON<JSONManga>(new Request(new URL(`./manga/${slug}/details.json`, this.URI)));
+        return new Manga(this, provider, slug, title);
+    }
+
+    public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
+        const { latest } = await FetchJSON<JSONMangas>(new Request(new URL('index.json', this.URI)));
+        return latest.map(({ link, title }) => new Manga(this, provider, new URL(link, this.URI).searchParams.get('id'), title));
+    }
+
+    public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
+        const { chapters_list } = await FetchJSON<JSONManga>(new Request(new URL(`./manga/${manga.Identifier}/details.json`, this.URI)));
+        return chapters_list.map(({ chapter }) => new Chapter(this, manga, `${chapter}`, `Chapter ${chapter}`));
+    }
+
+    public override async FetchPages(chapter: Chapter): Promise<Page[]> {
+        const { images } = await FetchJSON<JSONPages>(new Request(new URL(`./manga/${chapter.Parent.Identifier}/chapters/${chapter.Identifier}.json`, this.URI)));
+        return images.map(image => new Page(this, chapter, new URL(image, this.URI)));
+    }
 }

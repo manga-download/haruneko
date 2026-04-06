@@ -6,12 +6,12 @@ new TestFixture({
         title: 'XoManga',
     },
     container: {
-        url: 'https://xomanga.blogspot.com/2026/02/kuro-no-shoukanshi.html',
-        id: '/2026/02/kuro-no-shoukanshi.html',
+        url: 'https://xomanga.site/details?id=kuro-no-shoukanshi',
+        id: 'kuro-no-shoukanshi',
         title: 'Kuro no Shoukanshi',
     },
     child: {
-        id: '/2026/02/kuro-no-shoukanshi-chapter-185.html',
+        id: '185',
         title: 'Chapter 185'
     },
     entry: {
