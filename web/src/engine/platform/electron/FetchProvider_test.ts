@@ -1,21 +1,22 @@
 // @vitest-environment jsdom
-import { mock } from 'vitest-mock-extended';
-import { describe, it, expect } from 'vitest';
+import { vi, describe, it, expect } from 'vitest';
+import { Channels } from '../../../../../app/electron/src/ipc/InterProcessCommunicationChannels';
 import type { FeatureFlags } from '../../FeatureFlags';
 import FetchProvider from './FetchProvider';
-import type { IPC } from '../InterProcessCommunication';
 
 class TestFixture {
 
-    public readonly mockFeatureFlags = mock<FeatureFlags>();
-    public readonly mockIPC = mock<IPC<string, never>>();
+    public readonly MockIpcRenderer = {
+        invoke: vi.fn(),
+    };
 
-    public CreateTestee(performInitialize: boolean) {
-        const testee = new FetchProvider(this.mockIPC);
-        if (performInitialize) {
-            testee.Initialize(this.mockFeatureFlags);
-        }
-        return testee;
+    constructor() {
+        globalThis.Request = null;
+        globalThis.ipcRenderer = this.MockIpcRenderer as unknown as Electron.IpcRenderer;
+    }
+
+    public CreateTestee() {
+        return new FetchProvider();
     }
 }
 
@@ -23,11 +24,18 @@ describe('FetchProvider', () => {
 
     describe('Initialize', () => {
 
-        it('Should replace global Request type', () => {
+        it('Should invoke initialize via IPC', () => {
             const fixture = new TestFixture();
-            const testee = fixture.CreateTestee(false);
+            const testee = fixture.CreateTestee();
+            testee.Initialize({} as FeatureFlags);
+            expect(fixture.MockIpcRenderer.invoke).toHaveBeenCalledTimes(1);
+            expect(fixture.MockIpcRenderer.invoke).toHaveBeenCalledWith(Channels.FetchProvider.Initialize, 'X-FetchAPI-');
+        });
+
+        it('Should replace the global Request type', () => {
+            const testee = new TestFixture().CreateTestee();
             expect(globalThis.Request).toBeNull();
-            testee.Initialize(fixture.mockFeatureFlags);
+            testee.Initialize({} as FeatureFlags);
             expect(globalThis.Request.name).toBe('FetchRequest');
         });
     });
@@ -35,7 +43,7 @@ describe('FetchProvider', () => {
     describe('Request', () => {
 
         it('Should add prefix for unsupported fetch API headers', async () => {
-            new TestFixture().CreateTestee(true);
+            new TestFixture().CreateTestee().Initialize({} as FeatureFlags);
             const request = new Request('http://hakuneko.app/', {
                 headers: {
                     'Content-Type': 'application/json',
@@ -66,7 +74,8 @@ describe('FetchProvider', () => {
 
         it('Should passthru GET to native fetch', async () => {
             const fixture = new TestFixture();
-            const testee = fixture.CreateTestee(true);
+            const testee = fixture.CreateTestee();
+            testee.Initialize({} as FeatureFlags);
             const request = new Request('https://postman-echo.com/get', {
                 headers: {
                     'User-Agent': 'HakuNeko',
@@ -81,7 +90,8 @@ describe('FetchProvider', () => {
 
         it('Should passthru POST to native fetch', async () => {
             const fixture = new TestFixture();
-            const testee = fixture.CreateTestee(true);
+            const testee = fixture.CreateTestee();
+            testee.Initialize({} as FeatureFlags);
             const request = new Request('https://postman-echo.com/post', {
                 method: 'POST',
                 body: JSON.stringify({ a: 1, b: 2 }),

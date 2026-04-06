@@ -1,7 +1,7 @@
 import { FetchProvider } from '../FetchProviderCommon';
 import type { FeatureFlags } from '../../FeatureFlags';
 import { GetIPC } from './InterProcessCommunication';
-import { Channels } from '../../../../../app/electron/src/ipc/InterProcessCommunication';
+import { Channels } from '../../../../../app/electron/src/ipc/InterProcessCommunicationChannels';
 
 // See: https://developer.mozilla.org/en-US/docs/Glossary/Forbidden_header_name
 const fetchApiSupportedPrefix = 'X-FetchAPI-';
@@ -17,12 +17,14 @@ const fetchApiForbiddenHeaders = [
 ];
 
 class FetchRequest extends Request {
-    readonly #referrer: string = undefined;
+
+    readonly #referrer?: string;
     public override get referrer() { return this.#referrer; }
+
     constructor(input: URL | RequestInfo, init?: RequestInit) {
-        if(init?.headers) init.headers = FetchRequest.#ConcealHeaders(init.headers, init.credentials);
+        if (init?.headers) init.headers = FetchRequest.#ConcealHeaders(init.headers, init.credentials);
         super(input, init);
-        if(init?.referrer) this.#referrer = init.referrer;
+        this.#referrer = init?.referrer ?? undefined;
     }
 
     static #ConcealHeaders(init: HeadersInit, credentials?: RequestCredentials): Headers {
@@ -36,6 +38,7 @@ class FetchRequest extends Request {
         }
 
         if (credentials?.toLowerCase() === 'omit') {
+            // TODO: This will not prevent adding session cookies in main process
             headers.set(fetchApiSupportedPrefix + 'Cookie', '');
             headers.set('Authorization', '');
         }
@@ -60,7 +63,7 @@ export default class FetchProviderElectron extends FetchProvider {
         // NOTE: Monkey patching of the browser's native functionality to allow forbidden headers
         globalThis.Request = FetchRequest;
 
-        this.ipc.Send(Channels.FetchProvider.Initialize, fetchApiSupportedPrefix);
+        this.ipc.Invoke(Channels.FetchProvider.Initialize, fetchApiSupportedPrefix);
 
         // Register IPC callback for:
         // => main.ipc.Send(Channels.Web.OnBeforeSendHeaders, details))
@@ -78,6 +81,7 @@ export default class FetchProviderElectron extends FetchProvider {
         return response;
     }
 
+    /*
     private async GetSessionCookies(url: string): Promise<string> {
         const sessionCookies = await this.ipc.Send(Channels.FetchProvider.GetSessionCookies, { url, filter: {} });
         return sessionCookies.map(({ name, value }) => `${name}=${value}`).join(';'); // TODO: Maybe use `encodeURIComponent(cookie.value)`
@@ -91,4 +95,5 @@ export default class FetchProviderElectron extends FetchProvider {
 
     private ModifyResponseHeaders(details: OnHeadersReceivedListenerDetails): HeadersReceivedResponse {
     }
+    */
 }

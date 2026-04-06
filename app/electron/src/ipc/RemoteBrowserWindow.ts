@@ -2,7 +2,8 @@ import os from 'node:os';
 import path from 'node:path';
 import fs from 'node:fs/promises';
 import { BrowserWindow, type BrowserWindowConstructorOptions } from 'electron';
-import { type IPC, Channels } from './InterProcessCommunication';
+import type { IPC } from './InterProcessCommunication';
+import { Channels } from './InterProcessCommunicationChannels';
 
 export class RemoteBrowserWindowController {
 

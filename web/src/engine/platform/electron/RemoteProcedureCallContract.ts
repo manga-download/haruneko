@@ -1,13 +1,13 @@
 import { GetIPC } from './InterProcessCommunication';
 import type { IRemoteProcedureCallContract } from '../RemoteProcedureCallContract';
-import { Channels } from '../../../../../app/electron/src/ipc/InterProcessCommunication';
+import { Channels } from '../../../../../app/electron/src/ipc/InterProcessCommunicationChannels';
 
 export default class RemoteProcedureCallContract implements IRemoteProcedureCallContract {
 
     private readonly ipc = GetIPC();
 
     constructor () {
-        this.ipc.Listen(Channels.RemoteProcedureCallContract.LoadMediaContainerFromURL, this.LoadMediaContainerFromURL.bind(this));
+        this.ipc.On(Channels.RemoteProcedureCallContract.LoadMediaContainerFromURL, this.LoadMediaContainerFromURL.bind(this));
     }
 
     public async LoadMediaContainerFromURL(url: string): Promise<void> {

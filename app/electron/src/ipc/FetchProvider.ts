@@ -1,5 +1,6 @@
 import type { WebContents, BeforeSendResponse, HeadersReceivedResponse } from 'electron';
-import { type IPC, Channels } from './InterProcessCommunication';
+import type { IPC } from './InterProcessCommunication';
+import { Channels } from './InterProcessCommunicationChannels';
 
 export class FetchProvider {
 

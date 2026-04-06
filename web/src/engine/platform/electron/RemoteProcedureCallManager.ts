@@ -2,7 +2,7 @@ import { GetIPC } from './InterProcessCommunication';
 import { Key as GlobalKey } from '../../SettingsGlobal';
 import type { Numeric, Text, Check, SettingsManager } from '../../SettingsManager';
 import type { IRemoteProcedureCallManager } from '../RemoteProcedureCallManager';
-import { Channels } from '../../../../../app/electron/src/ipc/InterProcessCommunication';
+import { Channels } from '../../../../../app/electron/src/ipc/InterProcessCommunicationChannels';
 
 export default class RemoteProcedureCallManager implements IRemoteProcedureCallManager {
 
@@ -26,15 +26,15 @@ export default class RemoteProcedureCallManager implements IRemoteProcedureCallM
         this.Update();
     }
 
-    private async Update(): Promise<void> {
+    private Update(): Promise<void> {
         return this.rpcEnabled.Value ? this.Restart(this.rpcPort.Value, this.rpcSecret.Value) : this.Stop();
     }
 
-    public async Stop(): Promise<void> {
-        return this.ipc.Send(Channels.RemoteProcedureCallManager.Stop);
+    public Stop(): Promise<void> {
+        return this.ipc.Invoke(Channels.RemoteProcedureCallManager.Stop);
     }
 
-    public async Restart(port: number, secret: string): Promise<void> {
-        return this.ipc.Send(Channels.RemoteProcedureCallManager.Restart, port, secret);
+    public Restart(port: number, secret: string): Promise<void> {
+        return this.ipc.Invoke(Channels.RemoteProcedureCallManager.Restart, port, secret);
     }
 }

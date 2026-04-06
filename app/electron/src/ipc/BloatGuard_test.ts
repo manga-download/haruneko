@@ -1,19 +1,20 @@
 import { vi, describe, it, expect } from 'vitest';
 import type { WebContents } from 'electron';
-import { type IPC, Channels } from './InterProcessCommunication';
+import type { IPC } from './InterProcessCommunication';
+import { Channels } from './InterProcessCommunicationChannels';
 import { BloatGuard } from './BloatGuard';
 
 class TestFixture {
 
-    public readonly mockIPC = {
+    public readonly MockIPC = {
         Handle: vi.fn(),
     } as unknown as IPC;
 
-    private readonly mockWebContents = {
+    private readonly MockWebContents = {
     } as unknown as WebContents;
 
     public CreatTestee(): BloatGuard {
-        return new BloatGuard(this.mockIPC, this.mockWebContents);
+        return new BloatGuard(this.MockIPC, this.MockWebContents);
     }
 }
 
@@ -25,8 +26,8 @@ describe('BloatGuard', () => {
             const fixture = new TestFixture();
             const testee = fixture.CreatTestee();
             expect(testee).toBeDefined();
-            expect(fixture.mockIPC.Handle).toHaveBeenCalledTimes(1);
-            expect(fixture.mockIPC.Handle).toHaveBeenCalledWith(Channels.BloatGuard.Initialize, expect.anything());
+            expect(fixture.MockIPC.Handle).toHaveBeenCalledTimes(1);
+            expect(fixture.MockIPC.Handle).toHaveBeenCalledWith(Channels.BloatGuard.Initialize, expect.anything());
         });
     });
 });

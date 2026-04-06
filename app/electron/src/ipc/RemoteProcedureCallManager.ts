@@ -1,5 +1,6 @@
 import type { RPCServer } from '../../../src/rpc/Server';
-import { type IPC, Channels } from './InterProcessCommunication';
+import type { IPC } from './InterProcessCommunication';
+import { Channels } from './InterProcessCommunicationChannels';
 
 /**
  * Administration of the underlying RPC server via Electron specific IPC channels.

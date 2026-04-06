@@ -2,7 +2,8 @@ import path from 'node:path';
 import fs from 'node:fs/promises';
 import { app, session, type WebContents } from 'electron';
 import type { Contract } from '../../../src/rpc/Contract';
-import { type IPC, Channels } from './InterProcessCommunication';
+import type { IPC } from './InterProcessCommunication';
+import { Channels } from './InterProcessCommunicationChannels';
 
 export class RemoteProcedureCallContract implements Contract {
 

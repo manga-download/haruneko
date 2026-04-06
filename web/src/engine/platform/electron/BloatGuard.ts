@@ -1,6 +1,6 @@
 import type { IBloatGuard } from '../BloatGuard';
 import { GetIPC } from './InterProcessCommunication';
-import { Channels } from '../../../../../app/electron/src/ipc/InterProcessCommunication';
+import { Channels } from '../../../../../app/electron/src/ipc/InterProcessCommunicationChannels';
 
 export default class implements IBloatGuard {
 
@@ -9,6 +9,6 @@ export default class implements IBloatGuard {
     constructor (private readonly patterns: Array<string>) { }
 
     async Initialize(): Promise<void> {
-        return this.ipc.Send(Channels.BloatGuard.Initialize, this.patterns);
+        return this.ipc.Invoke(Channels.BloatGuard.Initialize, this.patterns);
     }
 }

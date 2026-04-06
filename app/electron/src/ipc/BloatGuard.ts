@@ -1,5 +1,6 @@
 import type { WebContents } from 'electron';
-import { type IPC, Channels } from './InterProcessCommunication';
+import type { IPC } from './InterProcessCommunication';
+import { Channels } from './InterProcessCommunicationChannels';
 
 export class BloatGuard {
 

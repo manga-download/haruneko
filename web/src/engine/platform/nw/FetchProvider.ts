@@ -103,6 +103,8 @@ export default class FetchProviderNW extends FetchProvider {
         return response;
     }
 
+    // TODO: Align with electron implementation ...
+
     private async GetSessionCookies(url: string): Promise<string> {
         const sessionCookies = await chrome.cookies.getAll({ url, partitionKey: {} }); // Include empty partition filter since the chrome bug-fix does not work: https://issues.chromium.org/issues/323924496
         return sessionCookies.map(({ name, value }) => `${name}=${value}`).join(';'); // TODO: Maybe use `encodeURIComponent(cookie.value)`
@@ -125,7 +127,7 @@ export default class FetchProviderNW extends FetchProvider {
         return result;
     }
 
-    private readonly ModifyRequestHeaders = function ModifyRequestHeaders(this: FetchProviderNW, details: chrome.webRequest.OnBeforeSendHeadersDetails): chrome.webRequest.BlockingResponse {
+    private readonly ModifyRequestHeaders = async function ModifyRequestHeaders(this: FetchProviderNW, details: chrome.webRequest.OnBeforeSendHeadersDetails): chrome.webRequest.BlockingResponse {
         const requestHeaders = new Headers(details.requestHeaders?.map(h => [ h.name, h.value ]) ?? []);
         requestHeaders.set('cookie', await this.GetSessionCookies(details.url));
         // NOTE: Previously this was assigned directly to `X-FetchAPI-Cookie` in `Fetch` call

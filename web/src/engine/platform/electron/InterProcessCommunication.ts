@@ -1,4 +1,4 @@
-import type { Channels } from '../../../../../app/electron/src/ipc/InterProcessCommunication';
+import type { Channels } from '../../../../../app/electron/src/ipc/InterProcessCommunicationChannels';
 
 class IPC {
 
@@ -14,6 +14,8 @@ class IPC {
         globalThis.ipcRenderer.on(channel, (_, ...args: TParameters) => callback(...args));
     }
 
+    Send(channel: never, ...parameters: never): never;
+
     /**
      * Send a message to the _Main_ process handled by `ipcMain.on(channel, listener)`.
      * The sender does not receive a response (fire & forget).
@@ -21,6 +23,8 @@ class IPC {
     public Send<TParameters extends JSONArray>(channel: string, ...parameters: TParameters): void {
         globalThis.ipcRenderer.send(channel, ...parameters);
     }
+
+    Handle(channel: never, ...parameters: never): never;
 
     /**
      * Register a {@link callback} to handle a request from the _MAin_ process via `ipcMain.invoke(channel, ...args)`.
@@ -48,9 +52,9 @@ class IPC {
     Invoke(channel: Channels.RemoteBrowserWindowController.OpenWindow, options: string): Promise<number>;
     Invoke(channel: Channels.RemoteBrowserWindowController.CloseWindow, windowID: number): Promise<void>
     Invoke(channel: Channels.RemoteBrowserWindowController.SetVisibility, windowID: number, show: boolean): Promise<void>;
-    Invoke<T extends JSONElement>(channel: Channels.RemoteBrowserWindowController.ExecuteScript, windowID: number, script: string): Promise<T>;
-    //Invoke<T extends never | JSONElement>(channel: Channels.RemoteBrowserWindowController.SendDebugCommand, windowID: number, channel: string, parameters?: JSONObject): Promise<T>
-    Invoke(channel: Channels.RemoteBrowserWindowController.LoadURL, windowID: number, url: string, options: string):Promise<void>;
+    Invoke<T extends void | JSONElement>(channel: Channels.RemoteBrowserWindowController.ExecuteScript, windowID: number, script: string): Promise<T>;
+    Invoke<T extends void | JSONElement>(channel: Channels.RemoteBrowserWindowController.SendDebugCommand, windowID: number, method: string, parameters?: JSONObject): Promise<T>
+    Invoke(channel: Channels.RemoteBrowserWindowController.LoadURL, windowID: number, url: string, options: string): Promise<void>;
     // RemoteProcedureCallManager
     Invoke(channel: Channels.RemoteProcedureCallManager.Stop): Promise<void>;
     Invoke(channel: Channels.RemoteProcedureCallManager.Restart, port: number, secret: string): Promise<void>;

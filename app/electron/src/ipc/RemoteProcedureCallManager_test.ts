@@ -1,5 +1,6 @@
 import { vi, describe, it, expect } from 'vitest';
-import { type IPC, Channels } from './InterProcessCommunication';
+import type { IPC } from './InterProcessCommunication';
+import { Channels } from './InterProcessCommunicationChannels';
 import type { RPCServer } from '../../../src/rpc/Server';
 import { RemoteProcedureCallManager } from './RemoteProcedureCallManager';
 

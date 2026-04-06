@@ -1,6 +1,7 @@
 import { vi, describe, it, expect } from 'vitest';
 import type { WebContents } from 'electron';
-import { type IPC, Channels } from './InterProcessCommunication';
+import type { IPC } from './InterProcessCommunication';
+import { Channels } from './InterProcessCommunicationChannels';
 import { FetchProvider } from './FetchProvider';
 
 class TestFixture {

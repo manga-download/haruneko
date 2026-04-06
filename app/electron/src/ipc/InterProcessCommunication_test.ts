@@ -42,7 +42,7 @@ describe('IPC', () => {
         it('Should relay subscription to Electron asynchronouos messaging', () => {
             const fixture = new TestFixture();
             const testee = fixture.CreatTestee();
-            const on = testee.On.bind(testee) as (channel: string, callback: unknown) => void;
+            const on = testee.On.bind(testee) as unknown as (channel: string, callback: unknown) => void;
             on('😎', async () => { });
             expect(ipcMain.on).toHaveBeenCalledTimes(1);
             expect(ipcMain.on).toHaveBeenCalledWith('😎', expect.anything());

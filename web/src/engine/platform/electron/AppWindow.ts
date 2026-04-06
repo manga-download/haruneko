@@ -1,7 +1,7 @@
 import { Observable, type IObservable } from '../../Observable';
 import type { IAppWindow } from '../AppWindow';
 import { GetIPC } from './InterProcessCommunication';
-import { Channels } from '../../../../../app/electron/src/ipc/InterProcessCommunication';
+import { Channels } from '../../../../../app/electron/src/ipc/InterProcessCommunicationChannels';
 
 export default class implements IAppWindow {
 
@@ -11,17 +11,17 @@ export default class implements IAppWindow {
         // TODO: Confirm really want to close => window.on('beforunload', ...)
 
         // TODO: Provisional fullscreen detection needs to be improved (e.g., via IPC BrowserWindow.on('move')) ...
-        setInterval(this.#DetectMaximized.bind(this), 250);
+        setInterval(this.#DetectMaximized.bind(this), 500);
     }
 
     public async ShowSplash(): Promise<void> {
-        await this.ipc.Send(Channels.ApplicationWindow.HideWindow);
-        await this.ipc.Send(Channels.ApplicationWindow.ShowWindow, this.splashURL);
+        this.ipc.Invoke(Channels.ApplicationWindow.HideWindow);
+        this.ipc.Invoke(Channels.ApplicationWindow.OpenSplash, this.splashURL);
     }
 
     public async HideSplash(): Promise<void> {
-        await this.ipc.Send(Channels.ApplicationWindow.CloseSplash, this.splashURL);
-        await this.ipc.Send(Channels.ApplicationWindow.ShowWindow);
+        this.ipc.Invoke(Channels.ApplicationWindow.CloseSplash);
+        this.ipc.Invoke(Channels.ApplicationWindow.ShowWindow);
     }
 
     public get HasControls() {
@@ -43,18 +43,18 @@ export default class implements IAppWindow {
     }
 
     public Minimize(): void {
-        this.ipc.Send(Channels.ApplicationWindow.Minimize);
+        this.ipc.Invoke(Channels.ApplicationWindow.Minimize);
     }
 
     public Maximize(): void {
-        this.ipc.Send(Channels.ApplicationWindow.Maximize);
+        this.ipc.Invoke(Channels.ApplicationWindow.Maximize);
     }
 
     public Restore(): void {
-        this.ipc.Send(Channels.ApplicationWindow.Restore);
+        this.ipc.Invoke(Channels.ApplicationWindow.Restore);
     }
 
     public Close(): void {
-        this.ipc.Send(Channels.ApplicationWindow.Close);
+        this.ipc.Invoke(Channels.ApplicationWindow.Close);
     }
 }
