@@ -6,23 +6,33 @@ const descending = 'ZYXWVUTSRQPONMLKJIHGFEDCBA9876543210';
 
 describe('Digest', () => {
 
-    bench('DBJ2', () => {
-        Hash.DJB2(ascending);
-        Hash.DJB2(descending);
+    describe('Hash (32 Bit)', () => {
+        bench('Hash32 (dec)', () => {
+            Hash.Hash32(ascending, Hash.Format.Dec);
+            Hash.Hash32(descending, Hash.Format.Dec);
+        });
+        bench('Hash32 (hex)', () => {
+            Hash.Hash32(ascending, Hash.Format.Hex);
+            Hash.Hash32(descending, Hash.Format.Hex);
+        });
+        bench('Hash32 (alphanumeric)', () => {
+            Hash.Hash32(ascending, Hash.Format.Alpha);
+            Hash.Hash32(descending, Hash.Format.Alpha);
+        });
     });
 
-    bench('SDBM', () => {
-        Hash.SDBM(ascending);
-        Hash.SDBM(descending);
-    });
-
-    bench('FNV1A', () => {
-        Hash.FNV1A(ascending);
-        Hash.FNV1A(descending);
-    });
-
-    bench('DJB64', () => {
-        Hash.DJB64(ascending);
-        Hash.DJB64(descending);
+    describe('Hash (36 Bit)', () => {
+        bench('Hash64 (dec)', () => {
+            Hash.Hash64(ascending, Hash.Format.Dec);
+            Hash.Hash64(descending, Hash.Format.Dec);
+        });
+        bench('Hash64 (hex)', () => {
+            Hash.Hash64(ascending, Hash.Format.Hex);
+            Hash.Hash64(descending, Hash.Format.Hex);
+        });
+        bench('Hash64 (alphanumeric)', () => {
+            Hash.Hash64(ascending, Hash.Format.Alpha);
+            Hash.Hash64(descending, Hash.Format.Alpha);
+        });
     });
 });

@@ -3,35 +3,33 @@ import * as Hash from './Digest';
 
 describe('Digest', () => {
 
-    describe('DJB2', () => {
+    describe('Hash32', () => {
 
-        it('Should calculate expected checksum', () => {
-            const actual = Hash.DJB2('Meow!').toString(16).toUpperCase().padStart(8, '0');
-            expect(actual).toBe('05E65734'); // 05E65734 => https://md5hashing.net/hash/djb2
+        it.each([
+            [Hash.Format.Dec, '', 0],
+            [Hash.Format.Dec, 'Lorem + Ipsum = Dolor 😎', 0],
+            [Hash.Format.Hex, '', ''],
+            [Hash.Format.Hex, 'Lorem + Ipsum = Dolor 😎', ''],
+            [Hash.Format.Alpha, '', ''],
+            [Hash.Format.Alpha, 'Lorem + Ipsum = Dolor 😎', ''],
+        ])('Should calculate expected checksum', (format, input, expected) => {
+            const actual = Hash.Hash32(input, format);
+            expect(actual).toBe(expected); // => https://md5hashing.net/hash/djb2
         });
     });
 
-    describe('SDBM', () => {
+    describe('Hash64', () => {
 
-        it('Should calculate expected checksum', () => {
-            const actual = Hash.SDBM('Meow!').toString(16).toUpperCase().padStart(8, '0');
-            expect(actual).toBe('99311A01'); // 99311A01 => https://md5hashing.net/hash/sdbm
-        });
-    });
-
-    describe('FNV1A', () => {
-
-        it('Should calculate expected checksum', () => {
-            const actual = Hash.FNV1A('Meow!').toString(16).toUpperCase().padStart(8, '0');
-            expect(actual).toBe('C7B5DDF4'); // C7B5DDF4 => https://md5hashing.net/hash/fnv1a32
-        });
-    });
-
-    describe('DJB64', () => {
-
-        it('Should calculate expected checksum', () => {
-            const actual = Hash.DJB64('Meow!').toUpperCase();
-            expect(actual).toBe('3H8UYC1XC5Y5N');
+        it.each([
+            [Hash.Format.Dec, '', 0],
+            [Hash.Format.Dec, 'Lorem + Ipsum = Dolor 😎', 0],
+            [Hash.Format.Hex, '', ''],
+            [Hash.Format.Hex, 'Lorem + Ipsum = Dolor 😎', ''],
+            [Hash.Format.Alpha, '', ''],
+            [Hash.Format.Alpha, 'Lorem + Ipsum = Dolor 😎', ''],
+        ])('Should calculate expected checksum', (format, input, expected) => {
+            const actual = Hash.Hash64(input, format);
+            expect(actual).toBe(expected);
         });
     });
 });
