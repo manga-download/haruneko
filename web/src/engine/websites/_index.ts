@@ -418,6 +418,7 @@ export { default as MangaTime } from './MangaTime';
 export { default as MangaTown } from './MangaTown';
 export { default as MangaTR } from './MangaTR';
 export { default as MangaTube } from './MangaTube';
+export { default as MangaTV } from './MangaTV';
 export { default as MangaUpGlobal } from './MangaUpGlobal';
 export { default as MangaUpJapan } from './MangaUpJapan';
 export { default as MangaWorld } from './MangaWorld';
