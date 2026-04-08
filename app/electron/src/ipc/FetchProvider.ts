@@ -69,37 +69,31 @@ export class FetchProvider {
 
     // TODO: Invoke via IPC in WEB
     private ModifyResponseHeaders(originalHeaders?: Record<string, string | string[]>): HeadersReceivedResponse {
-        const responseHeaders: Record<string, string | string[]> = {};
-        for (const originalHeader in originalHeaders) {
-            const normalizedHeader = originalHeader.toLowerCase();
 
-            // Remove the `link` header to prevent prefetch/preload and a corresponding warning about 'resource preloaded but not used',
-            // especially when scraping with headless requests (see: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Link)
-            if (normalizedHeader === 'link') {
-                continue;
-            }
+        const result = Object.fromEntries(Object.entries(originalHeaders).map(([name, value]) => [name.toLowerCase(), value]));
 
-            // Currently electron does not include partitioned cookies when filtering with `session.cookies.get({ url })`
-            // => Workaround: Remove the partitioned flag from the server response
-            if(normalizedHeader === 'set-cookie') {
-                originalHeaders[normalizedHeader] = originalHeaders[originalHeader].map(cookie => cookie.replace(/partitioned/gi, ''));
-            }
-
-            responseHeaders[normalizedHeader] = originalHeaders[originalHeader];
+        // Remove the `link` header to prevent prefetch/preload and a corresponding warning about 'resource preloaded but not used',
+        // especially when scraping with headless requests (see: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Link)
+        if ('link' in result) delete result['link'];
+        // Currently electron does not include partitioned cookies when filtering with `session.cookies.get({ url })`
+        // => Workaround: Remove the partitioned flag from the server response
+        if ('set-cookie' in result) {
+            const value = result['set-cookie'];
+            result['set-cookie'] = typeof value === 'string' ? value.replace(/partitioned/gi, '') : value.map(cookie => cookie.replace(/partitioned/gi, ''));
         }
 
         /*
         if(details.method.toUpperCase() === 'OPTIONS') {
-            responseHeaders['Access-Control-Allow-Origin'] = [ '*' ];
-            responseHeaders['Access-Control-Allow-Methods'] = [ '*' ];
-            responseHeaders['Access-Control-Allow-Headers'] = [ '*' ];
-            responseHeaders['Access-Control-Allow-Credentials'] = [ 'true' ];
+            result['Access-Control-Allow-Origin'] = [ '*' ];
+            result['Access-Control-Allow-Methods'] = [ '*' ];
+            result['Access-Control-Allow-Headers'] = [ '*' ];
+            result['Access-Control-Allow-Credentials'] = [ 'true' ];
         }
         */
 
         return {
             cancel: false,
-            responseHeaders,
+            responseHeaders: result,
         };
     }
 }

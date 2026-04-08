@@ -22,6 +22,10 @@ class TestFixture {
         globalThis.fetch = this.mockFetch;
         globalThis.chrome = this.chromeFake as unknown as typeof chrome;
         //this.chromeFake.cookies.getAll.mockImplementation((details, callback?) => callback(this.ParseCookies(cookies)));
+
+        globalThis.window = Object.assign(globalThis.window ?? {}, {
+            location: { origin: 'http://localhost' }
+        }) as Window & typeof globalThis;
     }
 
     private ParseCookies(cookies: string): chrome.cookies.Cookie[] {
@@ -64,10 +68,6 @@ describe('FetchProvider', () => {
         it('Should register onBeforeSendHeaders modifier', () => {
             const fixture = new TestFixture();
             const { onBeforeSendHeadersListener } = fixture.CreateTestee(true);
-
-            globalThis.window = Object.assign(globalThis.window ?? {}, {
-                location: { origin: 'http://localhost' }
-            }) as Window & typeof globalThis;
 
             const details = {
                 requestHeaders: [
