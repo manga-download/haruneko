@@ -8,7 +8,8 @@ new TestFixture({
     container: {
         url: 'https://plotnf.com/plotwist/manga/guarda-fantasmas/',
         id: '/plotwist/manga/guarda-fantasmas/',
-        title: 'Guarda-Fantasmas'
+        title: 'Guarda-Fantasmas',
+        timeout: 30_000
     },
     child: {
         id: '/reader/guarda-fantasmas/chapter-5.00/',

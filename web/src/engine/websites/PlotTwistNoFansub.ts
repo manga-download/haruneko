@@ -1,18 +1,12 @@
 import { Tags } from '../Tags';
 import icon from './PlotTwistNoFansub.webp';
-import { Chapter, DecoratableMangaScraper, type MangaPlugin, Manga } from '../providers/MangaPlugin';
+import { DecoratableMangaScraper, type MangaPlugin, Manga } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { FetchCSS, FetchJSON } from '../platform/FetchProvider';
+import { FetchJSON } from '../platform/FetchProvider';
 
 type APISearchResult = {
     td_data: string;
 };
-
-type APIChapter = {
-    post_name: string;
-    chapter_number: string;
-    chapter_name: string;
-}
 
 const pageScript = `
     new Promise(resolve => {
@@ -22,7 +16,74 @@ const pageScript = `
     });
 `;
 
+const chapterScript = `
+   new Promise(function (resolve, reject) {
+       const element = document.createElement('div');
+       document.body.appendChild(element);
+       const chapterlist = [];
+
+       // Turnstile wrapper
+       function requestWithTurnstile(url, page) {
+           return new Promise(function (resolve, reject) {
+               turnstile.render(element, {
+                   sitekey: cmrChListCfg.cfTs.siteKey,
+                   callback: async function (token) {
+                       try {
+                           const res = await fetch(url, {
+                               method: "POST",
+                               headers: {
+                                   "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
+                                   "X-Requested-With": "XMLHttpRequest"
+                               },
+                               body: new URLSearchParams({
+                                   manga_id: cmrChListCfg.manid,
+                                   nonce : cmrChListCfg.nonce_chapters,
+                                   action: cmrChListCfg.chapters_action,
+                                   pageNumber: page.toString(),
+                                   "cf-turnstile-response" : token
+                               }).toString()
+                           });
+
+                           if (!res.ok) throw new Error("HTTP " + res.status);
+
+                           const json = await res.json();
+                           resolve(json);
+                       } catch (err) {
+                           reject(err);
+                       }
+                   }
+               });
+           });
+       }
+
+       // Async IIFE for pagination
+       (async function () {
+           try {
+               for (let page = 1; ; page++) {
+                   const chaptersdata = await requestWithTurnstile('/wp-admin/admin-ajax.php', page);
+                   if (chaptersdata.length === 0) break;
+
+                   const chapters = chaptersdata
+                       .map(function (item) {
+                           return {
+                               id: "/reader/" + item.post_name + "/chapter-"+ item.chapter_number + "/",
+                               title: "Capítulo " + item.chapter_number + ": "+ new DOMParser().parseFromString(item.chapter_name, 'text/html').body.innerText.trim()
+                           };
+                       });
+
+                   chapterlist.push(...chapters);
+               }
+
+               resolve(chapterlist);
+           } catch (err) {
+               reject(err);
+           }
+       })();
+   });
+`;
+
 @Common.MangaCSS(/^{origin}\/plotwist\/manga\/[^/]+\/$/, 'p.htilestiloso')
+@Common.ChaptersSinglePageJS(chapterScript, 2000)
 @Common.PagesSinglePageJS(pageScript, 1500)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
@@ -63,35 +124,6 @@ export default class extends DecoratableMangaScraper {
         return [...doc.querySelectorAll<HTMLAnchorElement>('.entry-title a[href*="/plotwist/manga/"]')].map(manga => {
             const { id, title } = Common.AnchorInfoExtractor(true).call(this, manga, uri);
             return new Manga(this, provider, id, title);
-        });
-    }
-
-    public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const mangaId = (await FetchCSS(new Request(new URL(manga.Identifier, this.URI)), 'p.listcap')).at(0).dataset.mangaid;
-        const chapterList: Chapter[] = [];
-        for (let page = 1, run = true; run; page++) {
-            const chapters = await this.GetChaptersFromPage(manga, page, mangaId);
-            chapters.length > 0 ? chapterList.push(...chapters) : run = false;
-        }
-        return chapterList.distinct();
-    }
-
-    private async GetChaptersFromPage(manga: Manga, page: number, mangaId: string): Promise<Chapter[]> {
-        const data = await FetchJSON<APIChapter[]>(new Request(new URL('/wp-admin/admin-ajax.php', this.URI), {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
-                'X-Requested-With': 'XMLHttpRequest'
-            },
-            body: new URLSearchParams({
-                manga_id: mangaId,
-                action: 'lcapl6',
-                pageNumber: `${page}`
-            }).toString()
-        }));
-        return data.map(chapter => {
-            const title = new DOMParser().parseFromString(`Cap&iacute;tulo ${chapter.chapter_number}: ${chapter.chapter_name}`, 'text/html').body.innerText.trim();
-            return new Chapter(this, manga, `/reader/${chapter.post_name}/chapter-${chapter.chapter_number}/`, title);
         });
     }
 }
