@@ -13,15 +13,15 @@
     import { DownloadTask, Status } from '../../../engine/DownloadTask';
     import DownloadManager from './DownloadManager.svelte';
 
-    let previousTasks: DownloadTask[] = [];
-    let currentDownload: DownloadTask;
-    let completed = 0;
-    let failed = 0;
-    let processing = 0;
-    let progress: number;
-    let status: Status;
-    let isModalOpen = false;
-    let downloadTasks: DownloadTask[] = HakuNeko.DownloadManager.Queue.Value;
+    let previousTasks: DownloadTask[] = $state([]);
+    let currentDownload: DownloadTask = $state();
+    let completed = $state(0);
+    let failed = $state(0);
+    let processing = $state(0);
+    let progress: number = $state(0);
+    let status: Status = $state();
+    let isModalOpen = $state(false);
+    let downloadTasks: DownloadTask[] = $state(HakuNeko.DownloadManager.Queue.Value);
 
     function refreshCounts() {
         completed = downloadTasks.filter(

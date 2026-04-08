@@ -2,10 +2,10 @@
     import { Modal } from 'carbon-components-svelte';
 
     //Todo: just a POC Changing alert with extra args should be set inside the engine
-    let openAlertMessage = false;
-    let alertMessage = '';
-    let alertTitle = '';
-    let alertButton = '';
+    let openAlertMessage = $state(false);
+    let alertMessage = $state('');
+    let alertTitle = $state('');
+    let alertButton = $state('');
     window.alert = function (message, title = 'Alert', button = 'OK') {
         openAlertMessage = true;
         alertMessage = message;
@@ -13,10 +13,10 @@
         alertButton = button;
     };
 
-    let openInfoMessage = false;
-    let infoMessage = '';
-    let infoTitle = '';
-    let infoButton = '';
+    let openInfoMessage = $state(false);
+    let infoMessage = $state('');
+    let infoTitle = $state('');
+    let infoButton = $state('');
     // @ts-ignore: temp test
     window.info = function (message: string, title = 'Info', button = 'OK') {
         openInfoMessage = true;
