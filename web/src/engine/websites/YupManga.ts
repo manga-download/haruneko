@@ -35,15 +35,13 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const pageScript = `new Array(readerApp.totalPages).fill(0).map((_, index) => new URL('/image-proxy-v2.php?chapter='+ readerApp.chapterId+'&page='+(index+1)+'&context=preload&token='+encodeURIComponent(new URL(location).searchParams.get('token')), location).href)`;
-        const chapterUrl = new URL(chapter.Identifier, this.URI);
-        const { token } = await FetchJSON<{token: string}>(new Request(new URL(`./ajax/get_reader_token.php?chapter=${encodeURIComponent(chapterUrl.searchParams.get('chapter'))}`, this.URI), {
-            headers: {
-                'X-Requested-With': 'XMLHttpRequest'
-            }
-        }));
+        const chapterUrl = new URL(`${chapter.Identifier}&page=1`, this.URI);
+        const token = await FetchWindowScript<string>(new Request(new URL(chapter.Parent.Identifier, this.URI)), `solveAndGetToken('${chapterUrl.searchParams.get('chapter')}');`, 500);
         chapterUrl.searchParams.set('token', encodeURIComponent(token));
-        const pages = await FetchWindowScript<string[]>(new Request(chapterUrl), pageScript, 500);
-        return pages.map(page =>new Page(this, chapter, new URL(page), { Referer: this.URI.href }));
+
+        const pages = await FetchWindowScript<string[]>(new Request(chapterUrl),
+            `new Array(readerApp.totalPages).fill(0).map((_, index) => new URL('/image-proxy-v2.php?chapter='+ readerApp.chapterId+'&page='+(index+1)+'&context=preload&token='+encodeURIComponent(new URL(location).searchParams.get('token')), location).href)`
+            , 500);
+        return pages.map(page => new Page(this, chapter, new URL(page), { Referer: this.URI.href }));
     }
 }
