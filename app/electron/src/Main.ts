@@ -113,6 +113,39 @@ async function OpenWindow(): Promise<void> {
         new RemoteBrowserWindowController(ipc);
         new BloatGuard(ipc, win.webContents);
         win.RegisterChannels(ipc);
+
+        // Fallback: Show window after 10 seconds if web app hasn't shown it
+        // This ensures the window is visible even if the web app fails to load
+        const showTimeout = setTimeout(() => {
+            if(!win.isVisible() && !win.isDestroyed()) {
+                console.warn('Web app did not show window within timeout, showing window as fallback');
+                win.show();
+            }
+        }, 10000);
+
+        // Clear timeout when web app loads successfully
+        win.webContents.on('did-finish-load', () => {
+            clearTimeout(showTimeout);
+        });
+
+        // Show window immediately if web app fails to load
+        win.webContents.on('did-fail-load', (event, errorCode, errorDescription) => {
+            clearTimeout(showTimeout);
+            console.error(`Failed to load web app: [${errorCode}] ${errorDescription}`);
+            if(!win.isVisible() && !win.isDestroyed()) {
+                win.show();
+            }
+        });
+
+        // Show window if renderer process crashes
+        win.webContents.on('render-process-gone', (event, details) => {
+            clearTimeout(showTimeout);
+            console.error(`Renderer process gone: ${details.reason}`);
+            if(!win.isVisible() && !win.isDestroyed()) {
+                win.show();
+            }
+        });
+
         await win.loadURL(uri.href).catch(error => console.warn(error));
     } catch(error) {
         console.error(error);
