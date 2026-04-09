@@ -445,6 +445,7 @@ export { default as ManhwaBuddy } from './ManhwaBuddy';
 export { default as Manhwaclan } from './Manhwaclan';
 export { default as ManhwaClub } from './ManhwaClub';
 export { default as ManhwaDashRaw } from './ManhwaDashRaw';
+export { default as ManhwaDesu } from './ManhwaDesu';
 export { default as ManhwaEighteen } from './ManhwaEighteen';
 export { default as ManhwaHub } from './ManhwaHub';
 export { default as ManhwaIndo } from './ManhwaIndo';
