@@ -199,7 +199,7 @@ export abstract class FetchProvider {
                 // TODO: Improve extraction robustness and variety (e.g., split line breaks into sub-scripts)
                 try {
                     const content: string = JSON.parse(script.slice(script.indexOf(',"') + 1, -2));
-                    return JSON.parse(content.slice(content.indexOf(':') + 1)).at(-1) as JSONElement;
+                    return JSON.parse(content.slice(content.indexOf(':') + 1)) as JSONElement;
                 } catch {
                     return {} as JSONElement;
                 }

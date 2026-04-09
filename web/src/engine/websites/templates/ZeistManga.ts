@@ -4,7 +4,7 @@ import { FetchJSON, FetchWindowScript } from '../../platform/FetchProvider';
 
 // TODO: Check for possible revision
 
-type FeedResults = {
+export type FeedResults = {
     feed: {
         entry: {
             link: {
@@ -13,7 +13,13 @@ type FeedResults = {
                 title: string;
             }[],
             category: Category[];
-        }[];
+            title: {
+                $t: string;
+            };
+            content: {
+                $t: string;
+            };
+        }[]
     };
 };
 

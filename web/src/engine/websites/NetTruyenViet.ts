@@ -6,7 +6,7 @@ import * as Common from './decorators/Common';
 import * as MangaStream from './decorators/WordPressMangaStream';
 import { FetchWindowScript } from '../platform/FetchProvider';
 
-const primaryDomain = 'nettruyenviet3.com';
+const primaryDomain = 'nettruyenviet10.com';
 const patternAliasDomains = [
     primaryDomain,
     'nettruyenar.com',
