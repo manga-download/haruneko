@@ -32,12 +32,14 @@ type APIChapter = {
 };
 
 type APIMangas = {
-    data: APIManga[];
+    data: APIManga[] | null;
 };
 
 type APIPages = {
+    pageToken: string;
     pages: {
-        imageUrl: string;
+        imageUrl?: string;
+        pageNumber: number;
     }[]
 };
 
@@ -71,9 +73,9 @@ export default class extends DecoratableMangaScraper {
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
         type This = typeof this;
         return Array.fromAsync(async function* (this: This) {
-            for (let offset = 0, run = true; run; offset += 500) {
-                const { data } = await this.FetchAPI<APIMangas>(`./mangas?offset=${offset}&limit=500`);
-                const mangas = data.map(({ slug, title }) => new Manga(this, provider, slug, title));
+            for (let page = 1, run = true; run; page ++) {
+                const { data } = await this.FetchAPI<APIMangas>(`./mangas?page=${page}&limit=500`);
+                const mangas = (data ?? []).map(({ slug, title }) => new Manga(this, provider, slug, title));
                 mangas.length > 0 ? yield* mangas : run = false;
             }
         }.call(this));
@@ -85,13 +87,13 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const { pages } = await this.FetchAPI<APIPages>(`./chapter/${chapter.Identifier}`);
-        return pages.map(({ imageUrl }) => new Page(this, chapter, new URL(imageUrl)));
+        const { pages, pageToken } = await this.FetchAPI<APIPages>(`./chapter/${chapter.Identifier}`);
+        return pages.map(({ imageUrl }, index) => new Page(this, chapter, new URL(imageUrl || `./p/${pageToken}/${index}`, this.apiUrl)));
     }
 
     private async FetchAPI<T extends JSONElement>(endpoint: string): Promise<T> {
         const data = await FetchJSON<APIResult<T>>(new Request(new URL(endpoint, this.apiUrl)));
-        return !data['d'] ? data as T : this.Decrypt(data as APICryptedData);
+        return !data['d'] ? data as T : this.Decrypt<T>(data as APICryptedData);
     }
 
     private async Decrypt<T extends JSONElement>(data: APICryptedData): Promise<T> {
