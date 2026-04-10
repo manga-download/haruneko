@@ -393,7 +393,6 @@ export { default as MangaReaderSite } from './MangaReaderSite';
 export { default as MangaReaderTo } from './MangaReaderTo';
 export { default as MangaRuhu } from './MangaRuhu';
 export { default as MangAs } from './MangAs';
-export { default as MangaSail } from './MangaSail';
 export { default as MangasBrasuka } from './MangasBrasuka';
 export { default as MangaScantrad } from './MangaScantrad';
 export { default as MangaSehri } from './MangaSehri';
