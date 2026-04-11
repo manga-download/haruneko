@@ -37,7 +37,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        return FlatManga.FetchChaptersAJAX.call(this, manga, '/cek/fetch_pages_manga.php?manga_cek={manga}', 'a.chapter-card__title');
+        return FlatManga.FetchChaptersAJAX.call(this, manga, '/cek/fetch_pages_manga.php?manga_cek={manga}', 'a.chapter-card__row', undefined, link => link.querySelector('.chapter-title span').textContent.trim());
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
