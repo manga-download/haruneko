@@ -15,8 +15,8 @@ export function ExtractSlug(manga: Manga): string {
 }
 
 function TitleExtractor(link: HTMLAnchorElement): string {
-    return (link.title.trim() || link.text.trim());
-} 
+    return link.title.trim() || link.text.trim();
+}
 
 /**
  * Iterate through all available pages of the {@link path} AJAX endpoint to gather all chapters for the given {@link manga}.
