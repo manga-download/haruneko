@@ -2,18 +2,18 @@ import os from 'node:os';
 import path from 'node:path';
 import fs from 'node:fs/promises';
 import { BrowserWindow, type BrowserWindowConstructorOptions } from 'electron';
-import type { IPC, Callback } from './InterProcessCommunication';
-import { RemoteBrowserWindowController as Channels } from '../../../src/ipc/Channels';
+import type { IPC } from './InterProcessCommunication';
+import { Channels } from './InterProcessCommunicationChannels';
 
 export class RemoteBrowserWindowController {
 
-    constructor (private readonly ipc: IPC<Channels.Web, Channels.App>) {
-        this.ipc.Listen(Channels.App.OpenWindow, this.OpenWindow.bind(this) as Callback<number>);
-        this.ipc.Listen(Channels.App.CloseWindow, this.CloseWindow.bind(this) as Callback);
-        this.ipc.Listen(Channels.App.SetVisibility, this.SetVisibility.bind(this) as Callback);
-        this.ipc.Listen(Channels.App.ExecuteScript, this.ExecuteScript.bind(this) as Callback);
-        this.ipc.Listen(Channels.App.SendDebugCommand, this.SendDebugCommand.bind(this) as Callback);
-        this.ipc.Listen(Channels.App.LoadURL, this.LoadURL.bind(this) as Callback);
+    constructor (private readonly ipc: IPC) {
+        this.ipc.Handle(Channels.RemoteBrowserWindowController.OpenWindow, this.OpenWindow.bind(this));
+        this.ipc.Handle(Channels.RemoteBrowserWindowController.CloseWindow, this.CloseWindow.bind(this));
+        this.ipc.Handle(Channels.RemoteBrowserWindowController.SetVisibility, this.SetVisibility.bind(this));
+        this.ipc.Handle(Channels.RemoteBrowserWindowController.ExecuteScript, this.ExecuteScript.bind(this));
+        this.ipc.Handle(Channels.RemoteBrowserWindowController.SendDebugCommand, this.SendDebugCommand.bind(this));
+        this.ipc.Handle(Channels.RemoteBrowserWindowController.LoadURL, this.LoadURL.bind(this));
     }
 
     private Throw(message: string): never {
@@ -40,8 +40,8 @@ export class RemoteBrowserWindowController {
         win.setMenuBarVisibility(false);
         win.webContents.debugger.attach('1.3');
         win.webContents.setWindowOpenHandler(() => { return { action: 'deny' }; });
-        win.webContents.on('dom-ready', () => this.ipc.Send(Channels.Web.OnDomReady, win.id));
-        win.webContents.on('did-start-navigation', event => this.ipc.Send(Channels.Web.OnBeforeNavigate, win.id, event.url, event.isMainFrame, event.isSameDocument));
+        win.webContents.on('dom-ready', () => this.ipc.Send(Channels.RemoteBrowserWindowController.OnDomReady, win.id));
+        win.webContents.on('did-start-navigation', event => this.ipc.Send(Channels.RemoteBrowserWindowController.OnBeforeNavigate, win.id, event.url, event.isMainFrame, event.isSameDocument));
         win.once('closed', () => fs.rm(windowOptions.webPreferences?.preload || '').catch(err => console.warn(err)));
         return win.id;
     }
