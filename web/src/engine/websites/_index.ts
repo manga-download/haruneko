@@ -494,6 +494,7 @@ export { default as NecroScans } from './NecroScans';
 export { default as NekoPost } from './NekoPost';
 export { default as NemesisScans } from './NemesisScans';
 export { default as Neroxus } from './Neroxus';
+export { default as NetTruyenAR } from './NetTruyenAR';
 export { default as NetTruyenOK } from './NetTruyenOK';
 export { default as NetTruyenViet } from './NetTruyenViet';
 export { default as NeuManga } from './NeuManga';
