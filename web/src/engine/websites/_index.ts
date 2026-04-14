@@ -601,6 +601,7 @@ export { default as RuyaManga } from './RuyaManga';
 export { default as RuyaMangaNet } from './RuyaMangaNet';
 export { default as S2Manga } from './S2Manga';
 export { default as Sadscans } from './Sadscans';
+export { default as SafiCizgi } from './SafiCizgi';
 export { default as SakuraManga } from './SakuraManga';
 export { default as SamuraiScan } from './SamuraiScan';
 export { default as Sany } from './Sany';
