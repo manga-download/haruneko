@@ -20,8 +20,8 @@ AddAntiScrapingDetection(async (invoke) => {
     return result ? FetchRedirection.Interactive : undefined;
 });
 
-@Common.MangaCSS<HTMLImageElement>(FlatManga.pathManga, 'img.thumbnail', (img, uri) => ({ id: uri.pathname, title: img.title.trim() }))
-@Common.MangasSinglePageCSS('/manga-list.html', 'div.container a[data-toggle="mangapop"]:not([data-original-title=""])')
+@Common.MangaCSS<HTMLImageElement>(FlatManga.pathManga, '.poster-card__title')
+@Common.MangasSinglePageCSS<HTMLAnchorElement>('/manga-list.html', 'a.la-manga-item:not([data-original-title=""])', anchor => ({ id: anchor.pathname, title: anchor.dataset.originalTitle.trim() }))
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
@@ -37,7 +37,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        return FlatManga.FetchChaptersAJAX.call(this, manga, '/cek/fetch_pages_manga.php?manga_cek={manga}', 'div.chapter-item div.chapter-title > a');
+        return FlatManga.FetchChaptersAJAX.call(this, manga, '/cek/fetch_pages_manga.php?manga_cek={manga}', 'a.chapter-card__row', undefined, link => link.querySelector('.chapter-title span').textContent.trim());
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {

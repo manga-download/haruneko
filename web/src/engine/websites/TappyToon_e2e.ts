@@ -65,3 +65,25 @@ new TestFixture({
         type: 'image/jpeg'
     }
 }).AssertWebsite();
+
+// CASE : superhigh quality
+new TestFixture({
+    plugin: {
+        id: 'tappytoon',
+        title: 'TappyToon'
+    },
+    container: {
+        url: 'https://www.tappytoon.com/en/book/i-love-amy',
+        id: '889',
+        title: 'I Love Amy'
+    },
+    child: {
+        id: '573965272',
+        title: 'Episode 1'
+    },
+    entry: {
+        index: 0,
+        size: 111_690,
+        type: 'image/jpeg'
+    }
+}).AssertWebsite();
