@@ -68,7 +68,7 @@ export class FetchProvider {
     }
 
     // TODO: Invoke via IPC in WEB
-    private ModifyResponseHeaders(originalHeaders?: Record<string, string | string[]>): HeadersReceivedResponse {
+    private ModifyResponseHeaders(originalHeaders: Record<string, string | string[]>): HeadersReceivedResponse {
 
         const result = Object.fromEntries(Object.entries(originalHeaders).map(([name, value]) => [name.toLowerCase(), value]));
 
