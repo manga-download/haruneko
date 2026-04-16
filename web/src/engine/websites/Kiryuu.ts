@@ -6,7 +6,7 @@ import NatsuID from './NatsuID';
 export default class extends NatsuID {
 
     public constructor() {
-        super('kiryuu', 'Kiryuu', 'https://v1.kiryuu.to', [Tags.Media.Manga, Tags.Language.Indonesian, Tags.Source.Aggregator, Tags.Accessibility.DomainRotation]);
+        super('kiryuu', 'Kiryuu', 'https://v2.kiryuu.to', [Tags.Media.Manga, Tags.Language.Indonesian, Tags.Source.Aggregator, Tags.Accessibility.DomainRotation]);
     }
 
     public override get Icon() {
