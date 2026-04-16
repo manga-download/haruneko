@@ -5,6 +5,11 @@ import { RateLimit } from '../taskpool/RateLimit';
 import icon from './YupManga.webp';
 import * as Common from './decorators/Common';
 
+type ChapterInfos = {
+    chapterId: string;
+    token: string;
+};
+
 @Common.MangaCSS(/^{origin}\/series\.php\?id=/, 'div.container div.flex h1', Common.WebsiteInfoExtractor({ includeSearch: true }))
 @Common.MangasMultiPageCSS<HTMLAnchorElement>('div.comic-card a', Common.PatternLinkGenerator('/?page={page}'), 0, anchor => ({ id: anchor.pathname + anchor.search, title: anchor.querySelector('img').alt.trim() }))
 @Common.ImageAjax()
@@ -36,8 +41,9 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
         const chapterUrl = new URL(`${chapter.Identifier}&page=1`, this.URI);
-        const token = await FetchWindowScript<string>(new Request(new URL(chapter.Parent.Identifier, this.URI)), `solveAndGetToken('${chapterUrl.searchParams.get('chapter')}');`, 500);
+        const { token, chapterId } = await FetchWindowScript<ChapterInfos>(new Request(new URL(chapter.Parent.Identifier, this.URI)), `solveAndGetToken('${chapterUrl.searchParams.get('chapter')}');`, 500);
         chapterUrl.searchParams.set('token', encodeURIComponent(token));
+        chapterUrl.searchParams.set('chapter', encodeURIComponent(chapterId));
 
         const pages = await FetchWindowScript<string[]>(new Request(chapterUrl),
             `new Array(readerApp.totalPages).fill(0).map((_, index) => new URL('/image-proxy-v2.php?chapter='+ readerApp.chapterId+'&page='+(index+1)+'&context=preload&token='+encodeURIComponent(new URL(location).searchParams.get('token')), location).href)`
