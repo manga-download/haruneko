@@ -1,9 +1,14 @@
 import { Delay } from '../BackgroundTimers';
+import { GetBytesFromBase64, GetBytesFromUTF8 } from '../BufferEncoder';
 import { FetchGraphQL } from '../platform/FetchProvider';
 import { Chapter, DecoratableMangaScraper, Manga, type MangaPlugin, Page } from '../providers/MangaPlugin';
 import { Tags } from '../Tags';
 import icon from './AllMangaTo.webp';
 import * as Common from './decorators/Common';
+
+type APIEncryptedResult = {
+    tobeparsed?: string;
+};
 
 type APIMangas = {
     mangas: {
@@ -164,6 +169,17 @@ export default class extends DecoratableMangaScraper {
     }
 
     private async FetchAPI<T extends JSONElement>(query: string, variables: JSONObject): Promise<T> {
-        return await FetchGraphQL<T>(new Request(new URL(this.apiUrl)), '', query, variables);
+        const result = await FetchGraphQL<APIEncryptedResult | T>(new Request(new URL(this.apiUrl)), '', query, variables);
+        return !(result as APIEncryptedResult).tobeparsed ? result as T: await this.Decrypt<T>(result['tobeparsed'] as string);
+    }
+
+    private async Decrypt<T>(data: string): Promise<T> {
+        const message = GetBytesFromBase64(data);
+        const ciphertext = message.slice(12, message.length - 16);
+        const tag = message.slice(message.length - 16);
+        const algorithm = { name: 'AES-GCM', iv: message.slice(0, 12) };
+        const key = await crypto.subtle.importKey('raw', await crypto.subtle.digest('SHA-256', GetBytesFromUTF8('SimtVuagFbGR2K7P')), algorithm, false, ['decrypt']);
+        const result = await crypto.subtle.decrypt(algorithm, key, new Uint8Array([...ciphertext, ...tag]));
+        return JSON.parse((new TextDecoder).decode(result)) as T;
     }
 }
