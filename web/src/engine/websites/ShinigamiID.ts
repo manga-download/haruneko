@@ -32,7 +32,7 @@ export default class extends DecoratableMangaScraper {
     private readonly apiUrl = 'https://api.shngm.io/v1/';
 
     public constructor() {
-        super('shinigamiid', `Shinigami ID`, 'https://a.shinigami.asia', Tags.Language.Indonesian, Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Source.Scanlator, Tags.Accessibility.DomainRotation);
+        super('shinigamiid', 'Shinigami ID', 'https://e.shinigami.asia', Tags.Language.Indonesian, Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Source.Scanlator, Tags.Accessibility.DomainRotation);
     }
 
     public override get Icon() {
