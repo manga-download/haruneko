@@ -1,4 +1,3 @@
-// @vitest-environment jsdom
 import { mock } from 'vitest-mock-extended';
 import { vi, describe, it, expect } from 'vitest';
 import type { FeatureFlags } from '../../FeatureFlags';
@@ -60,7 +59,10 @@ describe('FetchProvider', () => {
             fixture.chromeFake.webRequest.onBeforeSendHeaders.addListener.mockImplementation((callback) => testee = callback);
             fixture.CreateTestee(true);
 
-            window.location = { origin: 'http://localhost' } as string & Location;
+            globalThis.window = Object.assign(globalThis.window ?? {}, {
+                location: { origin: 'http://localhost' }
+            }) as Window & typeof globalThis;
+
             const details = {
                 requestHeaders: [
                     { name: 'Referer', value: 'http://localhost/' }, // should remove referer for current origin

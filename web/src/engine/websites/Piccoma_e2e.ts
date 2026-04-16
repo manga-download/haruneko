@@ -17,7 +17,7 @@ new TestFixture({
     },
     entry: {
         index: 0,
-        size: 531_180,
+        size: 603_257,
         type: 'image/png'
     } */
 }).AssertWebsite();
@@ -34,12 +34,13 @@ new TestFixture({
         title: 'エロスの種子'
     },
     child: {
-        id: '367170',
-        title: '第1巻 (¥0)'
+        id: '2646861',
+        title: '第1巻',
+        timeout: 60_000 // need to load all pictures, could take a while
     },
     entry: {
         index: 0,
-        size: 1_012_662,
+        size: 1_091_700,
         type: 'image/png'
     } */
 }).AssertWebsite();
