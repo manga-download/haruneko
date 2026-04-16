@@ -1,14 +1,27 @@
 ﻿import { Tags } from '../Tags';
 import icon from './MangasBrasuka.webp';
-import { type Chapter, DecoratableMangaScraper, Page } from '../providers/MangaPlugin';
+import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Madara from './decorators/WordPressMadara';
 import * as Common from './decorators/Common';
-import { Fetch, FetchCSS, FetchWindowScript } from '../platform/FetchProvider';
-import { GetBytesFromBase64 } from '../BufferEncoder';
+import { FetchWindowScript } from '../platform/FetchProvider';
+
+export const pageScript = `
+    new Promise(async (resolve, reject) => {
+        try {
+            const auth = new URL(document.querySelector('div.page-break a').href).searchParams.get('t');
+            const response = await fetch('/campanha.php?auth=' + encodeURIComponent(auth));
+            const body = new DOMParser().parseFromString((await response.text()), 'text/html');
+            resolve([...body.querySelectorAll('div.manga-content img')].map(img => img.src));
+        } catch (error) {
+            reject(error)
+        }
+    })
+`;
 
 @Madara.MangaCSS(/^{origin}\/manga\/[^/]+\/$/, 'ol.breadcrumb li:last-of-type')
 @Madara.MangasMultiPageAJAX()
 @Madara.ChaptersSinglePageAJAXv2()
+@Common.PagesSinglePageJS(pageScript)
 @Common.ImageAjax(true)
 export default class extends DecoratableMangaScraper {
 
@@ -20,15 +33,7 @@ export default class extends DecoratableMangaScraper {
         return icon;
     }
 
-    public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        //get adgate link
-        const [crapLink] = await FetchCSS<HTMLAnchorElement>(new Request(new URL(chapter.Identifier, this.URI)), 'div.page-break a');
-        const authParam: string = JSON.parse(new TextDecoder().decode(GetBytesFromBase64(new URL(crapLink.href).searchParams.get('o').split('/').at(-1)))).url;
-        //get real url (redirected)
-        const response = await Fetch(new Request(new URL(crapLink.href)));
-        const newURL = response.url.replace('/ref/', '/finish/cpurl/');
-        await FetchWindowScript<string[]>(new Request(new URL(newURL)), '', 5000);
-        const pages = await FetchCSS<HTMLImageElement>(new Request(new URL(`/campanha.php?auth=${encodeURIComponent(authParam)}`, this.URI)), 'div.manga-content img');
-        return pages.map(page => new Page(this, chapter, new URL(page.src)));
+    public override async Initialize(): Promise<void> {
+        return FetchWindowScript(new Request(this.URI), `window.cookieStore.set('wpmanga-adault', '1')`);
     }
 }
