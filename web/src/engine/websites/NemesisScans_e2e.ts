@@ -6,17 +6,17 @@ new TestFixture({
         title: 'Nemesis Scans'
     },
     container: {
-        url: 'https://nemesisscans.com/manga/acimasiz-egitmen/',
-        id: '/manga/acimasiz-egitmen/',
-        title: 'Acımasız Eğitmen'
+        url: 'https://www.nemesisscans.com/manga/kusuriya-no-hitorigoto/',
+        id: JSON.stringify({ post: '185', slug: '/manga/kusuriya-no-hitorigoto/'}),
+        title: 'Kusuriya no Hitorigoto'
     },
     child: {
-        id: '/acimasiz-egitmen-bolum-125/',
-        title: 'Bölüm 125'
+        id: '/manga/kusuriya-no-hitorigoto/bolum-81-2/',
+        title: 'Bölüm 81.2'
     },
     entry: {
         index: 0,
-        size: 1_272_733,
-        type: 'image/jpeg'
+        size: 374_708,
+        type: 'image/webp'
     }
 }).AssertWebsite();

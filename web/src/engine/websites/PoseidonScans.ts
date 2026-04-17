@@ -42,8 +42,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
-        const request = new Request(new URL(url, this.URI));
-        const { manga: { slug, title } } = await FetchNextJS<HydratedManga>(request, data => 'manga' in data);
+        const { manga: { slug, title } } = await FetchNextJS<HydratedManga>(new Request(new URL(url, this.URI)), data => 'manga' in data);
         return new Manga(this, provider, slug, title);
     }
 
@@ -54,8 +53,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const request = new Request(new URL(chapter.Identifier, this.URI));
-        const { images } = await FetchNextJS<HydratedPages>(request, data => 'images' in data);
+        const { images } = await FetchNextJS<HydratedPages>(new Request(new URL(chapter.Identifier, this.URI)), data => 'images' in data);
         return images.map(image => new Page(this, chapter, new URL(image.originalUrl, this.URI)));
     }
 }

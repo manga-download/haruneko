@@ -6,7 +6,7 @@ new TestFixture({
         title: 'Letona Scans'
     },
     container: {
-        url: 'https://letonascans.com/manga/kocamdan-bosanamadim',
+        url: 'https://letonascans.net/manga/kocamdan-bosanamadim',
         id: 'kocamdan-bosanamadim',
         title: 'Kocamdan Boşanamadım'
     },
@@ -16,7 +16,7 @@ new TestFixture({
     },
     entry: {
         index: 0,
-        size: 230_926,
+        size: 600_884,
         type: 'image/webp'
     }
 }).AssertWebsite();

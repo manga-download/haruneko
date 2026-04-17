@@ -6,17 +6,17 @@ new TestFixture({
         title: 'Ainzscans'
     },
     container: {
-        url: 'https://ainzscans01.com/series/disastrous-necromancer/',
-        id: '/series/disastrous-necromancer/',
+        url: 'https://v1.ainzscans01.com/comic/disastrous-necromancer',
+        id: 'disastrous-necromancer',
         title: 'Disastrous Necromancer'
     },
     child: {
-        id: '/disastrous-necromancer-chapter-37-bahasa-indonesia/',
+        id: 'chapter-37-bahasa-indonesia',
         title: 'Chapter 37'
     },
     entry: {
         index: 2,
-        size: 995_872,
+        size: 109_219,
         type: 'image/jpeg'
     }
 }).AssertWebsite();

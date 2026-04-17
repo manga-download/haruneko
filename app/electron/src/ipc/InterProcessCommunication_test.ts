@@ -30,7 +30,7 @@ describe('IPC', () => {
     describe('Constructor', () => {
 
         it('Should create instance', () => {
-            const testee = new IPC<string, string>(null);
+            const testee = new IPC<string, string>(null as unknown as Electron.WebContents);
             expect(testee).toBeDefined();
         });
     });
@@ -38,7 +38,7 @@ describe('IPC', () => {
     describe('Listen', () => {
 
         it('Should relay subscription to Electron asynchronouos messaging', () => {
-            const testee = new IPC<string, string>(null);
+            const testee = new IPC<string, string>(null as unknown as Electron.WebContents);
             testee.Listen('😎', async () => {});
             expect(ipcMain.handle).toHaveBeenCalledTimes(1);
             expect(ipcMain.handle).toHaveBeenCalledWith('😎', expect.anything());
