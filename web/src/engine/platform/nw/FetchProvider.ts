@@ -25,6 +25,7 @@ class FetchRequest extends Request {
 
     static #ConcealHeaders(init: HeadersInit, credentials?: RequestCredentials): Headers {
         const headers = new Headers(init);
+        // TODO: Apply session cookie headers here by merging with `X-Cookie` instead of in ModifyRequestHeaders due to unsupported Promise support in `chrome.webRequest.onBeforeSendHeaders`
 
         if (credentials?.toLowerCase() === 'omit') {
             headers.delete('Authorization');
@@ -74,7 +75,7 @@ export default class FetchProviderNW extends FetchProvider {
         //       'blocking'       => sync request required for header modification
         //       'requestHeaders' => allow change request headers
         //       'extraHeaders'   => allow change 'referer', 'origin', 'cookie'
-        if (!chrome.webRequest.onBeforeSendHeaders.hasListener(this.ModifyRequestHeaders)) {
+        if (!chrome.webRequest.onBeforeSendHeaders.hasListener(details => this.ModifyRequestHeaders(details.url, details.requestHeaders))) {
             chrome.webRequest.onBeforeSendHeaders.addListener(this.ModifyRequestHeaders, { urls: [ '<all_urls>' ] }, [ 'blocking', 'requestHeaders', 'extraHeaders' ]);
         }
 
@@ -96,6 +97,7 @@ export default class FetchProviderNW extends FetchProvider {
     public async Fetch(request: Request): Promise<Response> {
         const concealedCookieHeaderName = fetchApiSupportedPrefix + 'Cookie';
         if (request.credentials !== 'omit' && !request.headers.has(concealedCookieHeaderName)) {
+            // ...
             request.headers.set(concealedCookieHeaderName, await this.GetSessionCookies(request.url));
         }
         const response = await fetch(request);
@@ -103,11 +105,24 @@ export default class FetchProviderNW extends FetchProvider {
         return response;
     }
 
-    // TODO: Align with electron implementation ...
+    private async GetSessionCookies(url: string, ...customCookieHeaders: string[]): Promise<string> {
+        const sessionCookieSet = await chrome.cookies.getAll({ url, partitionKey: {} }); // Include empty partition filter since the chrome bug-fix does not work: https://issues.chromium.org/issues/323924496
+        const customCookieSets = customCookieHeaders.map(customCookieHeader => customCookieHeader
+            .split(';')
+            .filter(cookie => cookie.includes('='))
+            .map(cookie => cookie.split('='))
+            .map(([name, value]) => ({ name: name.trim(), value: value.trim() }))
+            .filter(({ name, value }) => name && value));
 
-    private async GetSessionCookies(url: string): Promise<string> {
-        const sessionCookies = await chrome.cookies.getAll({ url, partitionKey: {} }); // Include empty partition filter since the chrome bug-fix does not work: https://issues.chromium.org/issues/323924496
-        return sessionCookies.map(({ name, value }) => `${name}=${value}`).join(';'); // TODO: Maybe use `encodeURIComponent(cookie.value)`
+        const result: Record<string, string> = {};
+
+        for (const cookies of [sessionCookieSet, ...customCookieSets]) {
+            for (const { name, value } of cookies) {
+                result[name] = value;
+            }
+        }
+
+        return Object.entries(result).map(([ name, value ]) => `${name}=${value}`).join('; '); // TODO: Maybe use `encodeURIComponent(cookie.value)`
     }
 
     private RevealHeaders(headers: chrome.webRequest.HttpHeader[]): Headers {
@@ -127,8 +142,9 @@ export default class FetchProviderNW extends FetchProvider {
         return result;
     }
 
-    private readonly ModifyRequestHeaders = async function ModifyRequestHeaders(this: FetchProviderNW, details: chrome.webRequest.OnBeforeSendHeadersDetails): chrome.webRequest.BlockingResponse {
-        const requestHeaders = new Headers(details.requestHeaders?.map(h => [ h.name, h.value ]) ?? []);
+    private readonly ModifyRequestHeaders = function ModifyRequestHeaders(this: FetchProviderNW, url: string, originalHeaders: Record<string, string | string[]>): chrome.webRequest.BlockingResponse {
+        /*
+        const requestHeaders = new Headers(details.requestHeaders?.map(h => [h.name, h.value]) ?? []);
         requestHeaders.set('cookie', await this.GetSessionCookies(details.url));
         // NOTE: Previously this was assigned directly to `X-FetchAPI-Cookie` in `Fetch` call
         const headers = this.RevealHeaders(details.requestHeaders);
@@ -142,6 +158,31 @@ export default class FetchProviderNW extends FetchProvider {
         return {
             cancel: false,
             requestHeaders: [ ...headers.entries().map(([ name, value ]) => ({ name, value })) ],
+        };
+        */
+
+        const patternConcealedHeaderName = new RegExp('^' + this.fetchApiSupportedPrefix, 'i');
+        const IsConcealed = (name: string) => patternConcealedHeaderName.test(name);
+        const GetRevealedHeaderName = (name: string) => name.replace(patternConcealedHeaderName, '').toLowerCase();
+
+        const all: Array<[string, string | string[]]> = Object.entries(originalHeaders);
+        const result = Object.fromEntries(all.filter(([name]) => !IsConcealed(name)).map(([name, value]) => [name.toLowerCase(), value]));
+        const replacements = Object.fromEntries(all.filter(([name]) => IsConcealed(name)).map(([name, value]) => [GetRevealedHeaderName(name), value]));
+        replacements['cookie'] = await this.GetSessionCookies(url, <string>result['cookie'] ?? '', <string>replacements['cookie'] ?? '');
+
+        for (const name in replacements) {
+            result[name] = replacements[name];
+        }
+
+        // Remove cookie header when empty
+        if ((<string>result['cookie'])?.trim() === '') delete result['cookie'];
+        // Prevent leaking HakuNeko's host in certain headers
+        if ((<string>result['origin'])?.includes(this.appHostname)) delete result['origin'];
+        if ((<string>result['referer'])?.includes(this.appHostname)) delete result['referer'];
+
+        return {
+            cancel: false,
+            requestHeaders: result,
         };
     }.bind(this);
 
