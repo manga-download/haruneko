@@ -75,18 +75,14 @@ export default class FetchProviderElectron extends FetchProvider {
 
     async Fetch(request: Request): Promise<Response> {
         // Fetch API defaults => https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch
-        // Update cookies in request.headers.set('...')
+        const cookies = await this.ipc.Invoke(Channels.FetchProvider.GetSessionCookies, { url: new URL(request.url).origin, /* partitionKey: {} */ });
+        // Update/Merge (concealed) cookies in request.headers.set('...')
         const response = await fetch(request);
         await super.ValidateResponse(response);
         return response;
     }
 
     /*
-    private async GetSessionCookies(url: string): Promise<string> {
-        const sessionCookies = await this.ipc.Send(Channels.FetchProvider.GetSessionCookies, { url, filter: {} });
-        return sessionCookies.map(({ name, value }) => `${name}=${value}`).join(';'); // TODO: Maybe use `encodeURIComponent(cookie.value)`
-    }
-
     private RevealHeaders(headers: Headers): Headers {
     }
 

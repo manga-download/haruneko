@@ -9,6 +9,7 @@ export class FetchProvider {
 
     constructor (private readonly ipc: IPC, private readonly webContents: WebContents) {
         this.ipc.Handle(Channels.FetchProvider.Initialize, this.Initialize.bind(this));
+        this.ipc.Handle(Channels.FetchProvider.GetSessionCookies, this.GetSessionCookies.bind(this));
     }
 
     private Initialize(fetchApiSupportedPrefix: string): void {
@@ -19,23 +20,27 @@ export class FetchProvider {
         this.Initialize = () => { };
     }
 
-    private async GetSessionCookies(url: string, ...customCookieHeaders: string[]): Promise<string> {
-        const sessionCookieSet = await this.webContents.session.cookies.get({ url, /* partitionKey: {} */ }); // TODO: When filter by URL partioned cookies may not be found (e.g., cf_clearance)
-        const customCookieSets = customCookieHeaders.map(customCookieHeader => customCookieHeader
+    private async GetSessionCookies(filter: Electron.CookiesGetFilter) {
+        // TODO: When filter by URL partioned cookies may not be found (e.g., cf_clearance)
+        return (await this.webContents.session.cookies.get(filter)).map(({ name, value }) => ({ name, value }));
+    }
+
+    private ParseCookieFromHeader(cookies: string): CookieSet {
+        return cookies
             .split(';')
             .filter(cookie => cookie.includes('='))
             .map(cookie => cookie.split('='))
             .map(([name, value]) => ({ name: name.trim(), value: value.trim() }))
-            .filter(({ name, value }) => name && value));
+            .filter(({ name, value }) => name && value);
+    }
 
+    private MergeCookies(...cookieSets: CookieSet[]): string {
         const result: Record<string, string> = {};
-
-        for (const cookies of [sessionCookieSet, ...customCookieSets]) {
-            for (const { name, value } of cookies) {
+        for (const cookieSet of cookieSets) {
+            for (const { name, value } of cookieSet) {
                 result[name] = value;
             }
         }
-
         return Object.entries(result).map(([ name, value ]) => `${name}=${value}`).join('; '); // TODO: Maybe use `encodeURIComponent(cookie.value)`
     }
 
@@ -49,14 +54,18 @@ export class FetchProvider {
         const all: Array<[string, string | string[]]> = Object.entries(originalHeaders);
         const result = Object.fromEntries(all.filter(([name]) => !IsConcealed(name)).map(([name, value]) => [name.toLowerCase(), value]));
         const replacements = Object.fromEntries(all.filter(([name]) => IsConcealed(name)).map(([name, value]) => [GetRevealedHeaderName(name), value]));
-        replacements['cookie'] = await this.GetSessionCookies(url, <string>result['cookie'] ?? '', <string>replacements['cookie'] ?? '');
+        replacements['cookie'] = this.MergeCookies(
+            await this.GetSessionCookies({ url, /* partitionKey: {} */ }), // TODO: Only added for backward-compatibility! Can be removed when session cookies are provided via `replacements['cookie']`
+            this.ParseCookieFromHeader(<string>result['cookie'] ?? ''),
+            this.ParseCookieFromHeader(<string>replacements['cookie'] ?? ''),
+        );
 
         for (const name in replacements) {
             result[name] = replacements[name];
         }
 
         // Remove cookie header when empty
-        if ((<string>result['cookie'])?.trim() === '') delete result['cookie'];
+        if (!(<string>result['cookie'])?.trim()) delete result['cookie'];
         // Prevent leaking HakuNeko's host in certain headers
         if ((<string>result['origin'])?.includes(this.appHostname)) delete result['origin'];
         if ((<string>result['referer'])?.includes(this.appHostname)) delete result['referer'];
