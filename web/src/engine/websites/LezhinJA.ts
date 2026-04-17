@@ -52,7 +52,6 @@ type ChapterID = {
 @Common.MangaCSS(/^{origin}\/comic\/[^/]+$/, 'title', (element: HTMLTitleElement, uri) => ({ id: uri.pathname, title: element.textContent.split('｜').at(0).trim() }))
 export default class extends DecoratableMangaScraper {
     private readonly apiUrl = 'https://lezhin.jp/api/';
-    private readonly xorKey = '57e87c8a4d50b7c3456dbab4ab144b200826e62459039c9915d1e5f5e0bf3a51';
 
     public constructor() {
         super('lezhin-ja', 'Lezhin (Japanese)', 'https://lezhin.jp', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Japanese, Tags.Source.Official);
@@ -121,10 +120,10 @@ export default class extends DecoratableMangaScraper {
     }
 
     private async DecryptImage(blob: Blob): Promise<Blob> {
+        const xorKey = GetBytesFromHex('57e87c8a4d50b7c3456dbab4ab144b200826e62459039c9915d1e5f5e0bf3a51');
         const bytes = new Uint8Array(await blob.arrayBuffer());
-        const xorkey = GetBytesFromHex(this.xorKey);
         for (let n = 0; n < bytes.length; n++)
-            bytes[n] = bytes[n] ^ xorkey[n % xorkey.length];
+            bytes[n] = bytes[n] ^ xorKey[n % xorKey.length];
         return Common.GetTypedData(bytes.buffer);
     }
 }
