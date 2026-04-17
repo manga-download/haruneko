@@ -128,7 +128,6 @@ import '../PawManga_e2e';
 import '../PinkSeaUnicorn_e2e';
 import '../PortalYaoi_e2e';
 import '../RaijinScans_e2e';
-import '../RawXZ_e2e';
 import '../ResetScans_e2e';
 import '../Retsu_e2e';
 import '../RuyaMangaNet_e2e';
