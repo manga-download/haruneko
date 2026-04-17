@@ -360,6 +360,11 @@ export enum WebsiteResourceKey {
     Plugin_SheepScanlations_Settings_PasswordInfo = 'Plugin_SheepScanlations_Settings_PasswordInfo',
 }
 
+// [SECTION]: Template : HEANCMS
+export enum WebsiteResourceKey {
+    Plugin_HeanCMS_ErrorNovelsNotSupported = 'Plugin_HeanCMS_ErrorNovelsNotSupported'
+}
+
 export const VariantResourceKey = {
     ...TagCategoryResourceKey,
     ...TagResourceKey,
