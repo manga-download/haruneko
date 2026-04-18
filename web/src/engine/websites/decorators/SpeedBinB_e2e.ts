@@ -4,7 +4,6 @@ import '../Cmoa_e2e';
 import '../ComicPorta_e2e';
 import '../Futabanet_e2e';
 import '../Kiraboshi_e2e';
-import '../MangaPlanet_e2e';
 import '../MangaPlaza_e2e';
 import '../MichiKusa_e2e';
 import '../Ohtabooks_e2e';

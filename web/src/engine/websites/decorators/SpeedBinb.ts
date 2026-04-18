@@ -246,7 +246,7 @@ async function FetchPagesLinks(this: MangaScraper, params: SpeedBinbParameters, 
             if (configuration.ContentDate) uri.searchParams.set('dmytime', configuration.ContentDate);
             return await ExtractPages.call(this, uri, '/content.js', '{src}/M_H.jpg', configuration, chapter);
         }
-        case 2: {//v016130 MangaPlanet, MangaPlaza, Yanmaga, Yomonga
+        case 2: {//v016130 MangaPlaza, Yanmaga, Yomonga
             const uri = getSanitizedURL(configuration.ContentsServer, 'content');
             if (configuration.ContentDate) uri.searchParams.set('dmytime', configuration.ContentDate);
             if (version === SpeedBindVersion.v016201) uri.searchParams.set('u1', params.u1); //YOUNGJUMP
