@@ -11,8 +11,9 @@ new TestFixture({
         title: '拷問バイトくんの日常'
     },
     child: {
-        id: '/episodes/1ee1238190925/',
-        title: '第1話'
+        id: '/episodes/54a59678400e0',
+        title: '第1話',
+        timeout: 10_000
     },
     entry: {
         index: 0,

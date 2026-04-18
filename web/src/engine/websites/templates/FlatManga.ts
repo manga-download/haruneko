@@ -14,14 +14,19 @@ export function ExtractSlug(manga: Manga): string {
     return manga.Identifier.match(/\/[a-zA-Z0-9]+-([^/]+)\.html$/).at(-1);
 }
 
+function TitleExtractor(link: HTMLAnchorElement): string {
+    return link.title.trim() || link.text.trim();
+}
+
 /**
  * Iterate through all available pages of the {@link path} AJAX endpoint to gather all chapters for the given {@link manga}.
  * @param manga - The manga from which the chapters shall be acquired
  * @param path - A relative path to the AJAX endpoint(s) containing the chapters (may contain the `{manga}` placeholder which will be replaced with the slug provided by {@link extract})
  * @param query - A CSS selector to detect all chapter links
  * @param extract - A method to determine the slug from the identifier of the provided {@link manga}
+ * @param extractTitle - A method to extract title from the element returned by {@link query} selector
  */
-export async function FetchChaptersAJAX(this: DecoratableMangaScraper, manga: Manga, path: string, query: string, extract = ExtractSlug): Promise<Chapter[]> {
+export async function FetchChaptersAJAX(this: DecoratableMangaScraper, manga: Manga, path: string, query: string, extract = ExtractSlug, extractTitle = TitleExtractor ): Promise<Chapter[]> {
     const chapterList: Chapter[] = [];
     const uri = new URL(path.replace('{manga}', extract(manga)), this.URI);
     const init = {
@@ -33,11 +38,10 @@ export async function FetchChaptersAJAX(this: DecoratableMangaScraper, manga: Ma
         },
         body: '',
     };
-    const extractTitle = (link: HTMLAnchorElement) => (link.title.trim() || link.text.trim()).replace(manga.Title, '').trim();
     for (let page = 1, run = true; run; page++) {
         init.body = `page=${page}`;
         const links = await FetchCSS<HTMLAnchorElement>(new Request(uri, init), query);
-        const chapters = links.map(link => new Chapter(this, manga, link.pathname, extractTitle(link)));
+        const chapters = links.map(link => new Chapter(this, manga, link.pathname, extractTitle(link).replace(manga.Title, '').trim()));
         chapterList.isMissingLastItemFrom(chapters) ? chapterList.push(...chapters) : run = false;
     }
     return chapterList;
