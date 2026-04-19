@@ -6,7 +6,7 @@ import { FetchJSON } from '../platform/FetchProvider';
 
 type PackedData = {
     nodes: {
-        data: JSONElement
+        data: JSONElement;
     }[]
 };
 
@@ -55,7 +55,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
-        //using API because too many different sort of junk in title
+        //using API because too many different sort of junk in "titles" from the html
         const { manga: { title } } = await this.FetchAPI<APIMangaDetails>(`${url}/__data.json`);
         return new Manga(this, provider, url.split('/').at(-1), CleanTitle(title));
     }
@@ -87,20 +87,17 @@ export default class extends DecoratableMangaScraper {
     }
 
     Deserialize<T extends JSONElement>(data: JSONElement): T {
-        if (typeof data === 'number') return processValue(data, true);
         if (!Array.isArray(data) || data.length === 0) throw new Error('Invalid input');
 
         const inputArray = data;
         const processedData = Array(inputArray.length);
 
-        function processValue(value: any, isTopLevel: boolean = false) {
+        function processValue(value: any) {
             if (value === -1) return;
             if (value === -3) return NaN;
             if (value === -4) return Infinity;
             if (value === -5) return -Infinity;
             if (value === -6) return -0;
-
-            if (isTopLevel || typeof value !== 'number') throw new Error('Invalid input');
 
             if (value in processedData) return processedData[value];
 
@@ -140,8 +137,6 @@ export default class extends DecoratableMangaScraper {
             }
             return processedData[value];
         }
-
         return processValue(0) as T;
     }
-
 }
