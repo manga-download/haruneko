@@ -714,6 +714,7 @@ export { default as ValirScans } from './ValirScans';
 export { default as VerComicsPorno } from './VerComicsPorno';
 export { default as VerMangasPorno } from './VerMangasPorno';
 export { default as VerManhwa } from './VerManhwa';
+export { default as ViHentai } from './ViHentai';
 export { default as VizShonenJump } from './VizShonenJump';
 export { default as VNSharing } from './VNSharing';
 export { default as VortexScans } from './VortexScans';
