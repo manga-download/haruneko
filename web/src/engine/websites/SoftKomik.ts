@@ -2,14 +2,8 @@ import { Tags } from '../Tags';
 import icon from './SoftKomik.webp';
 import * as Common from './decorators/Common';
 import { DecoratableMangaScraper, Manga, type MangaPlugin } from '../providers/MangaPlugin';
-import { FetchJSON, FetchWindowPreloadScript, FetchWindowScript } from '../platform/FetchProvider';
+import { FetchJSON, FetchWindowPreloadScript } from '../platform/FetchProvider';
 import { RandomText } from '../Random';
-
-type APIMangaDetails = {
-    pageProps: {
-        data: APIManga;
-    }
-};
 
 type APIManga = {
     title: string;
@@ -47,12 +41,12 @@ function payloadScript(eventName: string): string {
     `;
 };
 
+@Common.MangaCSS(/^{origin}\/[^/]+$/, 'div.bg-content.title h1', (element, uri) => ({ id: uri.pathname.split('/').at(-1), title: element.textContent.trim() }))
 @Common.ChaptersSinglePageJS(`[...document.querySelectorAll('div.chapter-list a')].map(el => ({ id: el.pathname, title:el.textContent.trim() }))`, 1500)
 @Common.PagesSinglePageJS(`[...document.querySelectorAll('div.container-img img')].map(img => img.src)`, 2500)
 @Common.ImageAjax(true)
 export default class extends DecoratableMangaScraper {
 
-    private nextBuild = '';
     private readonly apiUrl = 'https://v2.softdevices.my.id/';
     private websiteToken: TokenData = undefined;
 
@@ -65,18 +59,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async Initialize(): Promise<void> {
-        this.nextBuild = await FetchWindowScript<string>(new Request(this.URI), `__NEXT_DATA__.buildId`, 5000);
         await this.RefreshToken();
-    }
-
-    public override ValidateMangaURL(url: string): boolean {
-        return new RegExpSafe(`^${this.URI.origin}/[^/]+$`).test(url);
-    }
-
-    public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
-        const slug = url.split('/').at(-1);
-        const { pageProps: { data: { title, title_slug } } } = await FetchJSON<APIMangaDetails>(new Request(new URL(`/_next/data/${this.nextBuild}/${slug}.json`, this.URI)));
-        return new Manga(this, provider, title_slug, title.trim());
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
