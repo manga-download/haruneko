@@ -6,17 +6,17 @@ new TestFixture({
         title: 'Luvyaa'
     },
     container: {
-        url: 'https://luvyaa.org/todays-han-yoil-is-a-woman/',
+        url: 'https://v1.luvyaa.co/todays-han-yoil-is-a-woman/',
         id: '/todays-han-yoil-is-a-woman/',
         title: `Today’s Han Yoil is a Woman`
     },
     child: {
         id: '/todays-han-yoil-is-a-woman-chapter-01/',
-        title: 'Chapter 01'
+        title: 'Chapter 1'
     },
     entry: {
         index: 0,
-        size: 860_062,
+        size: 342_064,
         type: 'image/webp'
     }
 }).AssertWebsite();

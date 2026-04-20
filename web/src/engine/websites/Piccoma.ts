@@ -109,7 +109,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page<PageData>[]> {
-        const data = await FetchWindowScript<ImageLinks>(new Request(new URL(`./web/viewer/${chapter.Parent.Identifier}/${chapter.Identifier}`, this.URI)), script, 2500, 60_000);
+        const data = await FetchWindowScript<ImageLinks>(new Request(new URL(`./web/viewer/${chapter.Parent.Identifier}/${chapter.Identifier}`, this.URI)), pageScript, 2500, 60_000);
         if (data.length === 0) throw new Exception(R.Plugin_Common_Chapter_UnavailableError);
         return data.map(({ link, tiles }) => new Page<PageData>(this, chapter, new URL(link), { scrambled: JSON.stringify(tiles) }));
     }
@@ -132,19 +132,90 @@ export default class extends DecoratableMangaScraper {
         });
     }
 }
-
+/*
 type PData = {
     isScrambled: boolean;
     img?: PDataImage[];
     contents?: PDataImage[];
 };
-
+*/
+/*
 type PDataImage = {
     path: string;
     width: number;
     height: number;
-};
+};*/
 
+const pageScript = `
+    new Promise(async (resolve, reject) => {
+        try {
+            function extractSeed(path) {
+                const imgUrl = new URL(path, window.location.href);
+                const checksum = imgUrl.pathname.split('/').at(-2);
+                const expiration = imgUrl.searchParams.get('expires');
+                const sum = expiration.split('').reduce((accumulator, character) => accumulator + parseInt(character), 0);
+                const residualIndex = sum % checksum.length;
+                const seed = checksum.slice(-residualIndex) + checksum.slice(0, -residualIndex);
+                return globalThis.dd ? globalThis.dd(seed, expiration) : seed;
+            }
+
+            function extractGroupedTileMaps(img, seed, tileSize) {
+                const columns = Math.ceil(img.width / tileSize);
+                const tileCount = columns * Math.ceil(img.height / tileSize);
+                const groupedTileMaps = {};
+                for (let index = 0; index < tileCount; index++) {
+                    const row = Math.floor(index / columns);
+                    const column = index - row * columns;
+                    const offsetX = column * tileSize;
+                    const offsetY = row * tileSize;
+                    const tileWidth = offsetX + tileSize > img.width ? img.width - offsetX : tileSize;
+                    const tileHeight = offsetY + tileSize > img.height ? img.height - offsetY : tileSize;
+                    const group = tileWidth.toString()+ '-'+tileHeight.toString();
+                    if (!groupedTileMaps[group]) {
+                        groupedTileMaps[group] = { tileWidth, tileHeight, tiles: [], indexmap: [] };
+                    }
+                    groupedTileMaps[group].tiles.push({ x: offsetX, y: offsetY });
+                }
+
+                for (const key in groupedTileMaps) {
+                    const group = groupedTileMaps[key];
+                    group.indexmap = globalThis.shuffleSeed.shuffle(group.tiles.map((_, index) => index), seed);
+                }
+
+                return groupedTileMaps;
+            }
+
+            async function LoadImage(src) {
+                return new Promise((resolve, reject) => {
+                    const img = new Image();
+                    img.onload = () => resolve(img);
+                    img.onerror = reject;
+                    img.src = src;
+                });
+            }
+
+            const pdata = (globalThis._pdata_ ?? globalThis.__NEXT_DATA__?.props?.pageProps?.initialState?.viewer?.pData);
+            const images = await Promise.all(
+                (pdata?.img ?? pdata?.contents ?? [])
+                    .filter((img) => img.path)
+                    .map(async (img) => {
+                        const uri = new URL(img.path, window.location.origin);
+                        const seed = extractSeed(img.path);
+                        const image = pdata.isScrambled ? await LoadImage(uri.href) : undefined; //we need REAL image dimensions to solve the puzzle, not the ones from pdata
+                        return {
+                            link: uri.href,
+                            tiles: pdata.isScrambled ? extractGroupedTileMaps(image, seed, 50) : undefined,
+                        };
+                    })
+            );
+            resolve(images);
+        } catch (error) {
+            reject(error);
+        }
+    });
+`;
+
+/*
 export async function script(this: Window) {
     return new Promise<ImageLinks>(async (resolve, reject) => {
         try {
@@ -213,3 +284,4 @@ export async function script(this: Window) {
         }
     });
 }
+*/

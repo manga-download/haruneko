@@ -6,17 +6,17 @@ new TestFixture({
         title: 'Mugiwaras Oficial'
     },
     container: {
-        url: 'https://mugiwarasoficial.com/manga/the-apothecary-diaries/',
-        id: JSON.stringify({ post: '7942', slug: '/manga/the-apothecary-diaries/' }),
-        title: 'The Apothecary Diaries'
+        url: 'https://mugiwarasoficial.com/manga/tengoku-daimakyou/',
+        id: JSON.stringify({ post: '170', slug: '/manga/tengoku-daimakyou/' }),
+        title: 'Tengoku Daimakyou'
     },
     child: {
-        id: '/manga/the-apothecary-diaries/chapter-1_-a-maldicao-do-harem/',
-        title: 'Chapter 1_ A Maldição do Harém'
+        id: '/manga/tengoku-daimakyou/capitulo-1/',
+        title: 'Capitulo 1'
     },
     entry: {
-        index: 2,
-        size: 233_780,
-        type: 'image/jpeg'
+        index: 3,
+        size: 299_817,
+        type: 'image/avif'
     }
 }).AssertWebsite();
