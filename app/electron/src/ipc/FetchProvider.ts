@@ -25,7 +25,7 @@ export class FetchProvider {
         return (await this.webContents.session.cookies.get(filter)).map(({ name, value }) => ({ name, value }));
     }
 
-    private ParseCookieFromHeader(cookies: string): CookieSet {
+    private ParseCookieFromHeader(cookies: string): CookieList {
         return cookies
             .split(';')
             .filter(cookie => cookie.includes('='))
@@ -34,11 +34,11 @@ export class FetchProvider {
             .filter(({ name, value }) => name && value);
     }
 
-    private MergeCookies(...cookieSets: CookieSet[]): string {
+    private MergeCookies(...cookieSets: CookieList[]): string {
         const result: Record<string, string> = {};
         for (const cookieSet of cookieSets) {
             for (const { name, value } of cookieSet) {
-                result[name] = value;
+                if(name && value) result[name] = value;
             }
         }
         return Object.entries(result).map(([ name, value ]) => `${name}=${value}`).join('; '); // TODO: Maybe use `encodeURIComponent(cookie.value)`

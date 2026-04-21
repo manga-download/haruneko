@@ -1,4 +1,4 @@
-import { FetchProvider } from '../FetchProviderCommon';
+import { FetchProvider, ParseCookiesFromHeader, MergeCookies } from '../FetchProviderCommon';
 import type { FeatureFlags } from '../../FeatureFlags';
 
 // See: https://developer.mozilla.org/en-US/docs/Glossary/Forbidden_header_name
@@ -13,6 +13,7 @@ const fetchApiForbiddenHeaders = [
     'Sec-Fetch-Dest',
     'Sec-Fetch-Site',
 ];
+const concealedCookieHeaderName = fetchApiSupportedPrefix + 'Cookie';
 
 class FetchRequest extends Request {
     readonly #referrer: string = undefined;
@@ -95,34 +96,17 @@ export default class FetchProviderNW extends FetchProvider {
 
     // Fetch API defaults => https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch
     public async Fetch(request: Request): Promise<Response> {
-        const concealedCookieHeaderName = fetchApiSupportedPrefix + 'Cookie';
-        if (request.credentials !== 'omit' && !request.headers.has(concealedCookieHeaderName)) {
-            // ...
-            request.headers.set(concealedCookieHeaderName, await this.GetSessionCookies(request.url));
+        if (request.credentials !== 'omit') {
+            const cookie = MergeCookies(
+                await chrome.cookies.getAll({ url: new URL(request.url).origin, partitionKey: {} }), // Include empty partition filter since the chrome bug-fix does not work: https://issues.chromium.org/issues/323924496
+                ParseCookiesFromHeader(request.headers.get(concealedCookieHeaderName) ?? ''));
+            console.log('Merged Session Cookies:', cookie);
+            request.headers.set(concealedCookieHeaderName, cookie);
         }
+        // Fetch API defaults => https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch
         const response = await fetch(request);
         await super.ValidateResponse(response);
         return response;
-    }
-
-    private async GetSessionCookies(url: string, ...customCookieHeaders: string[]): Promise<string> {
-        const sessionCookieSet = await chrome.cookies.getAll({ url, partitionKey: {} }); // Include empty partition filter since the chrome bug-fix does not work: https://issues.chromium.org/issues/323924496
-        const customCookieSets = customCookieHeaders.map(customCookieHeader => customCookieHeader
-            .split(';')
-            .filter(cookie => cookie.includes('='))
-            .map(cookie => cookie.split('='))
-            .map(([name, value]) => ({ name: name.trim(), value: value.trim() }))
-            .filter(({ name, value }) => name && value));
-
-        const result: Record<string, string> = {};
-
-        for (const cookies of [sessionCookieSet, ...customCookieSets]) {
-            for (const { name, value } of cookies) {
-                result[name] = value;
-            }
-        }
-
-        return Object.entries(result).map(([ name, value ]) => `${name}=${value}`).join('; '); // TODO: Maybe use `encodeURIComponent(cookie.value)`
     }
 
     private RevealHeaders(headers: chrome.webRequest.HttpHeader[]): Headers {

@@ -1,4 +1,4 @@
-import { FetchProvider } from '../FetchProviderCommon';
+import { FetchProvider, ParseCookiesFromHeader, MergeCookies } from '../FetchProviderCommon';
 import type { FeatureFlags } from '../../FeatureFlags';
 import { GetIPC } from './InterProcessCommunication';
 import { Channels } from '../../../../../app/electron/src/ipc/InterProcessCommunicationChannels';
@@ -15,6 +15,7 @@ const fetchApiForbiddenHeaders = [
     'Sec-Fetch-Dest',
     'Sec-Fetch-Site',
 ];
+const concealedCookieHeaderName = fetchApiSupportedPrefix + 'Cookie';
 
 class FetchRequest extends Request {
 
@@ -39,7 +40,7 @@ class FetchRequest extends Request {
 
         if (credentials?.toLowerCase() === 'omit') {
             // TODO: This will not prevent adding session cookies in main process
-            headers.set(fetchApiSupportedPrefix + 'Cookie', '');
+            headers.set(concealedCookieHeaderName, '');
             headers.set('Authorization', '');
         }
 
@@ -49,47 +50,40 @@ class FetchRequest extends Request {
 
 export default class FetchProviderElectron extends FetchProvider {
 
+    #initialized = false;
     private readonly ipc = GetIPC();
 
     public Initialize(featureFlags: FeatureFlags): void {
 
-        super.Initialize(featureFlags);
-
-        // Abuse the global Request type to check if system is already initialized
-        if (globalThis.Request === FetchRequest) {
+        if (this.#initialized) {
             return;
+        } else {
+            this.#initialized = true;
         }
 
-        // NOTE: Monkey patching of the browser's native functionality to allow forbidden headers
-        globalThis.Request = FetchRequest;
+        super.Initialize(featureFlags);
+
+        if (globalThis.Request !== FetchRequest) {
+            // NOTE: Monkey patching of the browser's native functionality to allow forbidden headers
+            globalThis.Request = FetchRequest;
+        }
+
+        // TODO: Monkey patch `globalThis.fetch`?
 
         this.ipc.Invoke(Channels.FetchProvider.Initialize, fetchApiSupportedPrefix);
-
-        // Register IPC callback for:
-        // => main.ipc.Send(Channels.Web.OnBeforeSendHeaders, details))
-        // webContents.session.webRequest.onBeforeSendHeaders((details, callback) => this.ModifyRequestHeaders(details).then(callback));
-
-        // => main.ipc.Send(Channels.Web.OnHeadersReceived, details))
-        // webContents.session.webRequest.onHeadersReceived((details, callback) => callback(this.ModifyResponseHeaders(details)));
     }
 
     async Fetch(request: Request): Promise<Response> {
+        if (request.credentials !== 'omit') {
+            const cookie = MergeCookies(
+                await this.ipc.Invoke(Channels.FetchProvider.GetSessionCookies, { url: new URL(request.url).origin, /* partitionKey: {} */ }),
+                ParseCookiesFromHeader(request.headers.get(concealedCookieHeaderName) ?? ''));
+            console.log('Merged Session Cookies:', cookie);
+            request.headers.set(concealedCookieHeaderName, cookie);
+        }
         // Fetch API defaults => https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch
-        const cookies = await this.ipc.Invoke(Channels.FetchProvider.GetSessionCookies, { url: new URL(request.url).origin, /* partitionKey: {} */ });
-        // Update/Merge (concealed) cookies in request.headers.set('...')
         const response = await fetch(request);
         await super.ValidateResponse(response);
         return response;
     }
-
-    /*
-    private RevealHeaders(headers: Headers): Headers {
-    }
-
-    private async ModifyRequestHeaders(details: OnBeforeSendHeadersListenerDetails): Promise<BeforeSendResponse> {
-    }
-
-    private ModifyResponseHeaders(details: OnHeadersReceivedListenerDetails): HeadersReceivedResponse {
-    }
-    */
 }

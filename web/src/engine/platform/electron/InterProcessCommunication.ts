@@ -1,7 +1,5 @@
 import type { Channels } from '../../../../../app/electron/src/ipc/InterProcessCommunicationChannels';
 
-type CookieSet = { name: string; value: string }[];
-
 class IPC {
 
     On(channel: Channels.RemoteBrowserWindowController.OnDomReady, callback: (windowID: number) => Promise<void>): void;
@@ -49,7 +47,7 @@ class IPC {
     Invoke(channel: Channels.BloatGuard.Initialize, patterns: string[]): Promise<void>;
     // FetchProvider
     Invoke(channel: Channels.FetchProvider.Initialize, fetchApiSupportedPrefix: string): Promise<void>;
-    Invoke(channel: Channels.FetchProvider.GetSessionCookies, filter: Electron.CookiesGetFilter): Promise<CookieSet>;
+    Invoke(channel: Channels.FetchProvider.GetSessionCookies, filter: Electron.CookiesGetFilter): Promise<CookieList>;
     // RemoteBrowserWindowController
     Invoke(channel: Channels.RemoteBrowserWindowController.OpenWindow, options: string): Promise<number>;
     Invoke(channel: Channels.RemoteBrowserWindowController.CloseWindow, windowID: number): Promise<void>
