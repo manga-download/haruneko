@@ -23,12 +23,12 @@ class FetchRequest extends Request {
     public override get referrer() { return this.#referrer; }
 
     constructor(input: URL | RequestInfo, init?: RequestInit) {
-        if (init?.headers) init.headers = FetchRequest.#ConcealHeaders(init.headers, init.credentials);
+        if (init?.headers) init.headers = FetchRequest.#ConcealHeaders(init.headers);
         super(input, init);
         this.#referrer = init?.referrer ?? undefined;
     }
 
-    static #ConcealHeaders(init: HeadersInit, credentials?: RequestCredentials): Headers {
+    static #ConcealHeaders(init: HeadersInit): Headers {
         const headers = new Headers(init);
 
         for (const name of fetchApiForbiddenHeaders) {
@@ -36,12 +36,6 @@ class FetchRequest extends Request {
                 headers.set(fetchApiSupportedPrefix + name, headers.get(name));
                 headers.delete(name);
             }
-        }
-
-        if (credentials?.toLowerCase() === 'omit') {
-            // TODO: This will not prevent adding session cookies in main process
-            headers.set(concealedCookieHeaderName, '');
-            headers.set('Authorization', '');
         }
 
         return headers;
@@ -74,12 +68,17 @@ export default class FetchProviderElectron extends FetchProvider {
     }
 
     async Fetch(request: Request): Promise<Response> {
-        if (request.credentials !== 'omit') {
+        if (request.credentials === 'omit') {
+            // TODO: This will not prevent adding session cookies in main process
+            request.headers.set(concealedCookieHeaderName, '');
+            request.headers.delete('Authorization');
+        } else {
             const cookie = MergeCookies(
+                // TODO: This may fail for older desktop clients
                 await this.ipc.Invoke(Channels.FetchProvider.GetSessionCookies, { url: new URL(request.url).origin, /* partitionKey: {} */ }),
                 ParseCookiesFromHeader(request.headers.get(concealedCookieHeaderName) ?? ''));
-            console.log('Merged Session Cookies:', cookie);
             request.headers.set(concealedCookieHeaderName, cookie);
+            console.log('Merged Session Cookies:', cookie);
         }
         // Fetch API defaults => https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch
         const response = await fetch(request);

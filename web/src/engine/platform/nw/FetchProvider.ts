@@ -16,22 +16,18 @@ const fetchApiForbiddenHeaders = [
 const concealedCookieHeaderName = fetchApiSupportedPrefix + 'Cookie';
 
 class FetchRequest extends Request {
-    readonly #referrer: string = undefined;
+
+    readonly #referrer?: string;
     public override get referrer() { return this.#referrer; }
+
     constructor(input: URL | RequestInfo, init?: RequestInit) {
-        if(init?.headers) init.headers = FetchRequest.#ConcealHeaders(init.headers, init.credentials);
+        if (init?.headers) init.headers = FetchRequest.#ConcealHeaders(init.headers);
         super(input, init);
-        if(init?.referrer) this.#referrer = init.referrer;
+        this.#referrer = init?.referrer ?? undefined;
     }
 
-    static #ConcealHeaders(init: HeadersInit, credentials?: RequestCredentials): Headers {
+    static #ConcealHeaders(init: HeadersInit): Headers {
         const headers = new Headers(init);
-        // TODO: Apply session cookie headers here by merging with `X-Cookie` instead of in ModifyRequestHeaders due to unsupported Promise support in `chrome.webRequest.onBeforeSendHeaders`
-
-        if (credentials?.toLowerCase() === 'omit') {
-            headers.delete('Authorization');
-            headers.delete('Cookie');
-        }
 
         for (const name of fetchApiForbiddenHeaders) {
             if (headers.has(name)) {
@@ -96,12 +92,15 @@ export default class FetchProviderNW extends FetchProvider {
 
     // Fetch API defaults => https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch
     public async Fetch(request: Request): Promise<Response> {
-        if (request.credentials !== 'omit') {
+        if (request.credentials === 'omit') {
+            request.headers.set(concealedCookieHeaderName, '');
+            request.headers.delete('Authorization');
+        } else {
             const cookie = MergeCookies(
                 await chrome.cookies.getAll({ url: new URL(request.url).origin, partitionKey: {} }), // Include empty partition filter since the chrome bug-fix does not work: https://issues.chromium.org/issues/323924496
                 ParseCookiesFromHeader(request.headers.get(concealedCookieHeaderName) ?? ''));
-            console.log('Merged Session Cookies:', cookie);
             request.headers.set(concealedCookieHeaderName, cookie);
+            console.log('Merged Session Cookies:', cookie);
         }
         // Fetch API defaults => https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch
         const response = await fetch(request);
@@ -126,40 +125,27 @@ export default class FetchProviderNW extends FetchProvider {
         return result;
     }
 
-    private readonly ModifyRequestHeaders = function ModifyRequestHeaders(this: FetchProviderNW, url: string, originalHeaders: Record<string, string | string[]>): chrome.webRequest.BlockingResponse {
-        /*
-        const requestHeaders = new Headers(details.requestHeaders?.map(h => [h.name, h.value]) ?? []);
-        requestHeaders.set('cookie', await this.GetSessionCookies(details.url));
-        // NOTE: Previously this was assigned directly to `X-FetchAPI-Cookie` in `Fetch` call
-        const headers = this.RevealHeaders(details.requestHeaders);
+    private readonly ModifyRequestHeaders = function ModifyRequestHeaders(this: FetchProviderNW, originalHeaders: Record<string, string | string[]>): chrome.webRequest.BlockingResponse {
 
-        // Remove certain headers when empty
-        [ 'cookie' ].forEach(name => headers.has(name) && !headers.get(name)?.trim() ? headers.delete(name) : null);
-
-        // Prevent leaking HakuNeko's host in certain headers
-        [ 'origin', 'referer' ].forEach(name => headers.get(name)?.includes(this.appHostname) ? headers.delete(name) : null);
-
-        return {
-            cancel: false,
-            requestHeaders: [ ...headers.entries().map(([ name, value ]) => ({ name, value })) ],
-        };
-        */
-
-        const patternConcealedHeaderName = new RegExp('^' + this.fetchApiSupportedPrefix, 'i');
+        const patternConcealedHeaderName = new RegExp('^' + fetchApiSupportedPrefix, 'i');
         const IsConcealed = (name: string) => patternConcealedHeaderName.test(name);
         const GetRevealedHeaderName = (name: string) => name.replace(patternConcealedHeaderName, '').toLowerCase();
 
         const all: Array<[string, string | string[]]> = Object.entries(originalHeaders);
         const result = Object.fromEntries(all.filter(([name]) => !IsConcealed(name)).map(([name, value]) => [name.toLowerCase(), value]));
         const replacements = Object.fromEntries(all.filter(([name]) => IsConcealed(name)).map(([name, value]) => [GetRevealedHeaderName(name), value]));
-        replacements['cookie'] = await this.GetSessionCookies(url, <string>result['cookie'] ?? '', <string>replacements['cookie'] ?? '');
+        replacements['cookie'] = MergeCookies(
+            //await chrome.cookies.getAll({ url: new URL(url).origin, partitionKey: {} }),
+            ParseCookiesFromHeader(<string>result['cookie'] ?? ''),
+            ParseCookiesFromHeader(<string>replacements['cookie'] ?? ''),
+        );
 
         for (const name in replacements) {
             result[name] = replacements[name];
         }
 
         // Remove cookie header when empty
-        if ((<string>result['cookie'])?.trim() === '') delete result['cookie'];
+        if (!(<string>result['cookie'])?.trim()) delete result['cookie'];
         // Prevent leaking HakuNeko's host in certain headers
         if ((<string>result['origin'])?.includes(this.appHostname)) delete result['origin'];
         if ((<string>result['referer'])?.includes(this.appHostname)) delete result['referer'];

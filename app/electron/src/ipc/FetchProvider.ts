@@ -25,7 +25,7 @@ export class FetchProvider {
         return (await this.webContents.session.cookies.get(filter)).map(({ name, value }) => ({ name, value }));
     }
 
-    private ParseCookieFromHeader(cookies: string): CookieList {
+    private ParseCookiesFromHeader(cookies: string): CookieList {
         return cookies
             .split(';')
             .filter(cookie => cookie.includes('='))
@@ -55,9 +55,10 @@ export class FetchProvider {
         const result = Object.fromEntries(all.filter(([name]) => !IsConcealed(name)).map(([name, value]) => [name.toLowerCase(), value]));
         const replacements = Object.fromEntries(all.filter(([name]) => IsConcealed(name)).map(([name, value]) => [GetRevealedHeaderName(name), value]));
         replacements['cookie'] = this.MergeCookies(
-            await this.GetSessionCookies({ url, /* partitionKey: {} */ }), // TODO: Only added for backward-compatibility! Can be removed when session cookies are provided via `replacements['cookie']`
-            this.ParseCookieFromHeader(<string>result['cookie'] ?? ''),
-            this.ParseCookieFromHeader(<string>replacements['cookie'] ?? ''),
+            // TODO: Only added for backward-compatibility! Can be removed when session cookies are provided via `replacements['cookie']`
+            await this.GetSessionCookies({ url: new URL(url).origin, /* partitionKey: {} */ }),
+            this.ParseCookiesFromHeader(<string>result['cookie'] ?? ''),
+            this.ParseCookiesFromHeader(<string>replacements['cookie'] ?? ''),
         );
 
         for (const name in replacements) {
