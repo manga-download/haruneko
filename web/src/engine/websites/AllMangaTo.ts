@@ -175,10 +175,10 @@ export default class extends DecoratableMangaScraper {
 
     private async Decrypt<T>(data: string): Promise<T> {
         const message = GetBytesFromBase64(data);
-        const ciphertext = message.slice(12, message.length - 16);
+        const ciphertext = message.slice(13, message.length - 16);
         const tag = message.slice(message.length - 16);
-        const algorithm = { name: 'AES-GCM', iv: message.slice(0, 12) };
-        const key = await crypto.subtle.importKey('raw', await crypto.subtle.digest('SHA-256', GetBytesFromUTF8('SimtVuagFbGR2K7P')), algorithm, false, ['decrypt']);
+        const algorithm = { name: 'AES-GCM', iv: message.slice(1, 13) };
+        const key = await crypto.subtle.importKey('raw', await crypto.subtle.digest('SHA-256', GetBytesFromUTF8('Xot36i3lK3:v1')), algorithm, false, ['decrypt']);
         const result = await crypto.subtle.decrypt(algorithm, key, new Uint8Array([...ciphertext, ...tag]));
         return JSON.parse((new TextDecoder).decode(result)) as T;
     }
