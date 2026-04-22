@@ -15,8 +15,8 @@ new TestFixture({
         title: '【第193話】'
     },
     entry: {
-        index: 11,
-        size: 244_768,
+        index: 0,
+        size: 320_512,
         type: 'image/webp'
     }
 }).AssertWebsite();

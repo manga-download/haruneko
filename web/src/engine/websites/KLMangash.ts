@@ -7,7 +7,7 @@ export default class extends Zing92Base {
 
     public constructor() {
         super('klmangash', 'KLManga(.sh)', 'https://klmanga.you', Tags.Media.Manga, Tags.Language.Japanese, Tags.Source.Aggregator, Tags.Accessibility.DomainRotation);
-        this.WithNonceName('nonce_a').WithDecodeImageAction('decode_images_g');
+        this.WithNonceName('nonce_a');
     }
 
     public override get Icon() {
@@ -15,6 +15,7 @@ export default class extends Zing92Base {
     }
 
     public override async Initialize(): Promise<void> {
+        super.Initialize();
         this.URI.href = await FetchWindowScript(new Request(this.URI), 'window.location.origin');
         console.log(`Assigned URL '${this.URI}' to ${this.Title}`);
     }

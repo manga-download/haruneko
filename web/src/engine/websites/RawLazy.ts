@@ -11,6 +11,7 @@ export default class extends Zing92Base {
 
     public constructor() {
         super('rawlazy', 'RawLazy', 'https://rawlazy.io', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Japanese, Tags.Source.Aggregator);
+        this.WithChapterParameterName('p');
     }
 
     public override get Icon() {
@@ -18,12 +19,13 @@ export default class extends Zing92Base {
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        const mangaList: Manga[] = [];
-        for (let page = 1, run = true; run; page++) {
-            const mangas = await this.GetMangasFromPage(provider, page);
-            mangas.length > 0 ? mangaList.push(...mangas) : run = false;
-        }
-        return mangaList;
+        type This = typeof this;
+        return Array.fromAsync(async function* (this: This) {
+            for (let page = 1, run = true; run; page++) {
+                const mangas = await this.GetMangasFromPage(provider, page);
+                mangas.length > 0 ? yield* mangas : run = false;
+            }
+        }.call(this));
     }
 
     private async GetMangasFromPage(provider: MangaPlugin, page: number) {

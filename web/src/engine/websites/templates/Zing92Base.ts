@@ -1,10 +1,11 @@
 import { type Chapter, DecoratableMangaScraper, Page } from '../../providers/MangaPlugin';
 import * as Common from '../decorators/Common';
 import { Fetch, FetchJSON, FetchWindowScript } from '../../platform/FetchProvider';
-import type { Priority } from '../../taskpool/DeferredTask';
 
 export type APIResult = {
     mes: string;
+    img_index: number;
+    going: 1 | 0 | 'yes' | 'no';
 };
 
 type ZingParams = {
@@ -13,13 +14,12 @@ type ZingParams = {
 };
 
 type PageParameters = {
-    sp: string;
     chapterID: string;
     imageIndex: number;
 };
 
 export function CleanTitle(title: string): string {
-    return title.replace(/\(Raw.*Free\)/i, '').trim();
+    return title.replace(/\(?Raw.*Free\)?/i, '').trim();
 }
 
 export function ChapterExtractor(anchor: HTMLAnchorElement) {
@@ -36,14 +36,15 @@ function MangaExtractor(anchor: HTMLAnchorElement) {
     };
 }
 
-@Common.MangaCSS(/^{origin}\/manga(-raw)?\/[^/]+\/$/, 'div.container h1.name', (element, uri) => ({ id: uri.pathname, title: CleanTitle(element.textContent)}))
+@Common.MangaCSS(/^{origin}\/manga(-raw)?\/[^/]+\/$/, 'div.container h1.name', (element, uri) => ({ id: uri.pathname, title: CleanTitle(element.textContent) }))
 @Common.MangasMultiPageCSS('div.grid-of-mangas h2.name a', Common.PatternLinkGenerator('/page/{page}/'), 0, MangaExtractor)
 @Common.ChaptersSinglePageCSS('div.chapter-box a', undefined, ChapterExtractor)
+@Common.ImageAjax(true)
 export class Zing92Base extends DecoratableMangaScraper {
 
     protected zingParams: ZingParams;
     private nonceParameterName = 'nonce';
-    private decodeImageAjaxAction = 'decode_images';
+    private chapterParameterName = 'reading_chapter';
 
     public override async Initialize(): Promise<void> {
         this.zingParams = await FetchWindowScript(new Request(this.URI), `new Promise(resolve => resolve({ nonce: zing['${this.nonceParameterName}'], apiURL: zing.ajax_url }));`, 500);
@@ -54,37 +55,35 @@ export class Zing92Base extends DecoratableMangaScraper {
         return this;
     }
 
-    protected WithDecodeImageAction(action: string): this {
-        this.decodeImageAjaxAction = action;
+    protected WithChapterParameterName(paramName: string): this {
+        this.chapterParameterName = paramName;
         return this;
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page<PageParameters>[]> {
         const data = await (await Fetch(new Request(new URL(chapter.Identifier, this.URI)))).text();
-        const sp = data.match(/\sp:\s*(\d+),/).at(-1);
-        const chapterID = data.match(/chapter_id\s*:\s*['"]([^'"]+)/).at(-1);
-        const possibleLinks = new Array(256).fill(0).map((_, imageIndex) => new Page<PageParameters>(this, chapter, this.URI, { sp, chapterID, imageIndex }));
-        return possibleLinks.takeUntil(async page => this.FetchZingPage(page.Parameters).then(data => data.includes('<img')));
+        const chapterID = data.match(/\sp:\s*(\d+),/)?.at(-1) ?? data.match(/\sreading_chapter:\s*(\d+),/)?.at(-1);
+        const pagesList = [];
+        //On new chapters, there is only one AjAX request. On older there are only two, i'd say 3 max.
+        for (let imageIndex = 0, run = true; run;) {
+            const { mes, going, img_index } = await this.FetchZingPage({ chapterID, imageIndex });
+            const links = [...new DOMParser().parseFromString(mes, 'text/html').documentElement.querySelectorAll('img')];
+            links.length > 0 && pagesList.push(...links.map(img => new Page(this, chapter, new URL(img.src))));
+            run = going === 1;
+            imageIndex = img_index;
+        }
+        return pagesList;
     }
 
-    public override async FetchImage(page: Page<PageParameters>, priority: Priority, signal: AbortSignal): Promise<Blob> {
-        return this.imageTaskPool.Add(async () => {
-            const data = await this.FetchZingPage(page.Parameters);
-            const link = new DOMParser().parseFromString(data, 'text/html').documentElement.querySelector('img')?.src;
-            return Fetch(new Request(link)).then(response => response.arrayBuffer()).then(data => Common.GetTypedData(data));
-        }, priority, signal);
-    }
-
-    private async FetchZingPage(params: PageParameters): Promise<string> {
-        const { mes } = await FetchJSON<APIResult>(new Request(new URL(this.zingParams.apiURL, this.URI), {
+    private async FetchZingPage(params: PageParameters): Promise<APIResult> {
+        return await FetchJSON<APIResult>(new Request(new URL(this.zingParams.apiURL, this.URI), {
             method: 'POST',
             body: new URLSearchParams({
-                [this.nonceParameterName]: this.zingParams.nonce,
+                ... this.nonceParameterName && { [this.nonceParameterName]: this.zingParams.nonce },
                 action: 'z_do_ajax',
-                _action: this.decodeImageAjaxAction,
-                p: params.sp,
+                _action: 'decode_images',
+                [this.chapterParameterName]: params.chapterID,
                 img_index: `${params.imageIndex}`,
-                chapter_id: params.chapterID,
                 content: ''
             }),
             headers: {
@@ -92,6 +91,5 @@ export class Zing92Base extends DecoratableMangaScraper {
                 'X-Requested-With': 'XMLHttpRequest',
             }
         }));
-        return mes;
     }
 }
