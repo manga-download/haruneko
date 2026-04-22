@@ -257,6 +257,15 @@ export default class extends DecoratableMangaScraper {
         }
     }
 
+    /**
+     * Fetch (& optionaly validate) viewer data using Protobuff. Retry with "trial" parameter in case validation doesnt pass
+     * @param type - Media type : volume, magazine, gravure, chapter
+     * @param mangaId - Manga identifier
+     * @param issueId - Issue identifier ( chapter id, volume id, magazine issue id, etc..)
+     * @param secretKey - secret key from localstorage
+     * @param message - Protobuff type returned 
+     * @param predicate - function used to validate request results
+     */
     private async FetchViewer<T extends JSONElement>(type: string, mangaId: string, issueId: string, secretKey: string, message: string, predicate: (data: T) => unknown) {
         const payload = await this.#FetchViewerData<T>(type, mangaId, issueId, secretKey, message, false);
         return predicate(payload) ? payload : await this.#FetchViewerData<T>(type, mangaId, issueId, secretKey, message, true);
