@@ -4,9 +4,9 @@ new TestFixture({
     plugin: {
         id: 'nexustoons',
         title: 'Nexus Toons'
-    },
+    }, /* Need login
     container: {
-        url: 'https://nexustoons.com/manga/espadas-demoniacas-da-vinganca',
+        url: 'https://nx-toons.xyz/manga/espadas-demoniacas-da-vinganca',
         id: 'espadas-demoniacas-da-vinganca',
         title: 'Espadas Demoníacas da Vingança'
     },
@@ -18,5 +18,5 @@ new TestFixture({
         index: 1,
         size: 542_002,
         type: 'image/webp'
-    }
+    }*/
 }).AssertWebsite();

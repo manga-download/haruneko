@@ -7,8 +7,8 @@ import * as Common from './decorators/Common';
 @Common.MangaCSS(FlatManga.pathManga, FlatManga.queryMangaTitle)
 @Common.MangasMultiPageCSS(FlatManga.queryMangas, FlatManga.MangasLinkGenerator)
 @Common.ChaptersSinglePageCSS(FlatManga.queryChapters, undefined, Common.AnchorInfoExtractor(true))
-@Common.PagesSinglePageCSS('img.chapter-img[data-original]:not([data-original*="mejoras"]):not([data-original*="recluta"]):not([data-original*="zzz"])', (img: HTMLImageElement) => img.dataset.original.split('&site').at(0))
-@Common.ImageAjax()
+@Common.PagesSinglePageCSS('img.chapter-img[data-original]:not([data-original*="mejoras"]):not([data-original*="recluta"]):not([data-original*="zzz"])', img => img.dataset.original)
+@Common.ImageElement(false)
 export default class extends DecoratableMangaScraper {
 
     public constructor() {

@@ -1,99 +1,89 @@
 import { Tags } from '../Tags';
 import icon from './Comico.webp';
 import { Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from '../providers/MangaPlugin';
-import { Fetch } from '../platform/FetchProvider';
+import { Fetch, FetchJSON } from '../platform/FetchProvider';
 import * as Common from './decorators/Common';
 import { GetHexFromBytes, GetBytesFromUTF8, GetBytesFromBase64 } from '../BufferEncoder';
 
-export type APIResult<T> = {
-    result: {
-        code: number
-    },
-    data: T
-}
+type APIResult<T> = {
+    data: T;
+};
 
-type ApiMangas = {
+type APIMangas = {
     contents: {
-        id: number,
-        type: string,
-        name: string,
-    }[],
-    page: ApiPagination
-}
+        id: number;
+        type: string;
+        name: string;
+    }[];
+};
 
-type ApiPagination = {
-    currentPageNo: number,
-    hasNext: boolean
-}
-
-type ApiChapter = {
+type APIChapter = {
     activity: {
-        rented: boolean,
-        unlocked: boolean
-    },
+        rented: boolean;
+        unlocked: boolean;
+    };
     salesConfig: {
-        free: boolean
-    },
-    id: number,
-    name: string
-}
+        free: boolean;
+    };
+    id: number;
+    name: string;
+};
 
-export type ApiChapters = {
-    episode: {
+type APIChapters = {
+    episode?: {
         content: {
-            chapters: ApiChapter[]
-            name?: string,
+            chapters: APIChapter[];
+            name?: string;
         }
-    },
-    volume: {
+    };
+    volume?: {
         content: {
-            chapters: ApiChapter[]
-            name?: string,
+            chapters: APIChapter[];
+            name?: string;
         }
-    }
-}
+    };
+};
 
-type ApiPage = {
+type APIPage = {
     content: {
-        chapterFileFormat: string
-    },
+        chapterFileFormat: string;
+    };
     chapter: {
-        images: ApiImage[]
+        images: APIImage[];
+        epub: EPUBData;
     }
-}
+};
 
-type ApiImage = {
-    url: string,
-    parameter: string
-}
+type EPUBData = {
+    chapterEpubIncludedFile: {
+        m2Parameter: {
+            optimize: string;
+        };
+        parameter: string;
+        rootFileName: string;
+        rootPath: string;
+        url: string;
+    };
+};
+
+type APIImage = {
+    url: string;
+    parameter: string;
+};
 
 type MangaID = {
-    id: string,
-    lang: string
-}
+    id: string;
+    lang: string;
+};
 
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
-    private readonly languageOption = 'ja-JP';
-    private readonly mangaPaths = [ 'new_release', 'read_for_free' ];
     private readonly keyData = GetBytesFromUTF8('a7fc9dc89f2c873d79397f8a0028a4cd');
-    protected api = 'https://api.comico.jp';
-    protected mangaLanguages = [ this.languageOption ];
-
-    /**
-     * Override these base class parameters in a derived class to customize its construction properties.
-     */
-    protected static readonly InstanceParameters = {
-        identifier: 'comico',
-        title: 'Comico (コミコ)',
-        url: 'https://www.comico.jp',
-        tags: [ Tags.Language.Japanese, Tags.Media.Manga, Tags.Source.Official ],
-    };
+    private readonly apiUrl = 'https://api.comico.jp';
 
     public constructor() {
-        const { identifier, title, url, tags } = new.target.InstanceParameters;
-        super(identifier, title, url, ...tags);
+        super('comico', 'Comico (コミコ)', 'https://www.comico.jp', Tags.Language.Japanese, Tags.Media.Manga, Tags.Source.Official);
     }
 
     public override get Icon() {
@@ -101,23 +91,22 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override ValidateMangaURL(url: string): boolean {
-        return new RegExpSafe(`^${this.URI.origin}/\\S+/\\d+$`).test(url);
+        return new RegExpSafe(`^${this.URI.origin}/(magazine_)?comic/\\d+$`).test(url);
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
         const id = new URL(url).pathname;
-        const data = await this.FetchPOST<APIResult<ApiChapters>>(id, this.languageOption);
-        const title = data.data.volume?.content?.name ?? data.data.episode.content.name;
-        return new Manga(this, provider, JSON.stringify({ id: id, lang: this.languageOption }), title.trim());
+        const { volume: { content: volumeContent }, episode: { content: episodeContent } } = await this.FetchPOST<APIChapters>(id, 'ja-JP');
+        return new Manga(this, provider, JSON.stringify({ id, lang: 'ja-JP' }), (volumeContent ?? episodeContent).name);
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
         const mangaList: Manga[] = [];
-        for (const language of this.mangaLanguages) {
-            for (const path of this.mangaPaths) {
+        for (const language of ['ja-JP']) {
+            for (const path of ['new_release', 'read_for_free']) {
                 for (let page = 0, run = true; run; page++) {
-                    const data = await this.FetchPOST<APIResult<ApiMangas>>(`/all_comic/${path}?pageNo=${page}`, language);
-                    const mangas = data.result.code != 200 ? [] : data.data.contents.map(manga => new Manga(this, provider, JSON.stringify({ id: `/${manga.type}/${manga.id}`, lang: language }), manga.name));
+                    const { contents } = await this.FetchPOST<APIMangas>(`./all_comic/${path}?pageNo=${page}`, language);
+                    const mangas = contents.map(({ id, name, type }) => new Manga(this, provider, JSON.stringify({ id: `/${type}/${id}`, lang: language }), name));
                     mangas.length > 0 ? mangaList.push(...mangas) : run = false;
                 }
             }
@@ -127,58 +116,68 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const { id, lang }: MangaID = JSON.parse(manga.Identifier);
-        const data = await this.FetchPOST<APIResult<ApiChapters>>(id, lang);
-        const element = data.data.episode?.content ?? data.data.volume.content;
-        return element.chapters
-            .filter(chapter => chapter.activity.rented || chapter.activity.unlocked || chapter.salesConfig.free)
-            .map(chapter => new Chapter(this, manga, String(chapter.id), chapter.name));
+        const { volume: { content: volumeContent }, episode: { content: episodeContent } } = await this.FetchPOST<APIChapters>(id, lang);
+        return (episodeContent ?? volumeContent).chapters
+            .filter(({ activity: { rented, unlocked }, salesConfig: { free } }) => rented || unlocked || free)
+            .map(({ id, name }) => new Chapter(this, manga, `${id}`, name));
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
         const { id, lang }: MangaID = JSON.parse(chapter.Parent.Identifier);
-        const data = await this.FetchPOST<APIResult<ApiPage>>(`${id}/chapter/${chapter.Identifier}/product`, lang);
-        if (data.data.content.chapterFileFormat === 'epub') {
-            console.warn('Unsupported chapter format <epub>', chapter);
-            return [];
+        const { content: { chapterFileFormat }, chapter: { images, epub } } = await this.FetchPOST<APIPage>(`${id}/chapter/${chapter.Identifier}/product`, lang);
+        if (chapterFileFormat === 'epub') {
+            return await this.DecryptEpub(chapter, epub);
         }
-        return Promise.all(data.data.chapter.images.map(async page => {
-            const url = await this.DecryptPictureUrl(page);
-            return new Page(this, chapter, new URL(url));
+        return Promise.all(images.map(async page => {
+            return new Page(this, chapter, new URL(await this.DecryptPictureUrl(page)));
         }));
     }
 
-    private async DecryptPictureUrl(page: ApiImage): Promise<string> {
-        const algorithm = { name: 'AES-CBC', iv: new Uint8Array(16).buffer };
-        const secretKey = await crypto.subtle.importKey('raw', this.keyData, algorithm, false, [ 'decrypt' ]);
-        const decrypted = await crypto.subtle.decrypt(algorithm, secretKey, GetBytesFromBase64(page.url));
+    async DecryptEpub(chapter: Chapter, epub: EPUBData): Promise<Page[]> {
+        const { chapterEpubIncludedFile } = epub;
+        const { rootPath, rootFileName, url: opfUrl, parameter: opfParameter, m2Parameter } = chapterEpubIncludedFile;
 
+        const epubRootUrl = new TextDecoder('utf-8').decode(await this.AESDecrypt(GetBytesFromBase64(opfUrl))) + rootPath;
+        const epubUrl = `${epubRootUrl}${rootFileName}?${opfParameter}`;
+
+        const response = await Fetch(new Request(new URL(epubUrl)));
+        const XML = new DOMParser().parseFromString(await response.text(), 'text/xml');
+
+        return [...XML.querySelectorAll('item[media-type^="image/"]')].map(element => {
+            return new Page(this, chapter, new URL(`${epubRootUrl}${element.getAttribute('href')}${m2Parameter.optimize}?${opfParameter}`));
+        });
+    }
+
+    private async DecryptPictureUrl(page: APIImage): Promise<string> {
+        const decrypted = await this.AESDecrypt(GetBytesFromBase64(page.url));
         return new TextDecoder('utf-8').decode(decrypted) + '?' + page.parameter;
     }
 
-    protected async FetchPOST<T>(path: string, language: string): Promise<T> {
+    private async AESDecrypt(data: Uint8Array<ArrayBuffer>): Promise<ArrayBuffer> {
+        const algorithm = { name: 'AES-CBC', iv: new Uint8Array(16).buffer };
+        const secretKey = await crypto.subtle.importKey('raw', this.keyData, algorithm, false, ['decrypt']);
+        return await crypto.subtle.decrypt(algorithm, secretKey, data);
+    }
+
+    protected async FetchPOST<T extends JSONElement>(path: string, language: string): Promise<T> {
         const timestamp = Math.round(new Date().getTime() / 1000);
-        const seed = GetBytesFromUTF8('9241d2f090d01716feac20ae08ba791a' + '0.0.0.0' + timestamp.toString());
-        const hash = await crypto.subtle.digest('SHA-256', seed);
-        const checksum = GetHexFromBytes(new Uint8Array(hash));
-        const request = new Request(new URL(path, this.api), {
+        const seed = GetBytesFromUTF8('9241d2f090d01716feac20ae08ba791a' + '0.0.0.0' + `${timestamp}`);
+        const checksum = GetHexFromBytes(new Uint8Array(await crypto.subtle.digest('SHA-256', seed)));
+        return (await FetchJSON<APIResult<T>>(new Request(new URL(path, this.apiUrl), {
             method: 'GET',
             headers: {
                 'x-referer': this.URI.origin,
                 'x-origin': this.URI.origin,
-                'accept': 'application/json, text/plain, */*',
                 'Accept-Language': language,
                 'X-comico-client-os': 'other',
                 'X-comico-client-store': 'other',
-                'X-comico-request-time': timestamp.toString(),
+                'X-comico-request-time': `${timestamp}`,
                 'X-comico-check-sum': checksum,
                 'X-comico-timezone-id': 'Europe/Paris',
                 'X-comico-client-immutable-uid': '0.0.0.0',
                 'X-comico-client-platform': 'web',
                 'X-comico-client-accept-mature': 'Y',
             }
-        });
-        const response = await Fetch(request);
-        const data = await response.text();
-        return JSON.parse(data) as T;
+        }))).data as T;
     }
 }
