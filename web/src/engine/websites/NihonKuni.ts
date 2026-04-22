@@ -5,9 +5,9 @@ import { DecoratableMangaScraper, type Manga, type Chapter } from '../providers/
 import * as FlatManga from './templates/FlatManga';
 import * as Common from './decorators/Common';
 
-@Common.MangaCSS(/^{origin}\/manga-[^/]+\.html$/, FlatManga.queryMangaTitle)
-@Common.MangasMultiPageCSS(FlatManga.queryMangas, FlatManga.MangasLinkGenerator)
-@Common.PagesSinglePageJS(`[...document.querySelectorAll('${FlatManga.queryPages}')].map(image=>image.dataset.srcset);`, 500)
+@Common.MangaCSS(/^{origin}\/manga-[^/]+\.html$/, 'h1.manga-main-title')
+@Common.MangasMultiPageCSS('a.manga-title', FlatManga.MangasLinkGenerator)
+@Common.PagesSinglePageCSS(FlatManga.queryPages)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 

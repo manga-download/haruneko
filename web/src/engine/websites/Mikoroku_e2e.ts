@@ -6,12 +6,12 @@ new TestFixture({
         title: 'Mikoroku'
     },
     container: {
-        url: 'https://www.mikoroku.top/2023/04/the-hero-wants-milf-as-reward.html',
-        id: '/2023/04/the-hero-wants-milf-as-reward.html',
+        url: 'https://mikoroku.com/detail?slug=the-hero-wants-a-milf-as-a-reward',
+        id: 'the-hero-wants-a-milf-as-a-reward',
         title: 'The Hero Wants a Milf As a Reward'
     },
     child: {
-        id: '/2026/03/the-hero-wants-milf-as-reward-chapter-30.html',
+        id: JSON.stringify({ url: 'https://www.mikodrive.my.id/2026/03/the-hero-wants-milf-as-reward-chapter-30.html', slug: 'the-hero-wants-milf-as-reward-chapter-30'}),
         title: 'Chapter 30'
     },
     entry: {

@@ -4,16 +4,16 @@ const mangaID = encodeURI('/manga/俺だけレベルアップな件-raw-free/');
 new TestFixture({
     plugin: {
         id: 'rawxz',
-        title: 'RawXZ'
+        title: 'RawZO'
     },
     container: {
-        url: 'https://rawjx.net/manga/俺だけレベルアップな件-raw-free/',
-        id: JSON.stringify({ post: '34868', slug: mangaID }),
+        url: 'https://rawzo.net/manga/俺だけレベルアップな件-raw-free/',
+        id: mangaID,
         title: '俺だけレベルアップな件',
     },
     child: {
-        id: mangaID.toLowerCase() + encodeURI('第184話/').toLowerCase(),
-        title: '第184話'
+        id: `${mangaID.toLowerCase()}chapter-184/`,
+        title: '第 184'
     },
     entry: {
         index: 0,
