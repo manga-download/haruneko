@@ -42,6 +42,7 @@ class FetchRequest extends Request {
 
 export default class FetchProviderNW extends FetchProvider {
 
+    #initialized = false;
     private readonly appHostname = window.location.hostname;
 
     /**
@@ -50,29 +51,24 @@ export default class FetchProviderNW extends FetchProvider {
      */
     public Initialize(featureFlags: FeatureFlags) {
 
-        super.Initialize(featureFlags);
-
-        // Abuse the global Request type to check if system is already initialized
-        if (globalThis.Request === FetchRequest) {
+        if (this.#initialized) {
             return;
+        } else {
+            this.#initialized = true;
         }
 
-        // NOTE: Monkey patching of the browser's native functionality to allow forbidden headers
-        globalThis.Request = FetchRequest;
+        super.Initialize(featureFlags);
 
-        // Forward compatibility for future chrome versions (MV3 - Manifest v3)
-        /*
-        const nativeChromeCookiesGetAll = chrome.cookies.getAll;
-        chrome.cookies.getAll = function (details: chrome.cookies.GetAllDetails): Promise<chrome.cookies.Cookie[]> {
-            return new Promise<chrome.cookies.Cookie[]>(resolve => nativeChromeCookiesGetAll(details, resolve));
-        };
-        */
+        if (globalThis.Request !== FetchRequest) {
+            // NOTE: Monkey patching of the browser's native functionality to allow forbidden headers
+            globalThis.Request = FetchRequest;
+        }
 
         // NOTE: parameter extraInfoSpec:
         //       'blocking'       => sync request required for header modification
         //       'requestHeaders' => allow change request headers
         //       'extraHeaders'   => allow change 'referer', 'origin', 'cookie'
-        if (!chrome.webRequest.onBeforeSendHeaders.hasListener(details => this.ModifyRequestHeaders(details.url, details.requestHeaders))) {
+        if (!chrome.webRequest.onBeforeSendHeaders.hasListener(details => this.ModifyRequestHeaders(details.requestHeaders))) {
             chrome.webRequest.onBeforeSendHeaders.addListener(this.ModifyRequestHeaders, { urls: [ '<all_urls>' ] }, [ 'blocking', 'requestHeaders', 'extraHeaders' ]);
         }
 
@@ -100,7 +96,7 @@ export default class FetchProviderNW extends FetchProvider {
                 await chrome.cookies.getAll({ url: new URL(request.url).origin, partitionKey: {} }), // Include empty partition filter since the chrome bug-fix does not work: https://issues.chromium.org/issues/323924496
                 ParseCookiesFromHeader(request.headers.get(concealedCookieHeaderName) ?? ''));
             request.headers.set(concealedCookieHeaderName, cookie);
-            console.log('Merged Session Cookies:', cookie);
+            //console.log('Merged Session Cookies:', cookie);
         }
         // Fetch API defaults => https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch
         const response = await fetch(request);

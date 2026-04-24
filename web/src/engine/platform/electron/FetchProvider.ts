@@ -78,7 +78,7 @@ export default class FetchProviderElectron extends FetchProvider {
                 await this.ipc.Invoke(Channels.FetchProvider.GetSessionCookies, { url: new URL(request.url).origin, /* partitionKey: {} */ }),
                 ParseCookiesFromHeader(request.headers.get(concealedCookieHeaderName) ?? ''));
             request.headers.set(concealedCookieHeaderName, cookie);
-            console.log('Merged Session Cookies:', cookie);
+            //console.log('Merged Session Cookies:', cookie);
         }
         // Fetch API defaults => https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch
         const response = await fetch(request);
