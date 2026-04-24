@@ -31,7 +31,8 @@ type APIPages = {
         pages: {
             url: string
         }[]
-    }
+    };
+    slug: string;
 };
 
 @Common.ImageAjax()
@@ -69,5 +70,10 @@ export default class extends DecoratableMangaScraper {
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
         const { chapter: { pages } } = await FetchJSON<APIPages>(new Request(new URL(`./chapters/${chapter.Identifier}`, this.apiUrl)));
         return pages.map(({ url }) => new Page(this, chapter, new URL(url, this.URI)));
+    }
+
+    public override async GetChapterURL(chapter: Chapter): Promise<URL> {
+        const { slug } = await FetchJSON<APIPages>(new Request(new URL(`./chapters/${chapter.Identifier}`, this.apiUrl)));
+        return new URL(`/${slug}`, this.URI);
     }
 }

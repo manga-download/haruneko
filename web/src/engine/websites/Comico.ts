@@ -133,6 +133,11 @@ export default class extends DecoratableMangaScraper {
         }));
     }
 
+    public override async GetChapterURL(chapter: Chapter): Promise<URL> {
+        const { id }: MangaID = JSON.parse(chapter.Parent.Identifier);
+        return new URL(`/comic/${id}/chapter/${chapter.Identifier}/product`, this.URI);
+    }
+
     async DecryptEpub(chapter: Chapter, epub: EPUBData): Promise<Page[]> {
         const { chapterEpubIncludedFile } = epub;
         const { rootPath, rootFileName, url: opfUrl, parameter: opfParameter, m2Parameter } = chapterEpubIncludedFile;

@@ -217,4 +217,8 @@ export class DelitoonBase extends DecoratableMangaScraper {
             });
         });
     }
+
+    public override async GetChapterURL(chapter: Chapter): Promise<URL> {
+        return new URL(`/viewer/${chapter.Parent.Identifier}/${chapter.Identifier}`, this.URI);
+    }
 }

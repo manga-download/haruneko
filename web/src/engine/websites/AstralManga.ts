@@ -51,4 +51,8 @@ export default class extends DecoratableMangaScraper {
         const { images } = await FetchNextJS<HydratedImages>(new Request(new URL(`/manga/${chapter.Parent.Identifier}/chapter/${chapter.Identifier}`, this.URI)), data => 'images' in data);
         return images.map(({ link }) => new Page(this, chapter, new URL(link)));
     }
+
+    public override async GetChapterURL(chapter: Chapter): Promise<URL> {
+        return new URL(`/manga/${chapter.Parent.Identifier}/chapter/${chapter.Identifier}`, this.URI);
+    }
 }

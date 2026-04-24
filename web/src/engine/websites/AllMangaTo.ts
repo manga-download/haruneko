@@ -182,4 +182,9 @@ export default class extends DecoratableMangaScraper {
         const result = await crypto.subtle.decrypt(algorithm, key, new Uint8Array([...ciphertext, ...tag]));
         return JSON.parse((new TextDecoder).decode(result)) as T;
     }
+
+    public override async GetChapterURL(chapter: Chapter): Promise<URL> {
+        const { id, translationType }: ChapterID = JSON.parse(chapter.Identifier);
+        return new URL(`/manga/${chapter.Parent.Identifier}/chapter-${id}-${translationType}`, this.URI);
+    }
 }
