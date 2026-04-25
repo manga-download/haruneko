@@ -11,14 +11,14 @@ type APIManga = {
 };
 
 type APIPages = {
-    images: { id: number, source_url: string; }[];
+    images: { source_url: string; }[];
 };
 
 @Common.MangasNotSupported()
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
-    public constructor () {
+    public constructor() {
         super('hentaihand', `HentaiHand`, 'https://hentaihand.com', Tags.Language.Multilingual, Tags.Source.Aggregator, Tags.Rating.Erotica, Tags.Media.Manga);
     }
 
@@ -27,22 +27,25 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override ValidateMangaURL(url: string): boolean {
-        return new RegExpSafe(`^${this.URI.origin}/en/`).test(url);
+        return new RegExpSafe(`^${this.URI.origin}/[^/]+/comic/[^/]+$`).test(url);
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
-        const mangaId = url.split('/').at(-1);
-        const { slug, title } = await FetchJSON<APIManga>(new Request(new URL(`/api/comics/${mangaId}`, this.URI)));
+        const { slug, title } = await FetchJSON<APIManga>(new Request(new URL(`/api/comics/${url.split('/').at(-1) }`, this.URI)));
         return new Manga(this, provider, slug, title.trim());
 
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        return [ new Chapter(this, manga, manga.Identifier, manga.Title) ];
+        return [new Chapter(this, manga, manga.Identifier, manga.Title)];
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
         const { images } = await FetchJSON<APIPages>(new Request(new URL(`/api/comics/${chapter.Identifier}/images`, this.URI)));
-        return images.map(page => new Page(this, chapter, new URL(page.source_url)));
+        return images.map(({ source_url: url }) => new Page(this, chapter, new URL(url)));
+    }
+
+    public override async GetChapterURL(chapter: Chapter): Promise<URL> {
+        return new URL(`/en/comic/${chapter.Identifier}`, this.URI);
     }
 }

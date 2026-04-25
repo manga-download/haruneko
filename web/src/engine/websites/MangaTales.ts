@@ -182,6 +182,11 @@ export default class extends DecoratableMangaScraper {
             }
         }, priority, signal);
     }
+
+    public override async GetChapterURL(chapter: Chapter): Promise<URL> {
+        return new URL(`/mangas/${chapter.Identifier}`, this.URI);
+    }
+
 }
 
 async function TryDecrypt<T>(data: EncryptedData | T): Promise<T> {

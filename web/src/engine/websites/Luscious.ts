@@ -23,6 +23,14 @@ type APIManga = {
     url: string;
 };
 
+type APIAlbum ={
+    album: {
+        get: {
+            url: string;
+        }
+    }
+};
+
 type PagesResult = {
     picture: {
         list: {
@@ -146,6 +154,25 @@ export default class extends DecoratableMangaScraper {
                 yield* pages, run = has_next_page;
             }
         }.call(this));
+    }
+
+    public override async GetChapterURL(chapter: Chapter): Promise<URL> {
+        const query = `
+            query AlbumGet($id: ID!) {
+                album {
+                    get(id: $id) {
+                        ... on Album {
+                            url
+                        }
+                    }
+                }
+            }
+        `;
+        const variables = {
+            id: chapter.Identifier
+        };
+        const { album: { get: { url } } } = await this.FetchAPI<APIAlbum>('AlbumGet', variables, query);
+        return new URL(`${url}read`, this.URI);
     }
 
     private async FetchAPI<T extends JSONElement>(operationName: string, variables: JSONObject, query: string): Promise<T> {

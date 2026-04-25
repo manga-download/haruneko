@@ -25,7 +25,7 @@ type APIChapters = APIResult<{
     }[];
 }>;
 
-type JSONChapter = {
+type ChapterID = {
     episodeId: number;
     mask: number;
 };
@@ -75,7 +75,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page<PageParam>[]> {
-        const { episodeId, mask } = JSON.parse(chapter.Identifier) as JSONChapter;
+        const { episodeId, mask } = JSON.parse(chapter.Identifier) as ChapterID;
         const { imageUrls } = await FetchJSON<{ imageUrls: string[] }>(new Request(new URL(`./episode/${episodeId}/images`, this.apiUrl)));
         return imageUrls? imageUrls.map(url => new Page<PageParam>(this, chapter, new URL(url), { mask })): [];
     }
@@ -83,6 +83,11 @@ export default class extends DecoratableMangaScraper {
     public override async FetchImage(page: Page<PageParam>, priority: Priority, signal: AbortSignal): Promise<Blob> {
         const blob = await Common.FetchImageAjax.call(this, page, priority, signal, true);
         return page.Parameters.mask ? GetTypedData(this.Xor(new Uint8Array(await blob.arrayBuffer()), page.Parameters.mask)) : blob;
+    }
+
+    public override async GetChapterURL(chapter: Chapter): Promise<URL> {
+        const { episodeId } = JSON.parse(chapter.Identifier) as ChapterID;
+        return new URL(`/reader/${chapter.Parent.Identifier}/episodes/${episodeId}/`, this.URI);
     }
 
     private Xor(sourceArray: Uint8Array, mask: number) {

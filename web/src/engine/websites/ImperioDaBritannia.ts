@@ -82,6 +82,10 @@ export default class extends DecoratableMangaScraper {
         return paginas.map(page => new Page(this, chapter, new URL(this.CookPictureUrl(page, mangaId, chapterNumber))));
     }
 
+    public override async GetChapterURL(chapter: Chapter): Promise<URL> {
+        return new URL(`/manga/${chapter.Parent.Identifier}/capitulo/${chapter.Identifier.split('/').at(-1)}`, this.URI);
+    }
+
     private CookPictureUrl(page: APIPage, mangaId: string, chapterNumber: string): string {
         const { url, cdn_id, numero } = page;
         if (url?.startsWith('http') || cdn_id?.startsWith('http')) {
