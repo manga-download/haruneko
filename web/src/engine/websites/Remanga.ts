@@ -90,6 +90,10 @@ export default class extends DecoratableMangaScraper {
         return pages.flat().map(({ link }) => new Page(this, chapter, new URL(link), { Referer: this.URI.href }));
     }
 
+    public override async GetChapterURL(chapter: Chapter): Promise<URL> {
+        return new URL(`/manga/${chapter.Parent.Identifier}/${chapter.Identifier}`, this.URI);
+    }
+
     public async FetchAPI<T extends JSONElement>(endpoint: string): Promise<T> {
         return FetchJSON<T>(new Request(new URL(endpoint, this.apiUrl), {
             headers: {
