@@ -63,10 +63,6 @@ export default class extends DecoratableMangaScraper {
         this.token = await FetchWindowScript<string>(new Request(this.URI), `localStorage.getItem('token') || null;`);
     }
 
-    private async FetchToken(): Promise<void> {
-
-    }
-
     public override ValidateMangaURL(url: string): boolean {
         return new RegExpSafe(`^${this.URI.origin}/manga/[^/]+$`).test(url);
     }
