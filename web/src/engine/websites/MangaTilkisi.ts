@@ -8,7 +8,7 @@ import { AddAntiScrapingDetection, FetchRedirection } from '../platform/AntiScra
 AddAntiScrapingDetection(async (invoke) => {
     const result = await invoke<boolean>(`document.querySelector('button#insan-dogrulama-btn, a.dogrulama-btn')`);
     return result ? FetchRedirection.Interactive : undefined;
-});
+}, /^https:\/\/www.tilkiscans\.com/);
 
 @Madara.MangaCSS(/^{origin}\/manga\/[^/]+\/$/, 'ol.breadcrumb li:last-of-type a')
 @Madara.MangasMultiPageAJAX()

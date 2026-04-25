@@ -18,7 +18,7 @@ type PagesData = {
 AddAntiScrapingDetection(async (invoke) => {
     const result = await invoke<boolean>(`document.title === 'Bot Koruması' && document.querySelector('canvas#sliderCanvas') != undefined`);
     return result ? FetchRedirection.Interactive : undefined;
-});
+}, /^https:\/\/manga-tr\.com/);
 
 @Common.MangaCSS<HTMLImageElement>(FlatManga.pathManga, '.poster-card__title')
 @Common.MangasSinglePageCSS<HTMLAnchorElement>('/manga-list.html', 'a.la-manga-item:not([data-original-title=""])', anchor => ({ id: anchor.pathname, title: anchor.dataset.originalTitle.trim() }))
