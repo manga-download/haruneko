@@ -6,7 +6,7 @@ new TestFixture({
         title: 'Tilki Scans'
     },
     container: {
-        url: 'https://www.tilkiscans.com/manga/yasakli-yuce-buyucunun-reenkarnasyonu/',
+        url: 'https://www.tilkiscans.com/seri/yasakli-yuce-buyucunun-reenkarnasyonu/',
         id: JSON.stringify({ post: '210', slug: '/manga/yasakli-yuce-buyucunun-reenkarnasyonu/' }),
         title: 'Yasaklı Yüce Büyücünün Reenkarnasyonu'
     },

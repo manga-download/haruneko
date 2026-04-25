@@ -10,7 +10,7 @@ AddAntiScrapingDetection(async (invoke) => {
     return result ? FetchRedirection.Interactive : undefined;
 }, /^https:\/\/www.tilkiscans\.com/);
 
-@Madara.MangaCSS(/^{origin}\/manga\/[^/]+\/$/, 'ol.breadcrumb li:last-of-type a')
+@Madara.MangaCSS(/^{origin}\/seri\/[^/]+\/$/, 'ol.breadcrumb li:last-of-type a')
 @Madara.MangasMultiPageAJAX()
 @Madara.ChaptersSinglePageAJAXv2()
 @Common.PagesSinglePageJS('[...document.querySelectorAll("div.page-break > img")].map(image => image.dataset.src || image.src);', 2000)
