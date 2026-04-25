@@ -15,7 +15,7 @@ type HydratedPages = {
 const DetectSecurityShield: Parameters<typeof AddAntiScrapingDetection>[0] = async invoke => {
     const result = await invoke<boolean>(`document.title === 'Security Verification' && document.querySelector('div.shield-container') && true || false;`);
     return result ? FetchRedirection.Automatic : undefined;
-}
+};
 
 @Common.MangaCSS<HTMLImageElement>(/^{origin}\/manga\/\d+\/[^/]+$/, 'div.content-info img', (img, uri) => ({ id: uri.pathname, title: img.alt.trim() }))
 @Common.MangasMultiPageCSS('section[aria-label*="series"] div.card > div a:has(h2)', Common.PatternLinkGenerator('./search?page={page}'))
