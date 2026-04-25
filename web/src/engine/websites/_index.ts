@@ -535,7 +535,6 @@ export { default as ParadoxScans } from './ParadoxScans';
 export { default as PatiManga } from './PatiManga';
 export { default as PawManga } from './PawManga';
 export { default as PelaTeam } from './PelaTeam';
-export { default as Penlab } from './Penlab';
 export { default as PerfScan } from './PerfScan';
 export { default as PhenixScans } from './PhenixScans';
 export { default as PhiliaScans } from './PhiliaScans';
