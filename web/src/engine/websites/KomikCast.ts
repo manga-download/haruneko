@@ -34,7 +34,7 @@ export default class extends DecoratableMangaScraper {
     private readonly apiUrl = 'https://be.komikcast.fit/series/';
 
     public constructor() {
-        super('komikcast', 'KomikCast', 'https://v1.komikcast.fit', Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Language.Indonesian, Tags.Source.Aggregator, Tags.Accessibility.DomainRotation);
+        super('komikcast', 'KomikCast', 'https://v2.komikcast.fit', Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Language.Indonesian, Tags.Source.Aggregator, Tags.Accessibility.DomainRotation);
     }
 
     public override get Icon() {
@@ -53,7 +53,7 @@ export default class extends DecoratableMangaScraper {
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
         type This = typeof this;
         return Array.fromAsync(async function* (this: This) {
-            for (let page = 1, run = true; run && page; page++) {
+            for (let page = 1, run = true; run; page++) {
                 const mangasData = await this.FetchAPI<APIManga[]>(`./?take=500&page=${page}`);
                 const mangas = mangasData.map(({ data: { title, slug } }) => new Manga(this, provider, slug, title));
                 mangas.length > 0 ? yield* mangas : run = false;
