@@ -69,11 +69,26 @@ export default class extends DecoratableMangaScraper {
 
     public override async Initialize(): Promise<void> {
         // TODO: Update the token whenever the user performs a login/logout through manual website interactio
-        await this.UpdateInfos();
+        await this.#RefreshToken();
     }
 
     public override get Icon() {
         return icon;
+    }
+
+    async #RefreshToken(): Promise<void> {
+        this.tokens = await FetchWindowScript<CookiesAndTokens>(new Request(this.URI), `
+            (async () => {
+                const authData = localStorage.getItem('auth');
+                const authToken = authData ? JSON.parse(authData).authToken : undefined;
+                return {
+                    did: (await cookieStore.get('did')).value,
+                    uid: (await cookieStore.get('uid'))?.value,
+                    profile: (await cookieStore.get('profile')).value,
+                    token: authToken
+                };
+            })()
+        `, 2500);
     }
 
     public override ValidateMangaURL(url: string): boolean {
@@ -115,31 +130,6 @@ export default class extends DecoratableMangaScraper {
                 pages.length > 0 ? yield* pages : run = false;
             }
         }.call(this));
-    }
-
-    private async UpdateInfos(): Promise<void> {
-        this.tokens = await FetchWindowScript<CookiesAndTokens>(new Request(this.URI), () =>
-            new Promise(async (resolve, reject) => {
-                try {
-                    const [did, uid, profile] = await Promise.all([
-                        cookieStore.get('did'),
-                        cookieStore.get('uid'),
-                        cookieStore.get('profile')
-                    ]);
-
-                    const authData = localStorage.getItem('auth');
-                    const authToken = authData ? JSON.parse(authData).authToken : undefined;
-                    resolve({
-                        did: did.value,
-                        uid: uid?.value,
-                        profile: profile.value,
-                        token: authToken
-                    });
-
-                } catch (error) {
-                    reject(error);
-                }
-            }), 1500);
     }
 
     private async FetchAPI<T extends JSONElement>(endpoint: string, language = 'en-US'): Promise<T> {

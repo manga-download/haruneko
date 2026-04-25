@@ -6,8 +6,6 @@ import { CheckAntiScrapingDetection, FetchRedirection } from './AntiScrapingDete
 import type { FeatureFlags } from '../FeatureFlags';
 import { Delay, SetTimeout, ClearTimeout } from '../BackgroundTimers';
 
-export type ScriptInjection<T extends void | JSONElement> = string | ((this: Window) => T | Promise<T>);
-
 export abstract class FetchProvider {
 
     private featureFlags: FeatureFlags;
@@ -220,8 +218,8 @@ export abstract class FetchProvider {
      * @param delay - The time [ms] to wait after the window was fully loaded and before the {@link script} will be injected
      * @param timeout - The maximum time [ms] to wait for the result before a timeout error is thrown (excluding the {@link delay})
      */
-    public async FetchWindowScript<T extends void | JSONElement>(request: Request, script: ScriptInjection<T>, delay?: number, timeout?: number): Promise<T> {
-        return this.FetchWindowPreloadScript<T>(request, () => undefined, script, delay, timeout);
+    public async FetchWindowScript<T extends void | JSONElement>(request: Request, script: string, delay?: number, timeout?: number): Promise<T> {
+        return this.FetchWindowPreloadScript<T>(request, ``, script, delay, timeout);
     }
 
     /**
@@ -232,7 +230,7 @@ export abstract class FetchProvider {
      * @param delay - The time [ms] to wait after the window was fully loaded and before the {@link script} will be injected
      * @param timeout - The maximum time [ms] to wait for the result before a timeout error is thrown (excluding the {@link delay})
      */
-    public async FetchWindowPreloadScript<T extends void | JSONElement>(request: Request, preload: ScriptInjection<void>, script: ScriptInjection<T>, delay = 0, timeout = 60_000): Promise<T> {
+    public async FetchWindowPreloadScript<T extends void | JSONElement>(request: Request, preload: string, script: string, delay = 0, timeout = 60_000): Promise<T> {
 
         const invocations: {
             name: string;
