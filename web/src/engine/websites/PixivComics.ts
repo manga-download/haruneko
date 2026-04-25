@@ -87,8 +87,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
-        const uri = new URL(url);
-        const { data: { official_work: { id, name } } } = await this.FetchAPI<APIManga>(`./works/v5/${uri.pathname.match(/\d+$/).at(0)}`);
+        const { data: { official_work: { id, name } } } = await this.FetchAPI<APIManga>(`./works/v5/${new URL(url).pathname.match(/\d+$/).at(0)}`);
         return new Manga(this, provider, `${id}`, name);
     }
 
@@ -163,6 +162,10 @@ export default class extends DecoratableMangaScraper {
             const descrambled = await this.DescrambleData(scrambled, 4, width, height, gridsize, gridsize, '4wXCKprMMoxnyJ3PocJFs4CYbfnbazNe', key, true);
             ctx.putImageData(new ImageData(descrambled, width, height), 0, 0);
         });
+    }
+
+    public override async GetChapterURL(chapter: Chapter): Promise<URL> {
+        return new URL(`/viewer/stories/${chapter.Identifier}`, this.URI);
     }
 
     private async DescrambleData(scrambledData: Uint8ClampedArray, t: number, width: number, height: number, colSize: number, rowSize: number, salt: string, key: string, reverse: boolean): Promise<Uint8ClampedArray<ArrayBuffer>> {

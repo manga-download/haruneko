@@ -131,6 +131,10 @@ export default class extends DecoratableMangaScraper {
             }
         });
     }
+
+    public override async GetChapterURL(chapter: Chapter): Promise<URL> {
+        return new URL(`/web/viewer/${chapter.Parent.Identifier}/${chapter.Identifier}`, this.URI);
+    }
 }
 /*
 type PData = {

@@ -76,4 +76,8 @@ export default class extends DecoratableMangaScraper {
         const dom = new DOMParser().parseFromString(chapter_content, 'text/html');
         return [...dom.querySelectorAll<HTMLImageElement>('img[data-src]')].map(page => new Page(this, chapter, new URL(page.dataset.src, server)));
     }
+
+    public override async GetChapterURL(chapter: Chapter): Promise<URL> {
+        return new URL(`/read/ne${chapter.Parent.Identifier}/chapter-${chapter.Identifier}`, this.URI);
+    }
 }
