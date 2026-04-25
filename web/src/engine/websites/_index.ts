@@ -389,7 +389,6 @@ export { default as MangaRawBest } from './MangaRawBest';
 export { default as MangaRead } from './MangaRead';
 export { default as MangaReadCO } from './MangaReadCO';
 export { default as MangaReaderSite } from './MangaReaderSite';
-export { default as MangaReaderTo } from './MangaReaderTo';
 export { default as MangAs } from './MangAs';
 export { default as MangasBrasuka } from './MangasBrasuka';
 export { default as MangaScantrad } from './MangaScantrad';
