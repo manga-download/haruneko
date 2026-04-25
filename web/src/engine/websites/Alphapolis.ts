@@ -19,7 +19,7 @@ const tokenScript = `cookieStore.get('XSRF-TOKEN').then(({ value }) => decodeURI
 AddAntiScrapingDetection(async (invoke) => {
     const result = await invoke<boolean>(`document.documentElement.innerHTML.includes('window.awsWafCookieDomainList')`);
     return result ? FetchRedirection.Automatic : undefined;
-});
+}, /https:\/\/(?:www\.)?alphapolis\.co\.jp/);
 
 @Common.MangaCSS(/^{origin}\/manga\/(official|\d+)\/\d+/, 'div.manga-detail-description > div.title, div.content-main > h1.title')
 @Common.ChaptersSinglePageJS(`

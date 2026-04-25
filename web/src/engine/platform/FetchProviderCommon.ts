@@ -265,7 +265,7 @@ export abstract class FetchProvider {
             win.DOMReady.Subscribe(async () => {
                 invocations.push({ name: 'DOMReady', info: `Window: ${win}` });
                 try {
-                    const redirect = await CheckAntiScrapingDetection(win);
+                    const redirect = await CheckAntiScrapingDetection(win, request.url);
                     invocations.push({ name: 'performRedirectionOrFinalize()', info: `Mode: ${FetchRedirection[ redirect ]}` });
                     switch (redirect) {
                         case FetchRedirection.Interactive:
