@@ -29,6 +29,6 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override Initialize(): Promise<void> {
-        return FetchWindowScript(new Request(this.URI), () => window.cookieStore.set('unlock_chapter_guest', '1'));
+        return FetchWindowScript(new Request(this.URI), `window.cookieStore.set('unlock_chapter_guest', '1')`);
     }
 }

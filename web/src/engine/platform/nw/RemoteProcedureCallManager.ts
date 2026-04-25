@@ -31,10 +31,10 @@ export default class RemoteProcedureCallManager implements IRemoteProcedureCallM
     }
 
     public async Stop(): Promise<void> {
-        return this.ipc.Send(Channels.RemoteProcedureCallManager.App.Stop);
+        return this.ipc.Send(Channels.RemoteProcedureCallManager.Stop);
     }
 
     public async Restart(port: number, secret: string): Promise<void> {
-        return this.ipc.Send(Channels.RemoteProcedureCallManager.App.Restart, port, secret);
+        return this.ipc.Send(Channels.RemoteProcedureCallManager.Restart, port, secret);
     }
 }

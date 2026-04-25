@@ -6,7 +6,7 @@ new TestFixture({
         title: 'Imperio Da Britannia'
     },
     container: {
-        url: 'https://imperiodabritannia.net/manga/shinobigoto',
+        url: 'https://imperiodabritannia.net/manga/shinobigoto/',
         id: 'shinobigoto',
         title: 'Shinobigoto'
     },

@@ -1,6 +1,6 @@
 import { Tags } from '../Tags';
 import icon from './NexusToons.webp';
-import { FetchJSON } from '../platform/FetchProvider';
+import { FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
 import { type MangaPlugin, Manga, Chapter, Page, DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import { GetBytesFromBase64 } from '../BufferEncoder';
@@ -45,12 +45,13 @@ type APIPages = {
 
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
-    private readonly apiUrl = 'https://nexustoons.com/api/';
+    private readonly apiUrl = 'https://nx-toons.xyz/api/';
     private readonly seed = 'OrionNexus2025CryptoKey!Secure';
     private readonly keys: EncryptionKeys[] = [];
+    private token: string = undefined;
 
     public constructor() {
-        super('nexustoons', 'Nexus Toons', 'https://nexustoons.com', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Portuguese, Tags.Source.Aggregator, Tags.Accessibility.RegionLocked);
+        super('nexustoons', 'Nexus Toons', 'https://nx-toons.xyz', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Portuguese, Tags.Source.Aggregator, Tags.Accessibility.RegionLocked);
     }
 
     public override get Icon() {
@@ -59,6 +60,11 @@ export default class extends DecoratableMangaScraper {
 
     public override async Initialize(): Promise<void> {
         await this.InitKeys(this.seed);
+        this.token = await FetchWindowScript<string>(new Request(this.URI), `localStorage.getItem('token') || null;`);
+    }
+
+    private async FetchToken(): Promise<void> {
+
     }
 
     public override ValidateMangaURL(url: string): boolean {
@@ -92,7 +98,12 @@ export default class extends DecoratableMangaScraper {
     }
 
     private async FetchAPI<T extends JSONElement>(endpoint: string): Promise<T> {
-        const data = await FetchJSON<APIResult<T>>(new Request(new URL(endpoint, this.apiUrl)));
+        const data = await FetchJSON<APIResult<T>>(new Request(new URL(endpoint, this.apiUrl), {
+            headers: {
+                ...this.token && { Authorization: `Bearer ${this.token}` },
+                'X-App-Key': 'NxT_s3cur3_k3y_2026!xK9mPqL'
+            }
+        }));
         return !data['d'] ? data as T : this.Decrypt<T>(data as APICryptedData);
     }
 

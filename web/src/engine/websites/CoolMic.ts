@@ -9,7 +9,7 @@ import { GetBytesFromBase64, GetBytesFromUTF8 } from '../BufferEncoder';
 import { GetTypedData } from './decorators/Common';
 
 type APIMangas = {
-    hits: {s
+    hits: {
         hit: {
             id: number;
             fields: {
@@ -59,12 +59,10 @@ const tokenAndMatureCookieScript = `
 @Common.MangaCSS(/^{origin}\/titles\/\d+$/, 'meta[property="og:title"]')
 export default class extends DecoratableMangaScraper {
     protected readonly apiUrl = `${this.URI.origin}/api/v1/`;
-    private readonly languageCode: string = 'en';
-    private token = undefined;
+    private token: string = undefined;
 
-    public constructor(id = 'coolmic', label = 'CoolMic', url = 'https://coolmic.me', tags = [Tags.Media.Manhwa, Tags.Media.Manga, Tags.Language.English, Tags.Source.Official, Tags.Accessibility.RegionLocked]) {
-        super(id, label, url, ...tags);
-        this.languageCode = this.URI.href.match(/https:\/\/([a-z]+)\.coolmic/)?.at(-1) ?? this.languageCode;
+    public constructor() {
+        super('coolmic', 'CoolMic', 'https://coolmic.me', Tags.Media.Manhwa, Tags.Media.Manga, Tags.Language.English, Tags.Source.Official, Tags.Accessibility.RegionLocked);
     }
 
     public override get Icon() {
@@ -77,7 +75,7 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
         const promises = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').map(character => {
-            const url = new URL(`https://${this.languageCode}-search.coolmic.me/search`);
+            const url = new URL(`https://en-search.coolmic.me/search`);
             const params = new URLSearchParams({
                 q: `(${character}|*${character})`,
                 size: '10000',
@@ -104,7 +102,7 @@ export default class extends DecoratableMangaScraper {
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const [jsonNode] = await FetchCSS(new Request(new URL(manga.Identifier, this.URI)), '[\\:page-objects]');
         const { episodes } = JSON.parse(jsonNode.getAttribute(':page-objects')) as JsonChapters;
-        return episodes.map(episode => new Chapter(this, manga, episode.id.toString(), episode.number.trim()));
+        return episodes.map(({ id, number }) => new Chapter(this, manga, `${id}`, number.trim()));
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
@@ -164,5 +162,4 @@ export default class extends DecoratableMangaScraper {
         if (referer) request.headers.set('Referer', referer);
         return FetchJSON<T>(request);
     }
-
 }
