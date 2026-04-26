@@ -1,113 +1,109 @@
-import type {
-    WebContents,
-    BeforeSendResponse,
-    HeadersReceivedResponse,
-    OnBeforeSendHeadersListenerDetails,
-    OnHeadersReceivedListenerDetails,
-} from 'electron';
-import type { IPC, Callback } from './InterProcessCommunication';
-import { FetchProvider as Channels } from '../../../src/ipc/Channels';
+import type { WebContents, BeforeSendResponse, HeadersReceivedResponse } from 'electron';
+import type { IPC } from './InterProcessCommunication';
+import { Channels } from './InterProcessCommunicationChannels';
 
 export class FetchProvider {
 
-    private fetchApiSupportedPrefix = 'X-FetchAPI-'.toLowerCase();
+    private appHostname = '';
+    private fetchApiSupportedPrefix: string = '_';
 
-    constructor(private readonly ipc: IPC<Channels.Web, Channels.App>, private readonly webContents: WebContents) {
-        this.ipc.Listen(Channels.App.Initialize, this.Initialize.bind(this) as Callback);
+    constructor (private readonly ipc: IPC, private readonly webContents: WebContents) {
+        this.ipc.Handle(Channels.FetchProvider.Initialize, this.Initialize.bind(this));
+        this.ipc.Handle(Channels.FetchProvider.GetSessionCookies, this.GetSessionCookies.bind(this));
     }
 
-    private async Initialize(fetchApiSupportedPrefix: string): Promise<void> {
-        this.fetchApiSupportedPrefix = fetchApiSupportedPrefix.toLowerCase();
-        this.webContents.session.webRequest.onBeforeSendHeaders(async (details, callback) => callback(await this.ModifyRequestHeaders(details)));
-        this.webContents.session.webRequest.onHeadersReceived((details, callback) => callback(this.ModifyResponseHeaders(details)));
-        this.Initialize = () => Promise.resolve();
+    private Initialize(fetchApiSupportedPrefix: string): void {
+        this.fetchApiSupportedPrefix = fetchApiSupportedPrefix;
+        this.appHostname = new URL(this.webContents.getURL()).hostname;
+        this.webContents.session.webRequest.onBeforeSendHeaders(async (details, callback) => callback(await this.ModifyRequestHeaders(details.url, details.requestHeaders)));
+        this.webContents.session.webRequest.onHeadersReceived((details, callback) => callback(this.ModifyResponseHeaders(details.responseHeaders ?? {})));
+        this.Initialize = () => { };
     }
 
-    private IsMatchingAppHost(url: string) {
-        try {
-            const uri = new URL(this.webContents.getURL());
-            return new URL(url).hostname === uri.hostname;
-        } catch {
-            return false;
-        }
+    private async GetSessionCookies(filter: Electron.CookiesGetFilter) {
+        // TODO: When filter by URL partioned cookies may not be found (e.g., cf_clearance)
+        return (await this.webContents.session.cookies.get(filter)).map(({ name, value }) => ({ name, value }));
     }
 
-    private async UpdateCookieHeader(url: string, headers: Record<string, string>) {
-        // TODO: Skip cookie assignment in browser window e.g., when `sec-fetch-dest: empty`?
-        const normalizedCookieHeaderName = (this.fetchApiSupportedPrefix + 'Cookie').toLowerCase();
-        const originalCookieHeaderName = Object.keys(headers).find(header => header.toLowerCase() === normalizedCookieHeaderName) ?? normalizedCookieHeaderName;
-        const headerCookies = headers[originalCookieHeaderName]?.split(';').filter(cookie => cookie.includes('=')).map(cookie => cookie.trim()) ?? [];
-        const browserCookies = await this.webContents.session.cookies.get({ url/*, partitionKey: {}*/ }); // TODO: When filter by URL partioned cookies may not be found (e.g., cf_clearance)
-        for(const browserCookie of browserCookies) {
-            if(!headerCookies.some(cookie => cookie.startsWith(browserCookie.name + '='))) {
-                headerCookies.push(`${browserCookie.name}=${browserCookie.value}`);
+    private ParseCookiesFromHeader(cookies: string): CookieList {
+        return cookies
+            .split(';')
+            .filter(cookie => cookie.includes('='))
+            .map(cookie => cookie.split('='))
+            .map(([name, value]) => ({ name: name.trim(), value: value.trim() }))
+            .filter(({ name, value }) => name && value);
+    }
+
+    private MergeCookies(...cookieSets: CookieList[]): string {
+        const result: Record<string, string> = {};
+        for (const cookieSet of cookieSets) {
+            for (const { name, value } of cookieSet) {
+                if(name && value) result[name] = value;
             }
         }
-        if(headerCookies.length > 0) {
-            headers[originalCookieHeaderName] = headerCookies.join('; ');
-        }
+        return Object.entries(result).map(([ name, value ]) => `${name}=${value}`).join('; '); // TODO: Maybe use `encodeURIComponent(cookie.value)`
     }
 
-    private async ModifyRequestHeaders(details: OnBeforeSendHeadersListenerDetails): Promise<BeforeSendResponse> {
-        const uri = new URL(details.url);
-        await this.UpdateCookieHeader(uri.href, details.requestHeaders);
-        const updatedHeaders: typeof details.requestHeaders = {
-            //origin: uri.origin,
-            //referer: uri.href,
-        };
+    // TODO: Invoke via IPC in WEB
+    private async ModifyRequestHeaders(url: string, originalHeaders: Record<string, string | string[]>): Promise<BeforeSendResponse> {
 
-        for (const originalHeaderName in details.requestHeaders) {
-            const normalizedHeaderName = originalHeaderName.toLowerCase();
-            const originalHeaderValue = details.requestHeaders[originalHeaderName];
-            if (normalizedHeaderName.startsWith(this.fetchApiSupportedPrefix)) {
-                const revealedHeaderName = normalizedHeaderName.replace(this.fetchApiSupportedPrefix, '');
-                updatedHeaders[revealedHeaderName] = originalHeaderValue;
-            } else {
-                updatedHeaders[normalizedHeaderName] = updatedHeaders[normalizedHeaderName] ?? originalHeaderValue;
-            }
+        const patternConcealedHeaderName = new RegExp('^' + this.fetchApiSupportedPrefix, 'i');
+        const IsConcealed = (name: string) => patternConcealedHeaderName.test(name);
+        const GetRevealedHeaderName = (name: string) => name.replace(patternConcealedHeaderName, '').toLowerCase();
+
+        const all: Array<[string, string | string[]]> = Object.entries(originalHeaders);
+        const result = Object.fromEntries(all.filter(([name]) => !IsConcealed(name)).map(([name, value]) => [name.toLowerCase(), value]));
+        const replacements = Object.fromEntries(all.filter(([name]) => IsConcealed(name)).map(([name, value]) => [GetRevealedHeaderName(name), value]));
+        replacements['cookie'] = this.MergeCookies(
+            // TODO: Only added for backward-compatibility! Can be removed when session cookies are provided via `replacements['cookie']`
+            await this.GetSessionCookies({ url: new URL(url).origin, /* partitionKey: {} */ }),
+            this.ParseCookiesFromHeader(<string>result['cookie'] ?? ''),
+            this.ParseCookiesFromHeader(<string>replacements['cookie'] ?? ''),
+        );
+
+        for (const name in replacements) {
+            result[name] = replacements[name];
         }
 
+        // Remove cookie header when empty
+        if (!(<string>result['cookie'])?.trim()) delete result['cookie'];
         // Prevent leaking HakuNeko's host in certain headers
-        [ 'origin', 'referer' ].forEach(key => {
-            if(key in updatedHeaders && this.IsMatchingAppHost(updatedHeaders[key])) {
-                updatedHeaders[key] = uri.origin;
-            }
-        });
+        if ((<string>result['origin'])?.includes(this.appHostname)) delete result['origin'];
+        if ((<string>result['referer'])?.includes(this.appHostname)) delete result['referer'];
 
         return {
             cancel: false,
-            requestHeaders: updatedHeaders,
+            requestHeaders: result,
         };
     }
 
-    private ModifyResponseHeaders(details: OnHeadersReceivedListenerDetails): HeadersReceivedResponse {
-        const responseHeaders: typeof details.responseHeaders = {};
-        for (const originalHeader in details.responseHeaders) {
-            const normalizedHeader = originalHeader.toLowerCase();
-            // remove the `link` header to prevent prefetch/preload and a corresponding warning about 'resource preloaded but not used',
-            // especially when scraping with headless requests (see: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Link)
-            if (normalizedHeader === 'link') {
-                continue;
-            }
-            // Currently electron des not include partitioned cookies when filtering with `session.cookies.get({ url })`
-            // => Workaround: Remove the partitioned flag from the server response
-            if(normalizedHeader === 'set-cookie') {
-                details.responseHeaders[originalHeader] = details.responseHeaders[originalHeader].map(cookie => cookie.replace(/partitioned/gi, ''));
-            }
-            responseHeaders[originalHeader] = details.responseHeaders[originalHeader];
+    // TODO: Invoke via IPC in WEB
+    private ModifyResponseHeaders(originalHeaders: Record<string, string | string[]>): HeadersReceivedResponse {
+
+        const result = Object.fromEntries(Object.entries(originalHeaders).map(([name, value]) => [name.toLowerCase(), value]));
+
+        // Remove the `link` header to prevent prefetch/preload and a corresponding warning about 'resource preloaded but not used',
+        // especially when scraping with headless requests (see: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Link)
+        if ('link' in result) delete result['link'];
+        // Currently electron does not include partitioned cookies when filtering with `session.cookies.get({ url })`
+        // => Workaround: Remove the partitioned flag from the server response
+        if ('set-cookie' in result) {
+            const value = result['set-cookie'];
+            result['set-cookie'] = typeof value === 'string' ? value.replace(/partitioned/gi, '') : value.map(cookie => cookie.replace(/partitioned/gi, ''));
         }
 
         /*
         if(details.method.toUpperCase() === 'OPTIONS') {
-            responseHeaders['Access-Control-Allow-Origin'] = [ '*' ];
-            responseHeaders['Access-Control-Allow-Methods'] = [ '*' ];
-            responseHeaders['Access-Control-Allow-Headers'] = [ '*' ];
+            result['Access-Control-Allow-Origin'] = [ '*' ];
+            result['Access-Control-Allow-Methods'] = [ '*' ];
+            result['Access-Control-Allow-Headers'] = [ '*' ];
+            result['Access-Control-Allow-Credentials'] = [ 'true' ];
         }
         */
 
         return {
             cancel: false,
-            responseHeaders,
+            responseHeaders: result,
         };
     }
 }

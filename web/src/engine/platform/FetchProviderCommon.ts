@@ -6,6 +6,25 @@ import { CheckAntiScrapingDetection, FetchRedirection } from './AntiScrapingDete
 import type { FeatureFlags } from '../FeatureFlags';
 import { Delay, SetTimeout, ClearTimeout } from '../BackgroundTimers';
 
+export function ParseCookiesFromHeader(cookies: string): CookieList {
+    return cookies
+        .split(';')
+        .filter(cookie => cookie.includes('='))
+        .map(cookie => cookie.split('='))
+        .map(([name, value]) => ({ name: name.trim(), value: value.trim() }))
+        .filter(({ name, value }) => name && value);
+}
+
+export function MergeCookies(...cookieSets: CookieList[]): string {
+    const result: Record<string, string> = {};
+    for (const cookieSet of cookieSets) {
+        for (const { name, value } of cookieSet) {
+            if(name && value) result[name] = value;
+        }
+    }
+    return Object.entries(result).map(([ name, value ]) => `${name}=${value}`).join('; '); // TODO: Maybe use `encodeURIComponent(cookie.value)`
+}
+
 export abstract class FetchProvider {
 
     private featureFlags: FeatureFlags;

@@ -1,7 +1,7 @@
-import { FetchProvider } from '../FetchProviderCommon';
+import { FetchProvider, ParseCookiesFromHeader, MergeCookies } from '../FetchProviderCommon';
 import type { FeatureFlags } from '../../FeatureFlags';
-import type { IPC } from '../InterProcessCommunication';
-import { FetchProvider as Channels } from '../../../../../app/src/ipc/Channels';
+import { GetIPC } from './InterProcessCommunication';
+import { Channels } from '../../../../../app/electron/src/ipc/InterProcessCommunicationChannels';
 
 // See: https://developer.mozilla.org/en-US/docs/Glossary/Forbidden_header_name
 const fetchApiSupportedPrefix = 'X-FetchAPI-';
@@ -15,50 +15,72 @@ const fetchApiForbiddenHeaders = [
     'Sec-Fetch-Dest',
     'Sec-Fetch-Site',
 ];
-
-function ConcealHeaders(init: HeadersInit): Headers {
-    const headers = new Headers(init);
-    for(const name of fetchApiForbiddenHeaders) {
-        if(headers.has(name)) {
-            headers.set(fetchApiSupportedPrefix + name, headers.get(name));
-            headers.delete(name);
-        }
-    }
-    return headers;
-}
+const concealedCookieHeaderName = fetchApiSupportedPrefix + 'Cookie';
 
 class FetchRequest extends Request {
-    readonly #referrer: string = undefined;
+
+    readonly #referrer?: string;
     public override get referrer() { return this.#referrer; }
+
     constructor(input: URL | RequestInfo, init?: RequestInit) {
-        if(init?.headers) init.headers = ConcealHeaders(init.headers);
+        if (init?.headers) init.headers = FetchRequest.#ConcealHeaders(init.headers);
         super(input, init);
-        if(init?.referrer) this.#referrer = init.referrer;
+        this.#referrer = init?.referrer ?? undefined;
+    }
+
+    static #ConcealHeaders(init: HeadersInit): Headers {
+        const headers = new Headers(init);
+
+        for (const name of fetchApiForbiddenHeaders) {
+            if (headers.has(name)) {
+                headers.set(fetchApiSupportedPrefix + name, headers.get(name));
+                headers.delete(name);
+            }
+        }
+
+        return headers;
     }
 }
 
-export default class extends FetchProvider {
+export default class FetchProviderElectron extends FetchProvider {
 
-    constructor(private readonly ipc: IPC<Channels.App, Channels.Web>) {
-        super();
-    }
+    #initialized = false;
+    private readonly ipc = GetIPC();
 
     public Initialize(featureFlags: FeatureFlags): void {
 
-        super.Initialize(featureFlags);
-
-        // Abuse the global Request type to check if system is already initialized
-        if(globalThis.Request === FetchRequest) {
+        if (this.#initialized) {
             return;
+        } else {
+            this.#initialized = true;
         }
 
-        // NOTE: Monkey patching of the browser's native functionality to allow forbidden headers
-        globalThis.Request = FetchRequest;
+        super.Initialize(featureFlags);
 
-        this.ipc.Send(Channels.App.Initialize, fetchApiSupportedPrefix);
+        if (globalThis.Request !== FetchRequest) {
+            // NOTE: Monkey patching of the browser's native functionality to allow forbidden headers
+            globalThis.Request = FetchRequest;
+        }
+
+        // TODO: Monkey patch `globalThis.fetch`?
+
+        this.ipc.Invoke(Channels.FetchProvider.Initialize, fetchApiSupportedPrefix);
     }
 
     async Fetch(request: Request): Promise<Response> {
+        if (request.credentials === 'omit') {
+            // TODO: This will not prevent adding session cookies in main process
+            request.headers.set(concealedCookieHeaderName, '');
+            request.headers.delete('Authorization');
+        } else {
+            const cookie = MergeCookies(
+                // TODO: This may fail for older desktop clients
+                await this.ipc.Invoke(Channels.FetchProvider.GetSessionCookies, { url: new URL(request.url).origin, /* partitionKey: {} */ }),
+                ParseCookiesFromHeader(request.headers.get(concealedCookieHeaderName) ?? ''));
+            request.headers.set(concealedCookieHeaderName, cookie);
+            //console.log('Merged Session Cookies:', cookie);
+        }
+        // Fetch API defaults => https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch
         const response = await fetch(request);
         await super.ValidateResponse(response);
         return response;
