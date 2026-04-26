@@ -320,6 +320,15 @@ export default class extends DecoratableMangaScraper {
         return !page.Parameters.encryptionKey ? blob : this.DecryptImage(blob, page.Parameters.encryptionKey);
     }
 
+    public override async GetChapterURL(chapter: Chapter): Promise<URL> {
+        const [type, id] = chapter.Identifier.split('/');
+        const path = type === 'gravure' ? `/${type}/${id}/viewer` :
+            type === 'magazine' ? `${chapter.Parent.Identifier}/issue/${id}/viewer` :
+                `${chapter.Parent.Identifier}/${type}/${id}/viewer`;
+
+        return new URL(path, this.URI);
+    }
+
     private async DecryptImage(blob: Blob, key: string): Promise<Blob> {
         const bytes = new Uint8Array(await blob.arrayBuffer());
         const xorkey = new Uint8Array(GetBytesFromHex(key));

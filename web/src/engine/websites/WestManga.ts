@@ -76,6 +76,10 @@ export default class extends DecoratableMangaScraper {
         return images.map(image => new Page(this, chapter, new URL(image)));
     }
 
+    public override async GetChapterURL(chapter: Chapter): Promise<URL> {
+        return new URL(`/view/${chapter.Identifier}`, this.URI);
+    }
+
     private async FetchAPI<T extends JSONElement>(endpoint: string): Promise<APIResult<T>> {
         const url = new URL(endpoint, this.api.url);
         const timestamp = `${Date.now()}`.slice(0, -3);

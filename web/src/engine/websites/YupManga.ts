@@ -39,13 +39,17 @@ export default class extends DecoratableMangaScraper {
         }.call(this));
     }
 
-    public override async FetchPages(chapter: Chapter): Promise<Page[]> {
+    public override async GetChapterURL(chapter: Chapter): Promise<URL> {
         const chapterUrl = new URL(`${chapter.Identifier}&page=1`, this.URI);
         const chapterOldId = chapterUrl.searchParams.get('chapter');
         const { token, chapterId } = await FetchWindowScript<ChapterInfos>(new Request(new URL(chapter.Parent.Identifier, this.URI)), `solveAndGetToken('${chapterOldId}');`, 500);
         chapterUrl.searchParams.set('token', encodeURIComponent(token));
         chapterUrl.searchParams.set('chapter', encodeURIComponent(chapterId ?? chapterOldId));
+        return chapterUrl;
+    }
 
+    public override async FetchPages(chapter: Chapter): Promise<Page[]> {
+        const chapterUrl = await this.GetChapterURL(chapter);
         const pages = await FetchWindowScript<string[]>(new Request(chapterUrl),
             `new Array(readerApp.totalPages).fill(0).map((_, index) => new URL('/image-proxy-v2.php?chapter='+ readerApp.chapterId+'&page='+(index+1)+'&context=preload&token='+encodeURIComponent(new URL(location).searchParams.get('token')), location).href)`
             , 500);

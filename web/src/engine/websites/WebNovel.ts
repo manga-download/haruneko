@@ -30,7 +30,9 @@ type APIChapterList = APIResult<{
 }>;
 
 type APIPageList = APIResult<{
+    comicInfo: APIComic;
     chapterInfo: {
+        chapterName: string;
         chapterPage: {
             url: string;
         }[]
@@ -72,12 +74,16 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const data = await FetchJSON<APIChapterList>(new Request(new URL(`./go/pcm/comic/getChapterList?_csrfToken=${this.token}&comicId=${manga.Identifier}`, this.URI)));
-        return data.code == 0 ? data.data.comicChapters.map(({ chapterId, chapterIndex, chapterName }) => new Chapter(this, manga, chapterId, chapterIndex + ' : ' + chapterName)) : [];
+        const { code, data: { comicChapters } } = await FetchJSON<APIChapterList>(new Request(new URL(`./go/pcm/comic/getChapterList?_csrfToken=${this.token}&comicId=${manga.Identifier}`, this.URI)));
+        return code == 0 ? comicChapters.map(({ chapterId, chapterIndex, chapterName }) => new Chapter(this, manga, chapterId, chapterIndex + ' : ' + chapterName)) : [];
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const data = await FetchJSON<APIPageList>(new Request(new URL(`./go/pcm/comic/getContent?_csrfToken=${this.token}&comicId=${chapter.Parent.Identifier}&chapterId=${chapter.Identifier}&width=1920`, this.URI)));
-        return data.code == 0 ? data.data.chapterInfo.chapterPage.map(({ url }) => new Page(this, chapter, new URL(url))) : [];
+        const { code, data: { chapterInfo: { chapterPage } } } = await FetchJSON<APIPageList>(new Request(new URL(`./go/pcm/comic/getContent?_csrfToken=${this.token}&comicId=${chapter.Parent.Identifier}&chapterId=${chapter.Identifier}&width=1920`, this.URI)));
+        return code == 0 ? chapterPage.map(({ url }) => new Page(this, chapter, new URL(url))) : [];
+    }
+
+    public override async GetChapterURL(chapter: Chapter): Promise<URL> {
+        return new URL(`/comic/${chapter.Parent.Identifier}/${chapter.Identifier}`, this.URI);
     }
 }
