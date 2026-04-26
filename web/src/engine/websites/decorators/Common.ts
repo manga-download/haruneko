@@ -701,6 +701,7 @@ export function ImageAjaxFromHTML(queryImage: string, detectMimeType = false, de
 
 /**
  * A class decorator that adds the ability to get the real chapter url from a chapter
+ * Use this when chapter identifier is the full pathname to the chapter.
  */
 export function ChapterURL() {
     return function DecorateClass<T extends Constructor>(ctor: T, context?: ClassDecoratorContext): T {

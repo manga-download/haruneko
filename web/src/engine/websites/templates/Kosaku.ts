@@ -38,6 +38,7 @@ function ChapterExtractor(anchor: HTMLAnchorElement) {
 
 @Common.MangaCSS<HTMLMetaElement>(/^{origin}\/serie\/[^/]+\/$/, 'meta[property="og:title"]', (meta, uri) => ({ id: uri.pathname, title: meta.content.split('-').at(0).trim() }))
 @Common.ChaptersSinglePageCSS('ul#list-chapters li a', undefined, ChapterExtractor)
+@Common.ChapterURL()
 @Madara.PagesSinglePageCSS()
 @Common.ImageAjax()
 export class Kosaku extends DecoratableMangaScraper {

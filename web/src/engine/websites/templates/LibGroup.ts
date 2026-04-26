@@ -1,5 +1,6 @@
 import { Chapter, DecoratableMangaScraper, Manga, type MangaPlugin, Page } from '../../providers/MangaPlugin';
 import * as Grouple from '../decorators/Grouple';
+import * as Common from '../decorators/Common';
 import { FetchJSON, FetchWindowScript } from '../../platform/FetchProvider';
 import { Delay } from '../../BackgroundTimers';
 import type { MirroredPage } from '../decorators/Grouple';
@@ -118,6 +119,7 @@ class TokenProvider {
     }
 }
 
+@Common.ChapterURL()
 @Grouple.ImageWithMirrors()
 export class LibGroup extends DecoratableMangaScraper {
 
