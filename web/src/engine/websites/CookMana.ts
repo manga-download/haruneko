@@ -46,4 +46,8 @@ export default class extends DecoratableMangaScraper {
         const { data: { urls, folder3 } } = await FetchJSON<APIResult<APIPages>>(new Request(new URL(`./detail/${chapter.Identifier}`, this.apiUrl)));
         return urls.split(',')?.map(page => new Page(this, chapter, new URL(`${this.CDNv2}kr/${folder3}/${page.split('/').at(-1)}`))) ?? [];
     }
+
+    public override async GetChapterURL(chapter: Chapter): Promise<URL> {
+        return new URL(`/detail/${chapter.Identifier}`, this.URI);
+    }
 }

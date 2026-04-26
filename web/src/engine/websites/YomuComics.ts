@@ -23,6 +23,7 @@ type HydratedChapters = {
 type APIChapter = {
     chapter: {
         content: string[];
+        number: number;
     }
 };
 
@@ -52,5 +53,10 @@ export default class extends DecoratableMangaScraper {
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
         const { chapter: { content } } = await FetchJSON<APIChapter>(new Request(new URL(`./chapters?id=${chapter.Identifier}`, this.apiUrl)));
         return content.map(image => new Page(this, chapter, new URL(image, this.URI)));
+    }
+
+    public override async GetChapterURL(chapter: Chapter): Promise<URL> {
+        const { chapter: { number } } = await FetchJSON<APIChapter>(new Request(new URL(`./chapters?id=${chapter.Identifier}`, this.apiUrl)));
+        return new URL(`/ler/${chapter.Parent.Identifier}/${number}`, this.URI);
     }
 }

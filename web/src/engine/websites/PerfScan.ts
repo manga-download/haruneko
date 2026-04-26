@@ -8,7 +8,7 @@ type APIResult<T> = { data: T };
 type APIManga = APIResult<{ id: string, title: string }>;
 type APIMangas = APIResult<{ id: string, title: string }[]>;
 type APIChapters = APIResult<{ Chapter: { id: string, index: number }[] }>;
-type APIPages = APIResult<{ content: { value: string }[] }>;
+type APIPages = APIResult<{ index: number, seriesId: string, content: { value: string }[] }>;
 
 @Common.ImageAjax(true)
 export default class extends DecoratableMangaScraper {
@@ -29,23 +29,28 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
-        const { data: { id, title } } = await this.FetchAPI<APIManga>(`./series/${ url.split('/').at(-1) }`);
+        const { data: { id, title } } = await this.FetchAPI<APIManga>(`./series/${url.split('/').at(-1)}`);
         return new Manga(this, provider, id, title);
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
         const { data } = await this.FetchAPI<APIMangas>('./series?type=COMIC&take=9999&page=1&dataForPage=HOME');
-        return data.map(manga => new Manga(this, provider, manga.id, manga.title));
+        return data.map(({ id, title }) => new Manga(this, provider, id, title));
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const { data: { Chapter: chapters } } = await this.FetchAPI<APIChapters>(`./series/${manga.Identifier}`);
-        return chapters.map(chapter => new Chapter(this, manga, chapter.id, chapter.index.toString()));
+        return chapters.map(({ id, index }) => new Chapter(this, manga, id, `${index}`));
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
         const { data: { content } } = await this.FetchAPI<APIPages>(`./series/${chapter.Parent.Identifier}/chapter/${chapter.Identifier}`);
-        return content.map(page => new Page(this, chapter, new URL(page.value, this.cdnUrl)));
+        return content.map(({ value }) => new Page(this, chapter, new URL(value, this.cdnUrl)));
+    }
+
+    public override async GetChapterURL(chapter: Chapter): Promise<URL> {
+        const { data: { index, seriesId } } = await this.FetchAPI<APIPages>(`./series/${chapter.Parent.Identifier}/chapter/${chapter.Identifier}`);
+        return new URL(`/fr/series/${seriesId}/chapter/${index}`, this.URI);
     }
 
     private async FetchAPI<T extends JSONElement>(endpoint: string): Promise<T> {

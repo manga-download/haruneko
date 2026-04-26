@@ -15,6 +15,7 @@ function ChapterLinkResolver(this: DecoratableMangaScraper, manga: Manga) {
 @Common.MangaCSS(/^{origin}\/manga\/[^/]+\.html/, 'div.manga div.ttline h1', (element, uri) => ({ id: uri.pathname, title: CleanTitle(element.textContent) }))
 @Common.MangasMultiPageCSS('dl.bookinfo a.bookname', Common.PatternLinkGenerator('/search/?completed_series=either&page={page}'))
 @Common.ChaptersSinglePageCSS('div.chapterbox ul li a.chapter_list_a', ChapterLinkResolver, Common.AnchorInfoExtractor(true))
+@Common.ChapterURL()
 export class NineMangaBase extends DecoratableMangaScraper {
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {

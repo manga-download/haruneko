@@ -29,7 +29,6 @@ type APIPages = {
 };
 
 @Common.ImageAjax()
-
 export default class extends DecoratableMangaScraper {
     private readonly apiUrl = 'https://be.komikcast.fit/series/';
 
@@ -69,6 +68,10 @@ export default class extends DecoratableMangaScraper {
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
         const { data: { images } } = await this.FetchAPI<APIPages>(`./${chapter.Parent.Identifier}/chapters/${chapter.Identifier}`);
         return images.map(image => new Page(this, chapter, new URL(image), { Referer: this.URI.href }));
+    }
+
+    public override async GetChapterURL(chapter: Chapter): Promise<URL> {
+        return new URL(`/series/${chapter.Parent.Identifier}/chapter/${chapter.Identifier}`, this.URI);
     }
 
     private async FetchAPI<T extends JSONElement>(endpoint: string): Promise<T> {

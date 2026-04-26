@@ -133,3 +133,21 @@ async function FetchPagesSinglePageAJAX(this: MangaScraper, chapter: Chapter): P
     const groupname = preferred_sort.at(0)?? Object.keys(chap.groups).at(0);
     return chap.groups[groupname].map(page => new Page(this, chapter, new URL(`/media/manga/${chapter.Parent.Identifier}/chapters/${chap.folder}/${groupname}/${page}`, this.URI)));
 }
+
+/***********************************************
+ ******** Friendly Media URL rebuilder ********
+ ***********************************************/
+
+/**
+ * A class decorator that adds the ability to get the real chapter url from a chapter
+ */
+export function ChapterURL() {
+    return function DecorateClass<T extends Common.Constructor>(ctor: T, context?: ClassDecoratorContext): T {
+        Common.ThrowOnUnsupportedDecoratorContext(context);
+        return class extends ctor {
+            public async GetChapterURL(chapter: Chapter): Promise<URL> {
+                return new URL(`/read/manga/${chapter.Parent.Identifier}/${chapter.Identifier}/1`, this.URI);
+            }
+        };
+    };
+}

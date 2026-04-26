@@ -14,6 +14,7 @@ type APIManga = {
 type APIChapter = {
     id: number;
     chapter: number;
+    content: string;
 };
 
 function CleanMangaTitle(title: string): string {
@@ -70,7 +71,7 @@ export default class extends DecoratableMangaScraper {
             '5e1ad960d67b2_5e1ad962338c7.jpg',
         ];
 
-        const { content } = await this.FetchAPI<{ content: string }>(`./chapter/${chapter.Identifier}`);
+        const { content } = await this.FetchAPI<APIChapter>(`./chapter/${chapter.Identifier}`);
         return content
             .split('\n')
             .filter(link => !excluded.some(file => link.endsWith(file)))
@@ -79,6 +80,11 @@ export default class extends DecoratableMangaScraper {
                 uri.hostname = hosts.get(uri.hostname) ?? uri.hostname;
                 return new Page(this, chapter, uri);
             });
+    }
+
+    public override async GetChapterURL(chapter: Chapter): Promise<URL> {
+        const { chapter: chapterNumber } = await this.FetchAPI<APIChapter>(`./chapter/${chapter.Identifier}`);
+        return new URL(`/${chapter.Parent.Identifier}-chapter-${chapterNumber}.html`, this.URI);
     }
 
     private async FetchAPI<T extends JSONElement>(endpoint: string): Promise<T> {

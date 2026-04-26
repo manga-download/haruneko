@@ -154,6 +154,11 @@ export default class extends DecoratableMangaScraper {
         return aesKey && aesIv ? this.DecryptPicture(blob, aesKey, aesIv) : blob;
     }
 
+    public override async GetChapterURL(chapter: Chapter): Promise<URL> {
+        const { id, type }: ItemID = JSON.parse(chapter.Identifier);
+        return new URL(`/manga/${chapter.Parent.Identifier}/${type}/${id}`, this.URI);
+    }
+
     private async DecryptPicture(encrypted: Blob, key: string, iv: string): Promise<Blob> {
         const algorithm = { name: 'AES-CBC', iv: GetBytesFromHex(iv) };
         const secretKey = await crypto.subtle.importKey('raw', GetBytesFromHex(key), algorithm, false, ['decrypt']);

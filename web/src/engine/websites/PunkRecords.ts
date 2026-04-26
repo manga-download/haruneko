@@ -94,6 +94,10 @@ export default class extends DecoratableMangaScraper {
         return pages.map(({ original }) => new Page(this, chapter, original.startsWith('http') ? new URL(original) : new URL(`./images/webp/${original}.webp`, this.CDNurl), { Referer: this.URI.href }));
     }
 
+    public override async GetChapterURL(chapter: Chapter): Promise<URL> {
+        return new URL(`/mangas/${chapter.Parent.Identifier}/${chapter.Identifier}`, this.URI);
+    }
+
     private async FetchAPI<T extends JSONElement>(query: string, variables: JSONObject): Promise<T> {
         return FetchGraphQL<T>(new Request(this.apiURL), undefined, query, variables);
     }

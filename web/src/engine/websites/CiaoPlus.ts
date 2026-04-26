@@ -132,6 +132,10 @@ export default class extends DecoratableMangaScraper {
             }
         });
     }
+
+    public override async GetChapterURL(chapter: Chapter): Promise<URL> {
+        return new URL(`/comics/title/${chapter.Parent.Identifier.padStart(5, '0')}/episode/${chapter.Identifier}`, this.URI);
+    }
 }
 
 export class DRMProvider {

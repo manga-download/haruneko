@@ -128,6 +128,10 @@ export default class extends DecoratableMangaScraper {
         }, priority, signal);
     }
 
+    public override async GetChapterURL(chapter: Chapter): Promise<URL> {
+        return new URL(`/episodes/${chapter.Identifier}`);
+    }
+
     private async Decrypt(pageData: PageData, decryptedKey: string): Promise<ArrayBuffer> {
 
         const { encrypted_image, iterations, iv, salt } = pageData;

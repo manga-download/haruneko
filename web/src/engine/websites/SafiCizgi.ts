@@ -165,6 +165,12 @@ export default class extends DecoratableMangaScraper {
         }, priority, signal);
     }
 
+    public override async GetChapterURL(chapter: Chapter): Promise<URL> {
+        const { slug: mangaSlug }: MediaID = JSON.parse(chapter.Parent.Identifier);
+        const { slug: chapterSlug }: MediaID = JSON.parse(chapter.Identifier);
+        return new URL(`/oku/${mangaSlug}/${chapterSlug}`, this.URI);
+    }
+
     private XOR(data: Uint8Array, key: Uint8Array): Uint8Array<ArrayBuffer> {
         return data.map((byte, index) => byte ^ key[index % key.length]);
     }

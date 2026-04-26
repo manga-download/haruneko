@@ -14,6 +14,8 @@ type PageResult = {
     [id: string]: string;
 };
 
+// TODO : implement chapterURL (free.php may not be accurate for paid chapters)
+
 @Common.MangasSinglePageCSS<HTMLAnchorElement>('/ranking/', 'div.ranking a.parent',
     anchor => ({ id: new URL(anchor.href).searchParams.get('work_code'), title: anchor.querySelector('div.work_name').textContent.trim() }))
 export default class extends DecoratableMangaScraper {

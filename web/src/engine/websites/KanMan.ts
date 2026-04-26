@@ -7,21 +7,21 @@ import { Choice } from '../SettingsManager';
 import { EngineResourceKey as E, WebsiteResourceKey as W } from '../../i18n/ILocale';
 
 type APIResult<T> = {
-    data: T,
-}
+    data: T;
+};
 
 type APIManga = {
-    comic_id: number,
-    comic_name: string
-    comic_chapter: APIChapter[]
-    current_chapter: APIChapter
-}
+    comic_id: number;
+    comic_name: string;
+    comic_chapter: APIChapter[];
+    current_chapter: APIChapter;
+};
 
 type APIChapter = {
-    chapter_name: string,
-    chapter_newid: string
-    chapter_img_list: string[]
-}
+    chapter_name: string;
+    chapter_newid: string;
+    chapter_img_list: string[];
+};
 
 @Common.ImageAjax(true)
 export default class extends DecoratableMangaScraper {
@@ -52,12 +52,12 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
         const { data } = await FetchJSON<APIResult<APIManga[]>>(new Request(new URL('./getComicList', this.apiUrl)));
-        return data.map(manga => new Manga(this, provider, manga.comic_id.toString(), manga.comic_name.trim()));
+        return data.map(({ comic_name: name, comic_id: id }) => new Manga(this, provider, `${id}`, name.trim()));
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const { data: { comic_chapter } } = await FetchJSON<APIResult<APIManga>>(new Request(new URL(`./getComicInfoBody?comic_id=${manga.Identifier}`, this.apiUrl)));
-        return comic_chapter.map(chapter => new Chapter(this, manga, chapter.chapter_newid, chapter.chapter_name.trim()));
+        return comic_chapter.map(({ chapter_newid: id, chapter_name: name }) => new Chapter(this, manga, id, name.trim()));
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
@@ -73,5 +73,9 @@ export default class extends DecoratableMangaScraper {
         }).toString();
         const { data: { current_chapter: { chapter_img_list } } } = await FetchJSON<APIResult<APIManga>>(new Request(uri));
         return chapter_img_list.map(page => new Page(this, chapter, new URL(page)));
+    }
+
+    public override async GetChapterURL(chapter: Chapter): Promise<URL> {
+        return new URL(`/${chapter.Parent.Identifier}/${chapter.Identifier}.html`, this.URI);
     }
 }

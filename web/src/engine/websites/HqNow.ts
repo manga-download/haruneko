@@ -5,11 +5,11 @@ import * as Common from './decorators/Common';
 import { FetchGraphQL } from '../platform/FetchProvider';
 
 type APIMangas = {
-    id: number,
-    name: string,
+    id: number;
+    name: string;
     capitulos: {
-        id: number,
-        name: string,
+        id: number;
+        name: string;
         number: number;
     }[];
 }[];
@@ -24,7 +24,9 @@ type GQLMangasByID = {
 
 type GQLPages = {
     getChapterById: {
+        number: number;
         pictures: { pictureUrl: string; }[];
+        hq: { name: string; };
     };
 };
 
@@ -33,7 +35,7 @@ export default class extends DecoratableMangaScraper {
 
     private readonly apiUrl = 'https://admin.hq-now.com';
 
-    public constructor () {
+    public constructor() {
         super('hqnow', `Hq Now`, 'https://www.hq-now.com', Tags.Language.Spanish, Tags.Media.Comic, Tags.Source.Aggregator);
     }
 
@@ -47,45 +49,55 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
         const id = parseInt(new URL(url).pathname.match(/\/hq\/([\d]+)/).at(-1));
-        const request = new Request(new URL('/graphql', this.apiUrl).href);
-        const data = await FetchGraphQL<GQLMangasByID>(request, undefined, `
+        const { getHqsById } = await FetchGraphQL<GQLMangasByID>(new Request(new URL('/graphql', this.apiUrl)), undefined, `
             query ($id: Int!) {
                 getHqsById(id: $id) { id, name }
             }
         `, { id });
-        return new Manga(this, provider, String(id), data.getHqsById.at(0).name.trim());
+        return new Manga(this, provider, `${id}`, getHqsById.at(0).name.trim());
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        const request = new Request(new URL('/graphql', this.apiUrl).href);
-        const data = await FetchGraphQL<GQLMangasByLetter>(request, undefined, `
+        const { getHqsByNameStartingLetter } = await FetchGraphQL<GQLMangasByLetter>(new Request(new URL('/graphql', this.apiUrl)), undefined, `
             query ($letter: String!) {
                 getHqsByNameStartingLetter(letter: $letter) { id, name }
             }
         `, { letter: '0-z' });
-        return data.getHqsByNameStartingLetter.map(manga => new Manga(this, provider, String(manga.id), manga.name));
+        return getHqsByNameStartingLetter.map(({ id, name }) => new Manga(this, provider, `${id}`, name));
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const request = new Request(new URL('/graphql', this.apiUrl).href);
-        const data = await FetchGraphQL<GQLMangasByID>(request, undefined, `
+        const { getHqsById } = await FetchGraphQL<GQLMangasByID>(new Request(new URL('/graphql', this.apiUrl)), undefined, `
             query ($id: Int!) {
                 getHqsById(id: $id) { id, name, capitulos { id, name, number } }
             }
         `, { id: parseInt(manga.Identifier) });
-        return data.getHqsById.at(0).capitulos.map(chapter => {
-            const name = chapter.name ? String(chapter.number) + ' : ' + chapter.name.trim() : String(chapter.number);
-            return new Chapter(this, manga, String(chapter.id), name);
+        return getHqsById.at(0).capitulos.map(({ id, name, number }) => {
+            const chapterName = name ? `${number}` + ' : ' + name.trim() : `${number}`;
+            return new Chapter(this, manga, `${id}`, chapterName);
         });
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const request = new Request(new URL('/graphql', this.apiUrl).href);
-        const data = await FetchGraphQL<GQLPages>(request, undefined, `
+        const { getChapterById: { pictures } } = await FetchGraphQL<GQLPages>(new Request(new URL('/graphql', this.apiUrl)), undefined, `
             query ($chapterId: Int!) {
                 getChapterById(chapterId: $chapterId) { pictures { pictureUrl } }
             }
         `, { chapterId: parseInt(chapter.Identifier) });
-        return data.getChapterById.pictures.map(page => new Page(this, chapter, new URL(page.pictureUrl)));
+        return pictures.map(({ pictureUrl }) => new Page(this, chapter, new URL(pictureUrl)));
+    }
+
+    public override async GetChapterURL(chapter: Chapter): Promise<URL> {
+        const urlFriendly = (e: string): string => {
+            return e.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+        };
+
+        const { getChapterById: { hq: { name }, number } } = await FetchGraphQL<GQLPages>(new Request(new URL('/graphql', this.apiUrl)), undefined, `
+            query ($chapterId: Int!) {
+                getChapterById(chapterId: $chapterId) { number, hq { name } }
+            }
+        `, { chapterId: parseInt(chapter.Identifier) });
+
+        return new URL(`/hq-reader/${chapter.Identifier}/${urlFriendly(name)}/chapter/${number}/page/1`, this.URI);
     }
 }

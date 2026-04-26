@@ -55,4 +55,8 @@ export default class extends CiaoPlus {
         const { web_title: { episode_id_list } } = await this.#FetchMangaInfo(manga.Identifier);
         return this.FetchChapterList(manga, episode_id_list);
     }
+
+    public override async GetChapterURL(chapter: Chapter): Promise<URL> {
+        return new URL(`/title/${chapter.Parent.Identifier.padStart(5, '0')}/episode/${chapter.Identifier}`, this.URI);
+    }
 }

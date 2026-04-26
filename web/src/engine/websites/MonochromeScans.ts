@@ -74,4 +74,9 @@ export default class extends DecoratableMangaScraper {
         const images = Array.from({ length }, (_, i) => i + 1).map(index => `${this.URI.origin}/media/${mangaId}/${chapter.Identifier}/${index}.jpg?version=${version}`);
         return images.map(page => new Page(this, chapter, new URL(page)));
     }
+
+    public override async GetChapterURL(chapter: Chapter): Promise<URL> {
+        return new URL(`/chapters/${chapter.Identifier}`, this.URI);
+    }
+
 }

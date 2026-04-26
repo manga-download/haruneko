@@ -5,32 +5,32 @@ import * as Common from './decorators/Common';
 import { FetchJSON } from '../platform/FetchProvider';
 
 type APIMangas = {
-    id: string,
-    name: string
+    id: string;
+    name: string;
 }[];
 
 type APIManga = {
-    _id: string,
-    name: string,
-    chapters: APIChapter[],
-    volumes: APIVolume[]
-    email: string
+    _id: string;
+    name: string;
+    chapters: APIChapter[];
+    volumes: APIVolume[];
+    email: string;
 };
 
 type APIChapter = {
-    _id: string,
-    number: string,
-    title: string,
+    _id: string;
+    number: string;
+    title: string;
 };
 
 type APIVolume = {
-    number: string,
-    chapters: APIChapter[]
+    number: string;
+    chapters: APIChapter[];
 };
 
 type APIPages = {
     paths: {
-        path: string
+        path: string;
     }[]
 };
 
@@ -106,5 +106,9 @@ export default class extends DecoratableMangaScraper {
         const body = new FormData();
         Object.entries(form).forEach(([key, value]) => body.set(key, value));
         return FetchJSON<T>(new Request(uri, { method, body }));
+    }
+
+    public override async GetChapterURL(chapter: Chapter): Promise<URL> {
+        return new URL(`/manga/${chapter.Parent.Identifier}/${chapter.Identifier}`, this.URI);
     }
 }

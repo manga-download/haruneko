@@ -82,6 +82,7 @@ function ChapterExtractor(element: HTMLAnchorElement) {
 
 @Common.MangasNotSupported()
 @Common.ChaptersMultiPageCSS('div.detail_body div.detail_lst ul li > a', Common.PatternLinkGenerator('{id}&page={page}'), 0, ChapterExtractor)
+@Common.ChapterURL()
 export class LineWebtoonBase extends DecoratableMangaScraper {
 
     protected mangaRegexp = /[a-z]{2}\/[^/]+\/[^/]+\/list\?title_no=\d+$/;

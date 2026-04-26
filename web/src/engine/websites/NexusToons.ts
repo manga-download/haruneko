@@ -3,7 +3,8 @@ import icon from './NexusToons.webp';
 import { FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
 import { type MangaPlugin, Manga, Chapter, Page, DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { GetBytesFromBase64 } from '../BufferEncoder';
+import { GetBytesFromBase64, GetBytesFromUTF8, GetURLBase64FromBytes } from '../BufferEncoder';
+import { RandomText } from '../Random';
 
 type APICryptedData = {
     d: string;
@@ -91,6 +92,14 @@ export default class extends DecoratableMangaScraper {
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
         const { pages, pageToken } = await this.FetchAPI<APIPages>(`./chapter/${chapter.Identifier}`);
         return pages.map(({ imageUrl }, index) => new Page(this, chapter, new URL(imageUrl || `./p/${pageToken}/${index}`, this.apiUrl)));
+    }
+
+    public override async GetChapterURL(chapter: Chapter): Promise<URL>{
+        const key = GetBytesFromUTF8('NexusToons2026SecretKeyForChapterEncryption!@#$');
+        const cipherText = `${chapter.Identifier}|${chapter.Parent.Identifier || ''}|${Date.now().toString(36)}|${RandomText(20 + Math.floor(11 * Math.random()))}`;
+        const data = GetBytesFromUTF8(cipherText).map((byte, index) => byte ^ key[index % key.length]);
+        const hash = GetURLBase64FromBytes(new TextEncoder().encode(GetURLBase64FromBytes(data) + '|' + RandomText(10)));
+        return new URL(`/r/${hash.length < 64 ? hash + RandomText(64-hash.length): hash}`, this.URI);
     }
 
     private async FetchAPI<T extends JSONElement>(endpoint: string): Promise<T> {

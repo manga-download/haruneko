@@ -695,6 +695,25 @@ export function ImageAjaxFromHTML(queryImage: string, detectMimeType = false, de
     };
 }
 
+/***********************************************
+ ******** Friendly Media URL rebuilder ********
+ ***********************************************/
+
+/**
+ * A class decorator that adds the ability to get the real chapter url from a chapter
+ * Use this when chapter identifier is the full pathname to the chapter.
+ */
+export function ChapterURL() {
+    return function DecorateClass<T extends Constructor>(ctor: T, context?: ClassDecoratorContext): T {
+        ThrowOnUnsupportedDecoratorContext(context);
+        return class extends ctor {
+            public async GetChapterURL(chapter: Chapter): Promise<URL> {
+                return new URL(chapter.Identifier, this.URI);
+            }
+        };
+    };
+}
+
 /********************************
  ******** Helper Methods ********
  ********************************/
