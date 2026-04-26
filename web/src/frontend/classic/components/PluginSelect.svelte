@@ -16,6 +16,7 @@
     import StarFilled from 'carbon-icons-svelte/lib/StarFilled.svelte';
     import ContentDeliveryNetwork from 'carbon-icons-svelte/lib/ContentDeliveryNetwork.svelte';
     // Svelte
+    import { onDestroy } from 'svelte';
     import { fade } from 'svelte/transition';
     // UI: Components
     import Chip from '../lib/Tag.svelte';
@@ -67,9 +68,16 @@
         pluginTagsFilter = pluginTagsFilter.filter((value) => tag !== value);
     }
 
+    let pluginsFavorites: string[] = $state(HakuNeko.PluginController.Favorites.Value);
+    const onFavoritesChanged = (value: string[]) => pluginsFavorites = value;
+    HakuNeko.PluginController.Favorites.Subscribe(onFavoritesChanged);
+    onDestroy(() => HakuNeko.PluginController.Favorites.Unsubscribe(onFavoritesChanged));
+
     let filterFavorites = $state(false);
     let filteredPluginlist: ReturnType<typeof createDataRow>[] = $derived(HakuNeko.PluginController.WebsitePlugins.filter(
             (plugin) => {
+                if (filterFavorites && !pluginsFavorites.includes(plugin.Identifier))
+                    return false;
                 let rejectconditions: Array<boolean> = [];
                 if (
                     pluginNameFilter !== '' &&
@@ -184,11 +192,11 @@
                 />
             </ToolbarContent>
         </Toolbar>
-    <!-- @migration-task: migrate this slot by hand, `cell-header` is an invalid identifier -->
-    <svelte:fragment slot="cell-header" let:header>
+    <svelte:fragment slot="cellHeader" let:header>
             {#if header.key === 'favorite'}
                 <Button
-                    kind="secondary"
+                    kind="ghost"
+                    size="small"
                     iconDescription="Filter favorites"
                     icon={filterFavorites ? StarFilled : Star}
                     on:click={(e) => {
@@ -200,16 +208,15 @@
                 {header.value}
             {/if}
         </svelte:fragment>
-        <!-- @migration-task: migrate this slot by hand, `cell` is an invalid identifier -->
         <div class="plugin-row" slot="cell" let:cell={{key,value}} in:fade>
             {#if key === 'favorite'}
                 <Button
                     kind="ghost"
                     size="small"
-                    iconDescription="Add to favorites"
-                    icon={true ? StarFilled : Star}
+                    iconDescription={pluginsFavorites.includes(value.Identifier) ? "Remove from favorites" : "Add to favorites"}
+                    icon={pluginsFavorites.includes(value.Identifier) ? StarFilled : Star}
                     on:click={(e) => {
-                        // TODO: trigger plugin favorite
+                        HakuNeko.PluginController.ToggleFavorite(value.Identifier);
                         e.stopPropagation();
                     }}
                 />
