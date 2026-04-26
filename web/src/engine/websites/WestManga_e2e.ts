@@ -6,7 +6,7 @@ new TestFixture({
         title: 'WestManga'
     },
     container: {
-        url: 'https://westmanga.tv/comic/bad-born-blood',
+        url: 'https://westmanga.co/comic/bad-born-blood',
         id: 'bad-born-blood',
         title: 'Bad Born Blood'
     },
