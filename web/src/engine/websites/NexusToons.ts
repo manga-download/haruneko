@@ -12,7 +12,7 @@ type APICryptedData = {
     k: number;
 };
 
-type APIResult<T extends JSONElement> = APICryptedData | T;
+type APIResult<T extends JSONElement> = APICryptedData & T;
 
 type EncryptionKeys = {
     key: Uint8Array;
@@ -46,13 +46,13 @@ type APIPages = {
 
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
-    private readonly apiUrl = 'https://nx-toons.xyz/api/';
+    private readonly apiUrl = 'https://nexustoons.com/api/';
     private readonly seed = 'OrionNexus2025CryptoKey!Secure';
     private readonly keys: EncryptionKeys[] = [];
     private token: string = undefined;
 
     public constructor() {
-        super('nexustoons', 'Nexus Toons', 'https://nx-toons.xyz', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Portuguese, Tags.Source.Aggregator, Tags.Accessibility.RegionLocked);
+        super('nexustoons', 'Nexus Toons', 'https://nexustoons.com', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Portuguese, Tags.Source.Aggregator, Tags.Accessibility.RegionLocked);
     }
 
     public override get Icon() {
@@ -109,7 +109,7 @@ export default class extends DecoratableMangaScraper {
                 'X-App-Key': 'NxT_s3cur3_k3y_2026!xK9mPqL'
             }
         }));
-        return !data['d'] ? data as T : this.Decrypt<T>(data as APICryptedData);
+        return !data.d ? data as T : this.Decrypt<T>(data as APICryptedData);
     }
 
     private async Decrypt<T extends JSONElement>(data: APICryptedData): Promise<T> {

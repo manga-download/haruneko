@@ -6,7 +6,7 @@ new TestFixture({
         title: 'Nexus Toons'
     }, /* Need login
     container: {
-        url: 'https://nx-toons.xyz/manga/espadas-demoniacas-da-vinganca',
+        url: 'https://nexustoons.com/manga/espadas-demoniacas-da-vinganca',
         id: 'espadas-demoniacas-da-vinganca',
         title: 'Espadas Demoníacas da Vingança'
     },
