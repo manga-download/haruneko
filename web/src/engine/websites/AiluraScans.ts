@@ -16,6 +16,7 @@ type APIManga = {
 type APIChapter = {
     _id: string;
     title: string;
+    chapterNumber: number;
     pages: string[];
 };
 
@@ -53,6 +54,11 @@ export default class extends DecoratableMangaScraper {
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
         const chapters = await this.FetchAPI<APIChapter[]>(`./chapters?series=${chapter.Parent.Identifier}&includepages=true&limit=9999`);
         return chapters.find(({ _id }) => _id === chapter.Identifier).pages.map(page => new Page(this, chapter, new URL(page, this.URI)));
+    }
+
+    public override async GetChapterURL(chapter: Chapter): Promise<URL> {
+        const chapters = await this.FetchAPI<APIChapter[]>(`./chapters?series=${chapter.Parent.Identifier}&limit=9999`);
+        return new URL(`/seri/${chapter.Parent.Identifier}/bolum/${chapters.find(({ _id }) => _id === chapter.Identifier).chapterNumber}`, this.URI);
     }
 
     private async FetchAPI<T extends JSONElement>(endpoint: string): Promise<T> {
