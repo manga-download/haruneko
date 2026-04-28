@@ -69,9 +69,9 @@ export class ComiciViewer extends DecoratableMangaScraper {
     public override async FetchPages(chapter: Chapter): Promise<Page<ScrambleData>[]> {
         type AccountData = { viewerId: string, memberJwt: string };
         const { viewerId, memberJwt } = await FetchWindowScript<AccountData>(new Request(new URL(chapter.Identifier, this.URI)), `(() => {
-            const { attributes, dataset: { memberJwt, comiciViewerId } } = document.querySelector<HTMLElement>('#comici-viewer');
+            const { attributes, dataset: { memberJwt, comiciViewerId } } = document.querySelector('#comici-viewer');
             return { memberJwt, viewerId: attributes.getNamedItem('comici-viewer-id')?.value ?? comiciViewerId };
-        })();`, 750);
+        })();`, 1200);
         const pages = await this.#FetchPages(chapter, viewerId, memberJwt);
         return pages.map(({ imageUrl, scramble }) => new Page<ScrambleData>(this, chapter, new URL(imageUrl), { scramble, Referer: this.URI.href }));
     }
