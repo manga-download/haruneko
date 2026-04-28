@@ -173,6 +173,7 @@ export { default as GuruKomik } from './GuruKomik';
 export { default as Hachirumi } from './Hachirumi';
 export { default as HadesNoFansub } from './HadesNoFansub';
 export { default as HadesScans } from './HadesScans';
+export { default as HanaYume } from './HanaYume';
 export { default as Hanman18 } from './Hanman18';
 export { default as HariManga } from './HariManga';
 export { default as HarmonyScan } from './HarmonyScan';

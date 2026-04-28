@@ -21,7 +21,7 @@ AddAntiScrapingDetection(async (invoke) => {
     return result ? FetchRedirection.Automatic : undefined;
 }, /https:\/\/(?:www\.)?alphapolis\.co\.jp/);
 
-@Common.MangaCSS(/^{origin}\/manga\/(official|\d+)\/\d+/, 'div.manga-detail-description > div.title, div.content-main > h1.title')
+@Common.MangaCSS(/^{origin}\/manga\/(official|\d+)\/\d+$/, 'div.manga-detail-description > div.title, div.content-main > h1.title')
 @Common.ChaptersSinglePageJS(`
     new Promise(resolve => {
         resolve(
