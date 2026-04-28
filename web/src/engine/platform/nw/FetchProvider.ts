@@ -1,44 +1,8 @@
 import { FetchProvider, ParseCookiesFromHeader, MergeCookies } from '../FetchProviderCommon';
+import { FetchRequest, FetchApiSupportedPrefix } from '../FetchRequest';
 import type { FeatureFlags } from '../../FeatureFlags';
 
-// See: https://developer.mozilla.org/en-US/docs/Glossary/Forbidden_header_name
-const fetchApiSupportedPrefix = 'X-FetchAPI-';
-const fetchApiForbiddenHeaders = [
-    'User-Agent',
-    'Cookie',
-    'Referer',
-    'Origin',
-    'Host',
-    'Sec-Fetch-Mode',
-    'Sec-Fetch-Dest',
-    'Sec-Fetch-Site',
-];
-const concealedCookieHeaderName = fetchApiSupportedPrefix + 'Cookie';
-
-class FetchRequest extends Request {
-
-    readonly #referrer?: string;
-    public override get referrer() { return this.#referrer; }
-
-    constructor(input: URL | RequestInfo, init?: RequestInit) {
-        if (init?.headers) init.headers = FetchRequest.#ConcealHeaders(init.headers);
-        super(input, init);
-        this.#referrer = init?.referrer ?? undefined;
-    }
-
-    static #ConcealHeaders(init: HeadersInit): Headers {
-        const headers = new Headers(init);
-
-        for (const name of fetchApiForbiddenHeaders) {
-            if (headers.has(name)) {
-                headers.set(fetchApiSupportedPrefix + name, headers.get(name));
-                headers.delete(name);
-            }
-        }
-
-        return headers;
-    }
-}
+const FetchApiSupportedPrefixPattern = new RegExp('^' + FetchApiSupportedPrefix, 'i');
 
 export default class FetchProviderNW extends FetchProvider {
 
@@ -106,7 +70,7 @@ export default class FetchProviderNW extends FetchProvider {
 
     private RevealHeaders(headers: chrome.webRequest.HttpHeader[]): Headers {
         const result = new Headers();
-        const patternConcealedHeaderName = new RegExp('^' + fetchApiSupportedPrefix, 'i');
+        const patternConcealedHeaderName = FetchApiSupportedPrefixPattern;
         const IsHeaderNameConcealed = (name: string) => patternConcealedHeaderName.test(name);
         const GetRevealedHeaderName = (name: string) => name.replace(patternConcealedHeaderName, '');
 
@@ -123,7 +87,7 @@ export default class FetchProviderNW extends FetchProvider {
 
     private readonly ModifyRequestHeaders = function ModifyRequestHeaders(this: FetchProviderNW, originalHeaders: Record<string, string | string[]>): chrome.webRequest.BlockingResponse {
 
-        const patternConcealedHeaderName = new RegExp('^' + fetchApiSupportedPrefix, 'i');
+        const patternConcealedHeaderName = FetchApiSupportedPrefixPattern;
         const IsConcealed = (name: string) => patternConcealedHeaderName.test(name);
         const GetRevealedHeaderName = (name: string) => name.replace(patternConcealedHeaderName, '').toLowerCase();
 

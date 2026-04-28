@@ -3,45 +3,6 @@ import type { FeatureFlags } from '../../FeatureFlags';
 import { GetIPC } from './InterProcessCommunication';
 import { Channels } from '../../../../../app/electron/src/ipc/InterProcessCommunicationChannels';
 
-// See: https://developer.mozilla.org/en-US/docs/Glossary/Forbidden_header_name
-const fetchApiSupportedPrefix = 'X-FetchAPI-';
-const fetchApiForbiddenHeaders = [
-    'User-Agent',
-    'Referer',
-    'Cookie',
-    'Origin',
-    'Host',
-    'Sec-Fetch-Mode',
-    'Sec-Fetch-Dest',
-    'Sec-Fetch-Site',
-];
-const concealedCookieHeaderName = fetchApiSupportedPrefix + 'Cookie';
-
-class FetchRequest extends Request {
-
-    readonly #referrer?: string;
-    public override get referrer() { return this.#referrer; }
-
-    constructor(input: URL | RequestInfo, init?: RequestInit) {
-        if (init?.headers) init.headers = FetchRequest.#ConcealHeaders(init.headers);
-        super(input, init);
-        this.#referrer = init?.referrer ?? undefined;
-    }
-
-    static #ConcealHeaders(init: HeadersInit): Headers {
-        const headers = new Headers(init);
-
-        for (const name of fetchApiForbiddenHeaders) {
-            if (headers.has(name)) {
-                headers.set(fetchApiSupportedPrefix + name, headers.get(name));
-                headers.delete(name);
-            }
-        }
-
-        return headers;
-    }
-}
-
 export default class FetchProviderElectron extends FetchProvider {
 
     #initialized = false;
