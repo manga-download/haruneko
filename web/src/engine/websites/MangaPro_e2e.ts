@@ -14,7 +14,6 @@ new TestFixture({
     child: {
         id: '/series/manhua/399/awakening-sss-rank-skill-after-a-kiss/22222/91',
         title: 'Chapter 91',
-        timeout: 12_000
     },
     entry: {
         index: 0,
@@ -32,12 +31,11 @@ new TestFixture({
     container: {
         url: 'https://procomic.net/series/manhwa/492/the-villain-wants-to-live',
         id: '/series/manhwa/492/the-villain-wants-to-live',
-        title: 'The Villain Wants to Live.'
+        title: 'The Villain Wants to Live'
     },
     child: {
         id: '/series/manhwa/492/the-villain-wants-to-live/38647/46',
         title: 'Chapter 46',
-        timeout: 12_000
     },
     entry: {
         index: 7,
