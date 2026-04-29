@@ -68,10 +68,45 @@ export class ComiciViewer extends DecoratableMangaScraper {
 
     public override async FetchPages(chapter: Chapter): Promise<Page<ScrambleData>[]> {
         type AccountData = { viewerId: string, memberJwt: string };
-        const { viewerId, memberJwt } = await FetchWindowScript<AccountData>(new Request(new URL(chapter.Identifier, this.URI)), `(() => {
-            const { attributes, dataset: { memberJwt, comiciViewerId } } = document.querySelector('#comici-viewer');
-            return { memberJwt, viewerId: attributes.getNamedItem('comici-viewer-id')?.value ?? comiciViewerId };
-        })();`, 1200);
+        const { viewerId, memberJwt } = await FetchWindowScript<AccountData>(new Request(new URL(chapter.Identifier, this.URI)), `
+            new Promise((resolve, reject) => {
+                let interval;
+                try {
+                    const checkElement = () => {
+                        const element = document.querySelector('#comici-viewer');
+                        if (element) {
+                            const { attributes, dataset: { memberJwt, comiciViewerId } } = element;
+                            return {
+                                memberJwt,
+                                viewerId: attributes.getNamedItem('comici-viewer-id')?.value ?? comiciViewerId
+                            };
+                        } else {
+                            return null;
+                        }
+                    };
+
+                    const endTime = Date.now() + 15000;
+
+                    interval = setInterval(() => {
+                        if (Date.now() > endTime) {
+                            clearInterval(interval);
+                            reject(new Error("Element #comici-viewer not found after 10 seconds."));
+                            return;
+                        }
+
+                        const result = checkElement();
+                        if (result) {
+                            clearInterval(interval);
+                            resolve(result);
+                        }
+                    }, 150);
+
+                } catch (error) {
+                    if (interval) clearInterval(interval);
+                    reject(error);
+                }
+            });
+        `, 0);
         const pages = await this.#FetchPages(chapter, viewerId, memberJwt);
         return pages.map(({ imageUrl, scramble }) => new Page<ScrambleData>(this, chapter, new URL(imageUrl), { scramble, Referer: this.URI.href }));
     }
