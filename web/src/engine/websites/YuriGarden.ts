@@ -101,8 +101,8 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchPages(chapter: Chapter): Promise<Page<PageKey>[]> {
         // request page data within window because they have turnstile
-        const response = await FetchWindowScript<CryptedData | PagesData>(new Request(new URL(`./comic/${chapter.Parent.Identifier}/${chapter.Identifier}`, this.URI)), pageScript, 10_000, 60_000);
-        const { pages } = !!response['encrypted'] ? JSON.parse(await this.OpenSSLMD5Decrypt(response['data'], this.AESKEY)) as PagesData : response as PagesData;
+        const response = await FetchWindowScript<CryptedData & PagesData>(new Request(new URL(`./comic/${chapter.Parent.Identifier}/${chapter.Identifier}`, this.URI)), pageScript, 10_000, 60_000);
+        const { pages } = !!response.encrypted ? JSON.parse(await this.OpenSSLMD5Decrypt(response.data, this.AESKEY)) as PagesData : response as PagesData;
         return pages.map(({ key, url }) => new Page<PageKey>(this, chapter, new URL((url.startsWith('http') ? url : this.CDNUrl + url).replace('_credit', '')), { key, Referer: this.URI.href }));
     }
 
