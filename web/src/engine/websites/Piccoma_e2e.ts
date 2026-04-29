@@ -34,8 +34,8 @@ new TestFixture({
         title: 'エロスの種子'
     },
     child: {
-        id: '2646861',
-        title: '第1巻',
+        id: '367170',
+        title: '1',
         timeout: 60_000 // need to load all pictures, could take a while
     },
     entry: {

@@ -6,17 +6,17 @@ new TestFixture({
         title: 'Plot Twist No Fansub'
     },
     container: {
-        url: 'https://plotnf.com/plotwist/manga/guarda-fantasmas/',
-        id: '/plotwist/manga/guarda-fantasmas/',
+        url: 'https://plotnofansub.com/manga/guarda-fantasmas/',
+        id: '/manga/guarda-fantasmas/',
         title: 'Guarda-Fantasmas'
     },
     child: {
-        id: '/reader/guarda-fantasmas/chapter-5.00/',
-        title: 'Capítulo 5.00: No tengo miedo'
+        id: '/manga/guarda-fantasmas/5/',
+        title: '5 No tengo miedo'
     },
     entry: {
         index: 0,
-        size: 884_617,
-        type: 'image/png'
+        size: 164_516,
+        type: 'image/webp'
     }
 }).AssertWebsite();

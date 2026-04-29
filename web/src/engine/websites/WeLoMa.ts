@@ -17,10 +17,10 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override Initialize(): Promise<void> {
-        return FetchWindowScript(new Request(this.URI), () => {
+        return FetchWindowScript(new Request(this.URI), `
             window.cookieStore.set('smartlink_shown_guest', '1');
             window.cookieStore.set('smartlink_shown', '1');
-        });
+        `);
     }
 
     public override get Icon() {

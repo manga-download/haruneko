@@ -8,7 +8,7 @@ import { type MangaScraper, type MangaPlugin, Manga, Chapter, Page } from '../..
 import DeProxify from '../../transformers/ImageLinkDeProxifier';
 import * as Common from './Common';
 
-interface MangaID {
+export interface MangaID {
     readonly post: string;
     readonly slug: string;
 }
@@ -219,7 +219,7 @@ export function MangasMultiPageAJAX(query = queryMangaListLinks, throttle = 0, p
  ******** Chapter List Extraction Methods ********
  *************************************************/
 
-async function FetchChaptersCSS(this: MangaScraper, manga: Manga, request: Request, query = queryChapterListLinks, extract = DefaultInfoExtractor): Promise<Chapter[]> {
+export async function FetchChaptersCSS(this: MangaScraper, manga: Manga, request: Request, query = queryChapterListLinks, extract = DefaultInfoExtractor): Promise<Chapter[]> {
     const data = await FetchCSS<HTMLAnchorElement>(request, query);
     return data.map(element => {
         const { id, title } = extract.call(this, element, new URL(request.url));
