@@ -1,5 +1,5 @@
 import { FetchProvider, ParseCookiesFromHeader, MergeCookies } from '../FetchProviderCommon';
-import { FetchRequest, FetchApiSupportedPrefix } from '../FetchRequest';
+import { FetchConcealedRequest, FetchApiSupportedPrefix } from '../FetchConcealedRequest';
 import type { FeatureFlags } from '../../FeatureFlags';
 
 const FetchApiSupportedPrefixPattern = new RegExp('^' + FetchApiSupportedPrefix, 'i');
@@ -23,9 +23,9 @@ export default class FetchProviderNW extends FetchProvider {
 
         super.Initialize(featureFlags);
 
-        if (globalThis.Request !== FetchRequest) {
+        if (globalThis.Request !== FetchConcealedRequest) {
             // NOTE: Monkey patching of the browser's native functionality to allow forbidden headers
-            globalThis.Request = FetchRequest;
+            globalThis.Request = FetchConcealedRequest;
         }
 
         // NOTE: parameter extraInfoSpec:

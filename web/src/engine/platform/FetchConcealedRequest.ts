@@ -17,13 +17,13 @@ export const ConcealedCookieHeaderName = FetchApiSupportedPrefix + 'Cookie';
  * A dedicated `Request` type when fetching with Blink based clients.
  * This `Request` type allows the usage of forbidden headers.
  */
-export class FetchRequest extends Request {
+export class FetchConcealedRequest extends Request {
 
     readonly #referrer?: string;
     public override get referrer() { return this.#referrer; }
 
     constructor(input: URL | RequestInfo, init?: RequestInit) {
-        if (init?.headers) init.headers = FetchRequest.#ConcealHeaders(init.headers);
+        if (init?.headers) init.headers = FetchConcealedRequest.#ConcealHeaders(init.headers);
         super(input, init);
         this.#referrer = init?.referrer ?? undefined;
     }
