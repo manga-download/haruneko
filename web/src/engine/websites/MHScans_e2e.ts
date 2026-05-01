@@ -8,7 +8,7 @@ new TestFixture({
     container: {
         url: 'https://mh.inventariooculto.com/series/de-un-simple-soldado-a-monarca/',
         id: JSON.stringify({ post: '2337', slug: '/series/de-un-simple-soldado-a-monarca/' }),
-        title: `De un Simple Soldado a Monarca`
+        title: 'De un Simple Soldado a Monarca'
     },
     child: {
         id: '/series/de-un-simple-soldado-a-monarca/capitulo-133-5/',
@@ -16,7 +16,7 @@ new TestFixture({
     },
     entry: {
         index: 0,
-        size: 613_048,
+        size: 559_796,
         type: 'image/jpeg'
     }
 }).AssertWebsite();
