@@ -1,5 +1,7 @@
-// See: https://developer.mozilla.org/en-US/docs/Glossary/Forbidden_header_name
+export const FetchApiSupportedPrefix = 'X-FetchAPI-';
+export const ConcealedCookieHeaderName = `${FetchApiSupportedPrefix}Cookie`;
 
+// See: https://developer.mozilla.org/en-US/docs/Glossary/Forbidden_header_name
 const fetchApiForbiddenHeaders = [
     'User-Agent',
     'Referer',
@@ -10,12 +12,10 @@ const fetchApiForbiddenHeaders = [
     'Sec-Fetch-Dest',
     'Sec-Fetch-Site',
 ];
-export const FetchApiSupportedPrefix = 'X-FetchAPI-';
-export const ConcealedCookieHeaderName = FetchApiSupportedPrefix + 'Cookie';
 
 /**
  * A dedicated `Request` type when fetching with Blink based clients.
- * This `Request` type allows the usage of forbidden headers.
+ * This `Request` type allows the usage of forbidden headers by concealing.
  */
 export class FetchConcealedRequest extends Request {
 

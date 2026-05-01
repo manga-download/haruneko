@@ -5,31 +5,14 @@ import { CreateRemoteBrowserWindow } from './RemoteBrowserWindow';
 import { CheckAntiScrapingDetection, FetchRedirection } from './AntiScrapingDetection';
 import type { FeatureFlags } from '../FeatureFlags';
 import { Delay, SetTimeout, ClearTimeout } from '../BackgroundTimers';
-
-export function ParseCookiesFromHeader(cookies: string): CookieList {
-    return cookies
-        .split(';')
-        .filter(cookie => cookie.includes('='))
-        .map(cookie => cookie.split('='))
-        .map(([name, value]) => ({ name: name.trim(), value: value.trim() }))
-        .filter(({ name, value }) => name && value);
-}
-
-export function MergeCookies(...cookieSets: CookieList[]): string {
-    const result: Record<string, string> = {};
-    for (const cookieSet of cookieSets) {
-        for (const { name, value } of cookieSet) {
-            if(name && value) result[name] = value;
-        }
-    }
-    return Object.entries(result).map(([ name, value ]) => `${name}=${value}`).join('; '); // TODO: Maybe use `encodeURIComponent(cookie.value)`
-}
+import { ConcealedCookieHeaderName, type FetchConcealedRequest } from './FetchConcealedRequest';
+import { MergeCookiesIntoHeader, ParseCookiesFromHeader } from './CookieHelper';
 
 export abstract class FetchProvider {
 
     private featureFlags: FeatureFlags;
 
-    protected async ValidateResponse(response: Response): Promise<void> {
+    private async ValidateResponse(response: Response): Promise<void> {
         if (/challenge/i.test(response.headers.get('CF-Mitigated'))) {
             throw new Exception(R.FetchProvider_Fetch_CloudFlareChallenge, response.url);
         }
@@ -53,6 +36,29 @@ export abstract class FetchProvider {
      * @param request - ...
      */
     public abstract Fetch(request: Request): Promise<Response>;
+
+    /**
+     * ...
+     * @param request - ...
+     * @param sessionCookies - ...
+     */
+    protected async FetchConcealed(request: FetchConcealedRequest, sessionCookies: CookieList): Promise<Response> {
+        if (request.credentials === 'omit') {
+            request.headers.set(ConcealedCookieHeaderName, '');
+            request.headers.delete('Authorization');
+        } else {
+            const cookie = MergeCookiesIntoHeader(
+                sessionCookies,
+                //await chrome.cookies.getAll({ url: new URL(request.url).origin, partitionKey: {} }), // Include empty partition filter since the chrome bug-fix does not work: https://issues.chromium.org/issues/323924496
+                ParseCookiesFromHeader(request.headers.get(ConcealedCookieHeaderName) ?? ''));
+            request.headers.set(ConcealedCookieHeaderName, cookie);
+            //console.log('Merged Session Cookies:', cookie);
+        }
+        // Fetch API defaults => https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch
+        const response = await fetch(request);
+        await this.ValidateResponse(response);
+        return response;
+    }
 
     /**
      * Fetch and parse the remote HTML content into a virtual {@link Document} for further processing.

@@ -1,4 +1,5 @@
-import { FetchProvider, ParseCookiesFromHeader, MergeCookies } from '../FetchProviderCommon';
+import { FetchProvider } from '../FetchProviderCommon';
+import { ParseCookiesFromHeader, MergeCookiesIntoHeader } from '../CookieHelper';
 import { FetchConcealedRequest, FetchApiSupportedPrefix } from '../FetchConcealedRequest';
 import type { FeatureFlags } from '../../FeatureFlags';
 
@@ -50,22 +51,10 @@ export default class FetchProviderNW extends FetchProvider {
         //       chrome.declarativeWebRequest.onRequest.addListener(...);
     }
 
-    // Fetch API defaults => https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch
-    public async Fetch(request: Request): Promise<Response> {
-        if (request.credentials === 'omit') {
-            request.headers.set(concealedCookieHeaderName, '');
-            request.headers.delete('Authorization');
-        } else {
-            const cookie = MergeCookies(
-                await chrome.cookies.getAll({ url: new URL(request.url).origin, partitionKey: {} }), // Include empty partition filter since the chrome bug-fix does not work: https://issues.chromium.org/issues/323924496
-                ParseCookiesFromHeader(request.headers.get(concealedCookieHeaderName) ?? ''));
-            request.headers.set(concealedCookieHeaderName, cookie);
-            //console.log('Merged Session Cookies:', cookie);
-        }
-        // Fetch API defaults => https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch
-        const response = await fetch(request);
-        await super.ValidateResponse(response);
-        return response;
+    async Fetch(request: Request): Promise<Response> {
+        // Include empty partition filter since the chrome bug-fix does not work: https://issues.chromium.org/issues/323924496
+        const cookies = await chrome.cookies.getAll({ url: new URL(request.url).origin, partitionKey: {} });
+        return super.FetchConcealed(request, cookies);
     }
 
     private RevealHeaders(headers: chrome.webRequest.HttpHeader[]): Headers {
@@ -94,7 +83,7 @@ export default class FetchProviderNW extends FetchProvider {
         const all: Array<[string, string | string[]]> = Object.entries(originalHeaders);
         const result = Object.fromEntries(all.filter(([name]) => !IsConcealed(name)).map(([name, value]) => [name.toLowerCase(), value]));
         const replacements = Object.fromEntries(all.filter(([name]) => IsConcealed(name)).map(([name, value]) => [GetRevealedHeaderName(name), value]));
-        replacements['cookie'] = MergeCookies(
+        replacements['cookie'] = MergeCookiesIntoHeader(
             //await chrome.cookies.getAll({ url: new URL(url).origin, partitionKey: {} }),
             ParseCookiesFromHeader(<string>result['cookie'] ?? ''),
             ParseCookiesFromHeader(<string>replacements['cookie'] ?? ''),

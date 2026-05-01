@@ -1,4 +1,4 @@
-import { FetchProvider, ParseCookiesFromHeader, MergeCookies } from '../FetchProviderCommon';
+import { FetchProvider } from '../FetchProviderCommon';
 import { FetchConcealedRequest, FetchApiSupportedPrefix } from '../FetchConcealedRequest';
 import type { FeatureFlags } from '../../FeatureFlags';
 import { GetIPC } from './InterProcessCommunication';
@@ -30,21 +30,7 @@ export default class FetchProviderElectron extends FetchProvider {
     }
 
     async Fetch(request: Request): Promise<Response> {
-        if (request.credentials === 'omit') {
-            // TODO: This will not prevent adding session cookies in main process
-            request.headers.set(concealedCookieHeaderName, '');
-            request.headers.delete('Authorization');
-        } else {
-            const cookie = MergeCookies(
-                // TODO: This may fail for older desktop clients
-                await this.ipc.Invoke(Channels.FetchProvider.GetSessionCookies, { url: new URL(request.url).origin, /* partitionKey: {} */ }),
-                ParseCookiesFromHeader(request.headers.get(concealedCookieHeaderName) ?? ''));
-            request.headers.set(concealedCookieHeaderName, cookie);
-            //console.log('Merged Session Cookies:', cookie);
-        }
-        // Fetch API defaults => https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch
-        const response = await fetch(request);
-        await super.ValidateResponse(response);
-        return response;
+        const cookies = await this.ipc.Invoke(Channels.FetchProvider.GetSessionCookies, { url: new URL(request.url).origin, /* partitionKey: {} */ });
+        return super.FetchConcealed(request, cookies);
     }
 }
