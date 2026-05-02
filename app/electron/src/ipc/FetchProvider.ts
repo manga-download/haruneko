@@ -5,7 +5,7 @@ import { Channels } from './InterProcessCommunicationChannels';
 export class FetchProvider {
 
     private appHostname = '';
-    private fetchApiSupportedPrefix: string = '_';
+    #FetchApiSupportedPrefixPattern: RegExp = /$^/;
 
     constructor (private readonly ipc: IPC, private readonly webContents: WebContents) {
         this.ipc.Handle(Channels.FetchProvider.Initialize, this.Initialize.bind(this));
@@ -13,7 +13,7 @@ export class FetchProvider {
     }
 
     private Initialize(fetchApiSupportedPrefix: string): void {
-        this.fetchApiSupportedPrefix = fetchApiSupportedPrefix;
+        this.#FetchApiSupportedPrefixPattern = new RegExp('^' + fetchApiSupportedPrefix, 'i');
         this.appHostname = new URL(this.webContents.getURL()).hostname;
         this.webContents.session.webRequest.onBeforeSendHeaders(async (details, callback) => callback(await this.ModifyRequestHeaders(details.url, details.requestHeaders)));
         this.webContents.session.webRequest.onHeadersReceived((details, callback) => callback(this.ModifyResponseHeaders(details.responseHeaders ?? {})));
@@ -48,9 +48,8 @@ export class FetchProvider {
     // See also: web/.../platform/nw/FetchProvider.ts
     private async ModifyRequestHeaders(url: string, originalHeaders: Record<string, string | string[]>): Promise<BeforeSendResponse> {
 
-        const patternConcealedHeaderName = new RegExp('^' + this.fetchApiSupportedPrefix, 'i');
-        const IsConcealed = (name: string) => patternConcealedHeaderName.test(name);
-        const GetRevealedHeaderName = (name: string) => name.replace(patternConcealedHeaderName, '').toLowerCase();
+        const IsConcealed = (name: string) => this.#FetchApiSupportedPrefixPattern.test(name);
+        const GetRevealedHeaderName = (name: string) => name.replace(this.#FetchApiSupportedPrefixPattern, '').toLowerCase();
 
         const all: Array<[string, string | string[]]> = Object.entries(originalHeaders);
         const result = Object.fromEntries(all.filter(([name]) => !IsConcealed(name)).map(([name, value]) => [name.toLowerCase(), value]));

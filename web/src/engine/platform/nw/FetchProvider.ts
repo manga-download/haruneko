@@ -3,12 +3,11 @@ import { ParseCookiesFromHeader, MergeCookiesIntoHeader } from '../CookieHelper'
 import { FetchConcealedRequest, FetchApiSupportedPrefix } from '../FetchConcealedRequest';
 import type { FeatureFlags } from '../../FeatureFlags';
 
-const FetchApiSupportedPrefixPattern = new RegExp('^' + FetchApiSupportedPrefix, 'i');
-
 export default class FetchProviderNW extends FetchProvider {
 
     #initialized = false;
     private readonly appHostname = window.location.hostname;
+    #FetchApiSupportedPrefixPattern = new RegExp('^' + FetchApiSupportedPrefix, 'i');
 
     /**
      * Configure various system globals to bypass FetchAPI limitations.
@@ -60,9 +59,8 @@ export default class FetchProviderNW extends FetchProvider {
     // See also: app/electron/.../ipc/FetchProvider.ts
     readonly #ModifyRequestHeaders = function ModifyRequestHeaders(this: FetchProviderNW, details: chrome.webRequest.OnBeforeSendHeadersDetails): chrome.webRequest.BlockingResponse {
 
-        const patternConcealedHeaderName = FetchApiSupportedPrefixPattern;
-        const IsConcealed = (name: string) => patternConcealedHeaderName.test(name);
-        const GetRevealedHeaderName = (name: string) => name.replace(patternConcealedHeaderName, '').toLowerCase();
+        const IsConcealed = (name: string) => this.#FetchApiSupportedPrefixPattern.test(name);
+        const GetRevealedHeaderName = (name: string) => name.replace(this.#FetchApiSupportedPrefixPattern, '').toLowerCase();
 
         const all: Array<[string, string]> = details.requestHeaders.map(({ name, value }) => [ name, value ]);
         const result = Object.fromEntries(all.filter(([name]) => !IsConcealed(name)).map(([name, value]) => [name.toLowerCase(), value]));
