@@ -309,6 +309,7 @@ export { default as MaidScan } from './MaidScan';
 export { default as Manatoki } from './Manatoki';
 export { default as Manga18FX } from './Manga18FX';
 export { default as Manga168 } from './Manga168';
+export { default as MangaArsivi } from './MangaArsivi';
 export { default as MangaBahcesi } from './MangaBahcesi';
 export { default as MangaBall } from './MangaBall';
 export { default as MangaBANG } from './MangaBANG';
