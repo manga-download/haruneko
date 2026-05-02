@@ -500,6 +500,7 @@ export { default as NetTruyenOK } from './NetTruyenOK';
 export { default as NetTruyenViet } from './NetTruyenViet';
 export { default as NeuManga } from './NeuManga';
 export { default as NewToki } from './NewToki';
+export { default as NexusScans } from './NexusScans';
 export { default as NexusToons } from './NexusToons';
 export { default as Ngomik } from './Ngomik';
 export { default as NhatTruyen } from './NhatTruyen';
