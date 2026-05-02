@@ -28,7 +28,7 @@ export default class FetchProviderElectron extends FetchProvider {
     }
 
     async Fetch(request: Request): Promise<Response> {
-        // TODO: Older Electron desktop clients do not support `Channels.FetchProvider.GetSessionCookies` yet
+        // TODO: Older Electron desktop clients do not support `Channels.FetchProvider.GetSessionCookies`
         try {
             // TODO: When filter by URL partioned cookies may not be found (e.g., cf_clearance)
             const cookies = await this.ipc.Invoke(Channels.FetchProvider.GetSessionCookies, { url: new URL(request.url).origin, /* partitionKey: {} */ });

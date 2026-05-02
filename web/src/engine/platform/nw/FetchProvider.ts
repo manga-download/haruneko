@@ -7,7 +7,7 @@ export default class FetchProviderNW extends FetchProvider {
 
     #initialized = false;
     private readonly appHostname = window.location.hostname;
-    #FetchApiSupportedPrefixPattern = new RegExp('^' + FetchApiSupportedPrefix, 'i');
+    #patternFetchApiSupportedPrefix = new RegExp('^' + FetchApiSupportedPrefix, 'i');
 
     /**
      * Configure various system globals to bypass FetchAPI limitations.
@@ -59,8 +59,8 @@ export default class FetchProviderNW extends FetchProvider {
     // See also: app/electron/.../ipc/FetchProvider.ts
     readonly #ModifyRequestHeaders = function ModifyRequestHeaders(this: FetchProviderNW, details: chrome.webRequest.OnBeforeSendHeadersDetails): chrome.webRequest.BlockingResponse {
 
-        const IsConcealed = (name: string) => this.#FetchApiSupportedPrefixPattern.test(name);
-        const GetRevealedHeaderName = (name: string) => name.replace(this.#FetchApiSupportedPrefixPattern, '').toLowerCase();
+        const IsConcealed = (name: string) => this.#patternFetchApiSupportedPrefix.test(name);
+        const GetRevealedHeaderName = (name: string) => name.replace(this.#patternFetchApiSupportedPrefix, '').toLowerCase();
 
         const all: Array<[string, string]> = details.requestHeaders.map(({ name, value }) => [ name, value ]);
         const result = Object.fromEntries(all.filter(([name]) => !IsConcealed(name)).map(([name, value]) => [name.toLowerCase(), value]));
