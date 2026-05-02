@@ -33,16 +33,16 @@ export default class FetchProviderNW extends FetchProvider {
         //       'blocking'       => sync request required for header modification
         //       'requestHeaders' => allow change request headers
         //       'extraHeaders'   => allow change 'referer', 'origin', 'cookie'
-        if (!chrome.webRequest.onBeforeSendHeaders.hasListener(details => this.ModifyRequestHeaders(details.requestHeaders))) {
-            chrome.webRequest.onBeforeSendHeaders.addListener(this.ModifyRequestHeaders, { urls: [ '<all_urls>' ] }, [ 'blocking', 'requestHeaders', 'extraHeaders' ]);
+        if (!chrome.webRequest.onBeforeSendHeaders.hasListener(this.#ModifyRequestHeaders)) {
+            chrome.webRequest.onBeforeSendHeaders.addListener(this.#ModifyRequestHeaders, { urls: [ '<all_urls>' ] }, [ 'blocking', 'requestHeaders', 'extraHeaders' ]);
         }
 
         // NOTE: parameter extraInfoSpec:
         //       'blocking'        => sync request required for header modification
         //       'responseHeaders' => allow change response headers
         //       'extraHeaders'    => allow change 'referer', 'origin', 'cookie'
-        if (!chrome.webRequest.onHeadersReceived.hasListener(this.ModifyResponseHeaders)) {
-            chrome.webRequest.onHeadersReceived.addListener(this.ModifyResponseHeaders, { urls: [ '<all_urls>' ] }, [ 'blocking', 'responseHeaders', 'extraHeaders' ]);
+        if (!chrome.webRequest.onHeadersReceived.hasListener(this.#ModifyResponseHeaders)) {
+            chrome.webRequest.onHeadersReceived.addListener(this.#ModifyResponseHeaders, { urls: [ '<all_urls>' ] }, [ 'blocking', 'responseHeaders', 'extraHeaders' ]);
         }
 
         // TODO: Swith to chrome.declarativeNetRequest
@@ -57,30 +57,14 @@ export default class FetchProviderNW extends FetchProvider {
         return super.FetchConcealed(request, cookies);
     }
 
-    private RevealHeaders(headers: chrome.webRequest.HttpHeader[]): Headers {
-        const result = new Headers();
-        const patternConcealedHeaderName = FetchApiSupportedPrefixPattern;
-        const IsHeaderNameConcealed = (name: string) => patternConcealedHeaderName.test(name);
-        const GetRevealedHeaderName = (name: string) => name.replace(patternConcealedHeaderName, '');
-
-        headers
-            .filter(({ name, value }) => name && value && !IsHeaderNameConcealed(name))
-            .forEach(({ name, value }) => result.append(name, value));
-
-        headers
-            .filter(({ name, value }) => name && value && IsHeaderNameConcealed(name))
-            .forEach(({ name, value }) => result.set(GetRevealedHeaderName(name), value));
-
-        return result;
-    }
-
-    private readonly ModifyRequestHeaders = function ModifyRequestHeaders(this: FetchProviderNW, originalHeaders: Record<string, string | string[]>): chrome.webRequest.BlockingResponse {
+    // See also: app/electron/.../ipc/FetchProvider.ts
+    readonly #ModifyRequestHeaders = function ModifyRequestHeaders(this: FetchProviderNW, details: chrome.webRequest.OnBeforeSendHeadersDetails): chrome.webRequest.BlockingResponse {
 
         const patternConcealedHeaderName = FetchApiSupportedPrefixPattern;
         const IsConcealed = (name: string) => patternConcealedHeaderName.test(name);
         const GetRevealedHeaderName = (name: string) => name.replace(patternConcealedHeaderName, '').toLowerCase();
 
-        const all: Array<[string, string | string[]]> = Object.entries(originalHeaders);
+        const all: Array<[string, string]> = details.requestHeaders.map(({ name, value }) => [ name, value ]);
         const result = Object.fromEntries(all.filter(([name]) => !IsConcealed(name)).map(([name, value]) => [name.toLowerCase(), value]));
         const replacements = Object.fromEntries(all.filter(([name]) => IsConcealed(name)).map(([name, value]) => [GetRevealedHeaderName(name), value]));
         replacements['cookie'] = MergeCookiesIntoHeader(
@@ -101,15 +85,31 @@ export default class FetchProviderNW extends FetchProvider {
 
         return {
             cancel: false,
-            requestHeaders: result,
+            requestHeaders: Object.entries(result).map(([name, value]) => ({ name, value })),
         };
     }.bind(this);
 
-    private readonly ModifyResponseHeaders = function ModifyResponseHeaders(this: FetchProviderNW, details: chrome.webRequest.OnHeadersReceivedDetails): chrome.webRequest.BlockingResponse {
+    // See also: app/electron/.../ipc/FetchProvider.ts
+    readonly #ModifyResponseHeaders = function ModifyResponseHeaders(this: FetchProviderNW, details: chrome.webRequest.OnHeadersReceivedDetails): chrome.webRequest.BlockingResponse {
+
+        const result = Object.fromEntries(details.responseHeaders.map(({ name, value }) => [name.toLowerCase(), value]));
+
+        // Remove the `link` header to prevent prefetch/preload and a corresponding warning about 'resource preloaded but not used',
+        // especially when scraping with headless requests (see: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Link)
+        if ('link' in result) delete result['link'];
+
+        /*
+        if(details.method.toUpperCase() === 'OPTIONS') {
+            result['access-control-allow-origin'] = '*';
+            result['access-control-allow-methods'] = '*';
+            result['access-control-allow-headers'] = '*';
+            result['access-control-allow-credentials'] = 'true';
+        }
+        */
+
         return {
-            // remove the `link` header to prevent prefetch/preload and a corresponding warning about 'resource preloaded but not used',
-            // especially when scraping with headless requests (see: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Link)
-            responseHeaders: details.responseHeaders.filter(header => header.name.toLocaleLowerCase() !== 'link')
+            cancel: false,
+            responseHeaders: Object.entries(result).map(([name, value]) => ({ name, value })),
         };
     }.bind(this);
 }

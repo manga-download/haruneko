@@ -45,6 +45,7 @@ export class FetchProvider {
     }
 
     // TODO: Invoke via IPC in WEB
+    // See also: web/.../platform/nw/FetchProvider.ts
     private async ModifyRequestHeaders(url: string, originalHeaders: Record<string, string | string[]>): Promise<BeforeSendResponse> {
 
         const patternConcealedHeaderName = new RegExp('^' + this.fetchApiSupportedPrefix, 'i');
@@ -55,7 +56,8 @@ export class FetchProvider {
         const result = Object.fromEntries(all.filter(([name]) => !IsConcealed(name)).map(([name, value]) => [name.toLowerCase(), value]));
         const replacements = Object.fromEntries(all.filter(([name]) => IsConcealed(name)).map(([name, value]) => [GetRevealedHeaderName(name), value]));
         replacements['cookie'] = this.MergeCookies(
-            // TODO: Only added for backward-compatibility! Can be removed when session cookies are provided via `replacements['cookie']`
+            // TODO: Session cookies are only added for backward-compatibility with Electron desktop clients
+            //       that do not provide session cookies via concealed header in request: `replacements['cookie']`
             await this.GetSessionCookies({ url: new URL(url).origin, /* partitionKey: {} */ }),
             this.ParseCookiesFromHeader(<string>result['cookie'] ?? ''),
             this.ParseCookiesFromHeader(<string>replacements['cookie'] ?? ''),
@@ -78,6 +80,7 @@ export class FetchProvider {
     }
 
     // TODO: Invoke via IPC in WEB
+    // See also: web/.../platform/nw/FetchProvider.ts
     private ModifyResponseHeaders(originalHeaders: Record<string, string | string[]>): HeadersReceivedResponse {
 
         const result = Object.fromEntries(Object.entries(originalHeaders).map(([name, value]) => [name.toLowerCase(), value]));
@@ -85,21 +88,22 @@ export class FetchProvider {
         // Remove the `link` header to prevent prefetch/preload and a corresponding warning about 'resource preloaded but not used',
         // especially when scraping with headless requests (see: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Link)
         if ('link' in result) delete result['link'];
+
+        /*
+        if(details.method.toUpperCase() === 'OPTIONS') {
+            result['access-control-allow-origin'] = '*';
+            result['access-control-allow-methods'] = '*';
+            result['access-control-allow-headers'] = '*';
+            result['access-control-allow-credentials'] = 'true';
+        }
+        */
+
         // Currently electron does not include partitioned cookies when filtering with `session.cookies.get({ url })`
         // => Workaround: Remove the partitioned flag from the server response
         if ('set-cookie' in result) {
             const value = result['set-cookie'];
             result['set-cookie'] = typeof value === 'string' ? value.replace(/partitioned/gi, '') : value.map(cookie => cookie.replace(/partitioned/gi, ''));
         }
-
-        /*
-        if(details.method.toUpperCase() === 'OPTIONS') {
-            result['Access-Control-Allow-Origin'] = [ '*' ];
-            result['Access-Control-Allow-Methods'] = [ '*' ];
-            result['Access-Control-Allow-Headers'] = [ '*' ];
-            result['Access-Control-Allow-Credentials'] = [ 'true' ];
-        }
-        */
 
         return {
             cancel: false,

@@ -24,13 +24,17 @@ export default class FetchProviderElectron extends FetchProvider {
             globalThis.Request = FetchConcealedRequest;
         }
 
-        // TODO: Monkey patch `globalThis.fetch`?
-
         this.ipc.Invoke(Channels.FetchProvider.Initialize, FetchApiSupportedPrefix);
     }
 
     async Fetch(request: Request): Promise<Response> {
-        const cookies = await this.ipc.Invoke(Channels.FetchProvider.GetSessionCookies, { url: new URL(request.url).origin, /* partitionKey: {} */ });
-        return super.FetchConcealed(request, cookies);
+        // TODO: Older Electron desktop clients do not support `Channels.FetchProvider.GetSessionCookies` yet
+        try {
+            // TODO: When filter by URL partioned cookies may not be found (e.g., cf_clearance)
+            const cookies = await this.ipc.Invoke(Channels.FetchProvider.GetSessionCookies, { url: new URL(request.url).origin, /* partitionKey: {} */ });
+            return super.FetchConcealed(request, cookies);
+        } catch {
+            return super.FetchConcealed(request, []);
+        }
     }
 }

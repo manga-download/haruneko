@@ -37,19 +37,13 @@ export abstract class FetchProvider {
      */
     public abstract Fetch(request: Request): Promise<Response>;
 
-    /**
-     * ...
-     * @param request - ...
-     * @param sessionCookies - ...
-     */
     protected async FetchConcealed(request: FetchConcealedRequest, sessionCookies: CookieList): Promise<Response> {
         if (request.credentials === 'omit') {
-            request.headers.set(ConcealedCookieHeaderName, '');
+            request.headers.delete(ConcealedCookieHeaderName);
             request.headers.delete('Authorization');
         } else {
             const cookie = MergeCookiesIntoHeader(
                 sessionCookies,
-                //await chrome.cookies.getAll({ url: new URL(request.url).origin, partitionKey: {} }), // Include empty partition filter since the chrome bug-fix does not work: https://issues.chromium.org/issues/323924496
                 ParseCookiesFromHeader(request.headers.get(ConcealedCookieHeaderName) ?? ''));
             request.headers.set(ConcealedCookieHeaderName, cookie);
             //console.log('Merged Session Cookies:', cookie);
