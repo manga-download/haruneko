@@ -4,16 +4,16 @@ new TestFixture({
     plugin: {
         id: 'niverafansub',
         title: 'Nivera Fansub'
-    },
+    }, /* Need Login
     container: {
-        url: 'https://niverafansub.pro/manga/xian-chan-nu/',
-        id: JSON.stringify({ post: '183', slug: '/manga/xian-chan-nu/' }),
+        url: 'https://niverafansub.lol/manga/xian-chan-nu/',
+        id: JSON.stringify({ slug: '/manga/xian-chan-nu/' }),
         title: 'Xian Chan Nu'
     },
     child: {
         id: '/manga/xian-chan-nu/101-bolum/',
         title: '101. Bölüm'
-    }, /* Need Login
+    },
     entry: {
         index: 1,
         size: 1_536_881,

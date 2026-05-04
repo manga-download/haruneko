@@ -6,17 +6,17 @@ new TestFixture({
         title: 'MHScans'
     },
     container: {
-        url: 'https://mh.inventariooculto.com/series/de-un-simple-soldado-a-monarca/',
+        url: 'https://mhscans.com/series/de-un-simple-soldado-a-monarca/',
         id: JSON.stringify({ post: '2337', slug: '/series/de-un-simple-soldado-a-monarca/' }),
         title: 'De un Simple Soldado a Monarca'
     },
     child: {
-        id: '/series/de-un-simple-soldado-a-monarca/capitulo-133-5/',
-        title: 'Capítulo 133.5'
+        id: '/series/de-un-simple-soldado-a-monarca/capitulo-104/',
+        title: 'Capítulo 104'
     },
     entry: {
-        index: 0,
-        size: 559_796,
+        index: 2,
+        size: 220_232,
         type: 'image/jpeg'
     }
 }).AssertWebsite();

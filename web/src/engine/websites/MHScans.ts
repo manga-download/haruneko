@@ -21,7 +21,7 @@ export default class extends DecoratableMangaScraper {
     private ReaderKnight = { nonce: '', ajaxUrl: '' };
 
     public constructor() {
-        super('mhscans', 'MHScans', 'https://mh.inventariooculto.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Spanish, Tags.Source.Scanlator);
+        super('mhscans', 'MHScans', 'https://mhscans.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Spanish, Tags.Source.Scanlator);
     }
 
     public override get Icon() {
