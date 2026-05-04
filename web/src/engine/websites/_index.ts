@@ -644,6 +644,7 @@ export { default as SirenKomik } from './SirenKomik';
 export { default as SkyManga } from './SkyManga';
 export { default as SlashLib } from './SlashLib';
 export { default as SoftKomik } from './SoftKomik';
+export { default as SoraRaw } from './SoraRaw';
 export { default as SoulScans } from './SoulScans';
 export { default as SpoilerPlus } from './SpoilerPlus';
 export { default as StarlightScan } from './StarlightScan';

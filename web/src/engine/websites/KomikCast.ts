@@ -31,7 +31,7 @@ type APIPages = {
 @Common.ImageAjax()
 
 export default class extends DecoratableMangaScraper {
-    private readonly apiUrl = 'https://be.komikcast.fit/series/';
+    private readonly apiUrl = 'https://be.komikcast.cc/series/';
 
     public constructor() {
         super('komikcast', 'KomikCast', 'https://v2.komikcast.fit', Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Language.Indonesian, Tags.Source.Aggregator, Tags.Accessibility.DomainRotation);
