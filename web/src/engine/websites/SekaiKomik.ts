@@ -1,13 +1,13 @@
 import { Tags } from '../Tags';
 import icon from './SekaiKomik.webp';
-import { Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from '../providers/MangaPlugin';
+import { Chapter, DecoratableMangaScraper, Manga, type MangaPlugin } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { FetchJSON } from '../platform/FetchProvider';
+import { FetchJSON, FetchRegex } from '../platform/FetchProvider';
 
 type PackedData = {
     nodes: {
         data: JSONElement;
-    }[]
+    }[];
 };
 
 type APIMangas = {
@@ -20,30 +20,29 @@ type APIManga = {
     chapters: APIChapter[];
 };
 
-type APIMangaDetails = {
-    manga: APIManga;
+type APIChapters = {
+    chapters: APIChapter[];
 };
 
 type APIChapter = {
+    id: string;
     chapterNumber: number;
     pages: {
         url: string;
     }[]
 };
 
-type APIPages = {
-    chapter: APIChapter;
-};
-
 function CleanTitle(title: string): string {
     return title.replaceAll(/(Bahasa Indonesia|^(.*) Hentai\s*\|)/g, '').trim();
 }
 
+@Common.PagesSinglePageJS(`[...document.querySelectorAll('img[alt*="Page"')].map(img => img.src);`, 1500)
 @Common.ImageAjax(true)
 export default class extends DecoratableMangaScraper {
+    private readonly apiUrl = `${this.URI.origin}/api/`;
 
     public constructor() {
-        super('sekaikomik', 'ManhwaLand (SekaiKomik)', 'https://manhwaland.work', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Language.Indonesian, Tags.Rating.Pornographic, Tags.Source.Aggregator);
+        super('sekaikomik', 'ManhwaLand (SekaiKomik)', 'https://02x.mwland.xyz', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Language.Indonesian, Tags.Rating.Pornographic, Tags.Source.Aggregator);
     }
 
     public override get Icon() {
@@ -55,9 +54,9 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
-        //using API because too many different sort of junk in "titles" from the html
-        const { manga: { title } } = await this.FetchAPI<APIMangaDetails>(`${url}/__data.json`);
-        return new Manga(this, provider, url.split('/').at(-1), CleanTitle(title));
+        const mangaUrl = new URL(url);
+        const [title] = await FetchRegex(new Request(new URL(url)), /manga:\{[^}]*?title:"([^"]*)"/g);
+        return new Manga(this, provider, mangaUrl.pathname.split('/').at(-1), CleanTitle(title));
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
@@ -72,13 +71,15 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const { manga: { chapters } } = await this.FetchAPI<APIMangaDetails>(`/komik/${manga.Identifier}/__data.json`);
-        return chapters.map(({ chapterNumber }) => new Chapter(this, manga, `${chapterNumber}`, `Chapter ${chapterNumber}`));
-    }
-
-    public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const { chapter: { pages } } = await this.FetchAPI<APIPages>(`/baca/${chapter.Parent.Identifier}/${chapter.Identifier}/__data.json`);
-        return pages.map(({ url }) => new Page(this, chapter, new URL(url, this.URI)));
+        type This = typeof this;
+        return (await Array.fromAsync(async function* (this: This) {
+            for (let skip = 0, run = true; run;) {
+                const { chapters: chaptersData } = await FetchJSON<APIChapters>(new Request(new URL(`./manga/${manga.Identifier}/chapters?skip=${skip}`, this.apiUrl)));
+                const chapters = chaptersData.map(({ chapterNumber }) => new Chapter(this, manga, `/baca/${manga.Identifier}/${chapterNumber}`, `Chapter ${chapterNumber}`));
+                chapters.length > 0 ? yield* chapters : run = false;
+                skip += chapters.length;
+            }
+        }.call(this))).distinct();
     }
 
     private async FetchAPI<T extends JSONElement>(endpoint: string): Promise<T> {
