@@ -6,7 +6,7 @@ new TestFixture({
         title: 'Kiryuu'
     },
     container: {
-        url: 'https://v2.kiryuu.to/manga/the-modern-eras-strongest-soldier-conquers-another-worlds-dungeon/',
+        url: 'https://v5.kiryuu.to/manga/the-modern-eras-strongest-soldier-conquers-another-worlds-dungeon/',
         id: '/manga/the-modern-eras-strongest-soldier-conquers-another-worlds-dungeon/',
         title: `The Modern Era's Strongest Soldier Conquers Another World's Dungeon`
     },
