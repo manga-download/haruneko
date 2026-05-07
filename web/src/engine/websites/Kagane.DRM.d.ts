@@ -12,16 +12,8 @@ type Page = {
 export declare class DRMProvider {
     #private;
     constructor();
-    CreateImageURL(
-        tokenEndpointUrl: string,
-        bookId: string,
-        assetId: string
-    ): Promise<Page[]>;
-
-    DecryptImage(
-        bytes: ArrayBuffer,
-        mimeType?: string
-    ): Promise<Blob>;
+    CreateImageURL(tokenEndpointUrl: string, bookId: string, assetId: string): Promise<Page[]>;
+    DecryptImage(bytes: ArrayBuffer, mimeType?: string): Promise<Blob>;
 }
 
 export {};
