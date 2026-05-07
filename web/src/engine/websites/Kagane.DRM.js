@@ -1,2 +1,367 @@
 /* eslint-disable -- @preserved */
-(function(a,b){const a0J={a:'JCs%',b:0x76,c:'][os',d:0x81,e:'r6$^',f:0xff,g:'o$1c',h:0x13f,i:'U[vu',j:0x98,k:'82ry',l:0x5f,m:'B0L^',n:0x5b,o:'Ry0R',r:0x12f,C:'ox@n',H:0x6b,I:0x124,J:'bm]P',K:0x89,M:'X1rf',N:0x7b,O:'LLMH',P:0x11a},a0I={a:0x329},a0H={a:0x287},c=a();function p(a,b){return a0b(b- -a0H.a,a);}function q(a,b){return a0b(b- -a0I.a,a);}while(!![]){try{const d=parseInt(p(a0J.a,-a0J.b))/(-0x1*0xbe6+-0x2f2*0xb+0x2c4d)*(parseInt(p(a0J.c,-a0J.d))/(-0x1*-0x1922+0x81b*0x2+-0x197*0x1a))+parseInt(q(a0J.e,-a0J.f))/(-0x803+0x1dbb+0x1*-0x15b5)*(parseInt(q(a0J.g,-a0J.h))/(0x74d+0x298+-0x9e1))+parseInt(p(a0J.i,-a0J.j))/(0x16c7+-0xdc+-0x1*0x15e6)*(parseInt(p(a0J.k,-a0J.l))/(0xec7+-0x2197+0x12d6))+-parseInt(p(a0J.m,-a0J.n))/(0x2*-0xee+0x3*-0x917+0x1d28)*(parseInt(q(a0J.o,-a0J.r))/(0x266+0x7*-0x2f+0x115*-0x1))+-parseInt(p(a0J.C,-a0J.H))/(-0x6d7*-0x5+-0x2395+-0x3*-0x79)*(-parseInt(q(a0J.i,-a0J.I))/(-0x117e+-0x3f2*-0x8+0x1c1*-0x8))+-parseInt(p(a0J.J,-a0J.K))/(-0x1268*-0x2+0x12f8+-0x13*0x2ef)*(parseInt(p(a0J.M,-a0J.N))/(0x105*-0x19+0x642+0x1347))+-parseInt(q(a0J.O,-a0J.P))/(0x273*-0xe+-0x51b*0x4+0x36c3);if(d===b)break;else c['push'](c['shift']());}catch(e){c['push'](c['shift']());}}}(a0a,-0x7b5*-0x91+0x2*0x21912+-0x5f647*0x1));import a0c from'protobufjs';function a0b(a,b){a=a-(0x16c5+-0x1594+-0x2b*-0x4);const c=a0a();let d=c[a];if(a0b['YzzKZa']===undefined){var e=function(j){const l='abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789+/=';let m='',n='';for(let o=-0x81b+0xce6+0x1*-0x4cb,p,q,r=-0x16d8+0x6e8+0xff0;q=j['charAt'](r++);~q&&(p=o%(-0x879*0x3+-0xe95+0xd*0x314)?p*(-0x1855*-0x1+-0x44*-0x3+-0x18e1*0x1)+q:q,o++%(-0x160f+0xec2+0x751*0x1))?m+=String['fromCharCode'](-0x151+0x2625+-0x1*0x23d5&p>>(-(0x17ff+-0xb7a+-0xc83)*o&0x2e*0x16+-0xd*0xa4+-0x1*-0x466)):0x2*-0xbf9+0x1ee0+-0x6ee*0x1){q=l['indexOf'](q);}for(let s=-0x1106*0x1+-0x24c5+0x35cb,t=m['length'];s<t;s++){n+='%'+('00'+m['charCodeAt'](s)['toString'](0x1bf9+0x1*0x1cb7+0x2*-0x1c50))['slice'](-(-0x1d*-0x21+-0x1598+-0x10d*-0x11));}return decodeURIComponent(n);};const i=function(k,l){let m=[],n=-0xa*-0x1a5+-0x7cf*0x1+-0xc9*0xb,o,p='';k=e(k);let q;for(q=0x1f41+-0x23b2+-0x17b*-0x3;q<-0x140b+-0xaab+0x1fb6;q++){m[q]=q;}for(q=0xda*0x9+0x1*-0x2483+-0x5c5*-0x5;q<0xd66+-0x92*-0x13+-0x173c;q++){n=(n+m[q]+l['charCodeAt'](q%l['length']))%(0x7d5+0x83*0x49+-0xca*0x38),o=m[q],m[q]=m[n],m[n]=o;}q=0x5*-0x506+0x2091*0x1+-0x773*0x1,n=0x9fa+0x12f6+0xe78*-0x2;for(let r=-0x619*-0x3+-0x31c+-0xf2f;r<k['length'];r++){q=(q+(0xc02+-0x2*0x55f+-0x143))%(0x3c*0xb+-0x4d7*0x8+0x2524),n=(n+m[q])%(0x1*-0xa1f+-0x11dd+0x1cfc),o=m[q],m[q]=m[n],m[n]=o,p+=String['fromCharCode'](k['charCodeAt'](r)^m[(m[q]+m[n])%(0x1e*-0x11b+0x679*-0x2+0xa*0x4b6)]);}return p;};a0b['UPuwwT']=i,a0b['PMbDtn']={},a0b['YzzKZa']=!![];}const f=c[0xa8*-0x22+0x142+-0x62*-0x37],g=a+f,h=a0b['PMbDtn'][g];return!h?(a0b['sTzKMN']===undefined&&(a0b['sTzKMN']=!![]),d=a0b['UPuwwT'](d,b),a0b['PMbDtn'][g]=d):d=h,d;}import{FetchJSON}from'../platform/FetchProvider';function a0a(){const a9=['W6ZdU37cNanM','WOBcO8oCtCkri2ajWRett8kVWP4','WR3cOYJdH1y1DSkSW7/dJCk/wNi','WQhcJSohW6PpWRW','WP9NW7hcIv8JW6jLxJPlWPP9','ox0JCG','BG4HnmoZWRldRqVdRCoRW5fz','zGTW','wSkZpCkCha','bs9ioSo/mCkAWOZdSJ8fj8kQW6BcTCojBYS','qmkYnCkyhmo5WP7cPSoTbG','iSkWsheaWOeHsmoEo3RdMq','lfnWySkH','FCkErSo1bvpdSwGvWRG','CSo2gc5wW4q','fYuIbKmR','WRxcGmojW6H/WRaAW6CUW5ZcLti','E8olWPL+W7SbwqyvWPK','Fu7cSHNdLICXFSojWOq1e1JdNG','l15+zmkBW63dVWJdHCokW6W','E8okWP59W7Cwwr8dWOW','W6TQihO','arP8DNyqlmojnG','BH7cPuSvWPpdMComfmo5WP0','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','tuJcPrhdJcurDCor','WP1cW7pdQc7cU2tdJL0+W4hdQq','W5/cTbfGWRWc','b8o8WO0IWPOL','mCkrW4OrWQ7cSmoFnSo6fG','W4RcQb19WQmp','BrNcQKSwW4xdOmo8cCo8WOtdLG','WQzsoSolxM8','W5GFWQpcRhZdOKpdMwKOW7JdGG','W7NdTg/cGai','W7eoB8ksaZO+W6pdTCk8W7pcMSoL','W4ddK8kCWQ9eWRexW5SmW4S','orHdjCkUW6ldRG','ECoxja','y8oMcH1AW5G0hSkg','W7hcRNqQW5BcOvldQ1Ca','W6BdNSoxW5y','WOxcISobW79O','m0/dSHvrWPO','W7LRWQhcLSka','WP1cW6BdJYtcVudcNb0','hSoRnCk9imk8','luVdSHzkWP8','F2CayrvdWQO','rmk2ASoSzCoLWOqtvLpcJSok','kMi8AH9JWQ9pWPdcSCkvW6v8BCkghq','W7/cTh0NW4BcOW','W7/dI8kqtSkNW4C','WPldOSkPpCkLiLxdSW0q','BG5duCkXW4xdQr8','sbNcPSo6Cu7cPa','W6VcGCouW6WeWQ/cS33cLx5bWQ3cPCkKW43cMJVdTmke','C3u8qdryWPG','umoPWQHZ','fWL0FG','WOHoW7ZdSZ7cUW','W5JdTmkehmoCEW','W7XxqcOzzWa','qCoygq','W4pdI3RcMSkpWO/cTa','cCk/WQe3WOhcI8kzpG','xCkysSo7hLddGemaWQXaWOG8WP8','W53dOSk1h8ojzZKqWRqeESke','aXCKWRKofZhdHq','dWNcI8oVCwxcKmktWPFcHx5D','WQFcKSobW6rFWRW','wSojgxzKW5ixW4pcVSkZW43dHSkZFeDaB8kLWPddGxBdUaW4W7q0WQ/dM8oFjmoGW4e','ohC4','W7L+F0uywhW7u8oC','W6KYWPy6W5NdLa','WPBdR8kKnmoGlKldTGKdna','jCokeaSOq8ki','zW9UcSk3W5G','WQqyW51sf8kmv8ofqCkjW4FcHtG','lfPT','dW3dR03cLxmFFCoIWQCFpa'];a0a=function(){return a9;};return a0a();}import{GetBase64FromBytes}from'../BufferEncoder';import{RandomBytes}from'../Random';function a0C(a,b){const a0K={a:0x38a};return a0b(a- -a0K.a,b);}function a0r(a,b){const a0M={a:0x35e};return a0b(b- -a0M.a,a);}const WIDEVINE_SYSTEM_ID=Uint8Array[a0r('k6I7',-0x169)]([0x1*-0x1951+-0xff3+-0x7*-0x607,-0x998+-0x2508+-0x983*-0x5,0xffb*-0x1+0x1*0xcf3+0x393,-0x9d4*-0x1+-0x1d71+-0xad*-0x1e,-0x1*0x12bb+-0x14b*-0x11+-0x2c7,-0x2*-0x22+-0xd79+0xe0b,-0x1708+0x2e*0x16+-0x25*-0x86,0x1eee+0x2*-0x30b+-0x22*0xb5,0x1fd9+-0x26f4+-0x7be*-0x1,0xa7*-0x25+-0x171e+0x1*0x3009,-0x101*-0xa+-0x1*-0x1bb+-0xb9e,-0x2*-0xc87+-0x24*0xa7+-0xb6*0x1,-0x768*-0x2+-0x1b76+0xd7b,0xa0+-0x165c+0x15d9,-0xdba*0x1+0x2b*-0x1f+0x1*0x1310,0x12*0x105+-0x21de+-0xb7*-0x17]);export class DRMProvider{#protoSignedMessage;#protoLicenseRequest;constructor(){const a0P={a:'jG0*',b:0x22a,c:'e&J)',d:0x220,e:'o$1c',f:0x20d,g:0xcf,h:'ymNO',i:'aNsj',j:0x205,k:0x99,l:'udUd',m:0x1f9},a0O={a:0x35b},a0N={a:0x215},a=a0c[s(a0P.a,a0P.b)](s(a0P.c,a0P.d),{'keepCase':!![]})[s(a0P.e,a0P.f)];this.#protoSignedMessage=a[t(a0P.g,a0P.h)](s(a0P.i,a0P.j));function t(a,b){return a0r(b,a-a0N.a);}function s(a,b){return a0r(a,b-a0O.a);}this.#protoLicenseRequest=a[t(a0P.k,a0P.l)](s(a0P.h,a0P.m));}async #DeriveKeyId(a){const a0S={a:0x7,b:'jG0*',c:0x576,d:'Qi*C',e:0x577,f:'R6)A',g:0x1a,h:'[SEP',i:0x536,j:'Dky0'},a0R={a:0x14c},a0Q={a:0x6ae},b=new TextEncoder()[u(-a0S.a,a0S.b)](':'+a),c=await crypto[v(a0S.c,a0S.d)][v(a0S.e,a0S.f)](u(-a0S.g,a0S.h),b);function v(a,b){return a0r(b,a-a0Q.a);}function u(a,b){return a0r(b,a-a0R.a);}return new Uint8Array(c)[v(a0S.i,a0S.j)](-0x1f*0x133+0x191*0x5+-0x139*-0x18,0x5*-0x506+0x2091*0x1+-0x3d*0x1f);}async #BuildWidevinePSSH(a){const a0V={a:0x55b,b:'PlfE',c:'X1rf',d:0x122,e:0x556,f:'o$1c',g:'B0L^',h:0x112,i:0x539,j:'r6$^',k:'^^NM',l:0x145,m:0x535,n:'v7fc',o:'6GCF',r:0x113,C:0x144,H:'UnF#',I:0x119,J:0x537,K:'@vUb',M:0x541,N:'udUd'},a0U={a:0x289},a0T={a:0x6b2},b=await this.#DeriveKeyId(a),c=new Uint8Array(0x9fa+0x12f6+0xe77*-0x2+b[w(a0V.a,a0V.b)]);function w(a,b){return a0r(b,a-a0T.a);}c[-0x619*-0x3+-0x31c+-0xf2f]=0xc02+-0x2*0x55f+-0x132,c[0x3c*0xb+-0x4d7*0x8+0x2425]=b[x(a0V.c,a0V.d)],c[w(a0V.e,a0V.f)](b,0x1*-0xa1f+-0x11dd+0x1bfe);const d=new Uint8Array(0x1e*-0x11b+0x679*-0x2+0xc*0x3d8),e=new DataView(new ArrayBuffer(0xa8*-0x22+0x142+-0x57*-0x3e));e[x(a0V.g,a0V.h)](-0x1dd*-0x9+0x4*-0x1d+0x1051*-0x1,c[w(a0V.i,a0V.j)],![]);const f=new Uint8Array(e[x(a0V.k,a0V.l)]),g=new Uint8Array([...d,...WIDEVINE_SYSTEM_ID,...f,...c]),h=new DataView(new ArrayBuffer(-0x345+-0x141b*-0x1+-0x10d2));function x(a,b){return a0r(a,b-a0U.a);}h[w(a0V.m,a0V.n)](-0x1a1c+0x22a*0xe+0x2*-0x218,g[x(a0V.o,a0V.r)]+(0xa49+0x814+-0x1*0x1255),![]);const i=new Uint8Array(h[x(a0V.n,a0V.C)]);return new Uint8Array([...i,...new TextEncoder()[x(a0V.H,a0V.I)](w(a0V.J,a0V.K)),...g])[w(a0V.M,a0V.N)];}async #CreateMediaLicenseChallenge(a){const a0Y={a:0x333,b:'JCs%',c:0x31c,d:'GesE',e:0x2fc,f:'][os',g:'r6$^',h:0x2e8,i:0x330,j:'%flx',k:0x320,l:')CaM',m:0x347,n:'&Cw6',o:0x312,r:'B0L^',C:0x32a,H:'Qi*C',I:0x328},a0X={a:0x45d},a0W={a:0x47a};function y(a,b){return a0r(b,a-a0W.a);}const b=new Uint8Array(a)[y(a0Y.a,a0Y.b)](-0x1763+0x43*0x38+0x8db),c=this.#protoLicenseRequest[y(a0Y.c,a0Y.d)]({'type':0x1,'protocol_version':0x16,'request_time':Date[y(a0Y.e,a0Y.f)]()/(0xcf+-0x23ef+0x2*0x1384)>>>0xbc3+0x1*-0x21e2+0x161f,'key_control_nonce':Math[z(a0Y.g,a0Y.h)]()*(-0xf3e46737+-0x15ae1c757+0x167*0x25bd3eb)>>>0x246c+0xb05+-0x2f71,'encrypted_client_id':{'service_id':y(a0Y.i,a0Y.j),'service_certificate_serial_number':RandomBytes(0x13d*-0x14+-0xdba*-0x1+0x31*0x3a),'encrypted_client_id':RandomBytes(-0x18ea+-0x1d0a+0x1*0x4774),'encrypted_client_id_iv':RandomBytes(-0x144d+-0x3*0x35b+0x2*0xf37),'encrypted_privacy_key':RandomBytes(-0x17e*-0x4+0x2595+-0x2a8d)},'content_id':{'cenc_id':{'pssh':[b],'license_type':0x1,'request_id':RandomBytes(0xc5*-0x11+-0x1e26*0x1+0x2b4b*0x1)}}}),d=this.#protoSignedMessage[y(a0Y.k,a0Y.l)]({'type':0x1,'msg':this.#protoLicenseRequest[y(a0Y.m,a0Y.n)](c)[y(a0Y.o,a0Y.r)](),'signature':RandomBytes(-0x3a1*0x2+-0x2*-0x8a7+0x5e*-0x1a)});function z(a,b){return a0r(a,b-a0X.a);}return this.#protoSignedMessage[y(a0Y.C,a0Y.d)](d)[z(a0Y.H,a0Y.I)]();}async #CreateIntegrityChallenge(){const a0a1={a:0x48c,b:'h%wk',c:0x128,d:'82ry'},a0a0={a:0x42},a0Z={a:0x5e9},{token:a,exp:b}=await FetchJSON(new Request(A(a0a1.a,a0a1.b),{'method':B(-a0a1.c,a0a1.d)}));function A(a,b){return a0r(b,a-a0Z.a);}function B(a,b){return a0r(b,a-a0a0.a);}return{'token':a,'exp':b};}async[a0C(-0x16d,'4eS@')](a,b,c,d=![]){const a0a7={a:0x40f,b:'(DZs',c:'o$1c',d:0x1af,e:0x413,f:'4eS@',g:'b9iH',h:0x1be,i:'sXPa',j:0x1d6,k:0x401,l:'PlfE'},a0a6={a:'JCs%',b:0x157,c:'GesE',d:0x522,e:'k6I7',f:0x551,g:'B0L^',h:0x555,i:0x16c,j:'WpQd',k:0x191,l:'IO]r',m:0x52f,n:'h%wk',o:0x529,r:'X1rf',C:0x178},a0a5={a:0x338},a0a3={a:0x34d},a0a2={a:0x579},{token:e}=await this.#CreateIntegrityChallenge();function D(a,b){return a0C(a-a0a2.a,b);}const f=await this.#BuildWidevinePSSH(c),g=await this.#CreateMediaLicenseChallenge(f);function E(a,b){return a0C(b-a0a3.a,a);}const {cache_url:h,access_token:i,pages:j}=await FetchJSON(new Request(a,{'method':D(a0a7.a,a0a7.b),'headers':{'Content-Type':E(a0a7.c,a0a7.d),'X-Integrity-Token':e},'body':JSON[D(a0a7.e,a0a7.f)]({'challenge':GetBase64FromBytes(g)})})),k=h[E(a0a7.g,a0a7.h)]('/')?h[E(a0a7.i,a0a7.j)](-0x39*0x9d+-0x72b+0x2a20,-(0x430+0x33d*-0x1+-0xf2)):h;return j[D(a0a7.k,a0a7.l)]((l,m)=>{const a0a4={a:0x36d},n={'MangaID':b,'ChapterID':c,'PageNumber':l[F(a0a6.a,-a0a6.b)]??m+(0x12ad*-0x1+-0xba5+0x1e53)},o=new URL(k+G(a0a6.c,a0a6.d)+c+'/'+l[G(a0a6.e,a0a6.f)]);o[G(a0a6.g,a0a6.h)][F(a0a6.a,-a0a6.i)](F(a0a6.j,-a0a6.k),i);function G(a,b){return E(a,b-a0a4.a);}o[G(a0a6.l,a0a6.m)][G(a0a6.n,a0a6.o)](F(a0a6.r,-a0a6.C),String(d));function F(a,b){return E(a,b- -a0a5.a);}return{'link':o,'parameters':n};});}async[a0C(-0x16f,'WpQd')](a,b=a0C(-0x175,'sXPa')){return new Blob([a],{'type':b});}}
+import L from "protobufjs";
+import { FetchJSON } from "../platform/FetchProvider";
+import { GetBase64FromBytes } from "../BufferEncoder";
+import { RandomBytes } from "../Random";
+
+
+// Hardcoded Widevine SystemID for the PSSH box: edef8ba979d64acea3c827dcd51d21ed
+// Available in https://kagane.org/_next/static/chunks/common-e6bef285f8b57c56.js
+const WIDEVINE_SYSTEM_ID = Uint8Array.from(
+    [
+        237, 239, 139, 169, 
+        121, 214, 74, 206, 
+        163, 200, 39, 220, 
+        213, 29, 33, 237,
+    ]
+);
+
+
+export class DRMProvider {
+    #protoSignedMessage;
+    #protoLicenseRequest;
+
+    constructor() {
+        const root = L.parse(`
+
+syntax = "proto2";
+package video_widevine_server.sdk;
+option optimize_for = LITE_RUNTIME;
+
+enum LicenseType {
+  STREAMING = 1;
+  OFFLINE = 2;
+}
+
+message LicenseIdentification {
+  optional bytes request_id = 1;
+  optional bytes session_id = 2;
+  optional bytes purchase_id = 3;
+  optional LicenseType type = 4;
+  optional int32 version = 5;
+  optional bytes provider_session_token = 6;
+}
+
+message License {
+  message Policy {
+    optional bool can_play = 1 [default = false];
+    optional bool can_persist = 2 [default = false];
+    optional bool can_renew = 3 [default = false];
+    optional int64 rental_duration_seconds = 4 [default = 0];
+    optional int64 playback_duration_seconds = 5 [default = 0];
+    optional int64 license_duration_seconds = 6 [default = 0];
+    optional int64 renewal_recovery_duration_seconds = 7 [default = 0];
+    optional string renewal_server_url = 8;
+    optional int64 renewal_delay_seconds = 9 [default = 0];
+    optional int64 renewal_retry_interval_seconds = 10 [default = 0];
+    optional bool renew_with_usage = 11 [default = false];
+    optional bool renew_with_client_id = 12 [default = false];
+  }
+
+  message KeyContainer {
+    enum KeyType {
+      SIGNING = 1;
+      CONTENT = 2;
+      KEY_CONTROL = 3;
+      OPERATOR_SESSION = 4;
+    }
+    enum SecurityLevel {
+      SW_SECURE_CRYPTO = 1;
+      SW_SECURE_DECODE = 2;
+      HW_SECURE_CRYPTO = 3;
+      HW_SECURE_DECODE = 4;
+      HW_SECURE_ALL = 5;
+    }
+    message KeyControl {
+      optional bytes key_control_block = 1;
+      optional bytes iv = 2;
+    }
+    message OutputProtection {
+      enum HDCP {
+        HDCP_NONE = 0;
+        HDCP_V1 = 1;
+        HDCP_V2 = 2;
+        HDCP_V2_1 = 3;
+        HDCP_V2_2 = 4;
+        HDCP_NO_DIGITAL_OUTPUT = 0xff;
+      }
+      optional HDCP hdcp = 1 [default = HDCP_NONE];
+      enum CGMS {
+        CGMS_NONE = 42;
+        COPY_FREE = 0;
+        COPY_ONCE = 2;
+        COPY_NEVER = 3;
+      }
+      optional CGMS cgms_flags = 2 [default = CGMS_NONE];
+    }
+    message VideoResolutionConstraint {
+      optional uint32 min_resolution_pixels = 1;
+      optional uint32 max_resolution_pixels = 2;
+      optional OutputProtection required_protection = 3;
+    }
+    message OperatorSessionKeyPermissions {
+      optional bool allow_encrypt = 1 [default = false];
+      optional bool allow_decrypt = 2 [default = false];
+      optional bool allow_sign = 3 [default = false];
+      optional bool allow_signature_verify = 4 [default = false];
+    }
+    optional bytes id = 1;
+    optional bytes iv = 2;
+    optional bytes key = 3;
+    optional KeyType type = 4;
+    optional SecurityLevel level = 5 [default = SW_SECURE_CRYPTO];
+    optional OutputProtection required_protection = 6;
+    optional OutputProtection requested_protection = 7;
+    optional KeyControl key_control = 8;
+    optional OperatorSessionKeyPermissions operator_session_key_permissions = 9;
+    repeated VideoResolutionConstraint video_resolution_constraints = 10;
+    optional bool anti_rollback_usage_table = 11 [default = false];
+  }
+
+  optional LicenseIdentification id = 1;
+  optional Policy policy = 2;
+  repeated KeyContainer key = 3;
+  optional int64 license_start_time = 4;
+  optional bool remote_attestation_verified = 5 [default = false];
+  optional bytes provider_client_token = 6;
+}
+
+enum ProtocolVersion {
+  VERSION_2_0 = 20;
+  VERSION_2_1 = 21;
+  VERSION_2_2 = 22;
+}
+
+message LicenseRequest {
+  message ContentIdentification {
+    message CENC {
+      repeated bytes pssh = 1;
+      optional LicenseType license_type = 2;
+      optional bytes request_id = 3;
+    }
+    message WebM {
+      optional bytes header = 1;
+      optional LicenseType license_type = 2;
+      optional bytes request_id = 3;
+    }
+    message ExistingLicense {
+      optional LicenseIdentification license_id = 1;
+      optional int64 seconds_since_started = 2;
+      optional int64 seconds_since_last_played = 3;
+      optional bytes session_usage_table_entry = 4;
+    }
+    optional CENC cenc_id = 1;
+    optional WebM webm_id = 2;
+    optional ExistingLicense license = 3;
+  }
+  enum RequestType {
+    NEW = 1;
+    RENEWAL = 2;
+    RELEASE = 3;
+  }
+  optional ClientIdentification client_id = 1;
+  optional ContentIdentification content_id = 2;
+  optional RequestType type = 3;
+  optional int64 request_time = 4;
+  optional bytes key_control_nonce_deprecated = 5;
+  optional ProtocolVersion protocol_version = 6 [default = VERSION_2_0];
+  optional uint32 key_control_nonce = 7;
+  optional EncryptedClientIdentification encrypted_client_id = 8;
+}
+
+message LicenseError {
+  enum Error {
+    INVALID_DEVICE_CERTIFICATE = 1;
+    REVOKED_DEVICE_CERTIFICATE = 2;
+    SERVICE_UNAVAILABLE = 3;
+  }
+  optional Error error_code = 1;
+}
+
+message RemoteAttestation {
+  optional EncryptedClientIdentification certificate = 1;
+  optional bytes salt = 2;
+  optional bytes signature = 3;
+}
+
+message SignedMessage {
+  enum MessageType {
+    LICENSE_REQUEST = 1;
+    LICENSE = 2;
+    ERROR_RESPONSE = 3;
+    SERVICE_CERTIFICATE_REQUEST = 4;
+    SERVICE_CERTIFICATE = 5;
+  }
+  optional MessageType type = 1;
+  optional bytes msg = 2;
+  optional bytes signature = 3;
+  optional bytes session_key = 4;
+  optional RemoteAttestation remote_attestation = 5;
+}
+
+message ClientIdentification {
+  enum TokenType {
+    KEYBOX = 0;
+    DEVICE_CERTIFICATE = 1;
+    REMOTE_ATTESTATION_CERTIFICATE = 2;
+  }
+  message NameValue {
+    optional string name = 1;
+    optional string value = 2;
+  }
+  message ClientCapabilities {
+    enum HdcpVersion {
+      HDCP_NONE = 0;
+      HDCP_V1 = 1;
+      HDCP_V2 = 2;
+      HDCP_V2_1 = 3;
+      HDCP_V2_2 = 4;
+      HDCP_NO_DIGITAL_OUTPUT = 0xff;
+    }
+    optional bool client_token = 1 [default = false];
+    optional bool session_token = 2 [default = false];
+    optional bool video_resolution_constraints = 3 [default = false];
+    optional HdcpVersion max_hdcp_version = 4 [default = HDCP_NONE];
+    optional uint32 oem_crypto_api_version = 5;
+    optional bool anti_rollback_usage_table = 6 [default = false];
+  }
+  optional TokenType type = 1 [default = KEYBOX];
+  optional bytes token = 2;
+  repeated NameValue client_info = 3;
+  optional bytes provider_client_token = 4;
+  optional uint32 license_counter = 5;
+  optional ClientCapabilities client_capabilities = 6;
+}
+
+message EncryptedClientIdentification {
+  optional string service_id = 1;
+  optional bytes service_certificate_serial_number = 2;
+  optional bytes encrypted_client_id = 3;
+  optional bytes encrypted_client_id_iv = 4;
+  optional bytes encrypted_privacy_key = 5;
+}`,
+            { keepCase: true }
+        ).root;
+
+        this.#protoSignedMessage = root.lookupType("SignedMessage");
+        this.#protoLicenseRequest = root.lookupType("LicenseRequest");
+    }
+
+    async #DeriveKeyId(assetId) {
+        const data = new TextEncoder().encode(`:${assetId}`);
+        const hash = await crypto.subtle.digest("SHA-256", data);
+        return new Uint8Array(hash).slice(0, 16);
+    }
+
+    async #BuildWidevinePSSH(assetId) {
+        const kid = await this.#DeriveKeyId(assetId);
+
+        const kidField = new Uint8Array(2 + kid.length);
+        kidField[0] = 0x12;
+        kidField[1] = kid.length;
+        kidField.set(kid, 2);
+
+        const versionFlags = new Uint8Array(4);
+        const dataLenView = new DataView(new ArrayBuffer(4));
+        dataLenView.setUint32(0, kidField.length, false);
+        const dataLen = new Uint8Array(dataLenView.buffer);
+
+        const payload = new Uint8Array([
+            ...versionFlags,
+            ...WIDEVINE_SYSTEM_ID,
+            ...dataLen,
+            ...kidField,
+        ]);
+
+        const boxLenView = new DataView(new ArrayBuffer(4));
+        boxLenView.setUint32(0, payload.length + 8, false);
+        const boxLen = new Uint8Array(boxLenView.buffer);
+
+        return new Uint8Array([
+            ...boxLen,
+            ...new TextEncoder().encode("pssh"),
+            ...payload,
+        ]).buffer;
+    }
+
+    async #CreateMediaLicenseChallenge(psshBuffer) {
+        const psshBytes = new Uint8Array(psshBuffer).slice(32);
+
+        const licenseRequest = this.#protoLicenseRequest.create({
+            type: 1,
+            protocol_version: 22,
+            request_time: Date.now() / 1000 >>> 0,
+            key_control_nonce: Math.random() * 0xFFFFFFFF >>> 0,
+            encrypted_client_id: {
+                service_id: "staging.google.com",
+                service_certificate_serial_number: RandomBytes(16),
+                encrypted_client_id: RandomBytes(4480),
+                encrypted_client_id_iv: RandomBytes(16),
+                encrypted_privacy_key: RandomBytes(256),
+            },
+            content_id: {
+                cenc_id: {
+                    pssh: [psshBytes],
+                    license_type: 1,
+                    request_id: RandomBytes(16),
+                },
+            },
+        });
+
+        const signedMessage = this.#protoSignedMessage.create({
+            type: 1,
+            msg: this.#protoLicenseRequest.encode(licenseRequest).finish(),
+            signature: RandomBytes(128),
+        });
+
+        return this.#protoSignedMessage.encode(signedMessage).finish();
+    }
+
+    async #CreateIntegrityChallenge() {
+        const { token, exp } = await FetchJSON(
+            new Request(`https://kagane.org/api/integrity`, {
+                method: "POST",
+            })
+        );
+        return { token, exp };
+    }
+
+    async CreateImageURL(tokenEndpointUrl, bookId, assetId, isDataSaver = false) {
+        const { token } = await this.#CreateIntegrityChallenge();
+        const psshBuffer = await this.#BuildWidevinePSSH(assetId);
+        const challenge = await this.#CreateMediaLicenseChallenge(psshBuffer);
+
+        const { cache_url, access_token, pages } = await FetchJSON(
+            new Request(tokenEndpointUrl, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-Integrity-Token": token,
+                },
+                body: JSON.stringify({ challenge: GetBase64FromBytes(challenge) }),
+            })
+        );
+
+        const baseUrl = cache_url.endsWith("/") ? cache_url.slice(0, -1) : cache_url;
+
+        return pages.map((pageEntry, index) => {
+            const parameters = {
+                MangaID: bookId,
+                ChapterID: assetId,
+                PageNumber: pageEntry.page_number ?? index + 1,
+            };
+
+            const link = new URL(
+                `${baseUrl}/api/v2/books/file/${assetId}/${pageEntry.page_uuid}`
+            );
+            link.searchParams.set("token", access_token);
+            link.searchParams.set("is_datasaver", String(isDataSaver));
+
+            return { link, parameters };
+        });
+    }
+
+    async DecryptImage(encryptedData, _mimeType = "image/webp") {
+        return new Blob([encryptedData], { type: _mimeType });
+    }
+}
