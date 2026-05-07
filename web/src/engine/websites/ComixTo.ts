@@ -1,6 +1,6 @@
 import { Tags } from '../Tags';
 import icon from './ComixTo.webp';
-import { FetchJSON, FetchNextJS } from '../platform/FetchProvider';
+import { FetchJSON } from '../platform/FetchProvider';
 import { type MangaPlugin, Manga, Chapter, DecoratableMangaScraper, Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import { GetBytesFromBase64, GetBytesFromUTF8, GetURLBase64FromBytes } from '../BufferEncoder';
@@ -22,24 +22,25 @@ type APIManga = {
 type APIChapters = APIResult<APIChapter[]>;
 
 type APIChapter = {
-    chapter_id: number;
+    id: number;
     number: number;
     name: string;
-    scanlation_group: {
+    group: {
         name: string;
-    } | null
-};
-
-type HydratedImages = {
-    images: {
+    } | null;
+    pages: {
         url: string;
-    }[]
+    }[];
 };
 
-@Common.MangaCSS(/^{origin}\/title\/[^/]+$/, 'section.comic-info h1.title')
+type APIPages = {
+    result: APIChapter;
+};
+
+@Common.MangaCSS(/^{origin}\/title\/[^/]+$/, 'meta[property="og:title"]')
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
-    private readonly apiUrl = `${this.URI.origin}/api/v2/`;
+    private readonly apiUrl = `${this.URI.origin}/api/v1/`;
 
     public constructor() {
         super('comixto', 'Comix (.to)', 'https://comix.to', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.English, Tags.Source.Aggregator, Tags.Source.Scanlator);
@@ -67,9 +68,9 @@ export default class extends DecoratableMangaScraper {
         type This = typeof this;
         return Array.fromAsync(async function* (this: This) {
             for (let page = 1, run = true; run; page++) {
-                const { result: { items } } = await FetchJSON<APIChapters>(new Request(new URL(`./manga/${mangaHash}/chapters?limit=100&page=${page}&order[number]=desc&time=1&_=${requestHash}`, this.apiUrl)));
-                const chapters = items.map(({ chapter_id: id, number, name, scanlation_group: scanGroup }) => {
-                    const title = [number, name && `- ${name}`, scanGroup && `[${scanGroup.name}]`].filter(Boolean).join(' ');
+                const { result: { items } } = await FetchJSON<APIChapters>(new Request(new URL(`./manga/${mangaHash}/chapters?page=${page}&limit=100&order[number]=desc&_=${requestHash}`, this.apiUrl)));
+                const chapters = items.map(({ id, number, name, group }) => {
+                    const title = [number, name && `- ${name}`, group && `[${group.name}]`].filter(Boolean).join(' ');
                     return new Chapter(this, manga, `${manga.Identifier}/${id}-chapter-${number}`, title);
                 });
                 chapters.length > 0 ? yield* chapters : run = false;
@@ -78,8 +79,10 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const { images } = await FetchNextJS<HydratedImages>(new Request(new URL(chapter.Identifier, this.URI)), data => 'images' in data);
-        return images.map(({ url }) => new Page(this, chapter, new URL(url), { Referer: this.URI.href }));
+        const chapterId = chapter.Identifier.split('/').at(-1).match(/\d+/).at(0);
+        const requestHash = ComixHash.GenerateHash(`/chapters/${chapterId}`);
+        const { result: { pages } } = await FetchJSON<APIPages>(new Request(new URL(`./chapters/${chapterId}?_=${requestHash}`, this.apiUrl)));
+        return pages.map(({ url }) => new Page(this, chapter, new URL(url), { Referer: this.URI.href }));
     }
 }
 
@@ -93,8 +96,8 @@ class ComixHash {
         "U9LRYFL2zXU4TtALIYDj+lCATRk/EJtH7/y7qYYNlh8=", "e/GtffFDTvnw7LBRixAD+iGixjqTq9kIZ1m0Hj+s6fY=", "xb2XwHNB"
     ];
 
-    public static GenerateHash(path: string, bodySize: number = 0, time: number = 1): string {
-        const baseString = `${path}:${bodySize}:${time}`;
+    public static GenerateHash(path: string, /*bodySize: number = 0, time: number = 1*/): string {
+        const baseString = `${path}`;//:${bodySize}:${time}`;
 
         const encoded = encodeURIComponent(baseString);
         //    .replace(/\+/g, "%20")
@@ -103,7 +106,7 @@ class ComixHash {
 
         const initialBytes = GetBytesFromUTF8(encoded);
         const result = ComixHash.Round5(ComixHash.Round4(ComixHash.Round3(ComixHash.Round2(ComixHash.Round1(initialBytes)))));
-        return GetURLBase64FromBytes(result);
+        return GetURLBase64FromBytes(result).slice(0);
     }
 
     static Rc4(key: Uint8Array, data: Uint8Array): Uint8Array {
