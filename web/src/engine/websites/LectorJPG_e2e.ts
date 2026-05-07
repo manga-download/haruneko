@@ -3,15 +3,15 @@
 new TestFixture({
     plugin: {
         id: 'lectorjpg',
-        title: 'LectorJPG'
+        title: 'VisorJPG'
     },
     container: {
-        url: 'https://lectorjpg.com/series/killer-beat',
-        id: '/series/killer-beat',
+        url: 'https://visorjpg.lat/series/killer-beat',
+        id: 'killer-beat',
         title: 'Killer Beat'
     },
     child: {
-        id: '/read/killer-beat/12039',
+        id: '12039',
         title: 'Capitulo 1'
     },
     entry: {
