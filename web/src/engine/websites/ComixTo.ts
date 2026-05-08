@@ -89,11 +89,11 @@ export default class extends DecoratableMangaScraper {
 class ComixHash {
 
     static KEYS = [
-        "13YDu67uDgFczo3DnuTIURqas4lfMEPADY6Jaeqky+w=", "yEy7wBfBc+gsYPiQL/4Dfd0pIBZFzMwrtlRQGwMXy3Q=", "yrP+EVA1Dw==",
-        "vZ23RT7pbSlxwiygkHd1dhToIku8SNHPC6V36L4cnwM=", "QX0sLahOByWLcWGnv6l98vQudWqdRI3DOXBdit9bxCE=", "WJwgqCmf",
-        "BkWI8feqSlDZKMq6awfzWlUypl88nz65KVRmpH0RWIc=", "v7EIpiQQjd2BGuJzMbBA0qPWDSS+wTJRQ7uGzZ6rJKs=", "1SUReYlCRA==",
-        "RougjiFHkSKs20DZ6BWXiWwQUGZXtseZIyQWKz5eG34=", "LL97cwoDoG5cw8QmhI+KSWzfW+8VehIh+inTxnVJ2ps=", "52iDqjzlqe8=",
-        "U9LRYFL2zXU4TtALIYDj+lCATRk/EJtH7/y7qYYNlh8=", "e/GtffFDTvnw7LBRixAD+iGixjqTq9kIZ1m0Hj+s6fY=", "xb2XwHNB"
+        "JxTcdyiA5GZxnbrmthXBQfU2IMTKcY1+3nNhbq98Sgo=", "3PordjODbhqla382Cxapmo/1JiABJQcjiJj1+48gTJ4=", "OaKvnI5ARA==",
+        "MHNBHYWA7lvy867fXgvGcJwWDk79KqUJUVFsh3RwnnI=", "8i0Cru/VJBSVB2Y1GcMDVpzx2WepOcfnWdd81yxICl4=", "Fyskubz8VvA=",
+        "B46L1x+UeWP+19cRpQ+OZvdLAK9EHID8g3mSgn57tew=", "DTSTmUt6LpDUw9r1lSQqyb3YlFTzruT8tk8wUGkwehQ=", "vY/meeI=",
+        "7xWfIF5THL5LAnRgAARg+4mjWHPU9n3PQwvzbaMNi+Q=", "bewtiTuV+HJk56xxkf2iCljLgruCpBmN9BgE8i6gc9M=", "/Xcb2zAu8AU=",
+        "WgeCQ3T8R51uTwVSiVa7Zy0dN6JOg6Z5JleMS+HV8Aw=", "yXayUVFrrcW56jQCEfZzuCidjpnWKjTDUNT7XeX9i7k=", "tSLco2w="
     ];
 
     public static GenerateHash(path: string, /*bodySize: number = 0, time: number = 1*/): string {
@@ -109,7 +109,7 @@ class ComixHash {
         return GetURLBase64FromBytes(result).slice(0);
     }
 
-    static Rc4(key: Uint8Array, data: Uint8Array): Uint8Array {
+    static RC4(key: Uint8Array, data: Uint8Array): Uint8Array {
         if (!(key instanceof Uint8Array) || !(data instanceof Uint8Array)) {
             throw new TypeError("key and data must be Uint8Array");
         }
@@ -140,157 +140,123 @@ class ComixHash {
         return out;
     }
 
-    static MutS(e: number): number { return e + 143 & 0xff; }
-    static MutL(e: number): number { return (e >>> 1 | e << 7) & 0xff; }
-    static MutC(e: number): number { return e + 115 & 0xff; }
-    static MutM(e: number): number { return (e ^ 177) & 0xff; }
-    static MutF(e: number): number { return e - 188 & 0xff; }
-    static MutG(e: number): number { return (e << 2 | e >>> 6) & 0xff; }
-    static MutH(e: number): number { return e - 42 & 0xff; }
-    static MutDollar(e: number): number { return (e << 4 | e >>> 4) & 0xff; }
-    static MutB(e: number): number { return e - 12 & 0xff; }
-    static MutUnderscore(e: number): number { return e - 20 & 0xff; }
-    static MutY(e: number): number { return (e >>> 1 | e << 7) & 0xff; }
-    static MutK(e: number): number { return e - 241 & 0xff; }
+    static OpShiftRight7Left1 = (e: number) => (e >>> 7 | e << 1) & 255;
+    static OpShiftLeft1Right7 = (e: number) => (e << 1 | e >>> 7) & 255;
+    static OpShiftRight2Left6 = (e: number) => (e >>> 2 | e << 6) & 255;
+    static OpShiftLeft4Right4 = (e: number) => (e << 4 | e >>> 4) & 255;
+    static OpShiftRight4Left4 = (e: number) => (e >>> 4 | e << 4) & 255;
     static GetMutKey(mk: Uint8Array, idx: number): number { return mk.length > 0 && idx % 32 < mk.length ? mk[idx % 32] : 0; }
     static GetKeyBytes(index: number): Uint8Array { return GetBytesFromBase64(ComixHash.KEYS[index]); }
 
-    static Round1(data: Uint8Array): Uint8Array {
-        const enc = ComixHash.Rc4(ComixHash.GetKeyBytes(0), data);
-        const mutKey = ComixHash.GetKeyBytes(1);
-        const prefKey = ComixHash.GetKeyBytes(2);
-        const out = [];
+    static Mutate(data: Uint8Array, mutKey: Uint8Array, prefKey: Uint8Array, prefKeyLimit: number, round: number): Uint8Array {
+        const out: number[] = [];
 
-        for (let i = 0; i < enc.length; i++) {
-            if (i < 7 && i < prefKey.length) out.push(prefKey[i]);
-            let v = enc[i] ^ ComixHash.GetMutKey(mutKey, i);
+        for (let o = 0; o < data.length; o++) {
+            if (o < prefKeyLimit && o < prefKey.length) out.push(prefKey[o]);
 
-            switch (i % 10) {
-                case 0:
-                case 9: v = ComixHash.MutC(v); break;
-                case 1: v = ComixHash.MutB(v); break;
-                case 2: v = ComixHash.MutY(v); break;
-                case 3: v = ComixHash.MutDollar(v); break;
-                case 4:
-                case 6: v = ComixHash.MutH(v); break;
-                case 5: v = ComixHash.MutS(v); break;
-                case 7: v = ComixHash.MutK(v); break;
-                case 8: v = ComixHash.MutL(v); break;
-                default:
-                    break;
-            }
-            out.push(v & 255);
+            let n = data[o] ^ ComixHash.GetMutKey(mutKey, o);
+
+            n = (() => {
+                switch (round) {
+                    case 1:
+                        switch (o % 10) {
+                            case 0: return ComixHash.OpShiftRight7Left1(n);
+                            case 1: return n ^ 37;
+                            case 2: return n ^ 81;
+                            case 3: return n ^ 147;
+                            case 4: return ComixHash.OpShiftRight2Left6(n);
+                            case 5:
+                            case 8: return ComixHash.OpShiftRight4Left4(n);
+                            case 6: return n ^ 218;
+                            case 7: return n + 159 & 255;
+                            case 9: return n ^ 180;
+                            default: return n;
+                        }
+                    case 2:
+                        switch (o % 10) {
+                            case 0:
+                            case 9: return n ^ 180;
+                            case 1: return ComixHash.OpShiftLeft1Right7(n);
+                            case 2: return n ^ 147;
+                            case 3: return ComixHash.OpShiftRight7Left1(n);
+                            case 4: return ComixHash.OpShiftRight2Left6(n);
+                            case 5: return ComixHash.OpShiftRight4Left4(n);
+                            case 6:
+                            case 8: return n + 159 & 255;
+                            case 7: return n + 34 & 255;
+                            default: return n;
+                        }
+                    case 3:
+                        switch (o % 10) {
+                            case 0: return n ^ 81;
+                            case 1: return ComixHash.OpShiftRight4Left4(n);
+                            case 2:
+                            case 9: return ComixHash.OpShiftLeft4Right4(n);
+                            case 3: return n ^ 37;
+                            case 4: return n + 159 & 255;
+                            case 5: return ComixHash.OpShiftLeft1Right7(n);
+                            case 6: return n ^ 180;
+                            case 7: return n + 34 & 255;
+                            case 8: return ComixHash.OpShiftRight2Left6(n);
+                            default: return n;
+                        }
+                    case 4:
+                        switch (o % 10) {
+                            case 0:
+                            case 7: return n ^ 218;
+                            case 1:
+                            case 4: return ComixHash.OpShiftLeft1Right7(n);
+                            case 2: return ComixHash.OpShiftRight7Left1(n);
+                            case 3: return n + 159 & 255;
+                            case 5:
+                            case 8: return n ^ 180;
+                            case 6: return n ^ 147;
+                            case 9: return n ^ 37;
+                            default: return n;
+                        }
+                    case 5:
+                        switch (o % 10) {
+                            case 0: return ComixHash.OpShiftLeft4Right4(n);
+                            case 1:
+                            case 3: return n ^ 147;
+                            case 2: return n + 34 & 255;
+                            case 4:
+                            case 9: return n ^ 218;
+                            case 5:
+                            case 7: return ComixHash.OpShiftLeft1Right7(n);
+                            case 6: return n ^ 180;
+                            case 8: return ComixHash.OpShiftRight2Left6(n);
+                            default: return n;
+                        }
+                    default: return n;
+                }
+            })();
+            out.push(n & 255);
         }
-        return new Uint8Array(out);
+        return Uint8Array.from(out);
     }
 
+    static Round1(data: Uint8Array): Uint8Array {
+        const mut = ComixHash.Mutate(data, ComixHash.GetKeyBytes(1), ComixHash.GetKeyBytes(2), 7, 1);
+        return ComixHash.RC4(ComixHash.GetKeyBytes(0), mut);
+    }
     static Round2(data: Uint8Array): Uint8Array {
-        const enc = ComixHash.Rc4(ComixHash.GetKeyBytes(3), data);
-        const mutKey = ComixHash.GetKeyBytes(4);
-        const prefKey = ComixHash.GetKeyBytes(5);
-        const out = [];
-
-        for (let i = 0; i < enc.length; i++) {
-            if (i < 6 && i < prefKey.length) out.push(prefKey[i]);
-            let v = enc[i] ^ ComixHash.GetMutKey(mutKey, i);
-            switch (i % 10) {
-                case 0:
-                case 8: v = ComixHash.MutC(v); break;
-                case 1: v = ComixHash.MutB(v); break;
-                case 2:
-                case 6: v = ComixHash.MutDollar(v); break;
-                case 3: v = ComixHash.MutH(v); break;
-                case 4:
-                case 9: v = ComixHash.MutS(v); break;
-                case 5: v = ComixHash.MutK(v); break;
-                case 7: v = ComixHash.MutUnderscore(v); break;
-                default:
-                    break;
-            }
-            out.push(v & 255);
-        }
-        return new Uint8Array(out);
+        const mut = ComixHash.Mutate(data, ComixHash.GetKeyBytes(4), ComixHash.GetKeyBytes(5), 8, 2);
+        return ComixHash.RC4(ComixHash.GetKeyBytes(3), mut);
     }
 
     static Round3(data: Uint8Array): Uint8Array {
-        const enc = ComixHash.Rc4(ComixHash.GetKeyBytes(6), data);
-        const mutKey = ComixHash.GetKeyBytes(7);
-        const prefKey = ComixHash.GetKeyBytes(8);
-        const out = [];
-
-        for (let i = 0; i < enc.length; i++) {
-            if (i < 7 && i < prefKey.length) out.push(prefKey[i]);
-            let v = enc[i] ^ ComixHash.GetMutKey(mutKey, i);
-            switch (i % 10) {
-                case 0: v = ComixHash.MutC(v); break;
-                case 1: v = ComixHash.MutF(v); break;
-                case 2:
-                case 8: v = ComixHash.MutS(v); break;
-                case 3: v = ComixHash.MutG(v); break;
-                case 4: v = ComixHash.MutY(v); break;
-                case 5: v = ComixHash.MutM(v); break;
-                case 6: v = ComixHash.MutDollar(v); break;
-                case 7: v = ComixHash.MutK(v); break;
-                case 9: v = ComixHash.MutB(v); break;
-                default:
-                    break;
-            }
-            out.push(v & 255);
-        }
-        return new Uint8Array(out);
+        const mut = ComixHash.Mutate(data, ComixHash.GetKeyBytes(7), ComixHash.GetKeyBytes(8), 5, 3);
+        return ComixHash.RC4(ComixHash.GetKeyBytes(6), mut);
     }
 
     static Round4(data: Uint8Array): Uint8Array {
-        const enc = ComixHash.Rc4(ComixHash.GetKeyBytes(9), data);
-        const mutKey = ComixHash.GetKeyBytes(10);
-        const prefKey = ComixHash.GetKeyBytes(11);
-        const out = [];
-
-        for (let i = 0; i < enc.length; i++) {
-            if (i < 8 && i < prefKey.length) out.push(prefKey[i]);
-            let v = enc[i] ^ ComixHash.GetMutKey(mutKey, i);
-            switch (i % 10) {
-                case 0: v = ComixHash.MutB(v); break;
-                case 1:
-                case 9: v = ComixHash.MutM(v); break;
-                case 2:
-                case 7: v = ComixHash.MutL(v); break;
-                case 3:
-                case 5: v = ComixHash.MutS(v); break;
-                case 4:
-                case 6: v = ComixHash.MutUnderscore(v); break;
-                case 8: v = ComixHash.MutY(v); break;
-                default:
-                    break;
-            }
-            out.push(v & 255);
-        }
-        return new Uint8Array(out);
+        const mut = ComixHash.Mutate(data, ComixHash.GetKeyBytes(10), ComixHash.GetKeyBytes(11), 8, 4);
+        return ComixHash.RC4(ComixHash.GetKeyBytes(9), mut);
     }
 
     static Round5(data: Uint8Array): Uint8Array {
-        const enc = ComixHash.Rc4(ComixHash.GetKeyBytes(12), data);
-        const mutKey = ComixHash.GetKeyBytes(13);
-        const prefKey = ComixHash.GetKeyBytes(14);
-        const out = [];
-
-        for (let i = 0; i < enc.length; i++) {
-            if (i < 6 && i < prefKey.length) out.push(prefKey[i]);
-            let v = enc[i] ^ ComixHash.GetMutKey(mutKey, i);
-            switch (i % 10) {
-                case 0: v = ComixHash.MutUnderscore(v); break;
-                case 1:
-                case 7: v = ComixHash.MutS(v); break;
-                case 2: v = ComixHash.MutC(v); break;
-                case 3:
-                case 5: v = ComixHash.MutM(v); break;
-                case 4: v = ComixHash.MutB(v); break;
-                case 6: v = ComixHash.MutF(v); break;
-                case 8: v = ComixHash.MutDollar(v); break;
-                case 9: v = ComixHash.MutG(v); break;
-            }
-            out.push(v & 255);
-        }
-        return new Uint8Array(out);
+        const mut = ComixHash.Mutate(data, ComixHash.GetKeyBytes(13), ComixHash.GetKeyBytes(14), 5, 5);
+        return ComixHash.RC4(ComixHash.GetKeyBytes(12), mut);
     }
 }
