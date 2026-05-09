@@ -54,7 +54,7 @@ export default class extends DecoratableMangaScraper {
         return elements.map(anchor => {
             const languageCode = ExtractLanguage(anchor.pathname);
             return new Chapter(this, manga, anchor.pathname, anchor.querySelector('.comic-list__title-desc').textContent.replace(/[\r\n]+/g, '').replace(/\s{2,}/g, ' ').trim(),
-                ...chapterLanguageMap.has(languageCode) ? [chapterLanguageMap.get(languageCode)] : []
+                ...[chapterLanguageMap.get(languageCode)].filter(Boolean)
             );
         });
     }
