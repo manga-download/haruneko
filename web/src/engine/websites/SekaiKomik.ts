@@ -87,57 +87,62 @@ export default class extends DecoratableMangaScraper {
         return this.Deserialize<T>(nodes[1].data);
     }
 
-    Deserialize<T extends JSONElement>(data: JSONElement): T {
-        if (!Array.isArray(data) || data.length === 0) throw new Error('Invalid input');
+    private Deserialize<T extends JSONElement>(input: string | JSONElement): T {
+        const parsed = typeof input === 'string' ? JSON.parse(input) : input;
 
-        const inputArray = data;
-        const processedData = Array(inputArray.length);
+        if (!Array.isArray(parsed) || parsed.length === 0) {
+            throw new Error('Parsed input must be a non-empty array');
+        }
 
-        function processValue(value: any) {
-            if (value === -1) return;
+        const cache: JSONElement[] = new Array(parsed.length);
+
+        const revive = (index: number): JSONElement => {
+            if (index in cache) return cache[index];
+
+            const value = parsed[index];
+
+            if (value === -1) return undefined;
             if (value === -3) return NaN;
             if (value === -4) return Infinity;
-            if (value === -5) return -Infinity;
-            if (value === -6) return -0;
+            if (value === -5) return - Infinity;
+            if (value === -6) return - 0;
 
-            if (value in processedData) return processedData[value];
-
-            const item = inputArray[value];
-            if (!item || typeof item !== 'object') {
-                processedData[value] = item;
-            } else if (Array.isArray(item)) {
-                if (typeof item[0] === 'string') {
-                    const type = item[0];
-                    switch (type) {
-                        case 'Object':
-                            const obj = Object(item[1]);
-                            if (Object.hasOwn(obj, '__proto__')) throw new Error('Cannot parse an object with a `__proto__` property');
-                            processedData[value] = obj;
-                            break;
-                        default:
-                            processedData[value] = undefined;
-                    }
-                } else {
-                    const array = new Array(item.length);
-                    processedData[value] = array;
-                    for (let i = 0; i < item.length; i++) {
-                        const element = item[i];
-                        if (element !== -2) {
-                            array[i] = processValue(element);
-                        }
-                    }
-                }
-            } else {
-                const object = {};
-                processedData[value] = object;
-                for (const key of Object.keys(item)) {
-                    if (key === '__proto__') throw new Error('Cannot parse an object with a `__proto__` property');
-                    const element = item[key];
-                    object[key] = processValue(element);
-                }
+            // Primitive values
+            if (value === null || typeof value === 'boolean' || typeof value === 'string') {
+                cache[index] = value;
+                return value;
             }
-            return processedData[value];
-        }
-        return processValue(0) as T;
+
+            if (typeof value === 'number') {
+                cache[index] = value;
+                return value;
+            }
+
+            // Arrays
+            if (Array.isArray(value)) {
+                const arr: JSONArray = new Array(value.length);
+                cache[index] = arr;
+                for (let i = 0; i < value.length; i++) {
+                    const item = value[i];
+                    arr[i] = typeof item === 'number' ? revive(item) : item as JSONElement;
+                }
+                return arr;
+            }
+
+            // Objects
+            if (typeof value === 'object' && value !== null) {
+                const obj: JSONObject = {};
+                cache[index] = obj;
+                for (const key in value) {
+                    if (key === '__proto__') throw new Error('Cannot parse object with __proto__ property');
+                    const v = value[key];
+                    obj[key] = typeof v === 'number' ? revive(v) : v as JSONElement;
+                }
+                return obj;
+            }
+
+            throw new Error('Invalid value encountered during deserialization');
+        };
+        return revive(0) as T;
     }
 }
