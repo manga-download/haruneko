@@ -16,7 +16,7 @@ AddAntiScrapingDetection(async (invoke) => {
         result ? CleanPage() : false;
     `);
     return result ? FetchRedirection.Interactive : undefined;
-});
+}, /^https:\/\/manatoki\d+\.net/);
 
 const chapterScript = `
     new Promise (resolve => {

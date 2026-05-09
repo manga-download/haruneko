@@ -43,14 +43,19 @@ type APIChapters = {
 @Common.ImageAjax(true)
 export class VTheme extends DecoratableMangaScraper {
 
-    private readonly apiURL = new URL('//api.' + this.URI.hostname + '/api/', this.URI);
+    private apiURL = new URL('//api.' + this.URI.hostname + '/api/', this.URI);
+
+    public WithApiUrl(url: URL): VTheme {
+        this.apiURL = url;
+        return this;
+    }
 
     public override ValidateMangaURL(url: string): boolean {
         return new RegExpSafe(`^${this.URI.origin}/series/[^/]+$`).test(url);
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
-        const { post: { id, postTitle } } = await FetchJSON<APIManga>(new Request(new URL('./post?postSlug=' + url.split('/').at(-1), this.apiURL)));
+        const { post: { id, postTitle } } = await FetchJSON<APIManga>(new Request(new URL(`./post?postSlug=${url.split('/').at(-1)}`, this.apiURL)));
         return new Manga(this, provider, `${id}`, postTitle);
     }
 
@@ -58,7 +63,7 @@ export class VTheme extends DecoratableMangaScraper {
         type This = typeof this;
         return Array.fromAsync(async function* (this: This) {
             for (let page = 1, run = true; run; page++) {
-                const { posts } = await FetchJSON<APIMangas>(new Request(new URL('./query?perPage=9999&page=' + page, this.apiURL)));
+                const { posts } = await FetchJSON<APIMangas>(new Request(new URL(`./query?perPage=9999&page=${page}`, this.apiURL)));
                 const mangas = posts.map(({ id, postTitle }) => new Manga(this, provider, `${id}`, postTitle));
                 mangas.length > 0 ? yield* mangas : run = false;
             }

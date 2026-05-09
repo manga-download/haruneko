@@ -1,75 +1,40 @@
 import { Tags } from '../Tags';
 import icon from './YuriGarden.webp';
-import type { MangaPlugin } from '../providers/MangaPlugin';
-import { Chapter, DecoratableMangaScraper, Page, Manga } from '../providers/MangaPlugin';
-import * as Common from './decorators/Common';
 import { FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
 import type { Priority } from '../taskpool/DeferredTask';
 import DeScramble from '../transformers/ImageDescrambler';
+import type { MangaPlugin } from '../providers/MangaPlugin';
+import { Chapter, DecoratableMangaScraper, Page, Manga } from '../providers/MangaPlugin';
+import * as Common from './decorators/Common';
 
 type APIMangas = {
     comics: APIManga[];
 };
 
 type APIManga = {
-    id: string | number;
+    id: number;
     title: string;
 };
 
-type APIChapter = {
-    id: number;
-    order: number;
-    name: string;
-};
+type APIChapters = 	{
+	id: number;
+	order: number;
+	name: string;
+}[];
 
 type PageData = {
     url: string;
     key?: number[];
 };
 
-type PageKey = {
+type PageParameters = {
     key?: number[];
 };
 
-function pageScript(apiUrl: string) {
-    return `
-        new Promise(async resolve => {
-            let exports = undefined;
-
-            WebAssembly.instantiateStreaming = new Proxy(WebAssembly.instantiateStreaming, {
-                async apply(target, thisArg, args) {
-                    const result = await Reflect.apply(target, thisArg, args);
-                    exports = result.instance.exports;
-                    const interval = setInterval(async () => {
-                        try {
-
-                            if (typeof exports.cd !== "function") return;
-
-                            clearInterval(interval);
-                            const res = await fetch('${apiUrl}chapters/' + location.pathname.split('/').pop(), {
-                                headers: {
-                                    'x-app-origin': window.location.origin,
-                                    'x-custom-lang': 'vi'
-                                }
-                            });
-                            const json = await res.json();
-                            const chapter = json.encrypted ? JSON.parse(exports.cd(json)) : json;
-                            const pages = (chapter.pages || []).map(p => {
-                                return { url: p.url.replace('_credit', ''), key: p.key ? exports.dc([p.key]).at(0) : undefined };
-                            });
-                            resolve(pages);
-                        } catch { }
-                    }, 50);
-                    return result;
-                }
-            });
-        });
-`;
-}
-
 export default class extends DecoratableMangaScraper {
-    private apiUrl = 'https://api.yurigarden.com/api/';
-    private CDNUrl = 'https://db.yurigarden.com/storage/v1/object/public/yuri-garden-store/';
+
+    private apiURL = 'https://api.yurigarden.com/api/';
+    private cdnURL = 'https://db.yurigarden.com/storage/v1/object/public/yuri-garden-store/';
 
     public constructor() {
         super('yurigarden', 'YuriGarden', 'https://yurigarden.com', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Vietnamese, Tags.Source.Aggregator);
@@ -100,17 +65,94 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const chapters = await this.FetchAPI<APIChapter[]>(`./chapters/comic/${manga.Identifier}`);
-        return chapters.sort((self, other) => other.order - self.order)
+        const chapters = await this.FetchAPI<APIChapters>(`./chapters/comic/${manga.Identifier}`);
+        return chapters
+            .sort((self, other) => other.order - self.order)
             .map(({ id, order, name }) => new Chapter(this, manga, `${id}`, [order > -1 ? `Chapter ${order}` : 'OneShot', name].join(' - ').replace(/\s*-\s*$/, '')));
     }
 
-    public override async FetchPages(chapter: Chapter): Promise<Page<PageKey>[]> {
-        const pages = await FetchWindowScript<PageData[]>(new Request(new URL(`./comic/${chapter.Parent.Identifier}/${chapter.Identifier}`, this.URI)), pageScript(this.apiUrl));
-        return pages.map(({ key, url }) => new Page<PageKey>(this, chapter, new URL(url.startsWith('http') ? url : this.CDNUrl + url), { key, Referer: this.URI.href }));
+    public override async FetchPages(chapter: Chapter): Promise<Page<PageParameters>[]> {
+        /*
+        const script = `
+            new Promise((resolve, reject) => {
+                const native = WebAssembly.instantiateStreaming;
+                function toString() {
+                    return this.name === native.name ? native.toString() : 'function ' + this.name + '() { [native code] }';
+                }
+                Object.defineProperty(toString, 'toString', {
+                    value: toString,
+                    writable: false,
+                    enumerable: false,
+                });
+                Object.defineProperty(toString, 'prototype', {
+                    value: undefined,
+                    writable: false,
+                    enumerable: false,
+                });
+                WebAssembly.instantiateStreaming = new Proxy(WebAssembly.instantiateStreaming, {
+                    apply(funcNative, funcThis, funcArgs) {
+                        const { instance: { exports } } = await Reflect.apply(funcNative, funcThis, funcArgs);
+                        if (typeof exports.cd === 'function' && typeof exports.dc === 'function') {
+                            try {
+                                const uri = new URL('./chapters/' + location.pathname.split('/').at(-1), '${this.apiURL}																																');
+                                const response = await fetch(uri, { headers: { 'X-App-Origin': window.location.origin, 'X-Custom-Lang': 'vi' } });
+                                const data = await response.json();
+                                const chapter = data.encrypted ? JSON.parse(exports.cd(data)) : data;
+                                const pages = chapter.pages.map((url, key) => ({ url: url.replace('_credit', ''), key: key ? exports.dc([key]).at(0) : undefined }));
+                                resolve(pages);
+                            } catch (error) {
+                                reject(error);
+                            }
+                        }
+                        return { instance: { exports } };
+                        return Reflect.apply(funcNative, funcThis, funcArgs);
+                    },
+                    get(target, key, receiver) {
+                        return key === 'toString' ? toString : Reflect.get(target, key);
+                    },
+                });
+                WebAssembly.instantiateStreaming['toString'] = 'ƒ instantiateStreaming() { [native code] }';
+            });
+        `;
+        */
+        const script = `
+            new Promise(async resolve => {
+                let exports = undefined;
+
+                WebAssembly.instantiateStreaming = new Proxy(WebAssembly.instantiateStreaming, {
+                    async apply(target, thisArg, args) {
+                        const result = await Reflect.apply(target, thisArg, args);
+                        exports = result.instance.exports;
+                        const interval = setInterval(async () => {
+                            try {
+
+                                if (typeof exports.cd !== "function") return;
+
+                                clearInterval(interval);
+                                const res = await fetch('${this.apiURL}chapters/' + location.pathname.split('/').pop(), {
+                                    headers: {
+                                        'x-app-origin': window.location.origin,
+                                        'x-custom-lang': 'vi'
+                                    }
+                                });
+                                const json = await res.json();
+                                const chapter = json.encrypted ? JSON.parse(exports.cd(json)) : json;
+                                const pages = (chapter.pages || []).map(p => {
+                                    return { url: p.url.replace('_credit', ''), key: p.key ? exports.dc([p.key]).at(0) : undefined };
+                                });
+                                resolve(pages);
+                            } catch { }
+                        }, 50);
+                        return result;
+                    }
+                });
+            });
+        `;
+        const pages = await FetchWindowScript<PageData[]>(new Request(new URL(`/comic/${chapter.Parent.Identifier}/${chapter.Identifier}`, this.URI)), script);
+        return pages.map(({ key, url }) => new Page<PageParameters>(this, chapter, new URL(url, this.cdnURL), { Referer: this.URI.href, key }));
     }
 
-    public override async FetchImage(page: Page<PageKey>, priority: Priority, signal: AbortSignal): Promise<Blob> {
+    public override async FetchImage(page: Page<PageParameters>, priority: Priority, signal: AbortSignal): Promise<Blob> {
         const blob = await Common.FetchImageAjax.call(this, page, priority, signal);
         const numRows = 10;
         const MAGIC = 4;
@@ -154,13 +196,13 @@ export default class extends DecoratableMangaScraper {
     }
 
     private async FetchAPI<T extends JSONElement>(endpoint: string): Promise<T> {
-        return FetchJSON<T>(new Request(new URL(endpoint, this.apiUrl), {
+        return FetchJSON<T>(new Request(new URL(endpoint, this.apiURL), {
             method: 'GET',
             headers: {
-                Origin: this.URI.origin,
-                Referer: this.URI.href,
-                'x-app-origin': this.URI.origin,
-                'x-custom-lang': 'vi',
+                //'Origin': this.URI.origin,
+                'Referer': this.URI.href,
+                'X-App-Origin': this.URI.origin,
+                'X-Custom-Lang': 'vi',
             },
         }));
     }
