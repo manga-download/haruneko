@@ -126,7 +126,6 @@ export { default as DoujinZa } from './DoujinZa';
 export { default as DragonTea } from './DragonTea';
 export { default as DragonTranslation } from './DragonTranslation';
 export { default as DrakeScans } from './DrakeScans';
-export { default as DreComics } from './DreComics';
 export { default as DuaLeoTruyen } from './DuaLeoTruyen';
 export { default as Dumanwu } from './Dumanwu';
 export { default as DxdFansub } from './DxdFansub';
