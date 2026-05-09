@@ -32,7 +32,7 @@ export default class extends DecoratableMangaScraper {
     private readonly apiUrl = 'https://yomu.com.br/api/';
 
     public constructor() {
-        super('yomucomics', 'Yomu Comics', 'https://yomu.com.br', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Portuguese, Tags.Source.Scanlator);
+        super('yomucomics', 'Yomu Comics', 'https://yomu.com.br', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Portuguese, Tags.Source.Aggregator);
     }
 
     public override get Icon() {
@@ -40,7 +40,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        const { data } = await FetchJSON<APIResult<APIManga[]>>(new Request(new URL('./library?page=1&limit=9999&sort=popular&type=all', this.apiUrl)));
+        const { data } = await FetchJSON<APIResult<APIManga[]>>(new Request(new URL('./library?page=1&limit=99999&sort=popular&type=all', this.apiUrl)));
         return data.map(({ slug, title }) => new Manga(this, provider, slug, title));
     }
 
@@ -50,7 +50,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const { chapter: { content} } = await FetchJSON<APIChapter>(new Request(new URL(`./chapters?id=${chapter.Identifier}`, this.apiUrl)));
+        const { chapter: { content } } = await FetchJSON<APIChapter>(new Request(new URL(`./chapters?id=${chapter.Identifier}`, this.apiUrl)));
         return content.map(image => new Page(this, chapter, new URL(image, this.URI)));
     }
 }

@@ -1,6 +1,5 @@
 import { Observable, type IObservable } from '../../Observable';
 import type { IRemoteBrowserWindow } from '../RemoteBrowserWindow';
-import type { ScriptInjection } from '../FetchProviderCommon';
 import { SetTimeout } from '../../BackgroundTimers';
 
 export default class RemoteBrowserWindow implements IRemoteBrowserWindow {
@@ -39,7 +38,7 @@ export default class RemoteBrowserWindow implements IRemoteBrowserWindow {
         }
     }
 
-    public async Open(request: Request, show: boolean = false, preload: ScriptInjection<void> = '') {
+    public async Open(request: Request, show: boolean = false, preload: string = '') {
 
         const options: NWJS_Helpers.WindowOpenOption = {
             new_instance: false, // TODO: Would be safer when set to TRUE, but this would prevent sharing cookies ...
@@ -124,9 +123,9 @@ export default class RemoteBrowserWindow implements IRemoteBrowserWindow {
         this.nwWindow?.hide();
     }
 
-    public async ExecuteScript<T extends void | JSONElement>(script: ScriptInjection<T> = ''): Promise<T> {
+    public async ExecuteScript<T extends void | JSONElement>(script: string = ''): Promise<T> {
         try {
-            return this.nwWindow.eval(null, script instanceof Function ? `(${script})()` : script) as T | Promise<T>;
+            return this.nwWindow.eval(null, script) as T | Promise<T>;
         } catch(inner) {
             const outer = new EvalError('<script>', { cause: inner });
             //console.error(inner, outer);

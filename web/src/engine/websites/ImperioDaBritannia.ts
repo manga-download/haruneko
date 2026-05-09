@@ -52,11 +52,11 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override ValidateMangaURL(url: string): boolean {
-        return new RegExpSafe(`^${this.URI.origin}/manga/[^/]+$`).test(url);
+        return new RegExpSafe(`^${this.URI.origin}/manga/[^/]+/$`).test(url);
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
-        const { obra: { slug, nome } } = await this.FetchAPI<APIMangaDetails>(`./obras/by-slug/${url.split('/').at(-1)}`);
+        const { obra: { slug, nome } } = await this.FetchAPI<APIMangaDetails>(`./obras/by-slug/${url.split('/').filter(Boolean).at(-1)}`);
         return new Manga(this, provider, slug, nome);
     }
 
@@ -72,7 +72,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const { obra: { capitulos } } = await this.FetchAPI<APIMangaDetails>(`./obras/by-slug/${manga.Identifier}`);
+        const { obra: { capitulos } } = await this.FetchAPI<APIMangaDetails>(`./obras/by-slug/${manga.Identifier}/`);
         return capitulos.reverse().map(({ nome, numero, obra_id: mangaId }) => new Chapter(this, manga, `${mangaId}/${parseInt(numero)}`, nome));
     }
 

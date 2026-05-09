@@ -12,7 +12,7 @@ import { AddAntiScrapingDetection, FetchRedirection } from '../platform/AntiScra
 AddAntiScrapingDetection(async (invoke) => {
     const result = await invoke<string[]>(`[...document.querySelectorAll('script')].map(script => script.text)`);
     return result.some(script => /window\.captcha\s*=/.test(script) && /chaitin\.cn\/captcha\/api/.test(script)) ? FetchRedirection.Automatic : undefined;
-});
+}, /^https:\/\/truyenqqno\.com/);
 
 function PageExtractor(element: HTMLElement): string {
     return element.dataset.original;
