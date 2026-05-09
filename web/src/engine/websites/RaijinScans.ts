@@ -4,6 +4,8 @@ import { FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
 import { type Chapter, DecoratableMangaScraper, Page } from '../providers/MangaPlugin';
 import * as Madara from './decorators/WordPressMadara';
 import * as Common from './decorators/Common';
+import { Exception } from '../Error';
+import { WebsiteResourceKey as R } from '../../i18n/ILocale';
 
 type ReaderManifest = {
     ajaxUrl: string;
@@ -48,6 +50,8 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
         const manifests = await FetchWindowScript<ReaderManifest[]>(new Request(new URL(chapter.Identifier, this.URI)), `window.raijinFreeReaderManifests`, 500);
+        if (!manifests) throw new Exception(R.Plugin_Common_Chapter_UnavailableError);
+
         manifests.sort((self, other) => self.offset - other.offset);
 
         const pages = await manifests.reduce<Promise<Page[]>>(async (accP, manifest) => {
