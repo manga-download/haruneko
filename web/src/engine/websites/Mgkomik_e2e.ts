@@ -6,8 +6,8 @@ new TestFixture({
         title: 'MGKOMIK'
     },
     container: {
-        url: 'https://id.mgkomik.cc/komik/the-life-after-god-of-martial-lived-in-seclusion/',
-        id: JSON.stringify({ post: '7180', slug: '/komik/the-life-after-god-of-martial-lived-in-seclusion/' }),
+        url: 'https://web.mgkomik.cc/komik/the-life-after-god-of-martial-lived-in-seclusion/',
+        id: '/komik/the-life-after-god-of-martial-lived-in-seclusion/',
         title: 'The Life After God Of Martial Lived In Seclusion'
     },
     child: {

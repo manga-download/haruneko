@@ -6,7 +6,7 @@ new TestFixture({
         title: 'Summertoon'
     },
     container: {
-        url: 'https://summertoons.com/manga/i-cant-get-enough-of-you/',
+        url: 'https://summertoons.net/manga/i-cant-get-enough-of-you/',
         id: JSON.stringify({ post: '20', slug: '/manga/i-cant-get-enough-of-you/' }),
         title: 'I Can’t Get Enough of You'
     },
