@@ -4,6 +4,8 @@ import { Chapter, DecoratableMangaScraper, Manga, type MangaPlugin } from '../pr
 import * as Common from './decorators/Common';
 import { FetchJSON, FetchRegex } from '../platform/FetchProvider';
 
+// TODO: Extract Serialize & Deserialize to a separate file
+
 type PackedData = {
     nodes: {
         data: JSONElement;
