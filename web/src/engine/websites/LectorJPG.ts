@@ -112,10 +112,10 @@ export default class extends DecoratableMangaScraper {
         const output: JSONElement[] = [];
 
         const encode = (value: JSONElement): number | JSONElement => {
-            if (value === void 0) return -1;
+            if (value === undefined) return -1;
             if (Number.isNaN(value)) return -3;
-            if (value === 1 / 0) return -4;
-            if (value === - 1 / 0) return -5;
+            if (value === Infinity) return -4;
+            if (value === - Infinity) return -5;
             if (value === 0 && 1 / value < 0) return -6;
 
             // Primitives
@@ -190,9 +190,9 @@ export default class extends DecoratableMangaScraper {
 
             if (value === -1) return undefined;
             if (value === -3) return NaN;
-            if (value === -4) return 1 / 0;
-            if (value === -5) return - 1 / 0;
-            if (value === -6) return - 0;
+            if (value === -4) return Infinity;
+            if (value === -5) return -Infinity;
+            if (value === -6) return -0;
 
             // Primitive values
             if (value === null || typeof value === 'boolean' || typeof value === 'string') {
