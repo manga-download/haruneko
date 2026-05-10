@@ -151,8 +151,8 @@ class DRMProvider {
         const aesParamsData = await this.Decrypt(GetBytesFromBase64(base64KeyData).buffer, this.#aesParams.key, this.#aesParams.iv);
         const [imageKey, imageIv] = aesParamsData.split(':');
         const decryptedBase64ImageData = await this.Decrypt(await blob.arrayBuffer(), imageKey, imageIv);
-        if (!decryptedBase64ImageData.startsWith('data:image/')) {
-            throw new Error('Only image data URLs allowed');
+        if (!/^data:image\/(jpe?g|png|webp|avif|bmp|gif);base64,[A-Za-z0-9+/]+=*$/.test(decryptedBase64ImageData)) {
+            throw new Error(`Decrypted image data is not a valid base64 data URI`);
         }
         return (await fetch(decryptedBase64ImageData)).blob();
     }
