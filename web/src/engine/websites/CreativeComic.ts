@@ -5,12 +5,6 @@ import { type MangaPlugin, Manga, Chapter, Page, DecoratableMangaScraper } from 
 import { type Priority } from '../taskpool/TaskPool';
 import { GetBytesFromBase64, GetBytesFromHex, GetBytesFromUTF8, GetHexFromBytes } from '../BufferEncoder';
 
-const uuidScript = `
-    new Promise (resolve =>{
-        resolve ({ uuid : localStorage.getItem('uuid'), accessToken : localStorage.getItem('accessToken')});
-    });
-`;
-
 type TokenData = {
     uuid: string;
     accessToken: string;
@@ -55,8 +49,11 @@ type IvAndKey = {
 
 export default class extends DecoratableMangaScraper {
     private readonly apiUrl = 'https://api.creative-comic.tw';
-    private uuid: string = '';
-    private accessToken: string = 'freeforccc2020reading';
+    private session: TokenData = {
+        uuid: '',
+        accessToken: ''
+    };
+    private defaultAccessToken = 'freeforccc2020reading';
 
     public constructor() {
         super('creativecomic', 'Creative Comic', 'https://www.creative-comic.tw', Tags.Media.Manhua, Tags.Language.Chinese, Tags.Source.Official);
@@ -68,9 +65,11 @@ export default class extends DecoratableMangaScraper {
 
     public override async Initialize(): Promise<void> {
         // TODO: update token and uuid after manual website interaction (i.e login)
-        const { uuid, accessToken } = await FetchWindowScript<TokenData>(new Request(this.URI), uuidScript, 500);
-        this.uuid = uuid;
-        this.accessToken = accessToken ?? 'freeforccc2020reading';
+        this.session = await FetchWindowScript<TokenData>(new Request(this.URI), `
+            new Promise (resolve =>{
+                resolve ({ uuid : localStorage.getItem('uuid'), accessToken : localStorage.getItem('accessToken')});
+            });
+        `, 500);
     }
 
     public override ValidateMangaURL(url: string): boolean {
@@ -102,7 +101,7 @@ export default class extends DecoratableMangaScraper {
             // Get image encrypted key.
             const { key: imageKey } = await this.FetchAPI<PageKey>(page.Link.href);
             // Decrypt image key and iv using access token.
-            const { iv, key } = await this.GetRealKey(imageKey, this.accessToken);
+            const { iv, key } = await this.GetRealKey(imageKey, this.session.accessToken || this.defaultAccessToken);
             const encryptedPage = await (await Fetch(new Request(new URL(`./fs/chapter_content/encrypt/${page.Link.href.match(/\d+$/).at(-1)}/2`, this.URI)))).arrayBuffer();
             const b64image = await this.AESDecrypt(encryptedPage, key, iv);
             return (await fetch(b64image)).blob();
@@ -138,7 +137,7 @@ export default class extends DecoratableMangaScraper {
         return (await FetchJSON<APIResult<T>>(new Request(new URL(endpoint, this.apiUrl), {
             headers: {
                 device: 'web_desktop',
-                uuid: this.uuid,
+                uuid: this.session.uuid,
                 Origin: this.URI.origin,
                 Referer: this.URI.href
             }
