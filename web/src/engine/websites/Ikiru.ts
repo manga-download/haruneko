@@ -4,21 +4,17 @@ import { Chapter, DecoratableMangaScraper, type Manga } from '../providers/Manga
 import * as Common from './decorators/Common';
 import { FetchCSS } from '../platform/FetchProvider';
 
-function MangaLinkExtractor(element: HTMLTitleElement, uri: URL) {
-    return {
-        id: uri.pathname,
-        title: element.innerText.replace(/\s+Bahasa\s+Indonesia/i, '').replace(/\s*-\s*Ikiru/, '').trim(),
-    };
-}
-
-@Common.MangaCSS(/^{origin}\/manga\/[^/]+\/$/, 'title', MangaLinkExtractor)
+@Common.MangaCSS(/^{origin}\/manga\/[^/]+\/$/, 'title', (element, uri) => ({
+    id: uri.pathname,
+    title: element.innerText.replace(/\s+Bahasa\s+Indonesia/i, '').replace(/\s*-\s*Ikiru/, '').trim(),
+}))
 @Common.MangasMultiPageCSS('div#search-results a:not([class]', Common.PatternLinkGenerator('/project/?the_page={page}'))
 @Common.PagesSinglePageCSS('section img')
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('ikiru', 'Ikiru', 'https://02.ikiru.wtf', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Indonesian, Tags.Source.Aggregator);
+        super('ikiru', 'Ikiru', 'https://05.ikiru.wtf', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Indonesian, Tags.Source.Aggregator);
     }
 
     public override get Icon() {

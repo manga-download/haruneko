@@ -36,8 +36,6 @@ const patternAliasDomains = [
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
-    private readonly keyData = GetBytesFromUTF8('op0zzpvv.nzn.ocp');
-
     public constructor() {
         super('copymanga', 'CopyManga', uri.origin, Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Chinese, Tags.Source.Aggregator);
     }
@@ -66,21 +64,22 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const uri = new URL(`./comicdetail/${manga.Identifier.split('/').at(-1)}/chapters`, this.URI);
+        const keyData = await FetchWindowScript<string>(new Request(new URL(manga.Identifier, this.URI)), 'ccz', 500);
         const { results } = await FetchJSON<EncryptedChapters>(new Request(uri, { headers: { 'DNTS': '3' } }));
-        const { groups: { default: { chapters } } } = await this.Decrypt<APIChapters>(results);
+        const { groups: { default: { chapters } } } = await this.Decrypt<APIChapters>(results, keyData);
         return chapters.map(({ id, name }) => new Chapter(this, manga, `${manga.Identifier}/chapter/${id}`, name.trim()));
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const imageData = await FetchWindowScript<string>(new Request(new URL(chapter.Identifier, this.URI)), 'contentKey', 500);
-        const images = await this.Decrypt<APIPages>(imageData);
+        const { contentKey, cct } = await FetchWindowScript<{ contentKey: string, cct: string }>(new Request(new URL(chapter.Identifier, this.URI)), '(() => ({ contentKey, cct }))();', 500);
+        const images = await this.Decrypt<APIPages>(contentKey, cct);
         return images.map(({ url }) => new Page(this, chapter, new URL(url)));
     }
 
-    private async Decrypt<T>(encryptedData: string): Promise<T> {
+    private async Decrypt<T>(encryptedData: string, keyData: string): Promise<T> {
         const encrypted = GetBytesFromHex(encryptedData.slice(16, encryptedData.length));
         const algorithm = { name: 'AES-CBC', iv: GetBytesFromUTF8(encryptedData.slice(0, 16)) };
-        const key = await crypto.subtle.importKey('raw', this.keyData, algorithm, false, ['decrypt']);
+        const key = await crypto.subtle.importKey('raw', GetBytesFromUTF8(keyData), algorithm, false, ['decrypt']);
         const decrypted = await crypto.subtle.decrypt(algorithm, key, encrypted);
         return JSON.parse(new TextDecoder('utf-8').decode(decrypted)) as T;
     }

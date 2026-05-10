@@ -1,9 +1,14 @@
 import { Delay } from '../BackgroundTimers';
+import { GetBytesFromBase64, GetBytesFromUTF8 } from '../BufferEncoder';
 import { FetchGraphQL } from '../platform/FetchProvider';
 import { Chapter, DecoratableMangaScraper, Manga, type MangaPlugin, Page } from '../providers/MangaPlugin';
 import { Tags } from '../Tags';
 import icon from './AllMangaTo.webp';
 import * as Common from './decorators/Common';
+
+type APIEncryptedResult = {
+    tobeparsed?: string;
+};
 
 type APIMangas = {
     mangas: {
@@ -15,18 +20,20 @@ type APIManga = {
     _id: string;
     name: string;
     englishName: string | null;
+    availableChaptersDetail: {
+        raw: string[];
+        sub: string[];
+    }
 };
 
 type APIChapters = {
     episodeInfos: APIChapter[];
+    manga: APIManga;
 };
-
-type TranslationKeys = 'sub' | '[raw]';
 
 type APIChapter = {
     episodeIdNum: number;
     notes?: string;
-    uploadDates: Record<TranslationKeys, never>;
 };
 
 type APIPages = {
@@ -45,8 +52,6 @@ type ChapterID = {
     translationType: string;
 };
 
-// TODO: Check for possible revision
-
 @Common.MangaCSS<HTMLUListElement>(/{origin}\/manga\/[^/]+$/, 'ol.breadcrumb li:last-of-type', (li, uri) => ({ id: uri.href.split('/').at(-1), title: li.innerText.trim() }))
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
@@ -54,7 +59,7 @@ export default class extends DecoratableMangaScraper {
     private readonly apiUrl = 'https://api.allanime.day/api';
 
     public constructor() {
-        super('allmanga', `AllManga.to`, 'https://allmanga.to', Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Language.English, Tags.Source.Aggregator);
+        super('allmanga', 'AllManga.to', 'https://allmanga.to', Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Language.English, Tags.Source.Aggregator);
     }
 
     public override get Icon() {
@@ -98,10 +103,31 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
+        function buildChapters(chapters: string[], type: 'sub' | 'raw'): Chapter[] {
+            return chapters.map(chapter => {
+                const num = parseFloat(chapter);
+                const infos = episodeInfos.find(({ episodeIdNum }) => episodeIdNum === num);
+                const title = [
+                    'Chapter',
+                    infos.episodeIdNum,
+                    infos.notes ? '-' : '',
+                    infos.notes ?? '',
+                    type === 'raw' ? '[raw]' : '',
+                ].filter(Boolean).join(' ').trim();
+
+                return new Chapter(this, manga, JSON.stringify({ id: `${num}`, translationType: type }), title);
+            });
+        }
+
         const query = `
-            query ($id: String!) {
+            query ($id: String!, $showId: String!) {
+                manga(_id: $id) {
+                    _id
+                    name
+                    availableChaptersDetail
+                }
                 episodeInfos(
-                    showId: $id
+                    showId: $showId
                     episodeNumStart: 0
                     episodeNumEnd: 9999
                 ) {
@@ -112,23 +138,17 @@ export default class extends DecoratableMangaScraper {
             }
         `;
 
-        const { episodeInfos } = await this.FetchAPI<APIChapters>(query, { id: `manga@${manga.Identifier}` });
+        const { episodeInfos, manga: { availableChaptersDetail: { raw, sub } } } =
+            await this.FetchAPI<APIChapters>(query, { id: manga.Identifier, showId: `manga@${manga.Identifier}` });
 
-        episodeInfos.sort((self, other) => other.episodeIdNum - self.episodeIdNum);
-        return episodeInfos.reduce((accumulator: Chapter[], entry) => {
-            const chapters = Object.keys(entry.uploadDates).map((key: TranslationKeys) => {
-                const title = [
-                    'Chapter',
-                    entry.episodeIdNum,
-                    entry.notes ? '-' : '',
-                    entry.notes ?? '',
-                    key === 'sub' ? '' : '[raw]',
-                ].filter(segment => segment).join(' ').trim();
-                return new Chapter(this, manga, JSON.stringify({ id: entry.episodeIdNum.toString(), translationType: key }), title);
-            });
-            accumulator.push(...chapters);
-            return accumulator;
-        }, []);
+        const allChapters = [
+            ...buildChapters.call(this, sub, 'sub'),
+            ...buildChapters.call(this, raw, 'raw')
+        ];
+
+        return allChapters.sort(
+            (a, b) => parseFloat((JSON.parse(b.Identifier) as ChapterID).id) - parseFloat((JSON.parse(a.Identifier) as ChapterID).id)
+        );
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
@@ -164,6 +184,17 @@ export default class extends DecoratableMangaScraper {
     }
 
     private async FetchAPI<T extends JSONElement>(query: string, variables: JSONObject): Promise<T> {
-        return await FetchGraphQL<T>(new Request(new URL(this.apiUrl)), '', query, variables);
+        const result = await FetchGraphQL<APIEncryptedResult & T>(new Request(new URL(this.apiUrl)), '', query, variables);
+        return !result.tobeparsed ? result as T : await this.Decrypt<T>(result.tobeparsed);
+    }
+
+    private async Decrypt<T>(data: string): Promise<T> {
+        const message = GetBytesFromBase64(data);
+        const ciphertext = message.slice(13, message.length - 16);
+        const tag = message.slice(message.length - 16);
+        const algorithm = { name: 'AES-GCM', iv: message.slice(1, 13) };
+        const key = await crypto.subtle.importKey('raw', await crypto.subtle.digest('SHA-256', GetBytesFromUTF8('Xot36i3lK3:v1')), algorithm, false, ['decrypt']);
+        const result = await crypto.subtle.decrypt(algorithm, key, new Uint8Array([...ciphertext, ...tag]));
+        return JSON.parse((new TextDecoder).decode(result)) as T;
     }
 }
