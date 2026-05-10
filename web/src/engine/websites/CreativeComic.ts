@@ -104,6 +104,9 @@ export default class extends DecoratableMangaScraper {
             const { iv, key } = await this.GetRealKey(imageKey, this.session.accessToken || this.defaultAccessToken);
             const encryptedPage = await (await Fetch(new Request(new URL(`./fs/chapter_content/encrypt/${page.Link.href.match(/\d+$/).at(-1)}/2`, this.URI)))).arrayBuffer();
             const b64image = await this.AESDecrypt(encryptedPage, key, iv);
+            if (!b64image.startsWith('data:image/')) {
+                throw new Error('Only image data URLs allowed');
+            }
             return (await fetch(b64image)).blob();
         }, priority, signal);
     }
