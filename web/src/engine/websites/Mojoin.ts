@@ -40,7 +40,7 @@ type APIPages = {
     }[]
 };
 
-type TokenData = {
+type SessionData = {
     uuid: string;
     access_token: string;
 }
@@ -109,8 +109,10 @@ export default class extends DecoratableMangaScraper {
  * A basic DRM manager with Mojoin specific business logic
  */
 class DRMProvider {
-    #defaultToken = { uuid: '', access_token: '' };
-    #token: TokenData = this.#defaultToken;
+    #defaultKey: string = 'freereadingcomicstar';
+    #defaultSession = { uuid: '', access_token: '' };
+
+    #session: SessionData = this.#defaultSession;
     #aesParams: AESParams = { iv: '', key: '' };
 
     constructor(private readonly clientURI: URL) { }
@@ -120,12 +122,12 @@ class DRMProvider {
      */
     public async UpdateToken() {
         try {
-            this.#token = await FetchWindowScript<TokenData>(new Request(this.clientURI), `new Promise(resolve=> resolve({ uuid: localStorage.getItem('uuid'), access_token : localStorage.getItem('access_token')}))`) ?? null;
-            this.#aesParams = await this.ComputeAESParams(this.#token.access_token ?? 'freereadingcomicstar');
+            this.#session = await FetchWindowScript<SessionData>(new Request(this.clientURI), `new Promise(resolve=> resolve({ uuid: localStorage.getItem('uuid'), access_token : localStorage.getItem('access_token')}))`) ?? null;
+            this.#aesParams = await this.ComputeAESParams(this.#session.access_token ?? this.#defaultKey);
         } catch (error) {
             console.warn('UpdateToken()', error);
-            this.#token = this.#defaultToken;
-            this.#aesParams = await this.ComputeAESParams('freereadingcomicstar');
+            this.#session = this.#defaultSession;
+            this.#aesParams = await this.ComputeAESParams(this.#defaultKey);
         }
     }
 
@@ -135,9 +137,9 @@ class DRMProvider {
      */
     public async ApplyNeededHeaders(init: HeadersInit): Promise<HeadersInit> {
         const headers = new Headers(init);
-        headers.set('uuid', this.#token.uuid);
-        if (this.#token.access_token) {
-            headers.set('Authorization', 'Bearer ' + this.#token.access_token);
+        headers.set('uuid', this.#session.uuid);
+        if (this.#session.access_token) {
+            headers.set('Authorization', 'Bearer ' + this.#session.access_token);
         }
         return headers;
     }
@@ -149,6 +151,9 @@ class DRMProvider {
         const aesParamsData = await this.Decrypt(GetBytesFromBase64(base64KeyData).buffer, this.#aesParams.key, this.#aesParams.iv);
         const [imageKey, imageIv] = aesParamsData.split(':');
         const decryptedBase64ImageData = await this.Decrypt(await blob.arrayBuffer(), imageKey, imageIv);
+        if (!decryptedBase64ImageData.startsWith('data:image/')) {
+            throw new Error('Only image data URLs allowed');
+        }
         return (await fetch(decryptedBase64ImageData)).blob();
     }
 
