@@ -3,7 +3,7 @@ import icon from './Mojoin.webp';
 import { Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import { GetBytesFromBase64, GetBytesFromHex, GetBytesFromUTF8, GetHexFromBytes } from '../BufferEncoder';
-import { FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
+import { Fetch, FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
 import type { Priority } from '../taskpool/DeferredTask';
 
 // TODO: Update token and key after manual user interaction
@@ -122,7 +122,7 @@ class DRMProvider {
      */
     public async UpdateToken() {
         try {
-            this.#session = await FetchWindowScript<SessionData>(new Request(this.clientURI), `new Promise(resolve=> resolve({ uuid: localStorage.getItem('uuid'), access_token : localStorage.getItem('access_token')}))`) ?? null;
+            this.#session = await FetchWindowScript<SessionData>(new Request(this.clientURI), `new Promise(resolve=> resolve({ uuid: localStorage.getItem('uuid'), access_token : localStorage.getItem('access_token')}))`, 1500) ?? null;
             this.#aesParams = await this.ComputeAESParams(this.#session.access_token ?? this.#defaultKey);
         } catch (error) {
             console.warn('UpdateToken()', error);
