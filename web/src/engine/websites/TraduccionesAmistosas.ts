@@ -7,12 +7,12 @@ import * as Common from './decorators/Common';
 @Madara.MangaCSS(/^{origin}\/manga\/[^/]+\/$/, 'ol.breadcrumb li:last-of-type a')
 @Madara.MangasMultiPageAJAX()
 @Madara.ChaptersSinglePageAJAXv2()
-@Madara.PagesSinglePageCSS()
+@Common.PagesSinglePageJS(`[...document.querySelectorAll('div.rk-page-wrap img')].map(img => img.dataset.src || img.src);`, 1500)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('traduccionesamistosas', 'Traducciones Amistosas', 'https://traduccionesamistosas.topmanhuas.org', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Spanish, Tags.Source.Scanlator);
+        super('traduccionesamistosas', 'Traducciones Amistosas', 'https://nartag.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Spanish, Tags.Source.Scanlator);
     }
 
     public override get Icon() {

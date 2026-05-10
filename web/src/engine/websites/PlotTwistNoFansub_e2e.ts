@@ -11,12 +11,12 @@ new TestFixture({
         title: 'Guarda-Fantasmas'
     },
     child: {
-        id: '/manga/guarda-fantasmas/5/',
-        title: '5 No tengo miedo'
+        id: '/manga/guarda-fantasmas/14/',
+        title: '14 Amamiya'
     },
     entry: {
         index: 0,
-        size: 164_516,
+        size: 152_680,
         type: 'image/webp'
     }
 }).AssertWebsite();
