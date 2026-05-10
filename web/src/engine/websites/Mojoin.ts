@@ -154,7 +154,7 @@ class DRMProvider {
         if (!/^data:image\/(jpe?g|png|webp|avif|bmp|gif);base64,[A-Za-z0-9+/]+=*$/.test(decryptedBase64ImageData)) {
             throw new Error(`Decrypted image data is not a valid base64 data URI`);
         }
-        return (await fetch(decryptedBase64ImageData)).blob();
+        return (await Fetch(new Request(decryptedBase64ImageData))).blob();
     }
 
     private async ComputeAESParams(text: string): Promise<AESParams> {
