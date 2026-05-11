@@ -27,6 +27,9 @@ type APIPages = {
         images: {
             url: string;
         }[];
+        nextOffset: number;
+        nextToken: string;
+        hasMore: boolean;
     };
 };
 
@@ -57,7 +60,7 @@ export default class extends DecoratableMangaScraper {
         const pages = await manifests.reduce<Promise<Page[]>>(async (accP, manifest) => {
             const acc = await accP;
 
-            const { ajaxUrl, chapterId, nonce, token, mangaId, chapterSlug, host, offset, limit } = manifest;
+            const { ajaxUrl, chapterId, nonce, token, mangaId, chapterSlug, host, limit, instance } = manifest;
             const body = new FormData();
             body.append('action', 'raijin_free_reader_manifest');
             body.append('nonce', nonce);
@@ -66,16 +69,26 @@ export default class extends DecoratableMangaScraper {
             body.append('chapter_id', `${chapterId}`);
             body.append('chapter_slug', chapterSlug);
             body.append('host', host);
-            body.append('offset', `${offset || 0}`);
+            body.append('offset', '0');
             body.append('limit', `${limit || 0}`);
+            body.append('instance', instance);
+            body.append('cursor', '');
 
-            const { data: { images } } = await FetchJSON<APIPages>(new Request(new URL(ajaxUrl), {
-                credentials: 'same-origin',
-                method: 'POST',
-                body
-            }));
+            const manifestImages: Page[] = [];
+            for (let run = true; run;) {
+                const { data: { images, nextOffset, nextToken, hasMore } } = await FetchJSON<APIPages>(new Request(new URL(ajaxUrl), {
+                    credentials: 'same-origin',
+                    method: 'POST',
+                    body
+                }));
 
-            return [...acc, ...images.map(({ url }) => new Page(this, chapter, new URL(url)))];
+                manifestImages.push(...images.map(({ url }) => new Page(this, chapter, new URL(url))));
+                body.set('offset', `${nextOffset}`);
+                body.set('cursor', `${nextToken}`);
+                run = hasMore;
+            }
+
+            return [...acc, ...manifestImages];
         }, Promise.resolve([]));
         return pages;
     }
