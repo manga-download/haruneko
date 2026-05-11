@@ -12,7 +12,7 @@ import { AddAntiScrapingDetection, FetchRedirection } from '../platform/AntiScra
 AddAntiScrapingDetection(async (invoke) => {
     const result = await invoke<string[]>(`[...document.querySelectorAll('script')].map(script => script.text)`);
     return result.some(script => /window\.captcha\s*=/.test(script) && /chaitin\.cn\/captcha\/api/.test(script)) ? FetchRedirection.Automatic : undefined;
-}, /^https:\/\/truyenqqno\.com/);
+}, /^https:\/\/truyenqqko\.com/);
 
 function PageExtractor(element: HTMLElement): string {
     return element.dataset.original;
@@ -24,7 +24,7 @@ export default class extends DecoratableMangaScraper {
     private readonly interactionTaskPool = new TaskPool(1, RateLimit.PerMinute(30));
 
     public constructor() {
-        super('truyenqq', 'TruyenQQ', 'https://truyenqqno.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Vietnamese, Tags.Source.Aggregator);
+        super('truyenqq', 'TruyenQQ', 'https://truyenqqko.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Vietnamese, Tags.Source.Aggregator);
         this.Settings.throttle = new Numeric('throttle.interactive', R.Plugin_Settings_ThrottlingInteraction, R.Plugin_Settings_ThrottlingInteractionInfo, 30, 1, 60).Subscribe(value => this.interactionTaskPool.RateLimit = RateLimit.PerMinute(value));
     }
 
