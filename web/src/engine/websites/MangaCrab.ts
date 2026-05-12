@@ -68,21 +68,41 @@ export default class extends DecoratableMangaScraper {
     public override async FetchPages(chapter: Chapter): Promise<Page<PageKey>[]> {
         //NOT using script because of ad wall intermediate page interfering
         const [body] = await FetchCSS(new Request(new URL(chapter.Identifier, this.URI)), 'body');
-        const images = [...body.querySelectorAll('div.reader-body img.mv-secure-img')]
-            .map(img => [...img.attributes].find(attribute => attribute.value.startsWith('/encript.php'))?.value)
-            .filter(img => img);
         const imgKey = body.innerHTML.match(/['"]imgHeader['"]\s*:\s*['"]([^'"]+)['"]/).at(1);
+        const images = [...body.querySelectorAll<HTMLImageElement>('img.mv-secure-img, div.page-break:not([style*="display: none"]) img:not([src]), div.reader-body img, #mv-reader-body img')]
+            .map(image => this.PageLinkExtractor(image))
+            .filter(image => image);
         return images.map(page => new Page<PageKey>(this, chapter, new URL(page, this.URI), { imgKey }));
     }
 
+    private PageLinkExtractor(image: HTMLImageElement): string {
+        return image.getAttribute("data-sec-src")
+            || [...image.attributes]
+                .map(attr => {
+                    try {
+                        return new URL(attr.value, this.URI).toString();
+                    } catch {
+                        return null;
+                    }
+                })
+                .find(url => url?.includes('wp-content'))
+            || image.getAttribute('data-src')
+            || image.getAttribute('data-lazy-src')
+            || image.getAttribute('srcset')?.split(' ')[0].trim()
+            || image.getAttribute('data-cfsrc')
+            || image.getAttribute('data-src-base64')
+            || image.getAttribute('src');
+    };
+
     public override async FetchImage(page: Page<PageKey>, priority: Priority, signal: AbortSignal): Promise<Blob> {
-        return this.imageTaskPool.Add(async () => {
-            return (await Fetch(new Request(page.Link, {
-                headers: {
-                    Referer: new URL(page.Parent.Identifier, this.URI).href,
-                    'Node': page.Parameters.imgKey
-                },
-            }))).blob();
-        }, priority, signal);
+        return !page.Parameters.imgKey ? Common.FetchImageAjax.call(this, page, priority, signal) :
+            this.imageTaskPool.Add(async () => {
+                return (await Fetch(new Request(page.Link, {
+                    headers: {
+                        Referer: new URL(page.Parent.Identifier, this.URI).href,
+                        'Node': page.Parameters.imgKey
+                    },
+                }))).blob();
+            }, priority, signal);
     }
 }

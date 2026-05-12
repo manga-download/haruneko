@@ -11,7 +11,7 @@ new TestFixture({
         title: 'Mi Sistema Es Muy serio'
     },
     child: {
-        id: '/series/mi-sistema-es-muy-serio/?chapter=capitulo-19',
+        id: '/series/mi-sistema-es-muy-serio/capitulo-19',
         title: 'Capitulo 19'
     },
     entry: {
