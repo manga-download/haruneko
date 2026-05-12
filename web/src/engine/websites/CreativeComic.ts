@@ -1,26 +1,21 @@
 import { Tags } from '../Tags';
 import icon from './CreativeComic.webp';
+import type { Priority } from '../taskpool/TaskPool';
 import { Fetch, FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
 import { type MangaPlugin, Manga, Chapter, Page, DecoratableMangaScraper } from '../providers/MangaPlugin';
-import { type Priority } from '../taskpool/TaskPool';
-import { GetBytesFromBase64, GetBytesFromHex, GetBytesFromUTF8, GetHexFromBytes } from '../BufferEncoder';
+import { GetBytesFromBase64, GetBytesFromHex, GetBytesFromUTF8, GetUTF8FromBytes } from '../BufferEncoder';
+import * as Common from './decorators/Common';
 
 type TokenData = {
     uuid: string;
-    accessToken: string;
-};
-
-type APIResult<T> = {
-    data: T;
+    token?: string;
 };
 
 type APIMangas = {
-    data: APIManga[];
-};
-
-type APIManga = {
-    id: number;
-    name: string;
+    data: {
+        id: number;
+        name: string;
+    }[];
 };
 
 type APIChapters = {
@@ -38,22 +33,34 @@ type APIPages = {
     }
 };
 
-type PageKey = {
-    key: string;
-};
+type PageParameters = {
+    EncryptionEndpoint: string;
+}
 
-type IvAndKey = {
-    key: string;
-    iv: string;
-};
+class DRMProvider {
 
+    #uuid = '';
+    public get UUID() { return this.#uuid; }
+
+    #iv: Uint8Array<ArrayBuffer>;
+    public get IV() { return this.#iv; }
+
+    #keyData: Uint8Array<ArrayBuffer>;
+    public get KeyData() { return this.#keyData; }
+
+    public async Update(uuid: string, token: string) {
+        const hash = await crypto.subtle.digest({ name: 'SHA-512' }, GetBytesFromUTF8(token));
+        this.#uuid = uuid;
+        this.#iv = new Uint8Array(hash, 15, 16);
+        this.#keyData = new Uint8Array(hash, 0, 32);
+    }
+}
+
+@Common.MangaCSS<HTMLParagraphElement>(/^{origin}\/[^/]+\/book\/\d+\/content$/, 'div.info > p.name', (p, uri) => ({ id: uri.pathname.split('/').at(-2), title: p.innerText }))
 export default class extends DecoratableMangaScraper {
-    private readonly apiUrl = 'https://api.creative-comic.tw';
-    private session: TokenData = {
-        uuid: '',
-        accessToken: ''
-    };
-    private defaultAccessToken = 'freeforccc2020reading';
+
+    readonly #apiURL = 'https://api.creative-comic.tw';
+    #drm = new DRMProvider();
 
     public constructor() {
         super('creativecomic', 'Creative Comic', 'https://www.creative-comic.tw', Tags.Media.Manhua, Tags.Language.Chinese, Tags.Source.Official);
@@ -65,85 +72,56 @@ export default class extends DecoratableMangaScraper {
 
     public override async Initialize(): Promise<void> {
         // TODO: update token and uuid after manual website interaction (i.e login)
-        this.session = await FetchWindowScript<TokenData>(new Request(this.URI), `
-            new Promise (resolve =>{
-                resolve ({ uuid : localStorage.getItem('uuid'), accessToken : localStorage.getItem('accessToken')});
-            });
-        `, 500);
-    }
-
-    public override ValidateMangaURL(url: string): boolean {
-        return new RegExpSafe(`^${this.URI.origin}/[^/]+/book/\\d+/content`).test(url);
-    }
-
-    public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
-        const { id, name } = await this.FetchAPI<APIManga>(`/book/${url.match(/\/book\/(\d+)/).at(1)}/info`);
-        return new Manga(this, provider, `${id}`, name);
+        const { uuid, token } = await FetchWindowScript<TokenData>(new Request(this.URI), `({
+            uuid: localStorage.getItem('uuid'),
+            token: localStorage.getItem('accessToken'),
+        });`, 500);
+        return this.#drm.Update(uuid, token ?? 'freeforccc2020reading');
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        const { data } = await this.FetchAPI<APIMangas>('./book?page=1&rows_per_page=99999&sort_by=updated_at&class=2');
+        const { data } = await this.#FetchAPI<APIMangas>('./book?page=1&rows_per_page=99999&sort_by=updated_at&class=2');
         return data.map(({ id, name }) => new Manga(this, provider, `${id}`, name));
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const { chapters } = await this.FetchAPI<APIChapters>(`./book/${manga.Identifier}/chapter`);
+        const { chapters } = await this.#FetchAPI<APIChapters>(`./book/${manga.Identifier}/chapter`);
         return chapters.map(({ id, vol_name: vol }) => new Chapter(this, manga, `${id}`, vol));
     }
 
-    public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const { chapter: { proportion } } = await this.FetchAPI<APIPages>(`./book/chapter/${chapter.Identifier}`);
-        return proportion.map(({ id }) => new Page(this, chapter, new URL(`./book/chapter/image/${id}`, this.apiUrl)));
+    public override async FetchPages(chapter: Chapter): Promise<Page<PageParameters>[]> {
+        const { chapter: { proportion } } = await this.#FetchAPI<APIPages>(`./book/chapter/${chapter.Identifier}`);
+        return proportion.map(({ id }) => new Page<PageParameters>(this, chapter, new URL(`/fs/chapter_content/encrypt/${id}/2`, this.URI), { EncryptionEndpoint: `/book/chapter/image/${id}` }));
     }
 
-    public override async FetchImage(page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
-        return this.imageTaskPool.Add(async () => {
-            // Get image encrypted key.
-            const { key: imageKey } = await this.FetchAPI<PageKey>(page.Link.href);
-            // Decrypt image key and iv using access token.
-            const { iv, key } = await this.GetRealKey(imageKey, this.session.accessToken || this.defaultAccessToken);
-            const encryptedPage = await (await Fetch(new Request(new URL(`./fs/chapter_content/encrypt/${page.Link.href.match(/\d+$/).at(-1)}/2`, this.URI)))).arrayBuffer();
-            const b64image = await this.AESDecrypt(encryptedPage, key, iv);
-            if (!/^data:image\/(jpe?g|png|webp|avif|bmp|gif);base64,[A-Za-z0-9+/]+=*$/.test(b64image)) {
-                throw new Error(`Decrypted image data is not a valid base64 data URI`);
-            }
-            return (await Fetch(new Request(b64image))).blob();
+    public override async FetchImage(page: Page<PageParameters>, priority: Priority, signal: AbortSignal): Promise<Blob> {
+        const encrypted = await this.imageTaskPool.Add(async () => {
+            const { key } = await this.#FetchAPI<{ key: string }>(page.Parameters.EncryptionEndpoint);
+            const response = await Fetch(new Request(page.Link.href));
+            return { key: GetBytesFromBase64(key), image: await response.arrayBuffer() };
         }, priority, signal);
+
+        const [keyData, iv] = (await this.#Decrypt(encrypted.key, this.#drm.IV, this.#drm.KeyData)).split(':');
+        const decrypted = await this.#Decrypt(encrypted.image, GetBytesFromHex(iv), GetBytesFromHex(keyData));
+        return Fetch(new Request(decrypted)).then(response => response.blob());
     }
 
-    private async Token2key(token: string): Promise<IvAndKey> {
-        const hash = await crypto.subtle.digest({ name: 'SHA-512' }, GetBytesFromUTF8(token));
-        const t = GetHexFromBytes(new Uint8Array(hash));
-        return {
-            key: t.slice(0, 64),
-            iv: t.slice(30, 62)
-        };
+    async #Decrypt(encrypted: BufferSource, iv: BufferSource, keyData: BufferSource): Promise<string> {
+        const algorithm = { name: 'AES-CBC', iv };
+        const AESkey = await crypto.subtle.importKey('raw', keyData, algorithm, false, ['decrypt']);
+        const decrypted = await crypto.subtle.decrypt(algorithm, AESkey, encrypted);
+        return GetUTF8FromBytes(decrypted);
     }
 
-    private async GetRealKey(imageKey: string, token: string): Promise<IvAndKey> {
-        const { iv, key } = await this.Token2key(token);
-        const decryptionData = (await this.AESDecrypt(imageKey, key, iv)).split(':');
-        return {
-            key: decryptionData[0],
-            iv: decryptionData[1]
-        };
-    }
-
-    private async AESDecrypt(message: string | ArrayBuffer, key: string, iv: string): Promise<string> {
-        const algorithm = { name: 'AES-CBC', iv: GetBytesFromHex(iv) };
-        const AESkey = await crypto.subtle.importKey('raw', GetBytesFromHex(key), algorithm, false, ['decrypt']);
-        const decrypted = await crypto.subtle.decrypt(algorithm, AESkey, typeof message == 'string' ? GetBytesFromBase64(message) : message);
-        return new TextDecoder().decode(decrypted);
-    }
-
-    private async FetchAPI<T extends JSONElement>(endpoint: string): Promise<T> {
-        return (await FetchJSON<APIResult<T>>(new Request(new URL(endpoint, this.apiUrl), {
+    async #FetchAPI<T extends JSONElement>(endpoint: string): Promise<T> {
+        const { data } = await FetchJSON<{ data: T }>(new Request(new URL(endpoint, this.#apiURL), {
             headers: {
-                device: 'web_desktop',
-                uuid: this.session.uuid,
+                Device: 'web_desktop',
+                UUID: this.#drm.UUID,
                 Origin: this.URI.origin,
-                Referer: this.URI.href
+                Referer: this.URI.href,
             }
-        }))).data;
+        }));
+        return data;
     }
 }
