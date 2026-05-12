@@ -7,14 +7,17 @@ export class FetchProvider {
     private appHostname = '';
     #patternFetchApiSupportedPrefix: RegExp = /$^/;
 
-    constructor (private readonly ipc: IPC, private readonly webContents: WebContents) {
+    constructor(private readonly ipc: IPC, private readonly webContents: WebContents) {
+        this.appHostname = new URL(this.webContents.getURL()).hostname;
         this.ipc.Handle(Channels.FetchProvider.Initialize, this.Initialize.bind(this));
         this.ipc.Handle(Channels.FetchProvider.GetSessionCookies, this.GetSessionCookies.bind(this));
     }
 
     private Initialize(fetchApiSupportedPrefix: string): void {
         this.#patternFetchApiSupportedPrefix = new RegExp('^' + fetchApiSupportedPrefix, 'i');
-        this.appHostname = new URL(this.webContents.getURL()).hostname;
+        // TODO: Provide callbacks as serialized functions
+        //const onBeforeSendHeaders = new Function('...').bind(this);
+        //const onHeadersReceived = new Function('...').bind(this);
         this.webContents.session.webRequest.onBeforeSendHeaders(async (details, callback) => callback(await this.ModifyRequestHeaders(details.url, details.requestHeaders)));
         this.webContents.session.webRequest.onHeadersReceived((details, callback) => callback(this.ModifyResponseHeaders(details.responseHeaders ?? {})));
         this.Initialize = () => { };

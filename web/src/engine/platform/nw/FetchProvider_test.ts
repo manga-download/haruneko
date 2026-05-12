@@ -23,16 +23,23 @@ class TestFixture {
         globalThis.chrome = this.chromeFake as unknown as typeof chrome;
         //this.chromeFake.cookies.getAll.mockImplementation((details, callback?) => callback(this.ParseCookies(cookies)));
 
-        globalThis.window = Object.assign(globalThis.window ?? {}, {
-            location: { origin: 'http://localhost' }
-        }) as Window & typeof globalThis;
+        this.WithOrigin('http://localhost');
     }
 
+    /*
     private ParseCookies(cookies: string): chrome.cookies.Cookie[] {
         return cookies.split(';').filter(cookie => cookie.includes('=')).map(cookie => {
             const [ name, value ] = cookie.split('=').map(c => c.trim());
             return { name, value } as chrome.cookies.Cookie;
         });
+    }
+    */
+
+    public WithOrigin(origin: string) {
+        globalThis.window = Object.assign(globalThis.window ?? {}, {
+            location: { origin }
+        }) as Window & typeof globalThis;
+        return this;
     }
 
     public CreateTestee(performInitialize: boolean) {
@@ -62,7 +69,7 @@ describe('FetchProvider', () => {
             const { instance: testee } = fixture.CreateTestee(false);
             expect(globalThis.Request).toBeNull();
             testee.Initialize(fixture.mockFeatureFlags);
-            expect(globalThis.Request.name).toBe('FetchRequest');
+            expect(globalThis.Request.name).toBe('FetchConcealedRequest');
         });
 
         it('Should register onBeforeSendHeaders modifier', () => {
@@ -77,7 +84,7 @@ describe('FetchProvider', () => {
                 ]
             } as chrome.webRequest.OnBeforeSendHeadersDetails;
             const actual = onBeforeSendHeadersListener(details) as chrome.webRequest.BlockingResponse;
-
+console.log('++++++++', actual);
             expect(onBeforeSendHeadersListener.name).toBe('bound ModifyRequestHeaders');
             expect(actual.requestHeaders).toStrictEqual([
                 { name: 'host', value: '-' },
@@ -100,8 +107,8 @@ describe('FetchProvider', () => {
 
             expect(onHeadersReceivedListener.name).toBe('bound ModifyResponseHeaders');
             expect(actual.responseHeaders).toStrictEqual([
-                { name: 'X-FetchAPI-Origin', value: '😈' },
-                { name: 'Host', value: '😇' },
+                { name: 'x-fetchapi-origin', value: '😈' },
+                { name: 'host', value: '😇' },
             ]);
         });
     });
