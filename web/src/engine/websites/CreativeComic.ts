@@ -43,10 +43,10 @@ class DRMProvider {
     public get UUID() { return this.#uuid; }
 
     #iv: Uint8Array<ArrayBuffer>;
-    public get IV() { return this.#iv; }
+    //public get IV() { return this.#iv; }
 
     #keyData: Uint8Array<ArrayBuffer>;
-    public get KeyData() { return this.#keyData; }
+    //public get KeyData() { return this.#keyData; }
 
     public async Update(uuid: string, token: string) {
         const hash = await crypto.subtle.digest({ name: 'SHA-512' }, GetBytesFromUTF8(token));
@@ -54,13 +54,20 @@ class DRMProvider {
         this.#iv = new Uint8Array(hash, 15, 16);
         this.#keyData = new Uint8Array(hash, 0, 32);
     }
+
+    public async Decrypt(encrypted: BufferSource, iv = this.#iv, keyData = this.#keyData): Promise<string> {
+        const algorithm = { name: 'AES-CBC', iv };
+        const key = await crypto.subtle.importKey('raw', keyData, algorithm, false, ['decrypt']);
+        const decrypted = await crypto.subtle.decrypt(algorithm, key, encrypted);
+        return GetUTF8FromBytes(decrypted);
+    }
 }
 
-@Common.MangaCSS<HTMLParagraphElement>(/^{origin}\/[^/]+\/book\/\d+\/content$/, 'div.info > p.name', (p, uri) => ({ id: uri.pathname.split('/').at(-2), title: p.innerText }))
+@Common.MangaCSS(/^{origin}\/[^/]+\/book\/\d+\/content$/, 'div.info > p.name', (p, uri) => ({ id: uri.pathname.split('/').at(-2), title: p.innerText }))
 export default class extends DecoratableMangaScraper {
 
-    readonly #apiURL = 'https://api.creative-comic.tw';
     #drm = new DRMProvider();
+    readonly #apiURL = 'https://api.creative-comic.tw';
 
     public constructor() {
         super('creativecomic', 'Creative Comic', 'https://www.creative-comic.tw', Tags.Media.Manhua, Tags.Language.Chinese, Tags.Source.Official);
@@ -80,17 +87,17 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        const { data } = await this.#FetchAPI<APIMangas>('./book?page=1&rows_per_page=99999&sort_by=updated_at&class=2');
+        const { data } = await this.#FetchAPI<APIMangas>('/book?page=1&rows_per_page=99999&sort_by=updated_at&class=2');
         return data.map(({ id, name }) => new Manga(this, provider, `${id}`, name));
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const { chapters } = await this.#FetchAPI<APIChapters>(`./book/${manga.Identifier}/chapter`);
+        const { chapters } = await this.#FetchAPI<APIChapters>(`/book/${manga.Identifier}/chapter`);
         return chapters.map(({ id, vol_name: vol }) => new Chapter(this, manga, `${id}`, vol));
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page<PageParameters>[]> {
-        const { chapter: { proportion } } = await this.#FetchAPI<APIPages>(`./book/chapter/${chapter.Identifier}`);
+        const { chapter: { proportion } } = await this.#FetchAPI<APIPages>(`/book/chapter/${chapter.Identifier}`);
         return proportion.map(({ id }) => new Page<PageParameters>(this, chapter, new URL(`/fs/chapter_content/encrypt/${id}/2`, this.URI), { EncryptionEndpoint: `/book/chapter/image/${id}` }));
     }
 
@@ -101,16 +108,9 @@ export default class extends DecoratableMangaScraper {
             return { key: GetBytesFromBase64(key), image: await response.arrayBuffer() };
         }, priority, signal);
 
-        const [keyData, iv] = (await this.#Decrypt(encrypted.key, this.#drm.IV, this.#drm.KeyData)).split(':');
-        const decrypted = await this.#Decrypt(encrypted.image, GetBytesFromHex(iv), GetBytesFromHex(keyData));
+        const [keyData, iv] = (await this.#drm.Decrypt(encrypted.key)).split(':');
+        const decrypted = await this.#drm.Decrypt(encrypted.image, GetBytesFromHex(iv), GetBytesFromHex(keyData));
         return Fetch(new Request(decrypted)).then(response => response.blob());
-    }
-
-    async #Decrypt(encrypted: BufferSource, iv: BufferSource, keyData: BufferSource): Promise<string> {
-        const algorithm = { name: 'AES-CBC', iv };
-        const AESkey = await crypto.subtle.importKey('raw', keyData, algorithm, false, ['decrypt']);
-        const decrypted = await crypto.subtle.decrypt(algorithm, AESkey, encrypted);
-        return GetUTF8FromBytes(decrypted);
     }
 
     async #FetchAPI<T extends JSONElement>(endpoint: string): Promise<T> {
@@ -118,7 +118,6 @@ export default class extends DecoratableMangaScraper {
             headers: {
                 Device: 'web_desktop',
                 UUID: this.#drm.UUID,
-                Origin: this.URI.origin,
                 Referer: this.URI.href,
             }
         }));
