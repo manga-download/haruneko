@@ -227,6 +227,7 @@ export { default as ImperioDaBritannia } from './ImperioDaBritannia';
 export { default as InfraFandub } from './InfraFandub';
 export { default as InManga } from './InManga';
 export { default as InmortalScan } from './InmortalScan';
+export { default as InsanosManhua } from './InsanosManhua';
 export { default as iqiyi } from './iqiyi';
 export { default as IrisScanlator } from './IrisScanlator';
 export { default as JapScan } from './JapScan';
