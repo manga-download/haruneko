@@ -9,7 +9,7 @@ new TestFixture({
         url: 'https://insanoslibrary.com/manga/sere-rey-en-esta-vida-usare-el-dinero-para-subir-de-nivel/',
         id: '/manga/sere-rey-en-esta-vida-usare-el-dinero-para-subir-de-nivel/',
         title: 'Seré Rey En Esta Vida, Usare El Dinero Para Subir De Nivel',
-        timeout : 20000
+        timeout: 20_000,
     },
     child: {
         id: '/manga/sere-rey-en-esta-vida-usare-el-dinero-para-subir-de-nivel/sere-rey-en-esta-vida-usare-el-dinero-para-subir-de-nivel-capitulo-184/',
