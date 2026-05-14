@@ -31,6 +31,6 @@
         "test:e2e": "npm run build --workspaces && vitest run --config=test/vitest.e2e.js",
         "test:websites": "npm run build --workspaces && vitest run --config=test/vitest.websites.js",
         "npm:clean-install": "npm update --package-lock-only && npm clean-install",
-        "postinstall": "npm --workspace=app/electron exec electron -- --version"
+        "postinstall": "npm --workspace=app/electron exec electron -- --no-sandbox --version"
     }
 }
