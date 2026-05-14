@@ -3,7 +3,7 @@ import icon from './Comico.webp';
 import { Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from '../providers/MangaPlugin';
 import { Fetch, FetchJSON } from '../platform/FetchProvider';
 import * as Common from './decorators/Common';
-import { GetHexFromBytes, GetBytesFromUTF8, GetBytesFromBase64 } from '../BufferEncoder';
+import { GetHexFromBytes, GetBytesFromUTF8, GetBytesFromBase64, GetUTF8FromBytes } from '../BufferEncoder';
 import { Exception } from '../Error';
 import { WebsiteResourceKey as R} from '../../i18n/ILocale';
 
@@ -143,7 +143,7 @@ export default class extends DecoratableMangaScraper {
         const { chapterEpubIncludedFile } = epub;
         const { rootPath, rootFileName, url: opfUrl, parameter: opfParameter, m2Parameter } = chapterEpubIncludedFile;
 
-        const epubRootUrl = new TextDecoder('utf-8').decode(await this.AESDecrypt(GetBytesFromBase64(opfUrl))) + rootPath;
+        const epubRootUrl = GetUTF8FromBytes(await this.AESDecrypt(GetBytesFromBase64(opfUrl))) + rootPath;
         const epubUrl = `${epubRootUrl}${rootFileName}?${opfParameter}`;
 
         const response = await Fetch(new Request(new URL(epubUrl)));
@@ -156,7 +156,7 @@ export default class extends DecoratableMangaScraper {
 
     private async DecryptPictureUrl(page: APIImage): Promise<string> {
         const decrypted = await this.AESDecrypt(GetBytesFromBase64(page.url));
-        return new TextDecoder('utf-8').decode(decrypted) + '?' + page.parameter;
+        return GetUTF8FromBytes(decrypted) + '?' + page.parameter;
     }
 
     private async AESDecrypt(data: Uint8Array<ArrayBuffer>): Promise<ArrayBuffer> {
