@@ -3,7 +3,7 @@ import icon from './ImperioDaBritannia.webp';
 import { Chapter, DecoratableMangaScraper, Manga, type MangaPlugin, Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import { Fetch } from '../platform/FetchProvider';
-import { GetBytesFromHex, GetBytesFromUTF8 } from '../BufferEncoder';
+import { GetBytesFromHex, GetBytesFromUTF8, GetUTF8FromBytes } from '../BufferEncoder';
 
 type APIMangas = {
     obras: APIManga[];
@@ -40,7 +40,7 @@ type APIPage = {
 
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
-    private readonly apiUrl = 'https://imperiodabritannia.net/api/';
+    private readonly apiUrl = 'https://api.imperiodabritannia.net/api/';
     private readonly CDNUrl = 'https://cdn.imperiodabritannia.net/';
 
     public constructor() {
@@ -73,7 +73,7 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const { obra: { capitulos } } = await this.FetchAPI<APIMangaDetails>(`./obras/by-slug/${manga.Identifier}/`);
-        return capitulos.reverse().map(({ nome, numero, obra_id: mangaId }) => new Chapter(this, manga, `${mangaId}/${parseInt(numero)}`, nome));
+        return capitulos.reverse().map(({ nome, numero, obra_id: mangaId }) => new Chapter(this, manga, `${mangaId}/${parseInt(numero)}`, nome || `Capítulo ${numero}`));
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
@@ -95,12 +95,13 @@ export default class extends DecoratableMangaScraper {
     }
 
     private async FetchAPI<T extends JSONElement>(endpoint: string): Promise<T> {
-        const data = await Fetch(new Request(new URL(endpoint, this.apiUrl), {
+        const response = await Fetch(new Request(new URL(endpoint, this.apiUrl), {
             headers: {
-                'Content-type': 'application/json'
+                'Content-type': 'application/json',
+                'X-API-Token': 'bunker_api_token_secreto_2025',
             }
         }));
-        return data.headers.get('x-encrypted') === 'true' ? this.Decrypt<T>(await data.text()) : await data.json() as T;
+        return response.headers.get('x-encrypted') === 'true' ? this.Decrypt<T>(await response.text()) : await response.json() as T;
     }
 
     private async Decrypt<T extends JSONElement>(text: string): Promise<T> {
@@ -110,7 +111,7 @@ export default class extends DecoratableMangaScraper {
             await crypto.subtle.digest('SHA-256', GetBytesFromUTF8('mangotoons_encryption_key_2025' + 'salt')),
             algorithm, false, ['decrypt']);
         const decrypted = await crypto.subtle.decrypt(algorithm, key, GetBytesFromHex(encrypted));
-        return JSON.parse(new TextDecoder().decode(decrypted)) as T;
+        return JSON.parse(GetUTF8FromBytes(decrypted)) as T;
     }
 
 }
