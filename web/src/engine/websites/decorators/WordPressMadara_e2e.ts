@@ -94,6 +94,7 @@ import '../MangaSushi_e2e';
 import '../MangaTilkisi_e2e';
 import '../MangaWOW_e2e';
 import '../MangaWT_e2e';
+import '../MangaZizi_e2e';
 import '../ManHatic_e2e';
 import '../ManhuaFastNet_e2e';
 import '../ManhuaFast_e2e';
