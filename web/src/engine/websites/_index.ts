@@ -287,7 +287,6 @@ export { default as LezhinES } from './LezhinES';
 export { default as LezhinFR } from './LezhinFR';
 export { default as LezhinJA } from './LezhinJA';
 export { default as LezhinTH } from './LezhinTH';
-export { default as LezhinX } from './LezhinX';
 export { default as LHTranslation } from './LHTranslation';
 export { default as LianScans } from './LianScans';
 export { default as LikeManga } from './LikeManga';
