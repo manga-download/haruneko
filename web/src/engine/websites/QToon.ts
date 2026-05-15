@@ -4,7 +4,7 @@ import { FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
 import { type MangaPlugin, Manga, Chapter, DecoratableMangaScraper, Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import { RandomText } from '../Random';
-import { GetBase64FromBytes, GetBytesFromBase64, GetBytesFromUTF8, GetHexFromBytes } from '../BufferEncoder';
+import { GetBase64FromBytes, GetBytesFromBase64, GetBytesFromUTF8, GetHexFromBytes, GetUTF8FromBytes } from '../BufferEncoder';
 
 type CookiesAndTokens = {
     did: string;
@@ -171,7 +171,7 @@ export default class extends DecoratableMangaScraper {
         const algorithm = { name: 'AES-CBC', iv: GetBytesFromUTF8(iv) };
         const key = await crypto.subtle.importKey('raw', GetBytesFromUTF8(keyData), algorithm, false, ['decrypt']);
         const decrypted = await crypto.subtle.decrypt(algorithm, key, GetBytesFromBase64(data));
-        return new TextDecoder().decode(decrypted);
+        return GetUTF8FromBytes(decrypted);
     }
 
     private async DecryptResult<T extends JSONElement>(timestamp: string, data: string): Promise<T> {
