@@ -26,8 +26,8 @@
     } from '../../../engine/providers/MediaPlugin';
     import SettingsViewer from './settings/SettingsViewer.svelte';
     // UI : Stores
-    import { Locale } from '../stores/Settings';
-    import { selectedPlugin } from '../stores/Stores';
+    import { GlobalSettings } from '../stores/Settings.svelte';
+    import { Store as UI } from '../stores/Stores.svelte';
     // Hakuneko Engine
     import { TagCategoryResourceKey as R } from '../../../i18n/ILocale';
 
@@ -111,7 +111,7 @@
     <div class="content tags">
         <Tile>
             <div class="lang">
-                <strong>{$Locale[Tags.Language.Title]()}</strong>
+                <strong>{GlobalSettings.Locale[Tags.Language.Title]()}</strong>
                 {#each langTags as item}
                     <Chip
                         class="cursor-pointer"
@@ -122,7 +122,7 @@
                 {/each}
             </div>
             <div class="type">
-                <strong>{$Locale[Tags.Media.Title]()}</strong>
+                <strong>{GlobalSettings.Locale[Tags.Media.Title]()}</strong>
                 {#each typeTags as item}
                     <Chip
                         class="cursor-pointer"
@@ -133,7 +133,7 @@
                 {/each}
             </div>
             <div class="other">
-                <strong>{$Locale[R.Tags_Others]()}</strong>
+                <strong>{GlobalSettings.Locale[R.Tags_Others]()}</strong>
                 {#each otherTags as item}
                     <Chip
                         class="cursor-pointer"
@@ -171,7 +171,7 @@
         page={page}
         rows={filteredPluginlist}
         on:click:row={event => {
-            $selectedPlugin = event.detail.row.overflow;
+            UI.selectedPlugin = event.detail.row.overflow;
             isPluginModalOpen = false;
         }}
     >
