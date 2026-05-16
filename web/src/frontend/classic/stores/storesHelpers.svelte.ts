@@ -8,9 +8,9 @@ import { InternalError } from '../../../engine/Error';
  * A generic store class for managing settings to handle svelte reactive updates.
  *
  * The `SettingStore` class provides a mechanism to wrap a setting object and
- * enable reactive updates to its value. It uses proxies to track changes to
- * nested properties and ensures that updates are propagated to the underlying
- * setting object.
+ * enable reactive updates to its value. It mirrors the setting's value and
+ * ensures that updates are propagated bidirectionally between the store and
+ * the underlying setting object.
  *
  * @typeParam V - The type of the value managed by the setting.
  * @typeParam S - The type of the setting object that implements the `ISetting<V>` interface.

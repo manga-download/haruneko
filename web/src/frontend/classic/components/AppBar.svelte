@@ -37,7 +37,7 @@
 
     window.addEventListener('resize', updateWindowState);
 
-    let showWindowControls = $state(false);
+    let showWindowControls = $derived(UI.WindowController?.HasControls ?? false);
     let minimize = $derived(UI.WindowController?.Minimize.bind(UI.WindowController));
     let maximize = $derived(UI.WindowController?.Maximize.bind(UI.WindowController));
     let restore = $derived(UI.WindowController?.Restore.bind(UI.WindowController));
