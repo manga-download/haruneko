@@ -1,5 +1,5 @@
 <script>
-    import { contentscreen } from '../../stores/Stores';
+    import { Store as UI } from '../../stores/Stores.svelte';
 
     import Bookmarks from './Bookmarks.svelte';
     import Main from './Main.svelte';
@@ -11,12 +11,12 @@
 </header>
 
 <main>
-    {#if $contentscreen === '/'}
+    {#if UI.contentscreen === '/'}
         <Main />
-    {:else if $contentscreen === '/bookmarks'}
+    {:else if UI.contentscreen === '/bookmarks'}
         <Bookmarks />
     {:else}
-        Unkown content screen: {$contentscreen}
+        Unkown content screen: {UI.contentscreen}
     {/if}
 </main>
 
