@@ -65,8 +65,8 @@ export class SettingCountStore extends SettingStore<number, Numeric> {
         this.initialValue = initialValue;
     }
 
-    Increment (value?:number) { this.Value = this.Value + (value || this.increment);}
-    Decrement (value?:number) { this.Value = this.Value - (value || this.increment);}
+    Increment (value?:number) { this.Value = this.Value + (value ?? this.increment);}
+    Decrement (value?:number) { this.Value = this.Value - (value ?? this.increment);}
     Reset () { this.Value = this.initialValue; }
 }
 
