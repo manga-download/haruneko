@@ -3,7 +3,7 @@ import * as Common from '../decorators/Common';
 import { FetchJSON } from '../../platform/FetchProvider';
 import { Exception } from '../../Error';
 import { WebsiteResourceKey as R } from '../../../i18n/ILocale';
-import { GetBytesFromBase64, GetBytesFromUTF8 } from '../../BufferEncoder';
+import { GetBytesFromBase64, GetBytesFromUTF8, GetUTF8FromBytes } from '../../BufferEncoder';
 import DeScramble from '../../transformers/ImageDescrambler';
 import type { Priority } from '../../taskpool/DeferredTask';
 
@@ -196,7 +196,7 @@ export class DelitoonBase extends DecoratableMangaScraper {
         const key = await crypto.subtle.importKey('raw', keyData, algorithm, false, ['decrypt']);
         const promises = images.map(async image => {
             const decrypted = await crypto.subtle.decrypt(algorithm, key, GetBytesFromBase64(image.point));
-            const scrambleIndex = JSON.parse(new TextDecoder('utf-8').decode(decrypted)) as number[];
+            const scrambleIndex = JSON.parse(GetUTF8FromBytes(decrypted)) as number[];
             return new Page<ScrambleParams>(this, chapter, new URL(image.imagePath), { scrambleIndex, defaultHeight: image.defaultHeight });
         });
         return Promise.all(promises);

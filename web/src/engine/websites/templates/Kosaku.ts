@@ -53,24 +53,21 @@ export class Kosaku extends DecoratableMangaScraper {
     }
 
     public async GetMangasFromPage(page: number, provider: MangaPlugin): Promise<Manga[]> {
-        const form = new URLSearchParams({
-            action: 'madara_load_more',
-            page: page.toString(),
-            template: 'madara-core/content/content-search',
-            "vars[paged]": '1',
-            "vars[template]": 'search',
-            "vars[post_type]": 'wp-manga',
-        });
-
-        const request = new Request(new URL('/wp-admin/admin-ajax.php', this.URI), {
+        const data = await FetchCSS<HTMLAnchorElement>(new Request(new URL('/wp-admin/admin-ajax.php', this.URI), {
             method: 'POST',
-            body: form.toString(),
+            body: new URLSearchParams({
+                action: 'madara_load_more',
+                page: `${page}`,
+                template: 'madara-core/content/content-search',
+                'vars[paged]': '1',
+                'vars[template]': 'search',
+                'vars[post_type]': 'wp-manga',
+            }).toString(),
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
                 Referer: this.URI.href
             }
-        });
-        const data = await FetchCSS<HTMLAnchorElement>(request, 'button a.grid.w-full');
-        return data.map(anchor => new Manga(this, provider, anchor.pathname, anchor.title.trim()));
+        }), 'button a.grid.w-full');
+        return data.map(({ title, pathname }) => new Manga(this, provider, pathname, title.trim()));
     }
 }

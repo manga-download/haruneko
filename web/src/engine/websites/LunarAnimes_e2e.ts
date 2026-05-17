@@ -6,17 +6,17 @@ new TestFixture({
         title: 'Lunar Animes'
     },
     container: {
-        url: 'https://lunaranime.ru/manga/who-made-me-a-princess-official',
-        id: 'who-made-me-a-princess-official',
-        title: 'Who Made Me a Princess (Official)'
+        url: 'https://lunaranime.ru/manga/the-unorthodox-genius-of-the-house-of-darkness',
+        id: 'the-unorthodox-genius-of-the-house-of-darkness',
+        title: 'The Unorthodox Genius of the House of Darkness'
     },
     child: {
-        id: './who-made-me-a-princess-official/1?language=id',
-        title: 'Chapter 1 (id)'
+        id: '/manga/the-unorthodox-genius-of-the-house-of-darkness/43?lang=en',
+        title: 'Chapter 43 (en)'
     },
     entry: {
-        index: 0,
-        size: 884_284,
-        type: 'image/webp'
+        index: 1,
+        size: 658_626,
+        type: 'image/jpeg'
     }
 }).AssertWebsite();

@@ -3,7 +3,9 @@ import icon from './Comico.webp';
 import { Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from '../providers/MangaPlugin';
 import { Fetch, FetchJSON } from '../platform/FetchProvider';
 import * as Common from './decorators/Common';
-import { GetHexFromBytes, GetBytesFromUTF8, GetBytesFromBase64 } from '../BufferEncoder';
+import { GetHexFromBytes, GetBytesFromUTF8, GetBytesFromBase64, GetUTF8FromBytes } from '../BufferEncoder';
+import { Exception } from '../Error';
+import { WebsiteResourceKey as R} from '../../i18n/ILocale';
 
 type APIResult<T> = {
     data: T;
@@ -25,6 +27,7 @@ type APIChapter = {
     salesConfig: {
         free: boolean;
     };
+    hasTrial: boolean;
     id: number;
     name: string;
 };
@@ -50,7 +53,7 @@ type APIPage = {
     };
     chapter: {
         images: APIImage[];
-        epub: EPUBData;
+        epub?: EPUBData;
     }
 };
 
@@ -118,7 +121,7 @@ export default class extends DecoratableMangaScraper {
         const { id, lang }: MangaID = JSON.parse(manga.Identifier);
         const { volume: { content: volumeContent }, episode: { content: episodeContent } } = await this.FetchPOST<APIChapters>(id, lang);
         return (episodeContent ?? volumeContent).chapters
-            .filter(({ activity: { rented, unlocked }, salesConfig: { free } }) => rented || unlocked || free)
+            .filter(({ activity: { rented, unlocked }, salesConfig: { free }, hasTrial }) => rented || unlocked || free || hasTrial)
             .map(({ id, name }) => new Chapter(this, manga, `${id}`, name));
     }
 
@@ -126,8 +129,11 @@ export default class extends DecoratableMangaScraper {
         const { id, lang }: MangaID = JSON.parse(chapter.Parent.Identifier);
         const { content: { chapterFileFormat }, chapter: { images, epub } } = await this.FetchPOST<APIPage>(`${id}/chapter/${chapter.Identifier}/product`, lang);
         if (chapterFileFormat === 'epub') {
+            if (!epub) throw new Exception(R.Plugin_Common_Chapter_UnavailableError);
             return await this.DecryptEpub(chapter, epub);
         }
+
+        if (!images || images?.length == 0) throw new Exception(R.Plugin_Common_Chapter_UnavailableError);
         return Promise.all(images.map(async page => {
             return new Page(this, chapter, new URL(await this.DecryptPictureUrl(page)));
         }));
@@ -142,7 +148,7 @@ export default class extends DecoratableMangaScraper {
         const { chapterEpubIncludedFile } = epub;
         const { rootPath, rootFileName, url: opfUrl, parameter: opfParameter, m2Parameter } = chapterEpubIncludedFile;
 
-        const epubRootUrl = new TextDecoder('utf-8').decode(await this.AESDecrypt(GetBytesFromBase64(opfUrl))) + rootPath;
+        const epubRootUrl = GetUTF8FromBytes(await this.AESDecrypt(GetBytesFromBase64(opfUrl))) + rootPath;
         const epubUrl = `${epubRootUrl}${rootFileName}?${opfParameter}`;
 
         const response = await Fetch(new Request(new URL(epubUrl)));
@@ -155,7 +161,7 @@ export default class extends DecoratableMangaScraper {
 
     private async DecryptPictureUrl(page: APIImage): Promise<string> {
         const decrypted = await this.AESDecrypt(GetBytesFromBase64(page.url));
-        return new TextDecoder('utf-8').decode(decrypted) + '?' + page.parameter;
+        return GetUTF8FromBytes(decrypted) + '?' + page.parameter;
     }
 
     private async AESDecrypt(data: Uint8Array<ArrayBuffer>): Promise<ArrayBuffer> {

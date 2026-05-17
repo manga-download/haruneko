@@ -3,7 +3,7 @@ import icon from './MangaTales.webp';
 import { Chapter, DecoratableMangaScraper, Page, Manga, type MangaPlugin } from '../providers/MangaPlugin';
 import { Fetch, FetchCSS, FetchJSON } from '../platform/FetchProvider';
 import type { Priority } from '../taskpool/DeferredTask';
-import { GetBytesFromBase64, GetBytesFromUTF8 } from '../BufferEncoder';
+import { GetBytesFromBase64, GetBytesFromUTF8, GetUTF8FromBytes } from '../BufferEncoder';
 
 type EncryptedData = {
     iv: boolean;
@@ -200,7 +200,7 @@ async function Decrypt(serialized: string): Promise<string> {
     const hash = await crypto.subtle.digest('SHA-256', GetBytesFromUTF8(encrypted[3]));
     const key = await crypto.subtle.importKey('raw', hash, algorithm, false, ['decrypt']);
     const decrypted = await crypto.subtle.decrypt(algorithm, key, data);
-    return new TextDecoder('utf-8').decode(decrypted);
+    return GetUTF8FromBytes(decrypted);
 }
 
 function TryUnpack<T>(data: PackedData | T): T {

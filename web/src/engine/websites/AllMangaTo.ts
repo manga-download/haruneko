@@ -1,6 +1,6 @@
 import { Delay } from '../BackgroundTimers';
-import { GetBytesFromBase64, GetBytesFromUTF8 } from '../BufferEncoder';
-import { FetchGraphQL } from '../platform/FetchProvider';
+import { GetBytesFromBase64, GetBytesFromUTF8, GetUTF8FromBytes } from '../BufferEncoder';
+import { FetchGraphQL, FetchJSON } from '../platform/FetchProvider';
 import { Chapter, DecoratableMangaScraper, Manga, type MangaPlugin, Page } from '../providers/MangaPlugin';
 import { Tags } from '../Tags';
 import icon from './AllMangaTo.webp';
@@ -8,6 +8,10 @@ import * as Common from './decorators/Common';
 
 type APIEncryptedResult = {
     tobeparsed?: string;
+};
+
+type APIResult<T> = {
+    data: T & APIEncryptedResult;
 };
 
 type APIMangas = {
@@ -77,7 +81,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     private async GetMangasFromPage(page: number, provider: MangaPlugin): Promise<Manga[]> {
-        const query = `
+        const data = await this.FetchAPI<APIMangas>(`
             query ($page: Int) {
                 mangas(
                     search: {
@@ -96,9 +100,7 @@ export default class extends DecoratableMangaScraper {
                     }
                 }
             }
-        `;
-
-        const data = await this.FetchAPI<APIMangas>(query, { page: page });
+        `, { page: page });
         return data?.mangas?.edges ? data.mangas.edges.map(manga => new Manga(this, provider, manga._id, manga.englishName ?? manga.name)) : [];
     }
 
@@ -119,27 +121,25 @@ export default class extends DecoratableMangaScraper {
             });
         }
 
-        const query = `
-            query ($id: String!, $showId: String!) {
-                manga(_id: $id) {
-                    _id
-                    name
-                    availableChaptersDetail
-                }
-                episodeInfos(
-                    showId: $showId
-                    episodeNumStart: 0
-                    episodeNumEnd: 9999
-                ) {
-                    episodeIdNum
-                    notes
-                    uploadDates
-                }
-            }
-        `;
-
         const { episodeInfos, manga: { availableChaptersDetail: { raw, sub } } } =
-            await this.FetchAPI<APIChapters>(query, { id: manga.Identifier, showId: `manga@${manga.Identifier}` });
+            await this.FetchAPI<APIChapters>(`
+                query ($id: String!, $showId: String!) {
+                    manga(_id: $id) {
+                        _id
+                        name
+                        availableChaptersDetail
+                    }
+                    episodeInfos(
+                        showId: $showId
+                        episodeNumStart: 0
+                        episodeNumEnd: 9999
+                    ) {
+                        episodeIdNum
+                        notes
+                        uploadDates
+                    }
+                }
+        `, { id: manga.Identifier, showId: `manga@${manga.Identifier}` });
 
         const allChapters = [
             ...buildChapters.call(this, sub, 'sub'),
@@ -153,39 +153,30 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
         const { id: chapterId, translationType }: ChapterID = JSON.parse(chapter.Identifier);
-        const query = `
-            query (
-                $id: String!
-                $translationType: VaildTranslationTypeMangaEnumType!
-                $chapterNum: String!
-            ) {
-                chapterPages(
-                    mangaId: $id
-                    translationType: $translationType
-                    chapterString: $chapterNum
-                ) {
-                    edges {
-                        pictureUrls
-                        pictureUrlHead
-                    }
-                }
-            }
-        `;
-
-        const { chapterPages: { edges } } = await this.FetchAPI<APIPages>(query, {
-            id: chapter.Parent.Identifier,
-            chapterNum: chapterId,
+        const { chapterPages: { edges } } = await this.FetchAPI<APIPages>(undefined, {
+            mangaId: chapter.Parent.Identifier,
+            chapterString: chapterId,
+            limit: 999,
+            offset: 0,
             translationType
-        });
+        }, '466783e19a7540387e34265be906bebbe853857088d45d28af922ab8668ebb31');
+
         let { pictureUrlHead, pictureUrls } = edges.at(0);
         pictureUrlHead = pictureUrlHead ?? this.URI.origin;
         const domain = (/^https?:\/\//).test(pictureUrlHead) ? pictureUrlHead : 'https://' + pictureUrlHead;
         return pictureUrls.map(({ url }) => new Page(this, chapter, new URL(url, domain), { Referer: this.URI.href }));
     }
 
-    private async FetchAPI<T extends JSONElement>(query: string, variables: JSONObject): Promise<T> {
-        const result = await FetchGraphQL<APIEncryptedResult & T>(new Request(new URL(this.apiUrl)), '', query, variables);
-        return !result.tobeparsed ? result as T : await this.Decrypt<T>(result.tobeparsed);
+    private async FetchAPI<T extends JSONElement>(query: string, variables: JSONObject, queryHash?: string): Promise<T> {
+        const result: APIEncryptedResult | APIResult<T> = queryHash
+            ? await (async () => {
+                const url = new URL(this.apiUrl);
+                url.searchParams.set('variables', JSON.stringify(variables));
+                url.searchParams.set('extensions', JSON.stringify({ persistedQuery: { version: 1, sha256Hash: queryHash } }));
+                return (await FetchJSON<APIResult<T>>(new Request(url, { headers: { Referer: this.URI.href, Origin: this.URI.origin } }))).data;
+            })()
+            : await FetchGraphQL<APIEncryptedResult & T>(new Request(this.apiUrl), '', query, variables);
+        return 'tobeparsed' in result && result.tobeparsed ? await this.Decrypt<T>(result.tobeparsed) : (result as T);
     }
 
     private async Decrypt<T>(data: string): Promise<T> {
@@ -195,7 +186,7 @@ export default class extends DecoratableMangaScraper {
         const algorithm = { name: 'AES-GCM', iv: message.slice(1, 13) };
         const key = await crypto.subtle.importKey('raw', await crypto.subtle.digest('SHA-256', GetBytesFromUTF8('Xot36i3lK3:v1')), algorithm, false, ['decrypt']);
         const result = await crypto.subtle.decrypt(algorithm, key, new Uint8Array([...ciphertext, ...tag]));
-        return JSON.parse((new TextDecoder).decode(result)) as T;
+        return JSON.parse(GetUTF8FromBytes(result)) as T;
     }
 
     public override async GetChapterURL(chapter: Chapter): Promise<URL> {
