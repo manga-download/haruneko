@@ -26,17 +26,12 @@
     import SettingsAdjust from 'carbon-icons-svelte/lib/SettingsAdjust.svelte';
     import SettingsView from 'carbon-icons-svelte/lib/SettingsView.svelte';
     import TaskSettings from 'carbon-icons-svelte/lib/TaskSettings.svelte';
-    import { Locale } from '../stores/Settings';
     import SettingsMenu from './settings/SettingsModal.svelte';
     import PluginSelect from './PluginSelect.svelte';
     import BookmarksImport from './BookmarksImport.svelte';
 
-    import {
-        selectedPlugin,
-        selectedMedia,
-        selectedItem,
-    } from '../stores/Stores';
-    import { SidenavTrail, SidenavIconsOnTop } from '../stores/Settings';
+    import { Store as UI } from '../stores/Stores.svelte';
+    import { GlobalSettings, Settings as UISettings } from '../stores/Settings.svelte';
 
     interface Props {
         isOpen: boolean;
@@ -63,154 +58,154 @@
 {#if isBookmarksImportModalOpen}
     <BookmarksImport bind:isModalOpen={isBookmarksImportModalOpen} />
 {/if}
-<SideNav bind:isOpen rail={$SidenavTrail}>
-    <SideNavItems>
-        {#if !$SidenavIconsOnTop}
+<SideNav bind:isOpen rail={UISettings.SidenavTrail.Value}>
+        <SideNavItems>
+            {#if !UISettings.SidenavIconsOnTop.Value}
+                <SideNavLink
+                    text={GlobalSettings.Locale.Frontend_Classic_Sidenav_Home()}
+                    icon={Home}
+                    onclick={onHome}
+                />
+                <SideNavLink
+                    text={'Bookmarks'}
+                    icon={Bookmark}
+                    onclick={() => {
+                        UI.selectedPlugin = window.HakuNeko.BookmarkPlugin;
+                        UI.selectedMedia = undefined;
+                        UI.selectedItem = undefined;
+                    }}
+                />
+            {/if}
             <SideNavLink
-                text={$Locale.Frontend_Classic_Sidenav_Home()}
-                icon={Home}
-                onclick={onHome}
-            />
-            <SideNavLink
-                text={'Bookmarks'}
-                icon={Bookmark}
-                onclick={() => {
-                    $selectedPlugin = window.HakuNeko.BookmarkPlugin;
-                    $selectedMedia = undefined;
-                    $selectedItem = undefined;
-                }}
-            />
-        {/if}
-        <SideNavLink
-            text={'Paste Media URL'}
-            icon={CopyLink}
-            onclick={() =>
-                document.dispatchEvent(new Event('media-paste-url'))}
-        />
-        <SideNavLink
-            text={$Locale.Frontend_Plugins()}
-            icon={PlugFilled}
-            onclick={() => (isPluginModalOpen = true)}
-        />
-        <SideNavLink
-            text="import/export"
-            icon={ImportExport}
-            onclick={() => (isBookmarksImportModalOpen = true)}
-        />
-        <SideNavMenu text={$Locale.Frontend_Settings()} icon={Settings}>
-            <SideNavLink
-                text={$Locale.Frontend_Classic_Sidenav_Settings_General()}
-                icon={SettingsAdjust}
-                onclick={() => {
-                    settingsSelectedTabs = 0;
-                    isSettingsModalOpen = true;
-                }}
-            />
-            <SideNavLink
-                text={$Locale.Frontend_Classic_Sidenav_Settings_Interface()}
-                icon={ScreenMap}
-                onclick={() => {
-                    settingsSelectedTabs = 1;
-                    isSettingsModalOpen = true;
-                }}
-            />
-            <SideNavLink
-                text="Viewer"
-                icon={SettingsView}
-                onclick={() => {
-                    settingsSelectedTabs = 1;
-                    isSettingsModalOpen = true;
-                }}
-            />
-            <SideNavLink
-                text={$Locale.Frontend_Classic_Sidenav_Settings_Trackers()}
-                icon={TaskSettings}
-                onclick={() => {
-                    settingsSelectedTabs = 3;
-                    isSettingsModalOpen = true;
-                }}
-            />
-        </SideNavMenu>
-        <SideNavMenu text={$Locale.Frontend_Help()} icon={Document}>
-            <SideNavLink
-                text="Documentation"
-                icon={Doc}
-                class="clik-item"
+                text={'Paste Media URL'}
+                icon={CopyLink}
                 onclick={() =>
-                    window.open(
-                        'https://hakuneko.download/docs/interface/',
-                    )}
+                    document.dispatchEvent(new Event('media-paste-url'))}
             />
             <SideNavLink
-                text="Discord"
-                icon={LogoDiscord}
-                class="clik-item"
-                onclick={() =>
-                    window.open('https://discordapp.com/invite/A5d3NDf')}
+                text={GlobalSettings.Locale.Frontend_Plugins()}
+                icon={PlugFilled}
+                onclick={() => (isPluginModalOpen = true)}
             />
             <SideNavLink
-                text="Open a ticket"
-                icon={Debug}
-                class="clik-item"
-                onclick={() =>
-                    window.open(
-                        'https://hakuneko.download/docs/troubleshoot/',
-                    )}
+                text="import/export"
+                icon={ImportExport}
+                onclick={() => (isBookmarksImportModalOpen = true)}
             />
-            <SideNavLink
-                text="Home page"
-                icon={Home}
-                class="clik-item"
-                onclick={() => window.open('https://hakuneko.download')}
-            />
-            <SideNavLink
-                text="Show IP and localisation"
-                icon={Location}
-                class="clik-item"
-                onclick={() => window.open('https://ipinfo.io/json')}
-            />
-        </SideNavMenu>
-        <SideNavMenu text={$Locale.Frontend_About()} icon={Information}>
-            <SideNavLink
-                text="Code source"
-                icon={LogoGithub}
-                class="clik-item"
-                onclick={() =>
-                    window.open(
-                        'https://hakuneko.download/docs/interface/',
-                    )}
-            />
-            <SideNavLink
-                text="Using version X.X.X"
-                icon={App}
-                class="clik-item"
-                onclick={() => window.open('https://todo.com')}
-            />
-            <SideNavLink
-                text="Maintainers"
-                icon={Events}
-                class="clik-item"
-                onclick={() =>
-                    window.open('https://discordapp.com/invite/A5d3NDf')}
-            />
-            <SideNavLink
-                text="Contributors"
-                icon={EventsAlt}
-                class="clik-item"
-                onclick={() =>
-                    window.open(
-                        'https://hakuneko.download/docs/troubleshoot/',
-                    )}
-            />
-            <SideNavLink
-                text="Artwork"
-                icon={Image}
-                class="clik-item"
-                onclick={() =>
-                    window.open('https://www.deviantart.com/hakuneko3kune')}
-            />
-        </SideNavMenu>
-    </SideNavItems>
+            <SideNavMenu text={GlobalSettings.Locale.Frontend_Settings()} icon={Settings}>
+                <SideNavLink
+                    text={GlobalSettings.Locale.Frontend_Classic_Sidenav_Settings_General()}
+                    icon={SettingsAdjust}
+                    onclick={() => {
+                        settingsSelectedTabs = 0;
+                        isSettingsModalOpen = true;
+                    }}
+                />
+                <SideNavLink
+                    text={GlobalSettings.Locale.Frontend_Classic_Sidenav_Settings_Interface()}
+                    icon={ScreenMap}
+                    onclick={() => {
+                        settingsSelectedTabs = 1;
+                        isSettingsModalOpen = true;
+                    }}
+                />
+                <SideNavLink
+                    text="Viewer"
+                    icon={SettingsView}
+                    onclick={() => {
+                        settingsSelectedTabs = 1;
+                        isSettingsModalOpen = true;
+                    }}
+                />
+                <SideNavLink
+                    text={GlobalSettings.Locale.Frontend_Classic_Sidenav_Settings_Trackers()}
+                    icon={TaskSettings}
+                    onclick={() => {
+                        settingsSelectedTabs = 3;
+                        isSettingsModalOpen = true;
+                    }}
+                />
+            </SideNavMenu>
+            <SideNavMenu text={GlobalSettings.Locale.Frontend_Help()} icon={Document}>
+                <SideNavLink
+                    text="Documentation"
+                    icon={Doc}
+                    class="clik-item"
+                    onclick={() =>
+                        window.open(
+                            'https://hakuneko.download/docs/interface/',
+                        )}
+                />
+                <SideNavLink
+                    text="Discord"
+                    icon={LogoDiscord}
+                    class="clik-item"
+                    onclick={() =>
+                        window.open('https://discordapp.com/invite/A5d3NDf')}
+                />
+                <SideNavLink
+                    text="Open a ticket"
+                    icon={Debug}
+                    class="clik-item"
+                    onclick={() =>
+                        window.open(
+                            'https://hakuneko.download/docs/troubleshoot/',
+                        )}
+                />
+                <SideNavLink
+                    text="Home page"
+                    icon={Home}
+                    class="clik-item"
+                    onclick={() => window.open('https://hakuneko.download')}
+                />
+                <SideNavLink
+                    text="Show IP and localisation"
+                    icon={Location}
+                    class="clik-item"
+                    onclick={() => window.open('https://ipinfo.io/json')}
+                />
+            </SideNavMenu>
+            <SideNavMenu  text={GlobalSettings.Locale.Frontend_About()} icon={Information}>
+                <SideNavLink
+                    text="Code source"
+                    icon={LogoGithub}
+                    class="clik-item"
+                    onclick={() =>
+                        window.open(
+                            'https://hakuneko.download/docs/interface/',
+                        )}
+                />
+                <SideNavLink
+                    text="Using version X.X.X"
+                    icon={App}
+                    class="clik-item"
+                    onclick={() => window.open('https://todo.com')}
+                />
+                <SideNavLink
+                    text="Maintainers"
+                    icon={Events}
+                    class="clik-item"
+                    onclick={() =>
+                        window.open('https://discordapp.com/invite/A5d3NDf')}
+                />
+                <SideNavLink
+                    text="Contributors"
+                    icon={EventsAlt}
+                    class="clik-item"
+                    onclick={() =>
+                        window.open(
+                            'https://hakuneko.download/docs/troubleshoot/',
+                        )}
+                />
+                <SideNavLink
+                    text="Artwork"
+                    icon={Image}
+                    class="clik-item"
+                    onclick={() =>
+                        window.open('https://www.deviantart.com/hakuneko3kune')}
+                />
+            </SideNavMenu>
+        </SideNavItems>
 </SideNav>
 
 <style >

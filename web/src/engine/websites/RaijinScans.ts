@@ -4,6 +4,8 @@ import { FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
 import { type Chapter, DecoratableMangaScraper, Page } from '../providers/MangaPlugin';
 import * as Madara from './decorators/WordPressMadara';
 import * as Common from './decorators/Common';
+import { Exception } from '../Error';
+import { WebsiteResourceKey as R } from '../../i18n/ILocale';
 
 type ReaderManifest = {
     ajaxUrl: string;
@@ -25,6 +27,9 @@ type APIPages = {
         images: {
             url: string;
         }[];
+        nextOffset: number;
+        nextToken: string;
+        hasMore: boolean;
     };
 };
 
@@ -48,12 +53,14 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
         const manifests = await FetchWindowScript<ReaderManifest[]>(new Request(new URL(chapter.Identifier, this.URI)), `window.raijinFreeReaderManifests`, 500);
+        if (!manifests) throw new Exception(R.Plugin_Common_Chapter_UnavailableError);
+
         manifests.sort((self, other) => self.offset - other.offset);
 
         const pages = await manifests.reduce<Promise<Page[]>>(async (accP, manifest) => {
             const acc = await accP;
 
-            const { ajaxUrl, chapterId, nonce, token, mangaId, chapterSlug, host, offset, limit } = manifest;
+            const { ajaxUrl, chapterId, nonce, token, mangaId, chapterSlug, host, limit, instance } = manifest;
             const body = new FormData();
             body.append('action', 'raijin_free_reader_manifest');
             body.append('nonce', nonce);
@@ -62,16 +69,26 @@ export default class extends DecoratableMangaScraper {
             body.append('chapter_id', `${chapterId}`);
             body.append('chapter_slug', chapterSlug);
             body.append('host', host);
-            body.append('offset', `${offset || 0}`);
+            body.append('offset', '0');
             body.append('limit', `${limit || 0}`);
+            body.append('instance', instance);
+            body.append('cursor', '');
 
-            const { data: { images } } = await FetchJSON<APIPages>(new Request(new URL(ajaxUrl), {
-                credentials: 'same-origin',
-                method: 'POST',
-                body
-            }));
+            const manifestImages: Page[] = [];
+            for (let run = true; run;) {
+                const { data: { images, nextOffset, nextToken, hasMore } } = await FetchJSON<APIPages>(new Request(new URL(ajaxUrl), {
+                    credentials: 'same-origin',
+                    method: 'POST',
+                    body
+                }));
 
-            return [...acc, ...images.map(({ url }) => new Page(this, chapter, new URL(url)))];
+                manifestImages.push(...images.map(({ url }) => new Page(this, chapter, new URL(url))));
+                body.set('offset', `${nextOffset}`);
+                body.set('cursor', `${nextToken}`);
+                run = hasMore;
+            }
+
+            return [...acc, ...manifestImages];
         }, Promise.resolve([]));
         return pages;
     }
