@@ -6,12 +6,12 @@ new TestFixture({
         title: 'Samurai Scan'
     },
     container: {
-        url: 'https://samuraiscan.com/rd/dios-marcial-estelar/',
-        id: JSON.stringify({ post: '39', slug: '/rd/dios-marcial-estelar/' }),
-        title: 'Dios Marcial Estelar'
+        url: 'https://samurai.j5z.xyz/son/senda-del-emperador-astral/',
+        id: JSON.stringify({ post: '39', slug: '/son/senda-del-emperador-astral/' }),
+        title: 'Senda del Emperador Astral'
     },
     child: {
-        id: '/rd/dios-marcial-estelar/capitulo-1/',
+        id: '/son/senda-del-emperador-astral/capitulo-1/',
         title: 'Capitulo 1',
     },
     entry: {

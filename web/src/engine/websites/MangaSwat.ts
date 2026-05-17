@@ -70,6 +70,10 @@ export default class extends DecoratableMangaScraper {
     }
 
     private async FetchAPI<T extends JSONElement>(endpoint: string): Promise<T> {
-        return await FetchJSON<T>(new Request(new URL(endpoint, this.apiUrl)));
+        return await FetchJSON<T>(new Request(new URL(endpoint, this.apiUrl), {
+            headers: {
+                'User-Agent': 'ktor-client'
+            }
+        }));
     }
 }

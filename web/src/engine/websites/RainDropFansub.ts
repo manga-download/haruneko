@@ -4,7 +4,7 @@ import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import * as MangaStream from './decorators/WordPressMangaStream';
 
-@MangaStream.MangaCSS(/^https?:\/\/www\.raindropteamfan\.com\/manga\//)
+@MangaStream.MangaCSS(/^{origin}\/manga\/[^/]+\/$/)
 @MangaStream.MangasSinglePageCSS()
 @MangaStream.ChaptersSinglePageCSS()
 @MangaStream.PagesSinglePageCSS()
@@ -12,7 +12,7 @@ import * as MangaStream from './decorators/WordPressMangaStream';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('raindropfansub', `Rain Drop Fansub`, 'https://www.raindropteamfan.com', Tags.Language.Turkish, Tags.Media.Manhwa);
+        super('raindropfansub', 'Rain Drop Fansub', 'https://www.raindropteamfan.com', Tags.Language.Turkish, Tags.Media.Manhwa);
     }
 
     public override get Icon() {

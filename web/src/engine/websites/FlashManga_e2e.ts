@@ -6,7 +6,7 @@ new TestFixture({
         title: 'Flash Manga'
     },
     container: {
-        url: 'https://www.flash-manga.com/manga/killer-peter/',
+        url: 'https://www.flash-manga.net/manga/killer-peter/',
         id: '/manga/killer-peter/',
         title: 'Killer Peter'
     },

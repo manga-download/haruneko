@@ -10,21 +10,13 @@ function MangaChapterInfoExtractor(anchor: HTMLAnchorElement) {
     };
 }
 
-function MangaLinkExtractor(img: HTMLImageElement, uri: URL) {
-    return {
-        id: uri.pathname + uri.search,
-        title: img.getAttribute('alt').trim(),
-    };
-}
-
-function PageExtractor(img: HTMLImageElement) {
-    return img.dataset.original || img.getAttribute('src');
-}
-
-@Common.MangaCSS(/^{origin}\/title\.php\?title=\d+$/, 'div#main-box div#logo h2 img', MangaLinkExtractor)
+@Common.MangaCSS<HTMLImageElement>(/^{origin}\/title\.php\?title=\d+$/, 'div#main-box div#logo h2 img', (img, uri) => ({
+    id: uri.pathname + uri.search,
+    title: img.getAttribute('alt').trim()
+}))
 @Common.MangasSinglePageCSS('/all-list.php', 'div#all-title-list ul.title > a[href*="title.php"]:has(div.info)', MangaChapterInfoExtractor)
 @Common.ChaptersSinglePageCSS('div#title ul.manga a', undefined, MangaChapterInfoExtractor)
-@Common.PagesSinglePageCSS('div#manga div.page img:not([class="protector"])', PageExtractor)
+@Common.PagesSinglePageCSS('div#manga div.page img:not([class="protector"])', img => img.dataset.original || img.getAttribute('src') )
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 

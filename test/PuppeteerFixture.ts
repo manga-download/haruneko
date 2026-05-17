@@ -10,8 +10,10 @@ export class PuppeteerFixture {
         return page;
     });
 
-    public GetPage() {
-        return PuppeteerFixture.#page;
+    public async GetPage() {
+        const page = await PuppeteerFixture.#page;
+        await page.bringToFront();
+        return page;
     }
 
     public async Screenshot(page: puppeteer.Page) {

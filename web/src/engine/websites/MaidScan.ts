@@ -24,7 +24,7 @@ export default class extends DecoratableMangaScraper {
     private readonly CDNurl = 'https://cdn.verdinha.wtf/';
 
     public constructor() {
-        super('maidscan', 'Maid Scan', 'https://empreguetes.xyz', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Portuguese, Tags.Source.Scanlator);
+        super('maidscan', 'Maid Scan', 'https://empreguetes.wtf', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Portuguese, Tags.Source.Scanlator);
     }
 
     public override get Icon() {

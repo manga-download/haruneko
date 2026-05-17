@@ -1,9 +1,9 @@
 import { Tags } from '../Tags';
 import icon from './NexusToons.webp';
-import { FetchJSON } from '../platform/FetchProvider';
+import { FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
 import { type MangaPlugin, Manga, Chapter, Page, DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { GetBytesFromBase64 } from '../BufferEncoder';
+import { GetBytesFromBase64, GetUTF8FromBytes } from '../BufferEncoder';
 
 type APICryptedData = {
     d: string;
@@ -11,7 +11,7 @@ type APICryptedData = {
     k: number;
 };
 
-type APIResult<T extends JSONElement> = APICryptedData | T;
+type APIResult<T extends JSONElement> = APICryptedData & T;
 
 type EncryptionKeys = {
     key: Uint8Array;
@@ -32,12 +32,14 @@ type APIChapter = {
 };
 
 type APIMangas = {
-    data: APIManga[];
+    data: APIManga[] | null;
 };
 
 type APIPages = {
+    pageToken: string;
     pages: {
-        imageUrl: string;
+        imageUrl?: string;
+        pageNumber: number;
     }[]
 };
 
@@ -46,6 +48,7 @@ export default class extends DecoratableMangaScraper {
     private readonly apiUrl = 'https://nexustoons.com/api/';
     private readonly seed = 'OrionNexus2025CryptoKey!Secure';
     private readonly keys: EncryptionKeys[] = [];
+    private token: string = undefined;
 
     public constructor() {
         super('nexustoons', 'Nexus Toons', 'https://nexustoons.com', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Portuguese, Tags.Source.Aggregator, Tags.Accessibility.RegionLocked);
@@ -57,6 +60,7 @@ export default class extends DecoratableMangaScraper {
 
     public override async Initialize(): Promise<void> {
         await this.InitKeys(this.seed);
+        this.token = await FetchWindowScript<string>(new Request(this.URI), `localStorage.getItem('token') || null;`);
     }
 
     public override ValidateMangaURL(url: string): boolean {
@@ -71,9 +75,9 @@ export default class extends DecoratableMangaScraper {
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
         type This = typeof this;
         return Array.fromAsync(async function* (this: This) {
-            for (let offset = 0, run = true; run; offset += 500) {
-                const { data } = await this.FetchAPI<APIMangas>(`./mangas?offset=${offset}&limit=500`);
-                const mangas = data.map(({ slug, title }) => new Manga(this, provider, slug, title));
+            for (let page = 1, run = true; run; page ++) {
+                const { data } = await this.FetchAPI<APIMangas>(`./mangas?page=${page}&limit=500`);
+                const mangas = (data ?? []).map(({ slug, title }) => new Manga(this, provider, slug, title));
                 mangas.length > 0 ? yield* mangas : run = false;
             }
         }.call(this));
@@ -85,13 +89,18 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const { pages } = await this.FetchAPI<APIPages>(`./chapter/${chapter.Identifier}`);
-        return pages.map(({ imageUrl }) => new Page(this, chapter, new URL(imageUrl)));
+        const { pages, pageToken } = await this.FetchAPI<APIPages>(`./chapter/${chapter.Identifier}`);
+        return pages.map(({ imageUrl }, index) => new Page(this, chapter, new URL(imageUrl || `./p/${pageToken}/${index}`, this.apiUrl)));
     }
 
     private async FetchAPI<T extends JSONElement>(endpoint: string): Promise<T> {
-        const data = await FetchJSON<APIResult<T>>(new Request(new URL(endpoint, this.apiUrl)));
-        return !data['d'] ? data as T : this.Decrypt(data as APICryptedData);
+        const data = await FetchJSON<APIResult<T>>(new Request(new URL(endpoint, this.apiUrl), {
+            headers: {
+                ...this.token && { Authorization: `Bearer ${this.token}` },
+                'X-App-Key': 'NxT_s3cur3_k3y_2026!xK9mPqL'
+            }
+        }));
+        return !data.d ? data as T : this.Decrypt<T>(data as APICryptedData);
     }
 
     private async Decrypt<T extends JSONElement>(data: APICryptedData): Promise<T> {
@@ -113,7 +122,7 @@ export default class extends DecoratableMangaScraper {
             h ^= key[index % key.length];
             resultBuffer[index] = h;
         }
-        return JSON.parse(new TextDecoder().decode(resultBuffer)) as T;
+        return JSON.parse(GetUTF8FromBytes(resultBuffer)) as T;
     }
 
     private async InitKeys(seed: string): Promise<void> {

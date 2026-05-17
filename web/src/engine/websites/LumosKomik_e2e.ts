@@ -6,7 +6,7 @@ new TestFixture({
         title: 'LumosKomik'
     },
     container: {
-        url: 'https://01.lumosgg.com/komik/the-tales-of-heaven-and-earth/',
+        url: 'https://02.lumosgg.com/komik/the-tales-of-heaven-and-earth/',
         id: JSON.stringify({ post: '8190', slug: '/komik/the-tales-of-heaven-and-earth/'}),
         title: 'The Tales of Heaven And Earth'
     },

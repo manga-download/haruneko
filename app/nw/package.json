@@ -15,8 +15,8 @@
     },
     "devDependencies": {
         "extract-zip": "2.0.1",
-        "nw": "0.107.0-sdk",
-        "plist": "3.1.0"
+        "nw": "0.111.2-sdk",
+        "plist": "5.0.0"
     },
     "scripts": {
         "check:ts": "tsc --noEmit --pretty",

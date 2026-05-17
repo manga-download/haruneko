@@ -1,6 +1,6 @@
 import { TestFixture, type Config } from '../../../test/WebsitesFixture';
 
-function config(url: string): Config {
+function config(url: string ): Config {
     return {
         plugin: {
             id: 'nettruyen#BFBB5C98',
@@ -12,16 +12,16 @@ function config(url: string): Config {
             title: 'Ta Có 90 Tỷ Tiền Liếm Cẩu!',
         },
         child: {
-            id: '/truyen-tranh/ta-co-90-ty-tien-liem-cau/chuong-200',
-            title: 'Chapter 200',
+            id: '/truyen-tranh/ta-co-90-ty-tien-liem-cau/chapter-529',
+            title: 'Chapter 529',
         },
         entry: {
             index: 0,
-            size: 113_441,
+            size: 501_617,
             type: 'image/jpeg',
         }
     };
 }
 
-new TestFixture(config('https://nettruyenviet1.com/truyen-tranh/ta-co-90-ty-tien-liem-cau')).AssertWebsite();
-new TestFixture(config('https://nettruyenar.com/truyen-tranh/ta-co-90-ty-tien-liem-cau-16581')).AssertWebsite();
+new TestFixture(config('https://nettruyenviet10.com/truyen-tranh/ta-co-90-ty-tien-liem-cau')).AssertWebsite();
+new TestFixture(config('https://nettruyen.work/truyen-tranh/ta-co-90-ty-tien-liem-cau')).AssertWebsite();

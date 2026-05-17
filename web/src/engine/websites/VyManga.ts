@@ -4,15 +4,9 @@ import { Fetch } from '../platform/FetchProvider';
 import { DecoratableMangaScraper, type Manga, Chapter } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 
-function MangaExtractor(anchor: HTMLAnchorElement) {
-    return {
-        id: anchor.pathname,
-        title: anchor.querySelector('div.comic-title').textContent.trim()
-    };
-}
-
 @Common.MangaCSS(/^{origin}\/manga\/[^/]+$/, 'div.div-manga h1.title')
-@Common.MangasMultiPageCSS('div.comic-item > a', Common.PatternLinkGenerator('/search?page={page}'), 0, MangaExtractor)
+@Common.MangasMultiPageCSS<HTMLAnchorElement>('div.comic-item > a', Common.PatternLinkGenerator('/search?page={page}'), 0,
+    anchor => ({ id: anchor.pathname, title: anchor.querySelector('div.comic-title').textContent.trim() }))
 @Common.PagesSinglePageCSS('div.carousel-item[data-page] img')
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {

@@ -6,13 +6,13 @@ new TestFixture({
         title: 'Manga Denizi',
     },
     container: {
-        url: 'https://www.mangadenizi.net/manga/yuragisou-no-yuunasan',
-        id: '/manga/yuragisou-no-yuunasan',
-        title: 'Yuragi-sou no Yuuna-san',
+        url: 'https://www.mangadenizi.net/manga/yuuna-and-the-haunted-hot-springs',
+        id: '/manga/yuuna-and-the-haunted-hot-springs',
+        title: 'Yuuna and the Haunted Hot Springs',
     },
     child: {
-        id: '/manga/yuragisou-no-yuunasan/209',
-        title: 'Bölüm 209: Yuuna [SON]',
+        id: '/read/yuuna-and-the-haunted-hot-springs/209',
+        title: 'Bölüm 209 - Yuuna [SON]'
     },
     entry: {
         index: 1,

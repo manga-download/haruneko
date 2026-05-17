@@ -36,7 +36,7 @@ type APIChapterV2 = {
     viewer_uri: string;
 };
 
-type PageParams = {
+export type PageParams = {
     scrambled: boolean;
 };
 

@@ -5,12 +5,11 @@ import * as Common from './decorators/Common';
 
 const pageScript = `
     new Promise(async (resolve, reject) => {
-
         async function fetchImageUrl(obj) {
             return await $.post("/PartialView/SifreCoz", obj);
         }
         try {
-            const matches = document.body.innerHTML.matchAll(/{\\s*"id":\\s*'([^,]+)',\\s*"token"/g);
+            const matches = document.body.innerHTML.matchAll(/{\\s*"id":\\s*'([^,]+)',\\s*"token"/gm);
             const token = getTokenValue();
             const parsedMatches = [];
             for (const match of matches) {
@@ -32,23 +31,10 @@ const pageScript = `
 
 `;
 
-function MangaExtractor(element: HTMLElement) {
-    return {
-        title: element.title.trim(),
-        id: element.getAttribute('onclick').match(/location\.href='(.*)'/)[1]
-    };
-}
-
-function ChapterExtractor(anchor: HTMLAnchorElement) {
-    return {
-        title: anchor.text.trim(),
-        id: anchor.getAttribute('onclick').match(/location\.href='(.*)'/)[1]
-    };
-}
-
 @Common.MangaCSS(/^{origin}\/Tr\/Manga\/[^/]+$/, 'ul.breadcrumb li:last-of-type')
-@Common.MangasMultiPageCSS('div.zaman', Common.PatternLinkGenerator('/Tr/Mangalar?page={page}'), 0, MangaExtractor)
-@Common.ChaptersSinglePageCSS('div.plylist-single-content > a[onclick]', undefined, ChapterExtractor) //some chapters are mobile app only
+@Common.MangasMultiPageCSS('div.products div.zaman a', Common.PatternLinkGenerator('/Tr/Mangalar?page={page}'), 0, Common.AnchorInfoExtractor(true))
+@Common.ChaptersSinglePageCSS<HTMLAnchorElement>('div.plylist-single-content > a[onclick]', undefined,
+    anchor => ({ id: anchor.getAttribute('onclick').match(/location\.href='(.*)'/).at(1), title: anchor.text.trim() })) //some chapters are mobile app only
 @Common.PagesSinglePageJS(pageScript, 500)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
