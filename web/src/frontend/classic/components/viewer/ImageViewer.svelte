@@ -111,26 +111,7 @@
         }
     }
 
-    let previousZoom = Settings.ViewerZoomRatio;
-    $effect(() => {
-        switch (Settings.ViewerMode.Value) {
-            case Key.ViewerMode_Longstrip: {
-                viewer?.scrollTo({
-                    top: viewer.scrollTop * (Settings.ViewerZoomRatio / previousZoom),
-                    behavior: 'smooth',
-                });
-                break;
-            }
-            case Key.ViewerMode_Paginated: {
-                viewer?.scrollTo({
-                    left: viewer.scrollLeft * (Settings.ViewerZoomRatio / previousZoom),
-                    behavior: 'smooth',
-                });
-                break;
-            }
-        }
-        previousZoom = Settings.ViewerZoomRatio;
-    });
+
 
     // Auto next item after reaching end of page
     let autoNextItem = $state(false);
@@ -153,12 +134,6 @@
 
     // Drag and drop scroll
     let pos = { top: 0, left: 0, x: 0, y: 0 };
-
-    // Dynamic css values
-    let cssvars = $derived({'viewer-padding': `${Settings.ViewerPadding.Value}em`});
-    let cssVarStyles = $derived(Object.entries(cssvars)
-        .map(([key, value]) => `--${key}:${value}`)
-        .join(';'));
 
     // Entering wide mode : scroll to image
     $effect(() => {
@@ -188,6 +163,7 @@
         duration: 1500,
         easing: quintOut,
     });
+    const ViewerPadding = $derived(Settings.ViewerPadding.Value+'em');
 </script>
 {#if wide}
     <ImageViewerWideSettings
@@ -204,10 +180,11 @@
     tabindex="-1"
     ondblclick={() => toggleFullScreen()}
     transition:fade
-    class="{wide ? 'wide' : 'thumbnail'} {Settings.ViewerMode.Value} {Settings.ViewerReverseDirection.Value
-        ? 'reverse'
-        : ''}"
-    style={cssVarStyles}
+    class:wide={wide}
+    class:reverse={Settings.ViewerReverseDirection.Value}
+    class="{Settings.ViewerMode.Value}"
+    style:--viewer-padding={ViewerPadding}
+    style:--image-zoom={Settings.ViewerZoomRatio}
     use:dragscroll={{ axis: 'both' }}
 >
 
@@ -232,7 +209,7 @@
             out:receive={{ key: index }}
         >
             <Image
-                class={wide ? 'wide' : 'thumbnail'}
+                {wide}
                 alt="content_{index}"
                 page={content}
             />
@@ -260,7 +237,7 @@
         width: 100%;
         height: 100%;
     }
-    #ImageViewer.thumbnail {
+    #ImageViewer:node(.wide) {
         overflow-y: auto;
         display: flex;
         flex-wrap: wrap;
@@ -268,7 +245,7 @@
         align-content: flex-start;
     }
 
-    #ImageViewer.thumbnail :global(.imgpreview) {
+    #ImageViewer:not(.wide) :global(.imgpreview) {
         border: 2px solid var(--cds-ui-04);
         background-color: var(--cds-ui-01);
         box-shadow: 1em 1em 2em var(--cds-ui-01);
@@ -292,6 +269,9 @@
         gap: var(--viewer-padding);
         min-width: 0;
         min-height: 0;
+    }
+    #ImageViewer.wide :global(img.imgpreview)  {
+        zoom : var(--image-zoom);
     }
     #ImageViewer.wide.longstrip {
         display: flex;
