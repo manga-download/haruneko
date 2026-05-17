@@ -30,9 +30,13 @@ async function CloseSplashScreen(target: puppeteer.Target) {
         url = page?.url();
         // TODO: leave after timeout?
     }
-    if(url && /splash.html/i.test(url)) {
-        page?.removeAllListeners();
-        await page?.close();
+    if (url && /splash.html/i.test(url)) {
+        try {
+            page?.removeAllListeners();
+            await page?.close();
+        } catch (error) {
+            console.log(new Date().toISOString(), '➔', error);
+        }
     }
 }
 
