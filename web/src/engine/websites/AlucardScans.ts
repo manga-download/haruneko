@@ -2,11 +2,17 @@
 import icon from './AlucardScans.webp';
 import { Chapter, DecoratableMangaScraper, Manga, type MangaPlugin, Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { FetchJSON } from '../platform/FetchProvider';
+import { FetchJSON, FetchNextJS } from '../platform/FetchProvider';
+
+type HydratedManga = {
+    initialSeries: {
+        id: string;
+        title: string;
+    }
+};
 
 type APIManga = {
     _id: string;
-    slug: string;
     title: string;
 };
 
@@ -46,9 +52,8 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
-        const slug = url.split('/').at(-1);
-        const { series: [ { _id, title } ] } = await FetchJSON<APIMangas>(new Request(new URL('./series?search=' + slug, this.apiUrl)));
-        return new Manga(this, provider, _id, title);
+        const { initialSeries: { id, title } } = await FetchNextJS<HydratedManga>(new Request(url), data => 'initialSeries' in data);
+        return new Manga(this, provider, id, title);
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
@@ -58,11 +63,11 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const chapters = await FetchJSON<APIChapters>(new Request(new URL(`./series/${manga.Identifier}/chapters`, this.apiUrl)));
-        return chapters.map(({ _id, number, title }) => new Chapter(this, manga, _id, [ 'Bölüm', number, title ].join(' ').trim()));
+        return chapters.map(({ _id, number, title }) => new Chapter(this, manga, _id, ['Bölüm', number, title].join(' ').trim()));
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const { chapter: { pages } } = await FetchJSON<APIPages>(new Request(new URL('./chapters/' + chapter.Identifier, this.apiUrl)));
+        const { chapter: { pages } } = await FetchJSON<APIPages>(new Request(new URL(`./chapters/${chapter.Identifier}`, this.apiUrl)));
         return pages.map(({ url }) => new Page(this, chapter, new URL(url, this.URI)));
     }
 }

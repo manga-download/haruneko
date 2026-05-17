@@ -1,4 +1,3 @@
-// @vitest-environment jsdom
 import { mock, mockClear } from 'vitest-mock-extended';
 import { vi, describe, it, expect } from 'vitest';
 import type { HakuNeko } from './HakuNeko';
@@ -22,7 +21,9 @@ global.btoa = (decoded: string) => Buffer.from(decoded, 'utf-8').toString('base6
     const mockSettingsManager = mock<SettingsManager>();
     mockSettingsManager.OpenScope.mockReturnValue(mockSettigns);
 
-    window.HakuNeko = mock<HakuNeko>({ SettingsManager: mockSettingsManager });
+    globalThis.HakuNeko = Object.assign(globalThis.HakuNeko ?? {}, {
+        SettingsManager: mockSettingsManager
+    }) as unknown as HakuNeko;
 }
 
 describe('SettingsManager', () => {

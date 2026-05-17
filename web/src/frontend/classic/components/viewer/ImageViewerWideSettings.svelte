@@ -17,14 +17,7 @@
         HeaderPanelDivider,
         Tooltip,
     } from 'carbon-components-svelte';
-    import {
-        Key,
-        Locale,
-        ViewerDoublePage,
-        ViewerMode,
-        ViewerReverseDirection,
-    } from '../../stores/Settings';
-    import { ViewerPadding, ViewerZoom } from '../../stores/Settings';
+    import { Key, GlobalSettings, Settings } from '../../stores/Settings.svelte';
     import type {
         MediaContainer,
         MediaItem,
@@ -45,13 +38,13 @@
         class="previousitem"
         icon={ChevronLeft}
         iconDescription="Previous Item"
-        on:click={onPreviousItem}
+        onclick={onPreviousItem}
     />
     <HeaderGlobalAction
         class="nextitem"
         icon={ChevronRight}
         iconDescription="Next Item"
-        on:click={onNextItem}
+        onclick={onNextItem}
     />
     <HeaderAction
         icon={CloudServiceManagement}
@@ -67,28 +60,28 @@
                 kind="ghost"
                 size="small"
                 iconDescription="Previous item (ArrowLeft)"
-                on:click={onPreviousItem}
+                onclick={onPreviousItem}
             />
             <Button
                 icon={ChevronRight}
                 kind="ghost"
                 size="small"
                 iconDescription="Next item (ArrowRight)"
-                on:click={onNextItem}
+                onclick={onNextItem}
             />
             <Button
                 icon={ZoomIn}
                 kind="ghost"
                 size="small"
                 iconDescription="Zoom In (➕)"
-                on:click={ViewerZoom.increment}
+                onclick={() => Settings.ViewerZoom.Increment()}
             />
             <Button
                 icon={ZoomOut}
                 kind="ghost"
                 size="small"
                 iconDescription="Zoom Out (➖)"
-                on:click={ViewerZoom.decrement}
+                onclick={() => Settings.ViewerZoom.Decrement()}
             />
         </div>
         <div>
@@ -97,80 +90,81 @@
                 kind="ghost"
                 size="small"
                 iconDescription="Decrease spacing between images (CTRL ➖)"
-                on:click={ViewerPadding.decrement}
+                onclick={() => Settings.ViewerPadding.Decrement()}
             />
             <Button
                 icon={IntentRequestScaleOut}
                 kind="ghost"
                 size="small"
                 iconDescription="Increase spacing between images (CTRL ➕)"
-                on:click={ViewerPadding.increment}
+                onclick={() => Settings.ViewerPadding.Increment()}
             />
         </div>
         <HeaderPanelDivider>Reader</HeaderPanelDivider>
         <div class="setting block">
             <Tooltip
-                triggerText={$Locale[ViewerMode.setting.Label]()}
+                triggerText={GlobalSettings.Locale[Settings.ViewerMode.Setting.Label]()}
                 align="start"
                 class="tooltip"
             >
-                <p>{$Locale[ViewerMode.setting.Description]()}</p>
+                <p>{GlobalSettings.Locale[Settings.ViewerMode.Setting.Description]()}</p>
             </Tooltip>
             <ContentSwitcher size="sm">
-                {#each ViewerMode.setting.Options as option}
+                {#each Settings.ViewerMode.Setting.Options as option}
                     <Switch
-                        selected={$ViewerMode === option.key}
-                        text={$Locale[option.label]()}
-                        on:click={() => ($ViewerMode = option.key)}
+                        selected={Settings.ViewerMode.Value === option.key}
+                        text={GlobalSettings.Locale[option.label]()}
+                        onclick={() => (Settings.ViewerMode.Value = option.key)}
                     />
                 {/each}
             </ContentSwitcher>
         </div>
-        {#if $ViewerMode === Key.ViewerMode_Paginated}
+        {#if Settings.ViewerMode.Value === Key.ViewerMode_Paginated}
             <div class="setting block">
                 <Tooltip
-                    triggerText={$Locale[
-                        ViewerReverseDirection.setting.Label
+                    triggerText={GlobalSettings.Locale[
+                        Settings.ViewerReverseDirection.Setting.Label
                     ]()}
                     align="start"
                     class="tooltip"
                 >
                     <p>
-                        {$Locale[ViewerReverseDirection.setting.Description]()}
+                        {GlobalSettings.Locale[Settings.ViewerReverseDirection.Setting.Description]()}
                     </p>
                 </Tooltip>
                 <ContentSwitcher size="sm">
                     <Switch
-                        selected={!$ViewerReverseDirection}
-                        on:click={() => ($ViewerReverseDirection = false)}
+                        selected={!Settings.ViewerReverseDirection.Value}
+                        onclick={() => (Settings.ViewerReverseDirection.Value = false)}
                     >
-                        LeftToRight
+                        Left to Right
                     </Switch>
                     <Switch
-                        selected={$ViewerReverseDirection}
-                        on:click={() => ($ViewerReverseDirection = true)}
-                        >RightToLeft
+                        selected={Settings.ViewerReverseDirection.Value}
+                        onclick={() => (Settings.ViewerReverseDirection.Value = true)}
+                    >
+                        Right to Left
                     </Switch>
                 </ContentSwitcher>
             </div>
             <div class="setting block">
                 <Tooltip
-                    triggerText={$Locale[ViewerDoublePage.setting.Label]()}
+                    triggerText={GlobalSettings.Locale[Settings.ViewerDoublePage.Setting.Label]()}
                     align="start"
                     class="tooltip"
                 >
-                    <p>{$Locale[ViewerDoublePage.setting.Description]()}</p>
+                    <p>{GlobalSettings.Locale[Settings.ViewerDoublePage.Setting.Description]()}</p>
                 </Tooltip>
                 <ContentSwitcher size="sm">
                     <Switch
-                        selected={!$ViewerDoublePage}
-                        on:click={() => ($ViewerDoublePage = false)}
+                        selected={!Settings.ViewerDoublePage.Value}
+                        onclick={() => (Settings.ViewerDoublePage.Value = false)}
                     >
                         Single
                     </Switch>
                     <Switch
-                        selected={$ViewerDoublePage}
-                        on:click={() => ($ViewerDoublePage = true)}
+                        selected={Settings.ViewerDoublePage.Value}
+                        onclick={() => (Settings.ViewerDoublePage.Value = true)}
                     >
                         Double
                     </Switch>
