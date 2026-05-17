@@ -6,5 +6,4 @@ import '../MeiToon_e2e';
 import '../NecroScans_e2e';
 import '../RitharScans_e2e';
 import '../SerenityScans_e2e';
-import '../ValirScans_e2e';
 import '../WritersScans_e2e';

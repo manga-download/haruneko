@@ -12,7 +12,7 @@ new TestFixture({
     },
     child: {
         id: 'cmm0v5ql600a1vo6oe75844y9',
-        title: 'CAPÍTULO 101 - Capítulo 101',
+        title: 'CAPÍTULO 101',
     },
     entry: {
         index: 0,
