@@ -1,7 +1,7 @@
 import { mock } from 'vitest-mock-extended';
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import type { ISettings, SettingsManager } from './SettingsManager';
-import type { StorageController } from './StorageController';
+import { type StorageController, Store } from './StorageController';
 import { PluginController } from './PluginController';
 import { Tags } from './Tags';
 import { legacyWebsiteIdentifierMap } from './transformers/BookmarkConverter';
@@ -113,6 +113,69 @@ describe('PluginController', () => {
 
             expect(actual.length).toBeGreaterThan(0);
             expect(actual).toStrictEqual(expected);
+        });
+    });
+
+    describe('Favorites', () => {
+
+        it('Should load favorites from storage on construction', async () => {
+            const fixture = new TestFixture();
+            const stored = ['plugin-a', 'plugin-b'];
+            fixture.MockStorageController.LoadPersistent.calledWith(Store.PluginFavorites).mockResolvedValue(stored);
+
+            const testee = fixture.CreateTestee();
+            await vi.waitFor(() => expect(testee.Favorites.Value).toStrictEqual(stored));
+        });
+
+        it('Should default to empty array when storage returns non-array', async () => {
+            const fixture = new TestFixture();
+            fixture.MockStorageController.LoadPersistent.calledWith(Store.PluginFavorites).mockResolvedValue(null);
+
+            const testee = fixture.CreateTestee();
+            await vi.waitFor(() => expect(testee.Favorites.Value).toStrictEqual([]));
+        });
+
+        it('Should add identifier when toggling a non-favorite', async () => {
+            const fixture = new TestFixture();
+            fixture.MockStorageController.LoadPersistent.calledWith(Store.PluginFavorites).mockResolvedValue(undefined);
+            const testee = fixture.CreateTestee();
+
+            await testee.ToggleFavorite('plugin-a');
+
+            expect(testee.IsFavorite('plugin-a')).toBe(true);
+            expect(testee.Favorites.Value).toStrictEqual(['plugin-a']);
+        });
+
+        it('Should remove identifier when toggling an existing favorite', async () => {
+            const fixture = new TestFixture();
+            fixture.MockStorageController.LoadPersistent.calledWith(Store.PluginFavorites).mockResolvedValue(['plugin-a', 'plugin-b']);
+            const testee = fixture.CreateTestee();
+            await vi.waitFor(() => expect(testee.Favorites.Value).toHaveLength(2));
+
+            await testee.ToggleFavorite('plugin-a');
+
+            expect(testee.IsFavorite('plugin-a')).toBe(false);
+            expect(testee.Favorites.Value).toStrictEqual(['plugin-b']);
+        });
+
+        it('Should persist favorites to storage after toggle', async () => {
+            const fixture = new TestFixture();
+            fixture.MockStorageController.LoadPersistent.calledWith(Store.PluginFavorites).mockResolvedValue(undefined);
+            const testee = fixture.CreateTestee();
+
+            await testee.ToggleFavorite('plugin-a');
+
+            expect(fixture.MockStorageController.SavePersistent).toHaveBeenCalledWith(['plugin-a'], Store.PluginFavorites);
+        });
+
+        it('Should report correct favorite status via IsFavorite', async () => {
+            const fixture = new TestFixture();
+            fixture.MockStorageController.LoadPersistent.calledWith(Store.PluginFavorites).mockResolvedValue(['plugin-a']);
+            const testee = fixture.CreateTestee();
+            await vi.waitFor(() => expect(testee.Favorites.Value).toHaveLength(1));
+
+            expect(testee.IsFavorite('plugin-a')).toBe(true);
+            expect(testee.IsFavorite('plugin-b')).toBe(false);
         });
     });
 });
