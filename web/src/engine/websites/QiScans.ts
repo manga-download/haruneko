@@ -23,7 +23,7 @@ type APIChapter = {
 };
 
 @Common.MangaCSS(/^{origin}\/series\/[^/]+$/, 'h1.series-title', (element, uri) => ({ id: uri.pathname.split('/').at(-1), title: element.textContent.trim() }))
-@Common.ImageAjax()
+@Common.ImageAjax(true)
 export default class extends DecoratableMangaScraper {
     private readonly apiUrl = 'https://api.qimanhwa.com/api/v1/';
 

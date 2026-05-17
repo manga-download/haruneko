@@ -4,7 +4,7 @@ new TestFixture({
     plugin: {
         id: 'nexustoons',
         title: 'Nexus Toons'
-    }, /* Need login
+    }, /* Geoblocked
     container: {
         url: 'https://nexustoons.com/manga/espadas-demoniacas-da-vinganca',
         id: 'espadas-demoniacas-da-vinganca',
