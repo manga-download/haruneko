@@ -6,32 +6,32 @@ import { FetchProto } from '../platform/FetchProvider';
 import protoTypes from './ComicZerosum.proto?raw';
 
 type APISingleTitle = {
-    title: APITitle
+    title: APITitle;
 };
 
 type APITitles = {
-    titles: APITitle[]
+    titles: APITitle[];
 };
 
 type APITitle = {
-    tag: string,
-    name: string
+    tag: string;
+    name: string;
 };
 
 type TitleView = {
-    title: APITitle,
-    chapters: APIChapter[]
+    title: APITitle;
+    chapters: APIChapter[];
 };
 
 type APIChapter = {
-    id: number,
-    name: string,
+    id: number;
+    name: string;
 };
 
 type APIPages = {
     pages: {
-        imageUrl: string
-    }[]
+        imageUrl: string;
+    }[];
 };
 
 @Common.ImageAjax()
@@ -61,7 +61,7 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const { chapters } = await this.FetchAPI<TitleView>(`./title?tag=${manga.Identifier}`, 'ComicZerosum.TitleView');
-        return chapters.map(({ id, name }) => new Chapter(this, manga, id.toString(), name));
+        return chapters.map(({ id, name }) => new Chapter(this, manga, `${ id }`, name));
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
@@ -69,6 +69,10 @@ export default class extends DecoratableMangaScraper {
         return pages.filter(page => page.imageUrl).map(({imageUrl}) => new Page(this, chapter, new URL(imageUrl)));
     }
 
+    /* // TODO : chapter urls are OPENSSLENCRYPT(chapter id with gMx7rLcYtPafs46)
+    public override async GetChapterURL(chapter: Chapter): Promise<URL> {
+    }
+    */
     private async FetchAPI<T extends JSONElement>(endpoint: string, messageType: string, method: string = 'GET'): Promise<T> {
         return FetchProto<T>(new Request(new URL(endpoint, this.apiUrl), { method }), protoTypes, messageType);
     }

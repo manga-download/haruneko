@@ -39,6 +39,7 @@ function MangaExtractor(anchor: HTMLAnchorElement) {
 @Common.MangaCSS(/^{origin}\/manga(-raw)?\/[^/]+\/$/, 'div.container h1.name', (element, uri) => ({ id: uri.pathname, title: CleanTitle(element.textContent) }))
 @Common.MangasMultiPageCSS('div.grid-of-mangas h2.name a', Common.PatternLinkGenerator('/page/{page}/'), 0, MangaExtractor)
 @Common.ChaptersSinglePageCSS('div.chapter-box a', undefined, ChapterExtractor)
+@Common.ChapterURL()
 @Common.ImageAjax(true)
 export class Zing92Base extends DecoratableMangaScraper {
 

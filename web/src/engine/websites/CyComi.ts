@@ -70,9 +70,8 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
-        const id = new URL(url).pathname.split('/').at(-1);
-        const { data } = await this.FetchAPI<APIManga>(`./title/detail?titleId=${id}`);
-        return new Manga(this, provider, data.titleId.toString(), data.titleName);
+        const { data: { titleId, titleName } } = await this.FetchAPI<APIManga>(`./title/detail?titleId=${new URL(url).pathname.split('/').at(-1)}`);
+        return new Manga(this, provider, `${titleId}`, titleName);
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
@@ -81,7 +80,7 @@ export default class extends DecoratableMangaScraper {
             const { data, resultCode } = await this.FetchAPI<APIMangas>(`./home/paginatedList?limit=${50}&page=${page}`);
             const mangas = resultCode !== 1 || !data ? [] : data.reduce((accumulator: Manga[], entry) => {
                 if (entry) {
-                    const titles = entry.titles.map(manga => new Manga(this, provider, manga.titleId.toString(), manga.titleName));
+                    const titles = entry.titles.map(({ titleId, titleName }) => new Manga(this, provider, `${titleId}`, titleName));
                     accumulator.push(...titles);
                 }
                 return accumulator;
@@ -104,9 +103,9 @@ export default class extends DecoratableMangaScraper {
         do {
             const endpoint = [`./${type}/paginatedList?sort=1&limit=100&titleId=${manga.Identifier}&isWebOnly=0`, cursor ? `&cursor=${cursor}` : ''].join('');
             const { data, resultCode, nextCursor: next } = await this.FetchAPI<APIMedias>(endpoint);
-            const chapters = resultCode === 1 && data?.length > 0 ? data.map(chapter => {
-                const title = [chapter.name, chapter.subName ?? chapter.stories].filter(item => item).join(' - ');
-                return new Chapter(this, manga, JSON.stringify({ id: chapter.id, type: chapter.dataType }), title);
+            const chapters = resultCode === 1 && data?.length > 0 ? data.map(({ id, dataType, name, subName, stories }) => {
+                const title = [name, subName ?? stories].filter(item => item).join(' - ');
+                return new Chapter(this, manga, JSON.stringify({ id, type: dataType }), title);
             }) : [];
             chapterList.push(...chapters);
             cursor = next;
@@ -158,15 +157,18 @@ export default class extends DecoratableMangaScraper {
         return new Blob([decrypted], { type: blob.type });
     }
 
+    public override async GetChapterURL(chapter: Chapter): Promise<URL> {
+        return new URL(`/viewer/chapter/${chapter.Identifier}`, this.URI);
+    }
+
     private async FetchAPI<T extends JSONElement>(endpoint: string, body: JSONElement = undefined): Promise<T> {
-        const request = new Request(new URL(endpoint, this.apiURL), {
+        return FetchJSON<T>(new Request(new URL(endpoint, this.apiURL), {
             method: body ? 'POST' : 'GET',
             body: JSON.stringify(body),
             headers: {
                 'Content-type': body ? 'application/json' : undefined
             }
-        });
-        return FetchJSON<T>(request);
+        }));
     }
 }
 

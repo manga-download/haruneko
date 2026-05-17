@@ -133,6 +133,10 @@ export default class extends DecoratableMangaScraper {
         }));
     }
 
+    public override async GetChapterURL(chapter: Chapter): Promise<URL> {
+        return new URL(`/lecteur-ebook/${chapter.Identifier}`, this.URI);
+    }
+
     public override async FetchImage(page: Page<PageInfo>, priority: Priority, signal: AbortSignal): Promise<Blob> {
         const blob = await Common.FetchImageAjax.call(this, page, priority, signal);
         return DeScramble(blob, async (image, ctx) => {
@@ -150,14 +154,12 @@ export default class extends DecoratableMangaScraper {
     }
 
     private async FetchAPI<T extends JSONElement>(base: string, endpoint: string, search: Record<string, string>): Promise<T> {
-        const uri = new URL(endpoint + '?' + new URLSearchParams(search), base);
-        const request = new Request(uri, {
+        const response = await Fetch(new Request(new URL(endpoint + '?' + new URLSearchParams(search), base), {
             headers: {
                 Referer: this.URI.href,
                 ...this.#token && { Authorization: `Bearer ${this.#token}` }
             }
-        });
-        const response = await Fetch(request);
+        }));
         const text = await response.text();
         return JSON.parse(text.split('\n').at(-1));
     }

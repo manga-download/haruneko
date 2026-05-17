@@ -16,7 +16,7 @@ type APIManga = {
 };
 
 type APIMangas = {
-    mangas: APIManga[ 'manga' ][];
+    mangas: APIManga['manga'][];
 }
 
 type APIChapters = {
@@ -108,9 +108,13 @@ export default class extends DecoratableMangaScraper {
         return keyData && iv ? this.DecryptPicture(data, page.Parameters) : data;
     }
 
+    public override async GetChapterURL(chapter: Chapter): Promise<URL> {
+        return new URL(`/manga/viewer/${chapter.Identifier}`, this.URI);
+    }
+
     private async DecryptPicture(encrypted: Blob, page: PageParameters): Promise<Blob> {
         const algorithm = { name: 'AES-CBC', iv: GetBytesFromHex(page.iv) };
-        const key = await crypto.subtle.importKey('raw', GetBytesFromHex(page.keyData), algorithm, false, [ 'decrypt' ]);
+        const key = await crypto.subtle.importKey('raw', GetBytesFromHex(page.keyData), algorithm, false, ['decrypt']);
         const decrypted = await crypto.subtle.decrypt(algorithm, key, await encrypted.arrayBuffer());
         return Common.GetTypedData(decrypted);
     }

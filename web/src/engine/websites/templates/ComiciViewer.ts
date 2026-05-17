@@ -38,6 +38,7 @@ function StripTrailingSlash(pathname: string): string {
     id: new URL(a.dataset.href).pathname,
     title: a.querySelector<HTMLSpanElement>('span.series-ep-list-item-h-text').innerText.trim(),
 }))
+@Common.ChapterURL()
 export class ComiciViewer extends DecoratableMangaScraper {
 
     readonly #identityTileMap = new Array(16).fill(null).map((_, index) => ({ col: index / 4 >> 0, row: index % 4 >> 0 }));

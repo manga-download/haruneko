@@ -63,4 +63,8 @@ export default class extends DecoratableMangaScraper {
             .filter(({ src }) => exclude.none(pattern => pattern.test(src)))
             .map(({ src }) => new Page(this, chapter, new URL(src, this.cdnURL)));
     }
+
+    public override async GetChapterURL(chapter: Chapter): Promise<URL> {
+        return new URL(`/series/${chapter.Parent.Identifier}/${chapter.Identifier}`, this.URI);
+    }
 }

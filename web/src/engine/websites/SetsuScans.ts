@@ -71,6 +71,10 @@ export default class extends DecoratableMangaScraper {
         }, priority, signal);
     }
 
+    public override async GetChapterURL(chapter: Chapter): Promise<URL> {
+        return new URL(`/manga/${chapter.Parent.Identifier}/${chapter.Identifier}`, this.URI);
+    }
+
     private async FetchAPI<T extends JSONElement>(endpoint: string): Promise<T> {
         return FetchJSON<T>(new Request('https://api.saytsu.com' + endpoint));
     }

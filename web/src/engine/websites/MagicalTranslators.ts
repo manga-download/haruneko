@@ -8,6 +8,7 @@ import * as Guya from './decorators/Guya';
 @Guya.MangasSinglePageAJAX()
 @Guya.ChaptersSinglePageAJAX()
 @Guya.PagesSinglePageAJAX()
+@Guya.ChapterURL()
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 

@@ -69,7 +69,7 @@ export class MangaHubBase extends DecoratableMangaScraper {
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
         type This = typeof this;
         return Array.fromAsync(async function* (this: This) {
-            for (let offset = 0, run = true; run; offset+= 50) {
+            for (let offset = 0, run = true; run; offset += 50) {
                 const { search: { rows } } = await this.FetchGQL<GQLMangas>(`
                     query ($scope: MangaSource) {
                         search(x: $scope, q: "", genre: "all", mod: ALPHABET, limit: 50, offset: ${offset}) { rows { id, slug, title } }
@@ -108,6 +108,10 @@ export class MangaHubBase extends DecoratableMangaScraper {
             jsonPages['i'].map(pageNumber => new Page(this, chapter, new URL(`${jsonPages['p']}${pageNumber}`, this.cdnURL)))
             :
             Object.values(jsonPages as string[]).map(page => new Page(this, chapter, new URL(page, this.cdnURL)));
+    }
+
+    public override async GetChapterURL(chapter: Chapter): Promise<URL> {
+        return new URL(`/chapter/${chapter.Parent.Identifier}/chapter-${chapter.Identifier}`, this.URI);
     }
 
     private async FetchGQL<T extends JSONElement>(query: string, variables: JSONObject, remainingRetryAttempts = 3): Promise<T> {

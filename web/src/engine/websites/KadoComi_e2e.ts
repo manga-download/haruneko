@@ -11,7 +11,7 @@ new TestFixture({
         title: 'いつかのLo-fiみゅーじっく'
     },
     child: {
-        id: '018d6c44-a85b-750b-bda1-b23582d67441',
+        id: JSON.stringify({ id: '018d6c44-a85b-750b-bda1-b23582d67441', code: 'KC_0010500000200011_E' }),
         title: '第2話'
     },
     entry: {

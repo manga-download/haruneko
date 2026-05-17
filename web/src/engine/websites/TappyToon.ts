@@ -20,19 +20,19 @@ type NextInitialState = {
 };
 
 type APIManga = {
-    id: number,
-    title: string,
-    locale: string,
-    isSuperHighQualitySupported: boolean,
+    id: number;
+    title: string;
+    locale: string;
+    isSuperHighQualitySupported: boolean;
 };
 
 type APIChapters = {
-    id: number,
-    title: string,
-    isAccessible: boolean,
-    isFree: boolean,
-    isUserUnlocked: boolean,
-    isUserRented: boolean,
+    id: number;
+    title: string;
+    isAccessible: boolean;
+    isFree: boolean;
+    isUserUnlocked: boolean;
+    isUserRented: boolean;
 }[];
 
 type APIPages = {
@@ -97,6 +97,11 @@ export default class extends DecoratableMangaScraper {
             variant: isSuperHighQualitySupported ? 'super_high' : 'high',
         }).toString());
         return files.map(({ url }) => new Page(this, chapter, new URL(url)));
+    }
+
+    public override async GetChapterURL(chapter: Chapter): Promise<URL> {
+        //language from url doesnt matter
+        return new URL(`/en/chapter/${chapter.Identifier}`, this.URI);
     }
 
     private async FetchNextData<T extends JSONObject>(url: URL, field: NextFields): Promise<T> {

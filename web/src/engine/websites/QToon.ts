@@ -132,6 +132,10 @@ export default class extends DecoratableMangaScraper {
         }.call(this));
     }
 
+    public override async GetChapterURL(chapter: Chapter): Promise<URL> {
+        return new URL(`/pt/reader/${chapter.Parent.Identifier}?chapter=${chapter.Identifier}`, this.URI);
+    }
+
     private async FetchAPI<T extends JSONElement>(endpoint: string, language = 'en-US'): Promise<T> {
         const extraData = {
             bl: 'en-US'// navigator.language

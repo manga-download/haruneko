@@ -73,6 +73,10 @@ export default class extends DecoratableMangaScraper {
             .map(page => new Page(this, chapter, new URL(page.manga_page.page_image_url))) : [];
     }
 
+    public override async GetChapterURL(chapter: Chapter): Promise<URL> {
+        return new URL(`/viewer/${chapter.Parent.Identifier}/${chapter.Identifier}`, this.URI);
+    }
+
     public override async FetchImage(page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
         const data: Blob = await Common.FetchImageAjax.call(this, page, priority, signal);
         return DeScramble(data, async (bitmap, ctx) => {

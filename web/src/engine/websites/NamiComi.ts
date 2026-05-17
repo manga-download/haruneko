@@ -100,6 +100,11 @@ export default class extends DecoratableMangaScraper {
         return high.map(({ filename }) => new Page(this, chapter, new URL(`/chapter/${chapter.Identifier}/${hash}/high/${filename}`, baseUrl)));
     }
 
+    public override async GetChapterURL(chapter: Chapter): Promise<URL> {
+        //language from  url has NOTHING to do with chapter language, thanks god
+        return new URL(`/en/chapter/${chapter.Identifier}`, this.URI);
+    }
+
     private async FetchAPI<T extends JSONElement>(endpoint: string, searchParams: Record<string, string> = {}): Promise<T> {
         const uri = new URL(endpoint, this.apiUrl);
         uri.search = new URLSearchParams(searchParams).toString();

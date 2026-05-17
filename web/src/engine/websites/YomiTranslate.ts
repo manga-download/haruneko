@@ -20,6 +20,11 @@ type APIMangaDetails = {
 type APIChapter = {
     id: number;
     title: string;
+    chapter_number: number;
+};
+
+type APIPages = {
+    chapter: APIChapter;
     pages: {
         image_path: string;
     }[];
@@ -57,7 +62,12 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const { pages } = await FetchJSON<APIChapter>(new Request(new URL(`./chapters/${chapter.Identifier}`, this.apiUrl)));
+        const { pages } = await FetchJSON<APIPages>(new Request(new URL(`./chapters/${chapter.Identifier}`, this.apiUrl)));
         return pages.map(({ image_path: image }) => new Page(this, chapter, new URL(image, this.URI)));
+    }
+
+    public override async GetChapterURL(chapter: Chapter): Promise<URL> {
+        const { chapter: { chapter_number: chapterNumber } } = await FetchJSON<APIPages>(new Request(new URL(`./chapters/${chapter.Identifier}`, this.apiUrl)));
+        return new URL(`/series/${chapter.Parent.Identifier}/chapter/${chapterNumber}`, this.URI);
     }
 }

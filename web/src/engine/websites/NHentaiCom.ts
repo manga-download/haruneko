@@ -41,4 +41,9 @@ export default class extends DecoratableMangaScraper {
         const { images } = await FetchJSON<APIPages>(new Request(new URL(`/api/comics/${chapter.Identifier}/images`, this.URI)));
         return images.map(({ source_url: image }) => new Page(this, chapter, new URL(image)));
     }
+
+    public override async GetChapterURL(chapter: Chapter): Promise<URL> {
+        return new URL(`/en/comic/${chapter.Identifier}`, this.URI);
+    }
+
 }

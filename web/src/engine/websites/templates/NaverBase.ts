@@ -25,6 +25,7 @@ const mangaTypeMap = new Map([
     ['CHALLENGE', 'challenge'],
 ]);
 
+@Common.ChapterURL()
 @Common.PagesSinglePageCSS('div#comic_view_area div.wt_viewer img[id]')
 @Common.ImageAjax()
 export class NaverBase extends DecoratableMangaScraper {

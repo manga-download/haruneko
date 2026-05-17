@@ -50,7 +50,7 @@ export default class extends DecoratableMangaScraper {
 
     private readonly apiUrl = `${this.URI.origin}/api/csr`;
 
-    public constructor () {
+    public constructor() {
         super('corocoro', 'CoroCoro Online (コロコロオンライン)', 'https://www.corocoro.jp', Tags.Language.Japanese, Tags.Source.Official, Tags.Media.Manga);
     }
 
@@ -68,18 +68,18 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        const promises = [ 'mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun' ]
+        const promises = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun']
             .map(day => this.FetchAPI<TitleListView>({ rq: 'title/list/update_day', day }, 'TitleListView'));
         const mangaList = (await Promise.all(promises)).reduce((accumulator: Manga[], day) => {
             const mangas = day.titles.titles.map(({ id, name }) => new Manga(this, provider, id.toString(), name));
-            return [ ...accumulator, ...mangas ];
+            return [...accumulator, ...mangas];
         }, []);
         return mangaList.distinct();
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const { chapters } = await this.FetchAPI<TitleDetailView>({ rq: 'title/detail', title_id: manga.Identifier }, 'TitleDetailView');
-        return chapters.map(({ id, mainName, subName }) => new Chapter(this, manga, id.toString(), [ mainName, subName ].join(' ').trim()));
+        return chapters.map(({ id, mainName, subName }) => new Chapter(this, manga, id.toString(), [mainName, subName].join(' ').trim()));
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page<PageParameters>[]> {
@@ -96,9 +96,13 @@ export default class extends DecoratableMangaScraper {
         return keyData && iv ? this.DecryptImage(bytes, keyData, iv) : Common.GetTypedData(bytes);
     }
 
+    public override async GetChapterURL(chapter: Chapter): Promise<URL> {
+        return new URL(`/chapter/${chapter.Identifier}/viewer`, this.URI);
+    }
+
     private async DecryptImage(encrypted: ArrayBuffer, keyData: string, iv: string): Promise<Blob> {
         const algorithm = { name: 'AES-CBC', iv: GetBytesFromHex(iv) };
-        const key = await crypto.subtle.importKey('raw', GetBytesFromHex(keyData), algorithm, false, [ 'decrypt' ]);
+        const key = await crypto.subtle.importKey('raw', GetBytesFromHex(keyData), algorithm, false, ['decrypt']);
         const decrypted = await crypto.subtle.decrypt(algorithm, key, encrypted);
         return Common.GetTypedData(decrypted);
     }

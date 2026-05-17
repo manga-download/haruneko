@@ -4,7 +4,7 @@ import { type MangaPlugin, Chapter, Manga, Page } from '../providers/MangaPlugin
 import { FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
 import { PageLinkExtractor, ZeistManga, type FeedResults } from './templates/ZeistManga';
 
-type ChapterData = {
+type ChapterID = {
     url: string;
     slug: string;
 }
@@ -28,7 +28,7 @@ export default class extends ZeistManga {
             .filter(({ category }) => category && category.some(({ term }) => ["Manga", "Manhua", "Manhwa"].includes(term)))
             .map(({ link, title: { $t } }) => {
                 const goodLink = link.find(link => link.rel === 'alternate').href;
-                return new Manga(this, provider, goodLink.split('/').at(-1).replace('.html', '').trim(), $t.trim() );
+                return new Manga(this, provider, goodLink.split('/').at(-1).replace('.html', '').trim(), $t.trim());
             });
     }
 
@@ -58,7 +58,7 @@ export default class extends ZeistManga {
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const { slug, url }: ChapterData = JSON.parse(chapter.Identifier);
+        const { slug, url }: ChapterID = JSON.parse(chapter.Identifier);
         const allChapters = await this.FetchChapterEntries(chapter.Parent.Identifier);
 
         let currentIndex = allChapters.findIndex(entry => {
@@ -77,6 +77,11 @@ export default class extends ZeistManga {
 
         const chapterContent = new DOMParser().parseFromString(allChapters[currentIndex].content.$t, 'text/html');
         return [...chapterContent.querySelectorAll('img')].map(image => new Page(this, chapter, new URL(PageLinkExtractor(image))));
+    }
+
+    public override async GetChapterURL(chapter: Chapter): Promise<URL> {
+        const { url }: ChapterID = JSON.parse(chapter.Identifier);
+        return new URL(url);
     }
 
     private async FetchChapterEntries(mangaSlug: string): Promise<FeedResults['feed']['entry']> {

@@ -30,6 +30,7 @@ export abstract class MangaScraper extends MediaScraper<MangaPlugin> {
     public abstract FetchChapters(manga: Manga): Promise<Chapter[]>;
     public abstract FetchPages(chapter: Chapter): Promise<Page[]>;
     public abstract FetchImage(page: Page, priority: Priority, signal: AbortSignal): Promise<Blob>;
+    public abstract GetChapterURL(chapter: Chapter): Promise<URL>;
 }
 
 /**
@@ -59,6 +60,10 @@ export class DecoratableMangaScraper extends MangaScraper {
     }
 
     public FetchImage(_page: Page, _priority: Priority, _signal: AbortSignal): Promise<Blob> {
+        throw new NotImplementedError();
+    }
+
+    public GetChapterURL(_chapter: Chapter): Promise<URL> {
         throw new NotImplementedError();
     }
 }

@@ -30,6 +30,7 @@ type APIChapters = {
     };
 };
 
+@Common.ChapterURL()
 @Common.PagesSinglePageJS(`
     new Promise(resolve => {
         const images = [ ...document.querySelectorAll('.image-container img[data-image-index]') ];

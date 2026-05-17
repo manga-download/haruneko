@@ -15,6 +15,7 @@ type APIChapters = {
     manga: {
         chapters: {
             id: string;
+            number: number;
             title: string;
             images: { url: string }[];
         }[];
@@ -50,5 +51,11 @@ export default class extends DecoratableMangaScraper {
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
         const { manga: { chapters } } = await FetchJSON<APIChapters>(new Request(new URL(`./api/manga?slug=${chapter.Parent.Identifier}`, this.URI)));
         return chapters.find(({ id }) => id === chapter.Identifier).images.map(({ url }) => new Page(this, chapter, new URL(url, this.URI)));
+    }
+
+    public override async GetChapterURL(chapter: Chapter): Promise<URL> {
+        const { manga: { chapters } } = await FetchJSON<APIChapters>(new Request(new URL(`./api/manga?slug=${chapter.Parent.Identifier}`, this.URI)));
+        const { number } = chapters.find(({ id }) => id === chapter.Identifier);
+        return new URL(`/read/${chapter.Parent.Identifier}/${number}`, this.URI);
     }
 }

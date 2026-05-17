@@ -104,6 +104,10 @@ export default class extends DecoratableMangaScraper {
         return pages.map(({ image, linkImage }) => new Page(this, chapter, new URL((image || linkImage).imageUrl, uri)));
     }
 
+    public override async GetChapterURL(chapter: Chapter): Promise<URL> {
+        return new URL(`/title/${chapter.Parent.Identifier}/chapter/${chapter.Identifier}`, this.URI);
+    }
+
     private async GetEmbeddedJSON<T>(uri: URL) : Promise<T> {
         const [script] = await FetchCSS<HTMLScriptElement>(new Request(uri), 'script#__NEXT_DATA__');
         return (JSON.parse(script.text) as NEXTDATA<T>).props.pageProps.data;

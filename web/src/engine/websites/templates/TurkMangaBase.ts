@@ -20,6 +20,7 @@ const DetectSecurityShield: Parameters<typeof AddAntiScrapingDetection>[0] = asy
 @Common.MangaCSS<HTMLImageElement>(/^{origin}\/manga\/\d+\/[^/]+$/, 'div.content-info img', (img, uri) => ({ id: uri.pathname, title: img.alt.trim() }))
 @Common.MangasMultiPageCSS('section[aria-label*="series"] div.card > div a:has(h2)', Common.PatternLinkGenerator('./search?page={page}'))
 @Common.ChaptersSinglePageCSS<HTMLAnchorElement>('div.list-episode a', undefined, anchor => ({ id: anchor.pathname, title: anchor.querySelector('.chapternum').textContent.trim() }))
+@Common.ChapterURL()
 @Common.ImageAjax()
 export class TurkMangaBase extends DecoratableMangaScraper {
 

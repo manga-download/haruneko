@@ -115,6 +115,11 @@ export default class extends DecoratableMangaScraper {
         return this.DecryptImage(blob);
     }
 
+    public override async GetChapterURL(chapter: Chapter): Promise<URL> {
+        const { id, type }: ChapterID = JSON.parse(chapter.Identifier);
+        return new URL(`${chapter.Parent.Identifier}/${type}/${id}/viewer`, this.URI);
+    }
+
     private async FetchAPI<T extends JSONElement>(endpoint: string): Promise<T> {
         return FetchJSON<T>(new Request(new URL(endpoint, this.apiUrl)));
     }

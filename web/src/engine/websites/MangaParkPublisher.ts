@@ -49,6 +49,11 @@ export default class extends DecoratableMangaScraper {
         return Common.GetTypedData(decrypted);
     }
 
+    public override async GetChapterURL(chapter: Chapter): Promise<URL> {
+        // All chapters have the same url
+        return new URL(`/title/${chapter.Parent.Identifier}`, this.URI);
+    }
+
     private DecryptImage(encrypted: ArrayBuffer, key: Uint8Array): ArrayBuffer {
         return new Uint8Array(encrypted).map((byte, index) => byte ^ key[index % key.length]).buffer;
     }

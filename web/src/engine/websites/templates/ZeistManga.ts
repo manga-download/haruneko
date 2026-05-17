@@ -38,6 +38,7 @@ export function PageLinkExtractor(image: HTMLImageElement): string {
 }
 
 @Common.MangaCSS(/^{origin}\/\d+\/\d+\/[^/]+\.html$/, 'header h1[itemprop="name"]')
+@Common.ChapterURL()
 @Common.PagesSinglePageCSS('article#reader div.separator a img', PageLinkExtractor)
 @Common.ImageAjax()
 export class ZeistManga extends DecoratableMangaScraper {

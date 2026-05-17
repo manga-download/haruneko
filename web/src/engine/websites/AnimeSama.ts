@@ -36,4 +36,10 @@ export default class extends DecoratableMangaScraper {
         const data = await FetchWindowScript<string[]>(new Request(new URL(`${chapter.Parent.Identifier}scan/vf/`, this.URI)), pageScript(parseInt(chapter.Identifier)), 500);
         return data.map(page => new Page(this, chapter, new URL(page, this.URI)));
     }
+
+    public override async GetChapterURL(chapter: Chapter): Promise<URL> {
+        // All chapters have the same url
+        return new URL(`${chapter.Parent.Identifier}scan/vf/`, this.URI);
+    }
+
 }
