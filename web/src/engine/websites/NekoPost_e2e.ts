@@ -6,17 +6,17 @@ new TestFixture({
         title: 'NekoPost',
     },
     container: {
-        url: 'https://www.nekopost.net/manga/15660',
-        id: '/manga/15660',
-        title: 'Toshiue Elite Onna Kishi ga Boku no Mae de dake Kawaii'
+        url: 'https://www.nekopost.net/manga/8175',
+        id: '/manga/8175',
+        title: '[จบ] Isekai Ouji no Toshiue Cinderella'
     },
     child: {
-        id: '/manga/15660/13.1',
-        title: 'Ch.13.1 - 13.1'
+        id: '/manga/8175/7',
+        title: 'Ch.7 - Chapter 7 【END】'
     },
     entry: {
         index: 0,
-        size: 292_537,
+        size: 239_894,
         type: 'image/jpeg'
     }
 }).AssertWebsite();

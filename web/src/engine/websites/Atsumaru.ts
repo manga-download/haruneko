@@ -15,7 +15,9 @@ type APIManga = {
 };
 
 type APIMangas = {
-    items: APIManga[];
+    hits: {
+        document: APIManga;
+    }[];
 };
 
 type APIPages = {
@@ -43,32 +45,10 @@ export default class extends DecoratableMangaScraper {
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
         type This = typeof this;
         return Array.fromAsync(async function* (this: This) {
-            for (let page = 0, run = true; run ; page++) {
+            for (let page = 1, run = true; run ; page++) {
                 await Delay(500);
-                const body = {
-                    filter: {
-                        search: '',
-                        tags: [],
-                        excludeTags: [],
-                        types: [],
-                        status: [],
-                        years: [],
-                        minChapters: null,
-                        hideBookmarked: false,
-                        officialTranslation: false,
-                        showAdult: true,
-                        sortBy: 'title'
-                    }, page
-                };
-
-                const { items } = await FetchJSON<APIMangas>(new Request(new URL(`./explore/filteredView`, this.apiUrl), {
-                    method: 'POST',
-                    body: JSON.stringify(body),
-                    headers: {
-                        'Content-type': 'application/json',
-                    }
-                }));
-                const mangas = items.map(({ id, title }) => new Manga(this, provider, id, title));
+                const { hits } = await FetchJSON<APIMangas>(new Request(new URL(`./collections/manga/documents/search?q=*&page=${page}&per_page=250`, this.URI)));
+                const mangas = hits.map(({ document: { id, title} }) => new Manga(this, provider, id, title));
                 mangas.length > 0 ? yield* mangas : run = false;
             }
         }.call(this));

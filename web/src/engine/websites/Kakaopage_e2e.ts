@@ -1,6 +1,6 @@
 ﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'kakaopage',
         title: 'Page Kakao (카카오페이지)'
@@ -20,6 +20,4 @@ const config = {
         size: 65_661,
         type: 'image/jpeg'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

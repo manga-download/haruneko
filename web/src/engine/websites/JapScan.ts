@@ -5,10 +5,10 @@ import * as Common from './decorators/Common';
 import { AddAntiScrapingDetection, FetchRedirection } from '../platform/AntiScrapingDetection';
 import { DRMProvider } from './JapScan.DRM';
 
-AddAntiScrapingDetection(async (invoke) => {
+AddAntiScrapingDetection(async invoke => {
     const result = await invoke<boolean>(`document.querySelector('#jc-overlay') && true || false;`);
     return result ? FetchRedirection.Interactive : undefined;
-});
+}, /^https:\/\/(?:www\.)?japscan\.[a-z]{2,4}/);
 
 @Common.MangaCSS<HTMLHeadingElement>(/^https:\/\/(?:www\.)?japscan\.[a-z]{2,4}\/(manga|manhwa|bd)\/[^/]+\/$/, '#main div.card-body h1', (head, uri) => ({ id: uri.pathname, title: head.innerText.replace(/^man[gh][wu]?a\s+/i, '') }))
 @Common.ImageAjax()

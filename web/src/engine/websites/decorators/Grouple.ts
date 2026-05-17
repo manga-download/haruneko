@@ -4,7 +4,7 @@ import { type MangaScraper, type MangaPlugin, type Chapter, Page } from '../../p
 import { type Priority } from '../../taskpool/DeferredTask';
 import * as Common from './Common';
 
-type MirroredPage = Page<{
+export type MirroredPage = Page<{
     mirrors: string[];
 }>;
 
