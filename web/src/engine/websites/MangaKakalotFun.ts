@@ -5,7 +5,7 @@ import { MangaHubBase } from './templates/MangaHubBase';
 export default class extends MangaHubBase {
 
     public constructor() {
-        super('mangakakalotfun', `MangaKakalotFun`, 'https://mangakakalot.fun', 'mn01', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Media.Manga, Tags.Language.English, Tags.Source.Aggregator);
+        super('mangakakalotfun', 'MangaKakalotFun', 'https://mangakakalot.fun', 'mn01', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Media.Manga, Tags.Language.English, Tags.Source.Aggregator);
     }
 
     public override get Icon() {

@@ -34,7 +34,7 @@ type GQLPages = {
 type JSONPages = {
     i: string[];
     p: string;
-};
+} | string[];
 
 @Common.ImageAjax()
 export class MangaHubBase extends DecoratableMangaScraper {
@@ -86,10 +86,10 @@ export class MangaHubBase extends DecoratableMangaScraper {
                 manga(x: $scope, slug: $slug) { chapters { number, title } }
             }
         `, { scope: this.scope, slug: manga.Identifier });
-        return chapters.map(chapter => {
-            let title = `Ch.${chapter.number}`;
-            title += chapter.title ? ` - ${chapter.title}` : '';
-            return new Chapter(this, manga, chapter.number.toString(), title.trim());
+        return chapters.map(({ number, title: chaptertitle }) => {
+            let title = `Ch.${number}`;
+            title += chaptertitle ? ` - ${chaptertitle}` : '';
+            return new Chapter(this, manga, `${number}`, title.trim());
         });
     }
 
@@ -103,8 +103,11 @@ export class MangaHubBase extends DecoratableMangaScraper {
             manga: chapter.Parent.Identifier,
             chapter: parseFloat(chapter.Identifier),
         });
-        const { i: pageNumbers, p: pagePath }: JSONPages = JSON.parse(pages);
-        return pageNumbers.map(pageNumber => new Page(this, chapter, new URL(`${pagePath}${pageNumber}`, this.cdnURL)));
+        const jsonPages: JSONPages = JSON.parse(pages);
+        return jsonPages['i'] ?
+            jsonPages['i'].map(pageNumber => new Page(this, chapter, new URL(`${jsonPages['p']}${pageNumber}`, this.cdnURL)))
+            :
+            Object.values(jsonPages as string[]).map(page => new Page(this, chapter, new URL(page, this.cdnURL)));
     }
 
     private async FetchGQL<T extends JSONElement>(query: string, variables: JSONObject, remainingRetryAttempts = 3): Promise<T> {

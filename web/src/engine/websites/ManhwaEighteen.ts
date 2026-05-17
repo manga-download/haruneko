@@ -29,7 +29,7 @@ type JSONChapters = {
 
 type JSONPages = {
     chapterContent: string;
-}
+};
 
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {

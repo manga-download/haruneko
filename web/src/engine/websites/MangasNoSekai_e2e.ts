@@ -12,7 +12,7 @@ new TestFixture({
     },
     child: {
         id: '/manga/flops-de-amor/capitulo-19/',
-        title: 'Capítulo 19'
+        title: 'Capítulo 19 Final'
     },
     entry: {
         index: 2,
