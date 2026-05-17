@@ -676,6 +676,7 @@ export { default as TheBlank } from './TheBlank';
 export { default as TheBullyProject } from './TheBullyProject';
 export { default as ThreeHentai } from './ThreeHentai';
 export { default as ThunderScans } from './ThunderScans';
+export { default as TiaManhwa } from './TiaManhwa';
 export { default as Tibiu } from './Tibiu';
 export { default as ToCoronaEx } from './ToCoronaEx';
 export { default as TonariNoYoungJump } from './TonariNoYoungJump';

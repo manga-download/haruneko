@@ -143,6 +143,7 @@ import '../Summertoon_e2e';
 import '../TatakaeScan_e2e';
 import '../TaurusManga_e2e';
 import '../TheBlank_e2e';
+import '../TiaManhwa_e2e';
 import '../TonizuToon_e2e';
 import '../ToonFR_e2e';
 import '../ToonGod_e2e';
