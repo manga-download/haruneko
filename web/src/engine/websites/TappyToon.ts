@@ -90,7 +90,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const { isSuperHighQualitySupported } = await this.FetchAPI<APIManga>(`./comics/${chapter.Identifier}`);
+        const { isSuperHighQualitySupported } = await this.FetchAPI<APIManga>(`./comics/${chapter.Parent.Identifier}`);
         const { files } = await this.FetchAPI<APIPages>('./content-delivery/contents/manifest?' + new URLSearchParams({
             chapterId: chapter.Identifier,
             canAcceptSignedCookie: 'true',

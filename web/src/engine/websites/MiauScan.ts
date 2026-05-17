@@ -8,7 +8,7 @@ import * as Common from './decorators/Common';
 
 @MangaStream.MangaCSS(/^{origin}\/manga\/[^/]+\/$/)
 @MangaStream.MangasSinglePageCSS()
-@MangaStream.ChaptersSinglePageCSS()
+@Common.ChaptersSinglePageCSS<HTMLAnchorElement>('a.lm4-chapter-link', undefined, anchor => ({ id: anchor.pathname, title: anchor.dataset.chapterTitle.trim() }))
 @MangaStream.PagesSinglePageJS()
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {

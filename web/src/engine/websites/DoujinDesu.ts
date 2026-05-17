@@ -3,9 +3,12 @@ import icon from './DoujinDesu.webp';
 import { type Chapter, DecoratableMangaScraper, Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import { FetchJSON } from '../platform/FetchProvider';
-import { GetBytesFromBase64, GetBytesFromUTF8 } from '../BufferEncoder';
+import { GetBytesFromBase64, GetBytesFromUTF8, GetUTF8FromBytes } from '../BufferEncoder';
 
-@Common.MangaCSS(/^{origin}\/manga\/[^/]+$/, 'meta[property="og:title"]')
+@Common.MangaCSS(/^{origin}\/manga\/[^/]+$/, 'a.permalink img', (img, uri) => ({
+    id: uri.pathname,
+    title: img.title.trim()
+}))
 @Common.MangasMultiPageCSS('a[href*="/manga/"]:not([data-state])', Common.PatternLinkGenerator('/manga?page={page}'))
 @Common.ChaptersSinglePageCSS('div#chapter_list ul li span.eps a', undefined, Common.AnchorInfoExtractor(true))
 @Common.ImageAjax()
@@ -21,20 +24,19 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const key = 'youdoZFFxQusvsva1iHsbccZbpUAjoqB6niUyntkn5mocg2DZ0fCw1Zoow';
         const { images } = await FetchJSON<{ images: string[] }>(new Request(new URL(`./ch.php?slug=${chapter.Identifier}`, this.apiUrl), {
             headers: {
                 Origin: this.URI.origin,
                 Referer: this.URI.href
             }
         }));
-        return images.map(image => new Page(this, chapter, new URL(this.DecryptPage(image, key))));
+        return images.map(image => new Page(this, chapter, new URL(this.DecryptPage(image, 'youdoZFFxQusvsva1iHsbccZbpUAjoqB6niUyntkn5mocg2DZ0fCw1Zoow'))));
     }
 
     private DecryptPage(cryptedImage: string, keyString: string): string {
         const key: Uint8Array = GetBytesFromUTF8(keyString);
         const padding = (4 - cryptedImage.length % 4) % 4;
         const decoded: Uint8Array = GetBytesFromBase64((cryptedImage + '='.repeat(padding)).replace(/-/g, '+').replace(/_/g, '/'));
-        return new TextDecoder().decode(decoded.map((byte, index) => byte ^ key[index % key.length]));
+        return GetUTF8FromBytes(decoded.map((byte, index) => byte ^ key[index % key.length]));
     }
 }

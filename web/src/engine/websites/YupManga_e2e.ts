@@ -10,13 +10,14 @@ new TestFixture({
         id: '/series.php?id=0MHCAH4EG46B6',
         title: 'Grey'
     },
+    /* chapter token is random
     child: {
-        id: '/reader_v2.php?chapter=0MHCAH4EM49W4',
+        id: '/reader_v2.php?chapter=randomstuff',
         title: 'Tomo 09'
     },
     entry: {
         index: 0,
-        size: 223_998,
+        size: 26_330,
         type: 'image/webp'
-    }
+    }*/
 }).AssertWebsite();

@@ -1,6 +1,6 @@
 <script>
     import { Breadcrumb, BreadcrumbItem } from 'carbon-components-svelte';
-    import { contentscreen } from '../../stores/Stores';
+    import {Store as UI } from '../../stores/Stores.svelte';
 </script>
 
 <div id="contentpathbar">
@@ -8,20 +8,20 @@
         <BreadcrumbItem
             href="#"
             class="segment"
-            isCurrentPage={$contentscreen === '/'}
-            on:click={() => ($contentscreen = '/')}
+            isCurrentPage={UI.contentscreen === '/'}
+            on:click={() => (UI.contentscreen = '/')}
         >
             Hakuneko
         </BreadcrumbItem>
-        {#if $contentscreen !== '/'}
-            {@const steps = $contentscreen.split('/').slice(1)}
+        {#if UI.contentscreen !== '/'}
+            {@const steps = UI.contentscreen.split('/').slice(1)}
             {#each steps as step, index}
                 <BreadcrumbItem
                     href="#"
                     class="segment"
                     isCurrentPage={index === steps.length - 1}
                     on:click={() =>
-                        ($contentscreen = $contentscreen
+                        (UI.contentscreen = UI.contentscreen
                             .split('/')
                             .slice(0, index + 2)
                             .join('/'))}

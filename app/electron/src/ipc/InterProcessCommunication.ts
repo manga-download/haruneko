@@ -1,5 +1,7 @@
 import { ipcMain } from 'electron';
 
+export type Callback<T extends void | JSONElement = void> = (...parameters: JSONArray) => Promise<T>;
+
 export class IPC<TChannelsOut extends string, TChannelsIn extends string> {
 
     constructor(private readonly webContents: Electron.WebContents) {}
@@ -8,7 +10,7 @@ export class IPC<TChannelsOut extends string, TChannelsIn extends string> {
         this.webContents.send(method, ...parameters);
     }
 
-    public Listen(method: TChannelsIn, callback: (...parameters: JSONArray) => Promise<void>) {
+    public Listen<T extends void | JSONElement = void>(method: TChannelsIn, callback: Callback<T>) {
         ipcMain.handle(method, (_, ...parameters: JSONArray) => callback(...parameters));
     }
 }

@@ -1,14 +1,19 @@
 <script lang="ts">
+
     import { onDestroy } from 'svelte';
     import type { MediaItem } from '../../../../engine/providers/MediaPlugin';
     import { Priority } from '../../../../engine/taskpool/DeferredTask';
     import { InlineLoading } from 'carbon-components-svelte';
-    export let page: MediaItem;
-    export let alt: string;
-    let loaded = false;
-    let dataload: Promise<Blob>;
-    let image: HTMLImageElement;
-    dataload = page.Fetch(Priority.High, new AbortController().signal);
+    interface Props {
+        page: MediaItem;
+        alt: string;
+        class: string
+    }
+
+    let { page, alt, class: className = '' }: Props = $props();
+    let loaded = $state(false);
+    let dataload: Promise<Blob> = $derived(page.Fetch(Priority.High, new AbortController().signal));
+    let image: HTMLImageElement = $state();
 
     onDestroy(() => {
         dataload.then((_src) => {
@@ -16,26 +21,32 @@
         });
     });
 
-    import { ViewerZoomRatio } from '../../stores/Settings';
-    $: loaded ? (image.width = image.naturalWidth * $ViewerZoomRatio) : 100;
-    $: loaded ? (image.height = image.naturalHeight * $ViewerZoomRatio) : 100;
+    import { Settings } from '../../stores/Settings.svelte';
+
+    $effect(() => {
+        if (loaded) {
+            image.width = image.naturalWidth * Settings.ViewerZoomRatio;
+            image.height = image.naturalHeight * Settings.ViewerZoomRatio;
+        } 
+    });
+
 </script>
 
 {#await dataload}
-    <InlineLoading class="imgpreview center {$$props.class}" on:click />
+    <InlineLoading class="imgpreview center {className}" on:click />
 {:then data}
     {#if data?.type.startsWith('image')}
         <img
-            class="imgpreview {$$props.class}"
+            class="imgpreview {className}"
             alt={page ? alt : ''}
             src={URL.createObjectURL(data)}
             draggable="false"
             bind:this={image}
-            on:load={() => (loaded = true)}
+            onload={() => (loaded = true)}
         />
     {:else}
         <InlineLoading
-            class="imgpreview center {$$props.class}"
+            class="imgpreview center {className}"
             status="error"
             description="Resource is not an image"
             on:click
@@ -43,7 +54,7 @@
     {/if}
 {:catch error}
     <InlineLoading
-        class="imgpreview {$$props.class}"
+        class="imgpreview {className}"
         status="error"
         description={error}
         on:click
