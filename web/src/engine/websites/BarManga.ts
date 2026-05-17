@@ -10,6 +10,7 @@ type PageData = {
     action: string;
     nonce: string;
     page: string;
+    chapter_key: string;
 };
 
 @Madara.MangaCSS(/^{origin}\/manga\/[^/]+\/$/, 'ol.breadcrumb li:last-of-type a')
@@ -30,7 +31,8 @@ export default class extends DecoratableMangaScraper {
         const tokens: string[] = JSON.parse(script.match(/(?:_tokens\s+?=\s+?)([^;]+)/).at(1));
         const nonce = script.match(/nonce:\s+?"([^"]+)/).at(1);
         const action = script.match(/action:\s+?"([^"]+)/).at(1);
-        return Object.values(tokens).map((token, index) => new Page<PageData>(this, chapter, new URL('/wp-admin/admin-ajax.php', this.URI), { action, token, page: `${index + 1}`, nonce }));
+        const chapter_key = script.match(/chapterKey:\s+?"([^"]+)/).at(1);
+        return Object.values(tokens).map((token, index) => new Page<PageData>(this, chapter, new URL('/wp-admin/admin-ajax.php', this.URI), { action, token, page: `${index + 1}`, nonce, chapter_key }));
     }
 
     public override async FetchImage(page: Page<PageData>, priority: Priority, signal: AbortSignal): Promise<Blob> {

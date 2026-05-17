@@ -6,7 +6,7 @@ import icon from './YupManga.webp';
 import * as Common from './decorators/Common';
 
 type ChapterInfos = {
-    chapterId: string;
+    chapterId?: string;
     token: string;
 };
 
@@ -41,9 +41,10 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
         const chapterUrl = new URL(`${chapter.Identifier}&page=1`, this.URI);
-        const { token, chapterId } = await FetchWindowScript<ChapterInfos>(new Request(new URL(chapter.Parent.Identifier, this.URI)), `solveAndGetToken('${chapterUrl.searchParams.get('chapter')}');`, 500);
+        const chapterOldId = chapterUrl.searchParams.get('chapter');
+        const { token, chapterId } = await FetchWindowScript<ChapterInfos>(new Request(new URL(chapter.Parent.Identifier, this.URI)), `solveAndGetToken('${chapterOldId}');`, 500);
         chapterUrl.searchParams.set('token', encodeURIComponent(token));
-        chapterUrl.searchParams.set('chapter', encodeURIComponent(chapterId));
+        chapterUrl.searchParams.set('chapter', encodeURIComponent(chapterId ?? chapterOldId));
 
         const pages = await FetchWindowScript<string[]>(new Request(chapterUrl),
             `new Array(readerApp.totalPages).fill(0).map((_, index) => new URL('/image-proxy-v2.php?chapter='+ readerApp.chapterId+'&page='+(index+1)+'&context=preload&token='+encodeURIComponent(new URL(location).searchParams.get('token')), location).href)`

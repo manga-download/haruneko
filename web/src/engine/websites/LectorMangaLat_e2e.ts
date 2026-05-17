@@ -6,17 +6,17 @@ new TestFixture({
         title: 'LectorManga (.Lat)'
     },
     container: {
-        url: 'https://lectormangaa.com/biblioteca/lily-of-the-valley/',
-        id: JSON.stringify({ post: '18933', slug: '/biblioteca/lily-of-the-valley/' }),
-        title: 'Lily of the valley'
+        url: 'https://lectormangass.com/biblioteca/sin-dormir/',
+        id: JSON.stringify({ post: '20742', slug: '/biblioteca/sin-dormir/' }),
+        title: 'Sin dormir'
     },
     child: {
-        id: '/biblioteca/lily-of-the-valley/capitulo-10/',
-        title: 'Capítulo 10'
+        id: '/biblioteca/sin-dormir/capitulo-72/',
+        title: 'Capítulo 72'
     },
     entry: {
-        index: 0,
-        size: 610_831,
-        type: 'image/jpeg'
+        index: 2,
+        size: 287_900,
+        type: 'image/webp'
     }
 }).AssertWebsite();

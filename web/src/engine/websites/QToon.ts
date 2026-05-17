@@ -4,7 +4,7 @@ import { FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
 import { type MangaPlugin, Manga, Chapter, DecoratableMangaScraper, Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import { RandomText } from '../Random';
-import { GetBase64FromBytes, GetBytesFromBase64, GetBytesFromUTF8, GetHexFromBytes } from '../BufferEncoder';
+import { GetBase64FromBytes, GetBytesFromBase64, GetBytesFromUTF8, GetHexFromBytes, GetUTF8FromBytes } from '../BufferEncoder';
 
 type CookiesAndTokens = {
     did: string;
@@ -69,11 +69,26 @@ export default class extends DecoratableMangaScraper {
 
     public override async Initialize(): Promise<void> {
         // TODO: Update the token whenever the user performs a login/logout through manual website interactio
-        await this.UpdateInfos();
+        await this.#RefreshToken();
     }
 
     public override get Icon() {
         return icon;
+    }
+
+    async #RefreshToken(): Promise<void> {
+        this.tokens = await FetchWindowScript<CookiesAndTokens>(new Request(this.URI), `
+            (async () => {
+                const authData = localStorage.getItem('auth');
+                const authToken = authData ? JSON.parse(authData).authToken : undefined;
+                return {
+                    did: (await cookieStore.get('did')).value,
+                    uid: (await cookieStore.get('uid'))?.value,
+                    profile: (await cookieStore.get('profile')).value,
+                    token: authToken
+                };
+            })()
+        `, 2500);
     }
 
     public override ValidateMangaURL(url: string): boolean {
@@ -117,31 +132,6 @@ export default class extends DecoratableMangaScraper {
         }.call(this));
     }
 
-    private async UpdateInfos(): Promise<void> {
-        this.tokens = await FetchWindowScript<CookiesAndTokens>(new Request(this.URI), () =>
-            new Promise(async (resolve, reject) => {
-                try {
-                    const [did, uid, profile] = await Promise.all([
-                        cookieStore.get('did'),
-                        cookieStore.get('uid'),
-                        cookieStore.get('profile')
-                    ]);
-
-                    const authData = localStorage.getItem('auth');
-                    const authToken = authData ? JSON.parse(authData).authToken : undefined;
-                    resolve({
-                        did: did.value,
-                        uid: uid?.value,
-                        profile: profile.value,
-                        token: authToken
-                    });
-
-                } catch (error) {
-                    reject(error);
-                }
-            }), 1500);
-    }
-
     private async FetchAPI<T extends JSONElement>(endpoint: string, language = 'en-US'): Promise<T> {
         const extraData = {
             bl: 'en-US'// navigator.language
@@ -181,7 +171,7 @@ export default class extends DecoratableMangaScraper {
         const algorithm = { name: 'AES-CBC', iv: GetBytesFromUTF8(iv) };
         const key = await crypto.subtle.importKey('raw', GetBytesFromUTF8(keyData), algorithm, false, ['decrypt']);
         const decrypted = await crypto.subtle.decrypt(algorithm, key, GetBytesFromBase64(data));
-        return new TextDecoder().decode(decrypted);
+        return GetUTF8FromBytes(decrypted);
     }
 
     private async DecryptResult<T extends JSONElement>(timestamp: string, data: string): Promise<T> {

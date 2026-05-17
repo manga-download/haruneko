@@ -6,7 +6,7 @@ new TestFixture({
         title: 'Hayalistic'
     },
     container: {
-        url: 'https://hayalistic.com/manga/gorunus/',
+        url: 'https://hayalistic.blog/manga/gorunus/',
         id: JSON.stringify({ post: '3389', slug: '/manga/gorunus/' }),
         title: 'Görünüşçülük'
     },
@@ -14,9 +14,10 @@ new TestFixture({
         id: '/manga/gorunus/bolum-1/',
         title: 'Bölüm 1 - Hyung Suk’un İki Bedeni Var (1)'
     },
+    /* Need login
     entry: {
         index: 0,
         size: 492_090,
         type: 'image/jpeg'
-    }
+    }*/
 }).AssertWebsite();
