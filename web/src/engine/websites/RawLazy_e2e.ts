@@ -11,7 +11,7 @@ new TestFixture({
         title: '彼女、お借りします'
     },
     child: {
-        id: encodeURI('/manga-chapter/彼女、お借りします-raw-【第340話】/').toLowerCase(),
+        id: encodeURI('/彼女、お借りします-raw-【第340話】/').toLowerCase(),
         title: '第340話'
     },
     entry: {

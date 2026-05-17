@@ -29,7 +29,16 @@ type PagesResult = {
             info: {
                 has_next_page: boolean
             },
-            items: { url_to_original: string }[]
+            items: {
+                urlToOriginal: string;
+                urlToVideo: string;
+                thumbnails: {
+                    url: string;
+                    size: string;
+                    height: number;
+                    width: number;
+                }[]
+            }[]
         }
     }
 };
@@ -54,7 +63,7 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
         const mangaUrl = new URL(url);
-        const title = await FetchWindowScript<string>(new Request(mangaUrl), 'document.querySelector("main h1.album-heading").textContent.trim();', 1500);
+        const title = await FetchWindowScript<string>(new Request(mangaUrl), `document.querySelector('main h1[class*="album_page-module__albumHeading"]').textContent.trim();`, 1500);
         return new Manga(this, provider, mangaUrl.pathname.match(/_(\d+)\/?$/).at(1), title);
     }
 
@@ -85,7 +94,7 @@ export default class extends DecoratableMangaScraper {
                         items_per_page: 30//dont change items_per_page to more than 30
                     }
                 }, query);
-                const mangas = items.map(({ id, title }) => new Manga(this, provider, `${ id }`, title.trim()));
+                const mangas = items.map(({ id, title }) => new Manga(this, provider, `${id}`, title.trim()));
                 mangas.length > 0 ? yield* mangas : run = false;
             }
         }.call(this));
@@ -98,16 +107,18 @@ export default class extends DecoratableMangaScraper {
                 picture {
                     list(input: $input) {
                         info {
-                            ...FacetCollectionInfo
+                            has_next_page
                         }
-                        items {
-                            url_to_original
+                    items {
+                        urlToOriginal
+                        urlToVideo
+                        thumbnails {
+                            url
+                            size
                         }
                     }
                 }
-            }
-            fragment FacetCollectionInfo on FacetCollectionInfo {
-                has_next_page
+              }
             }
         `;
         const variables = {
@@ -122,7 +133,16 @@ export default class extends DecoratableMangaScraper {
             for (let page = 1, run = true; run; page++) {
                 variables.input.page = page;
                 const { picture: { list: { items, info: { has_next_page } } } } = await this.FetchAPI<PagesResult>('AlbumListOwnPictures', variables, query);
-                const pages = items.map(({ url_to_original: url }) => new Page(this, chapter, new URL(url)));
+                const pages = items.map(({ thumbnails, urlToOriginal, urlToVideo }) => {
+                    const pageUrl = urlToVideo ? urlToVideo.replace('.mp4', '.gif')
+                        : urlToOriginal ? urlToOriginal
+                            : thumbnails.reduce((max, thumbnail) => {
+                                const maxArea = max.height * max.width;
+                                const currentArea = thumbnail.height * thumbnail.width;
+                                return currentArea > maxArea ? thumbnail : max;
+                            }).url;
+                    return new Page(this, chapter, new URL(pageUrl));
+                });
                 yield* pages, run = has_next_page;
             }
         }.call(this));
