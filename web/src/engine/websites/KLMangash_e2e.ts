@@ -6,7 +6,7 @@ new TestFixture({
         title: 'KLManga(.sh)'
     },
     container: {
-        url: 'https://klmanga.bid/manga-raw/ボールパークでつかまえて！-raw-free/',
+        url: 'https://klmanga.click/manga-raw/ボールパークでつかまえて！-raw-free/',
         id: encodeURI('/manga-raw/ボールパークでつかまえて！-raw-free/'),
         title: 'ボールパークでつかまえて！'
     },
@@ -15,8 +15,8 @@ new TestFixture({
         title: '【第193話】'
     },
     entry: {
-        index: 11,
-        size: 244_768,
+        index: 0,
+        size: 147_272,
         type: 'image/webp'
     }
 }).AssertWebsite();

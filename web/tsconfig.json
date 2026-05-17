@@ -2,6 +2,7 @@
 {
     "compilerOptions": {
         "strict": false,
+        //"strictNullChecks": true,
         "strictFunctionTypes": false,
         "target": "ESNext",
         "module": "ESNext",

@@ -6,7 +6,7 @@ import * as FlatManga from './templates/FlatManga';
 import * as Common from './decorators/Common';
 import { AddAntiScrapingDetection, FetchRedirection } from '../platform/AntiScrapingDetection';
 import type { Priority } from '../taskpool/DeferredTask';
-import { GetBytesFromBase64 } from '../BufferEncoder';
+import { GetBytesFromBase64, GetUTF8FromBytes } from '../BufferEncoder';
 import DeScramble from '../transformers/ImageDescrambler';
 
 type PagesData = {
@@ -18,7 +18,7 @@ type PagesData = {
 AddAntiScrapingDetection(async (invoke) => {
     const result = await invoke<boolean>(`document.title === 'Bot Koruması' && document.querySelector('canvas#sliderCanvas') != undefined`);
     return result ? FetchRedirection.Interactive : undefined;
-});
+}, /^https:\/\/manga-tr\.com/);
 
 @Common.MangaCSS<HTMLImageElement>(FlatManga.pathManga, '.poster-card__title')
 @Common.MangasSinglePageCSS<HTMLAnchorElement>('/manga-list.html', 'a.la-manga-item:not([data-original-title=""])', anchor => ({ id: anchor.pathname, title: anchor.dataset.originalTitle.trim() }))
@@ -92,7 +92,7 @@ export default class extends DecoratableMangaScraper {
 
     private DecryptOrder(order: string) : number[] {
         const raw = GetBytesFromBase64(order).map(byte => (byte ^ 0x5A) & 0xFF);
-        return JSON.parse(new TextDecoder().decode(raw));
+        return JSON.parse(GetUTF8FromBytes(raw));
     }
 
     private async LoadImage(src: string): Promise<HTMLImageElement> {

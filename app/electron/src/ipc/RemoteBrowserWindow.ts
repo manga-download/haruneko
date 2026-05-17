@@ -34,6 +34,8 @@ export class RemoteBrowserWindowController {
         const windowOptions: BrowserWindowConstructorOptions = JSON.parse(options);
         if (windowOptions.webPreferences?.preload) {
             windowOptions.webPreferences.preload = await this.CreatePreloadScriptFile(windowOptions.webPreferences.preload);
+        } else {
+            delete windowOptions.webPreferences?.preload;
         }
         const win = new BrowserWindow(windowOptions);
         win.autoHideMenuBar = true;
@@ -42,7 +44,7 @@ export class RemoteBrowserWindowController {
         win.webContents.setWindowOpenHandler(() => { return { action: 'deny' }; });
         win.webContents.on('dom-ready', () => this.ipc.Send(Channels.Web.OnDomReady, win.id));
         win.webContents.on('did-start-navigation', event => this.ipc.Send(Channels.Web.OnBeforeNavigate, win.id, event.url, event.isMainFrame, event.isSameDocument));
-        win.once('closed', () => fs.rm(windowOptions.webPreferences?.preload || '').catch(err => console.warn(err)));
+        win.once('closed', () => windowOptions.webPreferences?.preload && fs.rm(windowOptions.webPreferences?.preload).catch(err => console.warn(err)));
         return win.id;
     }
 

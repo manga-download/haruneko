@@ -1,6 +1,6 @@
+import { FetchJSON, FetchWindowScript } from '../../platform/FetchProvider';
 import { Chapter, DecoratableMangaScraper, Manga, type MangaPlugin } from '../../providers/MangaPlugin';
 import * as Common from '../decorators/Common';
-import { FetchJSON, FetchWindowScript } from '../../platform/FetchProvider';
 
 // TODO: Check for possible revision
 
@@ -45,22 +45,22 @@ export class ZeistManga extends DecoratableMangaScraper {
     private mangaSlugScript = `clwd.settings.cat;`;
     private mangaEntriesSlug = 'Series';
 
+    protected WithMangaSlugScript(script: string) {
+        this.mangaSlugScript = script;
+        return this;
+    }
+
+    protected WithMangaEntriesSlug(slug: string) {
+        this.mangaEntriesSlug = slug;
+        return this;
+    }
+
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
         const entries = (await this.FetchEntries(this.mangaEntriesSlug)).filter(({ category }) => {
             const categories = category.map(({ term }) => term.toLowerCase());
             return categories.some(el => el === this.mangaEntriesSlug.toLowerCase());
         });
         return entries.map(({ pathname, title }) => new Manga(this, provider, pathname, title));
-    }
-
-    public WithMangaEntriesSlug(slug: string) {
-        this.mangaEntriesSlug = slug;
-        return this;
-    }
-
-    public WithMangaSlugScript(script: string) {
-        this.mangaSlugScript = script;
-        return this;
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {

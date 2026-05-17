@@ -6,17 +6,18 @@ new TestFixture({
         title: 'Plot Twist No Fansub'
     },
     container: {
-        url: 'https://plotnf.com/plotwist/manga/guarda-fantasmas/',
-        id: '/plotwist/manga/guarda-fantasmas/',
-        title: 'Guarda-Fantasmas'
+        url: 'https://plotnofansub.com/manga/seitokai-ni-mo-ana-wa-aru/',
+        id: '/manga/seitokai-ni-mo-ana-wa-aru/',
+        title: 'Seitokai ni mo Ana wa Aru!',
+        timeout: 10_000
     },
     child: {
-        id: '/reader/guarda-fantasmas/chapter-5.00/',
-        title: 'Capítulo 5.00: No tengo miedo'
+        id: '/manga/seitokai-ni-mo-ana-wa-aru/121/',
+        title: '121 Dímelo a mí también',
     },
     entry: {
         index: 0,
-        size: 884_617,
-        type: 'image/png'
+        size: 137_890,
+        type: 'image/webp'
     }
 }).AssertWebsite();
