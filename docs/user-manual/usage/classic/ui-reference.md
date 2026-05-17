@@ -31,7 +31,7 @@ To close the menu, click the button again or any space in the application other 
 1. The first menu entry is to get back to the home page.
 2. Second entry is to get to the [Bookmark](#bookmark-panel) page.
 3. Third is the [Paste Media URL](#paste-media-url) functionality.
-4. Forth is to open the [Plugin Panel](#website-selection-panel).
+4. Fourth is to open the [Plugin Panel](#website-selection-panel).
 5. Fifth is to [Import & Export](#import--export) functionality.
    This can either be used to migrate all bookmarks from the previous version of HakuNeko (legacy) or to backup and restore the current list of bookmarks to/from a file.
 6. Sixth provides an entry to open the [Settings](#application-settings) dialog.
@@ -57,7 +57,7 @@ To close the menu, click the button again or any space in the application other 
 4. Enter a search pattern to filter the manga list.
    The pattern requires at least 3 characters to perform a search (or 2 with non-latin characters).
    You can search by the title of a manga or by the source name.
-5. With the bookmark button (the star) you can add or remove the selected manga from he manga list to the bookmark list.
+5. With the bookmark button (the star) you can add or remove the selected manga from the manga list to the bookmark list.
 6. A *Play* symbol will appear next to a bookmarked manga when there are unread chapters present.
 7. The list of manga that are shown for the selected source and filtered by the search pattern.
    Select a manga to load its chapters in the Chapter List.
@@ -86,7 +86,7 @@ The chapter list shows the chapters of the selected manga from the [Media List](
 6. The status bar may show an activity icon when the list is loading.
    It also shows the number of filtered chapters in the list and the total number of available chapters for the selected manga.
 
-![](./assets/Itme-List-MoreInfo.jpg)
+![](./assets/Item-List-MoreInfo.jpg)
 
 Currently to download a chapter you need to right click on a chapter. <!--This will change in the future-->
 A menu will appear with multiple options.
@@ -116,9 +116,9 @@ Clicking on the download panel will open up a second window with more informatio
 ![](./assets/Download-2nd-Window.jpg)
 
 This download window first separates the downloads into its respective manga.
-Than opening them up will show you which chapters were correctly downloaded and which failed.
+Then opening them up will show you which chapters were correctly downloaded and which failed.
 
-At the top o the window you will find three buttons in the following order:
+At the top of the window you will find three buttons in the following order:
 
 * *Clear Finished Tasks*
   <br>
@@ -137,7 +137,7 @@ At the top o the window you will find three buttons in the following order:
 To open the reader just click any of the pages from the [Preview Panel](#media-preview).
 The control panel is at the top right corner and will expand as soon as the cursor enters (hover).
 
-You will found four buttons.
+You will find four buttons.
 
 1. To go to the previous chapter.
 2. To go to the next chapter.
@@ -178,7 +178,7 @@ In the plugin selection menu you can find several sorting options and other tool
 4. You have a search bar if you are looking for a specific site.
 5. You can favorite sites, so that you can find them quicker.
    **This option is work in progress**
-6. Open the site inside haru web browsing window.
+6. Open the site inside the HakuNeko web browsing window.
 
 For each site you can find its name, the website link and its associated tags.
 
