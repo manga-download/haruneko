@@ -1,4 +1,3 @@
-// @vitest-environment jsdom
 import { mock } from 'vitest-mock-extended';
 import { describe, it, expect } from 'vitest';
 import type { HakuNeko } from '../engine/HakuNeko';
@@ -21,10 +20,10 @@ import type { FeatureFlags } from '../engine/FeatureFlags';
     const mockSettingsManager = mock<SettingsManager>();
     mockSettingsManager.OpenScope.mockReturnValue(mockSettigns);
 
-    window.HakuNeko = mock<HakuNeko>({
+    globalThis.HakuNeko = Object.assign(globalThis.HakuNeko ?? {}, {
         SettingsManager: mockSettingsManager,
         FeatureFlags: mockFeatureFlags,
-    });
+    }) as unknown as HakuNeko;
 }
 
 describe('Localization', () => {

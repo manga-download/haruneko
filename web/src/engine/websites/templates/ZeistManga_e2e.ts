@@ -7,4 +7,3 @@ import '../Reyume_e2e';
 import '../SapphireScan_e2e';
 import '../Turktoon_e2e';
 import '../UlasComic_e2e';
-import '../XoManga_e2e';
