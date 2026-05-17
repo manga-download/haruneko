@@ -94,6 +94,10 @@
     let pageSizes = $state([5, 10, 20]);
     let totalItems = $derived(filteredPluginlist.length);
 
+    $effect(() => {
+        filteredPluginlist;
+        page = 1;
+    })
 </script>
 
 <Modal
