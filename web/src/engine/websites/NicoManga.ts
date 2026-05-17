@@ -16,7 +16,7 @@ function ChapterLinkResolver(this: DecoratableMangaScraper, manga: Manga) {
 @Common.MangaCSS<HTMLSpanElement>(/^{origin}\/manga-[^/]+\.html$/, 'div.breadcrumb-navigation span:last-of-type', (span, uri) => ({ id: uri.pathname, title: CleanMangaTitle(span.innerText) }))
 @Common.MangasMultiPageCSS<HTMLAnchorElement>('a.manga-title', Common.PatternLinkGenerator('/manga-post.html?page={page}'), 0, anchor => ({ id: anchor.pathname, title: CleanMangaTitle(anchor.text) }))
 @Common.ChaptersSinglePageCSS('ul.list-chapters a', ChapterLinkResolver, Common.AnchorInfoExtractor(true))
-@Common.PagesSinglePageJS(`[...document.querySelectorAll('div.chapter-image-wrapper img')].map(image => image.dataset.src?.trim() ?? image.src);`)
+@Common.PagesSinglePageJS(`chapterImages.map(image => image.trim());`, 500)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 

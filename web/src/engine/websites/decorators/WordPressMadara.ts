@@ -362,7 +362,7 @@ async function FetchChaptersMultiPageAJAX(this: MangaScraper, manga: Manga, quer
             }
         });
         const chapters: Chapter[] = await FetchChaptersCSS.call(this, manga, request, query, extract);
-        chapters.length > 0 ? chapterList.push(...chapters) : run = false;
+        chapters.length > 0 && chapterList.isMissingLastItemFrom(chapters) ? chapterList.push(...chapters) : run = false;
         await Delay(throttle);
     }
     return chapterList;

@@ -95,6 +95,33 @@ describe('BufferEncoder', () => {
         });
     });
 
+    describe('GetUTF8FromBytes()', () => {
+
+        it.each([
+            [ [], '' ],
+            [ [ 0x2D ], '-' ],
+            [ [
+                0x53, 0x74, 0x61, 0x79, 0x20, 0xF0, 0x9F, 0x98,
+                0x8E, 0x20, 0x69, 0x6E, 0x20, 0x74, 0x68, 0x65,
+                0x20, 0xE2, 0x98, 0x80, 0xEF, 0xB8, 0x8F,
+            ], 'Stay 😎 in the ☀️' ],
+        ])('Should get text from valid input', (input: number[], expected: string) => {
+            const actual = testee.GetUTF8FromBytes(new Uint8Array(input));
+            expect(actual).toBe(expected);
+        });
+
+        it.each([
+            undefined,
+            null,
+            true,
+            {},
+            '-',
+            3,
+        ])('Should throw on invalid input', (input: unknown) => {
+            expect(() => testee.GetUTF8FromBytes(input as BufferSource)).toThrow();
+        });
+    });
+
     describe('GetBytesFromBase64()', () => {
 
         it.each([

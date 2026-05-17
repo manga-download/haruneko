@@ -13,7 +13,7 @@ import { FetchWindowScript } from '../platform/FetchProvider';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('cosmicscansid', 'Cosmic Scans Indonesia', 'https://lc7.cosmicscans.asia', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Indonesian, Tags.Source.Scanlator, Tags.Accessibility.RegionLocked);
+        super('cosmicscansid', 'Cosmic Scans Indonesia', 'https://lc8.cosmicscans.asia', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Indonesian, Tags.Source.Scanlator, Tags.Accessibility.RegionLocked);
     }
 
     public override get Icon() {
