@@ -1,25 +1,28 @@
 import { Tags } from '../Tags';
 import icon from './Kagane.webp';
 import type { Priority } from '../taskpool/DeferredTask';
-import { Fetch, FetchJSON } from '../platform/FetchProvider';
-import { DecoratableMangaScraper, type Manga, Chapter, Page } from '../providers/MangaPlugin';
+import { Delay } from '../BackgroundTimers';
+import { FetchJSON } from '../platform/FetchProvider';
+import { DecoratableMangaScraper, Manga, Chapter, Page, type MangaPlugin } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 
 import { DRMProvider, type PageParameters } from './Kagane.DRM';
 
-type APIChapters = {
-    content: {
-        id: string;
-        title: string;
-    }[];
+type APIBooks = {
+    book_id: string;
+    chapter_no: string;
+    title?: string;
 };
 
-@Common.MangaCSS(/^{origin}\/series\/[0-9A-Z]+(#[^/]*)?$/, 'head > title', (title, uri) => ({ id: uri.pathname.split('/').at(-1), title: title.innerText.trim() }))
-@Common.MangasNotSupported()
+type APIChapters = {
+    series_books: APIBooks[]
+};
+
+@Common.MangaCSS(/^{origin}\/series\/[0-9a-zA-Z-]+(#[^/]*)?$/, 'h1', (element, uri) => ({id: uri.pathname.split('/').at(-1), title: element.textContent?.trim() ?? '', }))
 export default class extends DecoratableMangaScraper {
 
     readonly #drm = new DRMProvider();
-    readonly #apiURL = 'https://api.kagane.org/api/v1/';
+    readonly #apiURL = 'https://yuzuki.kagane.org/api/v2/';
 
     public constructor() {
         super('kagane', 'Kagane', 'https://kagane.org', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.English, Tags.Source.Aggregator, ...Tags.Rating.toArray());
@@ -29,50 +32,47 @@ export default class extends DecoratableMangaScraper {
         return icon;
     }
 
-    /* ⚠️ Disabled for now due to high risk of IP ban (429 => Too many Requests)
-    // TODO: Consider adding this to the website list provider repository
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
         type APIMangas = {
             content: {
-                id: string;
-                name: string;
+                series_id: string;
+                title: string;
             }[];
+            total_pages: number;
         };
-        const uri = new URL(`./search`, this.#apiURL);
-        uri.search = new URLSearchParams({ size: '100', sort: 'name', scanlations: 'true' }).toString();
-        return Array.fromAsync(async function* () {
-            for (let page = 0, run = true; run; page++) {
-                uri.searchParams.set('page', `${page}`);
-                const { content } = await FetchJSON<APIMangas>(new Request(uri, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ sources: [], content_rating: ['safe', 'suggestive', 'erotica', 'pornographic']}),
-                }));
-                const mangas = content.map(({ id, name }) => new Manga(this, provider, id, name));
-                mangas.length > 0 ? yield* mangas : run = false;
-                await Delay(2500);
+        const uri = new URL('./search/series', this.#apiURL);
+        uri.search = new URLSearchParams({ size: '100', sort: 'updated_at,desc' }).toString();
+        const body = JSON.stringify({ content_rating: ['Safe', 'Suggestive', 'Erotica'] }); // Removed 'Pornographic' as it was always returning that kind of content.
+        return await Array.fromAsync(async function* () {
+            for (let page = 0; ; page++) {
+                uri.searchParams.set('page', String(page));
+                const data = await FetchJSON<APIMangas>(new Request(uri, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body }));
+                if (!data.content.length) break;
+                for (const { series_id, title } of data.content) {
+                    yield new Manga(this, provider, series_id, title);
+                }
+                if (page + 1 >= data.total_pages) break;
+                await Delay(700);
             }
         }.call(this));
-    }*/
+    }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const uri = new URL(`./books/${manga.Identifier}`, this.#apiURL);
-        const { content } = await FetchJSON<APIChapters>(new Request(uri));
-        return content.map(({id, title}) => new Chapter(this, manga, id, title));
+        const uri = new URL(`./series/${manga.Identifier}`, this.#apiURL);
+        const { series_books } = await FetchJSON<APIChapters>(new Request(uri));
+        return series_books.map(({ book_id: bookId, title, chapter_no: chapterNo }) => new Chapter(this, manga, bookId, title ?? `Chapter ${chapterNo}`));
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page<PageParameters>[]> {
-        const uri = new URL(`./books/${chapter.Parent.Identifier}/file/${chapter.Identifier}`, this.#apiURL);
-        const pages = await this.#drm.CreateImageLinks(uri, chapter.Parent.Identifier, chapter.Identifier);
-        return pages.map(({ link, parameters })=> new Page<PageParameters>(this, chapter, link, parameters));
+        const chapterId = chapter.Identifier;
+        const tokenEndpoint = new URL(`./books/${chapterId}`, this.#apiURL);
+        tokenEndpoint.searchParams.set('is_datasaver', 'false');
+        const pages = await this.#drm.CreateImageURL(tokenEndpoint.toString(), chapter.Parent.Identifier, chapterId);
+        return pages.map(({ link, parameters }) => new Page<PageParameters>(this, chapter, link, parameters));
     }
 
     public override async FetchImage(page: Page<PageParameters>, priority: Priority, signal: AbortSignal): Promise<Blob> {
-        const bytes = await this.imageTaskPool.Add(async () => {
-            const response = await Fetch(new Request(page.Link, { signal: signal }));
-            return response.arrayBuffer();
-        }, priority, signal);
-
-        return this.#drm.DecryptImage(bytes, page.Parameters);
+        const blob = await Common.FetchImageAjax.call(this, page, priority, signal);
+        return this.#drm.DecryptImage(await blob.arrayBuffer());
     }
 }
