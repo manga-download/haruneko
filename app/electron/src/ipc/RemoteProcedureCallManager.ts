@@ -1,15 +1,15 @@
 import type { RPCServer } from '../../../src/rpc/Server';
-import type { IPC, Callback } from './InterProcessCommunication';
-import { RemoteProcedureCallManager as Channels } from '../../../src/ipc/Channels';
+import type { IPC } from './InterProcessCommunication';
+import { Channels } from './InterProcessCommunicationChannels';
 
 /**
  * Administration of the underlying RPC server via Electron specific IPC channels.
  */
 export class RemoteProcedureCallManager {
 
-    constructor(private readonly rpc: RPCServer, private readonly ipc: IPC<Channels.Web, Channels.App>) {
-        this.ipc.Listen(Channels.App.Stop, this.Stop.bind(this));
-        this.ipc.Listen(Channels.App.Restart, this.Restart.bind(this) as Callback);
+    constructor(private readonly rpc: RPCServer, private readonly ipc: IPC) {
+        this.ipc.Handle(Channels.RemoteProcedureCallManager.Stop, this.Stop.bind(this));
+        this.ipc.Handle(Channels.RemoteProcedureCallManager.Restart, this.Restart.bind(this));
     }
 
     private async Stop(): Promise<void> {
