@@ -138,7 +138,6 @@ import '../ShinobiScans_e2e';
 import '../ShootingStarScans_e2e';
 import '../SiiManga_e2e';
 import '../StickHorse_e2e';
-import '../StoneScape_e2e';
 import '../Summertoon_e2e';
 import '../TatakaeScan_e2e';
 import '../TaurusManga_e2e';

@@ -6,7 +6,7 @@ new TestFixture({
         title: 'Catharsis World'
     },
     container: {
-        url: 'https://catharsisworld.online/serie/mision-romance-sincero/',
+        url: 'https://catharsisworld.dig-it.info/serie/mision-romance-sincero/',
         id: '/serie/mision-romance-sincero/',
         title: 'Misión: Romance Sincero'
     },
