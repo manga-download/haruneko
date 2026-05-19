@@ -16,7 +16,7 @@ new TestFixture({
     },
     entry: {
         index: 4,
-        size: 1_696_332,
+        size: 1_804_373,
         type: 'image/png'
     }
 }).AssertWebsite();

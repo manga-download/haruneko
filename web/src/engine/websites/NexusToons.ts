@@ -3,7 +3,7 @@ import icon from './NexusToons.webp';
 import { FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
 import { type MangaPlugin, Manga, Chapter, Page, DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { GetBytesFromBase64 } from '../BufferEncoder';
+import { GetBytesFromBase64, GetUTF8FromBytes } from '../BufferEncoder';
 
 type APICryptedData = {
     d: string;
@@ -122,7 +122,7 @@ export default class extends DecoratableMangaScraper {
             h ^= key[index % key.length];
             resultBuffer[index] = h;
         }
-        return JSON.parse(new TextDecoder().decode(resultBuffer)) as T;
+        return JSON.parse(GetUTF8FromBytes(resultBuffer)) as T;
     }
 
     private async InitKeys(seed: string): Promise<void> {

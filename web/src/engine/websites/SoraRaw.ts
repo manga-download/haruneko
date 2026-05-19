@@ -1,9 +1,9 @@
 import { Tags } from '../Tags';
 import icon from './SoraRaw.webp';
-import { FetchJSON } from '../platform/FetchProvider';
+import { FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
 import { type MangaPlugin, Manga, Chapter, Page, DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { GetBytesFromBase64, GetBytesFromHex, GetBytesFromUTF8 } from '../BufferEncoder';
+import { GetBytesFromBase64, GetBytesFromHex, GetBytesFromUTF8, GetUTF8FromBytes } from '../BufferEncoder';
 
 type NEXTDATA<T> = {
     pageProps: {
@@ -55,7 +55,7 @@ type PagesData = {
 
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
-    private readonly nextPath = 'https://soraraw.com/_next/data/soraraw10/';
+    private nextPath = `https://soraraw.com/_next/data/soraraw12/`;
     private readonly pageApiUrl = 'https://api.mangarawgo.site';
 
     public constructor() {
@@ -64,6 +64,11 @@ export default class extends DecoratableMangaScraper {
 
     public override get Icon() {
         return icon;
+    }
+
+    public override async Initialize(): Promise<void> {
+        const nextBuild = await FetchWindowScript(new Request(new URL(this.URI)), `__NEXT_DATA__.buildId`, 2500);
+        this.nextPath = `https://soraraw.com/_next/data/${nextBuild}/`;
     }
 
     public override ValidateMangaURL(url: string): boolean {
@@ -101,7 +106,7 @@ export default class extends DecoratableMangaScraper {
 
         const { chapter: { id, manga_id, uuid, _b, _d, _t, _p } } = await this.FetchNextJSON<APIChapterDetails>(new URL(`.${chapter.Identifier}.json`, this.nextPath));
         const { d } = await FetchJSON<CryptedPagesData>(new Request(new URL(`/${manga_id}/${id}.json`, this.pageApiUrl)));
-        const pagesData: PagesData = JSON.parse(new TextDecoder().decode(XOR(B64Decode(d), GetBytesFromUTF8('/fuCkYou!!!'))));
+        const pagesData: PagesData = JSON.parse(GetUTF8FromBytes(XOR(B64Decode(d), GetBytesFromUTF8('/fuCkYou!!!'))));
 
         const AESKEY = GetBytesFromHex(uuid);
         const XORKEY = GetBytesFromUTF8('202508055d0db38bae2e86cc41649f90');
@@ -112,7 +117,7 @@ export default class extends DecoratableMangaScraper {
             const ciphertext = XOR(B64Decode(encryptedFileName), XORKEY);
             const algorithm = { name: 'AES-CTR', counter: ciphertext.subarray(0, 16), length: 128 };
             const key = await crypto.subtle.importKey('raw', AESKEY, algorithm, false, ['decrypt']);
-            const pathname = new TextDecoder().decode(await crypto.subtle.decrypt(algorithm, key, ciphertext.subarray(16)));
+            const pathname = GetUTF8FromBytes(await crypto.subtle.decrypt(algorithm, key, ciphertext.subarray(16)));
             return new Page(this, chapter, new URL(`${host}/${pathname}`));
         }));
     }
