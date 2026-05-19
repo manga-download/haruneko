@@ -13,7 +13,6 @@ new TestFixture({
     child: {
         id: '/ko/comic/brianoslab/1',
         title: '연구소',
-        timeout: 15000
     },
     entry: {
         index: 1,

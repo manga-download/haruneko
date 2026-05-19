@@ -13,7 +13,6 @@ new TestFixture({
     child: {
         id: '/en/comic/im_no_heroine/1',
         title: 'Episode 1',
-        timeout: 15000
     },
     entry: {
         index: 0,
