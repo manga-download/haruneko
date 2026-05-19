@@ -37,7 +37,7 @@ class TestFixture {
 
     public WithOrigin(origin: string) {
         globalThis.window = Object.assign(globalThis.window ?? {}, {
-            location: { origin }
+            location: { origin, hostname: new URL(origin).hostname },
         }) as Window & typeof globalThis;
         return this;
     }
@@ -84,7 +84,6 @@ describe('FetchProvider', () => {
                 ]
             } as chrome.webRequest.OnBeforeSendHeadersDetails;
             const actual = onBeforeSendHeadersListener(details) as chrome.webRequest.BlockingResponse;
-console.log('++++++++', actual);
             expect(onBeforeSendHeadersListener.name).toBe('bound ModifyRequestHeaders');
             expect(actual.requestHeaders).toStrictEqual([
                 { name: 'host', value: '-' },
@@ -122,9 +121,9 @@ console.log('++++++++', actual);
                 requestHeaders: [],
             });
 
-            expect(actual.requestHeaders).toStrictEqual({
-                //
-            });
+            expect(actual.requestHeaders).toStrictEqual([
+                // ...
+            ]);
         });
     });
 
@@ -137,9 +136,9 @@ console.log('++++++++', actual);
                 responseHeaders: [],
             });
 
-            expect(actual.responseHeaders).toStrictEqual({
-                //
-            });
+            expect(actual.responseHeaders).toStrictEqual([
+                // ...
+            ]);
         });
     });
 
