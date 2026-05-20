@@ -18,7 +18,7 @@
         "@svelte-put/dragscroll": "4.0.0",
         "@sveltejs/vite-plugin-svelte": "7.1.2",
         "@tsconfig/svelte": "5.0.8",
-        "@types/react": "19.2.14",
+        "@types/react": "19.2.15",
         "@types/react-dom": "19.2.3",
         "@types/wicg-file-system-access": "2023.10.7",
         "@vitejs/plugin-react": "6.0.2",
@@ -30,10 +30,10 @@
         "lit": "3.3.3",
         "react": "19.2.6",
         "react-dom": "19.2.6",
-        "svelte": "5.55.8",
+        "svelte": "5.55.9",
         "svelte-check": "4.4.8",
         "vue": "3.5.34",
-        "vue-tsc": "3.3.0"
+        "vue-tsc": "3.3.1"
     },
     "scripts": {
         "update-website-index": "node ./scripts/website-index.mjs",
