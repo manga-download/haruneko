@@ -14,7 +14,7 @@ type APIManga = {
 };
 
 type HydratedChapters = {
-    chapters: {
+    capitulos_lista: {
         id: string;
         title: string;
     }[]
@@ -45,8 +45,8 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const { chapters } = await FetchNextJS<HydratedChapters>(new Request(new URL(`./obra/${manga.Identifier}`, this.URI)), data => 'chapters' in data);
-        return chapters.map(({ id, title }) => new Chapter(this, manga, id, title));
+        const { capitulos_lista } = await FetchNextJS<HydratedChapters>(new Request(new URL(`./obra/${manga.Identifier}`, this.URI)), data => 'capitulos_lista' in data);
+        return capitulos_lista.map(({ id, title }) => new Chapter(this, manga, id, title));
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
