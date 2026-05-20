@@ -183,6 +183,7 @@ export { default as HariManga } from './HariManga';
 export { default as HarmonyScan } from './HarmonyScan';
 export { default as HastaTeam } from './HastaTeam';
 export { default as HastaTeamDDT } from './HastaTeamDDT';
+export { default as HattoriScans } from './HattoriScans';
 export { default as Hayalistic } from './Hayalistic';
 export { default as HDPornComics } from './HDPornComics';
 export { default as HeavenManga2 } from './HeavenManga2';
