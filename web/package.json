@@ -12,7 +12,7 @@
         "protobufjs": "8.4.0"
     },
     "devDependencies": {
-        "@fluentui/svg-icons": "1.1.326",
+        "@fluentui/svg-icons": "1.1.327",
         "@fluentui/web-components": "beta",
         "@microsoft/fast-element": "2.10.4",
         "@svelte-put/dragscroll": "4.0.0",
