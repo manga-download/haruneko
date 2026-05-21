@@ -48,8 +48,8 @@ const legacyWebsiteIdentifierMapTestCases = [
 // Mocking globals
 {
     const mockChoice = { Value: LocaleID.Locale_enUS } as unknown as Choice;
-    const mockSettigns = { Get: vi.fn(key => key === Key.Language ? mockChoice : undefined) } as unknown as ISettings;
-    const mockSettingsManager = { OpenScope: vi.fn(() => mockSettigns) } as unknown as SettingsManager;
+    const mockSettings = { Get: vi.fn(key => key === Key.Language ? mockChoice : undefined) } as unknown as ISettings;
+    const mockSettingsManager = { OpenScope: vi.fn(() => mockSettings) } as unknown as SettingsManager;
 
     globalThis.HakuNeko = Object.assign(globalThis.HakuNeko ?? {}, {
         SettingsManager: mockSettingsManager
