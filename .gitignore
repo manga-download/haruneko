@@ -10,3 +10,4 @@ node_modules
 package-lock.json
 junit.xml
 web/vite.config.ts.timestamp*
+.idea
