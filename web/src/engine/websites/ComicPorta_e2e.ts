@@ -12,7 +12,7 @@ new TestFixture({
     },
     child: {
         id: '/p_data/moth001/',
-        title: '１話「モスとの出会い」'
+        title: '１話「モスとの出会い」（分冊版1）'
     },
     entry: {
         index: 0,
