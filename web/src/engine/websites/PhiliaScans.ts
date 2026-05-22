@@ -1,12 +1,22 @@
 import { Tags } from '../Tags';
 import icon from './PhiliaScans.webp';
-import { DecoratableMangaScraper } from '../providers/MangaPlugin';
+import { Chapter, DecoratableMangaScraper, Manga, type MangaPlugin } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
+import { FetchHTML, FetchNextJS } from '../platform/FetchProvider';
 
-@Common.MangaCSS(/^{origin}\/series\/[^/]+\/$/, 'div.serie-info h1.serie-title')
-@Common.MangasMultiPageCSS('a.c-title', Common.PatternLinkGenerator('/all-mangas/page/{page}/'))
-@Common.ChaptersSinglePageCSS('ul li[data-chapter] a:not([href="#"])', undefined, Common.AnchorInfoExtractor(false, 'span.coin'))
-@Common.PagesSinglePageCSS('div#ch-images img')
+type HydratedChapters = {
+    langChapters: {
+        slug: string;
+        title: string;
+        number: string;
+    }[];
+};
+
+@Common.MangaCSS<HTMLImageElement>(/^{origin}\/series\/[^/]+$/, 'div.detail-cover img', (img, uri) => ({
+    id: uri.pathname,
+    title: img.alt.trim()
+}))
+@Common.PagesSinglePageCSS('img.chapter-page-img')
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
@@ -16,5 +26,30 @@ export default class extends DecoratableMangaScraper {
 
     public override get Icon() {
         return icon;
+    }
+
+    public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
+        type This = typeof this;
+        return Array.fromAsync(async function* (this: This) {
+            for (let page = 1, run = true; run; page++) {
+                const doc = await FetchHTML(new Request(new URL(`/all-mangas?page=${page}`, this.URI)));
+                const mangasInfos = [...doc.querySelectorAll<HTMLDivElement>('div:has(div.manga-card-info)')];
+                const mangasSkeletons = [...doc.querySelectorAll<HTMLAnchorElement>('a.manga-card, a[href^="/series/"]')];
+                const mangas = mangasSkeletons.map(manga => {
+                    let title = manga.querySelector('.card-title')?.textContent.trim();
+                    if (!title) {
+                        const titleId = manga.querySelector('template:last-of-type').id.replace(/^P/, 'S');
+                        title = mangasInfos.find(el => el.id === titleId).querySelector('.card-title').textContent.trim();
+                    }
+                    return new Manga(this, provider, manga.pathname, title);
+                });
+                mangas.length > 0 ? yield* mangas : run = false;
+            }
+        }.call(this));
+    }
+
+    public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
+        const { langChapters } = await FetchNextJS<HydratedChapters>(new Request(new URL(manga.Identifier, this.URI)), data => 'langChapters' in data);
+        return langChapters.map(({ slug, title, number }) => new Chapter(this, manga, `${manga.Identifier}/${slug}`, [`Ch.${number}`, title].filter(Boolean).join(' ').trim()));
     }
 }
