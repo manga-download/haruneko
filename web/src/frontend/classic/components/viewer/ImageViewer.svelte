@@ -237,7 +237,7 @@
         width: 100%;
         height: 100%;
     }
-    #ImageViewer:node(.wide) {
+    #ImageViewer:not(.wide) {
         overflow-y: auto;
         display: flex;
         flex-wrap: wrap;

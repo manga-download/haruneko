@@ -6,13 +6,13 @@ new TestFixture({
         title: 'Philia Scans'
     },
     container: {
-        url: 'https://philiascans.org/series/how-i-became-king-by-eating-monsters/',
-        id: '/series/how-i-became-king-by-eating-monsters/',
+        url: 'https://philiascans.org/series/how-i-became-king-by-eating-monsters',
+        id: '/series/how-i-became-king-by-eating-monsters',
         title: 'How I Became King by Eating Monsters'
     },
     child: {
-        id: '/series/how-i-became-king-by-eating-monsters/chapter-01/',
-        title: 'Chapter 01:'
+        id: '/series/how-i-became-king-by-eating-monsters/chapter-01',
+        title: 'Ch.01'
     },
     entry: {
         index: 1,
