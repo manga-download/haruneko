@@ -2,8 +2,8 @@ import { TestFixture } from '../../../test/WebsitesFixture';
 
 new TestFixture({
     plugin: {
-        id: 'comixto',
-        title: 'Comix (.to)'
+        id: 'comix',
+        title: 'Comix'
     },
     container: {
         url: 'https://comix.to/title/k7yg7-the-spark-in-your-eyes',
@@ -11,12 +11,12 @@ new TestFixture({
         title: 'The Spark in Your Eyes'
     },
     child: {
-        id: '/title/k7yg7-the-spark-in-your-eyes/7271789-chapter-225',
-        title: '225 [UTOON]'
+        id: '/title/k7yg7-the-spark-in-your-eyes/2536461-chapter-66',
+        title: '66 - The Period of Humans (4) [UTOON]'
     },
     entry: {
         index: 0,
-        size: 625_234,
+        size: 678_370,
         type: 'image/webp'
     }
 }).AssertWebsite();

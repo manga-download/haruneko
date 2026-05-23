@@ -1,33 +1,30 @@
 import { Tags } from '../Tags';
-import icon from './ComixTo.webp';
+import icon from './Comix.webp';
 import { FetchJSON } from '../platform/FetchProvider';
 import { Page } from '../providers/MangaPlugin';
 import { type MangaPlugin, Manga, Chapter, DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { DRMProvider } from './ComixTo.DRM';
+import { DRMProvider } from './Comix.DRM';
 
-type APIResult<T> = {
+type APIMangas = {
     result: {
-        items: T;
+        items: {
+            hash_id: string;
+            title: string;
+            slug: string;
+        }[];
     };
-};
-
-type APIMangas = APIResult<APIManga[]>;
-
-type APIManga = {
-    hash_id: string;
-    title: string;
-    slug: string;
 };
 
 @Common.MangaCSS(/^{origin}\/title\/[^/]+$/, 'meta[property="og:title"]')
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
-    private readonly apiUrl = `${this.URI.origin}/api/v1/`;
+
+    private readonly apiURL = `${this.URI.origin}/api/v1/`;
     readonly #drm = new DRMProvider();
 
     public constructor() {
-        super('comixto', 'Comix (.to)', 'https://comix.to', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.English, Tags.Source.Aggregator, Tags.Source.Scanlator);
+        super('comix', 'Comix', 'https://comix.to', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.English, Tags.Source.Aggregator);
     }
 
     public override get Icon() {
@@ -38,7 +35,7 @@ export default class extends DecoratableMangaScraper {
         type This = typeof this;
         return Array.fromAsync(async function* (this: This) {
             for (let page = 1, run = true; run; page++) {
-                const { result: { items } } = await FetchJSON<APIMangas>(new Request(new URL(`./manga?limit=100&page=${page}`, this.apiUrl)));
+                const { result: { items } } = await FetchJSON<APIMangas>(new Request(new URL(`./manga?limit=100&page=${page}`, this.apiURL)));
                 const mangas = items.map(({ hash_id: hash, title, slug }) => new Manga(this, provider, `/title/${hash}-${slug}`, title));
                 mangas.length > 0 ? yield* mangas : run = false;
             }

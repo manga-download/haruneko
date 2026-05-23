@@ -86,7 +86,7 @@ export { default as ComicZenon } from './ComicZenon';
 export { default as ComicZerosum } from './ComicZerosum';
 export { default as Comikey } from './Comikey';
 export { default as ComikeyArchive } from './ComikeyArchive';
-export { default as ComixTo } from './ComixTo';
+export { default as Comix } from './Comix';
 export { default as CookMana } from './CookMana';
 export { default as CoolMic } from './CoolMic';
 export { default as CopyManga } from './CopyManga';
