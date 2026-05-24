@@ -8,18 +8,22 @@ import * as Common from './decorators/Common';
 import { DRMProvider, type PageParameters } from './Kagane.DRM';
 
 type APIChapters = {
-    content: {
-        id: string;
+    series_books: {
+        book_id: string;
         title: string;
+        //chapter_no: string;
+        //groups: { title: string; }[];
     }[];
 };
 
-@Common.MangaCSS(/^{origin}\/series\/[0-9A-Z]+(#[^/]*)?$/, 'head > title', (title, uri) => ({ id: uri.pathname.split('/').at(-1), title: title.innerText.trim() }))
+@Common.MangaCSS<HTMLMetaElement>(/^{origin}\/series\/[-a-z0-9A]+(#[^/]+)?$/, 'meta[property="og:title"]', (meta, uri) => ({ id: uri.pathname.split('/').at(-1), title: meta.content.trim() }))
 @Common.MangasNotSupported()
+@Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
     readonly #drm = new DRMProvider();
-    readonly #apiURL = 'https://api.kagane.org/api/v1/';
+    //readonly #apiURL = 'https://akari.kagane.org/api/v2/';
+    readonly #apiURL = 'https://yuzuki.kagane.org/api/v2/';
 
     public constructor() {
         super('kagane', 'Kagane', 'https://kagane.org', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.English, Tags.Source.Aggregator, ...Tags.Rating.toArray());
@@ -56,23 +60,14 @@ export default class extends DecoratableMangaScraper {
     }*/
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const uri = new URL(`./books/${manga.Identifier}`, this.#apiURL);
-        const { content } = await FetchJSON<APIChapters>(new Request(uri));
-        return content.map(({id, title}) => new Chapter(this, manga, id, title));
+        const uri = new URL(`./series/${manga.Identifier}`, this.#apiURL);
+        const { series_books: chapters } = await FetchJSON<APIChapters>(new Request(uri));
+        return chapters.map(({ book_id: id, title }) => new Chapter(this, manga, id, title));
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page<PageParameters>[]> {
-        const uri = new URL(`./books/${chapter.Parent.Identifier}/file/${chapter.Identifier}`, this.#apiURL);
+        const uri = new URL(`./books/${chapter.Identifier}?is_datasaver=false`, this.#apiURL);
         const pages = await this.#drm.CreateImageLinks(uri, chapter.Parent.Identifier, chapter.Identifier);
         return pages.map(({ link, parameters })=> new Page<PageParameters>(this, chapter, link, parameters));
-    }
-
-    public override async FetchImage(page: Page<PageParameters>, priority: Priority, signal: AbortSignal): Promise<Blob> {
-        const bytes = await this.imageTaskPool.Add(async () => {
-            const response = await Fetch(new Request(page.Link, { signal: signal }));
-            return response.arrayBuffer();
-        }, priority, signal);
-
-        return this.#drm.DecryptImage(bytes, page.Parameters);
     }
 }
