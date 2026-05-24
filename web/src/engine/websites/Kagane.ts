@@ -1,7 +1,6 @@
 import { Tags } from '../Tags';
 import icon from './Kagane.webp';
-import type { Priority } from '../taskpool/DeferredTask';
-import { Fetch, FetchJSON } from '../platform/FetchProvider';
+import { FetchJSON } from '../platform/FetchProvider';
 import { DecoratableMangaScraper, type Manga, Chapter, Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 
