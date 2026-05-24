@@ -2,14 +2,8 @@ type APIChapter = {
     id: number;
     number: number;
     name: string;
-    group: {
+    group?: {
         name: string;
-    } | null;
-    pages: {
-        baseUrl: string;
-        items: {
-            url: string;
-        }[];
     };
 };
 export declare class DRMProvider {
