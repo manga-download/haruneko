@@ -451,7 +451,6 @@ export { default as ManhwaDesu } from './ManhwaDesu';
 export { default as ManhwaEighteen } from './ManhwaEighteen';
 export { default as ManhwaHub } from './ManhwaHub';
 export { default as ManhwaIndo } from './ManhwaIndo';
-export { default as Manhwaland } from './Manhwaland';
 export { default as ManhwaLatino } from './ManhwaLatino';
 export { default as ManhwaList } from './ManhwaList';
 export { default as ManhwaRead } from './ManhwaRead';
