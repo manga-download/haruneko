@@ -81,7 +81,6 @@ export { default as ComicRyu } from './ComicRyu';
 export { default as ComicSeasons } from './ComicSeasons';
 export { default as ComicsValley } from './ComicsValley';
 export { default as ComicTrail } from './ComicTrail';
-export { default as ComicVn } from './ComicVn';
 export { default as ComicZenon } from './ComicZenon';
 export { default as ComicZerosum } from './ComicZerosum';
 export { default as Comikey } from './Comikey';
