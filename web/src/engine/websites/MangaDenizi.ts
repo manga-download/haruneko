@@ -55,7 +55,7 @@ type PageData = {
     Grid: number;
 };
 
-class RNG {
+class PRNG {
 
     #state: number;
     readonly #seed: number;
@@ -178,24 +178,19 @@ export default class extends DecoratableMangaScraper {
         const gridSize = Math.max(1, Math.min(Math.floor(grid) || 1, canvasWidth, canvasHeight));
         const columnRegions = SplitDimensionIntoRegions(canvasWidth, gridSize);
         const rowRegions = SplitDimensionIntoRegions(canvasHeight, gridSize);
-        const shuffledColumns = new RNG(init, 0x85EBCA6B).Next(gridSize);
-        const shuffledRows = new RNG(init, 0X9E3779B9).Next(gridSize);
+        const shuffledColumns = new PRNG(init, 0x85EBCA6B).Next(gridSize);
+        const shuffledRows = new PRNG(init, 0X9E3779B9).Next(gridSize);
 
         ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+
         for (let row = 0; row < gridSize; row += 1) {
-            const destinationRow = rowRegions[shuffledRows[row]];
-            const sourceRow = rowRegions[row];
+            const srcTileY = rowRegions[row];
+            const dstTileY = rowRegions[shuffledRows[row]];
 
             for (let column = 0; column < gridSize; column += 1) {
-                const destinationColumn = columnRegions[shuffledColumns[column]];
-                const sourceColumn = columnRegions[column];
-                ctx.drawImage(
-                    image,
-                    sourceColumn.offset, sourceRow.offset,
-                    sourceColumn.length, sourceRow.length,
-                    destinationColumn.offset, destinationRow.offset,
-                    destinationColumn.length, destinationRow.length
-                );
+                const srcTileX = columnRegions[column];
+                const dstTileX = columnRegions[shuffledColumns[column]];
+                ctx.drawImage(image, srcTileX.offset, srcTileY.offset, srcTileX.length, srcTileY.length, dstTileX.offset, dstTileY.offset, dstTileX.length, dstTileY.length);
             }
         }
     }

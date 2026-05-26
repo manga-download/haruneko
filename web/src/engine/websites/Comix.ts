@@ -19,6 +19,39 @@ type APIMangas = {
     };
 };
 
+class PRNG {
+
+    #state: bigint;
+    readonly #seed: bigint;
+
+    constructor(private readonly seed: number) {
+        this.#seed = BigInt(seed);
+        this.#state = this.#seed;
+    }
+
+    /**
+     * Get the next pseudo random number with `Linear Congruential Generator`.
+     */
+    #Next() {
+        this.#state = this.#state * 1664525n + 1013904223n & 0xffffffffn;
+        return Number(this.#state);
+    };
+
+    /**
+     * Create a sequence of numbers shuffled by `Fisher-Yates` algorithm.
+     * Uses `Linear Congruential Generator` as the underlying random number generator.
+     */
+    public Next(count: number) {
+        this.#state = this.#seed;
+        const indices = [...new Array(Math.max(1, count)).keys()];
+        for (let current = indices.length - 1; current > 0; current--) {
+            const randomIndex = this.#Next() % (current + 1);
+            [indices[current], indices[randomIndex]] = [indices[randomIndex], indices[current]];
+        }
+        return indices;
+    }
+}
+
 @Common.MangaCSS(/^{origin}\/title\/[^/]+$/, 'meta[property="og:title"]')
 export default class extends DecoratableMangaScraper {
 
@@ -64,54 +97,26 @@ export default class extends DecoratableMangaScraper {
             }
         })), priority, signal);
 
-        const seed = parseInt(response.headers.get('x-scramble-seed'));
-        const scrambleType = response.headers.get('x-scramble-grid');
+        const seed = parseInt(response.headers.get('X-Scramble-Seed'), 10);
+        const grid = response.headers.get('X-Scramble-Grid');
         const blob = await GetTypedData(await response.arrayBuffer());
 
-        return !seed ? blob : DeScramble(blob, async (image, ctx) => {
-            const LCG_MULTIPLIER = BigInt(1664525);
-            const LCG_INCREMENT = BigInt(1013904223);
+        return seed ? DeScramble(blob, async (image, ctx) => this.#RenderTiles(image, ctx, seed, grid)) : blob;
+    }
 
-            const [numRows, numCols] = scrambleType.split('x').map(el => parseInt(el));
-            const numTiles = numRows * numCols;
+    #RenderTiles(image: ImageBitmap, ctx: OffscreenCanvasRenderingContext2D, init: number, grid: string) {
+        const [numRows, numColumns] = grid.split('x').map(el => parseInt(el, 10));
+        const tileWidth = Math.floor(image.width / numColumns);
+        const tileHeight = Math.floor(image.height / numRows);
+        const tileIndexMap = new PRNG(init).Next(numRows * numColumns);
 
-            const tileW = Math.floor(image.width / numCols);
-            const tileH = Math.floor(image.height / numRows);
-
-            const ComputeOrder = (seed: number, n: number): number[] => {
-                const arr: number[] = Array.from({ length: n }, (_, i) => i);
-                let state = BigInt(seed);
-                for (let i = n - 1; i > 0; i--) {
-                    state = BigInt.asIntN(32, state * LCG_MULTIPLIER + LCG_INCREMENT);
-                    const stateUnsigned = BigInt.asUintN(32, state);
-                    const j = Number(stateUnsigned % BigInt(i + 1));
-                    const tmp = arr[i];
-                    arr[i] = arr[j];
-                    arr[j] = tmp;
-                }
-                return arr;
-            };
-
-            const scrambleOrder = ComputeOrder(seed, numTiles);
-
-            for (let srcIdx = 0; srcIdx < numTiles; srcIdx++) {
-                const dstIdx = scrambleOrder[srcIdx];
-
-                const srcCol = srcIdx % numCols;
-                const srcRow = Math.floor(srcIdx / numCols);
-
-                const dstCol = dstIdx % numCols;
-                const dstRow = Math.floor(dstIdx / numCols);
-
-                const sx = srcCol * tileW;
-                const sy = srcRow * tileH;
-
-                const dx = dstCol * tileW;
-                const dy = dstRow * tileH;
-
-                ctx.drawImage(image, sx, sy, tileW, tileH, dx, dy, tileW, tileH);
-            }
-        });
-
+        for (let srcTileIndex = 0; srcTileIndex < tileIndexMap.length; srcTileIndex++) {
+            const dstTileIndex = tileIndexMap[srcTileIndex];
+            const srcOffsetX = srcTileIndex % numColumns * tileWidth;
+            const srcOffsetY = Math.floor(srcTileIndex / numColumns) * tileHeight;
+            const dstOffsetX = dstTileIndex % numColumns * tileWidth;
+            const dstOffsetY = Math.floor(dstTileIndex / numColumns) * tileHeight;
+            ctx.drawImage(image, srcOffsetX, srcOffsetY, tileWidth, tileHeight, dstOffsetX, dstOffsetY, tileWidth, tileHeight);
+        }
     }
 }
