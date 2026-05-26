@@ -58,61 +58,60 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchImage(page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
-        return this.imageTaskPool.Add(async () => {
-            const response = await Fetch(new Request(page.Link, {
-                headers: {
-                    Referer: page.Parameters.Referer
+        const response = await this.imageTaskPool.Add(() => Fetch(new Request(page.Link, {
+            headers: {
+                Referer: page.Parameters.Referer
+            }
+        })), priority, signal);
+
+        const seed = parseInt(response.headers.get('x-scramble-seed'));
+        const scrambleType = response.headers.get('x-scramble-grid');
+        const blob = await GetTypedData(await response.arrayBuffer());
+
+        return !seed ? blob : DeScramble(blob, async (image, ctx) => {
+            const LCG_MULTIPLIER = BigInt(1664525);
+            const LCG_INCREMENT = BigInt(1013904223);
+
+            const [numRows, numCols] = scrambleType.split('x').map(el => parseInt(el));
+            const numTiles = numRows * numCols;
+
+            const tileW = Math.floor(image.width / numCols);
+            const tileH = Math.floor(image.height / numRows);
+
+            const ComputeOrder = (seed: number, n: number): number[] => {
+                const arr: number[] = Array.from({ length: n }, (_, i) => i);
+                let state = BigInt(seed);
+                for (let i = n - 1; i > 0; i--) {
+                    state = BigInt.asIntN(32, state * LCG_MULTIPLIER + LCG_INCREMENT);
+                    const stateUnsigned = BigInt.asUintN(32, state);
+                    const j = Number(stateUnsigned % BigInt(i + 1));
+                    const tmp = arr[i];
+                    arr[i] = arr[j];
+                    arr[j] = tmp;
                 }
-            }));
+                return arr;
+            };
 
-            const seed = parseInt(response.headers.get('x-scramble-seed'));
-            const scrambleType = response.headers.get('x-scramble-grid');
-            const blob = await GetTypedData(await response.arrayBuffer());
+            const scrambleOrder = ComputeOrder(seed, numTiles);
 
-            return !seed ? blob : DeScramble(blob, async (image, ctx) => {
-                const LCG_MULTIPLIER = BigInt(1664525);
-                const LCG_INCREMENT = BigInt(1013904223);
+            for (let srcIdx = 0; srcIdx < numTiles; srcIdx++) {
+                const dstIdx = scrambleOrder[srcIdx];
 
-                const [numRows, numCols] = scrambleType.split('x').map(el => parseInt(el));
-                const numTiles = numRows * numCols;
+                const srcCol = srcIdx % numCols;
+                const srcRow = Math.floor(srcIdx / numCols);
 
-                const tileW = Math.floor(image.width / numCols);
-                const tileH = Math.floor(image.height / numRows);
+                const dstCol = dstIdx % numCols;
+                const dstRow = Math.floor(dstIdx / numCols);
 
-                const ComputeOrder = (seed: number, n: number): number[] => {
-                    const arr: number[] = Array.from({ length: n }, (_, i) => i);
-                    let state = BigInt(seed);
-                    for (let i = n - 1; i > 0; i--) {
-                        state = BigInt.asIntN(32, state * LCG_MULTIPLIER + LCG_INCREMENT);
-                        const stateUnsigned = BigInt.asUintN(32, state);
-                        const j = Number(stateUnsigned % BigInt(i + 1));
-                        const tmp = arr[i];
-                        arr[i] = arr[j];
-                        arr[j] = tmp;
-                    }
-                    return arr;
-                };
+                const sx = srcCol * tileW;
+                const sy = srcRow * tileH;
 
-                const scrambleOrder = ComputeOrder(seed, numTiles);
+                const dx = dstCol * tileW;
+                const dy = dstRow * tileH;
 
-                for (let srcIdx = 0; srcIdx < numTiles; srcIdx++) {
-                    const dstIdx = scrambleOrder[srcIdx];
+                ctx.drawImage(image, sx, sy, tileW, tileH, dx, dy, tileW, tileH);
+            }
+        });
 
-                    const srcCol = srcIdx % numCols;
-                    const srcRow = Math.floor(srcIdx / numCols);
-
-                    const dstCol = dstIdx % numCols;
-                    const dstRow = Math.floor(dstIdx / numCols);
-
-                    const sx = srcCol * tileW;
-                    const sy = srcRow * tileH;
-
-                    const dx = dstCol * tileW;
-                    const dy = dstRow * tileH;
-
-                    ctx.drawImage(image, sx, sy, tileW, tileH, dx, dy, tileW, tileH);
-                }
-            });
-        }, priority, signal);
     }
 }
