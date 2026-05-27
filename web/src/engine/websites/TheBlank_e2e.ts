@@ -1,22 +1,26 @@
-﻿import { TestFixture } from '../../../test/WebsitesFixture';
+import { TestFixture } from '../../../test/WebsitesFixture';
 
 new TestFixture({
     plugin: {
         id: 'theblank',
-        title: 'TheBlank'
+        title: 'TheBlank',
+        timeout: 180_000
     },
     container: {
-        url: 'https://theblank.net/manga/booby-trap/',
-        id: JSON.stringify({ post: '2657', slug: '/manga/booby-trap/' }),
-        title: 'Booby Trap'
+        url: 'https://theblank.net/serie/sneak-a-peek',
+        id: '/serie/sneak-a-peek',
+        title: 'Sneak a Peek',
+        timeout: 180_000
     },
     child: {
-        id: '/manga/booby-trap/chapter-55/',
-        title: 'Chapter 55'
+        id: '/serie/sneak-a-peek/chapter/xtmJIsPv0mGt-chapter-1',
+        title: 'Chapter 1',
+        timeout: 180_000
     },
     entry: {
         index: 0,
-        size: 943_952,
-        type: 'image/jpeg'
+        size: 124_662,
+        type: 'image/jpeg',
+        timeout: 180_000
     }
 }).AssertWebsite();
