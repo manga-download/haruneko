@@ -1,225 +1,286 @@
 import { Tags } from '../Tags';
 import icon from './TheBlank.webp';
 import { Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from '../providers/MangaPlugin';
-import * as Common from './decorators/Common';
-import { Fetch, FetchCSS, FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
-import { RandomHex } from '../Random';
-import type { Priority } from '../taskpool/DeferredTask';
-import { GetTypedData } from './decorators/Common';
+import { Fetch, FetchHTML, FetchWindowScript } from '../platform/FetchProvider';
+import { GetBase64FromBytes, GetBytesFromBase64, GetBytesFromUTF8, GetHexFromBytes } from '../BufferEncoder';
+import type { Priority } from '../taskpool/TaskPool';
 
-type APIMangas = {
-    series: {
-        data: APIManga[];
-    }
-};
-
-type APIManga = {
-    slug: string;
+type EntryInfo = {
+    id: string;
     title: string;
-    chapters?: {
-        slug: string;
-        title: string;
-    }[]
 };
 
-type APIChapters = {
-    props: {
-        serie: APIManga;
-    }
+type ListInfo = {
+    entries: EntryInfo[];
+    total: number;
 };
 
-type APIPages = {
-    props: {
-        signed_urls: string[];
-    }
+type PageParameters = {
+    pageIndex: number;
+    chapterToken: string;
+    serverPubkey: string;
 };
 
-type RSAParameters = {
-    keyPair: CryptoKeyPair;
-    publicKeyBase64: string;
-};
+type ChapterRecord = { slug: string; title: string };
+type PageAssembly = { HEAPU8: Uint8Array } & Record<`_${string}`, (...args: number[]) => number>;
 
-type PageData = {
-    key: string;
-};
+const titleFallback = (id: string) => ToTitleCase((id.split('/').at(-1) ?? id).replace(/^[A-Za-z0-9]{10}-/, '').replace(/-/g, ' '), true);
+
+function ToTitleCase(title: string, keepSmallWords = false): string {
+    return title.toLowerCase().replace(/\b\w+\b/g, (word, index) => keepSmallWords && index > 0 && /^(a|an|and|as|at|but|by|for|in|nor|of|on|or|the|to)$/.test(word) ? word : word[0].toUpperCase() + word.slice(1));
+}
+
+function CleanMangaTitle(title: string, id: string): string {
+    return title
+        .replace(/^_r_[^\s_]+_?/i, '')
+        .replace(/\s+/g, ' ')
+        .trim() || titleFallback(id);
+}
+
+const libraryListScript = `
+    new Promise(async resolve => {
+        const read = doc => JSON.parse(doc.querySelector('#app')?.getAttribute('data-page') || '{}').props?.series;
+        const series = read(document), entries = [...(series?.data || [])], pages = series?.meta?.last_page || 1;
+        for(let page = 2; page <= pages; page += 6) {
+            entries.push(...(await Promise.all(Array.from({ length: Math.min(6, pages - page + 1) }, async (_, index) => {
+                try {
+                    const response = await fetch('/library?page=' + (page + index), { credentials: 'same-origin' });
+                    return response.ok ? read(new DOMParser().parseFromString(await response.text(), 'text/html'))?.data || [] : [];
+                } catch { return []; }
+            }))).flat());
+        }
+        resolve({
+            entries: entries.map(entry => ({ id: new URL(entry.link, location.href).pathname.replace(/\\/$/, ''), title: entry.title || '' }))
+                .filter((entry, index, items) => items.findIndex(other => other.id === entry.id) === index),
+            total: series?.meta?.total || entries.length
+        });
+    });
+`;
+
+const chapterScript = `
+    JSON.parse(document.querySelector('#app').getAttribute('data-page')).props.serie.chapters
+        .map(chapter => ({ id: location.pathname.replace(/\\/$/, '') + '/chapter/' + chapter.slug, title: chapter.title }))
+        .sort((left, right) => parseFloat(left.title.match(/[\\d.]+/)[0]) - parseFloat(right.title.match(/[\\d.]+/)[0]));
+`;
 
 export default class extends DecoratableMangaScraper {
-    #token: null | string = null;
-    private version: string = undefined;
+
+    #pageAssembly: Promise<PageAssembly>;
+    #pageSession: { serverPubkey: string; clientPubkey: Promise<string> };
+    #decryptionQueue: Promise<void> = Promise.resolve();
 
     public constructor() {
-        super('theblank', 'TheBlank', 'https://beta.theblank.net', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Media.Manga, Tags.Language.English, Tags.Source.Aggregator, Tags.Rating.Pornographic);
+        super('theblank', 'TheBlank', 'https://theblank.net', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Media.Manga, Tags.Language.English, Tags.Source.Aggregator, Tags.Rating.Pornographic);
     }
 
     public override get Icon() {
         return icon;
     }
 
-    public override async Initialize(): Promise<void> {
-        // TODO: Update the token whenever the user performs a login/logout through manual website interaction
-        const [token, version] = await FetchWindowScript<string[]>(new Request(this.URI), `
-            new Promise(async (resolve, reject) => {
-                try {
-                    const {version} = JSON.parse(document.querySelector('#app').dataset.page);
-                    resolve([  (await cookieStore.get('XSRF-TOKEN'))?.value, version ]);
-                } catch (err) {
-                    reject(err);
-                }
-            });
-        `, 750);
-        this.#token = token;
-        this.version = version;
+    public override async Initialize(): Promise<void> {}
+
+    public override ValidateMangaURL(url: string): boolean {
+        const uri = new URL(url);
+        return uri.hostname.endsWith('theblank.net') && /^\/serie\/[^/]+\/?$/.test(uri.pathname);
+    }
+
+    public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
+        const id = new URL(url).pathname.replace(/\/$/, '');
+        return new Manga(this, provider, id, titleFallback(id));
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        type This = typeof this;
-        return Array.fromAsync(async function* (this: This) {
-            for (let page = 1, run = true; run; page++) {
-                const { series: { data } } = await this.FetchAPI<APIMangas>(`./library?page=${page}`);
-                const mangas = data?.map(({ slug, title }) => new Manga(this, provider, slug, title)) ?? [];
-                mangas.length > 0 ? yield* mangas : run = false;
-            }
-        }.call(this));
+        const list = await FetchWindowScript<ListInfo>(new Request(new URL('/library', this.URI)), libraryListScript, 0, 120_000);
+        if(list.entries.length < list.total) {
+            throw new Error(`Incomplete library: ${list.entries.length}/${list.total}`);
+        }
+        return list.entries.map(({ id, title }) => new Manga(this, provider, id, CleanMangaTitle(title, id)));
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const { props: { serie: { chapters } } } = await this.FetchAPI<APIChapters>(`./serie/${manga.Identifier}`, {
-            'X-Inertia': 'true',
-            'X-Inertia-Version': this.version
-        });
-        return chapters?.map(({ slug, title }) => new Chapter(this, manga, slug, title)) ?? [];
-    }
-
-    public override async FetchPages(chapter: Chapter): Promise<Page<PageData>[]> {
-        const chapterURL = new URL(`./serie/${chapter.Parent.Identifier}/chapter/${chapter.Identifier}`, this.URI)
-        const csrfToken = (await FetchCSS<HTMLMetaElement>(new Request(chapterURL), 'meta[name="csrf-token"]'))[0].content;
-
-        //get images urls
-        const { props: { signed_urls } } = await this.FetchAPI<APIPages>(chapterURL.pathname, {
-            'X-Inertia': 'true',
-            'X-Inertia-Version': this.version
-        });
-
-        const key = await this.GenerateImageKey(csrfToken, chapterURL.href);
-        return signed_urls.map(url => new Page<PageData>(this, chapter, new URL(url, this.URI)), { key });
-    }
-
-    private async GenerateImageKey(csrfToken: string, referer: string): Promise<string> {
-
-        //generate RSA keys
-        const { publicKeyBase64, keyPair: { privateKey } } = await this.GenerateKeyPair();
-
-        //fetch session id using generated pubkey
-        const { sid } = await FetchJSON<{ sid: string }>(new Request(new URL('./api/v1/session', this.URI), {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': csrfToken,
-                Origin: this.URI.origin,
-                Referer: referer
-            },
-            body: JSON.stringify({
-                clientPublicKey: publicKeyBase64,
-                nonce: this.GenerateNonce()
-            })
-        }));
-
-        const value = this.CookSID(sid);
-        return this.RSADecrypt(privateKey, value);
-    }
-
-    private GenerateNonce(): string {
-        const L0 = Math.floor(Date.now() / 1000).toString(16).padStart(16, '0');
-        const x0 = new Uint8Array(24);
-        window.crypto.getRandomValues(x0);
-        const vA = Array.from(x0).map(j0 => j0.toString(16).padStart(2, '0')).join('');
-        return L0 + vA;
-    }
-
-    private async RSADecrypt(key: CryptoKey, buffer: ArrayBuffer): Promise<string> {
-        const decrypted = await window.crypto.subtle.decrypt({
-            name: 'RSA-OAEP'
-        }, key, buffer);
-        return new TextDecoder().decode(decrypted);
-    }
-
-    private CookSID(sid: string): ArrayBuffer {
-        let L0 = sid.replace(/-/g, '+').replace(/_/g, '/');
-        for (; L0.length % 4;) L0 += '=';
-        const x0 = atob(L0),
-            vA = new Uint8Array(x0.length);
-        for (let j0 = 0; j0 < x0.length; j0++) vA[j0] = x0.charCodeAt(j0);
-        return vA.buffer;
-    }
-
-    private async GenerateKeyPair(): Promise<RSAParameters> {
-        const cryptoKey = await window.crypto.subtle.generateKey({
-            name: 'RSA-OAEP',
-            modulusLength: 2048,
-            publicExponent: new Uint8Array([1, 0, 1]),
-            hash: 'SHA-256'
-        }, !0, [
-            'encrypt',
-            'decrypt'
-        ]);
-        const keyBuffer = await window.crypto.subtle.exportKey('spki', cryptoKey.publicKey);
-        const x0 = btoa(String.fromCharCode(...new Uint8Array(keyBuffer)));
-        return {
-            keyPair: cryptoKey,
-            publicKeyBase64: x0
-        };
-    }
-
-    public override async FetchImage(page: Page<PageData>, priority: Priority, signal: AbortSignal): Promise<Blob> {
-        return this.imageTaskPool.Add(async () => {
-            //fetch image > get data and HEADER ['x-stream-header'];
-            const response = await Fetch(new Request(page.Link));
-            const header = response.headers.get('x-stream-header');
-            const imageData = await response.arrayBuffer();
-
-            const nonce = Uint8Array.from(atob(header), f => f.charCodeAt(0)); //create M from HEADER
-            const key = new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(page.Parameters.key)));
-            return GetTypedData(await this.DecryptImage(imageData, key, nonce));
-        }, priority, signal);
-    }
-
-    private async DecryptImage(buffer: ArrayBuffer, streamKey: Uint8Array, nonce: Uint8Array): Promise<ArrayBuffer> {
-        //await ag.ready;
-        const imageArray = new Uint8Array(buffer);
-        const X0 = ag.crypto_secretstream_xchacha20poly1305_init_pull(nonce , streamKey);
-        const H = [];
-
-        let position = 0;
-        const chunkSize = 8192 + 17; //ag.crypto_secretstream_xchacha20poly1305_ABYTES;
-        for (; position < imageArray.length;) {
-            const chunk = imageArray.slice(position, position + chunkSize);
-            const L0 = ag.crypto_secretstream_xchacha20poly1305_pull(X0, chunk);
-            if (!L0) throw new Error('Decryption failed - invalid or corrupted data');
-            const {
-                message: x0,
-                tag: vA
-            } = L0;
-            if (H.push(x0), vA === ag.crypto_secretstream_xchacha20poly1305_TAG_FINAL) break;
-            position += chunk.length;
-        }
-        const g2 = H.reduce((first, second) => first + second.length, 0),
-            finalArray = new Uint8Array(g2);
-        let P = 0;
-        for (const R0 of H) {
-            finalArray.set(R0, P);
-            P += R0.length;
-        }
-        return finalArray.buffer;
-    }
-
-    public async FetchAPI<T extends JSONElement>(endpoint: string, headers: HeadersInit = undefined): Promise<T> {
-        return FetchJSON<T>(new Request(new URL(endpoint, this.URI), {
-            headers: {
-                ...headers,
-                'X-XSRF-TOKEN': this.#token,
-                'X-Requested-With': 'XMLHttpRequest',
+        try {
+            const dom = await FetchHTML(new Request(new URL(manga.Identifier, this.URI)));
+            const entries = this.ExtractChaptersFromHTML(dom, manga.Identifier);
+            if(entries.length > 0) {
+                return entries.map(({ id, title }) => new Chapter(this, manga, id, ToTitleCase(title)));
             }
+        } catch {
+            // Direct series requests may be challenged; browser extraction remains a reliable fallback.
+        }
+        const chapters = await FetchWindowScript<EntryInfo[]>(new Request(new URL(manga.Identifier, this.URI)), chapterScript, 0, 120_000);
+        return chapters.map(({ id, title }) => new Chapter(this, manga, id, ToTitleCase(title)));
+    }
+
+    public override async FetchPages(chapter: Chapter): Promise<Page<PageParameters>[]> {
+        const dom = await FetchHTML(new Request(new URL(chapter.Identifier, this.URI)));
+        const payload = JSON.parse(dom.querySelector('#app')?.getAttribute('data-page') ?? '{}') as { props?: {
+            page_count?: number;
+            chapter_token?: string;
+            server_pubkey?: string;
+        } };
+        const { page_count: pageCount, chapter_token: chapterToken, server_pubkey: serverPubkey } = payload.props ?? {};
+        if(!pageCount || !chapterToken || !serverPubkey) {
+            return [];
+        }
+        return Array.from({ length: pageCount }, (_, index) => new Page(this, chapter, new URL(`${chapter.Identifier}/page/${index + 1}`, this.URI), {
+            pageIndex: index + 1,
+            chapterToken,
+            serverPubkey
         }));
     }
 
+    public override async FetchImage(page: Page<PageParameters>, priority: Priority, signal: AbortSignal): Promise<Blob> {
+        return this.imageTaskPool.Add(() => this.DecryptPage(page, signal), priority, signal);
+    }
+
+    private async DecryptPage(page: Page<PageParameters>, signal: AbortSignal): Promise<Blob> {
+        const clientPubkey = await this.GetClientPubkey(page.Parameters.serverPubkey);
+        const timestamp = Math.floor(Date.now() / 1000).toString();
+        const nonce = GetHexFromBytes(crypto.getRandomValues(new Uint8Array(16)));
+        const { pageIndex, chapterToken } = page.Parameters;
+        const signature = await this.SignPageRequest(chapterToken, `${pageIndex}${timestamp}${nonce}`);
+        const endpoint = new URL(page.Link);
+        endpoint.search = new URLSearchParams({ token: chapterToken, ts: timestamp, nonce, sig: signature }).toString();
+        const response = await Fetch(new Request(endpoint, {
+            signal,
+            headers: { 'X-Client-Pubkey': clientPubkey }
+        }));
+        if(!response.ok) {
+            throw new Error(`Page fetch failed: ${response.status}`);
+        }
+        const encrypted = await response.blob();
+        if(encrypted.size < 216) {
+            throw new Error('Invalid encrypted page stream');
+        }
+        const header = new Uint8Array(await encrypted.slice(192, 216).arrayBuffer());
+        const filename = response.headers.get('X-Page-Name') ?? '';
+        const keyHint = response.headers.get('X-Key-Hint') ?? '';
+        const operation = this.#decryptionQueue.then(() => {
+            if(signal?.aborted) {
+                throw new DOMException(null, 'AbortError');
+            }
+            return this.PerformPageDecryption(encrypted.slice(216), filename, keyHint, header);
+        });
+        this.#decryptionQueue = operation.then(() => undefined, () => undefined);
+        return operation;
+    }
+
+    private ExtractChaptersFromHTML(dom: Document, series: string): EntryInfo[] {
+        const payload = JSON.parse(dom.querySelector('#app')?.getAttribute('data-page') ?? '{}') as { props?: { serie?: { chapters?: ChapterRecord[] } } };
+        return (payload.props?.serie?.chapters ?? [])
+            .map(chapter => ({ id: `${series}/chapter/${chapter.slug}`, title: chapter.title }))
+            .sort((left, right) => parseFloat(left.title.match(/[\d.]+/)?.at(0) ?? '0') - parseFloat(right.title.match(/[\d.]+/)?.at(0) ?? '0'));
+    }
+
+    private async InitializePageDecryption(serverPubkey: string): Promise<string> {
+        const module = await this.GetPageAssembly();
+        module._ecdhDestroy();
+        const serverKey = GetBytesFromBase64(serverPubkey);
+        const privateKey = crypto.getRandomValues(new Uint8Array(32));
+        const privatePointer = this.CopyToAssembly(module, privateKey);
+        const serverPointer = this.CopyToAssembly(module, serverKey);
+        const clientPointer = module._malloc(32);
+        const initialized = module._ecdhInit(privatePointer, privateKey.length, serverPointer, serverKey.length, clientPointer);
+        module.HEAPU8.fill(0, privatePointer, privatePointer + privateKey.length);
+        privateKey.fill(0);
+        module._free(privatePointer);
+        module._free(serverPointer);
+        if(!initialized) {
+            module._free(clientPointer);
+            throw new Error('Page decryption handshake failed');
+        }
+        const clientKey = module.HEAPU8.slice(clientPointer, clientPointer + 32);
+        module._free(clientPointer);
+        return GetBase64FromBytes(clientKey);
+    }
+
+    private GetClientPubkey(serverPubkey: string): Promise<string> {
+        if(this.#pageSession?.serverPubkey !== serverPubkey) {
+            const operation = this.#decryptionQueue.then(() => this.InitializePageDecryption(serverPubkey));
+            this.#decryptionQueue = operation.then(() => undefined, () => undefined);
+            this.#pageSession = { serverPubkey, clientPubkey: operation };
+        }
+        return this.#pageSession.clientPubkey;
+    }
+
+    private async SignPageRequest(keyData: string, data: string): Promise<string> {
+        const algorithm = { name: 'HMAC', hash: 'SHA-256' };
+        const key = await crypto.subtle.importKey('raw', GetBytesFromUTF8(keyData), algorithm, false, ['sign']);
+        return GetHexFromBytes(new Uint8Array(await crypto.subtle.sign(algorithm, key, GetBytesFromUTF8(data))));
+    }
+
+    private async PerformPageDecryption(encrypted: Blob, filename: string, keyHint: string, headerBytes: Uint8Array): Promise<Blob> {
+        const module = await this.GetPageAssembly();
+        const filenameBytes = GetBytesFromUTF8(filename);
+        const keyHintBytes = GetBytesFromBase64(keyHint);
+        const filenamePointer = this.CopyToAssembly(module, filenameBytes);
+        const keyHintPointer = this.CopyToAssembly(module, keyHintBytes);
+        const headerPointer = this.CopyToAssembly(module, headerBytes);
+        const initialized = module._initPageDecryption(filenamePointer, filenameBytes.length, keyHintPointer, keyHintBytes.length, headerPointer, headerBytes.length);
+        module._wipeMemory(keyHintPointer, keyHintBytes.length);
+        module._wipeMemory(headerPointer, headerBytes.length);
+        module._free(filenamePointer);
+        module._free(keyHintPointer);
+        module._free(headerPointer);
+        keyHintBytes.fill(0);
+        headerBytes.fill(0);
+        if(!initialized) {
+            throw new Error('Page decryption initialization failed');
+        }
+        try {
+            const input = new Uint8Array(await encrypted.arrayBuffer());
+            const output: Uint8Array[] = [];
+            const sizePointer = module._malloc(4);
+            const statusPointer = module._malloc(4);
+            for(let offset = 0; offset < input.length;) {
+                const chunk = input.subarray(offset, Math.min(offset + 65553, input.length));
+                const chunkPointer = this.CopyToAssembly(module, chunk);
+                const resultPointer = module._decryptChunk(chunkPointer, chunk.length, sizePointer, statusPointer);
+                const length = new Int32Array(module.HEAPU8.buffer, sizePointer, 1)[0];
+                const status = new Int32Array(module.HEAPU8.buffer, statusPointer, 1)[0];
+                module._wipeMemory(chunkPointer, chunk.length);
+                module._free(chunkPointer);
+                if(!resultPointer || length < 0) {
+                    module._free(sizePointer);
+                    module._free(statusPointer);
+                    throw new Error('Page decryption failed');
+                }
+                output.push(module.HEAPU8.slice(resultPointer, resultPointer + length));
+                module._wipeMemory(resultPointer, length);
+                module._freeBuffer(resultPointer);
+                offset += chunk.length;
+                if(status === 3) {
+                    break;
+                }
+            }
+            module._free(sizePointer);
+            module._free(statusPointer);
+            input.fill(0);
+            return new Blob(output as BlobPart[], { type: 'image/jpeg' });
+        } finally {
+            module._destroyPageDecryption();
+        }
+    }
+
+    private GetPageAssembly(): Promise<PageAssembly> {
+        this.#pageAssembly ??= new Promise<PageAssembly>((resolve, reject) => {
+            const runtime = window as Window & { PageAssemblyModule?: () => Promise<PageAssembly> };
+            if(runtime.PageAssemblyModule) {
+                runtime.PageAssemblyModule().then(resolve, reject);
+                return;
+            }
+            const script = document.createElement('script');
+            script.src = new URL('/wasm/pam.js', this.URI).href;
+            script.onload = () => runtime.PageAssemblyModule?.().then(resolve, reject) ?? reject(new Error('Page assembly module is unavailable'));
+            script.onerror = () => reject(new Error('Failed to load page assembly module'));
+            document.head.appendChild(script);
+        });
+        return this.#pageAssembly;
+    }
+
+    private CopyToAssembly(module: PageAssembly, data: Uint8Array): number {
+        const pointer = module._malloc(data.length);
+        module.HEAPU8.set(data, pointer);
+        return pointer;
+    }
 }
