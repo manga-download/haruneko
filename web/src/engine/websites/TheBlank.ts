@@ -21,20 +21,17 @@ type PageParameters = {
     serverPubkey: string;
 };
 
-type ChapterRecord = { slug: string; title: string };
 type PageAssembly = { HEAPU8: Uint8Array } & Record<`_${string}`, (...args: number[]) => number>;
 
-const titleFallback = (id: string) => ToTitleCase((id.split('/').at(-1) ?? id).replace(/^[A-Za-z0-9]{10}-/, '').replace(/-/g, ' '), true);
-
-function ToTitleCase(title: string, keepSmallWords = false): string {
+function TitleCase(title: string, keepSmallWords = false): string {
     return title.toLowerCase().replace(/\b\w+\b/g, (word, index) => keepSmallWords && index > 0 && /^(a|an|and|as|at|but|by|for|in|nor|of|on|or|the|to)$/.test(word) ? word : word[0].toUpperCase() + word.slice(1));
 }
 
-function CleanMangaTitle(title: string, id: string): string {
+function MangaTitle(title: string, id: string): string {
     return title
         .replace(/^_r_[^\s_]+_?/i, '')
         .replace(/\s+/g, ' ')
-        .trim() || titleFallback(id);
+        .trim() || TitleCase((id.split('/').at(-1) ?? id).replace(/^[A-Za-z0-9]{10}-/, '').replace(/-/g, ' '), true);
 }
 
 const libraryListScript = `
@@ -60,7 +57,7 @@ const libraryListScript = `
 const chapterScript = `
     JSON.parse(document.querySelector('#app').getAttribute('data-page')).props.serie.chapters
         .map(chapter => ({ id: location.pathname.replace(/\\/$/, '') + '/chapter/' + chapter.slug, title: chapter.title }))
-        .sort((left, right) => parseFloat(left.title.match(/[\\d.]+/)[0]) - parseFloat(right.title.match(/[\\d.]+/)[0]));
+        .sort((left, right) => parseFloat(right.title.match(/[\\d.]+/)[0]) - parseFloat(left.title.match(/[\\d.]+/)[0]));
 `;
 
 export default class extends DecoratableMangaScraper {
@@ -86,7 +83,7 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
         const id = new URL(url).pathname.replace(/\/$/, '');
-        return new Manga(this, provider, id, titleFallback(id));
+        return new Manga(this, provider, id, MangaTitle('', id));
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
@@ -94,31 +91,21 @@ export default class extends DecoratableMangaScraper {
         if(list.entries.length < list.total) {
             throw new Error(`Incomplete library: ${list.entries.length}/${list.total}`);
         }
-        return list.entries.map(({ id, title }) => new Manga(this, provider, id, CleanMangaTitle(title, id)));
+        return list.entries.map(({ id, title }) => new Manga(this, provider, id, MangaTitle(title, id)));
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        try {
-            const dom = await FetchHTML(new Request(new URL(manga.Identifier, this.URI)));
-            const entries = this.ExtractChaptersFromHTML(dom, manga.Identifier);
-            if(entries.length > 0) {
-                return entries.map(({ id, title }) => new Chapter(this, manga, id, ToTitleCase(title)));
-            }
-        } catch {
-            // Direct series requests may be challenged; browser extraction remains a reliable fallback.
-        }
         const chapters = await FetchWindowScript<EntryInfo[]>(new Request(new URL(manga.Identifier, this.URI)), chapterScript, 0, 120_000);
-        return chapters.map(({ id, title }) => new Chapter(this, manga, id, ToTitleCase(title)));
+        return chapters.map(({ id, title }) => new Chapter(this, manga, id, TitleCase(title)));
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page<PageParameters>[]> {
         const dom = await FetchHTML(new Request(new URL(chapter.Identifier, this.URI)));
-        const payload = JSON.parse(dom.querySelector('#app')?.getAttribute('data-page') ?? '{}') as { props?: {
+        const { page_count: pageCount, chapter_token: chapterToken, server_pubkey: serverPubkey } = (JSON.parse(dom.querySelector('#app')?.getAttribute('data-page') ?? '{}') as { props?: {
             page_count?: number;
             chapter_token?: string;
             server_pubkey?: string;
-        } };
-        const { page_count: pageCount, chapter_token: chapterToken, server_pubkey: serverPubkey } = payload.props ?? {};
+        } }).props ?? {};
         if(!pageCount || !chapterToken || !serverPubkey) {
             return [];
         }
@@ -165,26 +152,17 @@ export default class extends DecoratableMangaScraper {
         return operation;
     }
 
-    private ExtractChaptersFromHTML(dom: Document, series: string): EntryInfo[] {
-        const payload = JSON.parse(dom.querySelector('#app')?.getAttribute('data-page') ?? '{}') as { props?: { serie?: { chapters?: ChapterRecord[] } } };
-        return (payload.props?.serie?.chapters ?? [])
-            .map(chapter => ({ id: `${series}/chapter/${chapter.slug}`, title: chapter.title }))
-            .sort((left, right) => parseFloat(left.title.match(/[\d.]+/)?.at(0) ?? '0') - parseFloat(right.title.match(/[\d.]+/)?.at(0) ?? '0'));
-    }
-
     private async InitializePageDecryption(serverPubkey: string): Promise<string> {
         const module = await this.GetPageAssembly();
         module._ecdhDestroy();
         const serverKey = GetBytesFromBase64(serverPubkey);
         const privateKey = crypto.getRandomValues(new Uint8Array(32));
-        const privatePointer = this.CopyToAssembly(module, privateKey);
-        const serverPointer = this.CopyToAssembly(module, serverKey);
+        const [privatePointer, serverPointer] = [privateKey, serverKey].map(data => this.CopyToAssembly(module, data));
         const clientPointer = module._malloc(32);
         const initialized = module._ecdhInit(privatePointer, privateKey.length, serverPointer, serverKey.length, clientPointer);
         module.HEAPU8.fill(0, privatePointer, privatePointer + privateKey.length);
         privateKey.fill(0);
-        module._free(privatePointer);
-        module._free(serverPointer);
+        [privatePointer, serverPointer].forEach(pointer => module._free(pointer));
         if(!initialized) {
             module._free(clientPointer);
             throw new Error('Page decryption handshake failed');
@@ -196,9 +174,9 @@ export default class extends DecoratableMangaScraper {
 
     private GetClientPubkey(serverPubkey: string): Promise<string> {
         if(this.#pageSession?.serverPubkey !== serverPubkey) {
-            const operation = this.#decryptionQueue.then(() => this.InitializePageDecryption(serverPubkey));
-            this.#decryptionQueue = operation.then(() => undefined, () => undefined);
-            this.#pageSession = { serverPubkey, clientPubkey: operation };
+            const clientPubkey = this.#decryptionQueue.then(() => this.InitializePageDecryption(serverPubkey));
+            this.#decryptionQueue = clientPubkey.then(() => undefined, () => undefined);
+            this.#pageSession = { serverPubkey, clientPubkey };
         }
         return this.#pageSession.clientPubkey;
     }
@@ -213,15 +191,11 @@ export default class extends DecoratableMangaScraper {
         const module = await this.GetPageAssembly();
         const filenameBytes = GetBytesFromUTF8(filename);
         const keyHintBytes = GetBytesFromBase64(keyHint);
-        const filenamePointer = this.CopyToAssembly(module, filenameBytes);
-        const keyHintPointer = this.CopyToAssembly(module, keyHintBytes);
-        const headerPointer = this.CopyToAssembly(module, headerBytes);
+        const [filenamePointer, keyHintPointer, headerPointer] = [filenameBytes, keyHintBytes, headerBytes].map(data => this.CopyToAssembly(module, data));
         const initialized = module._initPageDecryption(filenamePointer, filenameBytes.length, keyHintPointer, keyHintBytes.length, headerPointer, headerBytes.length);
         module._wipeMemory(keyHintPointer, keyHintBytes.length);
         module._wipeMemory(headerPointer, headerBytes.length);
-        module._free(filenamePointer);
-        module._free(keyHintPointer);
-        module._free(headerPointer);
+        [filenamePointer, keyHintPointer, headerPointer].forEach(pointer => module._free(pointer));
         keyHintBytes.fill(0);
         headerBytes.fill(0);
         if(!initialized) {
@@ -271,7 +245,7 @@ export default class extends DecoratableMangaScraper {
             }
             const script = document.createElement('script');
             script.src = new URL('/wasm/pam.js', this.URI).href;
-            script.onload = () => runtime.PageAssemblyModule?.().then(resolve, reject) ?? reject(new Error('Page assembly module is unavailable'));
+            script.onload = () => runtime.PageAssemblyModule!().then(resolve, reject);
             script.onerror = () => reject(new Error('Failed to load page assembly module'));
             document.head.appendChild(script);
         });
