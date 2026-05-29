@@ -40,7 +40,8 @@ jobs:
           #sudo apt-get update
           #sudo apt-get install -y libxkbfile-dev pkg-config libsecret-1-dev libxss1 dbus xvfb libgtk-3-0 libgconf-2-4
           sudo /usr/bin/Xvfb -ac :99 -screen 0 1920x1080x24 > /dev/null 2>&1 &
-          disown -ar # remove all running jobs (e.g. xvfb) from the job table of this bash process
+          # remove all running jobs (e.g. xvfb) from the job table of this bash process
+          disown -ar
       - name: Checkout ${{ github.repository }} @ ${{ github.ref }}
         uses: actions/checkout@v4
         with:
@@ -56,11 +57,13 @@ jobs:
         if: steps.packages.outcome == 'success' && (success() || failure())
         env:
           DISPLAY: ':99'
+          DBUS_SESSION_BUS_ADDRESS: '/dev/null'
         run: npm run test:e2e
       - name: Website Tests (Selection)
         if: steps.packages.outcome == 'success' && (success() || failure())
         env:
           DISPLAY: ':99'
+          DBUS_SESSION_BUS_ADDRESS: '/dev/null'
         run: npm run test:websites -- MangaDex
       - name: Upload Test Results
         if: failure()

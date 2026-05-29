@@ -6,12 +6,12 @@ new TestFixture({
         title: 'Qi Scans'
     },
     container: {
-        url: 'https://qiscans.org/series/celestial-phenomenon',
-        id: '5',
+        url: 'https://qimanhwa.com/series/celestial-phenomenon',
+        id: 'celestial-phenomenon',
         title: 'Celestial Phenomenon'
     },
     child: {
-        id: '/series/celestial-phenomenon/chapter-76',
+        id: 'chapter-76',
         title: 'Chapter 76'
     },
     entry: {

@@ -10,6 +10,9 @@
         ToolbarContent,
         ToolbarSearch,
         Pagination,
+        Grid,
+        Row,
+        Column,
     } from 'carbon-components-svelte';
     import Settings from 'carbon-icons-svelte/lib/Settings.svelte';
     import Star from 'carbon-icons-svelte/lib/Star.svelte';
@@ -26,8 +29,8 @@
     } from '../../../engine/providers/MediaPlugin';
     import SettingsViewer from './settings/SettingsViewer.svelte';
     // UI : Stores
-    import { Locale } from '../stores/Settings';
-    import { selectedPlugin } from '../stores/Stores';
+    import { GlobalSettings } from '../stores/Settings.svelte';
+    import { Store as UI } from '../stores/Stores.svelte';
     // Hakuneko Engine
     import { TagCategoryResourceKey as R } from '../../../i18n/ILocale';
 
@@ -94,6 +97,10 @@
     let pageSizes = $state([5, 10, 20]);
     let totalItems = $derived(filteredPluginlist.length);
 
+    $effect(() => {
+        filteredPluginlist;
+        page = 1;
+    })
 </script>
 
 <Modal
@@ -109,56 +116,60 @@
     hasForm
 >
     <div class="content tags">
-        <Tile>
-            <div class="lang">
-                <strong>{$Locale[Tags.Language.Title]()}</strong>
-                {#each langTags as item}
-                    <Chip
-                        class="cursor-pointer"
-                        category={item.Category}
-                        label={item.Title}
-                        on:click={() => addTagFilter(item)}
-                    />
-                {/each}
-            </div>
-            <div class="type">
-                <strong>{$Locale[Tags.Media.Title]()}</strong>
-                {#each typeTags as item}
-                    <Chip
-                        class="cursor-pointer"
-                        category={item.Category}
-                        label={item.Title}
-                        on:click={() => addTagFilter(item)}
-                    />
-                {/each}
-            </div>
-            <div class="other">
-                <strong>{$Locale[R.Tags_Others]()}</strong>
-                {#each otherTags as item}
-                    <Chip
-                        class="cursor-pointer"
-                        category={item.Category}
-                        label={item.Title}
-                        on:click={() => addTagFilter(item)}
-                    />
-                {/each}
-            </div>
-        </Tile>
+        <div id="tagsFilters">
+            <Grid fullWidth condensed>
+                <Row>
+                    <Column sm={1} md={4} lg={9}>
+                        <strong>{GlobalSettings.Locale[Tags.Language.Title]()}</strong>
+                        {#each langTags as item}
+                            <Chip
+                                class="cursor-pointer"
+                                category={item.Category}
+                                label={item.Title}
+                                on:click={() => addTagFilter(item)}
+                            />
+                        {/each}
+                    </Column>
+                    <Column sm={1} md={2} lg={3}>
+                        <strong>{GlobalSettings.Locale[Tags.Media.Title]()}</strong>
+                        {#each typeTags as item}
+                            <Chip
+                                class="cursor-pointer"
+                                category={item.Category}
+                                label={item.Title}
+                                on:click={() => addTagFilter(item)}
+                            />
+                        {/each}
+                    </Column>
+                    <Column sm={1} md={2} lg={4}>
+                        <strong>{GlobalSettings.Locale[R.Tags_Others]()}</strong>
+                        {#each otherTags as item}
+                            <Chip
+                                class="cursor-pointer"
+                                category={item.Category}
+                                label={item.Title}
+                                on:click={() => addTagFilter(item)}
+                            />
+                        {/each}
+                    </Column>
+                </Row>
+            </Grid>
+        </div>
     </div>
-    <Tile id="selectedTags">
+    <div id="selectedTags" >
         <span>Tags:</span>
         {#each pluginTagsFilter as item}
             <Chip
                 filter
                 category={item.Category}
                 label={item.Title}
-                on:click={() => removeTagFilter(item)}
+                on:close={() => removeTagFilter(item)}
             />
         {/each}
-    </Tile>
+    </div>
     <DataTable
         zebra
-        size="short"
+        size="compact"
         headers={[
             { key: 'favorite', empty: false },
             { key: 'image', empty: true },
@@ -171,7 +182,7 @@
         page={page}
         rows={filteredPluginlist}
         on:click:row={event => {
-            $selectedPlugin = event.detail.row.overflow;
+            UI.selectedPlugin = event.detail.row.overflow;
             isPluginModalOpen = false;
         }}
     >
@@ -184,8 +195,7 @@
                 />
             </ToolbarContent>
         </Toolbar>
-    <!-- @migration-task: migrate this slot by hand, `cell-header` is an invalid identifier -->
-    <svelte:fragment slot="cell-header" let:header>
+    <svelte:fragment slot="cellHeader" let:header>
             {#if header.key === 'favorite'}
                 <Button
                     kind="secondary"
@@ -200,7 +210,6 @@
                 {header.value}
             {/if}
         </svelte:fragment>
-        <!-- @migration-task: migrate this slot by hand, `cell` is an invalid identifier -->
         <div class="plugin-row" slot="cell" let:cell={{key,value}} in:fade>
             {#if key === 'favorite'}
                 <Button
@@ -277,8 +286,11 @@
 {/if}
 
 <style>
-    :global(#selectedTags) {
-        padding: 1rem 1rem 0 0;
+    #selectedTags {
+        margin: 0.5em 0 0.5em 0;
+    }
+    #tagsFilters {
+        margin: 0.5em 0 0.5em 0;
     }
     .action-cell {
         text-align: right;
@@ -287,7 +299,8 @@
         cursor: pointer;
     }
     :global(#pluginModal .bx--modal-content) {
-        margin-bottom: 0;
+        height: 70vh;
+        max-height: 90vh;
     }
 
     .content {
@@ -301,19 +314,5 @@
     .tags :global(.cursor-pointer) {
         cursor: pointer;
     }
-    .lang {
-        display: inline-block;
-        width: 50%;
-        vertical-align: top;
-    }
-    .type {
-        display: inline-block;
-        width: 20%;
-        vertical-align: top;
-    }
-    .other {
-        display: inline-block;
-        width: 20%;
-        vertical-align: top;
-    }
+
 </style>

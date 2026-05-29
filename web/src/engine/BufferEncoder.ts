@@ -26,6 +26,14 @@ export function GetBytesFromUTF8(encoded: string): Uint8Array<ArrayBuffer> {
     return new TextEncoder().encode(encoded);
 };
 
+/**
+ * Get the UTF-8 encoded string from bytes.
+ */
+export function GetUTF8FromBytes(bytes: BufferSource): string {
+    if(typeof bytes?.byteLength !== 'number') throw new TypeError();
+    return new TextDecoder().decode(bytes);
+};
+
 function DecodeBase64(encoded: string, predicate: (encoded: string) => boolean, xxx: (encoded: string) => string): Uint8Array<ArrayBuffer> {
     if(typeof encoded !== 'string') throw new TypeError();
     encoded = encoded.replace(/\s+/g, '');

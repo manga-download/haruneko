@@ -21,12 +21,12 @@ type APIChapters = {
     };
 }
 
-@Common.MangaCSS<HTMLImageElement>(/^{origin}\/manga\/[^/]+$/, 'img.object-cover', (img, uri) => ({ id: uri.pathname.split('/').at(-1), title: img.alt.trim() }))
+@Common.MangaCSS<HTMLMetaElement>(/^{origin}\/manga\/[^/]+$/, 'meta[property="og:title"]', (meta, uri) => ({ id: uri.pathname.split('/').at(-1), title: meta.content.replace(/\s+-\s+Scan\s+VF\s*$/, '').trim() }))
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('rimuscans', 'RimuScans', 'https://rimuscans.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Media.Manga, Tags.Language.French, Tags.Source.Scanlator);
+        super('rimuscans', 'RimuScans', 'https://rimuscan.fr', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Media.Manga, Tags.Language.French, Tags.Source.Scanlator);
     }
 
     public override get Icon() {
@@ -38,17 +38,17 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        const { mangas } = await FetchJSON<APIMangas>(new Request(new URL('/api/manga', this.URI)));
+        const { mangas } = await FetchJSON<APIMangas>(new Request(new URL('./api/manga?limit=9999', this.URI)));
         return mangas.map(({ slug, title }) => new Manga(this, provider, slug, title));
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const { manga: { chapters } } = await FetchJSON<APIChapters>(new Request(new URL(`/api/manga?slug=${manga.Identifier}`, this.URI)));
+        const { manga: { chapters } } = await FetchJSON<APIChapters>(new Request(new URL(`./api/manga?slug=${manga.Identifier}`, this.URI)));
         return chapters.map(({ id, title }) => new Chapter(this, manga, id, title));
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const { manga: { chapters } } = await FetchJSON<APIChapters>(new Request(new URL(`/api/manga?slug=${chapter.Parent.Identifier}`, this.URI)));
+        const { manga: { chapters } } = await FetchJSON<APIChapters>(new Request(new URL(`./api/manga?slug=${chapter.Parent.Identifier}`, this.URI)));
         return chapters.find(({ id }) => id === chapter.Identifier).images.map(({ url }) => new Page(this, chapter, new URL(url, this.URI)));
     }
 }

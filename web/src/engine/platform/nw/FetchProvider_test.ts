@@ -1,20 +1,24 @@
-// @vitest-environment jsdom
-import { mock } from 'vitest-mock-extended';
 import { vi, describe, it, expect } from 'vitest';
 import type { FeatureFlags } from '../../FeatureFlags';
 import FetchProvider from './FetchProvider';
 
 class TestFixture {
 
-    public readonly mockFeatureFlags = mock<FeatureFlags>();
+    public readonly mockFeatureFlags = {} as FeatureFlags;
     public readonly mockFetch = vi.fn().mockReturnValueOnce({ headers: { get: () => {} } });
     public readonly chromeFake = {
         cookies: {
             getAll: vi.fn(),
         },
         webRequest: {
-            onBeforeSendHeaders: mock<typeof chrome.webRequest.onBeforeSendHeaders>(),
-            onHeadersReceived: mock<typeof chrome.webRequest.onHeadersReceived>(),
+            onBeforeSendHeaders: {
+                hasListener: vi.fn(),
+                addListener: vi.fn(),
+            },
+            onHeadersReceived: {
+                hasListener: vi.fn(),
+                addListener: vi.fn(),
+            },
         }
     };
 
@@ -22,7 +26,7 @@ class TestFixture {
         globalThis.Request = null;
         globalThis.fetch = this.mockFetch;
         globalThis.chrome = this.chromeFake as unknown as typeof chrome;
-        this.chromeFake.cookies.getAll.mockImplementation((details, callback?) => callback(this.ParseCookies(cookies)));
+        this.chromeFake.cookies.getAll.mockImplementation((_, callback?) => callback(this.ParseCookies(cookies)));
     }
 
     private ParseCookies(cookies: string): chrome.cookies.Cookie[] {
@@ -60,7 +64,10 @@ describe('FetchProvider', () => {
             fixture.chromeFake.webRequest.onBeforeSendHeaders.addListener.mockImplementation((callback) => testee = callback);
             fixture.CreateTestee(true);
 
-            window.location = { origin: 'http://localhost' } as string & Location;
+            globalThis.window = Object.assign(globalThis.window ?? {}, {
+                location: { origin: 'http://localhost' }
+            }) as Window & typeof globalThis;
+
             const details = {
                 requestHeaders: [
                     { name: 'Referer', value: 'http://localhost/' }, // should remove referer for current origin

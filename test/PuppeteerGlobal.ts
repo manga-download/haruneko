@@ -30,9 +30,13 @@ async function CloseSplashScreen(target: puppeteer.Target) {
         url = page?.url();
         // TODO: leave after timeout?
     }
-    if(url && /splash.html/i.test(url)) {
-        page?.removeAllListeners();
-        await page?.close();
+    if (url && /splash.html/i.test(url)) {
+        try {
+            page?.removeAllListeners();
+            await page?.close();
+        } catch (error) {
+            console.log(new Date().toISOString(), '➔', error);
+        }
     }
 }
 
@@ -81,7 +85,17 @@ async function LaunchElectron(): Promise<puppeteer.Browser> {
         defaultViewport: null,
         ignoreDefaultArgs: true,
         executablePath: await DetectElectron(),
-        args: [ electronApp, '--remote-debugging-port=0', '--disable-blink-features=AutomationControlled', '--ignore-certificate-errors', '--no-sandbox', '--disable-gpu', '--trace-warnings', '--origin=' + AppURL ],
+        args: [
+            electronApp,
+            '--no-sandbox',
+            '--disable-gpu',
+            '--trace-warnings',
+            '--remote-debugging-port=0', // Use a random port to avoid anti-bot detection
+            '--disable-features=UseDBus', // Suppress warnings/errors when electron tries to connect to D-Bus session in CI/CD pipeline
+            '--ignore-certificate-errors',
+            '--disable-blink-features=AutomationControlled', // Suppress certain automation flags to avoid anti-bot detection
+            '--origin=' + AppURL
+        ],
         userDataDir: userDir,
         dumpio: true,
     });

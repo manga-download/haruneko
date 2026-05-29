@@ -4,7 +4,7 @@ import { Kosaku } from './templates/Kosaku';
 import * as Common from './decorators/Common';
 import { WPMangaProtectorPagesExtractorScript } from './decorators/WordPressMadara';
 
-@Common.PagesSinglePageJS(WPMangaProtectorPagesExtractorScript, 2500)
+@Common.PagesSinglePageJS(WPMangaProtectorPagesExtractorScript, 750)
 export default class extends Kosaku {
 
     public constructor() {

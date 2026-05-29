@@ -4,7 +4,7 @@ new TestFixture({
     plugin: {
         id: 'manhastro',
         title: 'ManHastro'
-    }, /* Need Login for everything
+    },
     container: {
         url: 'https://manhastro.net/manga/47401',
         id: '47401',
@@ -18,5 +18,5 @@ new TestFixture({
         index: 2,
         size: 5_026,
         type: 'image/avif'
-    }*/
+    }
 }).AssertWebsite();

@@ -17,16 +17,11 @@ type APIComic = {
     };
 };
 
-function ChapterExtractor(anchor: HTMLAnchorElement) {
-    const id = `/comic/ep_view/${anchor.dataset.comicId}/${anchor.dataset.episodeId}`;
-    let title = anchor.querySelector('p.ep_title').textContent.trim();
-    const subtitle = anchor.querySelector('p.ep_stitle')?.textContent.trim();
-    title += subtitle ? ' - ' + subtitle : '';
-    return { id, title };
-}
-
 @Common.MangaCSS(/^{origin}\/comic\/ep_list\/[^/]+/, 'div.ep_comic_info span.comic_tit span')
-@Common.ChaptersSinglePageCSS('div.eplist ul a.episode-items', undefined, ChapterExtractor)
+@Common.ChaptersSinglePageCSS('div.eplist ul a.episode-items', undefined, anchor => ({
+    id: `/comic/ep_view/${anchor.dataset.comicId}/${anchor.dataset.episodeId}`,
+    title: [anchor.querySelector('p.ep_title').textContent.trim(), anchor.querySelector('p.ep_stitle')?.textContent.trim() ?? ''].join(' - ').replace(/\s*-\s*$/, '')
+}))
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 

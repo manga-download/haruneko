@@ -11,7 +11,7 @@ new TestFixture({
         title: '岳'
     },
     child: {
-        id: '/episodes/4b87f55986ccc/',
+        id: '/episodes/4b87f55986ccc',
         title: '1巻－第0歩 お家'
     },
     entry: {

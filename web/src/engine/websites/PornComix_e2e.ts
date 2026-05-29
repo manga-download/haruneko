@@ -1,6 +1,6 @@
-import { TestFixture, type Config } from '../../../test/WebsitesFixture';
+import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config: Config = {
+new TestFixture({
     plugin: {
         id: 'porncomix',
         title: 'PornComix'
@@ -16,9 +16,7 @@ const config: Config = {
     },
     entry: {
         index: 0,
-        size: 287_491,
-        type: 'image/jpeg'
+        size: 285_864,
+        type: 'image/webp'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

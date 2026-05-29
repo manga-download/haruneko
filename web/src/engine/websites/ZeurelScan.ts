@@ -3,24 +3,11 @@ import icon from './ZeurelScan.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 
-function MangaExtractor(anchor: HTMLAnchorElement) {
-    return {
-        id: anchor.pathname + anchor.search,
-        title: anchor.text.trim()
-    };
-}
-
-function ChapterExtractor(anchor: HTMLAnchorElement) {
-    return {
-        id: anchor.pathname + anchor.search,
-        title: anchor.querySelector('div.numCap').textContent.trim()
-    };
-}
-
-@Common.MangaCSS(/^{origin}\/serie\.php\?serie=\d+$/, '.valore', Common.WebsiteInfoExtractor({ includeSearch: true }))
-@Common.MangasSinglePageCSS('/', 'div.dropdown-content a.titoliSerie', MangaExtractor)
-@Common.ChaptersSinglePageCSS('.rigaCap a', undefined, ChapterExtractor)
-@Common.PagesSinglePageCSS('.Immag img')
+@Common.MangaCSS(/^{origin}\/serie\/[^/]+$/, 'div.series-meta h1')
+@Common.MangasSinglePageCSS('/series', 'a.series-card')
+@Common.ChaptersSinglePageCSS<HTMLAnchorElement>('div.chapter a', undefined,
+    anchor => ({ id: anchor.pathname, title: anchor.text.replace(/\d+\/\d+\/\d+\s*$/, '').replace(/–\s*$/, '').trim() }))
+@Common.PagesSinglePageCSS('.reader > img')
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
