@@ -26,18 +26,15 @@ export default class extends DecoratableMangaScraper {
     async FetchChapters(m: Manga): Promise<Chapter[]> {
         const r = await Fetch<any>(new URL(`./mangas/${m.Identifier}`, this.apiURL));
         const cs = r.ero_chapters || r.chapters || r.data?.ero_chapters || [];
+
         return cs.sort((a: any, b: any) => parseFloat(b.ero_chapter || b.id || 0) - parseFloat(a.ero_chapter || a.id || 0))
             .map((i: any) => {
-                const rawTitle = i.post_title || i.title || i.name || 'ตอนใหม่';
-                const index = rawTitle.search(/(ตอนที่|Chapter|Ch\.)/i);
-                const title = index !== -1 ? rawTitle.substring(index).trim() : rawTitle.replace(new RegExp(m.Title, 'gi'), '').replace(/^[\s:-]+/, '').trim();
-
+                const title = (i.post_title || i.title || i.name || 'ตอนใหม่').trim();
                 return new Chapter(this, m, (i.ero_chapter || i.id || i.slug).toString(), title);
             });
     }
 
     async FetchPages(c: Chapter): Promise<Page[]> {
-
         const mangaId = c.Parent.Identifier;
         const chapterId = c.Identifier;
         const r = await Fetch<{ data: string[] }>(new URL(`./mangas/${mangaId}/${chapterId}/images`, this.apiURL));
