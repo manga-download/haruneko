@@ -26,10 +26,13 @@ export default class extends DecoratableMangaScraper {
     async FetchChapters(m: Manga): Promise<Chapter[]> {
         const r = await Fetch<any>(new URL(`./mangas/${m.Identifier}`, this.apiURL));
         const cs = r.ero_chapters || r.chapters || r.data?.ero_chapters || [];
-
+        const safeTitle = m.Title.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        const titleRegex = new RegExp(safeTitle, 'gi');
         return cs.sort((a: any, b: any) => parseFloat(b.ero_chapter || b.id || 0) - parseFloat(a.ero_chapter || a.id || 0))
             .map((i: any) => {
-                const title = (i.post_title || i.title || i.name || 'ตอนใหม่').trim();
+                const rawTitle = i.post_title || i.title || i.name || 'ตอนใหม่';
+                const index = rawTitle.search(/(ตอนที่|Chapter|Ch\.)/i);
+                const title = index !== -1 ? rawTitle.substring(index).trim() : rawTitle.replace(titleRegex, '').replace(/^[\s:-]+/, '').trim();
                 return new Chapter(this, m, (i.ero_chapter || i.id || i.slug).toString(), title);
             });
     }
