@@ -2,70 +2,46 @@ import { Tags } from '../Tags';
 import icon from './Manga168.webp';
 import { Chapter, DecoratableMangaScraper, Manga, type MangaPlugin, Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { FetchJSON } from '../platform/FetchProvider';
 
-type APIResult<T> = {
-    data: T;
-};
+const H = { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36', 'Referer': 'https://manga168x.com/', 'Origin': 'https://manga168x.com' };
 
-type APIManga = {
-    id: string;
-    title: string;
-};
-
-type APIMangaDetails = APIResult<{
-    id_manga: number;
-    post_title: string;
-    ero_chapters: APIChapter[];
-}>;
-
-type APIChapter = {
-    ero_chapter: string;
-    post_title: string;
-};
-
-type APIMangas = APIResult<APIManga[]>;
-type APIPages = APIResult<string[]>;
+async function Fetch<T>(u: URL): Promise<T> { const r = await fetch(u.href, { headers: H }); if (r.status !== 200) throw new Error(); return await r.json(); }
 
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
     private readonly apiURL = `${this.URI.origin}/api/manga/`;
 
-    public constructor() {
-        super('manga168', 'Manga168', 'https://manga168x.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Media.Manga, Tags.Language.Thai, Tags.Source.Aggregator);
+    constructor() { super('manga168', 'Manga168', 'https://manga168x.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Media.Manga, Tags.Language.Thai, Tags.Source.Aggregator); }
+    get Icon() { return icon; }
+
+    ValidateMangaURL(u: string) { return new RegExpSafe(`^${this.URI.origin}/manga/[^/]+$`).test(u); }
+
+    async FetchManga(p: MangaPlugin, u: string): Promise<Manga> {
+        const s = u.split('/').at(-1) || '';
+        const r = await Fetch<any>(new URL(`./mangas/${s}`, this.apiURL));
+        const id = r.id_manga || r.data?.id_manga || s;
+        return new Manga(this, p, id.toString(), r.post_title || r.data?.post_title);
     }
 
-    public override get Icon() {
-        return icon;
+    async FetchChapters(m: Manga): Promise<Chapter[]> {
+        const r = await Fetch<any>(new URL(`./mangas/${m.Identifier}`, this.apiURL));
+        const cs = r.ero_chapters || r.chapters || r.data?.ero_chapters || [];
+        return cs.sort((a: any, b: any) => parseFloat(b.ero_chapter || b.id || 0) - parseFloat(a.ero_chapter || a.id || 0))
+            .map((i: any) => {
+                const rawTitle = i.post_title || i.title || i.name || 'ตอนใหม่';
+                const index = rawTitle.search(/(ตอนที่|Chapter|Ch\.)/i);
+                const title = index !== -1 ? rawTitle.substring(index).trim() : rawTitle.replace(new RegExp(m.Title, 'gi'), '').replace(/^[\s:-]+/, '').trim();
+
+                return new Chapter(this, m, (i.ero_chapter || i.id || i.slug).toString(), title);
+            });
     }
 
-    public override ValidateMangaURL(url: string): boolean {
-        return new RegExpSafe(`^${this.URI.origin}/manga/[^/]+$`).test(url);
-    }
+    async FetchPages(c: Chapter): Promise<Page[]> {
 
-    public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
-        const { data: { id_manga: id, post_title: title } } = await FetchJSON<APIMangaDetails>(new Request(new URL(`./mangas/${url.split('/').at(-1)}`, this.apiURL)));
-        return new Manga(this, provider, `${id}`, title);
-    }
-
-    public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        type This = typeof this;
-        return Array.fromAsync(async function* (this: This) {
-            for (let page = 0, run = true; run ; page++) {
-                const { data } = await FetchJSON<APIMangas>(new Request(new URL(`./mangas?limit=500&page=${page}`, this.apiURL)));
-                const mangas = data.map(({ id, title }) => new Manga(this, provider, id, title));
-                mangas.length > 0 ? yield* mangas : run = false;
-            }
-        }.call(this));
-    }
-
-    public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const { data: { ero_chapters: chapters } } = await FetchJSON<APIMangaDetails>(new Request(new URL(`./mangas/${manga.Identifier}`, this.apiURL)));
-        return chapters.map(({ ero_chapter: id, post_title: title }) => new Chapter(this, manga, `${id}`, title.replace(manga.Title, '').trim() || title));
-    }
-
-    public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const { data } = await FetchJSON<APIPages>(new Request(new URL(`./mangas/${chapter.Parent.Identifier}/${chapter.Identifier}/images`, this.apiURL)));
-        return data.map(page => new Page(this, chapter, new URL(page, this.URI), { Referer: this.URI.href }));
+        const mangaId = c.Parent.Identifier;
+        const chapterId = c.Identifier;
+        const r = await Fetch<{ data: string[] }>(new URL(`./mangas/${mangaId}/${chapterId}/images`, this.apiURL));
+        if (!r.data?.length) throw new Error();
+        return r.data.map(u => new Page(this, c, new URL(u), { Referer: 'https://manga168x.com/' }));
     }
 }

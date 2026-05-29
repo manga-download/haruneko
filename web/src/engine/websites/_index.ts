@@ -403,10 +403,7 @@ export { default as MangaSpark } from './MangaSpark';
 export { default as MangasScans } from './MangasScans';
 export { default as MangaStarz } from './MangaStarz';
 export { default as MangaStep } from './MangaStep';
-<<<<<<< HEAD
-=======
 export { default as MangasTop } from './MangasTop';
->>>>>>> 1e03a8ca61fb7336f14f11f11ec0a9923739c67b
 export { default as MangaSushi } from './MangaSushi';
 export { default as MangaSusuku } from './MangaSusuku';
 export { default as MangaSwat } from './MangaSwat';
