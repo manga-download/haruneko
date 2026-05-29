@@ -5,7 +5,7 @@ import { Zing92Base } from './templates/Zing92Base';
 export default class extends Zing92Base {
 
     public constructor () {
-        super('syosetu', 'Syosetu', 'https://syosetu.buzz', Tags.Media.Manga, Tags.Language.Japanese, Tags.Source.Aggregator);
+        super('syosetu', 'Syosetu', 'https://syosetu.mom', Tags.Media.Manga, Tags.Language.Japanese, Tags.Source.Aggregator);
         this.WithNonceName(undefined);
     }
 
