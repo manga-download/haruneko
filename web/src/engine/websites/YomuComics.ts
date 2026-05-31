@@ -4,8 +4,8 @@ import { Chapter, DecoratableMangaScraper, Manga, type MangaPlugin, Page } from 
 import * as Common from './decorators/Common';
 import { FetchJSON, FetchNextJS } from '../platform/FetchProvider';
 
-type APIResult<T> = {
-    data: T;
+type APIMangas = {
+    garimpo: APIManga[];
 };
 
 type APIManga = {
@@ -17,13 +17,13 @@ type HydratedChapters = {
     capitulos_lista: {
         id: string;
         title: string;
-    }[]
+    }[];
 };
 
 type APIChapter = {
     chapter: {
         content: string[];
-    }
+    };
 };
 
 @Common.MangaCSS<HTMLImageElement>(/^{origin}\/obra\/[^/]+$/, 'main img.object-cover', (img, uri) => ({ id: uri.pathname.split('/').at(-1), title: img.alt.trim() }))
@@ -40,8 +40,8 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        const { data } = await FetchJSON<APIResult<APIManga[]>>(new Request(new URL('./library?page=1&limit=99999&sort=popular&type=all', this.apiUrl)));
-        return data.map(({ slug, title }) => new Manga(this, provider, slug, title));
+        const { garimpo } = await FetchJSON<APIMangas>(new Request(new URL('./library?page=1&limit=99999&sort=popular&type=all', this.apiUrl)));
+        return garimpo.map(({ slug, title }) => new Manga(this, provider, slug, title));
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
