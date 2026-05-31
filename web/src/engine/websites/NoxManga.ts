@@ -29,11 +29,11 @@ type APIChapter = {
 @Common.MangaCSS(/^{origin}\/manga\/[^/]+$/, 'div.detail-info-section .detail-title', (el, uri) => ({ id: uri.pathname.split('/').at(-1), title: el.textContent.trim() }))
 @Common.ImageAjax(true)
 export default class extends DecoratableMangaScraper {
-    private readonly apiUrl = 'https://xodneo.site/api/v1/';
+    private readonly apiURL = 'https://xodneo.site/api/v1/';
     private readonly siteId = '00000000-0000-0000-0000-000000000003';
 
     public constructor() {
-        super('noxmanga', 'NoxManga', 'https://noxmanga.co', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Portuguese, Tags.Source.Aggregator);
+        super('noxmanga', 'NoxManga', 'https://noxtoons.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Portuguese, Tags.Source.Aggregator);
     }
 
     public override get Icon() {
@@ -41,7 +41,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async Initialize(): Promise<void> {
-        //do nothing.. website never initialize properly
+        //HACK : website never initialize properly
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
@@ -66,7 +66,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     private async FetchAPI<T extends JSONElement>(endpoint: string): Promise<T> {
-        return FetchJSON<T>(new Request(new URL(endpoint, this.apiUrl), {
+        return FetchJSON<T>(new Request(new URL(endpoint, this.apiURL), {
             headers: {
                 Referer: this.URI.href,
                 Origin: this.URI.origin,
