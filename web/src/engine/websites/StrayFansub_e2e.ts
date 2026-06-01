@@ -6,7 +6,7 @@ new TestFixture({
         title: 'Stray Fansub'
     }, /* Need Login
     container: {
-        url: 'https://strayfansub.site/manga/dash/',
+        url: 'https://strayfansub.sbs/manga/dash/',
         id: /manga/dash/ }),
         title: 'DASH'
     },
