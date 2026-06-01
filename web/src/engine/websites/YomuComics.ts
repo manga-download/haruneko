@@ -4,32 +4,31 @@ import { Chapter, DecoratableMangaScraper, Manga, type MangaPlugin, Page } from 
 import * as Common from './decorators/Common';
 import { FetchJSON, FetchNextJS } from '../platform/FetchProvider';
 
-type APIResult<T> = {
-    data: T;
-};
-
-type APIManga = {
-    slug: string;
-    title: string;
+type APIMangas = {
+    garimpo: {
+        slug: string;
+        title: string;
+    }[];
 };
 
 type HydratedChapters = {
     capitulos_lista: {
         id: string;
         title: string;
-    }[]
+    }[];
 };
 
-type APIChapter = {
+type APIPages = {
     chapter: {
         content: string[];
-    }
+    };
 };
 
 @Common.MangaCSS<HTMLImageElement>(/^{origin}\/obra\/[^/]+$/, 'main img.object-cover', (img, uri) => ({ id: uri.pathname.split('/').at(-1), title: img.alt.trim() }))
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
-    private readonly apiUrl = 'https://yomu.com.br/api/';
+
+    private readonly apiURL = 'https://yomu.com.br/api/';
 
     public constructor() {
         super('yomucomics', 'Yomu Comics', 'https://yomu.com.br', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Portuguese, Tags.Source.Aggregator);
@@ -40,8 +39,8 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        const { data } = await FetchJSON<APIResult<APIManga[]>>(new Request(new URL('./library?page=1&limit=99999&sort=popular&type=all', this.apiUrl)));
-        return data.map(({ slug, title }) => new Manga(this, provider, slug, title));
+        const { garimpo } = await FetchJSON<APIMangas>(new Request(new URL('./library?page=1&limit=99999&sort=popular&type=all', this.apiURL)));
+        return garimpo.map(({ slug, title }) => new Manga(this, provider, slug, title));
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
@@ -50,7 +49,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const { chapter: { content } } = await FetchJSON<APIChapter>(new Request(new URL(`./chapters?id=${chapter.Identifier}`, this.apiUrl)));
+        const { chapter: { content } } = await FetchJSON<APIPages>(new Request(new URL(`./chapters?id=${chapter.Identifier}`, this.apiURL)));
         return content.map(image => new Page(this, chapter, new URL(image, this.URI)));
     }
 }
