@@ -173,12 +173,12 @@ export default class extends DecoratableMangaScraper {
     private async FetchAPI<T extends JSONElement>(query: string, variables: JSONObject, queryHash?: string): Promise<T> {
         const result: APIEncryptedResult | APIResult<T> = queryHash
             ? await (async () => {
-                const url = new URL(this.apiUrl);
+                const url = new URL(this.apiURL);
                 url.searchParams.set('variables', JSON.stringify(variables));
                 url.searchParams.set('extensions', JSON.stringify({ persistedQuery: { version: 1, sha256Hash: queryHash } }));
                 return (await FetchJSON<APIResult<T>>(new Request(url, { headers: { Referer: this.URI.href, Origin: this.URI.origin } }))).data;
             })()
-            : await FetchGraphQL<APIEncryptedResult & T>(new Request(this.apiUrl), '', query, variables);
+            : await FetchGraphQL<APIEncryptedResult & T>(new Request(this.apiURL), '', query, variables);
         return 'tobeparsed' in result && result.tobeparsed ? await this.Decrypt<T>(result.tobeparsed) : (result as T);
     }
 
