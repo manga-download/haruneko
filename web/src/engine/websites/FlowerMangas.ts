@@ -21,7 +21,6 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async Initialize(): Promise<void> {
-        //trigger Cloudflare at initialization
         return await FetchWindowScript(new Request(new URL('/manga/-/', this.URI)), '');
     }
 }

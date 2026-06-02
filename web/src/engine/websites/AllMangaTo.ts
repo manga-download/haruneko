@@ -1,6 +1,6 @@
 import { Delay } from '../BackgroundTimers';
 import { GetBytesFromBase64, GetBytesFromUTF8, GetUTF8FromBytes } from '../BufferEncoder';
-import { FetchGraphQL, FetchJSON } from '../platform/FetchProvider';
+import { FetchJSON, FetchGraphQL, FetchWindowScript } from '../platform/FetchProvider';
 import { Chapter, DecoratableMangaScraper, Manga, type MangaPlugin, Page } from '../providers/MangaPlugin';
 import { Tags } from '../Tags';
 import icon from './AllMangaTo.webp';
@@ -60,7 +60,7 @@ type ChapterID = {
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
-    private readonly apiUrl = 'https://api.allanime.day/api';
+    private readonly apiURL = 'https://api.allanime.day/api';
 
     public constructor() {
         super('allmanga', 'AllManga.to', 'https://allmanga.to', Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Language.English, Tags.Source.Aggregator);
@@ -68,6 +68,10 @@ export default class extends DecoratableMangaScraper {
 
     public override get Icon() {
         return icon;
+    }
+
+    public override async Initialize(): Promise<void> {
+        return FetchWindowScript(new Request(new URL('/manga/-', this.URI)), '');
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
@@ -112,10 +116,9 @@ export default class extends DecoratableMangaScraper {
                 const title = [
                     'Chapter',
                     infos.episodeIdNum,
-                    infos.notes ? '-' : '',
-                    infos.notes ?? '',
+                    infos.notes && `- ${infos.notes}`,
                     type === 'raw' ? '[raw]' : '',
-                ].filter(Boolean).join(' ').trim();
+                ].joinTitleSegments();
 
                 return new Chapter(this, manga, JSON.stringify({ id: `${num}`, translationType: type }), title);
             });
