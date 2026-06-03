@@ -1,6 +1,6 @@
 import { Delay } from '../BackgroundTimers';
 import { GetBytesFromBase64, GetBytesFromUTF8, GetUTF8FromBytes } from '../BufferEncoder';
-import { FetchGraphQL, FetchJSON } from '../platform/FetchProvider';
+import { FetchJSON, FetchGraphQL, FetchWindowScript } from '../platform/FetchProvider';
 import { Chapter, DecoratableMangaScraper, Manga, type MangaPlugin, Page } from '../providers/MangaPlugin';
 import { Tags } from '../Tags';
 import icon from './AllMangaTo.webp';
@@ -60,7 +60,7 @@ type ChapterID = {
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
-    private readonly apiUrl = 'https://api.allanime.day/api';
+    private readonly apiURL = 'https://api.allanime.day/api';
 
     public constructor() {
         super('allmanga', 'AllManga.to', 'https://allmanga.to', Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Language.English, Tags.Source.Aggregator);
@@ -68,6 +68,10 @@ export default class extends DecoratableMangaScraper {
 
     public override get Icon() {
         return icon;
+    }
+
+    public override async Initialize(): Promise<void> {
+        return FetchWindowScript(new Request(new URL('/manga/-', this.URI)), '');
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
@@ -112,10 +116,9 @@ export default class extends DecoratableMangaScraper {
                 const title = [
                     'Chapter',
                     infos.episodeIdNum,
-                    infos.notes ? '-' : '',
-                    infos.notes ?? '',
+                    infos.notes && `- ${infos.notes}`,
                     type === 'raw' ? '[raw]' : '',
-                ].filter(Boolean).join(' ').trim();
+                ].joinTitleSegments();
 
                 return new Chapter(this, manga, JSON.stringify({ id: `${num}`, translationType: type }), title);
             });
@@ -170,12 +173,12 @@ export default class extends DecoratableMangaScraper {
     private async FetchAPI<T extends JSONElement>(query: string, variables: JSONObject, queryHash?: string): Promise<T> {
         const result: APIEncryptedResult | APIResult<T> = queryHash
             ? await (async () => {
-                const url = new URL(this.apiUrl);
+                const url = new URL(this.apiURL);
                 url.searchParams.set('variables', JSON.stringify(variables));
                 url.searchParams.set('extensions', JSON.stringify({ persistedQuery: { version: 1, sha256Hash: queryHash } }));
                 return (await FetchJSON<APIResult<T>>(new Request(url, { headers: { Referer: this.URI.href, Origin: this.URI.origin } }))).data;
             })()
-            : await FetchGraphQL<APIEncryptedResult & T>(new Request(this.apiUrl), '', query, variables);
+            : await FetchGraphQL<APIEncryptedResult & T>(new Request(this.apiURL), '', query, variables);
         return 'tobeparsed' in result && result.tobeparsed ? await this.Decrypt<T>(result.tobeparsed) : (result as T);
     }
 

@@ -37,6 +37,7 @@ const patterns = [
     '*://*.outbrain.com/*',
     '*://*.outbrainimg.com/*',
     '*://*.papayads.net/*',
+    '*://*.profitablecpmratenetwork.com/*',
     '*://*.profitableratecpm.com/',
     '*://*.prplads.com/*',
     '*://*.pubadx.one/*',

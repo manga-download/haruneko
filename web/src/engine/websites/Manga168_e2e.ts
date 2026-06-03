@@ -6,12 +6,12 @@ new TestFixture({
         title: 'Manga168'
     },
     container: {
-        url: 'https://www2.manga1688.com/manga/overgeared-remake/',
-        id: '/manga/overgeared-remake/',
+        url: 'https://manga168x.com/manga/overgeared-remake',
+        id: '135587',
         title: 'Overgeared (Remake)'
     },
     child: {
-        id: encodeURI('/overgeared-remake-ตอนที่-215/').toLowerCase(),
+        id: '215',
         title: 'ตอนที่ 215'
     },
     entry: {

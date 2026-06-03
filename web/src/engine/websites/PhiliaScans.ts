@@ -33,13 +33,13 @@ export default class extends DecoratableMangaScraper {
         return Array.fromAsync(async function* (this: This) {
             for (let page = 1, run = true; run; page++) {
                 const doc = await FetchHTML(new Request(new URL(`/all-mangas?page=${page}`, this.URI)));
-                const mangasInfos = [...doc.querySelectorAll<HTMLDivElement>('div:has(div.manga-card-info)')];
+                const mangaInfos = [...doc.querySelectorAll<HTMLDivElement>('div:has(div.manga-card-info)')];
                 const mangasSkeletons = [...doc.querySelectorAll<HTMLAnchorElement>('a.manga-card, a[href^="/series/"]')];
                 const mangas = mangasSkeletons.map(manga => {
-                    let title = manga.querySelector('.card-title')?.textContent.trim();
+                    let title = manga.querySelector<HTMLElement>('.card-title')?.innerText.trim();
                     if (!title) {
                         const titleId = manga.querySelector('template:last-of-type').id.replace(/^P/, 'S');
-                        title = mangasInfos.find(el => el.id === titleId).querySelector('.card-title').textContent.trim();
+                        title = mangaInfos.find(el => el.id === titleId).querySelector<HTMLElement>('.card-title')?.innerText.trim();
                     }
                     return new Manga(this, provider, manga.pathname, title);
                 });
@@ -50,6 +50,6 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const { langChapters } = await FetchNextJS<HydratedChapters>(new Request(new URL(manga.Identifier, this.URI)), data => 'langChapters' in data);
-        return langChapters.map(({ slug, title, number }) => new Chapter(this, manga, `${manga.Identifier}/${slug}`, [`Ch.${number}`, title].filter(Boolean).join(' ').trim()));
+        return langChapters.map(({ slug, title, number }) => new Chapter(this, manga, `${manga.Identifier}/${slug}`, [`Ch.${number}`, title].joinTitleSegments()));
     }
 }

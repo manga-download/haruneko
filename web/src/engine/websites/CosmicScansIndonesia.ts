@@ -5,7 +5,7 @@ import * as MangaStream from './decorators/WordPressMangaStream';
 import * as Common from './decorators/Common';
 import { FetchWindowScript } from '../platform/FetchProvider';
 
-@MangaStream.MangaCSS(/^https:\/\/lc\d+\.cosmicscans\.asia\/manga\/[^/]+\/$/)
+@MangaStream.MangaCSS(/^https:\/\/lc\d+\.cosmicscans\.to\/manga\/[^/]+\/$/)
 @MangaStream.MangasSinglePageCSS()
 @MangaStream.ChaptersSinglePageCSS()
 @MangaStream.PagesSinglePageJS([ /800X250\.webp$/, /\.gif$/ ], 'ts_reader.params.sources.shift().images;')
@@ -13,7 +13,7 @@ import { FetchWindowScript } from '../platform/FetchProvider';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('cosmicscansid', 'Cosmic Scans Indonesia', 'https://lc8.cosmicscans.asia', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Indonesian, Tags.Source.Scanlator, Tags.Accessibility.RegionLocked);
+        super('cosmicscansid', 'Cosmic Scans Indonesia', 'https://lc1.cosmicscans.to', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Indonesian, Tags.Source.Scanlator, Tags.Accessibility.RegionLocked);
     }
 
     public override get Icon() {
