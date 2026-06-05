@@ -3,7 +3,6 @@ import '../Manhwa18_e2e';
 import '../ManhwaEighteen_e2e';
 import '../NicoManga_e2e';
 import '../NihonKuni_e2e';
-import '../OlimpoScans_e2e';
 import '../RawInu_e2e';
 import '../WeLoMa_e2e';
 import '../WeLoveManga_e2e';
