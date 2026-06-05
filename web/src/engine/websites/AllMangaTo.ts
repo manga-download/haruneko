@@ -56,7 +56,7 @@ type ChapterID = {
     translationType: string;
 };
 
-@Common.MangaCSS<HTMLUListElement>(/{origin}\/manga\/[^/]+$/, 'ol.breadcrumb li:last-of-type', (li, uri) => ({ id: uri.href.split('/').at(-1), title: li.innerText.trim() }))
+@Common.MangaCSS<HTMLUListElement>(/^{origin}\/manga\/[^/]+$/, 'ol.breadcrumb li:last-of-type', (li, uri) => ({ id: uri.href.split('/').at(-1), title: li.innerText.trim() }))
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
