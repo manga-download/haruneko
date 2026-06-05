@@ -101,7 +101,6 @@ import '../ManhuaHot_e2e';
 import '../ManhuaNext_e2e';
 import '../ManhuaUs_e2e';
 import '../Manhwa68_e2e';
-import '../Manhwaclan_e2e';
 import '../ManhwaClub_e2e';
 import '../ManhwaDashRaw_e2e';
 import '../ManhwaHub_e2e';
