@@ -1,10 +1,9 @@
 import { Tags } from '../Tags';
 import icon from './LunarAnimes.webp';
-import { FetchJSON, FetchWindowPreloadScript } from '../platform/FetchProvider';
+import { FetchJSON } from '../platform/FetchProvider';
 import { type MangaPlugin, Manga, Chapter, Page, DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { GetBytesFromBase64, GetBytesFromUTF8, GetUTF8FromBytes } from '../BufferEncoder';
-import { RandomText } from '../Random';
+import { DRMProvider } from './LunarAnimes.DRM';
 
 type APIMangas = {
     manga: APIManga[];
@@ -40,7 +39,9 @@ const chapterLanguageMap = new Map([
 @Common.MangaCSS<HTMLMetaElement>(/^{origin}\/manga\/[^/]+$/, 'meta[property="og:title"]', (element, uri) => ({ id: uri.pathname.split('/').at(-1), title: element.content.trim() }))
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
+
     private readonly apiUrl = 'https://api.lunaranime.ru/api/manga/';
+    readonly #drm = new DRMProvider();
 
     public constructor() {
         super('lunaranimes', 'Lunar Animes', 'https://lunaranime.ru', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Multilingual, Tags.Source.Aggregator);
@@ -70,37 +71,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const eventName = RandomText(32);
-        const PageScript = `
-            new Promise( resolve => {
-                    window.addEventListener('${eventName}', event => resolve(event.detail), { once: true });
-            });
-        `;
-
-        const PagePreloadScript = `
-            JSON.parse = new Proxy(JSON.parse, {
-                apply(target, thisArg, args) {
-                    const result = Reflect.apply(target, thisArg, args);
-                    try{
-                        if (result.data?.images){
-                            setInterval(() => window.dispatchEvent(new CustomEvent('${eventName}', { detail: result.data.images })), 250);
-                        }
-                    } catch {}
-                    return result;
-                }
-            });
-        `;
-
-        const data = await FetchWindowPreloadScript<string[]>(new Request(new URL(chapter.Identifier, this.URI)), PagePreloadScript, PageScript);
-        return data.map(image => new Page(this, chapter, new URL(image), { Referer: this.URI.href }));
+        const pages = await this.#drm.CreateImageLinks(new URL(chapter.Identifier, this.URI));
+        return pages.map(image => new Page(this, chapter, new URL(image), { Referer: this.URI.href }));
     }
-
-    private async Decrypt<T extends JSONElement>(data: string, secretKey: string): Promise<T> {
-        const keyData = await crypto.subtle.digest('SHA-256', GetBytesFromUTF8(secretKey));
-        const algorithm = { name: 'AES-CBC', iv: new Uint8Array(16) };
-        const key = await crypto.subtle.importKey('raw', keyData, algorithm, false, ['decrypt']);
-        const decrypted = await crypto.subtle.decrypt(algorithm, key, GetBytesFromBase64(data));
-        return JSON.parse(GetUTF8FromBytes(decrypted)) as T;
-    }
-
 }
