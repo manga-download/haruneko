@@ -29,110 +29,13 @@ type APIPages = {
     page_list: string[];
 };
 
-type PageInfo = {
-    seed: number;
-    version: number;
+type PageParameters = {
+    Seed: number;
+    Version: number;
 };
 
-// TODO: Check for possible revision
-
-@Common.MangasNotSupported()
-export default class extends DecoratableMangaScraper {
-    private CHARSET_EVEN: string;
-    private CHARSET_ODD: string;
-
-    protected readonly drm = new DRMProvider('https://api.ciao.shogakukan.co.jp/', {
-        name: 'X-Bambi-Hash',
-        seed: '',
-    },
-    { headers: { 'x-bambi-is-crawler': 'false' } }, //headers for all requests
-    { version: '6.0.0', platform: '3' } //urlparams for all requests
-    );
-
-    public constructor(id = 'ciaoplus', label = 'Ciao Plus', url = 'https://ciao.shogakukan.co.jp', tags = [Tags.Media.Manga, Tags.Language.Japanese, Tags.Source.Official]) {
-        super(id, label, url, ...tags);
-    }
-
-    public override get Icon() {
-        return icon;
-    }
-
-    public WithCharsetEVEN(charset: string) {
-        this.CHARSET_EVEN = charset;
-        return this;
-    }
-
-    public WithCharsetODD(charset: string) {
-        this.CHARSET_ODD = charset;
-        return this;
-    }
-
-    async #FetchMangaInfo(mangaID: string): Promise<APIManga> {
-        return this.drm.FetchAPI<APIManga>('./title/list', {
-            title_id_list: parseInt(mangaID).toString()//to remove leading 0,
-        });
-    }
-
-    public override ValidateMangaURL(url: string): boolean {
-        return new RegExpSafe(`^${this.URI.origin}/comics/title/\\d+/.*`).test(url);
-    }
-
-    public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
-        const { title_list: [{ title_id, title_name }] } = await this.#FetchMangaInfo(new URL(url).pathname.split('/').at(3));
-        return new Manga(this, provider, `${title_id}`, title_name.trim());
-    }
-
-    public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const { title_list: [{ episode_id_list }] } = await this.#FetchMangaInfo(manga.Identifier);
-        return this.FetchChapterList(manga, episode_id_list);
-    }
-
-    protected async FetchChapterList(manga: Manga, chapterIDs: number[]): Promise<Chapter[]> {
-        const chapters: Chapter[] = [];
-        while (chapterIDs.length > 0) {
-            const { episode_list } = await this.drm.FetchAPI<APIChapters>(`./episode/list`, {
-                episode_id_list: chapterIDs.splice(0, 50).join(','),
-            });
-            chapters.push(...episode_list.map(({ episode_id: id, episode_name: name }) => new Chapter(this, manga, `${id}`, name.trim())));
-        };
-        return chapters;
-    }
-
-    public override async FetchPages(chapter: Chapter): Promise<Page<PageInfo>[]> {
-        const { page_list, scramble_ver, scramble_seed } = await this.drm.FetchAPI<APIPages>('./web/episode/viewer', {
-            episode_id: chapter.Identifier,
-        });
-        // ShonenMagazine uses the same scrambling algorithm as CiaoPlus v2, but reports scramble_version as 1.
-        // Set version to -1 here to force the correct descrambling function.
-
-        // ShonenMagazine also use a string as seed, so we need to compute the correct seed (as a number)
-        const mangaId = parseInt(chapter.Parent.Identifier);
-        const charset = mangaId % 2 === 0 ? this.CHARSET_EVEN : this.CHARSET_ODD;
-
-        const seed = typeof scramble_seed === 'string' ? ComputeSeed32(scramble_seed, charset, mangaId, parseInt(chapter.Identifier)) : scramble_seed as number ?? 1;
-        return page_list.map(page => new Page<PageInfo>(this, chapter, new URL(page), { seed, version: scramble_ver ?? -1 }));
-    }
-
-    public override async FetchImage(page: Page<PageInfo>, priority: Priority, signal: AbortSignal): Promise<Blob> {
-        const blob = await Common.FetchImageAjax.call(this, page, priority, signal);
-        return DeScramble(blob, async (image, ctx) => {
-            ctx.drawImage(image, 0, 0);
-            // source code: const i = r === 1 ? tt(e.width, e.height, t) : nt(e.width, e.height, t);
-            const i = page.Parameters.version === 1 ? ComputeLCMBlockDimensions(image.width, image.height, COL_NUM) : ComputeGridBlockDimensions(image.width, image.height, COL_NUM);
-            for (const c of GenerateScrambleMapping(COL_NUM, page.Parameters.seed)) {
-                ctx.drawImage(
-                    image,
-                    c.source.x * i.width,
-                    c.source.y * i.height,
-                    i.width, i.height,
-                    c.dest.x * i.width,
-                    c.dest.y * i.height,
-                    i.width, i.height
-                );
-            }
-        });
-    }
-}
+// TODO: Major Code Revision
+// => e.g., Introduce PRNG Class
 
 export class DRMProvider {
 
@@ -148,7 +51,7 @@ export class DRMProvider {
         const uri = new URL(endpoint, this.apiURL);
         uri.search = payload.toString();
 
-        for (let key in this.fixedUrlParams) {
+        for (const key in this.fixedUrlParams) {
             uri.searchParams.set(key, this.fixedUrlParams[key]);
         }
 
@@ -170,6 +73,101 @@ export class DRMProvider {
     async #ComputeSHA(text: string, algorithm: 'SHA-256' | 'SHA-512'): Promise<string> {
         const hash = await crypto.subtle.digest(algorithm, GetBytesFromUTF8(text));
         return GetHexFromBytes(new Uint8Array(hash));
+    }
+}
+
+@Common.MangasNotSupported()
+export default class extends DecoratableMangaScraper {
+
+    readonly #alphabets = new Map<number, string>();
+
+    readonly #drm = new DRMProvider('https://api.ciao.shogakukan.co.jp/', {
+        name: 'X-Bambi-Hash',
+        seed: '',
+    }, {
+        headers: {
+            'X-Bambi-Is-Crawler': 'false'
+        }
+    }, {
+        version: '6.0.0', platform: '3'
+    });
+
+    public constructor(id = 'ciaoplus', label = 'Ciao Plus', url = 'https://ciao.shogakukan.co.jp', tags = [Tags.Media.Manga, Tags.Language.Japanese, Tags.Source.Official]) {
+        super(id, label, url, ...tags);
+    }
+
+    public override get Icon() {
+        return icon;
+    }
+
+    public WithAlphabet(residual: number, alphabet: string) {
+        this.#alphabets.set(residual, alphabet);
+        return this;
+    }
+
+    async #FetchMangaInfo(mangaID: string): Promise<APIManga> {
+        return this.#drm.FetchAPI<APIManga>('./title/list', {
+            title_id_list: parseInt(mangaID, 10).toString()
+        });
+    }
+
+    public override ValidateMangaURL(url: string): boolean {
+        return new RegExpSafe(`^${this.URI.origin}/comics/title/\\d+/.*`).test(url);
+    }
+
+    public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
+        const { title_list: [{ title_id, title_name }] } = await this.#FetchMangaInfo(new URL(url).pathname.split('/').at(3));
+        return new Manga(this, provider, `${title_id}`, title_name.trim());
+    }
+
+    public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
+        const { title_list: [{ episode_id_list }] } = await this.#FetchMangaInfo(manga.Identifier);
+        return this.FetchChapterList(manga, episode_id_list);
+    }
+
+    protected async FetchChapterList(manga: Manga, chapterIDs: number[]): Promise<Chapter[]> {
+        const chapters: Chapter[] = [];
+        while (chapterIDs.length > 0) {
+            const { episode_list } = await this.#drm.FetchAPI<APIChapters>(`./episode/list`, {
+                episode_id_list: chapterIDs.splice(0, 50).join(','),
+            });
+            chapters.push(...episode_list.map(({ episode_id: id, episode_name: name }) => new Chapter(this, manga, `${id}`, name.trim())));
+        };
+        return chapters;
+    }
+
+    public override async FetchPages(chapter: Chapter): Promise<Page<PageParameters>[]> {
+        const { page_list, scramble_ver, scramble_seed } = await this.#drm.FetchAPI<APIPages>('./web/episode/viewer', {
+            episode_id: chapter.Identifier,
+        });
+        // ShonenMagazine uses the same scrambling algorithm as CiaoPlus v2, but reports scramble_version as 1.
+        // Set version to -1 here to force the correct descrambling function.
+
+        // ShonenMagazine also use a string as seed, so we need to compute the correct seed (as a number)
+        const mangaID = parseInt(chapter.Parent.Identifier, 10);
+        const chapterID = parseInt(chapter.Identifier, 10);
+
+        const seed = typeof scramble_seed === 'string' ? ComputeSeed32(scramble_seed, mangaID, chapterID, this.#alphabets) : scramble_seed ?? 1;
+        return page_list.map(page => new Page<PageParameters>(this, chapter, new URL(page), { Seed: seed, Version: scramble_ver ?? -1 }));
+    }
+
+    public override async FetchImage(page: Page<PageParameters>, priority: Priority, signal: AbortSignal): Promise<Blob> {
+        const blob = await Common.FetchImageAjax.call(this, page, priority, signal);
+        return DeScramble(blob, async (image, ctx) => {
+            ctx.drawImage(image, 0, 0);
+            const i = page.Parameters.Version === 1 ? ComputeLCMBlockDimensions(image.width, image.height, COL_NUM) : ComputeGridBlockDimensions(image.width, image.height, COL_NUM);
+            for (const c of GenerateScrambleMapping(COL_NUM, page.Parameters.Seed)) {
+                ctx.drawImage(
+                    image,
+                    c.source.x * i.width,
+                    c.source.y * i.height,
+                    i.width, i.height,
+                    c.dest.x * i.width,
+                    c.dest.y * i.height,
+                    i.width, i.height
+                );
+            }
+        });
     }
 }
 
@@ -255,11 +253,12 @@ const ComputeGridBlockDimensions = (width: number, height: number, gridSize: num
 };
 
 // Compute seed from initial seed (string)
-const ComputeSeed32= (seed: string, charset: string, titleId: number, episodeId: number) => {
-    // Convert string to base-10 number using charset
+const ComputeSeed32 = (seed: string, titleId: number, episodeId: number, alphabets: Map<number, string>) => {
+    const alphabet = alphabets.get(titleId % 2);
+    // Convert string to base-10 number using alphabet
     let parsedInt = 0n;
     for (const char of seed) {
-        const index = charset.indexOf(char);
+        const index = alphabet.indexOf(char);
         if (index !== -1) {
             parsedInt = parsedInt * 10n + BigInt(index);
         } else {
