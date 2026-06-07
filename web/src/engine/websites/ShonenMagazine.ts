@@ -12,9 +12,10 @@ type APIManga = {
 };
 
 // TODO: Check for possible revision
+
 export default class extends CiaoPlus {
 
-    protected override readonly drm = new DRMProvider('https://api.pocket.shonenmagazine.com/', {
+    readonly #drm = new DRMProvider('https://api.pocket.shonenmagazine.com/', {
         name: 'X-Manga-Hash',
         seed: [
             'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855', // SHA256('')
@@ -22,14 +23,14 @@ export default class extends CiaoPlus {
         ].join('_'),
     }, {
         headers: {
-            'x-manga-is-crawler': 'false',
-            'x-manga-platform': '3'
+            'X-Manga-Is-Crawler': 'false',
+            'X-Manga-Platform': '3'
         }
     });
 
     public constructor() {
         super('shonenmagazine', '週刊少年マガジ (Weekly Shonen Magazine & Pocket Magazine)', 'https://pocket.shonenmagazine.com', [Tags.Media.Manga, Tags.Language.Japanese, Tags.Source.Official]);
-        this.WithCharsetEVEN('svdk0m7acl').WithCharsetODD('q6jtf2xnog');
+        this.WithAlphabet(0, 'svdk0m7acl').WithAlphabet(1, 'q6jtf2xnog');
     }
 
     public override get Icon() {
@@ -37,7 +38,7 @@ export default class extends CiaoPlus {
     }
 
     async #FetchMangaInfo(mangaID: string): Promise<APIManga> {
-        return this.drm.FetchAPI<APIManga>('./web/title/detail', {
+        return this.#drm.FetchAPI<APIManga>('./web/title/detail', {
             title_id: mangaID
         });
     }

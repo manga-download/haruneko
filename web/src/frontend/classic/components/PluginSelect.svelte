@@ -171,7 +171,7 @@
         zebra
         size="compact"
         headers={[
-            { key: 'favorite', empty: false },
+            { key: 'favorite', empty: true },
             { key: 'image', empty: true },
             { key: 'name', value: 'Name' },
             { key: 'website', value: 'Website' },

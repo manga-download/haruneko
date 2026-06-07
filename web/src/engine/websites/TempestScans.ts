@@ -1,21 +1,19 @@
 import { Tags } from '../Tags';
 import icon from './TempestScans.webp';
+import { FetchJSON } from '../platform/FetchProvider';
 import { Chapter, DecoratableMangaScraper, type Manga, Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { FetchJSON } from '../platform/FetchProvider';
 
-type APIResult<T> = {
-    json: T;
-};
-
-type APIChapter = {
-    id: string;
+type APIChapters = {
     slug: string;
     number: number;
+}[];
+
+type APIPages = [{
     pages: {
         imageUrl: string;
     }[];
-};
+}];
 
 @Common.MangaCSS(/^{origin}\/explore\/[^/]+$/, 'ol[data-slot="breadcrumb-list"] li:last-of-type', (el, uri) => ({
     id: uri.pathname.split('/').at(-1),
@@ -36,17 +34,17 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const chapters = await this.FetchAPI<APIChapter[]>('./chapter/byMangaSlug', { slug: manga.Identifier });
+        const chapters = await this.FetchAPI<APIChapters>('./chapter/byMangaSlug', { slug: manga.Identifier });
         return chapters.map(({ slug, number }) => new Chapter(this, manga, slug, `Bölüm ${number}`));
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const [{ pages } ]= await this.FetchAPI<APIChapter[]>('./release/byChapterSlug', { mangaSlug: chapter.Parent.Identifier, chapterSlug: chapter.Identifier });
+        const [{ pages }]= await this.FetchAPI<APIPages>('./release/byChapterSlug', { mangaSlug: chapter.Parent.Identifier, chapterSlug: chapter.Identifier });
         return pages.map(({ imageUrl }) => new Page(this, chapter, new URL(imageUrl)));
     }
 
     private async FetchAPI<T extends JSONElement>(endpoint: string, payload: JSONElement): Promise<T> {
-        return (await FetchJSON<APIResult<T>>(new Request(new URL(endpoint, this.apiURL), {
+        return (await FetchJSON<{ json: T }>(new Request(new URL(endpoint, this.apiURL), {
             method: 'POST',
             headers: {
                 'Content-type': 'application/json'
@@ -56,5 +54,4 @@ export default class extends DecoratableMangaScraper {
             })
         }))).json;
     }
-
 }

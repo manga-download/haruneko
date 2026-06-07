@@ -1,12 +1,12 @@
 import { Tags } from '../Tags';
 import icon from './PhiliaScans.webp';
-import { Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from '../providers/MangaPlugin';
-import { Fetch, FetchJSON } from '../platform/FetchProvider';
 import type { Priority } from '../taskpool/DeferredTask';
-import { GetBytesFromBase64, GetBytesFromUTF8 } from '../BufferEncoder';
-import * as Common from './decorators/Common';
+import { Fetch, FetchJSON } from '../platform/FetchProvider';
+import { GetHexFromBytes, GetBytesFromHex, GetBytesFromBase64, GetBytesFromUTF8 } from '../BufferEncoder';
+import { Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from '../providers/MangaPlugin';
 import DeScramble from '../transformers/ImageDescrambler';
 import { GetTypedData } from './decorators/Common';
+import * as Common from './decorators/Common';
 
 type APIResult<T> = {
     items: T[];
@@ -33,7 +33,12 @@ type APIChapter = {
 type APIChapters = APIResult<APIChapter>;
 
 type APIPages = {
-    chapter: APIChapter;
+    chapter: {
+        pages: {
+            url: string;
+        }[];
+        scrambled: boolean;
+    };
 };
 
 type APIToken = {
@@ -55,33 +60,29 @@ type APIDrmResponse = {
 };
 
 type PageParameters = {
-    pageIndex: number;
-    scrambled: boolean;
-    chapterKeyB64: string;
-    gridSize: number;
-    payloadA: string;
-    payloadB: string;
+    PageIndex: number;
+    IsScrambled: boolean;
+    GridSize: number;
+    KeyData: string;
 };
 
-class TilePermutation {
+// TODO: Major Code Revision
+
+class PRNG {
+
     private nCounter = 0;
     private rBuf = new Uint8Array(0);
     private aIndex = 8;
-    private mac!: CryptoKey;
+    private readonly mac: Promise<CryptoKey>;
 
-    constructor(
-        private readonly signKey: CryptoKey,
-        private readonly pageIndex: number
-    ) { }
-
-    async Init() {
-        const tilesSig = await crypto.subtle.sign('HMAC', this.signKey, GetBytesFromUTF8(`tiles:${this.pageIndex}`));
-        this.mac = await crypto.subtle.importKey('raw', tilesSig, { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']);
+    constructor(signKey: CryptoKey, pageIndex: number) {
+        this.mac = crypto.subtle.sign('HMAC', signKey, GetBytesFromUTF8(`tiles:${pageIndex}`))
+            .then(tilesSig => crypto.subtle.importKey('raw', tilesSig, { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']));
     }
 
     private async NextRandom(): Promise<number> {
         if (this.aIndex >= 8) {
-            this.rBuf = new Uint8Array(await crypto.subtle.sign('HMAC', this.mac, GetBytesFromUTF8(`perm:${this.nCounter++}`)));
+            this.rBuf = new Uint8Array(await crypto.subtle.sign('HMAC', await this.mac, GetBytesFromUTF8(`perm:${this.nCounter++}`)));
             this.aIndex = 0;
         }
         const offset = this.aIndex * 4;
@@ -94,9 +95,6 @@ class TilePermutation {
         return value >>> 0;
     }
 
-    /**
-     * Returns the inverse permutation
-     */
     async Next(gridSize: number): Promise<number[]> {
         this.nCounter = 0;
         this.rBuf = new Uint8Array(0);
@@ -124,6 +122,7 @@ class TilePermutation {
     title: img.alt.trim()
 }))
 export default class extends DecoratableMangaScraper {
+
     private readonly apiURL = `${this.URI.origin}/api/`;
 
     public constructor() {
@@ -151,15 +150,19 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page<PageParameters>[]> {
-        const { chapter: { id, pages, scrambled } } = await this.FetchAPI<APIPages>(`./manga/${chapter.Parent.Identifier}/chapters/${chapter.Identifier}`);
-
+        const { chapter: { pages, scrambled } } = await this.FetchAPI<APIPages>(`./manga/${chapter.Parent.Identifier}/chapters/${chapter.Identifier}`);
         const token = (await this.FetchAPI<APIToken>(`./reader/access-token`, undefined, 'POST')).token;
-        const { chapterKeyB64, gridSize } = await this.FetchAPI<APIPageKeys>(`./chapters/${id}/page-keys`, token);
-        const { payloadA, sessionId } = await this.FetchAPI<APIOpenResponse>(`./chapters/${id}/open`, token, 'POST');
-        const { payloadB } = await this.FetchAPI<APIDrmResponse>(`./chapters/${id}/get-drm?session=${sessionId}`, token);
+        const { chapterKeyB64, gridSize } = await this.FetchAPI<APIPageKeys>(`./chapters/${chapter.Identifier}/page-keys`, token);
+        const { payloadA, sessionId } = await this.FetchAPI<APIOpenResponse>(`./chapters/${chapter.Identifier}/open`, token, 'POST');
+        const { payloadB } = await this.FetchAPI<APIDrmResponse>(`./chapters/${chapter.Identifier}/get-drm?session=${sessionId}`, token);
+
+        const keyData = payloadA && payloadB ? new Uint8Array(this.XOR(GetBytesFromBase64(payloadA), GetBytesFromBase64(payloadB))) : GetBytesFromBase64(chapterKeyB64);
 
         return pages.map(({ url }, index) => new Page<PageParameters>(this, chapter, new URL(url, this.URI), {
-            pageIndex: index, scrambled, chapterKeyB64, payloadA, payloadB, gridSize
+            PageIndex: index,
+            IsScrambled: scrambled,
+            GridSize: gridSize,
+            KeyData: GetHexFromBytes(keyData),
         }));
     }
 
@@ -173,51 +176,42 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchImage(page: Page<PageParameters>, priority: Priority, signal: AbortSignal): Promise<Blob> {
+        const { PageIndex, IsScrambled, GridSize, KeyData } = page.Parameters;
         const buffer = await (await this.imageTaskPool.Add(() => Fetch(new Request(page.Link, { headers: { Referer: this.URI.href} })), priority, signal)).arrayBuffer();
 
-        const { chapterKeyB64, payloadA, payloadB, pageIndex, scrambled, gridSize } = page.Parameters;
-        const chapterKey = payloadA && payloadB ? this.XOR(GetBytesFromBase64(payloadA), GetBytesFromBase64(payloadB)) : GetBytesFromBase64(chapterKeyB64);
-
-        const signKey = await crypto.subtle.importKey('raw', chapterKey, { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']);
+        const signKey = await crypto.subtle.importKey('raw', GetBytesFromHex(KeyData), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']);
 
         const header = new Uint8Array(buffer, 0, 2);
         const isAES = header[0] === 255 && header[1] === 2;
         const headerSize = isAES ? 6 : 4;
 
-        //const view = new DataView(buffer, isAES ? 2 : 0, 4);
-        //const originalWidth = view.getUint16(0, false);
-        //const originalHeight = view.getUint16(2, false);
-
-        const encryptedBytes = new Uint8Array(buffer, headerSize);
-        const imageData = isAES ? await this.AESDecrypt(signKey, pageIndex, encryptedBytes) :
-            this.XOR(await this.DeriveKeystream(signKey, pageIndex, encryptedBytes.byteLength), encryptedBytes);
+        const encrypted = new Uint8Array(buffer, headerSize);
+        const imageData = isAES ? await this.AESDecrypt(signKey, PageIndex, encrypted) :
+            this.XOR(await this.DeriveKeyStream(signKey, PageIndex, encrypted.byteLength), encrypted).buffer;
 
         const blob = await GetTypedData(imageData);
-        return !scrambled ? blob : DeScramble(blob, async (image, ctx) => {
-            const tileWidth = image.width / gridSize;
-            const tileHeight = image.height / gridSize;
-            const gridSizeSq = gridSize * gridSize;
+        return !IsScrambled ? blob : DeScramble(blob, async (image, ctx) => {
+            const tileWidth = image.width / GridSize;
+            const tileHeight = image.height / GridSize;
+            const tileCount = GridSize * GridSize;
 
-            const perm = new TilePermutation(signKey, pageIndex);
-            await perm.Init();
+            const indexes = new PRNG(signKey, PageIndex).Next(GridSize);
 
-            const indexes = await perm.Next(gridSize);
+            for (let tileIndex = 0; tileIndex < tileCount; tileIndex++) {
+                const srcIdx = indexes[tileIndex];
 
-            for (let t = 0; t < gridSizeSq; t++) {
-                const srcIdx = indexes[t];
+                const srcX = srcIdx % GridSize * tileWidth;
+                const srcY = Math.floor(srcIdx / GridSize) * tileHeight;
 
-                const srcX = srcIdx % gridSize * tileWidth;
-                const srcY = Math.floor(srcIdx / gridSize) * tileHeight;
-
-                const dstX = t % gridSize * tileWidth;
-                const dstY = Math.floor(t / gridSize) * tileHeight;
+                const dstX = tileIndex % GridSize * tileWidth;
+                const dstY = Math.floor(tileIndex / GridSize) * tileHeight;
 
                 ctx.drawImage(image, srcX, srcY, tileWidth, tileHeight, dstX, dstY, tileWidth, tileHeight);
             }
         });
     }
 
-    private async DeriveKeystream(key: CryptoKey, pageIndex: number, length: number): Promise<Uint8Array<ArrayBuffer>> {
+    private async DeriveKeyStream(key: CryptoKey, pageIndex: number, length: number): Promise<Uint8Array<ArrayBuffer>> {
         const numBlocks = Math.ceil(length / 32);
         const result = new Uint8Array(32 * numBlocks);
 
@@ -229,17 +223,17 @@ export default class extends DecoratableMangaScraper {
         return result.subarray(0, length);
     }
 
-    private async AESDecrypt(signKey: CryptoKey, pageIndex: number, data: Uint8Array): Promise<ArrayBuffer> {
-        const aeskeyData = new Uint8Array(await crypto.subtle.sign({ name: 'HMAC', hash: 'SHA-256' }, signKey, GetBytesFromUTF8(`aesctr:${pageIndex}`)));
-        const aesKey = await crypto.subtle.importKey('raw', aeskeyData, { name: 'AES-CTR' }, false, ['decrypt']);
+    private async AESDecrypt(signKey: CryptoKey, pageIndex: number, data: Uint8Array<ArrayBuffer>): Promise<ArrayBuffer> {
+        const keyData = new Uint8Array(await crypto.subtle.sign({ name: 'HMAC', hash: 'SHA-256' }, signKey, GetBytesFromUTF8(`aesctr:${pageIndex}`)));
+        const key = await crypto.subtle.importKey('raw', keyData, { name: 'AES-CTR' }, false, ['decrypt']);
         return crypto.subtle.decrypt({
             name: 'AES-CTR',
             counter: new Uint8Array(16),
             length: 128
-        }, aesKey, new Uint8Array(data));
+        }, key, data);
     }
 
-    private XOR(source: Uint8Array, key: Uint8Array): ArrayBuffer {
-        return source.map((byte, index) => byte ^ key[index]).buffer;
+    private XOR(source: Uint8Array, key: Uint8Array): Uint8Array<ArrayBuffer> {
+        return source.map((byte, index) => byte ^ key[index]);
     }
 }
