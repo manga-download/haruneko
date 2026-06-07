@@ -15,7 +15,7 @@
     },
     "devDependencies": {
         "extract-zip": "2.0.1",
-        "electron": "42.3.2",
+        "electron": "42.3.3",
         "plist": "5.0.0",
         "vite": "8.0.16"
     },
