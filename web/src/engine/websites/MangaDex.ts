@@ -49,8 +49,7 @@ type APIMedia = {
 };
 
 type PageParameters = {
-    Base: string;
-    Slug: string;
+    Mirror: string;
 }
 
 const chapterLanguageMap = new Map([
@@ -184,24 +183,16 @@ export default class extends MangaScraper {
         const { baseUrl, chapter: { hash, data: files } } = await FetchJSON<APIMedia>(request);
         return files.map(file => {
             const slug = [ '/data', hash, file ].join('/');
-            const parameters = { Referer: this.URI.href, Base: baseUrl, Slug: slug };
-            return new Page(this, chapter, new URL(baseUrl + slug), parameters);
+            return new Page(this, chapter, new URL(`https://uploads.mangadex.org${slug}`), { Referer: this.URI.href, Mirror: baseUrl + slug });
         });
     }
 
     public override async FetchImage(page: Page<PageParameters>, priority: Priority, signal: AbortSignal): Promise<Blob> {
-
-        async function download(this: MangaScraper, page: Page, server: string): Promise<Blob> {
-            const source = new Page(this, page.Parent as Chapter, new URL(server + page.Parameters.Slug), page.Parameters);
-            const blob: Blob = await Common.FetchImageAjax.call(this, source, priority, signal, false);
-            (await createImageBitmap(blob)).close();
-            return blob;
-        }
-
         try {
-            return await download.call(this, page, 'https://uploads.mangadex.org');
+            return await Common.FetchImageAjax.call(this, page, priority, signal, false);
         } catch {
-            return download.call(this, page, page.Parameters.Base);
+            const source = new Page(this, page.Parent as Chapter, new URL(page.Parameters.Mirror), page.Parameters);
+            return Common.FetchImageAjax.call(this, source, priority, signal, false);
         }
     }
 }
