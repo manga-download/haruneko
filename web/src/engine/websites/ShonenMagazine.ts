@@ -15,7 +15,7 @@ type APIManga = {
 
 export default class extends CiaoPlus {
 
-    readonly #drm = new DRMProvider('https://api.pocket.shonenmagazine.com/', {
+    protected readonly drm = new DRMProvider('https://api.pocket.shonenmagazine.com/', {
         name: 'X-Manga-Hash',
         seed: [
             'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855', // SHA256('')
@@ -38,7 +38,7 @@ export default class extends CiaoPlus {
     }
 
     async #FetchMangaInfo(mangaID: string): Promise<APIManga> {
-        return this.#drm.FetchAPI<APIManga>('./web/title/detail', {
+        return this.drm.FetchAPI<APIManga>('./web/title/detail', {
             title_id: mangaID
         });
     }
