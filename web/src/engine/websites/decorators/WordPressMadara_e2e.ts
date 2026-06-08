@@ -72,6 +72,7 @@ import '../MangaGG_e2e';
 import '../MangaHubFR_e2e';
 import '../MangaKiss_e2e';
 import '../MangaLC_e2e';
+import '../MangaLector_e2e';
 import '../Mangalek_e2e';
 import '../MangaLink_e2e';
 import '../MangaLivreTo_e2e';
