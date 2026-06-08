@@ -24,7 +24,6 @@ import '../DoujinZa_e2e';
 import '../DragonTea_e2e';
 import '../DragonTranslation_e2e';
 import '../EuphoriaScan_e2e';
-import '../EvilFlowers_e2e';
 import '../FastestManga_e2e';
 import '../FbSquads_e2e';
 import '../FireComics_e2e';
