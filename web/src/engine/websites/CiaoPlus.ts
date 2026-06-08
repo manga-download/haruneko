@@ -105,12 +105,15 @@ export default class extends DecoratableMangaScraper {
         return this;
     }
 
+    protected get DRM(): DRMProvider {
+        return this.#drm;
+    }
+
     async #FetchMangaInfo(mangaID: string): Promise<APIManga> {
-        return this.#drm.FetchAPI<APIManga>('./title/list', {
+        return this.DRM.FetchAPI<APIManga>('./title/list', {
             title_id_list: parseInt(mangaID, 10).toString()
         });
     }
-
     public override ValidateMangaURL(url: string): boolean {
         return new RegExpSafe(`^${this.URI.origin}/comics/title/\\d+/.*`).test(url);
     }
@@ -128,7 +131,7 @@ export default class extends DecoratableMangaScraper {
     protected async FetchChapterList(manga: Manga, chapterIDs: number[]): Promise<Chapter[]> {
         const chapters: Chapter[] = [];
         while (chapterIDs.length > 0) {
-            const { episode_list } = await this.#drm.FetchAPI<APIChapters>(`./episode/list`, {
+            const { episode_list } = await this.DRM.FetchAPI<APIChapters>(`./episode/list`, {
                 episode_id_list: chapterIDs.splice(0, 50).join(','),
             });
             chapters.push(...episode_list.map(({ episode_id: id, episode_name: name }) => new Chapter(this, manga, `${id}`, name.trim())));
@@ -137,7 +140,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page<PageParameters>[]> {
-        const { page_list, scramble_ver, scramble_seed } = await this.#drm.FetchAPI<APIPages>('./web/episode/viewer', {
+        const { page_list, scramble_ver, scramble_seed } = await this.DRM.FetchAPI<APIPages>('./web/episode/viewer', {
             episode_id: chapter.Identifier,
         });
         // ShonenMagazine uses the same scrambling algorithm as CiaoPlus v2, but reports scramble_version as 1.

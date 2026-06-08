@@ -56,4 +56,8 @@ export default class extends CiaoPlus {
         const { web_title: { episode_id_list } } = await this.#FetchMangaInfo(manga.Identifier);
         return this.FetchChapterList(manga, episode_id_list);
     }
+    
+    protected get DRM(): DRMProvider {
+        return this.#drm;
+    }
 }
