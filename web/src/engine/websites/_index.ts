@@ -556,7 +556,6 @@ export { default as Pzykosis666HFansub } from './Pzykosis666HFansub';
 export { default as Qimeitj } from './Qimeitj';
 export { default as QiScans } from './QiScans';
 export { default as QManga } from './QManga';
-export { default as QToon } from './QToon';
 export { default as Rackus } from './Rackus';
 export { default as RadiantScans } from './RadiantScans';
 export { default as RageScans } from './RageScans';
