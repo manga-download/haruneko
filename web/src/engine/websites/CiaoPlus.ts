@@ -34,9 +34,50 @@ type PageParameters = {
     Version: number;
 };
 
-// TODO: Major Code Revision
-// => e.g., Introduce PRNG Class
+type TDimension = {
+    width: number;
+    height: number;
+};
 
+class PRNG {
+    #state: number;
+    #gridSize: number;
+
+    constructor(gridSize: number, seed: number) {
+        this.#gridSize = gridSize;
+        this.#state = seed >>> 0;
+    }
+
+    #Next(): number {
+        this.#state ^= this.#state << 13;
+        this.#state ^= this.#state >>> 17;
+        this.#state ^= this.#state << 5;
+        return this.#state >>> 0;
+    }
+
+    #Shuffle(array: number[]): number[] {
+        return array
+            .map((value) => [this.#Next(), value] as const)
+            .sort((a, b) => +(a[0] > b[0]) - +(b[0] > a[0]))
+            .map(([, value]) => value);
+    }
+
+    GenerateScrambleMapping() {
+        const shuffled = this.#Shuffle(Array.from({ length: this.#gridSize * this.#gridSize }, (_, i) => i));
+        return shuffled.map((sourceIndex, destIndex) => ({
+            source: {
+                x: sourceIndex % this.#gridSize,
+                y: sourceIndex / this.#gridSize | 0,
+            },
+            dest: {
+                x: destIndex % this.#gridSize,
+                y: destIndex / this.#gridSize | 0,
+            },
+        }));
+    }
+}
+
+// TODO: Major Code Revision
 export class DRMProvider {
 
     constructor(private readonly apiURL: string, readonly requestHeaderHash: { name: string, seed: string; },
@@ -81,7 +122,7 @@ export default class extends DecoratableMangaScraper {
 
     readonly #alphabets = new Map<number, string>();
 
-    readonly #drm = new DRMProvider('https://api.ciao.shogakukan.co.jp/', {
+    protected readonly drm = new DRMProvider('https://api.ciao.shogakukan.co.jp/', {
         name: 'X-Bambi-Hash',
         seed: '',
     }, {
@@ -106,7 +147,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     async #FetchMangaInfo(mangaID: string): Promise<APIManga> {
-        return this.#drm.FetchAPI<APIManga>('./title/list', {
+        return this.drm.FetchAPI<APIManga>('./title/list', {
             title_id_list: parseInt(mangaID, 10).toString()
         });
     }
@@ -128,7 +169,7 @@ export default class extends DecoratableMangaScraper {
     protected async FetchChapterList(manga: Manga, chapterIDs: number[]): Promise<Chapter[]> {
         const chapters: Chapter[] = [];
         while (chapterIDs.length > 0) {
-            const { episode_list } = await this.#drm.FetchAPI<APIChapters>(`./episode/list`, {
+            const { episode_list } = await this.drm.FetchAPI<APIChapters>(`./episode/list`, {
                 episode_id_list: chapterIDs.splice(0, 50).join(','),
             });
             chapters.push(...episode_list.map(({ episode_id: id, episode_name: name }) => new Chapter(this, manga, `${id}`, name.trim())));
@@ -137,7 +178,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page<PageParameters>[]> {
-        const { page_list, scramble_ver, scramble_seed } = await this.#drm.FetchAPI<APIPages>('./web/episode/viewer', {
+        const { page_list, scramble_ver, scramble_seed } = await this.drm.FetchAPI<APIPages>('./web/episode/viewer', {
             episode_id: chapter.Identifier,
         });
         // ShonenMagazine uses the same scrambling algorithm as CiaoPlus v2, but reports scramble_version as 1.
@@ -147,130 +188,83 @@ export default class extends DecoratableMangaScraper {
         const mangaID = parseInt(chapter.Parent.Identifier, 10);
         const chapterID = parseInt(chapter.Identifier, 10);
 
-        const seed = typeof scramble_seed === 'string' ? ComputeSeed32(scramble_seed, mangaID, chapterID, this.#alphabets) : scramble_seed ?? 1;
+        const seed = typeof scramble_seed === 'string' ? this.ComputeSeed32(scramble_seed, mangaID, chapterID) : scramble_seed ?? 1;
         return page_list.map(page => new Page<PageParameters>(this, chapter, new URL(page), { Seed: seed, Version: scramble_ver ?? -1 }));
     }
 
     public override async FetchImage(page: Page<PageParameters>, priority: Priority, signal: AbortSignal): Promise<Blob> {
         const blob = await Common.FetchImageAjax.call(this, page, priority, signal);
+
+        const { Seed, Version } = page.Parameters;
+        const numColumns = 4;
+        const scaleFactor = 8;
+
         return DeScramble(blob, async (image, ctx) => {
             ctx.drawImage(image, 0, 0);
-            const i = page.Parameters.Version === 1 ? ComputeLCMBlockDimensions(image.width, image.height, COL_NUM) : ComputeGridBlockDimensions(image.width, image.height, COL_NUM);
-            for (const c of GenerateScrambleMapping(COL_NUM, page.Parameters.Seed)) {
+            const blockDimension = Version === 1 ? this.ComputeLCMBlockDimensions(image.width, image.height, numColumns, scaleFactor) : this.ComputeGridBlockDimensions(image.width, image.height, numColumns, scaleFactor);
+            for (const piece of new PRNG(numColumns, Seed).GenerateScrambleMapping()) {
                 ctx.drawImage(
                     image,
-                    c.source.x * i.width,
-                    c.source.y * i.height,
-                    i.width, i.height,
-                    c.dest.x * i.width,
-                    c.dest.y * i.height,
-                    i.width, i.height
+                    piece.source.x * blockDimension.width,
+                    piece.source.y * blockDimension.height,
+                    blockDimension.width, blockDimension.height,
+                    piece.dest.x * blockDimension.width,
+                    piece.dest.y * blockDimension.height,
+                    blockDimension.width, blockDimension.height
                 );
             }
         });
     }
-}
 
-// Copy & Paste from Website
-
-const COL_NUM = 4;
-const MULTIPLE_NUM = 8;
-
-// ot
-const CreateXorShift32 = function* (seed: number) {
-    const e = Uint32Array.of(seed);
-    for (; ;) {
-        e[0] ^= e[0] << 13;
-        e[0] ^= e[0] >>> 17;
-        e[0] ^= e[0] << 5;
-        yield e[0];
-    }
-};
-
-// at
-const ShuffleArrayWithPRNG = (array: any[], seed: number) => {
-    const t = CreateXorShift32(seed);
-    return array
-        .map((r) => [t.next().value, r])
-        .sort((r, i) => +(r[0] > i[0]) - +(i[0] > r[0]))
-        .map((r) => r[1]);
-};
-
-// it
-const GenerateScrambleMapping = function* (gridSize: number, seed: number) {
-    yield* ShuffleArrayWithPRNG(
-        [...Array(gridSize ** 2)].map((s, r) => r),
-        seed
-    ).map((s, r) => ({
-        source: {
-            x: s % gridSize,
-            y: Math.floor(s / gridSize),
-        },
-        dest: {
-            x: r % gridSize,
-            y: Math.floor(r / gridSize),
-        },
-    }));
-};
-
-// st
-const GetLeastCommonMultiple = (a: number, b: number) => {
-    const t = function t(s: number, r: number): number {
-        return s ? t(r % s, s) : r;
-    };
-    return a * b / t(a, b);
-};
-
-// tt
-const ComputeLCMBlockDimensions = (width: number, height: number, gridSize: number) => {
-    if (width < gridSize || height < gridSize) {
-        return null;
-    }
-    const s = GetLeastCommonMultiple(gridSize, MULTIPLE_NUM);
-    if (width > s && height > s) {
-        width = Math.floor(width / s) * s;
-        height = Math.floor(height / s) * s;
-    }
-    return {
-        width: Math.floor(width / gridSize),
-        height: Math.floor(height / gridSize),
-    };
-};
-
-// nt
-const ComputeGridBlockDimensions = (width: number, height: number, gridSize: number) => {
-    if (width < gridSize * MULTIPLE_NUM || height < gridSize * MULTIPLE_NUM) {
-        return null;
-    }
-    const s = Math.floor(width / MULTIPLE_NUM);
-    const r = Math.floor(height / MULTIPLE_NUM);
-    const i = Math.floor(s / gridSize);
-    const c = Math.floor(r / gridSize);
-    return {
-        width: i * MULTIPLE_NUM,
-        height: c * MULTIPLE_NUM
-    };
-};
-
-// Compute seed from initial seed (string)
-const ComputeSeed32 = (seed: string, titleId: number, episodeId: number, alphabets: Map<number, string>) => {
-    const alphabet = alphabets.get(titleId % 2);
-    // Convert string to base-10 number using alphabet
-    let parsedInt = 0n;
-    for (const char of seed) {
-        const index = alphabet.indexOf(char);
-        if (index !== -1) {
-            parsedInt = parsedInt * 10n + BigInt(index);
-        } else {
-            break;
+    private ComputeSeed32(seed: string, titleId: number, episodeId: number): number {
+        const alphabet = this.#alphabets.get(titleId % 2);
+        let parsedInt = 0n;
+        for (const char of seed) {
+            const index = alphabet.indexOf(char);
+            if (index !== -1) {
+                parsedInt = parsedInt * 10n + BigInt(index);
+            } else {
+                break;
+            }
         }
+        const parsedUInt32 = Number(parsedInt & 0xFFFFFFFFn);
+        const combined = (titleId >>> 0) + (episodeId >>> 0);
+        return (parsedUInt32 ^ combined) >>> 0;
+    };
+
+    private ComputeLCMBlockDimensions(width: number, height: number, gridSize: number, scaleFactor: number): TDimension {
+        if (width < gridSize || height < gridSize) {
+            return null;
+        }
+        const s = this.GetLeastCommonMultiple(gridSize, scaleFactor);
+        if (width > s && height > s) {
+            width = Math.floor(width / s) * s;
+            height = Math.floor(height / s) * s;
+        }
+        return {
+            width: Math.floor(width / gridSize),
+            height: Math.floor(height / gridSize),
+        };
+    };
+
+    private ComputeGridBlockDimensions(width: number, height: number, gridSize: number, scaleFactor: number): TDimension {
+        if (width < gridSize * scaleFactor || height < gridSize * scaleFactor) {
+            return null;
+        }
+        const s = Math.floor(width / scaleFactor);
+        const r = Math.floor(height / scaleFactor);
+        const i = Math.floor(s / gridSize);
+        const c = Math.floor(r / gridSize);
+        return {
+            width: i * scaleFactor,
+            height: c * scaleFactor
+        };
+    };
+
+    private GetLeastCommonMultiple(a: number, b: number): number {
+        const gcd = (first: number, second: number): number => {
+            return second === 0 ? first : gcd(second, first % second);
+        };
+        return a * b / gcd(a, b);
     }
-    // Keep only lowest 32 bits
-    const parsedUInt32 = Number(parsedInt & 0xFFFFFFFFn);
-
-    // Compute titleId + episodeId as unsigned 32-bit
-    const combined = (titleId >>> 0) + (episodeId >>> 0);
-
-    // XOR and ensure result is unsigned 32-bit
-    return (parsedUInt32 ^ combined) >>> 0;
-};
+}
