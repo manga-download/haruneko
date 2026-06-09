@@ -30,7 +30,7 @@ class TestFixture {
         }
     };
 
-    constructor(cookies: ({ name: string, value: string })[] = []) {
+    constructor(cookies: CookieList = []) {
         this.MockWebContents.getURL.mockReturnValue(this.AppURL);
         this.MockWebContents.session.cookies.get.mockReturnValue(Promise.resolve(cookies));
         this.MockIPC.Handle.mockImplementationOnce((_, initialize) => initialize(TestFixture.PrefixHeader()));

@@ -22,11 +22,11 @@ class TestFixture {
         }
     };
 
-    constructor (/*cookies: string = ''*/) {
+    constructor (sessionCookies: CookieList = []) {
         globalThis.Request = null;
         globalThis.fetch = this.mockFetch;
         globalThis.chrome = this.chromeFake as unknown as typeof chrome;
-        //this.chromeFake.cookies.getAll.mockImplementation((details, callback?) => callback(this.ParseCookies(cookies)));
+        this.chromeFake.cookies.getAll.mockReturnValue(sessionCookies);
 
         this.WithOrigin('http://localhost');
     }

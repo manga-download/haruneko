@@ -1,4 +1,3 @@
-// @vitest-environment jsdom
 import { vi, describe, it, expect } from 'vitest';
 import { Channels } from '../../../../../app/electron/src/ipc/InterProcessCommunicationChannels';
 import type { FeatureFlags } from '../../FeatureFlags';
@@ -10,9 +9,10 @@ class TestFixture {
         invoke: vi.fn(),
     };
 
-    constructor() {
+    constructor(sessionCookies: CookieList = []) {
         globalThis.Request = null;
         globalThis.ipcRenderer = this.MockIpcRenderer as unknown as Electron.IpcRenderer;
+        this.MockIpcRenderer.invoke.mockImplementation((channel, _) => channel === Channels.FetchProvider.GetSessionCookies ? Promise.resolve(sessionCookies) : Promise.resolve());
     }
 
     public CreateTestee() {
@@ -36,7 +36,7 @@ describe('FetchProvider', () => {
             const testee = new TestFixture().CreateTestee();
             expect(globalThis.Request).toBeNull();
             testee.Initialize({} as FeatureFlags);
-            expect(globalThis.Request.name).toBe('FetchRequest');
+            expect(globalThis.Request.name).toBe('FetchConcealedRequest');
         });
     });
 
