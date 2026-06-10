@@ -7,7 +7,6 @@ import * as Common from './decorators/Common';
 import { DRMProvider } from './Comix.DRM';
 import type { Priority } from '../taskpool/DeferredTask';
 import { GetTypedData } from './decorators/Common';
-import DeScramble from '../transformers/ImageDescrambler';
 
 type APIMangas = {
     result: {
@@ -18,39 +17,6 @@ type APIMangas = {
         }[];
     };
 };
-
-class PRNG {
-
-    #state: bigint;
-    readonly #seed: bigint;
-
-    constructor(private readonly seed: number) {
-        this.#seed = BigInt(seed);
-        this.#state = this.#seed;
-    }
-
-    /**
-     * Get the next pseudo random number with `Linear Congruential Generator`.
-     */
-    #Next() {
-        this.#state = this.#state * 1664525n + 1013904223n & 0xffffffffn;
-        return Number(this.#state);
-    };
-
-    /**
-     * Create a sequence of numbers shuffled by `Fisher-Yates` algorithm.
-     * Uses `Linear Congruential Generator` as the underlying random number generator.
-     */
-    public Next(count: number) {
-        this.#state = this.#seed;
-        const indices = [...new Array(Math.max(1, count)).keys()];
-        for (let current = indices.length - 1; current > 0; current--) {
-            const randomIndex = this.#Next() % (current + 1);
-            [indices[current], indices[randomIndex]] = [indices[randomIndex], indices[current]];
-        }
-        return indices;
-    }
-}
 
 @Common.MangaCSS(/^{origin}\/title\/[^/]+$/, 'meta[property="og:title"]')
 export default class extends DecoratableMangaScraper {
@@ -97,26 +63,21 @@ export default class extends DecoratableMangaScraper {
             }
         })), priority, signal);
 
-        const seed = parseInt(response.headers.get('X-Scramble-Seed'), 10);
-        const grid = response.headers.get('X-Scramble-Grid');
-        const blob = await GetTypedData(await response.arrayBuffer());
-
-        return seed ? DeScramble(blob, async (image, ctx) => this.#RenderTiles(image, ctx, seed, grid)) : blob;
+        const seed = parseInt(response.headers.get('x-enc-seed'), 10);
+        const encLength = parseInt(response.headers.get('x-enc-len'), 10);
+        const buffer = await response.arrayBuffer();
+        return await GetTypedData(!seed || !encLength ? buffer : this.DecryptImage(buffer, seed, encLength));
     }
 
-    #RenderTiles(image: ImageBitmap, ctx: OffscreenCanvasRenderingContext2D, init: number, grid: string) {
-        const [numRows, numColumns] = grid.split('x').map(el => parseInt(el, 10));
-        const tileWidth = Math.floor(image.width / numColumns);
-        const tileHeight = Math.floor(image.height / numRows);
-        const tileIndexMap = new PRNG(init).Next(numRows * numColumns);
+    private DecryptImage(encrypted: ArrayBuffer, seed: number, length: number): ArrayBuffer {
+        const bytes = new Uint8Array(encrypted);
+        let state = seed;
+        const limit = Math.min(bytes.length, length);
 
-        for (let srcTileIndex = 0; srcTileIndex < tileIndexMap.length; srcTileIndex++) {
-            const dstTileIndex = tileIndexMap[srcTileIndex];
-            const srcOffsetX = srcTileIndex % numColumns * tileWidth;
-            const srcOffsetY = Math.floor(srcTileIndex / numColumns) * tileHeight;
-            const dstOffsetX = dstTileIndex % numColumns * tileWidth;
-            const dstOffsetY = Math.floor(dstTileIndex / numColumns) * tileHeight;
-            ctx.drawImage(image, srcOffsetX, srcOffsetY, tileWidth, tileHeight, dstOffsetX, dstOffsetY, tileWidth, tileHeight);
+        for (let i = 0; i < limit; i++) {
+            state = state * 1000005 + 1234567891 >> 0;
+            bytes[i] = bytes[i] ^ state >>> 24;
         }
+        return bytes.buffer;
     }
 }
