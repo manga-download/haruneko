@@ -1,12 +1,14 @@
 import { Tags } from '../Tags';
 import icon from './CiaoPlus.webp';
-import type { MangaPlugin } from '../providers/MangaPlugin';
-import { Chapter, DecoratableMangaScraper, Manga, Page } from '../providers/MangaPlugin';
-import * as Common from './decorators/Common';
 import { FetchJSON } from '../platform/FetchProvider';
 import type { Priority } from '../taskpool/DeferredTask';
 import DeScramble from '../transformers/ImageDescrambler';
 import { GetHexFromBytes, GetBytesFromUTF8 } from '../BufferEncoder';
+import type { MangaPlugin } from '../providers/MangaPlugin';
+import { Chapter, DecoratableMangaScraper, Manga, Page } from '../providers/MangaPlugin';
+import * as Common from './decorators/Common';
+
+// TODO: Major Code Revision
 
 type APIManga = {
     title_list: [{
@@ -32,11 +34,6 @@ type APIPages = {
 type PageParameters = {
     Seed: number;
     Version: number;
-};
-
-type TDimension = {
-    width: number;
-    height: number;
 };
 
 class PRNG {
@@ -77,11 +74,29 @@ class PRNG {
     }
 }
 
-// TODO: Major Code Revision
-export class DRMProvider {
+class DRMProvider {
 
-    constructor(private readonly apiURL: string, readonly requestHeaderHash: { name: string, seed: string; },
-        readonly fixedHeaders: RequestInit = {}, readonly fixedUrlParams: Record<string, string> = {}) { }
+    readonly #api = {
+        url: 'https://api.ciao.shogakukan.co.jp/',
+        params: { version: '6.0.0', platform: '3' },
+        hashHeader: { name: 'X-Bambi-Hash', seed: '' },
+        additionalHeaders: { 'X-Bambi-Is-Crawler': 'false' } as Record<string, string>
+    };
+
+    public WithURL(url: string) {
+        this.#api.url = url;
+        return this;
+    }
+
+    public WithHashHeader(name: string, seed: string) {
+        this.#api.hashHeader = { name, seed };
+        return this;
+    }
+
+    public WithAdditionalHeaders(headers: Record<string, string>) {
+        this.#api.additionalHeaders = headers;
+        return this;
+    }
 
     public async FetchAPI<T extends JSONElement>(endpoint: string, parameters: Record<string, string>, init: RequestInit = { method: 'GET' }): Promise<T> {
         return FetchJSON<T>(await this.#CreateRequest(endpoint, init, parameters));
@@ -89,15 +104,12 @@ export class DRMProvider {
 
     async #CreateRequest(endpoint: string, init: RequestInit, parameters: Record<string, string>) {
         const payload = new URLSearchParams(parameters);
-        const uri = new URL(endpoint, this.apiURL);
+        const uri = new URL(endpoint, this.#api.url);
         uri.search = payload.toString();
-
-        for (const key in this.fixedUrlParams) {
-            uri.searchParams.set(key, this.fixedUrlParams[key]);
-        }
-
-        const request = new Request(uri, { ...init, ...this.fixedHeaders });
-        request.headers.set(this.requestHeaderHash.name, await this.#ComputeHash(uri.searchParams, this.requestHeaderHash.seed));
+        Object.entries(this.#api.params).forEach(([name, value]) => uri.searchParams.set(name, value));
+        const request = new Request(uri, init);
+        Object.entries(this.#api.additionalHeaders).forEach(([name, value]) => request.headers.set(name, value));
+        request.headers.set(this.#api.hashHeader.name, await this.#ComputeHash(uri.searchParams, this.#api.hashHeader.seed));
         return request;
     }
 
@@ -120,18 +132,8 @@ export class DRMProvider {
 @Common.MangasNotSupported()
 export default class extends DecoratableMangaScraper {
 
+    protected readonly drm = new DRMProvider();
     readonly #alphabets = new Map<number, string>();
-
-    protected readonly drm = new DRMProvider('https://api.ciao.shogakukan.co.jp/', {
-        name: 'X-Bambi-Hash',
-        seed: '',
-    }, {
-        headers: {
-            'X-Bambi-Is-Crawler': 'false'
-        }
-    }, {
-        version: '6.0.0', platform: '3'
-    });
 
     public constructor(id = 'ciaoplus', label = 'Ciao Plus', url = 'https://ciao.shogakukan.co.jp', tags = [Tags.Media.Manga, Tags.Language.Japanese, Tags.Source.Official]) {
         super(id, label, url, ...tags);
@@ -232,7 +234,7 @@ export default class extends DecoratableMangaScraper {
         return (parsedUInt32 ^ combined) >>> 0;
     };
 
-    private ComputeLCMBlockDimensions(width: number, height: number, gridSize: number, scaleFactor: number): TDimension {
+    private ComputeLCMBlockDimensions(width: number, height: number, gridSize: number, scaleFactor: number) {
         if (width < gridSize || height < gridSize) {
             return null;
         }
@@ -247,7 +249,7 @@ export default class extends DecoratableMangaScraper {
         };
     };
 
-    private ComputeGridBlockDimensions(width: number, height: number, gridSize: number, scaleFactor: number): TDimension {
+    private ComputeGridBlockDimensions(width: number, height: number, gridSize: number, scaleFactor: number) {
         if (width < gridSize * scaleFactor || height < gridSize * scaleFactor) {
             return null;
         }
