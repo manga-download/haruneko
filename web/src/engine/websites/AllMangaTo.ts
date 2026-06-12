@@ -6,6 +6,8 @@ import { Tags } from '../Tags';
 import icon from './AllMangaTo.webp';
 import * as Common from './decorators/Common';
 
+// TODO: Check for possible revision
+
 type APIEncryptedResult = {
     tobeparsed?: string;
 };
@@ -16,28 +18,25 @@ type APIResult<T> = {
 
 type APIMangas = {
     mangas: {
-        edges: APIManga[];
+        edges: {
+            _id: string;
+            name: string;
+            englishName: string | null;
+        }[];
     };
 };
 
-type APIManga = {
-    _id: string;
-    name: string;
-    englishName: string | null;
-    availableChaptersDetail: {
-        raw: string[];
-        sub: string[];
-    }
-};
-
 type APIChapters = {
-    episodeInfos: APIChapter[];
-    manga: APIManga;
-};
-
-type APIChapter = {
-    episodeIdNum: number;
-    notes?: string;
+    episodeInfos: {
+        episodeIdNum: number;
+        notes?: string;
+    }[];
+    manga: {
+        availableChaptersDetail: {
+            raw: string[];
+            sub: string[];
+        }
+    };
 };
 
 type APIPages = {
@@ -75,6 +74,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
+        // TODO: Use Array.fromAsync
         const mangaList: Manga[] = [];
         for (let page = 1, run = true; run; page++) {
             await Delay(200);
@@ -85,6 +85,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     private async GetMangasFromPage(page: number, provider: MangaPlugin): Promise<Manga[]> {
+        // TODO: Use FetchGraphQL
         const data = await this.FetchAPI<APIMangas>(`
             query ($page: Int) {
                 mangas(
@@ -109,10 +110,10 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        function buildChapters(chapters: string[], type: 'sub' | 'raw'): Chapter[] {
+        function buildChapters(info: APIChapters['episodeInfos'], chapters: string[], type: 'sub' | 'raw'): Chapter[] {
             return chapters.map(chapter => {
                 const num = parseFloat(chapter);
-                const infos = episodeInfos.find(({ episodeIdNum }) => episodeIdNum === num);
+                const infos = info.find(({ episodeIdNum }) => episodeIdNum === num);
                 const title = [
                     'Chapter',
                     infos.episodeIdNum,
@@ -124,41 +125,40 @@ export default class extends DecoratableMangaScraper {
             });
         }
 
-        const { episodeInfos, manga: { availableChaptersDetail: { raw, sub } } } =
-            await this.FetchAPI<APIChapters>(`
-                query ($id: String!, $showId: String!) {
-                    manga(_id: $id) {
-                        _id
-                        name
-                        availableChaptersDetail
-                    }
-                    episodeInfos(
-                        showId: $showId
-                        episodeNumStart: 0
-                        episodeNumEnd: 9999
-                    ) {
-                        episodeIdNum
-                        notes
-                        uploadDates
-                    }
+        const { episodeInfos, manga: { availableChaptersDetail: { raw, sub } } } = await this.FetchAPI<APIChapters>(`
+            query ($id: String!, $showId: String!) {
+                manga(_id: $id) {
+                    _id
+                    name
+                    availableChaptersDetail
                 }
+                episodeInfos(
+                    showId: $showId
+                    episodeNumStart: 0
+                    episodeNumEnd: 9999
+                ) {
+                    episodeIdNum
+                    notes
+                    uploadDates
+                }
+            }
         `, { id: manga.Identifier, showId: `manga@${manga.Identifier}` });
 
         const allChapters = [
-            ...buildChapters.call(this, sub, 'sub'),
-            ...buildChapters.call(this, raw, 'raw')
+            ...buildChapters(episodeInfos, sub, 'sub'),
+            ...buildChapters(episodeInfos, raw, 'raw'),
         ];
 
-        return allChapters.sort(
-            (a, b) => parseFloat((JSON.parse(b.Identifier) as ChapterID).id) - parseFloat((JSON.parse(a.Identifier) as ChapterID).id)
+        return allChapters.toSorted(
+            (self, other) => parseFloat((JSON.parse(other.Identifier) as ChapterID).id) - parseFloat((JSON.parse(self.Identifier) as ChapterID).id)
         );
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const { id: chapterId, translationType }: ChapterID = JSON.parse(chapter.Identifier);
+        const { id: chapterString, translationType }: ChapterID = JSON.parse(chapter.Identifier);
         const { chapterPages: { edges } } = await this.FetchAPI<APIPages>(undefined, {
             mangaId: chapter.Parent.Identifier,
-            chapterString: chapterId,
+            chapterString,
             limit: 999,
             offset: 0,
             translationType
@@ -179,7 +179,7 @@ export default class extends DecoratableMangaScraper {
                 return (await FetchJSON<APIResult<T>>(new Request(url, { headers: { Referer: this.URI.href, Origin: this.URI.origin } }))).data;
             })()
             : await FetchGraphQL<APIEncryptedResult & T>(new Request(this.apiURL), '', query, variables);
-        return 'tobeparsed' in result && result.tobeparsed ? await this.Decrypt<T>(result.tobeparsed) : (result as T);
+        return result.tobeparsed ? await this.Decrypt<T>(result.tobeparsed) : (result as T);
     }
 
     private async Decrypt<T>(data: string): Promise<T> {
