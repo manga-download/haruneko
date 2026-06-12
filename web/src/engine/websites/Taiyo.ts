@@ -22,14 +22,14 @@ type HydratedPages = {
     mediaChapter: {
         pages: {
             id: string;
-            extension: string;
+            extension?: string;
         }[];
     };
 };
 
-@Common.MangaCSS<HTMLMetaElement>(/^{origin}\/media\/[^/]+$/, 'meta[property="og:title"]', (el, uri) => ({
+@Common.MangaCSS<HTMLMetaElement>(/^{origin}\/media\/[^/]+$/, 'meta[property="og:title"]', (meta, uri) => ({
     id: uri.pathname.split('/').at(-1),
-    title: el.content.trim()
+    title: meta.content.trim()
 }))
 @Common.MangasNotSupported()
 @Common.ImageAjax()
@@ -46,22 +46,13 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const input = {
-            0: {
-                json: {
-                    mediaId: manga.Identifier,
-                    page: 1,
-                    perPage: 50
-                }
-            }
-        };
-
         type This = typeof this;
+        const uri = new URL('./chapters.getByMediaId?batch=1', this.apiURL);
         return Array.fromAsync(async function* (this: This) {
             for (let page = 1, run = true; run; page++) {
-                input[0].json.page = page;
-                const data = await FetchJSON<APIChapters>(new Request(new URL(`./chapters.getByMediaId?batch=1&input=${encodeURIComponent(JSON.stringify(input))}`, this.apiURL)));
-                const chapters = data[0].result.data.json.chapters.map(({ id, number, title }) => new Chapter(this, manga, id, ['Capítulo', number, title].joinTitleSegments()));
+                uri.searchParams.set('input', JSON.stringify({ 0: { json: { mediaId: manga.Identifier, perPage: 50, page } } }));
+                const [{ result: { data: { json: { chapters: entries } } } } ] = await FetchJSON<APIChapters>(new Request(uri));
+                const chapters = entries.map(({ id, number, title }) => new Chapter(this, manga, id, ['Capítulo', number, title].joinTitleSegments()));
                 chapters.length > 0 ? yield* chapters : run = false;
             }
         }.call(this));
@@ -69,6 +60,6 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
         const { mediaChapter: { pages } } = await FetchNextJS<HydratedPages>(new Request(new URL(`/chapter/${chapter.Identifier}/1`, this.URI)), data => 'mediaChapter' in data);
-        return pages.map(({ id, extension }) => new Page(this, chapter, new URL(`/medias/${chapter.Parent.Identifier}/chapters/${chapter.Identifier}/${id}.${ extension || 'jpg'}`, 'https://cdn.taiyo.moe')));
+        return pages.map(({ id, extension }) => new Page(this, chapter, new URL(`/medias/${chapter.Parent.Identifier}/chapters/${chapter.Identifier}/${id}.${ extension || 'jpg' }`, 'https://cdn.taiyo.moe')));
     }
 }
