@@ -1,18 +1,22 @@
 import { Tags } from '../Tags';
-import icon from './AllMangaTo.webp';
+import icon from './AllManga.webp';
 import { Delay } from '../BackgroundTimers';
 import { FetchGraphQL, FetchWindowScript } from '../platform/FetchProvider';
 import { GetBytesFromBase64, GetBytesFromUTF8, GetUTF8FromBytes } from '../BufferEncoder';
-import { Chapter, DecoratableMangaScraper, Manga, type MangaPlugin, Page } from '../providers/MangaPlugin';
+import { DecoratableMangaScraper, type MangaPlugin, Manga, Chapter, Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
+
+type APIManga = {
+    manga: {
+        _id: string;
+        name: string;
+        englishName: string | null;
+    };
+};
 
 type APIMangas = {
     mangas: {
-        edges: {
-            _id: string;
-            name: string;
-            englishName: string | null;
-        }[];
+        edges: APIManga['manga'][];
     };
 };
 
@@ -40,14 +44,13 @@ type APIPages = {
     };
 };
 
-@Common.MangaCSS(/^{origin}\/manga\/[^/]+$/, 'div.manga-page nav ol li:last-of-type', (li, uri) => ({ id: uri.href.split('/').at(-1), title: li.innerText.trim() }))
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
     private readonly apiURL = 'https://api.allanime.day/api';
 
     public constructor() {
-        super('allmanga', 'AllManga.to', 'https://allmanga.to', Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Language.English, Tags.Source.Aggregator);
+        super('allmanga', 'AllManga', 'https://allmanga.to', Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Language.English, Tags.Source.Aggregator);
     }
 
     public override get Icon() {
@@ -56,6 +59,19 @@ export default class extends DecoratableMangaScraper {
 
     public override async Initialize(): Promise<void> {
         return FetchWindowScript(new Request(new URL('/manga/-', this.URI)), '');
+    }
+
+    public override ValidateMangaURL(url: string): boolean {
+        return new RegExp(`^${this.URI.origin}/manga/[^/]+$`).test(url);
+    }
+
+    public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
+        const { manga: { _id, name, englishName } } = await FetchGraphQL<APIManga>(new Request(this.apiURL), '', `
+            query ($id: String!) {
+                manga(_id: $id) { _id, name, englishName }
+            }
+        `, { id: new URL(url).pathname.split('/').at(-1) });
+        return new Manga(this, provider, _id, englishName ?? name);
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
