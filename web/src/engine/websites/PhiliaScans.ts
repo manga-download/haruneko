@@ -245,8 +245,7 @@ export default class extends DecoratableMangaScraper {
         switch (encryptionType) {
             case 'AESV3':
             case 'AESV4': {
-                const prefix = encryptionType === 'AESV3' ? 'aesctr' : 'aesctr4';
-                imageData = await this.AESDecrypt(signKey, pageIndex, encrypted, prefix);
+                imageData = await this.AESDecrypt(signKey, pageIndex, encrypted, encryptionType === 'AESV3' ? 'aesctr' : 'aesctr4');
                 break;
             }
             case 'CHACHA20': {
@@ -254,8 +253,7 @@ export default class extends DecoratableMangaScraper {
                 break;
             }
             case 'XOR': {
-                const keystream = await this.DeriveKeyStream(signKey, pageIndex, encrypted.byteLength);
-                imageData = this.XOR(keystream, encrypted).buffer;
+                imageData = this.XOR(await this.ComputeXorKey(signKey, pageIndex, encrypted.byteLength), encrypted).buffer;
                 break;
             }
         }
@@ -267,7 +265,7 @@ export default class extends DecoratableMangaScraper {
         return source.map((byte, index) => byte ^ key[index]);
     }
 
-    private async DeriveKeyStream(key: CryptoKey, pageIndex: number, length: number): Promise<Uint8Array<ArrayBuffer>> {
+    private async ComputeXorKey(key: CryptoKey, pageIndex: number, length: number): Promise<Uint8Array<ArrayBuffer>> {
         const numBlocks = Math.ceil(length / 32);
         const result = new Uint8Array(32 * numBlocks);
 
