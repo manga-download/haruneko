@@ -30,9 +30,13 @@ async function CloseSplashScreen(target: puppeteer.Target) {
         url = page?.url();
         // TODO: leave after timeout?
     }
-    if(url && /splash.html/i.test(url)) {
-        page?.removeAllListeners();
-        await page?.close();
+    if (url && /splash.html/i.test(url)) {
+        try {
+            page?.removeAllListeners();
+            await page?.close();
+        } catch (error) {
+            console.log(new Date().toISOString(), '➔', error);
+        }
     }
 }
 
@@ -90,11 +94,12 @@ async function LaunchElectron(): Promise<puppeteer.Browser> {
             '--disable-features=UseDBus', // Suppress warnings/errors when electron tries to connect to D-Bus session in CI/CD pipeline
             '--ignore-certificate-errors',
             '--disable-blink-features=AutomationControlled', // Suppress certain automation flags to avoid anti-bot detection
-            '--origin=' + AppURL
+            `--origin=${AppURL}`,
         ],
         userDataDir: userDir,
         dumpio: true,
     });
+    console.log(new Date().toISOString(), '➔', 'Electron CLI:', browser.process().spawnfile, browser.process().spawnargs);
     browser.on('targetcreated', CloseSplashScreen);
     //SetupBlinkEvasions(browser, EvadeWebDriverDetection, EvadeChromeDevToolProtocolDetection);
 

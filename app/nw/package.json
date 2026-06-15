@@ -10,13 +10,13 @@
         "npm": ">=10.9.2"
     },
     "dependencies": {
-        "commander": "14.0.3",
+        "commander": "15.0.0",
         "websocket-rpc": "github:manga-download/websocket-rpc#v1.2.7"
     },
     "devDependencies": {
         "extract-zip": "2.0.1",
-        "nw": "0.110.1-sdk",
-        "plist": "3.1.0"
+        "nw": "0.112.0-sdk",
+        "plist": "5.0.0"
     },
     "scripts": {
         "check:ts": "tsc --noEmit --pretty",

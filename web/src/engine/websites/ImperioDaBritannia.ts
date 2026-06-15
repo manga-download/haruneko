@@ -3,27 +3,28 @@ import icon from './ImperioDaBritannia.webp';
 import { Chapter, DecoratableMangaScraper, Manga, type MangaPlugin, Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import { Fetch } from '../platform/FetchProvider';
-import { GetBytesFromHex, GetBytesFromUTF8 } from '../BufferEncoder';
-
-type APIMangas = {
-    obras: APIManga[];
-};
-
-type APIMangaDetails = {
-    obra: APIManga;
-};
+import { GetBytesFromHex, GetBytesFromUTF8, GetUTF8FromBytes } from '../BufferEncoder';
 
 type APIManga = {
-    slug: string;
-    nome: string;
-    capitulos: APIChapter[];
+    obra: {
+        slug: string;
+        nome: string;
+    };
 };
 
-type APIChapter = {
-    id: number;
-    nome: string;
-    numero: string;
-    obra_id: number;
+type APIMangas = {
+    obras: APIManga['obra'][];
+};
+
+type APIChapters = {
+    obra: {
+        capitulos: {
+            id: number;
+            nome: string;
+            numero: string;
+            obra_id: number;
+        }[];
+    };
 };
 
 type APIPages = {
@@ -33,15 +34,16 @@ type APIPages = {
 };
 
 type APIPage = {
-    cdn_id: string | null;
+    cdn_id?: string;
     url?: string;
     numero: number;
 }
 
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
-    private readonly apiUrl = 'https://imperiodabritannia.net/api/';
-    private readonly CDNUrl = 'https://cdn.imperiodabritannia.net/';
+
+    private readonly apiURL = 'https://api.imperiodabritannia.net/api/';
+    private readonly cdnURL = 'https://cdn.imperiodabritannia.net/';
 
     public constructor() {
         super('imperiodabritania', 'Imperio Da Britannia', 'https://imperiodabritannia.net', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Portuguese, Tags.Source.Scanlator);
@@ -52,11 +54,12 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override ValidateMangaURL(url: string): boolean {
-        return new RegExpSafe(`^${this.URI.origin}/manga/[^/]+$`).test(url);
+        return new RegExpSafe(`^${this.URI.origin}/manga/[^/]+/?/$`).test(url);
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
-        const { obra: { slug, nome } } = await this.FetchAPI<APIMangaDetails>(`./obras/by-slug/${url.split('/').at(-1)}`);
+        const mangaID = new URL(url).pathname.split('/').at(2);
+        const { obra: { slug, nome } } = await this.FetchAPI<APIManga>(`./obras/by-slug/${mangaID}`);
         return new Manga(this, provider, slug, nome);
     }
 
@@ -64,7 +67,7 @@ export default class extends DecoratableMangaScraper {
         type This = typeof this;
         return Array.fromAsync(async function* (this: This) {
             for (let page = 0, run = true; run; page++) {
-                const { obras } = await this.FetchAPI<APIMangas>(`./obras?pagina=${page}&limite=200`);
+                const { obras } = await this.FetchAPI<APIMangas>(`./obras?limite=200&pagina=${page}`);
                 const mangas = obras.map(({ slug, nome }) => new Manga(this, provider, slug, nome));
                 mangas.length > 0 ? yield* mangas : run = false;
             }
@@ -72,8 +75,8 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const { obra: { capitulos } } = await this.FetchAPI<APIMangaDetails>(`./obras/by-slug/${manga.Identifier}`);
-        return capitulos.reverse().map(({ nome, numero, obra_id: mangaId }) => new Chapter(this, manga, `${mangaId}/${parseInt(numero)}`, nome));
+        const { obra: { capitulos } } = await this.FetchAPI<APIChapters>(`./obras/by-slug/${manga.Identifier}/`);
+        return capitulos.reverse().map(({ nome, numero, obra_id: mangaId }) => new Chapter(this, manga, `${mangaId}/${parseInt(numero, 10)}`, nome || `Capítulo ${numero}`));
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
@@ -89,18 +92,19 @@ export default class extends DecoratableMangaScraper {
         }
         if (cdn_id) {
             const base = cdn_id.startsWith('obras/') || cdn_id.startsWith('usuarios/') ? cdn_id : `proxy/${cdn_id}`;
-            return `${this.CDNUrl}${base}`;
+            return `${this.cdnURL}${base}`;
         }
-        return `${this.CDNUrl}obras/${mangaId}/capitulo-${chapterNumber}/pagina_${String(numero).padStart(3, '0')}.webp`;
+        return `${this.cdnURL}obras/${mangaId}/capitulo-${chapterNumber}/pagina_${String(numero).padStart(3, '0')}.webp`;
     }
 
     private async FetchAPI<T extends JSONElement>(endpoint: string): Promise<T> {
-        const data = await Fetch(new Request(new URL(endpoint, this.apiUrl), {
+        const response = await Fetch(new Request(new URL(endpoint, this.apiURL), {
             headers: {
-                'Content-type': 'application/json'
+                'Content-Type': 'application/json',
+                'X-API-Token': 'bunker_api_token_secreto_2025',
             }
         }));
-        return data.headers.get('x-encrypted') === 'true' ? this.Decrypt<T>(await data.text()) : await data.json() as T;
+        return response.headers.get('x-encrypted') === 'true' ? this.Decrypt<T>(await response.text()) : await response.json() as T;
     }
 
     private async Decrypt<T extends JSONElement>(text: string): Promise<T> {
@@ -110,7 +114,7 @@ export default class extends DecoratableMangaScraper {
             await crypto.subtle.digest('SHA-256', GetBytesFromUTF8('mangotoons_encryption_key_2025' + 'salt')),
             algorithm, false, ['decrypt']);
         const decrypted = await crypto.subtle.decrypt(algorithm, key, GetBytesFromHex(encrypted));
-        return JSON.parse(new TextDecoder().decode(decrypted)) as T;
+        return JSON.parse(GetUTF8FromBytes(decrypted)) as T;
     }
 
 }

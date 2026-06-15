@@ -1,97 +1,55 @@
 import { Tags } from '../Tags';
 import icon from './PlotTwistNoFansub.webp';
-import { Chapter, DecoratableMangaScraper, type MangaPlugin, Manga } from '../providers/MangaPlugin';
+import { FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
+import type { Manga } from '../providers/MangaPlugin';
+import { Chapter, DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { FetchCSS, FetchJSON } from '../platform/FetchProvider';
 
-type APISearchResult = {
-    td_data: string;
+type APIChapters = {
+    data: {
+        html: string;
+        has_more: boolean;
+    };
 };
 
-type APIChapter = {
-    post_name: string;
-    chapter_number: string;
-    chapter_name: string;
-}
-
-const pageScript = `
-    new Promise(resolve => {
-        resolve(objetoglobal.images.map(image => {
-            return objetoglobal.image_url + "/" + objetoglobal.title + "_" + objetoglobal.images[0].manga_id + "/ch_" + parseFloat(document.querySelector("select#chapter-select").value) + "/" + image.image_name;
-        }));
-    });
-`;
-
-@Common.MangaCSS(/^{origin}\/plotwist\/manga\/[^/]+\/$/, 'p.htilestiloso')
-@Common.PagesSinglePageJS(pageScript, 1500)
-@Common.ImageAjax()
+@Common.MangaCSS(/^{origin}\/manga\/[^/]+\/$/, 'h1.mn-detail-title')
+@Common.MangasMultiPageCSS('div.manga-grid-v2 figure > a', Common.PatternLinkGenerator('/biblioteca3/page/{page}/'), 0, Common.AnchorInfoExtractor(true))
+@Common.PagesSinglePageCSS('div.reading-content img[data-src]')
+@Common.ImageAjax(true)
 export default class extends DecoratableMangaScraper {
+
     public constructor() {
-        super('plottwistnofansub', 'Plot Twist No Fansub', 'https://plotnf.com', Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Language.Spanish, Tags.Source.Scanlator);
+        super('plottwistnofansub', 'Plot Twist No Fansub', 'https://plotnofansub.com', Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Language.Spanish, Tags.Source.Scanlator);
     }
 
     public override get Icon() {
         return icon;
     }
 
-    public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        const mangaList: Manga[] = [];
-        for (const letter of 'aeiouy'.split('')) {
-            const mangas = await this.GetMangasFromLetter(provider, letter);
-            mangaList.push(...mangas);
-        }
-        return mangaList.distinct();
-    }
-
-    private async GetMangasFromLetter(provider: MangaPlugin, letter: string): Promise<Manga[]> {
-        const uri = new URL('/wp-admin/admin-ajax.php', this.URI);
-        const { td_data } = await FetchJSON<APISearchResult>(new Request(uri, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
-                'X-Requested-With': 'XMLHttpRequest'
-            },
-            body: new URLSearchParams({
-                action: 'td_ajax_search',
-                module: 'tdb_module_search',
-                td_string: letter,
-                limit: '9999'
-            }).toString()
-        }));
-
-        const doc = new DOMParser().parseFromString(td_data, 'text/html');
-        return [...doc.querySelectorAll<HTMLAnchorElement>('.entry-title a[href*="/plotwist/manga/"]')].map(manga => {
-            const { id, title } = Common.AnchorInfoExtractor(true).call(this, manga, uri);
-            return new Manga(this, provider, id, title);
-        });
-    }
-
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const mangaId = (await FetchCSS(new Request(new URL(manga.Identifier, this.URI)), 'p.listcap')).at(0).dataset.mangaid;
-        const chapterList: Chapter[] = [];
-        for (let page = 1, run = true; run; page++) {
-            const chapters = await this.GetChaptersFromPage(manga, page, mangaId);
-            chapters.length > 0 ? chapterList.push(...chapters) : run = false;
-        }
-        return chapterList.distinct();
-    }
+        const mangaId = await FetchWindowScript<string>(new Request(new URL(manga.Identifier, this.URI)), 'manga.manga_id', 500);
+        const body = new FormData();
+        body.set('action', 'plot_load_chapters');
+        body.set('manga_id', mangaId);
 
-    private async GetChaptersFromPage(manga: Manga, page: number, mangaId: string): Promise<Chapter[]> {
-        const data = await FetchJSON<APIChapter[]>(new Request(new URL('/wp-admin/admin-ajax.php', this.URI), {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
-                'X-Requested-With': 'XMLHttpRequest'
-            },
-            body: new URLSearchParams({
-                manga_id: mangaId,
-                action: 'lcapl6',
-                pageNumber: `${page}`
-            }).toString()
-        }));
-        return data.map(chapter => {
-            const title = new DOMParser().parseFromString(`Cap&iacute;tulo ${chapter.chapter_number}: ${chapter.chapter_name}`, 'text/html').body.innerText.trim();
-            return new Chapter(this, manga, `/reader/${chapter.post_name}/chapter-${chapter.chapter_number}/`, title);
-        });
+        type This = typeof this;
+        return Array.fromAsync(async function* (this: This) {
+            for (let page = 0, run = true; run; page++) {
+                body.set('page', `${page}`);
+                const { data: { html, has_more } } = await FetchJSON<APIChapters>(new Request(new URL('/wp-admin/admin-ajax.php', this.URI), {
+                    method: 'POST',
+                    body,
+                }));
+                const doc = new DOMParser().parseFromString(html, 'text/html');
+                const chapters = [...doc.querySelectorAll<HTMLAnchorElement>('a.mn-detail-chapter-item')].map(chapter => {
+                    return new Chapter(this, manga, chapter.pathname, [
+                        chapter.querySelector<HTMLElement>('.mn-detail-chapter-name')?.innerText.trim(),
+                        chapter.querySelector<HTMLElement>('.mn-detail-chapter-extend')?.innerText.trim(),
+                    ].joinTitleSegments());
+                });
+                yield* chapters;
+                run = has_more;
+            }
+        }.call(this));
     }
 }

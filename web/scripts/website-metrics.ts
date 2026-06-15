@@ -1,8 +1,7 @@
 import path from 'node:path';
 import fs from 'node:fs/promises';
-import { mock } from 'vitest-mock-extended';
-import { describe, test, expect, afterAll } from 'vitest';
-import type { ISettings, SettingsManager } from '../src/engine/SettingsManager';
+import { vi, describe, test, expect, afterAll } from 'vitest';
+import type { SettingsManager } from '../src/engine/SettingsManager';
 import type { StorageController } from '../src/engine/StorageController';
 import { PluginController } from '../src/engine/PluginController';
 
@@ -62,12 +61,8 @@ const expectedRedirectPatterns = new Map([
 
 class TestFixture {
 
-    public readonly MockStorageController = mock<StorageController>();
-    public readonly MockSettingsManager = mock<SettingsManager>();
-
-    constructor () {
-        this.MockSettingsManager.OpenScope.mockReturnValue(mock<ISettings>());
-    }
+    private readonly MockStorageController = { LoadPersistent: vi.fn() } as unknown as StorageController;
+    private readonly MockSettingsManager = { OpenScope: vi.fn(() => ({ Initialize: vi.fn() }))} as unknown as SettingsManager;
 
     public CreateTestee() {
         return new PluginController(this.MockStorageController, this.MockSettingsManager);
@@ -96,12 +91,11 @@ class TestFixture {
                 result.code = StatusCode.OK;
                 result.info = '';
             }
-        } catch (error) {
+        } catch (error: any) {
             result.code = StatusCode.ERROR;
-            result.info = `${error.cause ?? error.message ?? error}`.trim();
-        } finally {
-            return result;
+            result.info = `${error?.cause ?? error?.message ?? error}`.trim();
         }
+        return result;
     }
 
     public static async GetSimilarWeb(uri: URL) {

@@ -1,5 +1,4 @@
-import { mock } from 'vitest-mock-extended';
-import { describe, it, expect } from 'vitest';
+import { vi, describe, it, expect } from 'vitest';
 import { MediaContainer, type MediaChild } from './MediaPlugin';
 import { MissingInfoTracker, type MediaInfoTracker } from '../trackers/IMediaInfoTracker';
 import { Store, type StorageController } from '../StorageController';
@@ -76,27 +75,27 @@ class TestFixture {
             Title: 'Tracker 01',
         } as MediaInfoTracker
     ];
-    public readonly mockInteractiveFileContentProvider = mock<InteractiveFileContentProvider>();
-    public readonly mockStorageController = mock<StorageController>();
-    public readonly mockPluginController = mock<PluginController>();
+    public readonly InteractiveFileContentProviderMock = { LoadFile: vi.fn(), SaveFile: vi.fn(), IsAbortError: vi.fn() };
+    public readonly StorageControllerMock = { LoadPersistent: vi.fn(), SavePersistent: vi.fn() };
+    private readonly PluginControllerMock = {} as PluginController;
 
     public SetupStoredBookmarks(bookmarks?: BookmarkSerialized[], delay = 0): TestFixture {
-        this.mockStorageController.LoadPersistent.calledWith(Store.Bookmarks, undefined).mockReturnValue(new Promise(resolve => setTimeout(() => resolve(bookmarks ?? TestFixture.DefaultStoredEntries), delay)));
+        this.StorageControllerMock.LoadPersistent = vi.fn((store, key) => store === Store.Bookmarks && key === undefined ? new Promise(resolve => setTimeout(() => resolve(bookmarks ?? TestFixture.DefaultStoredEntries), delay)) : Promise.reject());
         return this;
     }
 
     public SetupWebsitePlugins(plugins?: MediaContainer<MediaChild>[]): TestFixture {
-        Object.defineProperty(this.mockPluginController, 'WebsitePlugins', { get: () => plugins ?? TestFixture.DefaultWebsitePlugins });
+        Object.defineProperty(this.PluginControllerMock, 'WebsitePlugins', { get: () => plugins ?? TestFixture.DefaultWebsitePlugins });
         return this;
     }
 
     public SetupInfoTrackers(trackers?: MediaInfoTracker[]): TestFixture {
-        Object.defineProperty(this.mockPluginController, 'InfoTrackers', { get: () => trackers ?? TestFixture.DefaultInfoTrackers });
+        Object.defineProperty(this.PluginControllerMock, 'InfoTrackers', { get: () => trackers ?? TestFixture.DefaultInfoTrackers });
         return this;
     }
 
     public async CreateTestee(delay = 25): Promise<BookmarkPlugin> {
-        const testee = new BookmarkPlugin(this.mockStorageController, this.mockPluginController, this.mockInteractiveFileContentProvider);
+        const testee = new BookmarkPlugin(this.StorageControllerMock as unknown as StorageController, this.PluginControllerMock, this.InteractiveFileContentProviderMock as unknown as InteractiveFileContentProvider);
         await new Promise(resolve => setTimeout(resolve, delay)); // Make sure bookmarks are loaded from async storage provider
         return testee;
     }
@@ -161,30 +160,30 @@ describe('BookmarkPlugin', () => {
                 .SetupStoredBookmarks()
                 .SetupWebsitePlugins()
                 .SetupInfoTrackers();
-            const file = mock<Blob>();
-            fixture.mockInteractiveFileContentProvider.LoadFile.mockResolvedValue(file);
-            file.text.mockResolvedValue(`[
-                {
-                    "Title": "Bookmark 1001",
-                    "Created": 1.1, "Updated": 1.2,
-                    "Media": { "ProviderID": "website-01", "EntryID": "website-01/manga" },
-                    "Info": { "ProviderID": null, "EntryID": null }
-                },
-                {
-                    "Title": "Bookmark 1002",
-                    "Created": 2.1, "Updated": 2.2,
-                    "Media": { "ProviderID": "website-01", "EntryID": "website-01/anime" },
-                    "Info": { "ProviderID": "tracker-01", "EntryID": "tracker-01/anime" }
-                },
-                {
-                    "Title": "Bookmark 1003",
-                    "Created": 3.1, "Updated": 3.2,
-                    "Media": { "ProviderID": "website-02", "EntryID": "website-02/anime" },
-                    "Info": { "ProviderID": null, "EntryID": null }
-                }
-            ]`);
+            fixture.InteractiveFileContentProviderMock.LoadFile.mockResolvedValue({
+                text: () => Promise.resolve(`[
+                    {
+                        "Title": "Bookmark 1001",
+                        "Created": 1.1, "Updated": 1.2,
+                        "Media": { "ProviderID": "website-01", "EntryID": "website-01/manga" },
+                        "Info": { "ProviderID": null, "EntryID": null }
+                    },
+                    {
+                        "Title": "Bookmark 1002",
+                        "Created": 2.1, "Updated": 2.2,
+                        "Media": { "ProviderID": "website-01", "EntryID": "website-01/anime" },
+                        "Info": { "ProviderID": "tracker-01", "EntryID": "tracker-01/anime" }
+                    },
+                    {
+                        "Title": "Bookmark 1003",
+                        "Created": 3.1, "Updated": 3.2,
+                        "Media": { "ProviderID": "website-02", "EntryID": "website-02/anime" },
+                        "Info": { "ProviderID": null, "EntryID": null }
+                    }
+                ]`)
+            } as unknown as Blob);
             const testee = await fixture.CreateTestee();
-            fixture.mockStorageController.LoadPersistent.mockClear();
+            fixture.StorageControllerMock.LoadPersistent.mockClear();
             const actual = await testee.Import();
 
             expect(actual.cancelled).toBe(false);
@@ -193,15 +192,15 @@ describe('BookmarkPlugin', () => {
             expect(actual.skipped).toBe(1);
             expect(actual.broken).toBe(1);
 
-            expect(fixture.mockStorageController.LoadPersistent).toBeCalledTimes(1);
-            expect(fixture.mockStorageController.SavePersistent).toBeCalledTimes(2);
-            expect(fixture.mockStorageController.SavePersistent).toBeCalledWith({
+            expect(fixture.StorageControllerMock.LoadPersistent).toHaveBeenCalledTimes(1);
+            expect(fixture.StorageControllerMock.SavePersistent).toHaveBeenCalledTimes(2);
+            expect(fixture.StorageControllerMock.SavePersistent).toHaveBeenCalledWith({
                 Title: 'Bookmark 1002',
                 Created: 2, Updated: 2,
                 Media: { EntryID: 'website-01/anime', ProviderID: 'website-01' },
                 Info: { EntryID: 'tracker-01/anime', ProviderID: 'tracker-01' },
             }, Store.Bookmarks, 'website-01 :: website-01/anime');
-            expect(fixture.mockStorageController.SavePersistent).toBeCalledWith({
+            expect(fixture.StorageControllerMock.SavePersistent).toHaveBeenCalledWith({
                 Title: 'Bookmark 1003',
                 Created: 3, Updated: 3,
                 Media: { EntryID: 'website-02/anime', ProviderID: 'website-02' },
@@ -214,42 +213,42 @@ describe('BookmarkPlugin', () => {
                 .SetupStoredBookmarks()
                 .SetupWebsitePlugins()
                 .SetupInfoTrackers();
-            const file = mock<Blob>();
-            fixture.mockInteractiveFileContentProvider.LoadFile.mockResolvedValue(file);
-            file.text.mockResolvedValue(`[
-                {
-                    "title": {
-                        "connector": "❓",
-                        "manga": "Bookmark 1001"
+            fixture.InteractiveFileContentProviderMock.LoadFile.mockResolvedValue({
+                text: () => Promise.resolve(`[
+                    {
+                        "title": {
+                            "connector": "❓",
+                            "manga": "Bookmark 1001"
+                        },
+                        "key": {
+                            "connector": "website-01",
+                            "manga": "website-01/manga"
+                        }
                     },
-                    "key": {
-                        "connector": "website-01",
-                        "manga": "website-01/manga"
-                    }
-                },
-                {
-                    "title": {
-                        "connector": "❓",
-                        "manga": "Bookmark 1002"
+                    {
+                        "title": {
+                            "connector": "❓",
+                            "manga": "Bookmark 1002"
+                        },
+                        "key": {
+                            "connector": "website-01",
+                            "manga": "website-01/anime"
+                        }
                     },
-                    "key": {
-                        "connector": "website-01",
-                        "manga": "website-01/anime"
+                    {
+                        "title": {
+                            "connector": "❓",
+                            "manga": "Bookmark 1003"
+                        },
+                        "key": {
+                            "connector": "website-02",
+                            "manga": "website-02/anime"
+                        }
                     }
-                },
-                {
-                    "title": {
-                        "connector": "❓",
-                        "manga": "Bookmark 1003"
-                    },
-                    "key": {
-                        "connector": "website-02",
-                        "manga": "website-02/anime"
-                    }
-                }
-            ]`);
+                ]`)
+            } as unknown as Blob);
             const testee = await fixture.CreateTestee();
-            fixture.mockStorageController.LoadPersistent.mockClear();
+            fixture.StorageControllerMock.LoadPersistent.mockClear();
             const actual = await testee.Import();
 
             expect(actual.cancelled).toBe(false);
@@ -258,15 +257,15 @@ describe('BookmarkPlugin', () => {
             expect(actual.skipped).toBe(1);
             expect(actual.broken).toBe(1);
 
-            expect(fixture.mockStorageController.LoadPersistent).toBeCalledTimes(1);
-            expect(fixture.mockStorageController.SavePersistent).toBeCalledTimes(2);
-            expect(fixture.mockStorageController.SavePersistent).toBeCalledWith({
+            expect(fixture.StorageControllerMock.LoadPersistent).toHaveBeenCalledTimes(1);
+            expect(fixture.StorageControllerMock.SavePersistent).toHaveBeenCalledTimes(2);
+            expect(fixture.StorageControllerMock.SavePersistent).toHaveBeenCalledWith({
                 Title: 'Bookmark 1002',
                 Created: 0, Updated: 0,
                 Media: { EntryID: 'website-01/anime', ProviderID: 'website-01' },
                 Info: { EntryID: null, ProviderID: null },
             }, Store.Bookmarks, 'website-01 :: website-01/anime');
-            expect(fixture.mockStorageController.SavePersistent).toBeCalledWith({
+            expect(fixture.StorageControllerMock.SavePersistent).toHaveBeenCalledWith({
                 Title: 'Bookmark 1003',
                 Created: 0, Updated: 0,
                 Media: { EntryID: 'website-02/anime', ProviderID: 'website-02' },
@@ -279,8 +278,8 @@ describe('BookmarkPlugin', () => {
                 .SetupStoredBookmarks()
                 .SetupWebsitePlugins()
                 .SetupInfoTrackers();
-            fixture.mockInteractiveFileContentProvider.LoadFile.mockRejectedValue(new DOMException('😈', 'AbortError'));
-            fixture.mockInteractiveFileContentProvider.IsAbortError.mockReturnValue(true);
+            fixture.InteractiveFileContentProviderMock.LoadFile.mockRejectedValue(new DOMException('😈', 'AbortError'));
+            fixture.InteractiveFileContentProviderMock.IsAbortError.mockReturnValue(true);
             const testee = await fixture.CreateTestee();
             const actual = await testee.Import();
 
@@ -289,7 +288,7 @@ describe('BookmarkPlugin', () => {
             expect(actual.imported).toBe(0);
             expect(actual.skipped).toBe(0);
             expect(actual.broken).toBe(0);
-            expect(fixture.mockStorageController.SavePersistent).not.toBeCalled();
+            expect(fixture.StorageControllerMock.SavePersistent).not.toHaveBeenCalled();
         });
 
         it('Should throw on unexpected error', async () => {
@@ -298,12 +297,12 @@ describe('BookmarkPlugin', () => {
                 .SetupWebsitePlugins()
                 .SetupInfoTrackers();
             const expected = new Error('😈');
-            fixture.mockInteractiveFileContentProvider.LoadFile.mockRejectedValue(expected);
-            fixture.mockInteractiveFileContentProvider.IsAbortError.mockReturnValue(false);
+            fixture.InteractiveFileContentProviderMock.LoadFile.mockRejectedValue(expected);
+            fixture.InteractiveFileContentProviderMock.IsAbortError.mockReturnValue(false);
             const testee = await fixture.CreateTestee();
 
             await expect(testee.Import()).rejects.toBe(expected);
-            expect(fixture.mockStorageController.SavePersistent).not.toBeCalled();
+            expect(fixture.StorageControllerMock.SavePersistent).not.toHaveBeenCalled();
         });
     });
 
@@ -320,7 +319,7 @@ describe('BookmarkPlugin', () => {
 
             expect(actual.cancelled).toBe(false);
             expect(actual.exported).toBe(3);
-            expect(fixture.mockInteractiveFileContentProvider.SaveFile).toBeCalledWith(expect.objectContaining({ data: TestFixture.DefaultStoredEntries }), {
+            expect(fixture.InteractiveFileContentProviderMock.SaveFile).toHaveBeenCalledWith(expect.objectContaining({ data: TestFixture.DefaultStoredEntries }), {
                 suggestedName: `HakuNeko (${today}).bookmarks`,
                 types: [
                     {
@@ -337,14 +336,14 @@ describe('BookmarkPlugin', () => {
                 .SetupStoredBookmarks()
                 .SetupWebsitePlugins()
                 .SetupInfoTrackers();
-            fixture.mockInteractiveFileContentProvider.SaveFile.mockRejectedValue(new DOMException('😈', 'AbortError'));
-            fixture.mockInteractiveFileContentProvider.IsAbortError.mockReturnValue(true);
+            fixture.InteractiveFileContentProviderMock.SaveFile.mockRejectedValue(new DOMException('😈', 'AbortError'));
+            fixture.InteractiveFileContentProviderMock.IsAbortError.mockReturnValue(true);
             const testee = await fixture.CreateTestee();
             const actual = await testee.Export();
 
             expect(actual.cancelled).toBe(true);
             expect(actual.exported).toBe(0);
-            expect(fixture.mockInteractiveFileContentProvider.SaveFile).toBeCalled();
+            expect(fixture.InteractiveFileContentProviderMock.SaveFile).toHaveBeenCalled();
         });
 
         it('Should throw on unexpected error', async () => {
@@ -353,8 +352,8 @@ describe('BookmarkPlugin', () => {
                 .SetupWebsitePlugins()
                 .SetupInfoTrackers();
             const expected = new Error('😈');
-            fixture.mockInteractiveFileContentProvider.SaveFile.mockRejectedValue(expected);
-            fixture.mockInteractiveFileContentProvider.IsAbortError.mockReturnValue(false);
+            fixture.InteractiveFileContentProviderMock.SaveFile.mockRejectedValue(expected);
+            fixture.InteractiveFileContentProviderMock.IsAbortError.mockReturnValue(false);
             const testee = await fixture.CreateTestee();
 
             await expect(testee.Export()).rejects.toBe(expected);

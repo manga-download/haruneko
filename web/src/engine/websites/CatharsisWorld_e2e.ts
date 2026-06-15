@@ -12,7 +12,8 @@ new TestFixture({
     },
     child: {
         id: '/serie/mision-romance-sincero/capitulo-1/',
-        title: 'Capitulo 1'
+        title: 'Capitulo 1',
+        timeout: 30000
     },
     entry: {
         index: 0,

@@ -7,7 +7,7 @@ new TestFixture({
     },
     container: {
         url: 'https://reset-scans.org/manga/stuck-in-the-tower/',
-        id: JSON.stringify({ post: '162', slug: '/manga/stuck-in-the-tower/' }),
+        id: '/manga/stuck-in-the-tower/',
         title: 'Stuck in the Tower'
     },
     child: {

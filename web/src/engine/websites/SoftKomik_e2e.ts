@@ -12,11 +12,11 @@ new TestFixture({
     },
     child: {
         id: '/black-abyss-at-dawn-bahasa-indonesia/chapter/028',
-        title: '028'
+        title: 'Chapter 28'
     },
     entry: {
         index: 1,
         size: 348_548,
-        type: 'image/webp'
+        type: 'image/jpeg'
     }
 }).AssertWebsite();

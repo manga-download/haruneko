@@ -6,17 +6,17 @@ new TestFixture({
         title: 'Traducciones Amistosas'
     },
     container: {
-        url: 'https://traduccionesamistosas.topmanhuas.org/manga/entrenador-de-mascotas/',
-        id: JSON.stringify({ post: '90', slug: '/manga/entrenador-de-mascotas/' }),
+        url: 'https://rncalation.online/comics/entrenador-de-mascotas',
+        id: '/comics/entrenador-de-mascotas',
         title: 'Entrenador de Mascotas'
     },
     child: {
-        id: '/manga/entrenador-de-mascotas/capitulo-252/',
-        title: 'Capitulo 252'
+        id: '/comics/entrenador-de-mascotas/cap/1',
+        title: 'Capítulo 1',
     },
     entry: {
         index: 3,
-        size: 1_869_563,
+        size: 234_813,
         type: 'image/jpeg'
     }
 }).AssertWebsite();

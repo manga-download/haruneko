@@ -1,26 +1,25 @@
-import { mock } from 'vitest-mock-extended';
 import { vi, describe, it, expect } from 'vitest';
 import { Event } from './Event';
 
 function AssertSubscribeOnce<TSender, TArgs>(testee: Event<TSender, TArgs>): void {
     it('Should only subscribe once', async () => {
-        const sender = mock<TSender>();
-        const args = mock<TArgs>();
+        const sender = {} as TSender;
+        const args = {} as TArgs;
         const callback = vi.fn();
 
         testee.Subscribe(callback);
         testee.Subscribe(callback);
         testee.Dispatch(sender, args);
 
-        expect(callback).toBeCalledTimes(1);
-        expect(callback).toBeCalledWith(sender, args);
+        expect(callback).toHaveBeenCalledTimes(1);
+        expect(callback).toHaveBeenCalledWith(sender, args);
     });
 }
 
 function AssertInvokeAllSubscriptions<TSender, TArgs>(testee: Event<TSender, TArgs>): void {
     it('Should invoke all subscribed callbacks', async () => {
-        const sender = mock<TSender>();
-        const args = mock<TArgs>();
+        const sender = {} as TSender;
+        const args = {} as TArgs;
         const mockError = vi.fn();
         mockError.mockImplementation(() => { throw new Error(); });
         const callbacks = [
@@ -34,16 +33,16 @@ function AssertInvokeAllSubscriptions<TSender, TArgs>(testee: Event<TSender, TAr
         testee.Dispatch(sender, args);
 
         for(const callback of callbacks) {
-            expect(callback).toBeCalledTimes(1);
-            expect(callback).toBeCalledWith(sender, args);
+            expect(callback).toHaveBeenCalledTimes(1);
+            expect(callback).toHaveBeenCalledWith(sender, args);
         }
     });
 }
 
 function AssertUnsubscribe<TSender, TArgs>(testee: Event<TSender, TArgs>): void {
     it('Should no longer invoke unsubscribed callbacks', async () => {
-        const sender = mock<TSender>();
-        const args = mock<TArgs>();
+        const sender = {} as TSender;
+        const args = {} as TArgs;
         const callbacks = [
             vi.fn(),
             vi.fn(),
@@ -55,8 +54,8 @@ function AssertUnsubscribe<TSender, TArgs>(testee: Event<TSender, TArgs>): void 
         testee.Unsubscribe(callbacks[0]);
         testee.Dispatch(sender, args);
 
-        expect(callbacks[0]).toBeCalledTimes(0);
-        expect(callbacks[1]).toBeCalledTimes(1);
+        expect(callbacks[0]).toHaveBeenCalledTimes(0);
+        expect(callbacks[1]).toHaveBeenCalledTimes(1);
     });
 }
 
