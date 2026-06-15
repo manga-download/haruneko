@@ -67,7 +67,7 @@ export default class extends DecoratableMangaScraper {
         const { data } = await this.FetchAPI<APIChapters>(`./dados/${manga.Identifier}`);
         return data
             .sort((self, other) => other.capitulo_id - self.capitulo_id)
-            .map(({ capitulo_id: id, capitulo_nome: name }) => new Chapter(this, manga, id.toString(), name));
+            .map(({ capitulo_id: id, capitulo_nome: name }) => new Chapter(this, manga, `${id}`, name));
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
@@ -77,7 +77,7 @@ export default class extends DecoratableMangaScraper {
 
     private async GetAllMangas(provider: MangaPlugin): Promise<Manga[]> {
         const { data } = await this.FetchAPI<APIMangas>('./dados');
-        return data.map(({ manga_id: id, titulo: title }) => new Manga(this, provider, id.toString(), title));
+        return data.map(({ manga_id: id, titulo: title }) => new Manga(this, provider, `${id}`, title));
     }
 
     private async FetchAPI<T extends JSONElement>(endpoint: string) {
