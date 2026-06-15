@@ -1,18 +1,18 @@
 import { TestFixture } from '../../../test/WebsitesFixture';
 
-// CASE : English
+// CASE : Translated (English)
 new TestFixture({
     plugin: {
         id: 'allmanga',
-        title: 'AllManga.to'
+        title: 'AllManga'
     },
     container: {
         url: 'https://allmanga.to/manga/kFvrdRcbubPjrhr63',
         id: 'kFvrdRcbubPjrhr63',
-        title: 'Yuan Zun'
+        title: 'Dragon Prince Yuan'
     },
     child: {
-        id: JSON.stringify({ id: '652.5', translationType: 'sub' }),
+        id: JSON.stringify({ chapterString: '652.5', translationType: 'sub' }),
         title: 'Chapter 652.5'
     },
     entry: {
@@ -22,19 +22,19 @@ new TestFixture({
     }
 }).AssertWebsite();
 
-// CASE : "raw" (Chinese)
+// CASE : RAW (Chinese)
 new TestFixture({
     plugin: {
         id: 'allmanga',
-        title: 'AllManga.to'
+        title: 'AllManga'
     },
     container: {
         url: 'https://allmanga.to/manga/kFvrdRcbubPjrhr63',
         id: 'kFvrdRcbubPjrhr63',
-        title: 'Yuan Zun'
+        title: 'Dragon Prince Yuan'
     },
     child: {
-        id: JSON.stringify({ id: '261', translationType: 'raw' }),
+        id: JSON.stringify({ chapterString: '261', translationType: 'raw' }),
         title: 'Chapter 261 - Appeal for Aid [raw]'
     },
     entry: {

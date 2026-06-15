@@ -6,15 +6,13 @@ new TestFixture({
         title: 'NineMangaES'
     },
     container: {
-        url: 'https://es.ninemanga.com/manga/Martial+Peak.html',
-        id: '/manga/Martial+Peak.html',
+        url: 'https://es.niadd.com/manga/Martial_Peak.html',
+        id: '/manga/Martial_Peak.html',
         title: 'Martial Peak',
     },
     child: {
-        id: '/chapter/Martial%20Peak/1855269.html',
+        id: '/chapter/Martial_Peak_Capitulo_3440/1855269/',
         title: 'Capitulo 3440',
-        timeout: 15000
-
     },
     entry: {
         index: 1,

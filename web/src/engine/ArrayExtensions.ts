@@ -62,7 +62,7 @@ if (!Array.prototype.count) {
 if (!Array.prototype.joinTitleSegments) {
     Object.defineProperty(Array.prototype, 'joinTitleSegments', {
         value: function (this: Array<string | number>): string {
-            return this.filter(segment => `${segment ?? ''}`).join(' ').replace(/\s+/, ' ').trim();
+            return this.filter(segment => `${segment ?? ''}`.trim()).join(' ').replace(/\s+/g, ' ').trim();
         },
         enumerable: false,
     });

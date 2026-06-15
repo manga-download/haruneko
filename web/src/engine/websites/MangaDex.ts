@@ -6,53 +6,50 @@ import { TaskPool, Priority } from '../taskpool/TaskPool';
 import { RateLimit } from '../taskpool/RateLimit';
 import * as Common from './decorators/Common';
 
-type CachedManga = {
-    id: string,
-    title: string,
-    created: string,
-}
-
 type APIContainer<T> = {
     data: T
 }
 
-type APIManga = {
-    id: string
+type APIManga = APIContainer<{
+    id: string;
     attributes: {
-        title: Record<string, string>
-        createdAt: string
-    }
-    relationships: {
-        id: string
-        type: string
-    }[]
-}
+        title: Record<string, string>;
+    };
+}>;
 
-type APIChapter = {
-    id: string
+type CachedMangas = {
+    id: string;
+    title: string;
+}[];
+
+type APIChapters = APIContainer<{
+    id: string;
     attributes: {
-        isUnavailable?: boolean
-        volume?: string
-        chapter?: string
-        pages: number
-        title: string
-        translatedLanguage: string
-    }
+        isUnavailable?: boolean;
+        volume?: string;
+        chapter?: string;
+        pages: number;
+        title: string;
+        translatedLanguage: string;
+    };
     relationships: {
-        id: string
-        type: string
+        type: string;
         attributes?: {
-            name: string
-        }
-    }[]
-}
+            name: string;
+        };
+    }[];
+}[]>;
 
 type APIMedia = {
-    baseUrl: string
+    baseUrl: string;
     chapter: {
-        hash: string
-        data: string[]
-    }
+        hash: string;
+        data: string[];
+    };
+};
+
+type PageParameters = {
+    Mirror: string;
 }
 
 const chapterLanguageMap = new Map([
@@ -119,14 +116,14 @@ export default class extends MangaScraper {
         const regexGUID = /[a-fA-F0-9]{8}-([a-fA-F0-9]{4}-){3}[a-fA-F0-9]{12}/;
         const id = (uri.pathname.match(regexGUID) || uri.hash.match(regexGUID))[0].toLowerCase();
         const request = new Request(`${this.api}/manga/${id}`, { headers: { Referer: this.URI.href }});
-        const { data: { attributes: { title: titles } } } = await FetchJSON<APIContainer<APIManga>>(request);
+        const { data: { attributes: { title: titles } } } = await FetchJSON<APIManga>(request);
         const title = titles.en || Object.values(titles).at(0);
         return new Manga(this, provider, id, title);
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        const mangaCache = await FetchJSON<CachedManga[]>(new Request('https://websites.hakuneko.download/mangadex.json'));
-        return mangaCache.map(manga => new Manga(this, provider, manga.id, manga.title));
+        const mangaCache = await FetchJSON<CachedMangas>(new Request(`https://websites.hakuneko.download/${this.Identifier}.json`));
+        return mangaCache.map(({ id, title }) => new Manga(this, provider, id, title));
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
@@ -160,7 +157,7 @@ export default class extends MangaScraper {
         uri.searchParams.append('contentRating[]', 'pornographic');
 
         const request = new Request(uri.href, { headers: { Referer: this.URI.href }});
-        const { data } = await FetchJSON<APIContainer<APIChapter[]>>(request);
+        const { data } = await FetchJSON<APIChapters>(request);
 
         return !data ? [] : data
             .filter(entry => entry.attributes.pages && !entry.attributes.isUnavailable)
@@ -181,29 +178,21 @@ export default class extends MangaScraper {
             });
     }
 
-    public override async FetchPages(chapter: Chapter): Promise<Page[]> {
+    public override async FetchPages(chapter: Chapter): Promise<Page<PageParameters>[]> {
         const request = new Request(`${this.api}/at-home/server/${chapter.Identifier}`, { headers: { Referer: this.URI.href }});
         const { baseUrl, chapter: { hash, data: files } } = await FetchJSON<APIMedia>(request);
         return files.map(file => {
             const slug = [ '/data', hash, file ].join('/');
-            const parameters = { Referer: this.URI.href, Base: baseUrl, Slug: slug };
-            return new Page(this, chapter, new URL(baseUrl + slug), parameters);
+            return new Page(this, chapter, new URL(`https://uploads.mangadex.org${slug}`), { Referer: this.URI.href, Mirror: baseUrl + slug });
         });
     }
 
-    public override async FetchImage(page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
-
-        async function download(this: MangaScraper, page: Page, server: string): Promise<Blob> {
-            const source = new Page(this, page.Parent as Chapter, new URL(server + page.Parameters.Slug), page.Parameters);
-            const blob: Blob = await Common.FetchImageAjax.call(this, source, priority, signal, false);
-            (await createImageBitmap(blob)).close();
-            return blob;
-        }
-
+    public override async FetchImage(page: Page<PageParameters>, priority: Priority, signal: AbortSignal): Promise<Blob> {
         try {
-            return await download.call(this, page, 'https://uploads.mangadex.org');
+            return await Common.FetchImageAjax.call(this, page, priority, signal, false);
         } catch {
-            return download.call(this, page, page.Parameters.Base as string);
+            const source = new Page(this, page.Parent as Chapter, new URL(page.Parameters.Mirror), page.Parameters);
+            return Common.FetchImageAjax.call(this, source, priority, signal, false);
         }
     }
 }
