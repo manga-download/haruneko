@@ -33,7 +33,10 @@ class TestFixture {
     constructor(cookies: CookieList = []) {
         this.MockWebContents.getURL.mockReturnValue(this.AppURL);
         this.MockWebContents.session.cookies.get.mockReturnValue(Promise.resolve(cookies));
-        this.MockIPC.Handle.mockImplementationOnce((_, initialize) => initialize(TestFixture.PrefixHeader()));
+
+        // Invoke the initialization immediatly after the handler is subscribed
+        this.MockIPC.Handle.mockImplementationOnce((channel, initialize) => channel === Channels.FetchProvider.Initialize ? initialize(TestFixture.PrefixHeader()) : null);
+
         this.MockWebContents.session.webRequest.onHeadersReceived.mockImplementationOnce(listener => this.onHeadersReceivedListener = listener);
         this.MockWebContents.session.webRequest.onBeforeSendHeaders.mockImplementationOnce(listener => this.onBeforeSendHeadersListener = listener);
         this.Testee = new FetchProvider(this.MockIPC as unknown as IPC, this.MockWebContents as unknown as WebContents);
@@ -49,9 +52,7 @@ class TestFixture {
         return new Promise(resolve => this.onHeadersReceivedListener!(details as Electron.OnHeadersReceivedListenerDetails, resolve));
     }
 
-    public async InvokeOnBeforeSendHeaders(
-        details: Partial<Electron.OnBeforeSendHeadersListenerDetails>
-    ): Promise<Electron.BeforeSendResponse> {
+    public async InvokeOnBeforeSendHeaders(details: Partial<Electron.OnBeforeSendHeadersListenerDetails>): Promise<Electron.BeforeSendResponse> {
         return new Promise(resolve => this.onBeforeSendHeadersListener!(details as Electron.OnBeforeSendHeadersListenerDetails, resolve));
     }
 }
@@ -63,8 +64,9 @@ describe('FetchProvider', () => {
         it('Should subscribe to IPC events', () => {
             const fixture = new TestFixture();
             expect(fixture.Testee).toBeDefined();
-            expect(fixture.MockIPC.Handle).toHaveBeenCalledTimes(1);
+            expect(fixture.MockIPC.Handle).toHaveBeenCalledTimes(2);
             expect(fixture.MockIPC.Handle).toHaveBeenCalledWith(Channels.FetchProvider.Initialize, expect.anything());
+            expect(fixture.MockIPC.Handle).toHaveBeenCalledWith(Channels.FetchProvider.GetSessionCookies, expect.anything());
         });
     });
 
@@ -73,6 +75,7 @@ describe('FetchProvider', () => {
         it(`Should remove certain headers containing the application's hostname`, async () => {
             const fixture = new TestFixture();
             const actual = await fixture.InvokeOnBeforeSendHeaders({
+                url: 'https://mangas.net',
                 requestHeaders: {
                     'Origin': 'https://local.host',
                     'Referer': 'https://local.host/o/-',
@@ -90,6 +93,7 @@ describe('FetchProvider', () => {
         it('Should apply prefixed headers', async () => {
             const fixture = new TestFixture();
             const actual = await fixture.InvokeOnBeforeSendHeaders({
+                url: 'https://mangas.net',
                 requestHeaders: {
                     'Test-Keep-Header': '===',
                     'Origin': fixture.AppURL.origin,
@@ -116,6 +120,7 @@ describe('FetchProvider', () => {
         it('Should keep cookies from original header', async () => {
             const fixture = new TestFixture();
             const actual = await fixture.InvokeOnBeforeSendHeaders({
+                url: 'https://mangas.net',
                 requestHeaders: {
                     'Cookie': 'x=3; o=7',
                 }
@@ -131,6 +136,7 @@ describe('FetchProvider', () => {
         it('Should apply cookies from prefixed header', async () => {
             const fixture = new TestFixture();
             const actual = await fixture.InvokeOnBeforeSendHeaders({
+                url: 'https://mangas.net',
                 requestHeaders: {
                     'X-FetchAPI-Cookie': 'x=3; o=7',
                 }
@@ -146,6 +152,7 @@ describe('FetchProvider', () => {
         it('Should merge cookies from original and prefixed header', async () => {
             const fixture = new TestFixture();
             const actual = await fixture.InvokeOnBeforeSendHeaders({
+                url: 'https://mangas.net',
                 requestHeaders: {
                     'X-FetchAPI-Cookie': 'o=11; _ = 27 ; 0=; =0',
                     'Cookie': 'x=3; o=7; 0=; =0',
