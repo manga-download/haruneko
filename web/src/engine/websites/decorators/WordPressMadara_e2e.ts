@@ -59,7 +59,6 @@ import '../LumosKomik_e2e';
 import '../LunaScans_e2e';
 import '../MadaraDex_e2e';
 import '../Manga18FX_e2e';
-import '../MangaClash_e2e';
 import '../MangaDistrict_e2e';
 import '../MangaDiyari_e2e';
 import '../MangaEclipse_e2e';
