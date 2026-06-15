@@ -11,33 +11,34 @@ type APICollection<T> = {
     items: T[];
 };
 
-type APIManga = {
+type APIMangas = APICollection<{
     id: string;
     slug: string;
     title_english: string;
     title_turkish: string;
-};
+}>;
 
-type APIChapter = {
+type APIChapters = APICollection<{
     id: string;
     number: number;
     title: string;
-    pages: string[];
-};
+}>;
 
 type HydradedPages = {
-    chapter: APIChapter;
     hourlySalt: string;
     viewerToken: string;
+    chapter: {
+        pages: string[];
+    };
 };
 
 type MediaID = {
-    slug: string;
     id: string;
+    slug: string;
 };
 
 type PageData = {
-    salt: string;
+    Salt: string;
 };
 
 type DescramblingData = {
@@ -51,7 +52,8 @@ type DescramblingData = {
 };
 
 export default class extends DecoratableMangaScraper {
-    private readonly apiUrl = 'https://saficizgi.com/api/';
+
+    private readonly apiURL = 'https://saficizgi.com/api/';
 
     public constructor() {
         super('saficizgi', 'Safi Çizgi', 'https://saficizgi.com', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Turkish, Tags.Source.Aggregator, Tags.Accessibility.RegionLocked);
@@ -66,40 +68,39 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
-        const filter = encodeURIComponent(`slug = "${url.split('/').at(-1)}"`);
-        const [{ items: [{ id, slug, title_turkish: titleTurkish, title_english: titleEnglish }] }] = [await FetchJSON<APICollection<APIManga>>(
-            new Request(new URL(`./pb/api/collections/manga/records?filter=${filter}`, this.apiUrl))
-        )];
+        const uri = new URL(`./pb/api/collections/manga/records`, this.apiURL);
+        uri.searchParams.set('filter', `slug="${url.split('/').at(-1)}"`);
+        const { items: [{ id, slug, title_turkish: titleTurkish, title_english: titleEnglish }] } = await FetchJSON<APIMangas>(new Request(uri));
         return new Manga(this, provider, JSON.stringify({ slug, id }), titleTurkish || titleEnglish);
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        const { items } = await FetchJSON<APICollection<APIManga>>(new Request(new URL(`./pb/api/collections/manga/records?page=1&perPage=1000`, this.apiUrl)));
+        const { items } = await FetchJSON<APIMangas>(new Request(new URL(`./pb/api/collections/manga/records?page=1&perPage=1000`, this.apiURL)));
         return items.map(({ id, slug, title_turkish: titleTurkish, title_english: titleEnglish }) => new Manga(this, provider, JSON.stringify({ slug, id }), titleTurkish || titleEnglish));
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const { id: mangaId }: MediaID = JSON.parse(manga.Identifier);
-        const filter = encodeURIComponent(`manga_id = "${mangaId}"`);
-        const { items } = await FetchJSON<APICollection<APIChapter>>(new Request(new URL(`./pb/api/collections/chapters/records?page=1&perPage=1000&filter=${filter}`, this.apiUrl)));
-        return items.map(({ id, number, title }) => new Chapter(this, manga, JSON.stringify({ slug: `${number}`, id }), [`Bölüm ${number}`, title].filter(Boolean).join(' ').trim()));
+        const { id: mangaID } = <MediaID>JSON.parse(manga.Identifier);
+        const filter = encodeURIComponent(`manga_id = "${mangaID}"`);
+        const { items } = await FetchJSON<APIChapters>(new Request(new URL(`./pb/api/collections/chapters/records?page=1&perPage=1000&filter=${filter}`, this.apiURL)));
+        return items.map(({ id, number, title }) => new Chapter(this, manga, JSON.stringify({ slug: `${number}`, id }), ['Bölüm', number, title].joinTitleSegments()));
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page<PageData>[]> {
-        const { id: chapterId, slug: chapterSlug }: MediaID = JSON.parse(chapter.Identifier);
-        const { slug: mangaSlug }: MediaID = JSON.parse(chapter.Parent.Identifier);
+        const { id: chapterID, slug: chapterSlug } = <MediaID>JSON.parse(chapter.Identifier);
+        const { slug: mangaSlug } = <MediaID>JSON.parse(chapter.Parent.Identifier);
 
-        //const { pages } = await FetchJSON<APIChapter>(new Request(new URL(`./pb/api/collections/chapters/records/${chapterId}`, this.apiUrl)));
+        //const { pages } = await FetchJSON<APIChapter>(new Request(new URL(`./pb/api/collections/chapters/records/${chapterID}`, this.apiUrl)));
 
         const { hourlySalt, viewerToken, chapter: { pages } } = await FetchNextJS<HydradedPages>(new Request(new URL(`/oku/${mangaSlug}/${chapterSlug}`, this.URI)), data => 'viewerToken' in data);
         const salt = hourlySalt.substring(0, 8);
-        return pages.map(page => new Page<PageData>(this, chapter, new URL(`./v/${chapterId}/${salt}/${page}?token=${encodeURIComponent(viewerToken)}`, this.apiUrl), { salt }));
+        return pages.map(page => new Page<PageData>(this, chapter, new URL(`./v/${chapterID}/${salt}/${page}?token=${encodeURIComponent(viewerToken)}`, this.apiURL), { Salt: salt }));
     }
 
     public override async FetchImage(page: Page<PageData>, priority: Priority, signal: AbortSignal): Promise<Blob> {
         return this.imageTaskPool.Add(async () => {
 
-            const hash = await this.GetXorKey(page.Parameters.salt, decodeURIComponent(page.Link.pathname.split('/').at(-1)));
+            const hash = await this.GetXorKey(page.Parameters.Salt, decodeURIComponent(page.Link.pathname.split('/').at(-1)));
             const response = await Fetch(new Request(page.Link, {
                 headers: {
                     Referer: this.URI.href
@@ -110,6 +111,7 @@ export default class extends DecoratableMangaScraper {
             const { s, r, c: numCols, h: numRows, a: scrambleChoice, ow, oh }: DescramblingData = JSON.parse(decrypted);
             const blob = await GetTypedData(this.XOR(new Uint8Array(await response.arrayBuffer()), hash).buffer);
 
+            // TODO: Extract to PRNG class
             return DeScramble(blob, async (image, ctx) => {
                 const scrambledBytes = Array.from(this.XOR(GetBytesFromBase64(r), s).slice(2));
                 const tileOrder = [];

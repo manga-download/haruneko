@@ -6,7 +6,7 @@ new TestFixture( {
         title: 'Sany'
     },
     container: {
-        url: 'https://sanyteam.com/manga/khong-khoang-cach/',
+        url: 'https://teamsany.com/manga/khong-khoang-cach/',
         id: '/manga/khong-khoang-cach/',
         title: 'Không Khoảng Cách',
     },

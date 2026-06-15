@@ -46,12 +46,7 @@
     let isBookmarksImportModalOpen =  $state(false);
 </script>
 
-{#if isPluginModalOpen}
-    <PluginSelect
-        bind:isPluginModalOpen
-        on:close={() => (isPluginModalOpen = false)}
-    />
-{/if}$
+<PluginSelect bind:isPluginModalOpen on:close={() => (isPluginModalOpen = false)} />
 {#if isSettingsModalOpen}
     <SettingsMenu bind:isSettingsModalOpen selectedTab={settingsSelectedTabs} />
 {/if}
