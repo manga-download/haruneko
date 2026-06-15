@@ -248,7 +248,7 @@ export class LezhinBase extends DecoratableMangaScraper {
         parameters.shuffled = !!imageShuffle;
         parameters.subscribed = isSubscribed;
         parameters.purchased = isPurchased;
-        return (pageView ?? scrollView)
+        return (pageView?.length > 0 ? pageView : scrollView)
             .filter(({ cutType }) => cutType === 'contents')
             .map(({ path }) => new Page<EpisodeParameters>(this, chapter, new URL(`/v2${path}${this.Settings.imageFormat.Value}`, this.cdnURI), parameters));
     }
@@ -408,93 +408,102 @@ class TokenProvider {
  * Lehzin pictures unscrambling logic
  */
 class LehzinUnscrambler {
-    private state: bigint;
-    private scrambleTable: number[];
+    private prngState: bigint;
+    private permutationTable: number[];
     private seed: number;
-    private size: TDimensions = { width: 0, height: 0 };
+    private imageSize: TDimensions = { width: 0, height: 0 };
 
-    constructor(episodeId: number, numColAndRows: number, image: ImageBitmap) {
+    constructor(episodeId: number, gridSize: number, image: ImageBitmap) {
         this.seed = episodeId;
-        this.state = BigInt(this.seed);
-        const numPieces = numColAndRows * numColAndRows;
-        const order = Array.from({ length: numPieces }, function (_, length) { return length; });
-        for (let index = 0; index < order.length; index++) {
-            const s = this.Random(numPieces);
-            const u = order[index];
-            order[index] = order[s];
-            order[s] = u;
+        this.prngState = BigInt(this.seed);
+
+        const totalTiles = gridSize * gridSize;
+
+        const indices = Array.from({ length: totalTiles }, (_, i) => i);
+
+        for (let i = 0; i < indices.length; i++) {
+            const j = this.#Next(totalTiles);
+            [indices[i], indices[j]] = [indices[j], indices[i]];
         }
-        this.scrambleTable = order;
-        this.size.width = image.width;
-        this.size.height = image.height;
+
+        this.permutationTable = indices;
+
+        this.imageSize.width = image.width;
+        this.imageSize.height = image.height;
     }
 
-    private Random(t: number): number {
-        const BigNumber = BigInt('18446744073709551615');
-        let e = this.state;
-        e = e ^ e >> BigInt(12);
-        const shifter = e << BigInt(25) & BigNumber;
-        e = e ^ shifter;
-        e = e ^ e >> BigInt(27);
-        this.state = e & BigNumber;
-        return Number((e >> BigInt(32)) % BigInt(t));
+    #Next(modulo: number): number {
+        const MASK = BigInt('18446744073709551615');
+        let state = this.prngState;
+        state ^= state >> BigInt(12);
+        state ^= state << BigInt(25) & MASK;
+        state ^= state >> BigInt(27);
+        this.prngState = state & MASK;
+        return Number((state >> BigInt(32)) % BigInt(modulo));
     }
 
-    private AddLength(array: number[]): number[] {
-        return [].concat(array, [
-            array.length,
-            array.length + 1
-        ]);
+    #AppendMetadataIndices(array: number[]): number[] {
+        return [].concat(array, [array.length, array.length + 1]);
     }
 
-    private CreateSuperArray(array: number[]): [string, number][] {
-        //generate "0", "arraylength" array
-        const indexArray = Array(array.length).fill(0).map((_, index) => index.toString());
-        const resultArray = [];
-        indexArray.map(element => resultArray.push([element, array[element]]));
-        return resultArray;
+    #CreateIndexedPairs(array: number[]): [string, number][] {
+        const result: [string, number][] = [];
+
+        for (let i = 0; i < array.length; i++) {
+            result.push([i.toString(), array[i]]);
+        }
+        return result;
     }
 
-    private CalculatePiece(imageDimensions: TDimensions, numColAndRows: number, pieceIndex: number): TPiece {
-        let width: number;
-        let height: number;
-        const numPieces = numColAndRows * numColAndRows;
-        return pieceIndex < numPieces ? (
-            width = Math.floor(imageDimensions.width / numColAndRows),
-            height = Math.floor(imageDimensions.height / numColAndRows),
-            {
-                left: pieceIndex % numColAndRows * width,
-                top: Math.floor(pieceIndex / numColAndRows) * height,
-                width: width,
-                height: height
-            }
-        ) : pieceIndex === numPieces ?
-            0 === (width = imageDimensions.width % numColAndRows) ? null : {
-                left: imageDimensions.width - width,
-                top: 0,
-                width: width,
-                height: imageDimensions.height
-            }
-            :
-            0 === (height = imageDimensions.height % numColAndRows) ? null : {
-                left: 0,
-                top: imageDimensions.height - height,
-                width: imageDimensions.width - imageDimensions.width % numColAndRows,
-                height: height
+    #GetTileBounds(imageSize: TDimensions, gridSize: number, tileIndex: number): TPiece | null {
+        const totalTiles = gridSize * gridSize;
+        let tileWidth: number;
+        let tileHeight: number;
+
+        if (tileIndex < totalTiles) {
+            tileWidth = Math.floor(imageSize.width / gridSize);
+            tileHeight = Math.floor(imageSize.height / gridSize);
+
+            return {
+                left: tileIndex % gridSize * tileWidth,
+                top: Math.floor(tileIndex / gridSize) * tileHeight,
+                width: tileWidth,
+                height: tileHeight
             };
+        }
+
+        if (tileIndex === totalTiles) {
+            const remainderWidth = imageSize.width % gridSize;
+            if (remainderWidth === 0) return null;
+
+            return {
+                left: imageSize.width - remainderWidth,
+                top: 0,
+                width: remainderWidth,
+                height: imageSize.height
+            };
+        }
+
+        const remainderHeight = imageSize.height % gridSize;
+        if (remainderHeight === 0) return null;
+
+        return {
+            left: 0,
+            top: imageSize.height - remainderHeight,
+            width: imageSize.width - imageSize.width % gridSize,
+            height: remainderHeight
+        };
     }
 
     public GetPieces(): TPieceData[] {
-        const scrambleTableArray = this.CreateSuperArray(this.AddLength(this.scrambleTable));
-        const arrayLength = Math.floor(Math.sqrt(scrambleTableArray.length));
-        const piecesData = scrambleTableArray.map(entry => {
-            return {
-                from: this.CalculatePiece(this.size, arrayLength, parseInt(entry[0])),
-                to: this.CalculatePiece(this.size, arrayLength, entry[1])
-            };
-        }).filter(entry => {
-            return !!entry.from && !!entry.to;
-        });
-        return piecesData;
+        const indexedPermutation = this.#CreateIndexedPairs(this.#AppendMetadataIndices(this.permutationTable));
+        const gridSize = Math.floor(Math.sqrt(indexedPermutation.length));
+        const pieces: TPieceData[] = indexedPermutation
+            .map(([fromIndex, toIndex]) => ({
+                from: this.#GetTileBounds(this.imageSize, gridSize, parseInt(fromIndex)),
+                to: this.#GetTileBounds(this.imageSize, gridSize, toIndex)
+            }))
+            .filter(piece => piece.from && piece.to);
+        return pieces;
     }
 }
