@@ -72,7 +72,7 @@ export default class extends DecoratableMangaScraper {
 
         const { content } = await this.FetchAPI<{ content: string }>(`./chapter/${chapter.Identifier}`);
         return content
-            .split('\n')
+            .split(/[\r\n]+/).filter(Boolean)
             .filter(link => !excluded.some(file => link.endsWith(file)))
             .map(link => {
                 const uri = new URL(link);

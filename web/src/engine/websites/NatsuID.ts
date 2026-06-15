@@ -11,7 +11,7 @@ const chapterScript = `
             resolve ( [...document.querySelectorAll('#chapter-list div[data-chapter-number]')].map(chapter => {
                 return { id: chapter.querySelector('a').pathname, title : ['Chapter', chapter.dataset.chapterNumber].join(' ').trim()};
             }));
-        }, 750);
+        }, 1500);
     });
 `;
 

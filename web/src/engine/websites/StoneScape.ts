@@ -29,7 +29,8 @@ type APIPages = {
 
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
-    private readonly apiUrl = `${this.URI.origin}/api/`;
+
+    private readonly apiURL = `${this.URI.origin}/api/`;
 
     public constructor() {
         super('stonescape', 'StoneScape', 'https://stonescape.xyz', Tags.Media.Manhwa, Tags.Media.Manga, Tags.Language.English, Tags.Source.Aggregator);
@@ -54,9 +55,8 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const parseDecimal = (s: string): number => isNaN(parseFloat(s)) ? NaN : parseFloat(s) % 1 ? parseFloat(s) : Math.trunc(parseFloat(s));
         const { chapters } = await this.FetchAPI<APIChapters>(`./series/by-slug/${manga.Identifier}/chapters`);
-        return chapters.reverse().map(({ chapterId, chapterNumber, title }) => new Chapter(this, manga, chapterId, [`Chapter ${parseDecimal(chapterNumber)}`, title].filter(Boolean).join(' ').trim()));
+        return chapters.map(({ chapterId, chapterNumber, title }) => new Chapter(this, manga, chapterId, ['Chapter', parseFloat(chapterNumber), title].joinTitleSegments()));
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
@@ -65,6 +65,6 @@ export default class extends DecoratableMangaScraper {
     }
 
     private async FetchAPI<T extends JSONElement>(endpoint: string): Promise<T> {
-        return FetchJSON<T>(new Request(new URL(endpoint, this.apiUrl)));
+        return FetchJSON<T>(new Request(new URL(endpoint, this.apiURL)));
     }
 }
