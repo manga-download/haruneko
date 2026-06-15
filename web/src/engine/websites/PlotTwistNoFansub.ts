@@ -43,9 +43,9 @@ export default class extends DecoratableMangaScraper {
                 const doc = new DOMParser().parseFromString(html, 'text/html');
                 const chapters = [...doc.querySelectorAll<HTMLAnchorElement>('a.mn-detail-chapter-item')].map(chapter => {
                     return new Chapter(this, manga, chapter.pathname, [
-                        chapter.querySelector('.mn-detail-chapter-name').textContent.trim(),
-                        chapter.querySelector('.mn-detail-chapter-extend').textContent.trim(),
-                    ].filter(Boolean).join(' ').trim());
+                        chapter.querySelector<HTMLElement>('.mn-detail-chapter-name')?.innerText.trim(),
+                        chapter.querySelector<HTMLElement>('.mn-detail-chapter-extend')?.innerText.trim(),
+                    ].joinTitleSegments());
                 });
                 yield* chapters;
                 run = has_more;

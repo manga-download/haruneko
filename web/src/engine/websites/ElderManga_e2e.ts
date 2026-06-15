@@ -6,17 +6,17 @@ new TestFixture({
         title: 'ElderManga'
     },
     container: {
-        url: 'https://eldermanga.com/manga/18/antik-cag-kadim-irmakin-varisi',
-        id: '/manga/18/antik-cag-kadim-irmakin-varisi',
-        title: `Antik Çağ: Kadim Irmak'ın Varisi`
+        url: 'https://eldermanga.com/manga/perileri-somurerek-gucleniyorum',
+        id: 'perileri-somurerek-gucleniyorum',
+        title: 'Perileri Sömürerek Güçleniyorum!'
     },
     child: {
-        id: '/manga/18/antik-cag-kadim-irmakin-varisi/1041/50-bolum',
-        title: 'Bölüm 50'
+        id: '/manga/perileri-somurerek-gucleniyorum/1-bolum-oku',
+        title: 'Bölüm 1'
     },
     entry: {
         index: 1,
-        size: 29_814,
-        type: 'image/jpeg'
+        size: 48_464,
+        type: 'image/avif'
     }
 }).AssertWebsite();
