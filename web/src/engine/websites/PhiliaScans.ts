@@ -242,25 +242,25 @@ export default class extends DecoratableMangaScraper {
     }
 
     private async DecryptImage(encrypted: Uint8Array<ArrayBuffer>, encryptionType: string, signKey: CryptoKey, pageIndex: number): Promise<Blob> {
+        let imageData: ArrayBuffer;
         switch (encryptionType) {
             case 'AESV3':
             case 'AESV4': {
-                const prefix = encryptionType === 'AESV3' ? 'aesctr' : encryptionType === 'AESV4' ? 'aesctr4' : undefined;
-                const imageData = await this.AESDecrypt(signKey, pageIndex, encrypted, prefix);
-                return await GetTypedData(imageData);
+                const prefix = encryptionType === 'AESV3' ? 'aesctr' : 'aesctr4';
+                imageData = await this.AESDecrypt(signKey, pageIndex, encrypted, prefix);
                 break;
             }
             case 'CHACHA20': {
-                const imageData = (await this.Chacha20Decrypt(signKey, pageIndex, encrypted)).buffer;
-                return await GetTypedData(imageData);
+                imageData = (await this.Chacha20Decrypt(signKey, pageIndex, encrypted)).buffer;
                 break;
             }
             case 'XOR': {
-                const imageData = this.XOR(await this.DeriveKeyStream(signKey, pageIndex, encrypted.byteLength), encrypted).buffer;
-                return await GetTypedData(imageData);
+                const keystream = await this.DeriveKeyStream(signKey, pageIndex, encrypted.byteLength);
+                imageData = this.XOR(keystream, encrypted).buffer;
                 break;
             }
         }
+        return GetTypedData(imageData);
     }
 
     // XOR
@@ -333,10 +333,8 @@ export default class extends DecoratableMangaScraper {
         state[2] = 0x79622d32;
         state[3] = 0x6b206574;
         state.set(keyWords.subarray(0, 8), 4);
-
         let blockCounter = counter >>> 0;
         state[12] = blockCounter;
-
         state[13] = nonceWords[0];
         state[14] = nonceWords[1];
         state[15] = nonceWords[2];
