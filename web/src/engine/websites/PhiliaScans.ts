@@ -204,8 +204,7 @@ export default class extends DecoratableMangaScraper {
         const signKey = await crypto.subtle.importKey('raw', GetBytesFromHex(KeyData), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']);
 
         const encryptionType = this.GetEncryptionType(buffer);
-        const headerSize = encryptionType === 'AESV3' || 'AESV4' || 'CHACHA20' ? 6 : 4;
-        const encrypted = new Uint8Array(buffer, headerSize);
+        const encrypted = new Uint8Array(buffer, encryptionType === 'AESV3' || 'AESV4' || 'CHACHA20' ? 6 : 4);
 
         const blob = await this.DecryptImage(encrypted, encryptionType, signKey, PageIndex);
         if (encryptionType === 'CHACHA20' || encryptionType === 'AESV4') return blob;
