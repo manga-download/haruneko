@@ -6,7 +6,7 @@ new TestFixture({
         title: 'Nivera Fansub'
     }, /* Need Login
     container: {
-        url: 'https://niverafansub.mom/manga/xian-chan-nu/',
+        url: 'https://niverafansub.one/manga/xian-chan-nu/',
         id: JSON.stringify({ slug: '/manga/xian-chan-nu/' }),
         title: 'Xian Chan Nu'
     },

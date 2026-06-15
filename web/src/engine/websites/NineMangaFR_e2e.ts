@@ -6,15 +6,13 @@ new TestFixture({
         title: 'NineMangaFR'
     },
     container: {
-        url: 'https://fr.ninemanga.com/manga/Lycoris+Recoil.html',
-        id: '/manga/Lycoris+Recoil.html',
+        url: 'https://fr.niadd.com/manga/Lycoris_Recoil.html',
+        id: '/manga/Lycoris_Recoil.html',
         title: 'Lycoris Recoil',
     },
     child: {
-        id: '/chapter/Lycoris%20Recoil/722483.html',
+        id: '/chapter/Lycoris_Recoil_4/722483/',
         title: '4',
-        timeout: 15000
-
     },
     entry: {
         index: 1,
