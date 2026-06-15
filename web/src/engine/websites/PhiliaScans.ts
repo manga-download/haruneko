@@ -198,7 +198,7 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchImage(page: Page<PageParameters>, priority: Priority, signal: AbortSignal): Promise<Blob> {
         const buffer = await (await this.imageTaskPool.Add(() => Fetch(new Request(page.Link, { headers: { Referer: this.URI.href } })), priority, signal)).arrayBuffer();
-        if (!/_s(-sm)?\.webp(\?|#|$)/.test(page.Link.href)) return GetTypedData(buffer);
+        if (!/_s(-sm)?\.webp/.test(page.Link.href)) return GetTypedData(buffer);
 
         const { PageIndex, IsScrambled, GridSize, KeyData } = page.Parameters;
         const signKey = await crypto.subtle.importKey('raw', GetBytesFromHex(KeyData), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']);
