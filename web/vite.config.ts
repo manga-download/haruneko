@@ -88,6 +88,11 @@ export default defineConfig({
                 assetFileNames: `${buildID}/[name].[ext]`,
                 chunkFileNames: `${buildID}/[name].js`,
                 keepNames: true,
+                minify: {
+                    compress: true,
+                    mangle: false,
+                    codegen: true,
+                },
                 manualChunks: function(id) {
                     if(id.includes('node_modules')) {
                         return 'Vendor';
@@ -106,6 +111,11 @@ export default defineConfig({
                 assetFileNames: `${buildID}/[name].[ext]`,
                 chunkFileNames: `${buildID}/[name].js`,
                 keepNames: true,
+                minify: {
+                    compress: true,
+                    mangle: false,
+                    codegen: true,
+                },
             }
         }
     },
