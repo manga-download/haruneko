@@ -78,7 +78,7 @@ export default defineConfig({
         sourcemap: false,
         outDir: 'build',
         chunkSizeWarningLimit: 2 * 1024,
-        rollupOptions: {
+        rolldownOptions: {
             input: {
                 index: './index.html',
                 sw: './src/service-worker.ts',
@@ -105,7 +105,7 @@ export default defineConfig({
         },
     },
     worker: {
-        rollupOptions: {
+        rolldownOptions: {
             output: {
                 entryFileNames: `${buildID}/[name].js`,
                 assetFileNames: `${buildID}/[name].[ext]`,
