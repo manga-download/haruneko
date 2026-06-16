@@ -8,7 +8,7 @@ import type { IValue } from '../src/engine/SettingsManager';
 export class FrontendFixture extends PuppeteerFixture {
 
     static readonly #frontendSelectors: Readonly<Record<string, string>> = {
-        classic: '#Plugin input#PluginSelect',
+        classic: '#PluginSelect',
         'fluent-core': 'div#app > fluent-app',
     };
 
