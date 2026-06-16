@@ -43,17 +43,17 @@ class TestFixture {
     }
 
     public static PrefixHeader(name: string = '') {
-        return 'X-FetchAPI-' + name;
+        return `X-FetchAPI-${name}`;
     }
 
     public async InvokeOnHeadersReceived(
         details: Partial<Electron.OnHeadersReceivedListenerDetails>
     ): Promise<Electron.HeadersReceivedResponse> {
-        return new Promise(resolve => this.onHeadersReceivedListener!(details as Electron.OnHeadersReceivedListenerDetails, resolve));
+        return new Promise(resolve => this.onHeadersReceivedListener(details as Electron.OnHeadersReceivedListenerDetails, resolve));
     }
 
     public async InvokeOnBeforeSendHeaders(details: Partial<Electron.OnBeforeSendHeadersListenerDetails>): Promise<Electron.BeforeSendResponse> {
-        return new Promise(resolve => this.onBeforeSendHeadersListener!(details as Electron.OnBeforeSendHeadersListenerDetails, resolve));
+        return new Promise(resolve => this.onBeforeSendHeadersListener(details as Electron.OnBeforeSendHeadersListenerDetails, resolve));
     }
 }
 

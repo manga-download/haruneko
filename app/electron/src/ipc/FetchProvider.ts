@@ -14,7 +14,7 @@ export class FetchProvider {
     }
 
     private Initialize(fetchApiSupportedPrefix: string): void {
-        this.#patternFetchApiSupportedPrefix = new RegExp('^' + fetchApiSupportedPrefix, 'i');
+        this.#patternFetchApiSupportedPrefix = new RegExp(`^${fetchApiSupportedPrefix}`, 'i');
         // TODO: Provide callbacks as serialized functions
         //const onBeforeSendHeaders = new Function('...').bind(this);
         //const onHeadersReceived = new Function('...').bind(this);
