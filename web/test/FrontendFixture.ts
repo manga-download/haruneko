@@ -7,11 +7,6 @@ import type { IValue } from '../src/engine/SettingsManager';
  */
 export class FrontendFixture extends PuppeteerFixture {
 
-    static readonly #frontendSelectors: Readonly<Record<string, string>> = {
-        classic: '#PluginSelect',
-        'fluent-core': 'div#app > fluent-app',
-    };
-
     /**
      * Helper function to wait for a given {@link timespan} (in _milliseconds_).
      * Can be useful e.g., when it takes some time for updating dynamic elements in the frontend.
@@ -25,7 +20,6 @@ export class FrontendFixture extends PuppeteerFixture {
      */
     public async Reset(frontend: string = 'classic'): Promise<void> {
         const page = await this.GetPage();
-        const selector = FrontendFixture.#frontendSelectors[frontend] ?? FrontendFixture.#frontendSelectors.classic;
         await page.evaluate(() => new Promise((resolve, reject) => {
             try {
                 const operation = indexedDB.deleteDatabase('HakuNeko');
@@ -43,8 +37,7 @@ export class FrontendFixture extends PuppeteerFixture {
             page.off('dialog', dismiss);
         }
         await page.reload();
-        await page.waitForFunction(() => document.readyState === 'complete');
-        await page.waitForSelector(selector, { timeout: 15000, visible: true });
+        await this.Delay(500);
     }
 
     public async WaitForSelectors(timeout: number, ... selectors: string[]) {
