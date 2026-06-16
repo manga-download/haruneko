@@ -15,7 +15,6 @@
         "@stylistic/eslint-plugin": "5.10.0",
         "@types/chrome": "0.1.43",
         "@types/nw.js": "0.92.0",
-        "esbuild": "^0.28.1",
         "eslint": "10.5.0",
         "eslint-plugin-tsdoc": "0.5.2",
         "puppeteer-core": "25.1.0",

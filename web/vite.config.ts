@@ -75,7 +75,6 @@ export default defineConfig({
     ],
     publicDir: 'static',
     build: {
-        minify: 'esbuild',
         sourcemap: false,
         outDir: 'build',
         chunkSizeWarningLimit: 2 * 1024,
@@ -88,6 +87,7 @@ export default defineConfig({
                 entryFileNames: file => (file.name !== 'sw' ? `${buildID}/` : '') + '[name].js',
                 assetFileNames: `${buildID}/[name].[ext]`,
                 chunkFileNames: `${buildID}/[name].js`,
+                keepNames: true,
                 manualChunks: function(id) {
                     if(id.includes('node_modules')) {
                         return 'Vendor';
@@ -105,14 +105,9 @@ export default defineConfig({
                 entryFileNames: `${buildID}/[name].js`,
                 assetFileNames: `${buildID}/[name].[ext]`,
                 chunkFileNames: `${buildID}/[name].js`,
+                keepNames: true,
             }
         }
-    },
-    esbuild: {
-        minifySyntax: true,
-        minifyWhitespace: true,
-        minifyIdentifiers: false,
-        keepNames: true,
     },
     optimizeDeps: {
         // TODO: once carbon-componenets-svelte v1 is released, check if svelte optimize has been improved
