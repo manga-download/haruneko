@@ -20,6 +20,9 @@ export class FrontendFixture extends PuppeteerFixture {
      */
     public async Reset(frontend: string = 'classic'): Promise<void> {
         const page = await this.GetPage();
+        const selector = frontend === 'fluent-core'
+            ? 'div#app > fluent-app'
+            : '#Plugin input#PluginSelect';
         await page.evaluate(() => new Promise((resolve, reject) => {
             try {
                 const operation = indexedDB.deleteDatabase('HakuNeko');
@@ -37,7 +40,9 @@ export class FrontendFixture extends PuppeteerFixture {
             page.off('dialog', dismiss);
         }
         await page.reload();
-        await this.Delay(500);
+        await page.waitForFunction(() => document.readyState === 'complete');
+        await page.waitForSelector(selector, { timeout: 15000 });
+        await this.Delay(250);
     }
 
     public async WaitForSelectors(timeout: number, ... selectors: string[]) {
