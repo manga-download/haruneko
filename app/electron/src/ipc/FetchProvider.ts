@@ -4,16 +4,17 @@ import { Channels } from './InterProcessCommunicationChannels';
 
 export class FetchProvider {
 
-    private appHostname = '';
+    #appHostname = 'localhost';
     #patternFetchApiSupportedPrefix: RegExp = /$^/;
 
     constructor(private readonly ipc: IPC, private readonly webContents: WebContents) {
-        this.appHostname = new URL(this.webContents.getURL()).hostname;
         this.ipc.Handle(Channels.FetchProvider.Initialize, this.Initialize.bind(this));
         this.ipc.Handle(Channels.FetchProvider.GetSessionCookies, this.GetSessionCookies.bind(this));
+        this.webContents.addListener('did-navigate', () => this.#appHostname = new URL(this.webContents.getURL()).hostname);
     }
 
     private Initialize(fetchApiSupportedPrefix: string): void {
+        this.#appHostname = new URL(this.webContents.getURL()).hostname;
         this.#patternFetchApiSupportedPrefix = new RegExp(`^${fetchApiSupportedPrefix}`, 'i');
         // TODO: Provide callbacks as serialized functions
         //const onBeforeSendHeaders = new Function('...').bind(this);
@@ -57,12 +58,12 @@ export class FetchProvider {
         const all: Array<[string, string | string[]]> = Object.entries(originalHeaders);
         const result = Object.fromEntries(all.filter(([name]) => !IsConcealed(name)).map(([name, value]) => [name.toLowerCase(), value]));
         const replacements = Object.fromEntries(all.filter(([name]) => IsConcealed(name)).map(([name, value]) => [GetRevealedHeaderName(name), value]));
-        replacements['cookie'] = this.MergeCookies(
+        replacements.cookie = this.MergeCookies(
             // TODO: Session cookies are only added for backward-compatibility with Electron desktop clients
             //       that do not provide session cookies via concealed header in request: `replacements['cookie']`
             await this.GetSessionCookies({ url: new URL(url).origin, /* partitionKey: {} */ }),
-            this.ParseCookiesFromHeader(<string>result['cookie'] ?? ''),
-            this.ParseCookiesFromHeader(<string>replacements['cookie'] ?? ''),
+            this.ParseCookiesFromHeader(<string>result.cookie ?? ''),
+            this.ParseCookiesFromHeader(<string>replacements.cookie ?? ''),
         );
 
         for (const name in replacements) {
@@ -70,10 +71,10 @@ export class FetchProvider {
         }
 
         // Remove cookie header when empty
-        if (!(<string>result['cookie'])?.trim()) delete result['cookie'];
+        if (!(<string>result.cookie)?.trim()) delete result.cookie;
         // Prevent leaking HakuNeko's host in certain headers
-        if ((<string>result['origin'])?.includes(this.appHostname)) delete result['origin'];
-        if ((<string>result['referer'])?.includes(this.appHostname)) delete result['referer'];
+        if ((<string>result.origin)?.includes(this.#appHostname)) delete result.origin;
+        if ((<string>result.referer)?.includes(this.#appHostname)) delete result.referer;
 
         return {
             cancel: false,
@@ -89,7 +90,7 @@ export class FetchProvider {
 
         // Remove the `link` header to prevent prefetch/preload and a corresponding warning about 'resource preloaded but not used',
         // especially when scraping with headless requests (see: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Link)
-        if ('link' in result) delete result['link'];
+        if ('link' in result) delete result.link;
 
         /*
         if(details.method.toUpperCase() === 'OPTIONS') {
