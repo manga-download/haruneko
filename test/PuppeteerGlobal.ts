@@ -94,11 +94,12 @@ async function LaunchElectron(): Promise<puppeteer.Browser> {
             '--disable-features=UseDBus', // Suppress warnings/errors when electron tries to connect to D-Bus session in CI/CD pipeline
             '--ignore-certificate-errors',
             '--disable-blink-features=AutomationControlled', // Suppress certain automation flags to avoid anti-bot detection
-            '--origin=' + AppURL
+            `--origin=${AppURL}`,
         ],
         userDataDir: userDir,
         dumpio: true,
     });
+    console.log(new Date().toISOString(), '➔', 'Electron CLI:', browser.process().spawnfile, browser.process().spawnargs);
     browser.on('targetcreated', CloseSplashScreen);
     //SetupBlinkEvasions(browser, EvadeWebDriverDetection, EvadeChromeDevToolProtocolDetection);
 

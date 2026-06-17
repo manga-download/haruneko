@@ -1,4 +1,3 @@
-import { mock, mockClear } from 'vitest-mock-extended';
 import { vi, describe, it, expect } from 'vitest';
 import type { HakuNeko } from './HakuNeko';
 import { LocaleID, type EngineResourceKey } from '../i18n/ILocale';
@@ -13,17 +12,22 @@ global.btoa = (decoded: string) => Buffer.from(decoded, 'utf-8').toString('base6
 
 // Mocking globals
 {
-    const mockChoice = mock<Choice>({ Value: LocaleID.Locale_enUS });
-
-    const mockSettigns = mock<ISettings>();
-    mockSettigns.Get.calledWith(Key.Language).mockReturnValue(mockChoice);
-
-    const mockSettingsManager = mock<SettingsManager>();
-    mockSettingsManager.OpenScope.mockReturnValue(mockSettigns);
+    const mockChoice = { Value: LocaleID.Locale_enUS } as unknown as Choice;
+    const mockSettings = { Get: vi.fn(key => key === Key.Language ? mockChoice : undefined) } as unknown as ISettings;
+    const mockSettingsManager = { OpenScope: vi.fn(() => mockSettings) } as unknown as SettingsManager;
 
     globalThis.HakuNeko = Object.assign(globalThis.HakuNeko ?? {}, {
         SettingsManager: mockSettingsManager
     }) as unknown as HakuNeko;
+}
+
+class TestFixture {
+
+    public readonly StorageMock = { LoadPersistent: vi.fn(), SavePersistent: vi.fn() };
+
+    public CreateTestee() {
+        return new SettingsManager(this.StorageMock as unknown as StorageController);
+    }
 }
 
 describe('SettingsManager', () => {
@@ -31,21 +35,21 @@ describe('SettingsManager', () => {
     describe('OpenScope', () => {
 
         it('Should get an existing scope', async () => {
-            const storage = mock<StorageController>();
-            const testee = new SettingsManager(storage);
+            const fixture = new TestFixture();
+            const testee = fixture.CreateTestee();
 
             expect(testee.OpenScope('x')).toBe(testee.OpenScope('x'));
-            expect(storage.LoadPersistent).toBeCalledTimes(0);
-            expect(storage.SavePersistent).toBeCalledTimes(0);
+            expect(fixture.StorageMock.LoadPersistent).toHaveBeenCalledTimes(0);
+            expect(fixture.StorageMock.SavePersistent).toHaveBeenCalledTimes(0);
         });
 
         it('Should create a scope if not exist', async () => {
-            const storage = mock<StorageController>();
-            const testee = new SettingsManager(storage);
+            const fixture = new TestFixture();
+            const testee = fixture.CreateTestee();
 
             expect(testee.OpenScope('a')).not.toBe(testee.OpenScope('1'));
-            expect(storage.LoadPersistent).toBeCalledTimes(0);
-            expect(storage.SavePersistent).toBeCalledTimes(0);
+            expect(fixture.StorageMock.LoadPersistent).toHaveBeenCalledTimes(0);
+            expect(fixture.StorageMock.SavePersistent).toHaveBeenCalledTimes(0);
         });
     });
 });
@@ -69,10 +73,10 @@ describe('Settings', () => {
     describe('Initialize', () => {
 
         it('Should apply values from persistant storage', async () => {
-            const storage = mock<StorageController>();
-            const testee = new SettingsManager(storage).OpenScope('test-scope');
+            const fixture = new TestFixture();
+            const testee = fixture.CreateTestee().OpenScope('test-scope');
 
-            storage.LoadPersistent.mockReturnValue(Promise.resolve({
+            fixture.StorageMock.LoadPersistent.mockReturnValue(Promise.resolve({
                 '[ID]:Check': true,
                 '[ID]:Text': '{STORED-TEXT}',
                 '[ID]:Secret': 'e1NUT1JFRC1FTkNSWVBURUR9',
@@ -94,7 +98,8 @@ describe('Settings', () => {
         });
 
         it('Should only be called once', async () => {
-            const testee = new SettingsManager(mock<StorageController>()).OpenScope('test-scope');
+            const fixture = new TestFixture();
+            const testee = fixture.CreateTestee().OpenScope('test-scope');
 
             await testee.Initialize();
             await expect(testee.Initialize(...CreateSettings())).rejects.toThrow(/<test-scope>/);
@@ -103,7 +108,8 @@ describe('Settings', () => {
         });
 
         it('Should be iterable through all settings', async () => {
-            const testee = new SettingsManager(mock<StorageController>()).OpenScope('test-scope');
+            const fixture = new TestFixture();
+            const testee = fixture.CreateTestee().OpenScope('test-scope');
 
             const expected = CreateSettings();
             await testee.Initialize(...expected);
@@ -113,8 +119,8 @@ describe('Settings', () => {
         });
 
         it('Should save persistant when any setting changed', async () => {
-            const storage = mock<StorageController>();
-            const testee = new SettingsManager(storage).OpenScope('test-scope');
+            const fixture = new TestFixture();
+            const testee = fixture.CreateTestee().OpenScope('test-scope');
 
             const settings = CreateSettings();
             const expected = {
@@ -130,9 +136,10 @@ describe('Settings', () => {
 
             for(const setting of settings) {
                 setting.Dispatch();
-                expect(storage.SavePersistent).toHaveBeenCalledTimes(1);
-                expect(storage.SavePersistent).toHaveBeenCalledWith(expected, Store.Settings, 'test-scope');
-                mockClear(storage);
+                expect(fixture.StorageMock.SavePersistent).toHaveBeenCalledTimes(1);
+                expect(fixture.StorageMock.SavePersistent).toHaveBeenCalledWith(expected, Store.Settings, 'test-scope');
+                fixture.StorageMock.LoadPersistent.mockClear();
+                fixture.StorageMock.SavePersistent.mockClear();
             }
         });
     });
@@ -142,14 +149,14 @@ describe('Settings', () => {
         const settings = CreateSettings();
 
         it.each([...settings])('Should get existing settings', async (setting) => {
-            const storage = mock<StorageController>();
-            const testee = new SettingsManager(storage).OpenScope('test-scope');
+            const fixture = new TestFixture();
+            const testee = fixture.CreateTestee().OpenScope('test-scope');
 
             const stored = {};
             for(const setting of settings) {
                 stored[setting.ID] = setting.Value;
             }
-            storage.LoadPersistent.mockReturnValue(Promise.resolve(stored));
+            fixture.StorageMock.LoadPersistent.mockReturnValue(Promise.resolve(stored));
 
             await testee.Initialize(...settings);
 
@@ -157,8 +164,8 @@ describe('Settings', () => {
         });
 
         it('Should not get non-existing setting', async () => {
-            const storage = mock<StorageController>();
-            const testee = new SettingsManager(storage).OpenScope('test-scope');
+            const fixture = new TestFixture();
+            const testee = fixture.CreateTestee().OpenScope('test-scope');
 
             await testee.Initialize(...settings);
 

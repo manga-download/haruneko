@@ -6,7 +6,7 @@ new TestFixture({
         title: 'Qi Scans'
     },
     container: {
-        url: 'https://qimanhwa.com/series/celestial-phenomenon',
+        url: 'https://qimanga.com/series/celestial-phenomenon',
         id: 'celestial-phenomenon',
         title: 'Celestial Phenomenon'
     },
