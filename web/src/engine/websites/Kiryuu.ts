@@ -1,12 +1,12 @@
 import { Tags } from '../Tags';
-import { FetchWindowScript } from '../platform/FetchProvider';
 import icon from './Kiryuu.webp';
-import NatsuID from './NatsuID';
+import { KiruBase } from './templates/KiruBase';
+import { FetchWindowScript } from '../platform/FetchProvider';
 
-export default class extends NatsuID {
+export default class extends KiruBase {
 
     public constructor() {
-        super('kiryuu', 'Kiryuu', 'https://v6.kiryuu.to', [Tags.Media.Manga, Tags.Language.Indonesian, Tags.Source.Aggregator, Tags.Accessibility.DomainRotation]);
+        super('kiryuu', 'Kiryuu', 'https://v6.kiryuu.to', Tags.Media.Manga, Tags.Language.Indonesian, Tags.Source.Aggregator, Tags.Accessibility.DomainRotation);
     }
 
     public override get Icon() {
