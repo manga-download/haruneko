@@ -5,8 +5,7 @@ import { TurkMangaBase } from './templates/TurkMangaBase';
 export default class extends TurkMangaBase {
 
     public constructor() {
-        super('limonmanga', 'Limon Manga', 'https://limonmanga.com', Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Source.Aggregator, Tags.Language.Turkish);
-        this.WithCDN('https://limonmangacdn6.efsaneler.can.re');
+        super('limonmanga', 'Limon Manga', 'https://limonmanga.com', Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Source.Aggregator, Tags.Language.Turkish, Tags.Accessibility.RegionLocked);
     }
 
     public override get Icon() {

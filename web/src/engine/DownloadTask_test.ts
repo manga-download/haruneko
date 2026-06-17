@@ -1,4 +1,3 @@
-import { mock } from 'vitest-mock-extended';
 import { vi, describe, it, expect } from 'vitest';
 import { DownloadTask, Status } from './DownloadTask';
 import type { StoreableMediaContainer, MediaItem } from './providers/MediaPlugin';
@@ -6,7 +5,7 @@ import type { StorageController } from './StorageController';
 import { DeferredTask } from './taskpool/DeferredTask';
 
 function MockItem(resolve: boolean, delay: number = undefined) {
-    const item = mock<MediaItem>();
+    const item = { Fetch: vi.fn() };
     if(resolve) {
         if(delay) {
             item.Fetch.mockReturnValue(new Promise(resolve => setTimeout(resolve, 5)));
@@ -20,33 +19,25 @@ function MockItem(resolve: boolean, delay: number = undefined) {
             item.Fetch.mockRejectedValue('x');
         }
     }
-    return item;
+    return item as unknown as MediaItem;
 }
 
 class TestFixture {
 
-    public readonly StorageControllerMock = mock<StorageController>();
-    private readonly MediaContainerEntriesMock = vi.fn();
-    public readonly MediaContainerMock = mock<StoreableMediaContainer<MediaItem>>();
+    public readonly MediaContainerMock = { Update: vi.fn(), Store: vi.fn() };
+    public readonly StorageControllerMock = { SaveTemporary: vi.fn(), RemoveTemporary: vi.fn() };
     public readonly StatusChangedCallbackMock = vi.fn();
     public readonly ProgressChangedCallbackMock = vi.fn();
 
-    constructor() {
-        const base = {};
-        Object.defineProperty(base, 'Entries', { get: this.MediaContainerEntriesMock });
-        this.MediaContainerMock = mock<StoreableMediaContainer<MediaItem>>(base);
-    }
-
     public CreateTestee() {
-        const testee = new DownloadTask(this.MediaContainerMock, this.StorageControllerMock);
+        const testee = new DownloadTask(this.MediaContainerMock as unknown as StoreableMediaContainer<MediaItem>, this.StorageControllerMock as unknown as StorageController);
         testee.Status.Subscribe(this.StatusChangedCallbackMock);
         testee.Progress.Subscribe(this.ProgressChangedCallbackMock);
         return testee;
     }
 
     public SetupMediaContainer(items: MediaItem[]): TestFixture {
-        this.MediaContainerEntriesMock.mockReset();
-        this.MediaContainerEntriesMock.mockReturnValue({ Value: items });
+        Object.defineProperty(this.MediaContainerMock, 'Entries', { get: vi.fn(() => ({ Value: items })) });
         return this;
     }
 }
@@ -65,9 +56,9 @@ describe('DownloadTask', () => {
             expect(testee.Media).toBe(fixture.MediaContainerMock);
             expect(testee.Errors.Value).toEqual([]);
             expect(testee.Status.Value).toBe(Status.Queued);
-            expect(fixture.StatusChangedCallbackMock).not.toBeCalled();
+            expect(fixture.StatusChangedCallbackMock).not.toHaveBeenCalled();
             expect(testee.Progress.Value).toBe(0);
-            expect(fixture.ProgressChangedCallbackMock).not.toBeCalled();
+            expect(fixture.ProgressChangedCallbackMock).not.toHaveBeenCalled();
         });
     });
 
@@ -76,18 +67,18 @@ describe('DownloadTask', () => {
         it('Should process all entries in container on success', async () => {
             const items = [ MockItem(true), MockItem(true), MockItem(true), MockItem(true) ];
             const fixture = new TestFixture().SetupMediaContainer(items);
-            fixture.MediaContainerMock.Store.mockResolvedValue();
+            fixture.MediaContainerMock.Store.mockResolvedValue(undefined);
             const testee = fixture.CreateTestee();
 
             await testee.Run();
 
             for(const item of items) {
-                expect(item.Fetch).toBeCalledTimes(1);
+                expect(item.Fetch).toHaveBeenCalledTimes(1);
             }
-            expect(fixture.MediaContainerMock.Update).toBeCalledTimes(1);
-            expect(fixture.MediaContainerMock.Store).toBeCalledTimes(1);
-            expect(fixture.StorageControllerMock.SaveTemporary).toBeCalledTimes(4);
-            expect(fixture.StorageControllerMock.RemoveTemporary).toBeCalledTimes(1);
+            expect(fixture.MediaContainerMock.Update).toHaveBeenCalledTimes(1);
+            expect(fixture.MediaContainerMock.Store).toHaveBeenCalledTimes(1);
+            expect(fixture.StorageControllerMock.SaveTemporary).toHaveBeenCalledTimes(4);
+            expect(fixture.StorageControllerMock.RemoveTemporary).toHaveBeenCalledTimes(1);
         });
 
         it('Should gracefully succeed on downloading errors', async () => {
@@ -98,12 +89,12 @@ describe('DownloadTask', () => {
             await testee.Run();
 
             for(const item of items) {
-                expect(item.Fetch).toBeCalledTimes(1);
+                expect(item.Fetch).toHaveBeenCalledTimes(1);
             }
-            expect(fixture.MediaContainerMock.Update).toBeCalledTimes(1);
-            expect(fixture.MediaContainerMock.Store).toBeCalledTimes(0);
-            expect(fixture.StorageControllerMock.SaveTemporary).toBeCalledTimes(2);
-            expect(fixture.StorageControllerMock.RemoveTemporary).toBeCalledTimes(1);
+            expect(fixture.MediaContainerMock.Update).toHaveBeenCalledTimes(1);
+            expect(fixture.MediaContainerMock.Store).toHaveBeenCalledTimes(0);
+            expect(fixture.StorageControllerMock.SaveTemporary).toHaveBeenCalledTimes(2);
+            expect(fixture.StorageControllerMock.RemoveTemporary).toHaveBeenCalledTimes(1);
         });
 
         it('Should gracefully succeed on processing error', async () => {
@@ -115,29 +106,29 @@ describe('DownloadTask', () => {
             await testee.Run();
 
             for(const item of items) {
-                expect(item.Fetch).toBeCalledTimes(1);
+                expect(item.Fetch).toHaveBeenCalledTimes(1);
             }
-            expect(fixture.MediaContainerMock.Update).toBeCalledTimes(1);
-            expect(fixture.MediaContainerMock.Store).toBeCalledTimes(1);
-            expect(fixture.StorageControllerMock.SaveTemporary).toBeCalledTimes(4);
-            expect(fixture.StorageControllerMock.RemoveTemporary).toBeCalledTimes(1);
+            expect(fixture.MediaContainerMock.Update).toHaveBeenCalledTimes(1);
+            expect(fixture.MediaContainerMock.Store).toHaveBeenCalledTimes(1);
+            expect(fixture.StorageControllerMock.SaveTemporary).toHaveBeenCalledTimes(4);
+            expect(fixture.StorageControllerMock.RemoveTemporary).toHaveBeenCalledTimes(1);
         });
 
         it('Should prevent multiple calls', async () => {
             const item = MockItem(true, 5);
             const fixture = new TestFixture().SetupMediaContainer([ item ]);
-            fixture.MediaContainerMock.Store.mockResolvedValue();
+            fixture.MediaContainerMock.Store.mockResolvedValue(undefined);
             const testee = fixture.CreateTestee();
 
             const promise = testee.Run();
             testee.Run();
             await promise;
 
-            expect(item.Fetch).toBeCalledTimes(1);
-            expect(fixture.MediaContainerMock.Update).toBeCalledTimes(1);
-            expect(fixture.MediaContainerMock.Store).toBeCalledTimes(1);
-            expect(fixture.StorageControllerMock.SaveTemporary).toBeCalledTimes(1);
-            expect(fixture.StorageControllerMock.RemoveTemporary).toBeCalledTimes(1);
+            expect(item.Fetch).toHaveBeenCalledTimes(1);
+            expect(fixture.MediaContainerMock.Update).toHaveBeenCalledTimes(1);
+            expect(fixture.MediaContainerMock.Store).toHaveBeenCalledTimes(1);
+            expect(fixture.StorageControllerMock.SaveTemporary).toHaveBeenCalledTimes(1);
+            expect(fixture.StorageControllerMock.RemoveTemporary).toHaveBeenCalledTimes(1);
         });
     });
 
@@ -145,13 +136,12 @@ describe('DownloadTask', () => {
 
         it('Should signal abort for active downloads', async () => {
             const signals: AbortSignal[] = [];
-            const item = mock<MediaItem>();
-            item.Fetch.mockImplementation((_, signal) => {
+            const item = { Fetch: vi.fn((_, signal) => {
                 signals.push(signal);
                 return Promise.resolve(null);
-            });
+            }) } as unknown as MediaItem;
             const fixture = new TestFixture().SetupMediaContainer([ item, item, item, item ]);
-            fixture.MediaContainerMock.Store.mockResolvedValue();
+            fixture.MediaContainerMock.Store.mockResolvedValue(undefined);
             const testee = fixture.CreateTestee();
 
             const promise = testee.Run();
@@ -166,7 +156,7 @@ describe('DownloadTask', () => {
 
         it('Should reset abort after success', async () => {
             const fixture = new TestFixture().SetupMediaContainer([ MockItem(true) ]);
-            fixture.MediaContainerMock.Store.mockResolvedValue();
+            fixture.MediaContainerMock.Store.mockResolvedValue(undefined);
             const testee = fixture.CreateTestee();
 
             const promise = testee.Run();
@@ -205,7 +195,7 @@ describe('DownloadTask', () => {
         it('Should be empty on success', async () => {
             const items = [ MockItem(true), MockItem(true), MockItem(true), MockItem(true) ];
             const fixture = new TestFixture().SetupMediaContainer(items);
-            fixture.MediaContainerMock.Store.mockResolvedValue();
+            fixture.MediaContainerMock.Store.mockResolvedValue(undefined);
             const testee = fixture.CreateTestee();
 
             await testee.Run();
@@ -245,7 +235,7 @@ describe('DownloadTask', () => {
             const fixture = new TestFixture().SetupMediaContainer([ item ]);
             const cleaned = new DeferredTask(() => Promise.resolve(), undefined);
             fixture.StorageControllerMock.RemoveTemporary.mockImplementationOnce(() => cleaned.Run());
-            fixture.MediaContainerMock.Store.mockResolvedValue();
+            fixture.MediaContainerMock.Store.mockResolvedValue(undefined);
             const testee = fixture.CreateTestee();
 
             expect(testee.Status.Value).toBe(Status.Queued);
@@ -296,12 +286,12 @@ describe('DownloadTask', () => {
         it('Should invoke expected events on success', async () => {
             const item = MockItem(true);
             const fixture = new TestFixture().SetupMediaContainer([ item ]);
-            fixture.MediaContainerMock.Store.mockResolvedValue();
+            fixture.MediaContainerMock.Store.mockResolvedValue(undefined);
             const testee = fixture.CreateTestee();
 
             await testee.Run();
 
-            expect(fixture.StatusChangedCallbackMock).toBeCalledTimes(3);
+            expect(fixture.StatusChangedCallbackMock).toHaveBeenCalledTimes(3);
             expect(fixture.StatusChangedCallbackMock).toHaveBeenNthCalledWith(1, Status.Downloading, testee);
             expect(fixture.StatusChangedCallbackMock).toHaveBeenNthCalledWith(2, Status.Processing, testee);
             expect(fixture.StatusChangedCallbackMock).toHaveBeenNthCalledWith(3, Status.Completed, testee);
@@ -314,7 +304,7 @@ describe('DownloadTask', () => {
 
             await testee.Run();
 
-            expect(fixture.StatusChangedCallbackMock).toBeCalledTimes(2);
+            expect(fixture.StatusChangedCallbackMock).toHaveBeenCalledTimes(2);
             expect(fixture.StatusChangedCallbackMock).toHaveBeenNthCalledWith(1, Status.Downloading, testee);
             expect(fixture.StatusChangedCallbackMock).toHaveBeenNthCalledWith(2, Status.Failed, testee,);
         });
@@ -327,7 +317,7 @@ describe('DownloadTask', () => {
 
             await testee.Run();
 
-            expect(fixture.StatusChangedCallbackMock).toBeCalledTimes(3);
+            expect(fixture.StatusChangedCallbackMock).toHaveBeenCalledTimes(3);
             expect(fixture.StatusChangedCallbackMock).toHaveBeenNthCalledWith(1, Status.Downloading, testee,);
             expect(fixture.StatusChangedCallbackMock).toHaveBeenNthCalledWith(2, Status.Processing, testee,);
             expect(fixture.StatusChangedCallbackMock).toHaveBeenNthCalledWith(3, Status.Failed, testee,);
@@ -379,12 +369,12 @@ describe('DownloadTask', () => {
         it('Should invoke expected events on success', async () => {
             const items = [ MockItem(true), MockItem(true), MockItem(true), MockItem(true) ];
             const fixture = new TestFixture().SetupMediaContainer(items);
-            fixture.MediaContainerMock.Store.mockResolvedValue();
+            fixture.MediaContainerMock.Store.mockResolvedValue(undefined);
             const testee = fixture.CreateTestee();
 
             await testee.Run();
 
-            expect(fixture.ProgressChangedCallbackMock).toBeCalledTimes(items.length + 2);
+            expect(fixture.ProgressChangedCallbackMock).toHaveBeenCalledTimes(items.length + 2);
             for(let page = 1; page <= items.length; page++) {
                 expect(fixture.ProgressChangedCallbackMock).toHaveBeenNthCalledWith(page, page/items.length, testee);
             }
@@ -399,7 +389,7 @@ describe('DownloadTask', () => {
 
             await testee.Run();
 
-            expect(fixture.ProgressChangedCallbackMock).toBeCalledTimes(2);
+            expect(fixture.ProgressChangedCallbackMock).toHaveBeenCalledTimes(2);
             expect(fixture.ProgressChangedCallbackMock).toHaveBeenNthCalledWith(1, 1/items.length, testee);
             expect(fixture.ProgressChangedCallbackMock).toHaveBeenNthCalledWith(2, 2/items.length, testee);
         });
@@ -412,7 +402,7 @@ describe('DownloadTask', () => {
 
             await testee.Run();
 
-            expect(fixture.ProgressChangedCallbackMock).toBeCalledTimes(items.length + 2);
+            expect(fixture.ProgressChangedCallbackMock).toHaveBeenCalledTimes(items.length + 2);
             for(let page = 1; page <= items.length; page++) {
                 expect(fixture.ProgressChangedCallbackMock).toHaveBeenNthCalledWith(page, page/items.length, testee);
             }

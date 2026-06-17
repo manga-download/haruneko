@@ -7,7 +7,7 @@ new TestFixture({
         title: 'RawZO'
     },
     container: {
-        url: 'https://rawzo.net/manga/俺だけレベルアップな件-raw-free/',
+        url: 'https://rawzo.top/manga/俺だけレベルアップな件-raw-free/',
         id: mangaID,
         title: '俺だけレベルアップな件',
     },
