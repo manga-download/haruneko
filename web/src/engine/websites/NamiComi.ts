@@ -5,8 +5,6 @@ import { Page } from '../providers/MangaPlugin';
 import { DecoratableMangaScraper, type MangaPlugin, Manga, Chapter } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 
-type APIResult<T> = { data: T; };
-
 type APIManga = {
     id: string;
     attributes: {
@@ -15,41 +13,21 @@ type APIManga = {
     }
 };
 
-type APIChapter = {
+type APIChapters = {
     id: string;
     attributes: {
-        volume: null | string;
+        volume?: string;
         chapter: string;
-        name: null | string;
+        name?: string;
         translatedLanguage: string;
     };
-};
+}[];
 
 type APIPages = {
     baseUrl: string;
     hash: string;
     high: { filename: string; }[];
 };
-
-const chapterLanguageMap = new Map([
-    [ 'ar', [ Tags.Language.Arabic ] ],
-    [ 'de', [ Tags.Language.German ] ],
-    [ 'en', [ Tags.Language.English ] ],
-    [ 'es-419', [ Tags.Language.Spanish ] ],
-    [ 'es-es', [ Tags.Language.Spanish ] ],
-    [ 'fr', [ Tags.Language.French ] ],
-    [ 'id', [ Tags.Language.Indonesian ] ],
-    [ 'it', [ Tags.Language.Italian ] ],
-    [ 'ja', [ Tags.Language.Japanese ] ],
-    [ 'ko', [ Tags.Language.Korean ] ],
-    [ 'pl', [ Tags.Language.Polish ] ],
-    [ 'pt-br', [ Tags.Language.Portuguese ] ],
-    [ 'pt-pt', [ Tags.Language.Portuguese ] ],
-    [ 'ru', [ Tags.Language.Russian ] ],
-    [ 'tr', [ Tags.Language.Turkish ] ],
-    [ 'zh-hans', [ Tags.Language.Chinese ] ],
-    [ 'zh-hant', [ Tags.Language.Chinese ] ],
-]);
 
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
@@ -69,29 +47,29 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
-        const mangaData = await this.FetchAPI<APIManga>('./title/' + url.split('/').at(-2));
-        return this.ExtractManga(mangaData, provider);
+        const manga = await this.FetchAPI<APIManga>('./title/' + url.split('/').at(-2));
+        return this.CreateManga(provider, manga);
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        const mangasData = await this.FetchAPI<APIManga[]>('./title/search', { limit: '9999', offset: '0' });
-        return mangasData.map(item => this.ExtractManga(item, provider));
+        const mangas = await this.FetchAPI<APIManga[]>('./title/search', { limit: '9999', offset: '0' });
+        return mangas.map(manga => this.CreateManga(provider, manga));
     }
 
-    private ExtractManga(mangaData: APIManga, provider: MangaPlugin): Manga {
-        const { id, attributes: { title, originalLanguage } } = mangaData;
-        return new Manga(this, provider, id, title[ originalLanguage ] || title[ 'en' ] || Object.values(title).at(0).trim());
+    private CreateManga(provider: MangaPlugin, manga: APIManga): Manga {
+        const { id, attributes: { title, originalLanguage } } = manga;
+        return new Manga(this, provider, id, title[originalLanguage] || title.en || Object.values(title).at(0));
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const chapters = await this.FetchAPI<APIChapter[]>('./chapter', { titleId: manga.Identifier, limit: '9999', offset: '0' });
+        const chapters = await this.FetchAPI<APIChapters>('./chapter', { titleId: manga.Identifier, limit: '9999', offset: '0' });
         return chapters.map(({ id, attributes: { name, translatedLanguage, chapter, volume } }) => {
             const title = [
-                volume ? `Volume ${volume}` : null,
-                chapter ? `Chapter ${chapter}` : null,
-                name ? `${name} ` : '',
-            ].filter(Boolean).join(' ').trim() || 'Oneshot';
-            return new Chapter(this, manga, id, title + ` [${translatedLanguage}]`, ...chapterLanguageMap.get(translatedLanguage) ?? []);
+                volume && `Volume ${volume}`,
+                chapter && `Chapter ${chapter}`,
+                name,
+            ].joinTitleSegments() || 'Oneshot';
+            return new Chapter(this, manga, id, `${title} [${translatedLanguage}]`);
         });
     }
 
@@ -108,6 +86,6 @@ export default class extends DecoratableMangaScraper {
     private async FetchAPI<T extends JSONElement>(endpoint: string, searchParams: Record<string, string> = {}): Promise<T> {
         const uri = new URL(endpoint, this.apiUrl);
         uri.search = new URLSearchParams(searchParams).toString();
-        return (await FetchJSON<APIResult<T>>(new Request(uri))).data as T;
+        return (await FetchJSON<{ data: T }>(new Request(uri))).data;
     }
 }

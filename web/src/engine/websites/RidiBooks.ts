@@ -1,24 +1,22 @@
 ﻿import { Tags } from '../Tags';
 import icon from './RidiBooks.webp';
-import { Chapter, DecoratableMangaScraper, Manga, type MangaPlugin, Page } from '../providers/MangaPlugin';
+import { FetchJSON } from '../platform/FetchProvider';
+import { DecoratableMangaScraper, type MangaPlugin, Manga, type Chapter, Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
 
 type APIMangas = {
     data: {
-        items: APIManga[];
+        items: {
+            book: {
+                bookId: string;
+                title: string;
+                serial: {
+                    title: string;
+                };
+            };
+        }[];
         pagination: {
             nextPage: string;
-        };
-    };
-};
-
-type APIManga = {
-    book: {
-        bookId: string;
-        title: string;
-        serial: {
-            title: string;
         };
     };
 };
@@ -29,22 +27,14 @@ type APIPages = {
             src: string;
         }[];
     };
-    success: boolean;
 };
 
-type ChapterID = {
-    id: string;
-    title: string;
-};
-
-type BookDetail = {
-    series_id: string;
-    series_title: string;
-};
-
-@Common.ImageAjax()
+@Common.MangaCSS(/^{origin}\/books\/\d+$/, '#ISLANDS__Header h1')
+@Common.ChaptersSinglePageJS(`seriesBookListJson.map(({ id, title }) => ({ id, title: title.replace(bookDetail.series_title, '').trim() || title }));`)
+@Common.ImageAjax(true)
 export default class extends DecoratableMangaScraper {
-    private apiUrl = 'https://api.ridibooks.com';
+
+    private readonly apiURL = 'https://api.ridibooks.com';
 
     public constructor() {
         super('ridibooks', 'RidiBooks', 'https://ridibooks.com', Tags.Media.Manhwa, Tags.Language.Korean, Tags.Source.Official);
@@ -54,59 +44,32 @@ export default class extends DecoratableMangaScraper {
         return icon;
     }
 
-    public override ValidateMangaURL(url: string): boolean {
-        return new RegExpSafe(`^${this.URI.origin}/books/\\d+`).test(url);
-    }
-
-    public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
-        const { series_id: id, series_title: title } = await FetchWindowScript<BookDetail>(new Request(url), 'bookDetail');
-        return new Manga(this, provider, id, title.trim());
-    }
-
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        const mangaList: Manga[] = [];
-        let uri: URL | null = new URL('/v2/category/books', this.apiUrl);
-
+        type This = typeof this;
+        const uri = new URL('/v2/category/books', this.apiURL);
         uri.search = new URLSearchParams({
-            category_id: '1600',
-            tab: 'books',
-            platform: 'web',
-            order_by: 'popular',
-            limit: '60',
-            offset: '0'
+            'platform': 'web',
+            'tab': 'books',
+            'category_id': '1600',
+            'order_by': 'popular',
+            'limit': '200',
         }).toString();
-
-        while (uri) {
-            const { data: { items, pagination: { nextPage } } } = await FetchJSON<APIMangas>(new Request(uri));
-            const mangas = items.map(({ book }) => {
-                const title = book.serial?.title ? book.serial.title.trim() : book.title.trim();
-                return new Manga(this, provider, book.bookId, title);
-            });
-            mangaList.push(...mangas);
-            uri = nextPage && new URL(nextPage, this.apiUrl);
-        }
-        return mangaList.distinct();
-    }
-
-    public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const data = await FetchWindowScript<ChapterID[]>(new Request(new URL(`/books/${manga.Identifier}`, this.URI)), 'seriesBookListJson');
-        return data.map(({ id, title }) => new Chapter(this, manga, id, title.replace(manga.Title, '').trim() || title));
-    }
-
-    public override async GetChapterURL(chapter: Chapter): Promise<URL> {
-        return new URL(`/books/${chapter.Identifier}/view`, this.URI);
+        return Array.fromAsync(async function* (this: This) {
+            for (let offset = 0, run = true; run; offset += 200) {
+                uri.searchParams.set('offset', `${offset}`);
+                const { data: { items, pagination: { nextPage } } } = await FetchJSON<APIMangas>(new Request(uri));
+                yield* items.map(({ book: { bookId, serial, title } }) => new Manga(this, provider, `/books/${bookId}`, (serial?.title ?? title).trim()));
+                run = !!nextPage;
+            }
+        }.call(this));
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const { success, data: { pages } } = await FetchJSON<APIPages>(new Request(new URL('/api/web-viewer/generate', this.URI), {
+        const { data } = await FetchJSON<APIPages>(new Request(new URL('/api/web-viewer/generate', this.URI), {
             method: 'POST',
-            body: JSON.stringify({
-                book_id: chapter.Identifier
-            }),
-            headers: {
-                'Content-Type': 'application/json',
-            },
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ book_id: chapter.Identifier }),
         }));
-        return success ? pages.map(({ src }) => new Page(this, chapter, new URL(src))) : [];
+        return data.pages.map(page => new Page(this, chapter, new URL(page.src, this.URI)));
     }
 }

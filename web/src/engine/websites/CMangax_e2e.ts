@@ -6,12 +6,12 @@ new TestFixture({
         title: 'CMangax'
     },
     container: {
-        url: 'https://cmangax16.com/album/trong-sinh-chi-quan-chu-80929',
-        id: JSON.stringify({ id: '80929', slug: 'trong-sinh-chi-quan-chu' }),
+        url: 'https://cmangax17.com/album/trong-sinh-chi-quan-chu-80929',
+        id: '80929',
         title: 'Trọng Sinh Chi Quân Chủ'
     },
     child: {
-        id: JSON.stringify({ id: '2198086', num: '11' }),
+        id: '2198086',
         title: 'Chapter 11'
     },
     entry: {
