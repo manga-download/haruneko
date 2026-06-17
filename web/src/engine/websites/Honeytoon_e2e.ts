@@ -1,28 +1,28 @@
 ﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-// CASE: English
+// CASE: English, Safe
 new TestFixture({
     plugin: {
         id: 'honeytoon',
         title: 'Honeytoon'
     },
     container: {
-        url: 'https://honeytoon.com/comic/my-five-prominent-dadies',
-        id: '/comic/my-five-prominent-dadies',
-        title: 'My Five Prominent Dadies (en)'
+        url: 'https://honeytoon.com/comic/my-apprentice-game-over-again',
+        id: '/comic/my-apprentice-game-over-again',
+        title: 'My Apprentice: Game over again! (en)'
     },
     child: {
-        id: '/comic/my-five-prominent-dadies/1',
+        id: '/comic/my-apprentice-game-over-again/1',
         title: 'Episode 1'
     },
     entry: {
         index: 0,
-        size: 72_084,
+        size: 124_958,
         type: 'image/webp'
     }
 }).AssertWebsite();
 
-// CASE: Spanish
+// CASE: Spanish, Adult
 new TestFixture({
     plugin: {
         id: 'honeytoon',
