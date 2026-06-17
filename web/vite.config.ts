@@ -84,16 +84,10 @@ export default defineConfig({
                 sw: './src/service-worker.ts',
             },
             output: {
-                entryFileNames: file => (file.name !== 'sw' ? `${buildID}/` : '') + '[name].js',
+                entryFileNames: file => file.name === 'sw' ? '[name].js' : `${buildID}/[name].js`,
                 assetFileNames: `${buildID}/[name].[ext]`,
                 chunkFileNames: `${buildID}/[name].js`,
-                keepNames: true,
-                minify: {
-                    compress: true,
-                    mangle: false,
-                    codegen: true,
-                },
-                manualChunks: function(id) {
+                manualChunks: (id) => {
                     if(id.includes('node_modules')) {
                         return 'Vendor';
                     }
@@ -101,6 +95,20 @@ export default defineConfig({
                         return 'WebsiteIcons';
                     }
                 },
+                minify: {
+                    compress: {
+                        keepNames: {
+                            class: true,
+                            function: true,
+                        }
+                    },
+                    mangle: {
+                        keepNames: true,
+                    },
+                    codegen: {
+                        removeWhitespace: true,
+                    },
+                }
             },
         },
     },
@@ -110,12 +118,6 @@ export default defineConfig({
                 entryFileNames: `${buildID}/[name].js`,
                 assetFileNames: `${buildID}/[name].[ext]`,
                 chunkFileNames: `${buildID}/[name].js`,
-                keepNames: true,
-                minify: {
-                    compress: true,
-                    mangle: false,
-                    codegen: true,
-                },
             }
         }
     },
