@@ -75,20 +75,19 @@ export default defineConfig({
     ],
     publicDir: 'static',
     build: {
-        minify: 'esbuild',
         sourcemap: false,
         outDir: 'build',
         chunkSizeWarningLimit: 2 * 1024,
-        rollupOptions: {
+        rolldownOptions: {
             input: {
                 index: './index.html',
                 sw: './src/service-worker.ts',
             },
             output: {
-                entryFileNames: file => (file.name !== 'sw' ? `${buildID}/` : '') + '[name].js',
+                entryFileNames: file => file.name === 'sw' ? '[name].js' : `${buildID}/[name].js`,
                 assetFileNames: `${buildID}/[name].[ext]`,
                 chunkFileNames: `${buildID}/[name].js`,
-                manualChunks: function(id) {
+                manualChunks: (id) => {
                     if(id.includes('node_modules')) {
                         return 'Vendor';
                     }
@@ -96,23 +95,31 @@ export default defineConfig({
                         return 'WebsiteIcons';
                     }
                 },
+                minify: {
+                    compress: {
+                        keepNames: {
+                            class: true,
+                            function: true,
+                        }
+                    },
+                    mangle: {
+                        keepNames: true,
+                    },
+                    codegen: {
+                        removeWhitespace: true,
+                    },
+                }
             },
         },
     },
     worker: {
-        rollupOptions: {
+        rolldownOptions: {
             output: {
                 entryFileNames: `${buildID}/[name].js`,
                 assetFileNames: `${buildID}/[name].[ext]`,
                 chunkFileNames: `${buildID}/[name].js`,
             }
         }
-    },
-    esbuild: {
-        minifySyntax: true,
-        minifyWhitespace: true,
-        minifyIdentifiers: false,
-        keepNames: true,
     },
     optimizeDeps: {
         // TODO: once carbon-componenets-svelte v1 is released, check if svelte optimize has been improved
