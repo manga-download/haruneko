@@ -6,12 +6,12 @@ new TestFixture({
         title: 'NineMangaEN'
     },
     container: {
-        url: 'https://www.ninemanga.com/manga/Koakuma+Kyoushi+Psycho.html',
-        id: '/manga/Koakuma+Kyoushi+Psycho.html',
+        url: 'https://www.niadd.com/manga/Koakuma_Kyoushi_Psycho.html',
+        id: '/manga/Koakuma_Kyoushi_Psycho.html',
         title: 'Koakuma Kyoushi Psycho',
     },
     child: {
-        id: '/chapter/Koakuma%20Kyoushi%20Psycho/11885012.html',
+        id: '/chapter/Koakuma_Kyoushi_Psycho_8/11885012/',
         title: '8',
     },
     entry: {
