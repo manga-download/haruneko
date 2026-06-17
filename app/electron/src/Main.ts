@@ -104,10 +104,8 @@ async function OpenWindow(): Promise<void> {
         await SetupUserDataDirectory(manifest);
         app.userAgentFallback = manifest['user-agent'] ?? app.userAgentFallback.split(/\s+/).filter(segment => !/(hakuneko|electron)/i.test(segment)).join(' ');
         await app.whenReady();
-
         const win = await CreateApplicationWindow();
         const uri = new URL(argv.origin ?? manifest.url ?? 'about:blank');
-        await win.loadURL(uri.href).catch(error => console.warn(error));
         UpdatePermissions(win.webContents.session, uri);
 
         const ipc = new IPC(win.webContents);
@@ -117,6 +115,8 @@ async function OpenWindow(): Promise<void> {
         new RemoteBrowserWindowController(ipc);
         new BloatGuard(ipc, win.webContents);
         win.RegisterChannels(ipc);
+
+        await win.loadURL(uri.href).catch(error => console.warn(error));
     } catch(error) {
         console.error(error);
         app.quit();
