@@ -15,8 +15,8 @@ new TestFixture({
         title: '66 - The Period of Humans (4) [UToon]'
     },
     entry: {
-        index: 3,
-        size: 822_478,
+        index: 0,
+        size: 678_370,
         type: 'image/webp'
     }
 }).AssertWebsite();
