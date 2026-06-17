@@ -6,13 +6,13 @@ new TestFixture({
         title: 'NineMangaRU'
     },
     container: {
-        url: 'https://ru.ninemanga.com/manga/Рождение+сильнейшего+мастера.html',
-        id: encodeURI('/manga/Рождение+сильнейшего+мастера.html'),
-        title: 'Рождение сильнейшего мастера Манга (The Distinguished Cute Master)',
+        url: 'https://ru.niadd.com/manga/Рождение сильнейшего мастера.html',
+        id: encodeURI('/manga/Рождение сильнейшего мастера.html'),
+        title: 'Рождение сильнейшего мастера',
     },
     child: {
-        id: encodeURI('/chapter/Рождение сильнейшего мастера/3940336.html'),
-        title: 'Рождение сильнейшего мастера Том 1 Глава 308',
+        id: encodeURI('/chapter/1_308/3940336/'),
+        title: 'Том 1 Глава 308',
     },
     entry: {
         index: 0,

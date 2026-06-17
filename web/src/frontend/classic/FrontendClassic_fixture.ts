@@ -30,7 +30,7 @@ export class TestFixture extends FrontendFixture {
      * Click the option in the website selection list that corresponds to the given website plugin {@link id}.
      */
     public async SelectWebsite(id: string, timeout = 1000) {
-        const selector = `#Plugin [role="listbox"] #${id}[role="option"] .title`;
+        const selector = `#Plugin #combo-PluginSelect #PluginSelect-${id}[role="option"] .title`;
         const page = await super.GetPage();
         await page.click(this.#selector.WebsiteFilter); // Required to open the drop-down
         await page.waitForSelector(selector, { timeout });

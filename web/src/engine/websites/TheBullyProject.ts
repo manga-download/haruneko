@@ -1,5 +1,5 @@
 import { Tags } from '../Tags';
-import icon from './MangaClash.webp';
+import icon from './TheBullyProject.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 

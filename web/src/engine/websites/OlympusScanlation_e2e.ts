@@ -6,7 +6,7 @@ new TestFixture({
         title: 'Olympus Scanlation'
     },
     container: {
-        url: 'https://olympusbiblioteca.com/series/comic-el-mago-20-225-devorador-de-talentos13424',
+        url: 'https://olympusxyz.com/series/comic-el-mago-20-225-devorador-de-talentos13424',
         id: JSON.stringify({ slug: 'el-mago-20-225-devorador-de-talentos13424', type: 'comic' }),
         title: 'El Mago Devorador de Talentos'
     },
