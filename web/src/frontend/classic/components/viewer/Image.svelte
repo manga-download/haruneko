@@ -7,11 +7,10 @@
     interface Props {
         page: MediaItem;
         alt: string;
-        class: string
+        wide: boolean;
     }
 
-    let { page, alt, class: className = '' }: Props = $props();
-    let loaded = $state(false);
+    let { page, alt, wide}: Props = $props();
     let dataload: Promise<Blob> = $derived(page.Fetch(Priority.High, new AbortController().signal));
     let image: HTMLImageElement = $state();
 
@@ -21,32 +20,23 @@
         });
     });
 
-    import { Settings } from '../../stores/Settings.svelte';
-
-    $effect(() => {
-        if (loaded) {
-            image.width = image.naturalWidth * Settings.ViewerZoomRatio;
-            image.height = image.naturalHeight * Settings.ViewerZoomRatio;
-        } 
-    });
-
 </script>
 
 {#await dataload}
-    <InlineLoading class="imgpreview center {className}" on:click />
+    <InlineLoading class="imgpreview center " on:click />
 {:then data}
     {#if data?.type.startsWith('image')}
         <img
-            class="imgpreview {className}"
+            class="imgpreview"
             alt={page ? alt : ''}
             src={URL.createObjectURL(data)}
+            class:wide={wide}
             draggable="false"
             bind:this={image}
-            onload={() => (loaded = true)}
         />
     {:else}
         <InlineLoading
-            class="imgpreview center {className}"
+            class="imgpreview center"
             status="error"
             description="Resource is not an image"
             on:click
@@ -54,7 +44,7 @@
     {/if}
 {:catch error}
     <InlineLoading
-        class="imgpreview {className}"
+        class="imgpreview"
         status="error"
         description={error}
         on:click
@@ -64,13 +54,12 @@
 <style>
     img {
         display: flex;
+        transition: width 100ms ease-in-out;
+        transition: height 100ms ease-in-out;
     }
     img.wide {
         transition: width 200ms ease-in-out;
         transition: height 200ms ease-in-out;
     }
-    img.thumbnail {
-        transition: width 100ms ease-in-out;
-        transition: height 100ms ease-in-out;
-    }
+
 </style>
