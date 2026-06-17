@@ -13,7 +13,7 @@ export default defineConfig({
             ],
             formats: [ 'cjs' ]
         },
-        rollupOptions: {
+        rolldownOptions: {
             output: {
                 entryFileNames: ({ name }) => `${name}.js`.toLowerCase(),
                 chunkFileNames: ({ name }) => `${name}.js`.toLowerCase(),

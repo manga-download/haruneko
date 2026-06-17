@@ -6,12 +6,12 @@ new TestFixture({
         title: 'WebDex Scans'
     },
     container: {
-        url: 'https://webdexscans.com/series/steel-covenant/',
-        id: JSON.stringify({ post: '2071', slug: '/series/steel-covenant/' }),
+        url: 'https://webdexscans.com/series/steel-covenant',
+        id: '/series/steel-covenant',
         title: 'Steel Covenant'
     },
     child: {
-        id: '/series/steel-covenant/chapter-25/',
+        id: '/series/steel-covenant/chapter-25',
         title: 'Chapter 25'
     },
     entry: {
