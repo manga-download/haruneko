@@ -20,7 +20,7 @@ function CleanTitle(title: string): string {
 export default class extends DecoratableMangaScraper {
 
     public constructor () {
-        super('rawxz', 'RawZO', 'https://rawzo.net', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Media.Manga, Tags.Language.Japanese, Tags.Source.Aggregator);
+        super('rawxz', 'RawZO', 'https://rawzo.top', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Media.Manga, Tags.Language.Japanese, Tags.Source.Aggregator);
     }
 
     public override get Icon() {

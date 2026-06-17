@@ -11,12 +11,12 @@ new TestFixture({
         title: 'Flops de Amor'
     },
     child: {
-        id: '/manga/flops-de-amor/capitulo-19/',
-        title: 'Capítulo 19 Final'
+        id: '/manga/flops-de-amor/capitulo-8/',
+        title: 'Capítulo 8'
     },
     entry: {
         index: 2,
-        size: 334_434,
+        size: 460_790,
         type: 'image/webp'
     }
 }).AssertWebsite();

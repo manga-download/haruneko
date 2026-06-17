@@ -13,17 +13,16 @@
     ],
     "devDependencies": {
         "@stylistic/eslint-plugin": "5.10.0",
-        "@types/chrome": "0.1.42",
+        "@types/chrome": "0.1.43",
         "@types/nw.js": "0.92.0",
-        "eslint": "10.4.0",
+        "eslint": "10.5.0",
         "eslint-plugin-tsdoc": "0.5.2",
-        "puppeteer-core": "25.0.4",
+        "puppeteer-core": "25.1.0",
         "tslib": "2.8.1",
         "typescript": "6.0.3",
-        "typescript-eslint": "8.59.4",
-        "vite": "8.0.14",
-        "vitest": "4.1.7",
-        "vitest-mock-extended": "4.0.0"
+        "typescript-eslint": "8.61.1",
+        "vite": "8.0.16",
+        "vitest": "4.1.9"
     },
     "scripts": {
         "check": "npm run check --workspaces",

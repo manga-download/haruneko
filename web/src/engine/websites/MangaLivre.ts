@@ -7,25 +7,29 @@ import { FetchJSON } from '../platform/FetchProvider';
 type APIManga = {
     id: string;
     title: string;
-    chapters: APIChapter[];
 };
 
-type APIChapter = {
+type APIMangas = {
+    mangas: APIManga[];
+};
+
+type APIChapters = {
     id: string;
-    number: string;
-    title: string;
+    chapters: {
+        id: string;
+        number: string;
+        title: string;
+    }[];
+};
+
+type APIPages = {
     pages: string[];
 };
 
-type APIMangas = { mangas: APIManga[]; };
-
-type MangaID = {
-    id: string;
-    slug: string;
-};
-
+@Common.MangaCSS(/^{origin}\/[^/]+$/, 'head title', (title, uri) => ({ id: uri.pathname.split('/').at(-1), title: title.innerText.trim() }))
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
+
     private readonly apiURL = `${this.URI.origin}/api/`;
 
     public constructor() {
@@ -36,36 +40,24 @@ export default class extends DecoratableMangaScraper {
         return icon;
     }
 
-    public override ValidateMangaURL(url: string): boolean {
-        return new RegExpSafe(`^${this.URI.origin}/[^/]+$`).test(url);
-    }
-
-    public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
-        const slug = url.split('/').at(-1);
-        const { id, title } = await FetchJSON<APIManga>(new Request(new URL(`./manga-by-slug/${slug}`, this.apiURL)));
-        return new Manga(this, provider, JSON.stringify({ id, slug }), title);
-    }
-
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
         type This = typeof this;
         return Array.fromAsync(async function* (this: This) {
             for (let page = 1, run = true; run; page++) {
-                const { mangas: mangasData } = await FetchJSON<APIMangas>(new Request(new URL(`./mangas/releases?limit=9999&page=${page}`, this.apiURL)));
-                const mangas = mangasData.map(({ id, title }) => new Manga(this, provider, JSON.stringify({ id, slug: this.Slugify(id) }), title));
+                const { mangas: entries } = await FetchJSON<APIMangas>(new Request(new URL(`./mangas/releases?limit=9999&page=${page}`, this.apiURL)));
+                const mangas = entries.map(({ id, title }) => new Manga(this, provider, this.Slugify(id), title));
                 mangas.length > 0 ? yield* mangas : run = false;
             }
         }.call(this));
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const { slug } = <MangaID>JSON.parse(manga.Identifier);
-        const { chapters } = await FetchJSON<APIManga>(new Request(new URL(`./manga-by-slug/${slug}`, this.apiURL)));
-        return chapters.map(({ id, number, title }) => new Chapter(this, manga, id, [`Capítulo ${number}`, title.trim()].filter(Boolean).join(' ').trim()));
+        const { id: slug, chapters } = await FetchJSON<APIChapters>(new Request(new URL(`./manga-by-slug/${manga.Identifier}`, this.apiURL)));
+        return chapters.map(({ id, number, title }) => new Chapter(this, manga, `./mangas/${slug}/chapters/${id}`, ['Capítulo', number, title].joinTitleSegments()));
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const { id: mangaId } = <MangaID>JSON.parse(chapter.Parent.Identifier);
-        const { pages } = await FetchJSON<APIChapter>(new Request(new URL(`./mangas/${mangaId}/chapters/${chapter.Identifier}`, this.apiURL)));
+        const { pages } = await FetchJSON<APIPages>(new Request(new URL(chapter.Identifier, this.apiURL)));
         return pages.map(page => new Page(this, chapter, new URL(page, this.URI)));
     }
 

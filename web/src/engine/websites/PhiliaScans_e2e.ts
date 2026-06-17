@@ -7,16 +7,16 @@ new TestFixture({
     },
     container: {
         url: 'https://philiascans.org/series/how-i-became-king-by-eating-monsters',
-        id: '/series/how-i-became-king-by-eating-monsters',
+        id: 'how-i-became-king-by-eating-monsters',
         title: 'How I Became King by Eating Monsters'
     },
     child: {
-        id: '/series/how-i-became-king-by-eating-monsters/chapter-01',
-        title: 'Ch.01'
+        id: 'chapter-01',
+        title: 'Ch.1'
     },
     entry: {
         index: 1,
-        size: 174_298,
-        type: 'image/webp'
+        size: 1_210_233,
+        type: 'image/png'
     }
 }).AssertWebsite();

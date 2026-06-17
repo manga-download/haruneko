@@ -4,16 +4,15 @@ new TestFixture({
     plugin: {
         id: 'sekaikomik',
         title: 'ManhwaLand (SekaiKomik)',
-        //timeout: 30_000
     },
     container: {
-        url: 'https://02x.mwland.xyz/komik/circles',
+        url: 'https://05c.manhwaland.land/manga/circles',
         id: 'circles',
         title: 'Circles'
     },
     child: {
-        id: '/baca/circles/1',
-        title: 'Chapter 1',
+        id: '1',
+        title: 'Ch. 1',
     },
     entry: {
         index: 1,

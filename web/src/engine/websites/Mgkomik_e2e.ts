@@ -6,7 +6,7 @@ new TestFixture({
         title: 'MGKOMIK'
     },
     container: {
-        url: 'https://web.mgkomik.cc/komik/the-life-after-god-of-martial-lived-in-seclusion/',
+        url: 'https://web1.mgkomik.cc/komik/the-life-after-god-of-martial-lived-in-seclusion/',
         id: '/komik/the-life-after-god-of-martial-lived-in-seclusion/',
         title: 'The Life After God Of Martial Lived In Seclusion'
     },

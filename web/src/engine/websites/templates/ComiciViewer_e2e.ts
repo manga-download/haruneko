@@ -5,6 +5,7 @@ import '../ComicGrowl_e2e';
 import '../ComicPash_e2e';
 import '../ComicRide_e2e';
 import '../HanaYume_e2e';
+import '../HerosWebNew_e2e';
 import '../JEnta_e2e';
 import '../KimiComi_e2e';
 import '../MagKan_e2e';
