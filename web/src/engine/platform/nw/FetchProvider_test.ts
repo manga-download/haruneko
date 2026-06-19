@@ -31,15 +31,6 @@ class TestFixture {
         this.WithOrigin('http://localhost');
     }
 
-    /*
-    private ParseCookies(cookies: string): chrome.cookies.Cookie[] {
-        return cookies.split(';').filter(cookie => cookie.includes('=')).map(cookie => {
-            const [ name, value ] = cookie.split('=').map(c => c.trim());
-            return { name, value } as chrome.cookies.Cookie;
-        });
-    }
-    */
-
     public WithOrigin(origin: string) {
         globalThis.window = Object.assign(globalThis.window ?? {}, {
             location: { origin, hostname: new URL(origin).hostname },
@@ -190,7 +181,7 @@ describe('FetchProvider', () => {
             });
 
             await testee.Fetch(request);
-            expect(fixture.mockFetch).toBeCalledTimes(1);
+            expect(fixture.mockFetch).toHaveBeenCalledTimes(1);
             expect(fixture.mockFetch).toHaveBeenCalledWith(request);
         });
 
@@ -208,7 +199,7 @@ describe('FetchProvider', () => {
             });
 
             await testee.Fetch(request);
-            expect(fixture.mockFetch).toBeCalledTimes(1);
+            expect(fixture.mockFetch).toHaveBeenCalledTimes(1);
             expect(fixture.mockFetch).toHaveBeenCalledWith(request);
         });
     });

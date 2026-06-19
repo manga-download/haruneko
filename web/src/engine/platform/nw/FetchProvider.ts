@@ -7,7 +7,7 @@ export default class FetchProviderNW extends FetchProvider {
 
     #initialized = false;
     private readonly appHostname = window.location.hostname;
-    #patternFetchApiSupportedPrefix = new RegExp('^' + FetchApiSupportedPrefix, 'i');
+    #patternFetchApiSupportedPrefix = new RegExp(`^${FetchApiSupportedPrefix}`, 'i');
 
     /**
      * Configure various system globals to bypass FetchAPI limitations.
@@ -65,10 +65,9 @@ export default class FetchProviderNW extends FetchProvider {
         const all: Array<[string, string]> = details.requestHeaders.map(({ name, value }) => [ name, value ]);
         const result = Object.fromEntries(all.filter(([name]) => !IsConcealed(name)).map(([name, value]) => [name.toLowerCase(), value]));
         const replacements = Object.fromEntries(all.filter(([name]) => IsConcealed(name)).map(([name, value]) => [GetRevealedHeaderName(name), value]));
-        replacements['cookie'] = MergeCookiesIntoHeader(
-            //await chrome.cookies.getAll({ url: new URL(url).origin, partitionKey: {} }),
-            ParseCookiesFromHeader(<string>result['cookie'] ?? ''),
-            ParseCookiesFromHeader(<string>replacements['cookie'] ?? ''),
+        replacements.cookie = MergeCookiesIntoHeader(
+            ParseCookiesFromHeader(<string>result.cookie ?? ''),
+            ParseCookiesFromHeader(<string>replacements.cookie ?? ''),
         );
 
         for (const name in replacements) {
@@ -76,10 +75,10 @@ export default class FetchProviderNW extends FetchProvider {
         }
 
         // Remove cookie header when empty
-        if (!(<string>result['cookie'])?.trim()) delete result['cookie'];
+        if (!(<string>result.cookie)?.trim()) delete result.cookie;
         // Prevent leaking HakuNeko's host in certain headers
-        if ((<string>result['origin'])?.includes(this.appHostname)) delete result['origin'];
-        if ((<string>result['referer'])?.includes(this.appHostname)) delete result['referer'];
+        if ((<string>result.origin)?.includes(this.appHostname)) delete result.origin;
+        if ((<string>result.referer)?.includes(this.appHostname)) delete result.referer;
 
         return {
             cancel: false,
@@ -94,16 +93,7 @@ export default class FetchProviderNW extends FetchProvider {
 
         // Remove the `link` header to prevent prefetch/preload and a corresponding warning about 'resource preloaded but not used',
         // especially when scraping with headless requests (see: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Link)
-        if ('link' in result) delete result['link'];
-
-        /*
-        if(details.method.toUpperCase() === 'OPTIONS') {
-            result['access-control-allow-origin'] = '*';
-            result['access-control-allow-methods'] = '*';
-            result['access-control-allow-headers'] = '*';
-            result['access-control-allow-credentials'] = 'true';
-        }
-        */
+        if ('link' in result) delete result.link;
 
         return {
             cancel: false,
