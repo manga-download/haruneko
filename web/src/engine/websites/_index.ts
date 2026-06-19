@@ -367,7 +367,6 @@ export { default as MangaLivreBlog } from './MangaLivreBlog';
 export { default as MangaLivreTo } from './MangaLivreTo';
 export { default as MangaLover } from './MangaLover';
 export { default as MangaMana } from './MangaMana';
-export { default as MangaMirror } from './MangaMirror';
 export { default as MangaNato } from './MangaNato';
 export { default as MangaNo } from './MangaNo';
 export { default as MangaOneJp } from './MangaOneJp';
