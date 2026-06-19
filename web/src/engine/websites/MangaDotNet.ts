@@ -1,6 +1,6 @@
 import { Tags } from '../Tags';
 import icon from './MangaDotNet.webp';
-import { FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
+import { FetchJSON } from '../platform/FetchProvider';
 import { type MangaPlugin, Manga, Chapter, Page, DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 
