@@ -2,6 +2,8 @@ import type { WebContents, BeforeSendResponse, HeadersReceivedResponse } from 'e
 import type { IPC } from './InterProcessCommunication';
 import { Channels } from './InterProcessCommunicationChannels';
 
+const RegExpSafe = RegExp;
+
 export class FetchProvider {
 
     #appHostname = 'localhost';
@@ -15,7 +17,7 @@ export class FetchProvider {
 
     private Initialize(fetchApiSupportedPrefix: string): void {
         this.#appHostname = new URL(this.webContents.getURL()).hostname;
-        this.#patternFetchApiSupportedPrefix = new RegExp(`^${fetchApiSupportedPrefix}`, 'i');
+        this.#patternFetchApiSupportedPrefix = new RegExpSafe(`^${fetchApiSupportedPrefix}`, 'i');
         // TODO: Provide callbacks as serialized functions
         //const onBeforeSendHeaders = new Function('...').bind(this);
         //const onHeadersReceived = new Function('...').bind(this);
