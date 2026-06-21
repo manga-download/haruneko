@@ -29,6 +29,8 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '24'
+          check-latest: true
+          cache: 'npm' # Crée un cache propre à ta branche pour écraser Node 22
       - name: Install NPM Packages
         run: npm install
       - name: Code Inspection
