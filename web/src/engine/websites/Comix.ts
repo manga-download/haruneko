@@ -71,7 +71,9 @@ export default class extends DecoratableMangaScraper {
         const encodingAlgo = response.headers.get('X-Enc-Algo');
         const scrambleAlgo = response.headers.get('X-Scramble-Algo');
         const scrambleGrid = response.headers.get('X-Scramble-Grid');
-        const scrambleSeed = response.headers.get('X-Scramble-Seed');
+        const scrambleSeed = parseInt(response.headers.get('X-Scramble-Seed'), 10);
+        const scrambleHash = response.headers.get('X-Scramble-Hash')?.trim();
+        const seed = (scrambleHash === '03632' ? 58414 : 0) ^ scrambleSeed;
 
         const blob = encodingSeed && encodingLimit ? await this.#DecryptImage(buffer, parseInt(encodingSeed, 10), parseInt(encodingLimit, 10), encodingAlgo) : await Common.GetTypedData(buffer);
         return !scrambleAlgo || !scrambleSeed || !scrambleGrid ? blob : await DeScramble(blob, async (image, ctx) => {
@@ -82,7 +84,7 @@ export default class extends DecoratableMangaScraper {
             const tileW = Math.floor(image.width / GRID_COLS);
             const tileH = Math.floor(image.height / GRID_ROWS);
 
-            const scrambleOrder = scrambleAlgo === '3' ? this.#BuildOrder(parseInt(scrambleSeed, 10), NUM_TILES) : this.#BuildOrderLcg(parseInt(scrambleSeed, 10), NUM_TILES);
+            const scrambleOrder = scrambleAlgo === '3' ? this.#BuildOrder(seed, NUM_TILES) : this.#BuildOrderLcg(seed, NUM_TILES);
 
             ctx.drawImage(image, 0, 0);
             for (let tileIndex = 0; tileIndex < NUM_TILES; tileIndex++) {
