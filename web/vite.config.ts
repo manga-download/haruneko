@@ -2,6 +2,7 @@ import { defineConfig } from 'vite';
 import vue from '@vitejs/plugin-vue';
 import react from '@vitejs/plugin-react';
 import { svelte } from '@sveltejs/vite-plugin-svelte';
+import { vitePreprocess } from '@sveltejs/vite-plugin-svelte'; // 1. Importe le préprocesseur
 
 const buildID = Date.now().toString(36).toUpperCase();
 
@@ -66,6 +67,7 @@ iw==
 export default defineConfig({
     plugins: [
         svelte({
+            preprocess: vitePreprocess(), // <--- 2. Ajoute cette ligne ici
             onwarn: function (warning, handler) {
                 return warning.code.startsWith('a11y-') ? undefined : handler?.call(this, warning);
             }
