@@ -1,6 +1,6 @@
 ﻿import { Tags } from '../Tags';
 import icon from './MangaTR.webp';
-import { FetchHTML, FetchRegex, FetchWindowPreloadScript, FetchWindowScript } from '../platform/FetchProvider';
+import { FetchHTML, FetchJSON, FetchRegex, FetchWindowPreloadScript, FetchWindowScript } from '../platform/FetchProvider';
 import { Chapter, DecoratableMangaScraper, Manga, type MangaPlugin, Page } from '../providers/MangaPlugin';
 import { AddAntiScrapingDetection, FetchRedirection } from '../platform/AntiScrapingDetection';
 import type { Priority } from '../taskpool/DeferredTask';
@@ -47,7 +47,7 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
         const mangaUrl = new URL(url);
-        const title = await FetchWindowScript<string>(new Request(mangaUrl), `document.querySelector('.poster-card__title').textContent.trim()`, 1500);
+        const title = await FetchWindowScript<string>(new Request(mangaUrl), `document.querySelector('.bento-hero-title').textContent.trim()`, 1500);
         return new Manga(this, provider, mangaUrl.pathname, title);
     }
 
@@ -67,7 +67,8 @@ export default class extends DecoratableMangaScraper {
                     headers: {
                         'X-Requested-With': 'XMLHttpRequest',
                         Origin: this.URI.origin,
-                        Referer: this.URI.href
+                        Referer: this.URI.href,
+                        'Sec-Fetch-Site': 'same-origin'
                     },
                     credentials: 'include',
                     method: 'POST',
@@ -76,9 +77,8 @@ export default class extends DecoratableMangaScraper {
                     })
                 }));
 
-                const chapters = [...doc.querySelectorAll<HTMLAnchorElement>('a.chapter-card__row')].map(anchor => {
-                    const title = anchor.querySelector('.chapter-title').textContent.trim();
-                    return new Chapter(this, manga, anchor.pathname, title.replace(manga.Title, '').trim() || title);
+                const chapters = [...doc.querySelectorAll<HTMLAnchorElement>('a.bento-ep-title-link')].map(anchor => {
+                    return new Chapter(this, manga, anchor.pathname, anchor.text.replace(manga.Title, '').trim() || anchor.text.trim());
                 });
                 yield* chapters;
                 chapter_list_key = doc.querySelector<HTMLElement>(`a.pagination-link[data-page="${page + 1}"]`)?.dataset.key;
@@ -239,4 +239,18 @@ export default class extends DecoratableMangaScraper {
         const images: HTMLImageElement[] = await Promise.all(sources.map(src => loadImage(src)));
         return images;
     }
+
+    private async RenewToken(currentToken: string = undefined): Promise<string> {
+        return (await FetchJSON<{ token: string }>(new Request(new URL('/yorum/get_antispam_token.php', this.URI), {
+            method: 'POST',
+            headers: {
+                Origin: this.URI.origin,
+                Referer: this.URI.href,
+                'Sec-Fetch-Site': 'same-origin'
+            }
+
+        }))).token;
+
+    }
+    //https://manga-tr.com/yorum/get_antispam_token.php
 }
