@@ -65,13 +65,13 @@ iw==
 // https://vitejs.dev/config/
 export default defineConfig({
     plugins: [
-        vue(),
-        react(),
         svelte({
-            onwarn: function(warning, handler) {
+            onwarn: function (warning, handler) {
                 return warning.code.startsWith('a11y-') ? undefined : handler?.call(this, warning);
             }
         }),
+        vue(),
+        react(),
     ],
     publicDir: 'static',
     build: {
