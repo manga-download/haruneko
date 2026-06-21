@@ -22,7 +22,6 @@ jobs:
         with:
           node-version: '24'
           check-latest: true
-          cache: 'npm'
       - name: Install NPM Packages
         run: npm install
       - name: Process Websites
