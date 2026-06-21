@@ -23,7 +23,7 @@ jobs:
         with:
           node-version: '24'
           check-latest: true
-          cache: 'npm' # Crée un cache propre à ta branche pour écraser Node 22
+          cache: 'npm'
       - name: Install NPM Packages
         run: npm install
       - name: Build Web-Application
