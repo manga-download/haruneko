@@ -10,14 +10,15 @@ type APIResult<T> = {
 };
 
 type APIManga = {
-    slug: string,
-    title: string,
-    chapters: APIChapter[];
+    slug: string;
+    title: string;
 };
 
-type APIChapter = {
-    number: string,
-    slug: string;
+type APIChapters = {
+    chapters: {
+        number: string,
+        slug: string;
+    }[];
 };
 
 type APIPages = {
@@ -31,7 +32,7 @@ function CleanTitle(title: string): string {
 @Common.ImageAjax(true)
 export default class extends DecoratableMangaScraper {
 
-    #token: null | string = null;
+    #token: string = null;
     private readonly api = {
         url: 'https://data.mantweh.online/api/',
         nonce: 'wm-api-request',
@@ -49,7 +50,7 @@ export default class extends DecoratableMangaScraper {
 
     public override async Initialize(): Promise<void> {
         // TODO: Update the token whenever the user performs a login/logout through manual website interaction
-        this.#token = await FetchWindowScript<string>(new Request(this.URI), `localStorage.getItem('access_token') || null;`);
+        this.#token = await FetchWindowScript<string>(new Request(this.URI), `localStorage.getItem('access_token') ?? null;`);
     }
 
     public override ValidateMangaURL(url: string): boolean {
@@ -73,7 +74,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const { data: { chapters } } = await this.FetchAPI<APIManga>(`./comic/${manga.Identifier}`);
+        const { data: { chapters } } = await this.FetchAPI<APIChapters>(`./comic/${manga.Identifier}`);
         return chapters.map(({ slug, number }) => new Chapter(this, manga, slug, number));
     }
 
@@ -87,8 +88,8 @@ export default class extends DecoratableMangaScraper {
         const timestamp = `${Date.now()}`.slice(0, -3);
         return FetchJSON<APIResult<T>>(new Request(url, {
             headers: {
-                ...this.#token && { Authorization: `Bearer ${this.#token}` },
-                Referer: this.URI.href,
+                ...this.#token ? { Authorization: `Bearer ${this.#token}` } : {},
+                'Referer': this.URI.href,
                 'X-Wm-Request-Time': timestamp,
                 'X-Wm-Accses-Key': this.api.accessKey,
                 'X-Wm-Request-Signature': await this.HMAC256(this.api.nonce, timestamp, 'GET', url.pathname, this.api.accessKey, this.api.secretKey)
