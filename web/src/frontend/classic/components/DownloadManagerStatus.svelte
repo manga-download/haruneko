@@ -92,6 +92,11 @@
         [Status.Failed]: 'error',
     };
 
+    async function clearTasks() {
+        await window.HakuNeko.DownloadManager.Dequeue(...downloadTasks);
+        refreshStatus();
+    }
+
     async function deleteTasks(status: Status) {
         await window.HakuNeko.DownloadManager.Dequeue(...downloadTasks.filter(task => task.Status.Value === status));
         refreshStatus();
@@ -126,7 +131,7 @@
                 size="small"
                 icon={TrashCan}
                 iconDescription="Delete all tasks"
-                on:click={() => deleteTasks(null)}
+                on:click={() => clearTasks()}
             />
         </div>
     </Modal>
