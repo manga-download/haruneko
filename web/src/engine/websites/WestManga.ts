@@ -3,7 +3,7 @@ import icon from './WestManga.webp';
 import { Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import { GetBytesFromUTF8, GetHexFromBytes } from '../BufferEncoder';
-import { FetchJSON } from '../platform/FetchProvider';
+import { FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
 
 type APIResult<T> = {
     data: T | null;
@@ -31,6 +31,7 @@ function CleanTitle(title: string): string {
 @Common.ImageAjax(true)
 export default class extends DecoratableMangaScraper {
 
+    #token: null | string = null;
     private readonly api = {
         url: 'https://data.mantweh.online/api/',
         nonce: 'wm-api-request',
@@ -39,11 +40,16 @@ export default class extends DecoratableMangaScraper {
     };
 
     public constructor() {
-        super('westmanga', 'WestManga', 'https://westmanga.cc', Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Language.Indonesian, Tags.Source.Aggregator);
+        super('westmanga', 'WestManga', 'https://v1.westmanga.my', Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Language.Indonesian, Tags.Source.Aggregator);
     }
 
     public override get Icon() {
         return icon;
+    }
+
+    public override async Initialize(): Promise<void> {
+        // TODO: Update the token whenever the user performs a login/logout through manual website interaction
+        this.#token = await FetchWindowScript<string>(new Request(this.URI), `localStorage.getItem('access_token') || null;`);
     }
 
     public override ValidateMangaURL(url: string): boolean {
@@ -81,6 +87,7 @@ export default class extends DecoratableMangaScraper {
         const timestamp = `${Date.now()}`.slice(0, -3);
         return FetchJSON<APIResult<T>>(new Request(url, {
             headers: {
+                ...this.#token && { Authorization: `Bearer ${this.#token}` },
                 Referer: this.URI.href,
                 'X-Wm-Request-Time': timestamp,
                 'X-Wm-Accses-Key': this.api.accessKey,
