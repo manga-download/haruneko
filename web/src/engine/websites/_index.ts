@@ -338,7 +338,6 @@ export { default as MangaFoxFun } from './MangaFoxFun';
 export { default as MangaFreak } from './MangaFreak';
 export { default as MangaFury } from './MangaFury';
 export { default as MangaGeko } from './MangaGeko';
-export { default as MangaGezgini } from './MangaGezgini';
 export { default as MangaGG } from './MangaGG';
 export { default as MangaGo } from './MangaGo';
 export { default as MangaHack } from './MangaHack';
