@@ -64,7 +64,6 @@ import '../MangaDiyari_e2e';
 import '../MangaEclipse_e2e';
 import '../MangaForFree_e2e';
 import '../MangaFury_e2e';
-import '../MangaGezgini_e2e';
 import '../MangaGG_e2e';
 import '../MangaHubFR_e2e';
 import '../MangaKiss_e2e';
