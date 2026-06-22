@@ -61,9 +61,6 @@ export class FetchProvider {
         const result = Object.fromEntries(all.filter(([name]) => !IsConcealed(name)).map(([name, value]) => [name.toLowerCase(), value]));
         const replacements = Object.fromEntries(all.filter(([name]) => IsConcealed(name)).map(([name, value]) => [GetRevealedHeaderName(name), value]));
         replacements.cookie = this.MergeCookies(
-            // TODO: Session cookies are only added for backward-compatibility with Electron desktop clients
-            //       that do not provide session cookies via concealed header in request: `replacements['cookie']`
-            await this.GetSessionCookies({ url: new URL(url).origin, /* partitionKey: {} */ }),
             this.ParseCookiesFromHeader(<string>result.cookie ?? ''),
             this.ParseCookiesFromHeader(<string>replacements.cookie ?? ''),
         );
