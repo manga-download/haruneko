@@ -32,7 +32,6 @@ export default class FetchProviderElectron extends FetchProvider {
         try {
             // TODO: When filter by URL partioned cookies may not be found (e.g., cf_clearance)
             const cookies = await this.ipc.Invoke(Channels.FetchProvider.GetSessionCookies, { url: new URL(request.url).origin, /* partitionKey: {} */ });
-            console.log('Get Cookies via IPC (Renderer)', cookies);
             return super.FetchConcealed(request, cookies);
         } catch {
             return super.FetchConcealed(request, []);
