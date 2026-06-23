@@ -1,9 +1,9 @@
 import { Tags } from '../Tags';
 import icon from './LunarAnimes.webp';
-import { FetchJSON } from '../platform/FetchProvider';
 import { type MangaPlugin, Manga, Chapter, Page, DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import { DRMProvider } from './LunarAnimes.DRM';
+import { AddAntiScrapingDetection, FetchRedirection } from '../platform/AntiScrapingDetection';
 
 type APIMangas = {
     manga: APIManga[];
@@ -36,12 +36,16 @@ const chapterLanguageMap = new Map([
     ['vi', Tags.Language.Vietnamese],
 ]);
 
+AddAntiScrapingDetection(async (invoke) => {
+    const result = await invoke<boolean>(`document.documentElement.innerHTML.includes('Security Check')`);
+    return result ? FetchRedirection.Interactive : undefined;
+}, /https:\/\/(?:www\.)?lunaranime\.ru/);
+
 @Common.MangaCSS<HTMLMetaElement>(/^{origin}\/manga\/[^/]+$/, 'meta[property="og:title"]', (element, uri) => ({ id: uri.pathname.split('/').at(-1), title: element.content.trim() }))
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
-    private readonly apiUrl = 'https://api.lunaranime.ru/api/manga/';
-    readonly #drm = new DRMProvider();
+    readonly #drm = new DRMProvider(this.URI, new URL('https://api.lunaranime.ru/api/manga/'));
 
     public constructor() {
         super('lunaranimes', 'Lunar Animes', 'https://lunaranime.ru', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Multilingual, Tags.Source.Aggregator);
@@ -51,11 +55,15 @@ export default class extends DecoratableMangaScraper {
         return icon;
     }
 
+    public override async Initialize(): Promise<void> {
+        await this.#drm.Initialize();
+    }
+
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
         type This = typeof this;
         return Array.fromAsync(async function* (this: This) {
             for (let page = 1, run = true; run; page++) {
-                const { manga } = await FetchJSON<APIMangas>(new Request(new URL(`./search?page=${page}&limit=100&sort=relevance`, this.apiUrl)));
+                const { manga } = await this.#drm.FetchSigned<APIMangas>(`./search?page=${page}&limit=100&sort=relevance`);
                 const mangas = manga.map(({ slug, title }) => new Manga(this, provider, slug, title));
                 mangas.length > 0 ? yield* mangas : run = false;
             }
@@ -63,10 +71,10 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const { data } = await FetchJSON<APIChapters>(new Request(new URL(`./${manga.Identifier}`, this.apiUrl)));
+        const { data } = await this.#drm.FetchSigned<APIChapters>(`./${manga.Identifier}`);
         return data.map(({ chapter_number: chapterNumber, language }) => {
             return new Chapter(this, manga, `/manga/${manga.Identifier}/${chapterNumber}?lang=${language}`, `Chapter ${chapterNumber} (${language})`,
-                ...chapterLanguageMap.has(language) ? [chapterLanguageMap.get(language)] : []);
+                ...[chapterLanguageMap.get(language)].filter(Boolean));
         });
     }
 
