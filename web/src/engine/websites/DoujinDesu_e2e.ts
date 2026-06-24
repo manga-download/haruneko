@@ -6,17 +6,17 @@ new TestFixture({
         title: 'DoujinDesu',
     },
     container: {
-        url: 'https://doujindesu.tv/manga/hero-villain',
-        id: '/manga/hero-villain',
+        url: 'https://doujin.desu.xxx/manga/hero-villain',
+        id: 'hero-villain',
         title: 'Hero Villain'
     },
     child: {
-        id: '/2022/02/19/hero-villain-chapter-01/',
-        title: 'Chapter 1'
+        id: 'ef012c1e-e81e-4895-9105-fbd83a597f6a',
+        title: 'Chapter 96'
     },
     entry: {
         index: 1,
-        size: 1_115_560,
-        type: 'image/jpeg'
+        size: 57_002,
+        type: 'image/webp'
     }
 }).AssertWebsite();
