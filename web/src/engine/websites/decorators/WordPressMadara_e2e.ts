@@ -122,7 +122,6 @@ import '../PinkSeaUnicorn_e2e';
 import '../PortalYaoi_e2e';
 import '../QManga_e2e';
 import '../RaijinScans_e2e';
-import '../ResetScans_e2e';
 import '../Retsu_e2e';
 import '../RuyaMangaNet_e2e';
 import '../RuyaManga_e2e';
