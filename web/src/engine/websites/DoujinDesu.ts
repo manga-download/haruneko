@@ -5,23 +5,25 @@ import * as Common from './decorators/Common';
 import { FetchJSON } from '../platform/FetchProvider';
 import { GetBytesFromHex, GetBytesFromUTF8 } from '../BufferEncoder';
 
-type APIResult = {
+type APIResult<T> = T & {
     _enc_resp_: string;
 };
 
 type APIManga = {
-    chapters: APIChapter[];
     slug: string;
     title: string;
 };
 
-type APIChapter = {
-    id: string;
-    title: string;
+type APIChapters = {
+    chapters: {
+        id: string;
+        title: string;
+    }[];
 };
 
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
+
     private readonly apiURL = 'https://doujin.desu.xxx/api/';
 
     public constructor() {
@@ -42,11 +44,10 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        const perPage = 500;
         type This = typeof this;
         return Array.fromAsync(async function* (this: This) {
-            for (let offset = 0, run = true; run; offset += perPage) {
-                const data = await this.FetchAPI<APIManga[]>(`./manga?limit=${perPage}&offset=${offset}`);
+            for (let offset = 0, run = true; run; offset += 500) {
+                const data = await this.FetchAPI<APIManga[]>(`./manga?limit=500&offset=${offset}`);
                 const mangas = data.map(({ slug, title }) => new Manga(this, provider, slug, title));
                 mangas.length > 0 ? yield* mangas : run = false;
             }
@@ -54,27 +55,27 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const { chapters } = await this.FetchAPI<APIManga>(`./manga/${manga.Identifier}`);
+        const { chapters } = await this.FetchAPI<APIChapters>(`./manga/${manga.Identifier}`);
         return chapters.map(({ id, title }) => new Chapter(this, manga, id, title.replace(manga.Title, '').trim() || title.trim()));
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
         const { content_urls } = await this.FetchAPI<{ content_urls: string[] }>(`./chapters/${chapter.Identifier}`);
-        return content_urls.map(url => new Page(this, chapter, this.CookUrl(url), { Referer: this.URI.href }));
-    }
-
-    private CookUrl(url: string): URL {
-        return new URL(url.replace(/(?<!\/storage)\/uploads?\//, match => `/storage${match}`));
+        return content_urls.map(url => {
+            const uri = new URL(url, this.URI);
+            if(!uri.pathname.includes('/storage/upload')) uri.pathname = uri.pathname.replace('/upload', '/storage/upload');
+            return new Page(this, chapter, uri, { Referer: this.URI.href });
+        });
     }
 
     private GenerateAPIDecryptionKeys(): string[] {
         const seed = Math.floor(Date.now() / 3_600_000);
         const results: string[] = [];
         for (const value of [seed, seed - 1, seed + 1]) {
-            let t = `doujindesu-scrapers-cannot-read-this-super-secret-salt-2026-v2_${value}`;
+            let key = `doujindesu-scrapers-cannot-read-this-super-secret-salt-2026-v2_${value}`;
             let state = 0;
-            for (let index = 0; index < t.length; index++) {
-                state = (state << 5) - state + t.charCodeAt(index);
+            for (let index = 0; index < key.length; index++) {
+                state = (state << 5) - state + key.charCodeAt(index);
                 state |= 0;
             }
             let result = '';
@@ -108,7 +109,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     private async FetchAPI<T extends JSONElement>(endpoint: string): Promise<T> {
-        const result = await FetchJSON<APIResult & T>(new Request(new URL(endpoint, this.apiURL), {
+        const result = await FetchJSON<APIResult<T>>(new Request(new URL(endpoint, this.apiURL), {
             headers: {
                 'X-App-Secret': 'dfdf72051dbfdc7d76889ebd31324e74'
             }
