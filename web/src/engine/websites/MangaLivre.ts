@@ -2,7 +2,9 @@ import { Tags } from '../Tags';
 import icon from './MangaLivre.webp';
 import { Chapter, DecoratableMangaScraper, Manga, type MangaPlugin, Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { FetchJSON } from '../platform/FetchProvider';
+import { FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
+
+// Nothing will work unless request language is set to pt-BR
 
 type APIManga = {
     id: string;
@@ -26,42 +28,63 @@ type APIPages = {
     pages: string[];
 };
 
-@Common.MangaCSS(/^{origin}\/[^/]+$/, 'head title', (title, uri) => ({ id: uri.pathname.split('/').at(-1), title: title.innerText.trim() }))
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
     private readonly apiURL = `${this.URI.origin}/api/`;
 
     public constructor() {
-        super('mangalivre', 'ToonLivre', 'https://toonlivre.net', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Source.Aggregator, Tags.Language.Portuguese);
+        super('mangalivre', 'ToonLivre', 'https://toonlivre.net', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Source.Aggregator, Tags.Language.Portuguese, Tags.Accessibility.RegionLocked);
     }
 
     public override get Icon() {
         return icon;
     }
 
+    public override async Initialize(): Promise<void> {
+        return FetchWindowScript(new Request(this.URI, {
+            headers: {
+                'Accept-Language': 'pt-BR,en-US;q=0.9,en;q=0.8',
+            }
+        }), '');
+    }
+
+    public override ValidateMangaURL(url: string): boolean {
+        return new RegExpSafe(`^${this.URI.origin}/[^/]+$`).test(url);
+    }
+
+    public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
+        const { id, title } = await this.FetchAPI<APIManga>(`./manga-by-slug/${url.split('/').at(-1)}`);
+        return new Manga(this, provider, id, title);
+    }
+
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
         type This = typeof this;
         return Array.fromAsync(async function* (this: This) {
             for (let page = 1, run = true; run; page++) {
-                const { mangas: entries } = await FetchJSON<APIMangas>(new Request(new URL(`./mangas/releases?limit=9999&page=${page}`, this.apiURL)));
-                const mangas = entries.map(({ id, title }) => new Manga(this, provider, this.Slugify(id), title));
+                const { mangas: entries } = await this.FetchAPI<APIMangas>(`./mangas/releases?limit=9999&page=${page}`);
+                const mangas = entries.map(({ id, title }) => new Manga(this, provider, id, title));
                 mangas.length > 0 ? yield* mangas : run = false;
             }
         }.call(this));
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const { id: slug, chapters } = await FetchJSON<APIChapters>(new Request(new URL(`./manga-by-slug/${manga.Identifier}`, this.apiURL)));
-        return chapters.map(({ id, number, title }) => new Chapter(this, manga, `./mangas/${slug}/chapters/${id}`, ['Capítulo', number, title].joinTitleSegments()));
+        const { id: mangaId, chapters } = await this.FetchAPI<APIChapters>(`./manga-by-slug/${manga.Identifier}`);
+        return chapters.map(({ id, number, title }) => new Chapter(this, manga, `./mangas/${mangaId}/chapters/${id}`, ['Capítulo', number, title].joinTitleSegments()));
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const { pages } = await FetchJSON<APIPages>(new Request(new URL(chapter.Identifier, this.apiURL)));
+        const { pages } = await this.FetchAPI<APIPages>(chapter.Identifier, 'web-x');
         return pages.map(page => new Page(this, chapter, new URL(page, this.URI)));
     }
 
-    private Slugify(title: string): string {
-        return title.toString().toLowerCase().normalize('NFD').replace(new RegExp('\\p{Diacritic}', 'gu'), '').replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+    private async FetchAPI<T extends JSONElement>(endpoint: string, client: string = 'web-z'): Promise<T> {
+        return FetchJSON<T>(new Request(new URL(endpoint, this.apiURL), {
+            headers: {
+                'Accept-Language': 'pt-BR,en-US;q=0.9,en;q=0.8',
+                'X-Toonlivre-Client': client
+            }
+        }));
     }
 }
