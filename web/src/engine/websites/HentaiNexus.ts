@@ -5,7 +5,7 @@ import * as Common from './decorators/Common';
 
 @Common.MangaCSS(/^{origin}\/view\/\d+$/, 'div.column h1.title')
 @Common.MangasMultiPageCSS('div.column > a', Common.PatternLinkGenerator('/page/{page}'))
-@Common.PagesSinglePageJS(`pageData.map(page => page.image);`, 500)
+@Common.PagesSinglePageJS(`pageData.map(({ image, image_fallback  }) => image || image_fallback);`, 500)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
