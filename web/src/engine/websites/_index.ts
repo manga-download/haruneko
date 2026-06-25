@@ -464,6 +464,7 @@ export { default as Migudm } from './Migudm';
 export { default as Mikoroku } from './Mikoroku';
 export { default as MilaSub } from './MilaSub';
 export { default as MilfToon } from './MilfToon';
+export { default as MimiHentai } from './MimiHentai';
 export { default as MindaFanSub } from './MindaFanSub';
 export { default as MiniTwoScan } from './MiniTwoScan';
 export { default as MintManga } from './MintManga';
