@@ -3,20 +3,8 @@ import icon from './MugiwarasOficial.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Madara from './decorators/WordPressMadara';
 import * as Common from './decorators/Common';
+import { pageScript } from './MangasBrasuka';
 import { FetchWindowScript } from '../platform/FetchProvider';
-
-export const pageScript = `
-    new Promise(async (resolve, reject) => {
-        try {
-            const auth = new URL(document.querySelector('div.page-break a').href).searchParams.get('t');
-            const response = await fetch('/campanha.php?auth=' + encodeURIComponent(auth));
-            const body = new DOMParser().parseFromString((await response.text()), 'text/html');
-            resolve([...body.querySelectorAll('div.manga-content img')].map(img => img.src));
-        } catch (error) {
-            reject(error)
-        }
-    })
-`;
 
 @Madara.MangaCSS(/^{origin}\/manga\/[^/]+\/$/, 'ol.breadcrumb li:last-of-type')
 @Madara.MangasMultiPageAJAX()
