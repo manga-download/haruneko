@@ -25,10 +25,31 @@ export abstract class MangaScraper extends MediaScraper<MangaPlugin> {
     }
 
     public abstract ValidateMangaURL(url: string): boolean;
+
     public abstract FetchManga(provider: MangaPlugin, url: string): Promise<Manga>;
+
+    /**
+     * Get the manga list for the given website {@link provider}.
+     * Mangas can be in arbitrary order (usually as provided by the website), the frontend may be responsible for sorting.
+     */
     public abstract FetchMangas(provider: MangaPlugin): Promise<Manga[]>;
+
+    /**
+     * Get the chapters for the given {@link manga}.
+     * Chapters can be in arbitrary order (usually as provided by the website), the frontend may be responsible for sorting.
+     */
     public abstract FetchChapters(manga: Manga): Promise<Chapter[]>;
+
+    /**
+     * Get the pages for the given {@link chapter}.
+     * Pages are guaranteed to be in the correct reading order.
+     */
     public abstract FetchPages(chapter: Chapter): Promise<Page[]>;
+
+    /**
+     * Get the image for the given {@link page}.
+     * The image is provided in the best possible quality as available on the website wihout any post processing (except for scrambled images).
+     */
     public abstract FetchImage(page: Page, priority: Priority, signal: AbortSignal): Promise<Blob>;
 }
 

@@ -50,8 +50,9 @@ export class ComiciViewer extends DecoratableMangaScraper {
 
     protected WithChaptersFromAPI() {
         this.FetchChapters = async (manga: Manga) => {
-            const { series: { episodes } } = await FetchJSON<APIChapters>(new Request(new URL(`./episodes?seriesHash=${manga.Identifier.split('/').at(-1)}&episodeFrom=1&episodeTo=9999`, this.#apiURL)));
-            return episodes.map(({ id, title }) => new Chapter(this, manga, `/episodes/${id}`, title));
+            const [, prefix, seriesHash] = manga.Identifier.match(/^(.*)\/series\/([^/]+)$/)!;
+            const { series: { episodes }, } = await FetchJSON<APIChapters>(new Request(new URL(`./episodes?seriesHash=${seriesHash}&episodeFrom=1&episodeTo=9999`, this.#apiURL)));
+            return episodes.map(({ id, title }) => new Chapter(this, manga, `${prefix}/episodes/${id}`, title));
         };
         return this;
     }
