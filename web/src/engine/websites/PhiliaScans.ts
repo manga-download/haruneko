@@ -74,7 +74,6 @@ type ChapterID = {
 };
 
 // TODO: Major Code Revision
-
 class PRNG {
 
     private nCounter = 0;
@@ -198,7 +197,7 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchImage(page: Page<PageParameters>, priority: Priority, signal: AbortSignal): Promise<Blob> {
         const buffer = await (await this.imageTaskPool.Add(() => Fetch(new Request(page.Link, { headers: { Referer: this.URI.href } })), priority, signal)).arrayBuffer();
-        if (!new RegExpSafe('_s(-sm)\?.webp').test(page.Link.href)) return GetTypedData(buffer);
+        if ( !page.Link.href.includes('_s-sm.webp') && !page.Link.href.includes('_s.webp')) return GetTypedData(buffer);
 
         const { PageIndex, IsScrambled, GridSize, KeyData } = page.Parameters;
         const signKey = await crypto.subtle.importKey('raw', GetBytesFromHex(KeyData), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']);
