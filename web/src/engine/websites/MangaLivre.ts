@@ -28,6 +28,15 @@ type APIPages = {
     pages: string[];
 };
 
+class CustomRequest extends Request {
+    constructor(input: RequestInfo | URL, init?: RequestInit ) {
+        const headers = new Headers(init?.headers);
+        headers.set('Accept-Language', 'pt-BR,en-US;q=0.9,en;q=0.8');
+        headers.set('X-Tly-Sec', 'web-z99');
+        super(input, { ...init, headers });
+    }
+}
+
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
@@ -42,11 +51,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async Initialize(): Promise<void> {
-        return FetchWindowScript(new Request(this.URI, {
-            headers: {
-                'Accept-Language': 'pt-BR,en-US;q=0.9,en;q=0.8',
-            }
-        }), '');
+        return FetchWindowScript(new CustomRequest(this.URI), '');
     }
 
     public override ValidateMangaURL(url: string): boolean {
@@ -75,16 +80,11 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const { pages } = await this.FetchAPI<APIPages>(chapter.Identifier, 'web-x');
+        const { pages } = await this.FetchAPI<APIPages>(chapter.Identifier);
         return pages.map(page => new Page(this, chapter, new URL(page, this.URI)));
     }
 
-    private async FetchAPI<T extends JSONElement>(endpoint: string, client: string = 'web-z'): Promise<T> {
-        return FetchJSON<T>(new Request(new URL(endpoint, this.apiURL), {
-            headers: {
-                'Accept-Language': 'pt-BR,en-US;q=0.9,en;q=0.8',
-                'X-Toonlivre-Client': client
-            }
-        }));
+    private async FetchAPI<T extends JSONElement>(endpoint: string): Promise<T> {
+        return FetchJSON<T>(new CustomRequest(new URL(endpoint, this.apiURL)));
     }
 }
