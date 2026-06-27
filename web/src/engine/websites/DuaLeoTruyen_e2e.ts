@@ -6,7 +6,7 @@ new TestFixture({
         title: 'DuaLeoTruyen'
     },
     container: {
-        url: 'https://dualeotruyenbs.com/truyen-tranh/peppermint-candy',
+        url: 'https://dualeotruyendc.com/truyen-tranh/peppermint-candy',
         id: '/truyen-tranh/peppermint-candy',
         title: '(ABO) Peppermint Candy'
     },
