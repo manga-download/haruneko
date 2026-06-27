@@ -73,7 +73,7 @@ export default class extends DecoratableMangaScraper {
         const scrambleGrid = response.headers.get('X-Scramble-Grid');
         const scrambleSeed = parseInt(response.headers.get('X-Scramble-Seed'), 10);
         const scrambleHash = response.headers.get('X-Scramble-Hash')?.trim();
-        const seed = (scrambleHash === '03632' ? 58414 : 0) ^ scrambleSeed;
+        const seed = (scrambleHash === '03632' ? 58414 : scrambleHash === '02900' ? 117532 : 0) ^ scrambleSeed;
 
         const blob = encodingSeed && encodingLimit ? await this.#DecryptImage(buffer, parseInt(encodingSeed, 10), parseInt(encodingLimit, 10), encodingAlgo) : await Common.GetTypedData(buffer);
         return !scrambleAlgo || !scrambleSeed || !scrambleGrid ? blob : await DeScramble(blob, async (image, ctx) => {
@@ -104,9 +104,7 @@ export default class extends DecoratableMangaScraper {
 
                 ctx.drawImage(image, sx, sy, tileW, tileH, dx, dy, tileW, tileH);
             }
-
         });
-
     }
 
     async #DecryptImage(encrypted: ArrayBuffer, key: number, limit: number, algorithm: string = undefined): Promise<Blob> {
@@ -147,51 +145,37 @@ export default class extends DecoratableMangaScraper {
 
     #BuildOrder(seed: number, n: number): number[] {
         const arr: number[] = Array.from({ length: n }, (_, i) => i);
-
         let state = seed | 1;
-
         for (let i = n - 1; i >= 1; i--) {
             state = state ^ state << 13;
             state = state ^ state >>> 17;
             state = state ^ state << 5;
-
             const j = (state >>> 0) % (i + 1);
-
             const tmp = arr[i];
             arr[i] = arr[j];
             arr[j] = tmp;
         }
-
         const inverse: number[] = new Array(n);
-
         for (let i = 0; i < arr.length; i++) {
             inverse[arr[i]] = i;
         }
-
         return inverse;
     }
 
     #BuildOrderLcg(seed: number, n: number): number[] {
         const arr: number[] = Array.from({ length: n }, (_, i) => i);
-
         let state = seed;
-
         for (let i = n - 1; i >= 1; i--) {
             state = state * 1664525 + 1013904223;
-
             const j = (state >>> 0) % (i + 1);
-
             const tmp = arr[i];
             arr[i] = arr[j];
             arr[j] = tmp;
         }
-
         const inverse: number[] = new Array(n);
-
         for (let i = 0; i < arr.length; i++) {
             inverse[arr[i]] = i;
         }
-
         return inverse;
     }
 }
