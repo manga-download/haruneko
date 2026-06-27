@@ -63,7 +63,8 @@ export default class extends DecoratableMangaScraper {
         const { content_urls } = await this.FetchAPI<{ content_urls: string[] }>(`./chapters/${chapter.Identifier}`);
         return content_urls.map(url => {
             const uri = new URL(url, this.URI);
-            if(!uri.pathname.includes('/storage/upload')) uri.pathname = uri.pathname.replace('/upload', '/storage/upload');
+            if (!uri.pathname.includes('/storage/upload')) uri.pathname = uri.pathname.replace('/upload', '/storage/upload');
+            uri.href = new DOMParser().parseFromString(uri.href, 'text/html').body.textContent.trim();
             return new Page(this, chapter, uri, { Referer: this.URI.href });
         });
     }
