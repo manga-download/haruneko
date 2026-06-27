@@ -86,7 +86,7 @@ class PRNG {
             .then(tilesSig => crypto.subtle.importKey('raw', tilesSig, { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']));
     }
 
-    private async NextRandom(): Promise<number> {
+    async #Next(): Promise<number> {
         if (this.aIndex >= 8) {
             this.rBuf = new Uint8Array(await crypto.subtle.sign('HMAC', await this.mac, GetBytesFromUTF8(`perm:${this.nCounter++}`)));
             this.aIndex = 0;
@@ -101,7 +101,7 @@ class PRNG {
         return value >>> 0;
     }
 
-    async Next(gridSize: number): Promise<number[]> {
+    public async BuildIndexes(gridSize: number): Promise<number[]> {
         this.nCounter = 0;
         this.rBuf = new Uint8Array(0);
         this.aIndex = 8;
@@ -110,7 +110,7 @@ class PRNG {
         const c = Array.from({ length: gridSizeSq }, (_, i) => i);
 
         for (let idx = gridSizeSq - 1; idx >= 1; idx--) {
-            const swapIdx = await this.NextRandom() % (idx + 1);
+            const swapIdx = await this.#Next() % (idx + 1);
             [c[idx], c[swapIdx]] = [c[swapIdx], c[idx]];
         }
 
@@ -213,7 +213,7 @@ export default class extends DecoratableMangaScraper {
             const tileHeight = image.height / GridSize;
             const tileCount = GridSize * GridSize;
 
-            const indexes = new PRNG(signKey, PageIndex).Next(GridSize);
+            const indexes = new PRNG(signKey, PageIndex).BuildIndexes(GridSize);
 
             for (let tileIndex = 0; tileIndex < tileCount; tileIndex++) {
                 const srcIdx = indexes[tileIndex];
