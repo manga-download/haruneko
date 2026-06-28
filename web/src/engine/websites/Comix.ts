@@ -38,7 +38,7 @@ class PRNG {
 
     constructor(init: string, salt: number, algorithm?: string) {
         this.#seed = (this.#inits[init] ?? this.#inits['']) ^ salt;
-        this.#seed = algorithm !== '3' ? this.#seed : GetOdd(this.#seed | 1);
+        this.#seed = algorithm !== '3' ? this.#seed : GetOdd(this.#seed);
         this.#Next = this.#algorithms[algorithm] ?? this.#algorithms[''];
     }
 
