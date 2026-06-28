@@ -142,7 +142,6 @@ import '../TopComicPorno_e2e';
 import '../TopManhuaNet_e2e';
 import '../TopManhua_e2e';
 import '../TortugaCeviri_e2e';
-import '../TraduccionesAmistosas_e2e';
 import '../TritiniaScans_e2e';
 import '../TruyenTranhDammy_e2e';
 import '../TurkceMangaOku_e2e';
