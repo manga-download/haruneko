@@ -1,6 +1,7 @@
 import { Tags } from '../Tags';
 import icon from './AnimeXNovel.webp';
 import { FetchCSS, FetchJSON } from '../platform/FetchProvider';
+import { DecodeEntities } from '../transformers/HtmlEntityTranscoder';
 import { type Manga, Chapter, DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 
@@ -32,16 +33,8 @@ export default class extends DecoratableMangaScraper {
         return posts
             .filter(({ link }) => link != new URL(manga.Identifier, this.URI).href)
             .map(({ title: { rendered }, link }) => {
-                const title = this.DecodeEntities(rendered).trim();
+                const title = DecodeEntities(rendered).trim();
                 return new Chapter(this, manga, new URL(link).pathname, title.replace(manga.Title, '').replace(/\s+–\s+/, '') || title);
             });
     }
-
-    private DecodeEntities = (function () {
-        const element = globalThis?.document?.createElement('textarea');
-        return function (html: string) {
-            element.innerHTML = html;
-            return element.value;
-        };
-    })();
 }
