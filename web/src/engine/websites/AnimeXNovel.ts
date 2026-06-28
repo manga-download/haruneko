@@ -29,13 +29,19 @@ export default class extends DecoratableMangaScraper {
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const mangaId = (await FetchCSS(new Request(new URL(manga.Identifier, this.URI)), 'div#container-capitulos')).at(0).dataset.categoria.trim();
         const posts = await FetchJSON<APIChapter[]>(new Request(new URL(`./wp-json/wp/v2/posts?categories=${mangaId}&orderby=date&order=asc&per_page=5000&page=1`, this.URI)));
-        return posts.filter(({ link }) => link != new URL(manga.Identifier, this.URI).href)
-            .map(({ title: { rendered }, link }) => new Chapter(this, manga, new URL(link).pathname, this.DecodeEntities(rendered).replace(manga.Title, '') || this.DecodeEntities(rendered)));
-
+        return posts
+            .filter(({ link }) => link != new URL(manga.Identifier, this.URI).href)
+            .map(({ title: { rendered }, link }) => {
+                const title = this.DecodeEntities(rendered).trim();
+                return new Chapter(this, manga, new URL(link).pathname, title.replace(manga.Title, '').replace(/\s+–\s+/, '') || title);
+            });
     }
 
-    private DecodeEntities(text: string): string {
-        const doc = new DOMParser().parseFromString(text, "text/html");
-        return doc.documentElement.textContent.trim();
-    }
+    private DecodeEntities = (function () {
+        const element = globalThis?.document?.createElement('textarea');
+        return function (html: string) {
+            element.innerHTML = html;
+            return element.value;
+        };
+    })();
 }
