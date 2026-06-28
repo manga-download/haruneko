@@ -3,7 +3,7 @@ import { TestFixture } from '../../../test/WebsitesFixture';
 new TestFixture({
     plugin: {
         id: 'traduccionesamistosas',
-        title: 'Traducciones Amistosas'
+        title: 'RNCalation'
     },
     container: {
         url: 'https://rncalation.online/comics/entrenador-de-mascotas',
