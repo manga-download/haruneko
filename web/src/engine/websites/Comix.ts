@@ -44,11 +44,17 @@ class PRNG {
 
     readonly #Next: () => number;
 
+    /**
+     * Get the next pseudo random number with `Linear Congruential Generator`.
+     */
     #NextLCG() {
         this.#state = this.#state * 1664525 + 1013904223;
         return this.#state >>> 0;
     }
 
+    /**
+     * Get the next pseudo random number with `XorShift32`.
+     */
     #NextXorShift32() {
         this.#state ^= this.#state << 13;
         this.#state ^= this.#state >>> 17;
@@ -56,6 +62,11 @@ class PRNG {
         return this.#state >>> 0;
     }
 
+    /**
+     * Create a sequence of numbers shuffled by `Fisher-Yates` algorithm.
+     * In addition the sequence is inversed (swapping values with indices).
+     * Uses one of various pre-defined algorithms as the underlying random number generator.
+     */
     public Sequence(count: number) {
         this.#state = this.#seed;
         const indices = [...new Array(Math.max(1, count)).keys()];
