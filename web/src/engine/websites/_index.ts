@@ -691,7 +691,6 @@ export { default as TRWebtoon } from './TRWebtoon';
 export { default as TuhaoManhua } from './TuhaoManhua';
 export { default as TuMangaOnlineHentai } from './TuMangaOnlineHentai';
 export { default as TurkceMangaOku } from './TurkceMangaOku';
-export { default as Turktoon } from './Turktoon';
 export { default as Tuttoanimemanga } from './Tuttoanimemanga';
 export { default as TwentyFourHNovel } from './TwentyFourHNovel';
 export { default as TwoAnimx } from './TwoAnimx';
