@@ -51,6 +51,10 @@ export abstract class MangaScraper extends MediaScraper<MangaPlugin> {
      * The image is provided in the best possible quality as available on the website wihout any post processing (except for scrambled images).
      */
     public abstract FetchImage(page: Page, priority: Priority, signal: AbortSignal): Promise<Blob>;
+
+    /**
+     * Get the URL for the given {@link chapter}.
+     */
     public abstract GetChapterURL(chapter: Chapter): Promise<URL>;
 }
 
