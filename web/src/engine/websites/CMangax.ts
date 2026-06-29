@@ -4,35 +4,26 @@ import { FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
 import { Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 
-type APIMangas = {
-    data: {
-        data: {
-            info: string;
-        }[]
-    }
+type APIResult<T> = {
+    data: T;
 };
 
-type MangaInfo = {
-    id: string;
+type APIMangas = APIResult<{
+    data: APIMedia[];
+}>;
+
+type APIMedia = {
+    info: string;
+};
+
+type APIMediaInfos = {
+    id: number | string;
     name: string;
-};
-
-type APIChapters = {
-    data: {
-        id_chapter: number;
-        info: string;
-    }[]
-};
-
-type ChapterInfo = {
     num: string;
 };
 
-type APIPages = {
-    data: {
-        image: string[];
-    }
-};
+type APIChapters = APIResult<APIMedia[]>;
+type APIPages = APIResult<{ image: string[] }>;
 
 @Common.MangaCSS(/^https:\/\/cmangax\d+.com\/album\/[^/]+-\d+$/, 'h1 p.name', (paragraph, uri) => ({ id: uri.pathname.split('-').at(-1), title: paragraph.innerText.trim() }))
 @Common.ImageAjax(true)
@@ -60,20 +51,18 @@ export default class extends DecoratableMangaScraper {
         return Array.fromAsync(async function* (this: This) {
             for (let page = 1, run = true; run; page++) {
                 const { data: { data } } = await FetchJSON<APIMangas>(new Request(new URL(`./home_album_list?limit=1000&page=${page}`, this.ResourceURL)));
-                const mangas = data.map(item => JSON.parse(item.info) as MangaInfo)
+                const mangas = data.map(({ info }) => <APIMediaInfos>JSON.parse(info))
                     .filter(({ id }) => id)
-                    .map(({ id, name }) => new Manga(this, provider, id, name));
+                    .map(({ id, name }) => new Manga(this, provider, `${id}`, name));
                 mangas.length > 0 ? yield* mangas : run = false;
             }
-
         }.call(this));
-
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const { data } = await FetchJSON<APIChapters>(new Request(new URL(`./chapter_list?limit=9999&album=${manga.Identifier}`, this.ResourceURL)));
-        return data.map(({ id_chapter: id, info }) => {
-            const { num } = JSON.parse(info) as ChapterInfo;
+        return data.map(({ info }) => {
+            const { num, id } = <APIMediaInfos>JSON.parse(info);
             return new Chapter(this, manga, `${id}`, 'Chapter ' + num.trim());
         });
     }
