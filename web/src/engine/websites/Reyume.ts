@@ -10,7 +10,7 @@ export default class extends ZeistManga {
 
     public constructor() {
         super('reyume', 'Reyume', 'https://www.re-yume.my.id', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Indonesian, Tags.Source.Scanlator);
-        this.WithMangaSlugScript(`document.querySelector('div#clwd script').text.match(/run\\(['"](.*)['"]/).at(1)`);
+        this.WithMangaSlugScript(`document.querySelector('div#clwd script').text.match(/run\\(['"]([^'"]+)['"]/).at(1)`);
     }
 
     public override get Icon() {
@@ -21,6 +21,5 @@ export default class extends ZeistManga {
         const [html] = await FetchCSS(new Request(new URL(chapter.Identifier, this.URI)), '#zeist-raw-data');
         return [...new DOMParser().parseFromString(html.textContent, 'text/html').querySelectorAll<HTMLImageElement>('div.separator a img')]
             .map(img => new Page(this, chapter, new URL(PageLinkExtractor(img))));
-
     }
 }
