@@ -193,4 +193,8 @@ export default class extends MangaScraper {
             return Common.FetchImageAjax.call(this, source, priority, signal, false);
         }
     }
+
+    public override async GetChapterURL(chapter: Chapter): Promise<URL> {
+        return new URL(`/chapter/${chapter.Identifier}`, this.URI);
+    }
 }
