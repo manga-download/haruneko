@@ -47,7 +47,7 @@ function MangaExtractor(img: HTMLImageElement, uri: URL) {
 @Common.MangaCSS<HTMLImageElement>(/^{origin}\/series\/[^/]+$/, 'img.object-cover', MangaExtractor)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
-    private readonly apiUrl = 'https://dashboard.olympusxyz.com/api/';
+    private readonly apiUrl = 'https://panel.olympusxyz.com/api/';
 
     public constructor() {
         super('olympusscanlation', 'Olympus Scanlation', 'https://olympusxyz.com', Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Language.Spanish, Tags.Source.Scanlator);
@@ -82,7 +82,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const { slug, type } = JSON.parse(chapter.Parent.Identifier) as APIManga;
+        const { slug, type } = <APIManga>JSON.parse(chapter.Parent.Identifier);
         const { chapter: { pages } } = await FetchJSON<APIPages>(new Request(new URL(`./api/capitulo/${type}-${slug}/${chapter.Identifier}`, this.URI)));
         return pages.map(page => new Page(this, chapter, new URL(page)));
     }

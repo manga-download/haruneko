@@ -18,6 +18,71 @@ type APIMangas = {
     };
 };
 
+const GetOdd = (value: number) => value | 1;
+
+class PRNG {
+
+    #state: number;
+
+    readonly #seed: number;
+    readonly #inits = {
+        '': 0, // Define default/fallback
+        '03632': 58414,
+        '02900': 117532,
+    };
+
+    readonly #algorithms = {
+        '': this.#NextLCG, // Define default/fallback
+        '3': this.#NextXorShift32,
+    };
+
+    constructor(init: string, salt: number, algorithm?: string) {
+        this.#seed = (this.#inits[init] ?? this.#inits['']) ^ salt;
+        this.#seed = algorithm !== '3' ? this.#seed : GetOdd(this.#seed);
+        this.#Next = this.#algorithms[algorithm] ?? this.#algorithms[''];
+    }
+
+    readonly #Next: () => number;
+
+    /**
+     * Get the next pseudo random number with `Linear Congruential Generator`.
+     */
+    #NextLCG() {
+        this.#state = this.#state * 1664525 + 1013904223;
+        return this.#state >>> 0;
+    }
+
+    /**
+     * Get the next pseudo random number with `XorShift32`.
+     */
+    #NextXorShift32() {
+        this.#state ^= this.#state << 13;
+        this.#state ^= this.#state >>> 17;
+        this.#state ^= this.#state << 5;
+        return this.#state >>> 0;
+    }
+
+    /**
+     * Create a sequence of numbers shuffled by `Fisher-Yates` algorithm.
+     * In addition the sequence is inversed (swapping values with indices).
+     * Uses one of various pre-defined algorithms as the underlying random number generator.
+     */
+    public Sequence(count: number) {
+        this.#state = this.#seed;
+        const indices = [...new Array(Math.max(1, count)).keys()];
+        for (let current = indices.length - 1; current > 0; current--) {
+            const randomIndex = this.#Next.call(this) % (current + 1);
+            [indices[current], indices[randomIndex]] = [indices[randomIndex], indices[current]];
+        }
+
+        const inverse: number[] = new Array(count);
+        for (let i = 0; i < indices.length; i++) {
+            inverse[indices[i]] = i;
+        }
+        return inverse;
+    }
+}
+
 @Common.MangaCSS(/^{origin}\/title\/[^/]+$/, 'meta[property="og:title"]')
 export default class extends DecoratableMangaScraper {
 
@@ -68,58 +133,54 @@ export default class extends DecoratableMangaScraper {
         const buffer = await response.arrayBuffer();
         const encodingSeed = response.headers.get('X-Enc-Seed');
         const encodingLimit = response.headers.get('X-Enc-Len');
-        const encodingAlgo = response.headers.get('X-Enc-Algo');
-        const scrambleAlgo = response.headers.get('X-Scramble-Algo');
+        const encodingAlgorithm = response.headers.get('X-Enc-Algo');
+        const blob = encodingSeed && encodingLimit ? await this.#DecryptImage(buffer, parseInt(encodingSeed, 10), parseInt(encodingLimit, 10), encodingAlgorithm) : await Common.GetTypedData(buffer);
+
         const scrambleGrid = response.headers.get('X-Scramble-Grid');
-        const scrambleSeed = response.headers.get('X-Scramble-Seed');
+        const scrambleAlgorithm = response.headers.get('X-Scramble-Algo');
+        const scambleSeedHash = response.headers.get('X-Scramble-Hash')?.trim() || '';
+        const scambleSeedModifier = parseInt(response.headers.get('X-Scramble-Seed'), 10) || 0;
 
-        const blob = encodingSeed && encodingLimit ? await this.#DecryptImage(buffer, parseInt(encodingSeed, 10), parseInt(encodingLimit, 10), encodingAlgo) : await Common.GetTypedData(buffer);
-        return !scrambleAlgo || !scrambleSeed || !scrambleGrid ? blob : await DeScramble(blob, async (image, ctx) => {
-            const GRID_ROWS = parseInt(scrambleGrid.split('x').at(0), 10);
-            const GRID_COLS = parseInt(scrambleGrid.split('x').at(1), 10);
-            const NUM_TILES = GRID_ROWS * GRID_COLS;
-
-            const tileW = Math.floor(image.width / GRID_COLS);
-            const tileH = Math.floor(image.height / GRID_ROWS);
-
-            const scrambleOrder = scrambleAlgo === '3' ? this.#BuildOrder(parseInt(scrambleSeed, 10), NUM_TILES) : this.#BuildOrderLcg(parseInt(scrambleSeed, 10), NUM_TILES);
+        return !scrambleGrid || !scrambleAlgorithm ? blob : await DeScramble(blob, async (image, ctx) => {
+            const gridRowCount = parseInt(scrambleGrid.split('x').at(0), 10);
+            const gridColumnCount = parseInt(scrambleGrid.split('x').at(1), 10);
+            const tileWidth = Math.floor(image.width / gridColumnCount);
+            const tileHeight = Math.floor(image.height / gridRowCount);
+            const scrambleOrder = new PRNG(scambleSeedHash, scambleSeedModifier, scrambleAlgorithm).Sequence(gridRowCount * gridColumnCount);
 
             ctx.drawImage(image, 0, 0);
-            for (let tileIndex = 0; tileIndex < NUM_TILES; tileIndex++) {
-                const srcIdx = scrambleOrder[tileIndex];
-
-                const srcCol = srcIdx % GRID_COLS;
-                const srcRow = Math.floor(srcIdx / GRID_COLS);
-
-                const dstCol = tileIndex % GRID_COLS;
-                const dstRow = Math.floor(tileIndex / GRID_COLS);
-
-                const sx = srcCol * tileW;
-                const sy = srcRow * tileH;
-
-                const dx = dstCol * tileW;
-                const dy = dstRow * tileH;
-
-                ctx.drawImage(image, sx, sy, tileW, tileH, dx, dy, tileW, tileH);
+            for (let dstIndex = 0; dstIndex < scrambleOrder.length; dstIndex++) {
+                const srcIndex = scrambleOrder[dstIndex];
+                const srcColumn = srcIndex % gridColumnCount;
+                const srcRow = Math.floor(srcIndex / gridColumnCount);
+                const dstColumn = dstIndex % gridColumnCount;
+                const dstRow = Math.floor(dstIndex / gridColumnCount);
+                const srcX = srcColumn * tileWidth;
+                const srcY = srcRow * tileHeight;
+                const dstX = dstColumn * tileWidth;
+                const dstY = dstRow * tileHeight;
+                ctx.drawImage(image, srcX, srcY, tileWidth, tileHeight, dstX, dstY, tileWidth, tileHeight);
             }
-
         });
-
     }
 
-    async #DecryptImage(encrypted: ArrayBuffer, key: number, limit: number, algorithm: string = undefined): Promise<Blob> {
-        if (algorithm != '2') return await Common.GetTypedData(this.#DecryptWithLCG(encrypted, key, limit));
-
-        const decoders: Array<() => ArrayBuffer> = [
-            () => this.#DecryptWithPRNG(encrypted, key | 1, limit, false),
-            () => this.#DecryptWithPRNG(encrypted, key, limit, false),
-            () => this.#DecryptWithPRNG(encrypted, key | 1, limit, true),
+    async #DecryptImage(encrypted: ArrayBuffer, key: number, limit: number, _algorithm: string = undefined): Promise<Blob> {
+        // TODO: Derive from algorithm type, is decryption even used ???
+        const decryptions = [
+            () => this.#DecryptWithXorShift32(encrypted, GetOdd(key), limit, true),
+            () => this.#DecryptWithXorShift32(encrypted, key, limit, true),
+            () => this.#DecryptWithXorShift32(encrypted, GetOdd(key), limit, false),
+            () => this.#DecryptWithXorShift32(encrypted, key, limit, false),
+            () => this.#DecryptWithLCG(encrypted, GetOdd(key), limit),
             () => this.#DecryptWithLCG(encrypted, key, limit),
         ];
 
-        for (const decodeFn of decoders) {
-            const blob = await Common.GetTypedData(decodeFn());
-            if (blob.type.startsWith('image/')) return blob;
+        for (const decrypt of decryptions) {
+            const blob = await Common.GetTypedData(decrypt());
+            if (blob.type.startsWith('image/')) {
+                //console.log(this.Title, 'Detected Decryption:', _algorithm, decrypt);
+                return blob;
+            }
         }
     }
 
@@ -132,7 +193,7 @@ export default class extends DecoratableMangaScraper {
         return bytes.buffer;
     }
 
-    #DecryptWithPRNG(encrypted: ArrayBuffer, key: number, limit: number, highByte: boolean): ArrayBuffer {
+    #DecryptWithXorShift32(encrypted: ArrayBuffer, key: number, limit: number, highByte: boolean): ArrayBuffer {
         const bytes = new Uint8Array(encrypted);
         let state = key | 0;
         for (let i = 0; i < Math.min(bytes.length, limit); i++) {
@@ -141,55 +202,5 @@ export default class extends DecoratableMangaScraper {
             bytes[i] = bytes[i] ^ key;
         }
         return bytes.buffer;
-    }
-
-    #BuildOrder(seed: number, n: number): number[] {
-        const arr: number[] = Array.from({ length: n }, (_, i) => i);
-
-        let state = seed | 1;
-
-        for (let i = n - 1; i >= 1; i--) {
-            state = state ^ state << 13;
-            state = state ^ state >>> 17;
-            state = state ^ state << 5;
-
-            const j = (state >>> 0) % (i + 1);
-
-            const tmp = arr[i];
-            arr[i] = arr[j];
-            arr[j] = tmp;
-        }
-
-        const inverse: number[] = new Array(n);
-
-        for (let i = 0; i < arr.length; i++) {
-            inverse[arr[i]] = i;
-        }
-
-        return inverse;
-    }
-
-    #BuildOrderLcg(seed: number, n: number): number[] {
-        const arr: number[] = Array.from({ length: n }, (_, i) => i);
-
-        let state = seed;
-
-        for (let i = n - 1; i >= 1; i--) {
-            state = state * 1664525 + 1013904223;
-
-            const j = (state >>> 0) % (i + 1);
-
-            const tmp = arr[i];
-            arr[i] = arr[j];
-            arr[j] = tmp;
-        }
-
-        const inverse: number[] = new Array(n);
-
-        for (let i = 0; i < arr.length; i++) {
-            inverse[arr[i]] = i;
-        }
-
-        return inverse;
     }
 }
