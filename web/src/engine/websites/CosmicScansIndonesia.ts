@@ -1,19 +1,35 @@
 import { Tags } from '../Tags';
 import icon from './CosmicScansIndonesia.webp';
-import { DecoratableMangaScraper } from '../providers/MangaPlugin';
-import * as MangaStream from './decorators/WordPressMangaStream';
+import { Chapter, DecoratableMangaScraper, Manga, type MangaPlugin, Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { FetchWindowScript } from '../platform/FetchProvider';
+import { FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
 
-@MangaStream.MangaCSS(/^https:\/\/lc\d+\.cosmicscans\.to\/manga\/[^/]+\/$/)
-@MangaStream.MangasSinglePageCSS()
-@MangaStream.ChaptersSinglePageCSS()
-@MangaStream.PagesSinglePageJS([ /800X250\.webp$/, /\.gif$/ ], 'ts_reader.params.sources.shift().images;')
+type APIResult<T> = {
+    data: T;
+    cursor: {
+        nextCursor: string;
+    };
+};
+
+type APIManga = {
+    slug: string;
+    title: string;
+    chapters: {
+        chapterNum: string;
+        slug: string;
+    }[];
+}
+
+type APIPages = APIResult<{ chapters: string[]; }>;
+type APIMangas = APIResult<APIManga[]>;
+
 @Common.ImageAjax(true)
 export default class extends DecoratableMangaScraper {
 
+    private readonly apiURL = 'https://cdncid.csmcscns.id/v1/';
+
     public constructor() {
-        super('cosmicscansid', 'Cosmic Scans Indonesia', 'https://lc2.cosmicscans.to', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Indonesian, Tags.Source.Scanlator, Tags.Accessibility.RegionLocked);
+        super('cosmicscansid', 'Cosmic Scans Indonesia', 'https://01.cosmicscans.to', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Indonesian, Tags.Source.Scanlator, Tags.Accessibility.RegionLocked);
     }
 
     public override get Icon() {
@@ -23,5 +39,37 @@ export default class extends DecoratableMangaScraper {
     public override async Initialize(): Promise<void> {
         this.URI.href = await FetchWindowScript(new Request(this.URI), 'window.location.origin');
         console.log(`Assigned URL '${this.URI}' to ${this.Title}`);
+    }
+
+    public override ValidateMangaURL(url: string): boolean {
+        return new RegExpSafe('^https://\\d+.cosmicscans.to/series/[^/]+/$').test(url);
+    }
+
+    public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
+        const { data: { title, slug } } = await FetchJSON<APIResult<APIManga>>(new Request(new URL(`./manga/mangaDetail/${url.split('/').filter(Boolean).at(-1)}`, this.apiURL)));
+        return new Manga(this, provider, slug, title);
+    }
+
+    public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
+        type This = typeof this;
+        return Array.fromAsync(async function* (this: This) {
+            let cursor: string;
+            for (let run = true; run;) {
+                const { data, cursor: { nextCursor } } = await FetchJSON<APIMangas>(new Request(new URL(`./manga/allComics?limit=100&after=${cursor}`, this.apiURL)));
+                const mangas = data.map(({ title, slug }) => new Manga(this, provider, `/series/${slug}`, title));
+                yield* mangas;
+                nextCursor ? cursor = nextCursor : run = false;
+            }
+        }.call(this));
+    }
+
+    public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
+        const { data: { chapters } } = await FetchJSON<APIResult<APIManga>>(new Request(new URL(`./manga/mangaDetail/${manga.Identifier}`, this.apiURL)));
+        return chapters.map(({ slug, chapterNum }) => new Chapter(this, manga, slug, `Chapter ${chapterNum}`));
+    }
+
+    public override async FetchPages(chapter: Chapter): Promise<Page[]> {
+        const { data: { chapters } } = await FetchJSON<APIPages>(new Request(new URL(`./manga/readingPage/${chapter.Identifier}`, this.apiURL)));
+        return [...new DOMParser().parseFromString(chapters.join(''), 'text/html').querySelectorAll('img')].map(img => new Page(this, chapter, new URL(img.src, this.URI)));
     }
 }
