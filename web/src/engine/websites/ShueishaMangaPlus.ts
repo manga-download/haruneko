@@ -7,6 +7,7 @@ import { FetchProto, FetchWindowScript } from '../platform/FetchProvider';
 import type { Priority } from '../taskpool/DeferredTask';
 import { GetBytesFromHex } from '../BufferEncoder';
 import { GetTypedData } from './decorators/Common';
+import { XOR } from './Crypto';
 
 type MangaPlusResponse = {
     success: {
@@ -94,8 +95,7 @@ export default class extends DecoratableMangaScraper {
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
         const titleId = url.match(/\/titles\/(\d+)/).at(1);
         const { success: { titleDetailView: { title: { name, language } } } } = await this.FetchAPI<MangaPlusResponse>(`./title_detailV3?title_id=${titleId}`, protoTypes, 'MangaPlus.Response');
-        const title = `${name} ${this.GetLanguage(language)}`;
-        return new Manga(this, provider, titleId, title);
+        return new Manga(this, provider, titleId, `${name} ${this.GetLanguage(language)}`);
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
@@ -133,11 +133,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     private async DecryptImage(blob: Blob, key: string): Promise<Blob> {
-        const bytes = new Uint8Array(await blob.arrayBuffer());
-        const xorkey = new Uint8Array(GetBytesFromHex(key));
-        for (let n = 0; n < bytes.length; n++)
-            bytes[n] = bytes[n] ^ xorkey[n % xorkey.length];
-        return GetTypedData(bytes.buffer);
+        return GetTypedData(XOR(new Uint8Array(await blob.arrayBuffer()), new Uint8Array(GetBytesFromHex(key))).buffer);
     }
 
     private async FetchAPI<T extends JSONElement>(endpoint: string, schema: string, message: string): Promise<T> {
