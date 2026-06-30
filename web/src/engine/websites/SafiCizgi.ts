@@ -1,6 +1,6 @@
 import { Tags } from '../Tags';
 import icon from './SafiCizgi.webp';
-import { Fetch, FetchJSON, FetchNextJS } from '../platform/FetchProvider';
+import { Fetch, FetchJSON, FetchNextJS, FetchWindowScript } from '../platform/FetchProvider';
 import { type MangaPlugin, Manga, Chapter, Page, DecoratableMangaScraper } from '../providers/MangaPlugin';
 import { type Priority } from '../taskpool/TaskPool';
 import { GetBytesFromBase64, GetBytesFromUTF8, GetUTF8FromBytes } from '../BufferEncoder';
@@ -18,18 +18,19 @@ type APIMangas = APICollection<{
     title_turkish: string;
 }>;
 
-type APIChapters = APICollection<{
-    id: string;
-    number: number;
-    title: string;
-}>;
+type HydratedChapters = {
+    chapters: {
+        id: string;
+        number: number;
+        title: string;
+    }[];
+};
 
-type HydradedPages = {
-    hourlySalt: string;
-    viewerToken: string;
-    chapter: {
-        pages: string[];
-    };
+type APIPages = {
+    images: {
+        index: number;
+        url: string;
+    }[];
 };
 
 type MediaID = {
@@ -38,7 +39,7 @@ type MediaID = {
 };
 
 type PageData = {
-    Salt: string;
+    index: number;
 };
 
 type DescramblingData = {
@@ -80,35 +81,49 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const { id: mangaID } = <MediaID>JSON.parse(manga.Identifier);
-        const filter = encodeURIComponent(`manga_id = "${mangaID}"`);
-        const { items } = await FetchJSON<APIChapters>(new Request(new URL(`./pb/api/collections/chapters/records?page=1&perPage=1000&filter=${filter}`, this.apiURL)));
-        return items.map(({ id, number, title }) => new Chapter(this, manga, JSON.stringify({ slug: `${number}`, id }), ['Bölüm', number, title].joinTitleSegments()));
+        const { slug: mangaSlug } = <MediaID>JSON.parse(manga.Identifier);
+        const { chapters } = await FetchNextJS<HydratedChapters>(new Request(new URL(`./seri/${mangaSlug}`, this.URI)), data => 'chapters' in data && !!data['chapters']);
+        return chapters.map(({ id, number, title }) => new Chapter(this, manga, JSON.stringify({ slug: `${number}`, id }), ['Bölüm', number, title].joinTitleSegments()));
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page<PageData>[]> {
         const { id: chapterID, slug: chapterSlug } = <MediaID>JSON.parse(chapter.Identifier);
         const { slug: mangaSlug } = <MediaID>JSON.parse(chapter.Parent.Identifier);
 
-        //const { pages } = await FetchJSON<APIChapter>(new Request(new URL(`./pb/api/collections/chapters/records/${chapterID}`, this.apiUrl)));
+        const script = `
+            new Promise(async (resolve, reject) => {
+                try {
+                    const response = await fetch('/api/reader/manifest/${chapterID}?from=0&count=9999&machine=0');
+                    const data = await response.json();
+                    resolve(data);
+                } catch(error) {
+                    reject(error);
+                }
+            });
+        `;
 
-        const { hourlySalt, viewerToken, chapter: { pages } } = await FetchNextJS<HydradedPages>(new Request(new URL(`/oku/${mangaSlug}/${chapterSlug}`, this.URI)), data => 'viewerToken' in data);
-        const salt = hourlySalt.substring(0, 8);
-        return pages.map(page => new Page<PageData>(this, chapter, new URL(`./v/${chapterID}/${salt}/${page}?token=${encodeURIComponent(viewerToken)}`, this.apiURL), { Salt: salt }));
+        const { images } = await FetchWindowScript<APIPages>(new Request(new URL(`/oku/${mangaSlug}/${chapterSlug}`, this.apiURL)), script, 2500);
+        return images.map(({ url, index }) => new Page(this, chapter, new URL(url, this.URI), { index }));
     }
 
     public override async FetchImage(page: Page<PageData>, priority: Priority, signal: AbortSignal): Promise<Blob> {
         return this.imageTaskPool.Add(async () => {
 
-            const hash = await this.GetXorKey(page.Parameters.Salt, decodeURIComponent(page.Link.pathname.split('/').at(-1)));
+            await this.SendHeartBeat((<MediaID>JSON.parse(page.Parent.Identifier)).id, page.Parameters.index);
             const response = await Fetch(new Request(page.Link, {
                 headers: {
                     Referer: this.URI.href
                 }
             }));
-            const encrypted = GetBytesFromBase64(response.headers.get('X-Safi-Armor'));
+            const armor = response.headers.get('X-Safi-Armor');
+            if (!armor) return response.blob();
+
+            const salt = page.Link.href.match(/\/api\/v\/[^/]+\/([^/]+)/).at(1);
+            const encrypted = GetBytesFromBase64(armor);
+            const hash = await this.GetXorKey(salt, decodeURIComponent(page.Link.pathname.split('/').at(-1)));
+
             const decrypted = GetUTF8FromBytes(this.XOR(encrypted, hash));
-            const { s, r, c: numCols, h: numRows, a: scrambleChoice, ow, oh }: DescramblingData = JSON.parse(decrypted);
+            const { s, r, c: numCols, h: numRows, a: scrambleChoice, ow, oh } = <DescramblingData>JSON.parse(decrypted);
             const blob = await GetTypedData(this.XOR(new Uint8Array(await response.arrayBuffer()), hash).buffer);
 
             // TODO: Extract to PRNG class
@@ -196,6 +211,30 @@ export default class extends DecoratableMangaScraper {
                 }
             });
         }, priority, signal);
+    }
+
+    private async SendHeartBeat(chapterId: string, pageIndex: number): Promise<void> {
+        await FetchJSON(new Request(new URL('./reader/heartbeat', this.apiURL), {
+            method: 'POST',
+            credentials: 'same-origin',
+            cache: 'no-store',
+            body: JSON.stringify({
+                chapterId,
+                pageIndex,
+                visibleFrom: 0, // FIX
+                visibleTo: 0, // FIX
+                scrollY: 50000, // FIX
+                viewportHeight: 500, // FIX
+                documentHeight: 50000, // FIX
+                focused: true
+            }),
+            headers: {
+                'Content-Type': 'application/json',
+                Origin: this.URI.origin,
+                Referer: this.URI.href,
+                'Sec-Fetch-Site': 'same-origin'
+            }
+        }));
     }
 
     private XOR(data: Uint8Array, key: Uint8Array | string): Uint8Array<ArrayBuffer> {
