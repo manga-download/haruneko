@@ -8,40 +8,34 @@ import { Exception } from '../Error';
 import { WebsiteResourceKey as R } from '../../i18n/ILocale';
 import { GetBytesFromHex } from '../BufferEncoder';
 
-type APIVolumes = {
-    results: {
-        data: APIVolume[];
-    }
+type APIResult<T> = {
+    results: T;
 };
 
-type APIMangas = {
-    results: {
-        comics: APIComic[];
-    }
-};
+type APIVolumes = APIResult<{
+    data: {
+        hash_id: string;
+        name: string;
+        chapters: {
+            hash_id: string;
+            name: string;
+        }[];
+    }[];
+}>;
+
+type APIMangas = APIResult<{
+    comics: {
+        id: string;
+        name: string;
+    }[];
+}>;
 
 type APIPages = {
-    results: APIPage[]
-};
-
-type APIComic = {
-    id: string;
-    name: string;
-};
-
-type APIChapter = {
-    hash_id: string;
-    name: string;
-};
-
-type APIVolume = {
-    hash_id: string;
-    name: string;
-    chapters: APIChapter[];
-};
-
-type APIPage = {
-    image_path: string;
+    results: {
+        image_paths: {
+            image_path: string;
+        }[];
+    }
 };
 
 type ChapterID = {
@@ -49,9 +43,9 @@ type ChapterID = {
     id: string;
 };
 
-@Common.MangaCSS(/^{origin}\/comic\/[^/]+$/, 'title', (element: HTMLTitleElement, uri) => ({ id: uri.pathname, title: element.textContent.split('｜').at(0).trim() }))
+@Common.MangaCSS<HTMLTimeElement>(/^{origin}\/comic\/[^/]+$/, 'title', (element, uri) => ({ id: uri.pathname, title: element.textContent.split('｜').at(0).trim() }))
 export default class extends DecoratableMangaScraper {
-    private readonly apiUrl = 'https://lezhin.jp/api/';
+    private readonly apiURL = 'https://lezhin.jp/api/';
 
     public constructor() {
         super('lezhin-ja', 'Lezhin (Japanese)', 'https://lezhin.jp', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Japanese, Tags.Source.Official);
@@ -101,22 +95,22 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const { id, type }: ChapterID = JSON.parse(chapter.Identifier);
+        const { id, type } = <ChapterID>JSON.parse(chapter.Identifier);
         try {
-            const { results } = await this.FetchAPI<APIPages>(`.${chapter.Parent.Identifier}/${type}/${id}/viewer`);
-            return results.map(({ image_path: path }) => new Page(this, chapter, new URL(path)));
+            const { results: { image_paths } } = await this.FetchAPI<APIPages>(`.${chapter.Parent.Identifier}/${type}/${id}/viewer`);
+            return image_paths.map(({ image_path: path }) => new Page(this, chapter, new URL(path)));
         } catch { // in case of chapter unavailable error 400 is thrown :/
             throw new Exception(R.Plugin_Common_Chapter_UnavailableError);
         }
     }
 
-    public override async FetchImage(page: Page<APIPage>, priority: Priority, signal: AbortSignal): Promise<Blob> {
+    public override async FetchImage(page: Page<APIPages>, priority: Priority, signal: AbortSignal): Promise<Blob> {
         const blob = await Common.FetchImageAjax.call(this, page, priority, signal);
         return this.DecryptImage(blob);
     }
 
     private async FetchAPI<T extends JSONElement>(endpoint: string): Promise<T> {
-        return FetchJSON<T>(new Request(new URL(endpoint, this.apiUrl)));
+        return FetchJSON<T>(new Request(new URL(endpoint, this.apiURL)));
     }
 
     private async DecryptImage(blob: Blob): Promise<Blob> {
