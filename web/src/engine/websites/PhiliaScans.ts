@@ -8,6 +8,7 @@ import DeScramble from '../transformers/ImageDescrambler';
 import { GetTypedData } from './decorators/Common';
 import { Exception } from '../Error';
 import { WebsiteResourceKey as R } from '../../i18n/ILocale';
+import { XOR } from './Crypto';
 
 type APIResult<T> = {
     items: T[];
@@ -175,7 +176,7 @@ export default class extends DecoratableMangaScraper {
             const token = (await this.FetchAPI<APIToken>(`./reader/access-token`, undefined, 'POST')).token;
             const { payloadA, sessionId } = await this.FetchAPI<APIOpenResponse>(`./chapters/${chapterId}/open`, token, 'POST');
             const { payloadB } = await this.FetchAPI<APIDrmResponse>(`./chapters/${chapterId}/get-drm?session=${sessionId}`, token);
-            if (payloadA && payloadB) keyData = new Uint8Array(this.XOR(GetBytesFromBase64(payloadA), GetBytesFromBase64(payloadB)));
+            if (payloadA && payloadB) keyData = new Uint8Array(XOR(GetBytesFromBase64(payloadA), GetBytesFromBase64(payloadB)));
         }
 
         return pages.map(({ url }, index) => new Page<PageParameters>(this, chapter, new URL(url, this.URI), {
@@ -252,16 +253,11 @@ export default class extends DecoratableMangaScraper {
                 break;
             }
             case 'XOR': {
-                imageData = this.XOR(await this.ComputeXorKey(signKey, pageIndex, encrypted.byteLength), encrypted).buffer;
+                imageData = XOR(await this.ComputeXorKey(signKey, pageIndex, encrypted.byteLength), encrypted).buffer;
                 break;
             }
         }
         return GetTypedData(imageData);
-    }
-
-    // XOR
-    private XOR(source: Uint8Array, key: Uint8Array): Uint8Array<ArrayBuffer> {
-        return source.map((byte, index) => byte ^ key[index]);
     }
 
     private async ComputeXorKey(key: CryptoKey, pageIndex: number, length: number): Promise<Uint8Array<ArrayBuffer>> {
