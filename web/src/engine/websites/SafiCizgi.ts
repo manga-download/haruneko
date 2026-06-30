@@ -6,6 +6,8 @@ import { type Priority } from '../taskpool/TaskPool';
 import { GetBytesFromBase64, GetBytesFromUTF8, GetUTF8FromBytes } from '../BufferEncoder';
 import { GetTypedData } from './decorators/Common';
 import DeScramble from '../transformers/ImageDescrambler';
+import { RateLimit } from '../taskpool/RateLimit';
+import { RandomInt } from '../Random';
 
 type APICollection<T> = {
     items: T[];
@@ -31,6 +33,7 @@ type APIPages = {
         index: number;
         url: string;
     }[];
+    heartbeatIntervalMs: number;
 };
 
 type MediaID = {
@@ -52,12 +55,19 @@ type DescramblingData = {
     oh: number; // JSON_imageHeight
 };
 
+type HeartBeat = {
+    interval: number;
+    lastTime: number;
+};
+
 export default class extends DecoratableMangaScraper {
+    private readonly heartbeats = new Map<string, HeartBeat>();
 
     private readonly apiURL = 'https://saficizgi.com/api/';
 
     public constructor() {
         super('saficizgi', 'Safi Çizgi', 'https://saficizgi.com', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Turkish, Tags.Source.Aggregator, Tags.Accessibility.RegionLocked);
+        this.imageTaskPool.RateLimit = new RateLimit(4, 2);
     }
 
     public override get Icon() {
@@ -91,7 +101,7 @@ export default class extends DecoratableMangaScraper {
         const { slug: mangaSlug } = <MediaID>JSON.parse(chapter.Parent.Identifier);
 
         //fetch in browser because of anti bot
-        const { images } = await FetchWindowScript<APIPages>(new Request(new URL(`/oku/${mangaSlug}/${chapterSlug}`, this.apiURL)), `
+        const { images, heartbeatIntervalMs } = await FetchWindowScript<APIPages>(new Request(new URL(`/oku/${mangaSlug}/${chapterSlug}`, this.apiURL)), `
             new Promise(async (resolve, reject) => {
                 try {
                     const response = await fetch('/api/reader/manifest/${chapterID}?from=0&count=9999&machine=0');
@@ -102,13 +112,23 @@ export default class extends DecoratableMangaScraper {
                 }
             });
         `, 2500);
+
+        this.heartbeats.set(chapterID, { interval: heartbeatIntervalMs, lastTime: Date.now() });
         return images.map(({ url, index }) => new Page(this, chapter, new URL(url, this.URI), { index }));
     }
 
     public override async FetchImage(page: Page<PageData>, priority: Priority, signal: AbortSignal): Promise<Blob> {
         return this.imageTaskPool.Add(async () => {
 
-            await this.SendHeartBeat((<MediaID>JSON.parse(page.Parent.Identifier)).id, page.Parameters.index);
+            const { id: chapterId } = <MediaID>JSON.parse(page.Parent.Identifier);
+            if (this.heartbeats.get(chapterId)) {
+                const { interval, lastTime } = this.heartbeats.get(chapterId);
+                if (Date.now() > interval + lastTime) {
+                    await this.SendHeartBeat(chapterId, page.Parameters.index);
+                    this.heartbeats.get(chapterId).lastTime = Date.now();
+                }
+            }
+
             const response = await Fetch(new Request(page.Link, {
                 headers: {
                     Referer: this.URI.href
@@ -222,9 +242,9 @@ export default class extends DecoratableMangaScraper {
                 pageIndex,
                 visibleFrom: 0, // FIX
                 visibleTo: 0, // FIX
-                scrollY: 50000, // FIX
-                viewportHeight: 500, // FIX
-                documentHeight: 50000, // FIX
+                scrollY: pageIndex + 1 * RandomInt(10000, 60000),
+                viewportHeight: (pageIndex + 1) * RandomInt(10000, 60000) + RandomInt(100, 200),
+                documentHeight: (pageIndex + 1) * RandomInt(10000, 60000) + RandomInt(100, 200),
                 focused: true
             }),
             headers: {
