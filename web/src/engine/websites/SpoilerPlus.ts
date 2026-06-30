@@ -5,6 +5,8 @@ import { type Chapter, DecoratableMangaScraper, Page } from '../providers/MangaP
 import DeScramble from '../transformers/ImageDescrambler';
 import type { Priority } from '../taskpool/DeferredTask';
 import * as Common from './decorators/Common';
+import { XOR } from './Crypto';
+import { GetBytesFromHex, GetBytesFromUTF8, GetUTF8FromBytes } from '../BufferEncoder';
 
 type ChapterCryptedData = {
     c: string; //SCRAMBLEDATA
@@ -13,23 +15,23 @@ type ChapterCryptedData = {
 };
 
 type PageData = {
-    ScrambleArray: number[],
+    ScrambleArray: number[];
 };
 
 type TDimension = {
-    height: number,
+    height: number;
     width: number;
 };
 
 type TPiece = {
-    height: number,
-    left: number,
-    top: number,
+    height: number;
+    left: number;
+    top: number;
     width: number;
 };
 
 type TPuzzleData = {
-    from: TPiece,
+    from: TPiece;
     to: TPiece;
 };
 
@@ -86,35 +88,17 @@ export default class extends DecoratableMangaScraper {
         }));
     }
 
-    private Decrypt(encrypted: string, key: string = this.URI.host): string {
-        const xor = key.split('').map(char => char.charCodeAt(0));
-        return encrypted.match(/.{1,2}/g)
-            .map(hex => {
-                let byte = parseInt(hex, 16);
-                xor.forEach(x => byte ^= x);
-                return String.fromCharCode(byte);
-            }).join('');
+    private Decrypt(encrypted: string, keyData: string = this.URI.host): string {
+        const key = Uint8Array.of(GetBytesFromUTF8(keyData).reduce((acc, b) => acc ^ b, 0));
+        return GetUTF8FromBytes(XOR(GetBytesFromHex(encrypted), key));
     }
 
     public override async FetchImage(page: Page<PageData>, priority: Priority, signal: AbortSignal): Promise<Blob> {
         const blob = await Common.FetchImageAjax.call(this, page, priority, signal);
         const { ScrambleArray } = page.Parameters;
-        return !ScrambleArray ? blob: DeScramble(blob, async (image, ctx) => {
-            function COMPUTEPIECES(skey: number[], image: ImageBitmap): TPuzzleData[] {
-                const numColAndRow = 4;
-                const dimensions: TDimension = {
-                    width: image.width,
-                    height: image.height,
-                };
-                return skey.map((pieceindex, index) => {
-                    return {
-                        from: COMPUTEPIECE(dimensions, numColAndRow, index),
-                        to: COMPUTEPIECE(dimensions, numColAndRow, pieceindex),
-                    };
-                });
-            }
+        return !ScrambleArray ? blob : DeScramble(blob, async (image, ctx) => {
 
-            const scrambleData = COMPUTEPIECES(ScrambleArray, image);
+            const scrambleData = this.ComputePieces(ScrambleArray, image);
             scrambleData.forEach(piece => {
                 let source = piece.from,
                     dest = piece.to;
@@ -124,25 +108,60 @@ export default class extends DecoratableMangaScraper {
             });
         });
     }
-}
 
-function COMPUTEPIECE(dimensions: TDimension, numColAndRow: number, pieceindex: number): TPiece {
-    let c, d, e, f, g, h, i, k, l, m, n, o, p, q, r, s, t, numpieces;
-    numpieces = numColAndRow * numColAndRow;
-    return pieceindex < numpieces ? (o = numColAndRow, p = pieceindex, q = (n = dimensions).width, r = n.height, s = Math.floor(q / o), t = Math.floor(r / o), {
-        left: p % o * s,
-        top: Math.floor(p / o) * t,
-        width: s,
-        height: t,
-    }) : pieceindex === numpieces ? (i = numColAndRow, k = (h = dimensions).width, l = h.height, 0 == (m = k % i) ? null : {
-        left: k - m,
-        top: 0,
-        width: m,
-        height: l,
-    }) : (d = numColAndRow, e = (c = dimensions).width, 0 == (g = (f = c.height) % d) ? null : {
-        left: 0,
-        top: f - g,
-        width: e - e % d,
-        height: g,
-    });
+    private ComputePieces(skey: number[], image: ImageBitmap): TPuzzleData[] {
+        const numColAndRow = 4;
+        const dimensions: TDimension = {
+            width: image.width,
+            height: image.height,
+        };
+        return skey.map((pieceindex, index) => {
+            return {
+                from: this.ComputePiece(dimensions, numColAndRow, index),
+                to: this.ComputePiece(dimensions, numColAndRow, pieceindex),
+            };
+        });
+    }
+
+    private ComputePiece(dimensions: TDimension, numColAndRow: number, pieceIndex: number): TPiece {
+        const { width, height } = dimensions;
+        const totalGridPieces = numColAndRow * numColAndRow;
+        const pieceWidth = Math.floor(width / numColAndRow);
+        const pieceHeight = Math.floor(height / numColAndRow);
+
+        if (pieceIndex < totalGridPieces) {
+            const column = pieceIndex % numColAndRow;
+            const row = Math.floor(pieceIndex / numColAndRow);
+            return {
+                left: column * pieceWidth,
+                top: row * pieceHeight,
+                width: pieceWidth,
+                height: pieceHeight,
+            };
+        }
+
+        if (pieceIndex === totalGridPieces) {
+            const remainingWidth = width % numColAndRow;
+            if (remainingWidth === 0) {
+                return null;
+            }
+            return {
+                left: width - remainingWidth,
+                top: 0,
+                width: remainingWidth,
+                height,
+            };
+        }
+
+        const remainingHeight = height % numColAndRow;
+        if (remainingHeight === 0) {
+            return null;
+        }
+        return {
+            left: 0,
+            top: height - remainingHeight,
+            width: width - width % numColAndRow,
+            height: remainingHeight,
+        };
+    }
 }
