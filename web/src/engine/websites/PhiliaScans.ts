@@ -102,7 +102,7 @@ class PRNG {
         return value >>> 0;
     }
 
-    public async BuildIndexes(gridSize: number): Promise<number[]> {
+    public async Sequence(gridSize: number): Promise<number[]> {
         this.nCounter = 0;
         this.rBuf = new Uint8Array(0);
         this.aIndex = 8;
@@ -214,7 +214,7 @@ export default class extends DecoratableMangaScraper {
             const tileHeight = image.height / GridSize;
             const tileCount = GridSize * GridSize;
 
-            const indexes = new PRNG(signKey, PageIndex).BuildIndexes(GridSize);
+            const indexes = new PRNG(signKey, PageIndex).Sequence(GridSize);
 
             for (let tileIndex = 0; tileIndex < tileCount; tileIndex++) {
                 const srcIdx = indexes[tileIndex];
