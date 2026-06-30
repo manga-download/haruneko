@@ -90,7 +90,8 @@ export default class extends DecoratableMangaScraper {
         const { id: chapterID, slug: chapterSlug } = <MediaID>JSON.parse(chapter.Identifier);
         const { slug: mangaSlug } = <MediaID>JSON.parse(chapter.Parent.Identifier);
 
-        const script = `
+        //fetch in browser because of anti bot
+        const { images } = await FetchWindowScript<APIPages>(new Request(new URL(`/oku/${mangaSlug}/${chapterSlug}`, this.apiURL)), `
             new Promise(async (resolve, reject) => {
                 try {
                     const response = await fetch('/api/reader/manifest/${chapterID}?from=0&count=9999&machine=0');
@@ -100,9 +101,7 @@ export default class extends DecoratableMangaScraper {
                     reject(error);
                 }
             });
-        `;
-
-        const { images } = await FetchWindowScript<APIPages>(new Request(new URL(`/oku/${mangaSlug}/${chapterSlug}`, this.apiURL)), script, 2500);
+        `, 2500);
         return images.map(({ url, index }) => new Page(this, chapter, new URL(url, this.URI), { index }));
     }
 
