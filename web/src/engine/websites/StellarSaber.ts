@@ -13,7 +13,7 @@ type JSONChapter = {
     title: string;
 };
 
-type ChapterData = {
+type PagesData = {
     images: string[];
     nonce: string;
     chapterId: number;
@@ -54,7 +54,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page<KeyData>[]> {
-        const { nonce, images, chapterId } = await FetchWindowScript<ChapterData>(new Request(new URL(chapter.Identifier, this.URI)), `
+        const { nonce, images, chapterId } = await FetchWindowScript<PagesData>(new Request(new URL(chapter.Identifier, this.URI)), `
             new Promise( resolve => {
                 const images = [...document.querySelectorAll('img[data-cdn-url]')].map(el=> el.dataset.cdnUrl);
                 resolve( { images, nonce : flavorReaderData.cdnNonce, chapterId : flavorReaderData.chapterId });
