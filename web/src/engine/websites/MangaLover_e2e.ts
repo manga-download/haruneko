@@ -6,7 +6,7 @@ new TestFixture({
         title: '3asq (مانجا العاشق)'
     },
     container: {
-        url: 'https://3asq.org/manga/shinobi-goto/',
+        url: 'https://3asq.pro/manga/shinobi-goto/',
         id: JSON.stringify({ post: '18972', slug: '/manga/shinobi-goto/' }),
         title: 'Shinobi Goto'
     },
