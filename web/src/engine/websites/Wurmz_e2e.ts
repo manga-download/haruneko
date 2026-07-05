@@ -11,8 +11,8 @@ new TestFixture({
         title: `I've Been Raised By Villains`
     },
     child: {
-        id: '/todays-han-yoil-is-a-woman-chapter-01/',
-        title: 'Ch. 1'
+        id: '/detail/manhwa/aku-dibesarkan-oleh-penjahat/chapter/1',
+        title: 'Chapter 1'
     },
     entry: {
         index: 0,
