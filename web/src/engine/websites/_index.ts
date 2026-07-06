@@ -637,7 +637,6 @@ export { default as SoulScans } from './SoulScans';
 export { default as SpoilerPlus } from './SpoilerPlus';
 export { default as StarlightScan } from './StarlightScan';
 export { default as StellarSaber } from './StellarSaber';
-export { default as StickHorse } from './StickHorse';
 export { default as StoneScape } from './StoneScape';
 export { default as StrayFansub } from './StrayFansub';
 export { default as Summertoon } from './Summertoon';
