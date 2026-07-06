@@ -5,7 +5,7 @@ import * as Madara from './decorators/WordPressMadara';
 import * as Common from './decorators/Common';
 
 @Madara.MangaCSS(/^{origin}\/manga\/[^/]+\/$/, 'div.post-title h1')
-@Madara.MangasMultiPageAJAX()
+@Madara.MangasMultiPageCSS('div.post-title h3 a:not([target])', 0, '/manga/page/{page}/')
 @Madara.ChaptersSinglePageAJAXv2()
 @Madara.PagesSinglePageCSS()
 @Common.ImageAjax()
