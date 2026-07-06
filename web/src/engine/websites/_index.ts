@@ -428,8 +428,6 @@ export { default as Mangazure } from './Mangazure';
 export { default as ManHastro } from './ManHastro';
 export { default as ManHatic } from './ManHatic';
 export { default as ManhuaBuddy } from './ManhuaBuddy';
-export { default as ManhuaFast } from './ManhuaFast';
-export { default as ManhuaFastNet } from './ManhuaFastNet';
 export { default as ManHuaGui } from './ManHuaGui';
 export { default as ManhuaHot } from './ManhuaHot';
 export { default as ManhuaNext } from './ManhuaNext';
