@@ -1,21 +1,10 @@
 import { Tags } from '../Tags';
 import icon from './SpoilerPlus.webp';
-import { type Chapter, DecoratableMangaScraper, Page } from '../providers/MangaPlugin';
-import * as Common from './decorators/Common';
 import { FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
-import type { Priority } from '../taskpool/DeferredTask';
+import { type Chapter, DecoratableMangaScraper, Page } from '../providers/MangaPlugin';
 import DeScramble from '../transformers/ImageDescrambler';
-
-const pageScript = `
-    new Promise (resolve =>{
-        resolve ({ mangaId: window.MangaId, chapterId : window.CNumber});
-    });
-`;
-
-type ChapterData = {
-    mangaId: number;
-    chapterId: number;
-};
+import type { Priority } from '../taskpool/DeferredTask';
+import * as Common from './decorators/Common';
 
 type ChapterCryptedData = {
     c: string; //SCRAMBLEDATA
@@ -24,7 +13,7 @@ type ChapterCryptedData = {
 };
 
 type PageData = {
-    scrambleArray: number[],
+    ScrambleArray: number[],
 };
 
 type TDimension = {
@@ -67,10 +56,12 @@ export function MangaInfoExtractor(anchor: HTMLAnchorElement) {
 @Common.ChaptersSinglePageCSS('div.list-chapter ul li a')
 export default class extends DecoratableMangaScraper {
 
-    private readonly queryPages: string = '';
-
-    public constructor(id = 'spoilerplus', label = 'SpoilerPlus', url = 'https://spoilerplus.tv', tags = [Tags.Media.Manga, Tags.Language.Japanese, Tags.Source.Aggregator, Tags.Accessibility.RegionLocked]) {
-        super(id, label, url, ...tags);
+    public constructor(...args: [] | ConstructorParameters<typeof DecoratableMangaScraper>) {
+        if (args.length) {
+            super(...args as ConstructorParameters<typeof DecoratableMangaScraper>);
+        } else {
+            super('spoilerplus', 'SpoilerPlus', 'https://spoilerplus.tv', Tags.Media.Manga, Tags.Language.Japanese, Tags.Source.Aggregator, Tags.Accessibility.RegionLocked);
+        }
     }
 
     public override get Icon() {
@@ -78,43 +69,37 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page<PageData>[]> {
-        const { mangaId, chapterId } = await FetchWindowScript<ChapterData>(new Request(new URL(chapter.Identifier, this.URI)), pageScript, 500);
-        const { c, d, e } = await FetchJSON<ChapterCryptedData>(new Request(new URL('./api/v1/get/c', this.URI), {
+        const body = await FetchWindowScript(new Request(new URL(chapter.Identifier, this.URI)), `({ m: window.MangaId, n: window.CNumber });`, 500);
+        const { c: encryptedScrambleData, d: encryptedImageBaseURL, e: images } = await FetchJSON<ChapterCryptedData>(new Request(new URL('./api/v1/get/c', this.URI), {
             method: 'POST',
             headers: {
-                Accept: 'application/json, text/plain, */*',
-                'Content-Type': 'application/json'
+                'Accept': 'application/json, text/plain, */*',
+                'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ m: mangaId, n: chapterId })
+            body: JSON.stringify(body),
         }));
 
-        const CDN = this.XOR(this.URI.host, d);
-        const scrambleArray = c ? this.XOR(this.URI.host, c).split(',').map(Number) : undefined;
-        return e.map(image => new Page<PageData>(this, chapter, new URL(CDN + image), { Referer: this.URI.origin, scrambleArray }));
+        const decryptedScrambleData = encryptedScrambleData ? this.Decrypt(encryptedScrambleData).split(',').map(Number) : undefined;
+        return images.map(image => new Page<PageData>(this, chapter, new URL(this.Decrypt(encryptedImageBaseURL) + image), {
+            Referer: this.URI.origin,
+            ScrambleArray: decryptedScrambleData,
+        }));
     }
 
-    private XOR(key: string, value: string): string {
-        const toByteArray = a => {
-            return a.split('').map(letter => {
-                return letter.charCodeAt(0);
-            });
-        };
-        const xorIt = a => {
-            return toByteArray(key).reduce((a, b) => {
-                return a ^ b;
-            }, a);
-        };
-        return value.match(/.{1,2}/g).map(a => {
-            return parseInt(a, 16);
-        }).map(xorIt).map(a => {
-            return String.fromCharCode(a);
-        }).join('');
+    private Decrypt(encrypted: string, key: string = this.URI.host): string {
+        const xor = key.split('').map(char => char.charCodeAt(0));
+        return encrypted.match(/.{1,2}/g)
+            .map(hex => {
+                let byte = parseInt(hex, 16);
+                xor.forEach(x => byte ^= x);
+                return String.fromCharCode(byte);
+            }).join('');
     }
 
     public override async FetchImage(page: Page<PageData>, priority: Priority, signal: AbortSignal): Promise<Blob> {
         const blob = await Common.FetchImageAjax.call(this, page, priority, signal);
-        const { scrambleArray } = page.Parameters;
-        return !scrambleArray ? blob: DeScramble(blob, async (image, ctx) => {
+        const { ScrambleArray } = page.Parameters;
+        return !ScrambleArray ? blob: DeScramble(blob, async (image, ctx) => {
             function COMPUTEPIECES(skey: number[], image: ImageBitmap): TPuzzleData[] {
                 const numColAndRow = 4;
                 const dimensions: TDimension = {
@@ -129,7 +114,7 @@ export default class extends DecoratableMangaScraper {
                 });
             }
 
-            const scrambleData = COMPUTEPIECES(scrambleArray, image);
+            const scrambleData = COMPUTEPIECES(ScrambleArray, image);
             scrambleData.forEach(piece => {
                 let source = piece.from,
                     dest = piece.to;

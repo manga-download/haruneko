@@ -30,7 +30,7 @@ jobs:
         with:
           node-version: 22.13.x
       - name: Install NPM Packages
-        run: npm install
+        run: npm run npm:clean-install
       - name: Code Inspection
         run: npm run check
       - name: Unit & Component Tests
