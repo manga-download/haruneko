@@ -6,7 +6,7 @@ new TestFixture({
         title: 'Opiatoon (Opia&Shipperland)'
     },
     container: {
-        url: 'https://opiatoon.pics/manga/lit-a-light/',
+        url: 'https://opiatoon.shop/manga/lit-a-light/',
         id: JSON.stringify({ post: '20752', slug: '/manga/lit-a-light/' }),
         title: 'Lit a Light'
     },

@@ -11,8 +11,12 @@ import { FetchWindowScript } from '../platform/FetchProvider';
 @Common.ImageAjax(true)
 export default class extends DecoratableMangaScraper {
 
-    public constructor(id = 'mangasbrasuka', label = 'Mangas Brasuka', url = 'https://mangasbrasuka.com.br', tags = [Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Media.Manga, Tags.Language.Portuguese, Tags.Source.Scanlator, Tags.Accessibility.RegionLocked]) {
-        super(id, label, url, ...tags);
+    public constructor(...args: [] | ConstructorParameters<typeof DecoratableMangaScraper>) {
+        if (args.length) {
+            super(...args as ConstructorParameters<typeof DecoratableMangaScraper>);
+        } else {
+            super('mangasbrasuka', 'Mangas Brasuka', 'https://mangasbrasuka.com.br', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Media.Manga, Tags.Language.Portuguese, Tags.Source.Scanlator, Tags.Accessibility.RegionLocked);
+        }
     }
 
     public override get Icon() {

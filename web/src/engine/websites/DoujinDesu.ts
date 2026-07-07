@@ -1,9 +1,10 @@
 import { Tags } from '../Tags';
 import icon from './DoujinDesu.webp';
-import { Chapter, DecoratableMangaScraper, Manga, type MangaPlugin, Page } from '../providers/MangaPlugin';
-import * as Common from './decorators/Common';
 import { FetchJSON } from '../platform/FetchProvider';
 import { GetBytesFromHex, GetBytesFromUTF8 } from '../BufferEncoder';
+import { DecodeEntities } from '../transformers/HtmlEntityTranscoder';
+import { Chapter, DecoratableMangaScraper, Manga, type MangaPlugin, Page } from '../providers/MangaPlugin';
+import * as Common from './decorators/Common';
 
 type APIResult<T> = T & {
     _enc_resp_: string;
@@ -62,9 +63,8 @@ export default class extends DecoratableMangaScraper {
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
         const { content_urls } = await this.FetchAPI<{ content_urls: string[] }>(`./chapters/${chapter.Identifier}`);
         return content_urls.map(url => {
-            const uri = new URL(url, this.URI);
+            const uri = new URL(DecodeEntities(url), this.URI);
             if (!uri.pathname.includes('/storage/upload')) uri.pathname = uri.pathname.replace('/upload', '/storage/upload');
-            uri.href = new DOMParser().parseFromString(uri.href, 'text/html').body.textContent.trim();
             return new Page(this, chapter, uri, { Referer: this.URI.href });
         });
     }
