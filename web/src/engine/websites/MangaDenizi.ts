@@ -85,7 +85,7 @@ class PRNG {
      * Create a sequence of numbers shuffled by `Fisher-Yates` algorithm.
      * Uses `XorShift32` algorithm as the underlying random number generator.
      */
-    public Next(count: number) {
+    public Sequence(count: number) {
         this.#state = this.#seed;
         const indices = [...new Array(Math.max(1, count)).keys()];
         for (let current = indices.length - 1; current > 0; current--) {
@@ -178,8 +178,8 @@ export default class extends DecoratableMangaScraper {
         const gridSize = Math.max(1, Math.min(Math.floor(grid) || 1, canvasWidth, canvasHeight));
         const columnRegions = SplitDimensionIntoRegions(canvasWidth, gridSize);
         const rowRegions = SplitDimensionIntoRegions(canvasHeight, gridSize);
-        const shuffledColumns = new PRNG(init, 0x85EBCA6B).Next(gridSize);
-        const shuffledRows = new PRNG(init, 0X9E3779B9).Next(gridSize);
+        const shuffledColumns = new PRNG(init, 0x85EBCA6B).Sequence(gridSize);
+        const shuffledRows = new PRNG(init, 0X9E3779B9).Sequence(gridSize);
 
         ctx.clearRect(0, 0, canvasWidth, canvasHeight);
 

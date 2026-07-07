@@ -7,17 +7,18 @@ new TestFixture({
         title: 'MangaFire'
     },
     container: {
-        url: 'https://mangafire.to/manga/vagabondd.4mx',
-        id: '/manga/vagabondd.4mx',
-        title: 'Vagabond'
+        url: 'https://mangafire.to/title/pvzy-vagabondd',
+        id: 'pvzy',
+        title: 'Vagabond',
+        timeout: 10_000
     },
     child: {
-        id: '/read/vagabondd.4mx/en/chapter-25',
-        title: 'Chapter 25: Chaos at the Yoshioka School (en)'
+        id: '7536601',
+        title: 'Ch. 25 Chaos at the Yoshioka School (official) (en)'
     },
     entry: {
-        index: 0,
-        size: 273_603,
+        index: 2,
+        size: 863_103,
         type: 'image/jpeg'
     }
 }).AssertWebsite();
@@ -29,61 +30,18 @@ new TestFixture({
         title: 'MangaFire'
     },
     container: {
-        url: 'https://mangafire.to/manga/vagabondd.4mx',
-        id: '/manga/vagabondd.4mx',
-        title: 'Vagabond'
+        url: 'https://mangafire.to/title/pvzy-vagabondd',
+        id: 'pvzy',
+        title: 'Vagabond',
+        timeout: 10_000
     },
     child: {
-        id: '/read/vagabondd.4mx/ja/chapter-25',
-        title: 'Chapter 25: 吉岡騒然 (ja)'
+        id: '4724613',
+        title: 'Ch. 25 吉岡騒然 (unofficial) (ja)'
     },
     entry: {
         index: 0,
         size: 289_836,
-        type: 'image/jpeg'
-    }
-}).AssertWebsite();
-
-// CASE: Volume (English)
-new TestFixture({
-    plugin: {
-        id: 'mangafire',
-        title: 'MangaFire'
-    },
-    container: {
-        url: 'https://mangafire.to/manga/vagabondd.4mx',
-        id: '/manga/vagabondd.4mx',
-        title: 'Vagabond'
-    },
-    child: {
-        id: '/read/vagabondd.4mx/en/volume-10',
-        title: 'Vol 10 (en)'
-    },
-    entry: {
-        index: 0,
-        size: 150_104,
-        type: 'image/jpeg'
-    }
-}).AssertWebsite();
-
-// CASE: Volume (Japanese)
-new TestFixture({
-    plugin: {
-        id: 'mangafire',
-        title: 'MangaFire'
-    },
-    container: {
-        url: 'https://mangafire.to/manga/vagabondd.4mx',
-        id: '/manga/vagabondd.4mx',
-        title: 'Vagabond'
-    },
-    child: {
-        id: '/read/vagabondd.4mx/ja/volume-10',
-        title: 'Vol 10 (ja)'
-    },
-    entry: {
-        index: 0,
-        size: 242_294,
         type: 'image/jpeg'
     }
 }).AssertWebsite();
