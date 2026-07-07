@@ -4,7 +4,7 @@ new TestFixture({
     plugin: {
         id: 'dongmanmanhua',
         title: '咚漫 (DongMan Manhua)',
-        timeout: 60_000
+        timeout: 30_000
     },
     container: {
         url: 'https://www.dongmanmanhua.cn/FANTASY/dark-moon-the-blood-altar/list?title_no=1970',
