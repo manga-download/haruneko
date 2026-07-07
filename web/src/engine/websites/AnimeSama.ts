@@ -9,7 +9,7 @@ function pageScript(chapterIndex: number) {
     return `new Array(dataOeuvre[${chapterIndex}]).fill(0).map((_, index) => 's2/scans/' + nomOeuvre + '/${chapterIndex}/' + (index+1) + '.jpg' )`;
 }
 
-@Common.MangaCSS(/^{origin}\/catalogue\/[^/]+\/$/, 'h4#titreOeuvre')
+@Common.MangaCSS<HTMLImageElement>(/^{origin}\/catalogue\/[^/]+\/$/, 'img#coverOeuvre', (img, uri) => ({ id: uri.pathname, title: img.alt.trim() }))
 @Common.MangasMultiPageCSS<HTMLAnchorElement>('div#list_catalog div.card-base a', Common.PatternLinkGenerator('/catalogue/?type[0]=Scans&search=&page={page}'), 0,
     anchor => ({
         id: anchor.pathname.endsWith('/') ? anchor.pathname : anchor.pathname + '/', //website search result sometimes misses trailing '/'

@@ -23,6 +23,7 @@ const patterns = [
     '*://*.adskeeper.co.uk/*',
     '*://*.adskeeper.com/*',
     '*://*.arc.io/*',
+    '*://*.bayokagrote.com/*',
     '*://*.bidgear.com/*',
     '*://*.chatango.com/*',
     '*://*.clokemidriff.com/*',
