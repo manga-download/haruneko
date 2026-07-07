@@ -1,24 +1,22 @@
-﻿import { Tags } from '../Tags';
+﻿import { Chapter, type Manga } from '../providers/MangaPlugin';
+import { Tags } from '../Tags';
 import icon from './GodaComic.webp';
-import { DecoratableMangaScraper, type Manga, type Chapter } from '../providers/MangaPlugin';
-import * as Common from './decorators/Common';
-import { FetchChapters } from './GodaManhua';
+import { GodaBase } from './templates/GodaBase';
+import { FetchCSS } from '../platform/FetchProvider';
 
-@Common.MangaCSS(/^{origin}\/manga\/[^/]+$/, 'nav ol li:last-of-type a')
-@Common.MangasMultiPageCSS('div.cardlist a', Common.PatternLinkGenerator('/manga/page/{page}'))
-@Common.PagesSinglePageCSS('div#chapcontent img[data-src]')
-@Common.ImageAjax()
-export default class extends DecoratableMangaScraper {
+export default class extends GodaBase {
 
     public constructor() {
         super('godacomic', 'GodaComic', 'https://manhuascans.org', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.English, Tags.Source.Aggregator);
     }
 
-    public override get Icon() {
-        return icon;
+    public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
+        const mangaId = (await FetchCSS(new Request(new URL(manga.Identifier, this.URI)), '#mangachapters')).at(0).dataset.mid;
+        const anchors = await FetchCSS<HTMLAnchorElement>(new Request(new URL(`./manga/get?mid=${mangaId}&mode=all`, this.apiURL)), 'div.chapteritem a');
+        return anchors.map(({ dataset, pathname }) => new Chapter(this, manga, pathname, dataset.ct.replace(manga.Title, '').trim() || dataset.ct.trim()));
     }
 
-    public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        return FetchChapters.call(this, manga, '/chapter/getcontent?');
+    public override get Icon() {
+        return icon;
     }
 }

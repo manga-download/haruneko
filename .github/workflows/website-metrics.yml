@@ -22,7 +22,7 @@ jobs:
         with:
           node-version: 22.13.x
       - name: Install NPM Packages
-        run: npm install
+        run: npm run npm:clean-install
       - name: Process Websites
         run: npx --yes vitest run --config=web/scripts/website-metrics.vitest.ts
       - name: Upload Metrics (JSON)

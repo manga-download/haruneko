@@ -11,12 +11,12 @@ new TestFixture({
         title: 'How I Became King by Eating Monsters'
     },
     child: {
-        id: 'chapter-01',
+        id: JSON.stringify({ slug: 'chapter-01', id: '10905' }),
         title: 'Ch.1'
     },
     entry: {
         index: 1,
-        size: 1_210_233,
-        type: 'image/png'
+        size: 174_298,
+        type: 'image/webp'
     }
 }).AssertWebsite();
