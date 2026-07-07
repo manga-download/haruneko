@@ -1,16 +1,31 @@
 import { Tags } from '../Tags';
 import icon from './MangaFire.webp';
 import { FetchJSON } from '../platform/FetchProvider';
-import type { Priority } from '../taskpool/DeferredTask';
-import { DecoratableMangaScraper, type Manga, Chapter, Page } from '../providers/MangaPlugin';
+import { DecoratableMangaScraper, Manga, Chapter, Page, type MangaPlugin } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import DeScramble from '../transformers/ImageDescrambler';
 
-import { DRMProvider } from './MangaFire.DRM.js';
-
-type PageParameters = {
-    ScramblingOffset?: number;
+type APIResults<T> = {
+    items: T[];
 };
+
+type APIManga = {
+    hid: string;
+    title: string;
+};
+
+type APIChapter = {
+    id: number;
+    number: number;
+    name: string;
+    language: string;
+    type: string;
+    pages: {
+        url: string;
+    }[];
+};
+
+type APIMangas = APIResults<APIManga>;
+type APIChapters = APIResults<APIChapter>;
 
 const chapterLanguageMap = new Map([
     ['en', Tags.Language.English],
@@ -21,11 +36,10 @@ const chapterLanguageMap = new Map([
     ['pt-br', Tags.Language.Portuguese]
 ]);
 
-@Common.MangaCSS(/^{origin}\/manga\/[^/]+$/, 'div.info h1[itemprop="name"]', (head, uri) => ({ id: uri.pathname, title: head.innerText.trim() }))
-@Common.MangasMultiPageCSS<HTMLAnchorElement>('div.info > a', Common.PatternLinkGenerator('/az-list?page={page}'), 250, anchor => ({ id: anchor.pathname.split('.').at(-1), title: anchor.text.trim() }))
+@Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
-    #drm = new DRMProvider();
+    private readonly apiURL = `${this.URI.origin}/api/`;
 
     public constructor() {
         super('mangafire', 'MangaFire', 'https://mangafire.to', Tags.Language.English, Tags.Language.French, Tags.Language.Japanese, Tags.Language.Portuguese, Tags.Language.Spanish, Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Source.Aggregator);
@@ -35,29 +49,38 @@ export default class extends DecoratableMangaScraper {
         return icon;
     }
 
-    public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const parser = new DOMParser();
-        const id = manga.Identifier.split('.').at(-1);
-        return Array.fromAsync(async function* () {
-            for (const type of ['chapter', 'volume']) {
-                for (const language of ['en', 'es', 'es-la', 'fr', 'ja', 'pt-br']) {
-                    const uri = new URL(`/ajax/manga/${id}/${type}/${language}`, this.URI);
-                    const { result } = await FetchJSON<{ result: string }>(new Request(uri));
-                    const entries = [...parser.parseFromString(result, 'text/html').documentElement.querySelectorAll<HTMLSpanElement>('.item[data-number] > a > span:first-of-type')];
-                    yield* entries.map(span => new Chapter(this, manga, span.closest('a').pathname, `${span.innerText.trim()} (${language})`, ...[chapterLanguageMap.get(language)].filter(Boolean)));
-                }
+    public override ValidateMangaURL(url: string): boolean {
+        return new RegExpSafe(`^${this.URI.origin}/title/[^/]+$`).test(url);
+    }
+
+    public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
+        type This = typeof this;
+        return Array.fromAsync(async function* (this: This) {
+            for (let page = 1, run = true; run; page++) {
+                const { items } = await FetchJSON<APIMangas>(new Request(new URL(`./titles?page=${page}&limit=100`, this.apiURL)));
+                const mangas = items.map(({ hid, title }) => new Manga(this, provider, hid, title));
+                mangas.length > 0 ? yield* mangas : run = false;
             }
         }.call(this));
     }
 
-    public override async FetchPages(chapter: Chapter): Promise<Page<PageParameters>[]> {
-        const uri = new URL(chapter.Identifier, this.URI);
-        const images = await this.#drm.CreateImageLinks(uri);
-        return images.map(([link, _, offset]) => new Page(this, chapter, new URL(link), { Referer: uri.href, ScramblingOffset: offset }));
+    public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
+        const { data: { hid, title } } = await FetchJSON<{ data: APIManga }>(new Request(new URL(`./titles/${url.match(/\/title\/([^-]+)/).at(1)}`, this.apiURL)));
+        return new Manga(this, provider, hid, title);
     }
 
-    public override async FetchImage(page: Page<PageParameters>, priority: Priority, signal: AbortSignal): Promise<Blob> {
-        const blob = await Common.FetchImageAjax.call(this, page, priority, signal);
-        return page.Parameters.ScramblingOffset ? DeScramble(blob, (source, target) => this.#drm.DescrambleImage(page.Parameters.ScramblingOffset, source, target)) : blob;
+    public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
+        return Array.fromAsync(async function* () {
+            for (let page = 1, run = true; run; page++) {
+                const { items } = await FetchJSON<APIChapters>(new Request(new URL(`./titles/${manga.Identifier}/chapters?sort=number&order=desc&page=${page}&limit=200`, this.apiURL)));
+                const chapters = items.map(({ id, language, name, number, type }) => new Chapter(this, manga, `${id}`, [`Ch. ${number}`, name, `(${type})`, `(${language})`].joinTitleSegments(), ...[chapterLanguageMap.get(language)].filter(Boolean)));
+                chapters.length > 0 ? yield* chapters : run = false ;
+            }
+        }.call(this));
+    }
+
+    public override async FetchPages(chapter: Chapter): Promise<Page[]> {
+        const { data: { pages } } = await FetchJSON<{ data: APIChapter }>(new Request(new URL(`./chapters/${chapter.Identifier}`, this.apiURL)));
+        return pages.map(({ url }) => new Page(this, chapter, new URL(url), { Referer: this.URI.href }));
     }
 }

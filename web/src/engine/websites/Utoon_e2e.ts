@@ -7,7 +7,7 @@ new TestFixture({
     },
     container: {
         url: 'https://utoon.net/manga/absolute-martial-arts/',
-        id: JSON.stringify({ post: '3404', slug: '/manga/absolute-martial-arts/'}),
+        id: JSON.stringify({ slug: '/manga/absolute-martial-arts/'}),
         title: 'Absolute Martial Arts',
     },
     child: {
