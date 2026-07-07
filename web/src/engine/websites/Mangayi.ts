@@ -19,7 +19,7 @@ type APIMangas = {
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('mangayi', 'Mangayi', 'https://mangayi.com', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.English, Tags.Source.Scanlator);
+        super('mangayi', 'Mangayi', 'https://mangayi.com', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.English, Tags.Source.Aggregator);
     }
 
     public override get Icon() {
