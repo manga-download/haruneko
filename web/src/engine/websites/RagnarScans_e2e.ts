@@ -6,13 +6,13 @@ new TestFixture({
         title: 'Ragnar Scans',
     },
     container: {
-        url: 'https://ragnarscans.com/manga/deli-iblisin-donusu/',
+        url: 'https://ragnarscans.net/manga/deli-iblisin-donusu/',
         id: '/manga/deli-iblisin-donusu/',
         title: 'Deli İblisin Dönüşü',
     },
     child: {
         id: '/manga/deli-iblisin-donusu/bolum-1/',
-        title: 'Bölüm 1:  Bölüm 1',
+        title: 'Bölüm 1',
     },
     entry: {
         index: 2,

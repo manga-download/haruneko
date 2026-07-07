@@ -6,17 +6,17 @@ new TestFixture({
         title: 'Kaze Scans',
     },
     container: {
-        url: 'https://www.kazescans.com/2026/01/chronicles-of-demon-faction.html',
-        id: '/2026/01/chronicles-of-demon-faction.html',
-        title: 'Chronicles of the Demon Faction',
+        url: 'https://www.kazescans.com/2026/01/return-of-apocalypse-class-death-knight.html',
+        id: '/2026/01/return-of-apocalypse-class-death-knight.html',
+        title: 'Return of the Apocalypse-Class Death Knight',
     },
     child: {
-        id: '/2026/01/chronicles-of-demon-faction-bolum-91.html',
-        title: 'Bölüm 91',
+        id: '/2026/01/blog-post.html',
+        title: 'Bölüm 1',
     },
     entry: {
         index: 0,
-        size: 1_058_394,
+        size: 210_934,
         type: 'image/jpeg'
     }
 }).AssertWebsite();
