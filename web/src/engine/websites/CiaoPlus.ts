@@ -132,11 +132,17 @@ class DRMProvider {
 @Common.MangasNotSupported()
 export default class extends DecoratableMangaScraper {
 
-    protected readonly drm = new DRMProvider();
-    readonly #alphabets = new Map<number, string>();
+    protected readonly drm: DRMProvider;
+    private readonly alphabets: Map<number, string>;
 
-    public constructor(id = 'ciaoplus', label = 'Ciao Plus', url = 'https://ciao.shogakukan.co.jp', tags = [Tags.Media.Manga, Tags.Language.Japanese, Tags.Source.Official]) {
-        super(id, label, url, ...tags);
+    public constructor(...args: [] | ConstructorParameters<typeof DecoratableMangaScraper>) {
+        if (args.length) {
+            super(...args as ConstructorParameters<typeof DecoratableMangaScraper>);
+        } else {
+            super('ciaoplus', 'Ciao Plus', 'https://ciao.shogakukan.co.jp', Tags.Media.Manga, Tags.Language.Japanese, Tags.Source.Official);
+        }
+        this.drm = new DRMProvider();
+        this.alphabets = new Map<number, string>();
     }
 
     public override get Icon() {
@@ -144,11 +150,11 @@ export default class extends DecoratableMangaScraper {
     }
 
     public WithAlphabet(residual: number, alphabet: string) {
-        this.#alphabets.set(residual, alphabet);
+        this.alphabets.set(residual, alphabet);
         return this;
     }
 
-    async #FetchMangaInfo(mangaID: string): Promise<APIManga> {
+    private async FetchMangaInfo(mangaID: string): Promise<APIManga> {
         return this.drm.FetchAPI<APIManga>('./title/list', {
             title_id_list: parseInt(mangaID, 10).toString()
         });
@@ -159,12 +165,12 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
-        const { title_list: [{ title_id, title_name }] } = await this.#FetchMangaInfo(new URL(url).pathname.split('/').at(3));
+        const { title_list: [{ title_id, title_name }] } = await this.FetchMangaInfo(new URL(url).pathname.split('/').at(3));
         return new Manga(this, provider, `${title_id}`, title_name.trim());
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const { title_list: [{ episode_id_list }] } = await this.#FetchMangaInfo(manga.Identifier);
+        const { title_list: [{ episode_id_list }] } = await this.FetchMangaInfo(manga.Identifier);
         return this.FetchChapterList(manga, episode_id_list);
     }
 
@@ -219,7 +225,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     private ComputeSeed32(seed: string, titleId: number, episodeId: number): number {
-        const alphabet = this.#alphabets.get(titleId % 2);
+        const alphabet = this.alphabets.get(titleId % 2);
         let parsedInt = 0n;
         for (const char of seed) {
             const index = alphabet.indexOf(char);

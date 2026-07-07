@@ -18,7 +18,7 @@ type APIChapters = {
 };
 
 type APIPages = {
-    viewerData: {
+    viewer_data: {
         imageDownloadData: {
             files: {
                 secureUrl: string;
@@ -57,7 +57,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const { viewerData: { imageDownloadData: { files } } } = await FetchJSON<APIPages>(new Request(new URL(`./v1/viewer/data?series_id=${chapter.Parent.Identifier}&product_id=${chapter.Identifier}`, this.apiUrl)));
+        const { viewer_data: { imageDownloadData: { files } } } = await FetchJSON<APIPages>(new Request(new URL(`./v1/viewer/data?series_id=${chapter.Parent.Identifier}&product_id=${chapter.Identifier}`, this.apiUrl)));
         return files.map(({ secureUrl }) => new Page(this, chapter, new URL(secureUrl)));
     }
 }

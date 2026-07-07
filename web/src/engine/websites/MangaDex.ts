@@ -128,12 +128,12 @@ export default class extends MangaScraper {
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         type This = typeof this;
-        return Array.fromAsync(async function* (this: This) {
+        return (await Array.fromAsync(async function* (this: This) {
             for (let page = 0, run = true; run; page++) {
                 const chapters = await this.chaptersTaskPool.Add(() => this.FetchChaptersFromPage(manga, page), Priority.Normal);
                 chapters.length > 0 ? yield* chapters : run = false;
             }
-        }.call(this));
+        }.call(this))).reverse();
     }
 
     private async FetchChaptersFromPage(manga: Manga, page: number) {

@@ -23,7 +23,7 @@ jobs:
         with:
           node-version: 22.13.x
       - name: Install NPM Packages
-        run: npm install
+        run: npm run npm:clean-install
       - name: Build Web-Application
         run: npm run build --workspace=web
       - name: Deploy App to CloudFlare
