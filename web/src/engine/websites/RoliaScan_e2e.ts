@@ -11,7 +11,7 @@ new TestFixture({
         title: 'The Bully In-Charge'
     },
     child: {
-        id: '/read/the-bully-in-charge/ch178-80446',
+        id: '/read/the-bully-in-charge/ch178-93308',
         title: 'Ch. 178 N/A'
     },
     entry: {
