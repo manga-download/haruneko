@@ -6,7 +6,7 @@ new TestFixture({
         title: 'The Bully Project',
     },
     container: {
-        url: 'https://thebullyproject.com/chainsaw-man',
+        url: 'https://bully-manga.com/chainsaw-man',
         id: '/chainsaw-man',
         title: 'Chainsaw Man'
     },

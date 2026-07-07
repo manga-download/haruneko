@@ -1,32 +1,14 @@
 import { Tags } from '../Tags';
 import icon from './Ikiru.webp';
-import { Chapter, DecoratableMangaScraper, type Manga } from '../providers/MangaPlugin';
-import * as Common from './decorators/Common';
-import { FetchCSS } from '../platform/FetchProvider';
+import { KiruBase } from './templates/KiruBase';
 
-@Common.MangaCSS(/^{origin}\/manga\/[^/]+\/$/, 'title', (element, uri) => ({
-    id: uri.pathname,
-    title: element.innerText.replace(/\s+Bahasa\s+Indonesia/i, '').replace(/\s*-\s*Ikiru/, '').trim(),
-}))
-@Common.MangasMultiPageCSS('div#search-results a:not([class]', Common.PatternLinkGenerator('/project/?the_page={page}'))
-@Common.PagesSinglePageCSS('section img')
-@Common.ImageAjax()
-export default class extends DecoratableMangaScraper {
+export default class extends KiruBase {
 
     public constructor() {
-        super('ikiru', 'Ikiru', 'https://05.ikiru.wtf', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Indonesian, Tags.Source.Aggregator);
+        super('ikiru', 'Ikiru', 'https://06.ikiru.wtf', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Indonesian, Tags.Source.Aggregator);
     }
 
     public override get Icon() {
         return icon;
-    }
-
-    public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const endpoint = (await FetchCSS<HTMLDivElement>(new Request(new URL(manga.Identifier, this.URI)), 'div#chapter-list')).at(0).getAttribute('hx-get').trim();
-        const data = await FetchCSS<HTMLAnchorElement>(new Request(new URL(endpoint)), 'div[data-chapter-number] a');
-        return data.map(chapter => {
-            const title = chapter.querySelector('span').textContent.trim();
-            return new Chapter(this, manga, chapter.pathname, title);
-        });
     }
 }

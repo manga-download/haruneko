@@ -4,35 +4,31 @@ import { FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
 import { Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 
-type APIMangas = {
-    data: {
-        data: {
-            info: string;
-        }[]
-    }
+type APIResult<T> = {
+    data: T;
 };
 
-type MangaInfo = {
+type APIMangas = APIResult<{
+    data: {
+        info: string; // JSON stringified <APIMangaInfo>
+    }[];
+}>;
+
+type APIMangaInfo = {
     id: string;
     name: string;
 };
 
-type APIChapters = {
-    data: {
-        id_chapter: number;
-        info: string;
-    }[]
-};
+type APIChapters = APIResult<{
+    info: string; // JSON stringified <APIChapterInfo>
+}[]>;
 
-type ChapterInfo = {
+type APIChapterInfo = {
+    id: string;
     num: string;
 };
 
-type APIPages = {
-    data: {
-        image: string[];
-    }
-};
+type APIPages = APIResult<{ image: string[] }>;
 
 @Common.MangaCSS(/^https:\/\/cmangax\d+.com\/album\/[^/]+-\d+$/, 'h1 p.name', (paragraph, uri) => ({ id: uri.pathname.split('-').at(-1), title: paragraph.innerText.trim() }))
 @Common.ImageAjax(true)
@@ -43,7 +39,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public constructor() {
-        super('cmangax', 'CMangax', 'https://cmangax17.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Vietnamese, Tags.Source.Aggregator, Tags.Accessibility.DomainRotation);
+        super('cmangax', 'CManga', 'https://cmangax17.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Vietnamese, Tags.Source.Aggregator, Tags.Accessibility.DomainRotation);
     }
 
     public override get Icon() {
@@ -60,21 +56,20 @@ export default class extends DecoratableMangaScraper {
         return Array.fromAsync(async function* (this: This) {
             for (let page = 1, run = true; run; page++) {
                 const { data: { data } } = await FetchJSON<APIMangas>(new Request(new URL(`./home_album_list?limit=1000&page=${page}`, this.ResourceURL)));
-                const mangas = data.map(item => JSON.parse(item.info) as MangaInfo)
+                const mangas = data
+                    .map<APIMangaInfo>(({ info }) => JSON.parse(info))
                     .filter(({ id }) => id)
                     .map(({ id, name }) => new Manga(this, provider, id, name));
                 mangas.length > 0 ? yield* mangas : run = false;
             }
-
         }.call(this));
-
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const { data } = await FetchJSON<APIChapters>(new Request(new URL(`./chapter_list?limit=9999&album=${manga.Identifier}`, this.ResourceURL)));
-        return data.map(({ id_chapter: id, info }) => {
-            const { num } = JSON.parse(info) as ChapterInfo;
-            return new Chapter(this, manga, `${id}`, 'Chapter ' + num.trim());
+        return data.map(({ info }) => {
+            const { id, num } = <APIChapterInfo>JSON.parse(info);
+            return new Chapter(this, manga, id, `Chapter ${num.trim()}`);
         });
     }
 
