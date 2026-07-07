@@ -53,45 +53,45 @@ type PageParameters = {
 }
 
 const chapterLanguageMap = new Map([
-    [ 'ar', Tags.Language.Arabic ],
-    // [ 'bn', Tags.Language.Bengali ],
-    // [ 'bg', Tags.Language.Bulgarian ],
-    // [ 'my', Tags.Language.Burmese ],
-    // [ 'ca', Tags.Language.Catalan ],
-    [ 'zh', Tags.Language.Chinese ],
-    // [ 'cs', Tags.Language.Czech ],
-    // [ 'da', Tags.Language.Danish ],
-    // [ 'nl', Tags.Language.Dutch ],
-    [ 'en', Tags.Language.English ],
-    // [ 'fi', Tags.Language.Finnish ],
-    [ 'fr', Tags.Language.French ],
-    [ 'de', Tags.Language.German ],
-    // [ 'el', Tags.Language.Greek ],
-    // [ 'he', Tags.Language.Hebrew ],
-    // [ 'hi', Tags.Language.Hindi ],
-    // [ 'hu', Tags.Language.Hungarian ],
-    [ 'id', Tags.Language.Indonesian ],
-    [ 'it', Tags.Language.Italian ],
-    [ 'ja', Tags.Language.Japanese ],
-    [ 'ko', Tags.Language.Korean ],
-    // [ 'lt', Tags.Language.Lithuanian ],
-    // [ 'ms', Tags.Language.Malay ],
-    // [ 'mn', Tags.Language.Mongolian ],
-    // [ 'ne', Tags.Language.Nepali ],
-    // [ 'no', Tags.Language.Norwegian ],
-    // [ 'fa', Tags.Language.Persian ],
-    [ 'pl', Tags.Language.Polish ],
-    [ 'pt', Tags.Language.Portuguese ],
-    // [ 'ro', Tags.Language.Romanian ],
-    [ 'ru', Tags.Language.Russian ],
-    // [ 'sh', Tags.Language.Serbo-Croatian ],
-    [ 'es', Tags.Language.Spanish ],
-    // [ 'sv', Tags.Language.Swedish ],
-    // [ 'tl', Tags.Language.Tagalog ],
-    [ 'th', Tags.Language.Thai ],
-    [ 'tr', Tags.Language.Turkish ],
-    // [ 'uk', Tags.Language.Ukrainian ],
-    [ 'vi', Tags.Language.Vietnamese ],
+    ['ar', [Tags.Language.Arabic]],
+    ['bg', []],
+    ['bn', []],
+    ['ca', []],
+    ['cs', []],
+    ['da', []],
+    ['de', [Tags.Language.German]],
+    ['el', []],
+    ['en', [Tags.Language.English]],
+    ['es', [Tags.Language.Spanish]],
+    ['fa', []],
+    ['fi', []],
+    ['fr', [Tags.Language.French]],
+    ['he', []],
+    ['hi', []],
+    ['hu', []],
+    ['id', [Tags.Language.Indonesian]],
+    ['it', [Tags.Language.Italian]],
+    ['ja', [Tags.Language.Japanese]],
+    ['ko', [Tags.Language.Korean]],
+    ['lt', []],
+    ['mn', []],
+    ['ms', []],
+    ['my', []],
+    ['ne', []],
+    ['nl', []],
+    ['no', []],
+    ['pl', [Tags.Language.Polish]],
+    ['pt', [Tags.Language.Portuguese]],
+    ['ro', []],
+    ['ru', [Tags.Language.Russian]],
+    ['sh', []],
+    ['sv', []],
+    ['th', [Tags.Language.Thai]],
+    ['tl', []],
+    ['tr', [Tags.Language.Turkish]],
+    ['uk', []],
+    ['vi', [Tags.Language.Vietnamese]],
+    ['zh', [Tags.Language.Chinese]],
 ]);
 
 export default class extends MangaScraper {
@@ -127,12 +127,13 @@ export default class extends MangaScraper {
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const chapterList = [];
-        for(let page = 0, run = true; run; page++) {
-            const chapters = await this.chaptersTaskPool.Add(() => this.FetchChaptersFromPage(manga, page), Priority.Normal);
-            chapters.length > 0 ? chapterList.push(...chapters) : run = false;
-        }
-        return chapterList.reverse();
+        type This = typeof this;
+        return (await Array.fromAsync(async function* (this: This) {
+            for (let page = 0, run = true; run; page++) {
+                const chapters = await this.chaptersTaskPool.Add(() => this.FetchChaptersFromPage(manga, page), Priority.Normal);
+                chapters.length > 0 ? yield* chapters : run = false;
+            }
+        }.call(this))).reverse();
     }
 
     private async FetchChaptersFromPage(manga: Manga, page: number) {
@@ -164,17 +165,14 @@ export default class extends MangaScraper {
             .map(entry => {
                 const groups = entry.relationships.filter(relation => relation.type === 'scanlation_group' && relation.attributes?.name);
                 const title = [
-                    entry.attributes.volume ? 'Vol.' + pad(entry.attributes.volume, 2) : null,
-                    entry.attributes.chapter ? 'Ch.' + pad(entry.attributes.chapter, 4) : null,
-                    entry.attributes.title ? '-' : null,
-                    entry.attributes.title ? entry.attributes.title : null,
-                    entry.attributes.translatedLanguage ? '(' + entry.attributes.translatedLanguage + ')' : null,
-                    groups.length > 0 ? '[' + groups.map(group => group.attributes.name).join(', ') + ']' : null,
-                ].filter(segment => segment).join(' ').trim();
+                    entry.attributes.volume && `Vol.${pad(entry.attributes.volume, 2)}`,
+                    entry.attributes.chapter && `Ch.${pad(entry.attributes.chapter, 4)}`,
+                    entry.attributes.title && `- ${entry.attributes.title}`,
+                    entry.attributes.translatedLanguage && `(${entry.attributes.translatedLanguage})`,
+                    groups.length > 0 ? `[${groups.map(group => group.attributes.name).join(', ')}]`: null,
+                ].joinTitleSegments();
                 const languageCode = entry.attributes.translatedLanguage?.split('-')?.shift();
-                return new Chapter(this, manga, entry.id, title.trim(),
-                    ...chapterLanguageMap.has(languageCode) ? [ chapterLanguageMap.get(languageCode) ] : []
-                );
+                return new Chapter(this, manga, entry.id, title.trim(), ...chapterLanguageMap.get(languageCode) ?? []);
             });
     }
 

@@ -13,10 +13,10 @@ new TestFixture({
     child: {
         id: '/manga/tengoku-daimakyou/capitulo-1/',
         title: 'Capitulo 1'
-    },
+    }, /* Region Lock : Brazil
     entry: {
         index: 3,
         size: 299_817,
         type: 'image/avif'
-    }
+    }*/
 }).AssertWebsite();
