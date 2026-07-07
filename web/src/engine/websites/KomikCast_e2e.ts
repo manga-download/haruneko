@@ -6,7 +6,7 @@ new TestFixture({
         title: 'KomikCast'
     },
     container: {
-        url: 'https://v2.komikcast.fit/series/swordmasters-youngest-son',
+        url: 'https://v3.komikcast.fit/series/swordmasters-youngest-son',
         id: 'swordmasters-youngest-son',
         title: 'Swordmaster’s Youngest Son'
     },
@@ -16,7 +16,7 @@ new TestFixture({
     },
     entry: {
         index: 1,
-        size: 347_696,
+        size: 267_484,
         type: 'image/jpeg'
     }
 }).AssertWebsite();

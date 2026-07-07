@@ -1,6 +1,6 @@
 import { TestFixture } from '../../../test/WebsitesFixture';
 
-new TestFixture( {
+new TestFixture({
     plugin: {
         id: 'mangasbrasuka',
         title: 'Mangas Brasuka'
@@ -13,10 +13,10 @@ new TestFixture( {
     child: {
         id: '/manga/yotaka-futatabi/capitulo-1_1/',
         title: 'Capitulo 1'
-    },
+    }, /* Region Lock : Brazil
     entry: {
         index: 1,
         size: 143_860,
         type: 'image/webp'
-    }
+    }*/
 }).AssertWebsite();

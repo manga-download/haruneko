@@ -6,7 +6,7 @@ new TestFixture({
         title: 'ازورا مانجا (AZORA MANGA / WORLD)'
     },
     container: {
-        url: 'https://azoramoon.com/series/return-of-the-unrivaled-spear-knight',
+        url: 'https://azorafly.com/series/return-of-the-unrivaled-spear-knight',
         id: '838',
         title: 'Return of The Unrivaled Spear Knight'
     },
