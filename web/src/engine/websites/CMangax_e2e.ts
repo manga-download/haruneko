@@ -3,7 +3,7 @@ import { TestFixture } from '../../../test/WebsitesFixture';
 new TestFixture({
     plugin: {
         id: 'cmangax',
-        title: 'CMangax'
+        title: 'CManga'
     },
     container: {
         url: 'https://cmangax17.com/album/trong-sinh-chi-quan-chu-80929',
