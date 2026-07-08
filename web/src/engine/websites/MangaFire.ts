@@ -70,17 +70,21 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        return Array.fromAsync(async function* () {
+        const { items } = await FetchJSON<APIChapters>(new Request(new URL(`./titles/${manga.Identifier}/volumes`, this.apiURL)));
+        const volumes = items.map(({ id, language, name, number }) => new Chapter(this, manga, `volumes/${id}`, [`Vol. ${number}`, name, `(${language})`].joinTitleSegments(), ...[chapterLanguageMap.get(language)].filter(Boolean)));
+
+        const chapters = await Array.fromAsync(async function* () {
             for (let page = 1, run = true; run; page++) {
                 const { items } = await FetchJSON<APIChapters>(new Request(new URL(`./titles/${manga.Identifier}/chapters?sort=number&order=desc&page=${page}&limit=200`, this.apiURL)));
-                const chapters = items.map(({ id, language, name, number, type }) => new Chapter(this, manga, `${id}`, [`Ch. ${number}`, name, `(${type})`, `(${language})`].joinTitleSegments(), ...[chapterLanguageMap.get(language)].filter(Boolean)));
+                const chapters = items.map(({ id, language, name, number, type }) => new Chapter(this, manga, `chapters/${id}`, [`Ch. ${number}`, name, `(${type})`, `(${language})`].joinTitleSegments(), ...[chapterLanguageMap.get(language)].filter(Boolean)));
                 chapters.length > 0 ? yield* chapters : run = false ;
             }
         }.call(this));
+        return [...chapters, ...volumes];
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const { data: { pages } } = await FetchJSON<{ data: APIChapter }>(new Request(new URL(`./chapters/${chapter.Identifier}`, this.apiURL)));
+        const { data: { pages } } = await FetchJSON<{ data: APIChapter }>(new Request(new URL(`./${chapter.Identifier}`, this.apiURL)));
         return pages.map(({ url }) => new Page(this, chapter, new URL(url), { Referer: this.URI.href }));
     }
 }
