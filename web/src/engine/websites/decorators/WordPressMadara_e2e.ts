@@ -50,7 +50,6 @@ import '../LectorMangaLat_e2e';
 import '../LerMangas_e2e';
 import '../LHTranslation_e2e';
 import '../LilyManga_e2e';
-import '../LoversToon_e2e';
 import '../LumosKomik_e2e';
 import '../LunaScans_e2e';
 import '../MadaraDex_e2e';
