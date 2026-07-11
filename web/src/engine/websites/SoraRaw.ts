@@ -4,7 +4,7 @@ import { FetchCSS, FetchJSON } from '../platform/FetchProvider';
 import { type MangaPlugin, Manga, Chapter, Page, DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Grouple from './decorators/Grouple';
 import { GetBytesFromBase64, GetBytesFromHex, GetBytesFromUTF8, GetUTF8FromBytes } from '../BufferEncoder';
-import { XOR } from './Crypto';
+import { XOR } from '../Crypto';
 
 type NEXTDATA<T> = {
     props: {

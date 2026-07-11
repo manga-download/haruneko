@@ -8,7 +8,7 @@ import DeScramble from '../transformers/ImageDescrambler';
 import { GetTypedData } from './decorators/Common';
 import { Exception } from '../Error';
 import { WebsiteResourceKey as R } from '../../i18n/ILocale';
-import { XOR } from './Crypto';
+import { XOR } from '../Crypto';
 
 type APIResult<T> = {
     items: T[];

@@ -5,7 +5,7 @@ import { type Chapter, DecoratableMangaScraper, Page } from '../providers/MangaP
 import DeScramble from '../transformers/ImageDescrambler';
 import type { Priority } from '../taskpool/DeferredTask';
 import * as Common from './decorators/Common';
-import { XOR } from './Crypto';
+import { XOR } from '../Crypto';
 import { GetBytesFromHex, GetBytesFromUTF8, GetUTF8FromBytes } from '../BufferEncoder';
 
 type ChapterCryptedData = {

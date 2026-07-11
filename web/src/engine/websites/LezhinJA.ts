@@ -8,7 +8,7 @@ import { Exception } from '../Error';
 import { WebsiteResourceKey as R } from '../../i18n/ILocale';
 import { GetBytesFromHex } from '../BufferEncoder';
 import { GetTypedData } from './decorators/Common';
-import { XOR } from './Crypto';
+import { XOR } from '../Crypto';
 
 type APIResult<T> = {
     results: T;

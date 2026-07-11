@@ -7,7 +7,7 @@ import { FetchProto, FetchWindowScript } from '../platform/FetchProvider';
 import type { Priority } from '../taskpool/TaskPool';
 import { GetTypedData } from './decorators/Common';
 import { GetBytesFromHex } from '../BufferEncoder';
-import { XOR } from './Crypto';
+import { XOR } from '../Crypto';
 
 type ZebrackResponse = {
     titleDetailView?: TitleDetailView;

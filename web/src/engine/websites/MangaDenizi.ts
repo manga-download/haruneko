@@ -5,7 +5,7 @@ import { Fetch, FetchJSON } from '../platform/FetchProvider';
 import type { Priority } from '../taskpool/DeferredTask';
 import { GetTypedData } from './decorators/Common';
 import DeScramble from '../transformers/ImageDescrambler';
-import { XOR } from './Crypto';
+import { XOR } from '../Crypto';
 
 type APIManga = {
     data: {

@@ -6,7 +6,7 @@ import { FetchJSON } from '../platform/FetchProvider';
 import type { Priority } from '../taskpool/DeferredTask';
 import { GetBytesFromHex } from '../BufferEncoder';
 import { GetTypedData } from './decorators/Common';
-import { XOR } from './Crypto';
+import { XOR } from '../Crypto';
 
 type APIMedia = {
     id: number;

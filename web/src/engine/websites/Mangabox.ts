@@ -5,7 +5,7 @@ import * as Common from './decorators/Common';
 import { FetchJSON } from '../platform/FetchProvider';
 import type { Priority } from '../taskpool/DeferredTask';
 import { GetTypedData } from './decorators/Common';
-import { XOR } from './Crypto';
+import { XOR } from '../Crypto';
 
 type APIMangas = {
     manga: {

@@ -4,7 +4,7 @@ import { Chapter, DecoratableMangaScraper, Manga, type MangaPlugin, Page } from 
 import * as Common from './decorators/Common';
 import { FetchJSON } from '../platform/FetchProvider';
 import type { Priority } from '../taskpool/DeferredTask';
-import { XOR } from './Crypto';
+import { XOR } from '../Crypto';
 import { GetBytesFromHex } from '../BufferEncoder';
 
 type APIResult<T> = {
