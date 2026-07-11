@@ -40,8 +40,7 @@ async function HASH(message: BufferSource, hashType: string): Promise<ArrayBuffe
  */
 export async function HMAC256(message: string | BufferSource, key: string | BufferSource | CryptoKey): Promise<ArrayBuffer> {
     if (typeof message === 'string') message = GetBytesFromUTF8(message);
-    key = await HMAC256ImportKey(key);
-    return crypto.subtle.sign(HMAC256Algo, key, message);
+    return crypto.subtle.sign(HMAC256Algo, await HMAC256ImportKey(key), message);
 }
 
 /**
@@ -49,6 +48,9 @@ export async function HMAC256(message: string | BufferSource, key: string | Buff
  * @param key - data to use as key
  */
 export async function HMAC256ImportKey(key: string | BufferSource | CryptoKey): Promise<CryptoKey> {
-    if (key instanceof CryptoKey) return key;
-    return crypto.subtle.importKey('raw', typeof key === 'string' ? GetBytesFromUTF8(key) : key, HMAC256Algo, false, ['sign']);
+    // Don't use `instanceof CryptoKey` here: CryptoKeys may come from a different
+    // execution context (e.g. Puppeteer), making `instanceof` unreliable.
+    if (typeof key === 'string') key = GetBytesFromUTF8(key);
+    if (key instanceof ArrayBuffer || ArrayBuffer.isView(key)) key = await crypto.subtle.importKey('raw', key, HMAC256Algo, false, ['sign']);
+    return key;
 }
