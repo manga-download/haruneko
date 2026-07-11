@@ -3,10 +3,11 @@ import icon from './CiaoPlus.webp';
 import { FetchJSON } from '../platform/FetchProvider';
 import type { Priority } from '../taskpool/DeferredTask';
 import DeScramble from '../transformers/ImageDescrambler';
-import { GetHexFromBytes, GetBytesFromUTF8 } from '../BufferEncoder';
+import { GetHexFromBytes } from '../BufferEncoder';
 import type { MangaPlugin } from '../providers/MangaPlugin';
 import { Chapter, DecoratableMangaScraper, Manga, Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
+import { SHA256, SHA512 } from '../Crypto';
 
 // TODO: Major Code Revision
 
@@ -124,7 +125,7 @@ class DRMProvider {
     }
 
     async #ComputeSHA(text: string, algorithm: 'SHA-256' | 'SHA-512'): Promise<string> {
-        const hash = await crypto.subtle.digest(algorithm, GetBytesFromUTF8(text));
+        const hash = algorithm == 'SHA-256' ? await SHA256(text) : await SHA512(text);
         return GetHexFromBytes(new Uint8Array(hash));
     }
 }
