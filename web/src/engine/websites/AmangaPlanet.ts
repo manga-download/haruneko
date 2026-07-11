@@ -1,18 +1,18 @@
 import { Tags } from '../Tags';
-import icon from './SushiScansFR.webp';
+import icon from './AmangaPlanet.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as MangaStream from './decorators/WordPressMangaStream';
 import * as Common from './decorators/Common';
 
-@MangaStream.MangaCSS(/^{origin}\/catalogue\/[^/]+\/$/)
-@MangaStream.MangasSinglePageCSS(undefined, '/catalogue/list-mode/')
+@MangaStream.MangaCSS(/^{origin}\/manga\/[^/]+\/$/)
+@MangaStream.MangasSinglePageCSS()
 @MangaStream.ChaptersSinglePageCSS()
-@Common.PagesSinglePageJS('ts_reader.params.sources.shift().images;', 1500)
+@MangaStream.PagesSinglePageJS()
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('sushiscansfr', 'Sushi Scans (.FR)', 'https://sushiscan.io', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.French, Tags.Source.Aggregator);
+        super('amangaplanet', 'Amanga Planet', 'https://www.amangaplanet.com.tr', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Turkish, Tags.Source.Scanlator);
     }
 
     public override get Icon() {

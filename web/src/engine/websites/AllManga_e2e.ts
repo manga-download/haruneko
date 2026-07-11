@@ -7,7 +7,7 @@ new TestFixture({
         title: 'AllManga'
     },
     container: {
-        url: 'https://allmanga.to/manga/kFvrdRcbubPjrhr63',
+        url: 'https://mkissa.to/manga/kFvrdRcbubPjrhr63',
         id: 'kFvrdRcbubPjrhr63',
         title: 'Dragon Prince Yuan'
     },

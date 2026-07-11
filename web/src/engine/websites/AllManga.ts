@@ -2,9 +2,15 @@ import { Tags } from '../Tags';
 import icon from './AllManga.webp';
 import { Delay } from '../BackgroundTimers';
 import { FetchGraphQL, FetchWindowScript } from '../platform/FetchProvider';
-import { GetBytesFromBase64, GetBytesFromUTF8, GetUTF8FromBytes } from '../BufferEncoder';
+import { GetBase64FromBytes, GetBytesFromBase64, GetBytesFromHex, GetBytesFromUTF8, GetHexFromBytes, GetUTF8FromBytes } from '../BufferEncoder';
 import { DecoratableMangaScraper, type MangaPlugin, Manga, Chapter, Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
+
+const primaryDomain = 'mkissa.to';
+const patternAliasDomains = [
+    primaryDomain,
+    'allmanga.to'
+].join('|').replaceAll('.', '\\.');
 
 type APIManga = {
     manga: {
@@ -33,6 +39,14 @@ type APIChapters = {
     }[];
 };
 
+type CryptoParams = {
+    epoch: number;
+    epocjMS: number;
+    graceMS: number;
+    partB: string;
+    switchAt: number;
+};
+
 type APIPages = {
     chapterPages: {
         edges: [{
@@ -47,10 +61,10 @@ type APIPages = {
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
-    private readonly apiURL = 'https://api.allanime.day/api';
+    private readonly apiURL = 'https://api.mkissa.net/api';
 
     public constructor() {
-        super('allmanga', 'AllManga', 'https://allmanga.to', Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Language.English, Tags.Source.Aggregator);
+        super('allmanga', 'AllManga', 'https://mkissa.to', Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Language.English, Tags.Source.Aggregator);
     }
 
     public override get Icon() {
@@ -62,7 +76,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override ValidateMangaURL(url: string): boolean {
-        return new RegExp(`^${this.URI.origin}/manga/[^/]+$`).test(url);
+        return new RegExpSafe(`^https?://(${patternAliasDomains})/manga/[^/]+$`).test(url);
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
@@ -78,7 +92,7 @@ export default class extends DecoratableMangaScraper {
         // TODO: Use Array.fromAsync
         const mangaList: Manga[] = [];
         for (let page = 1, run = true; run; page++) {
-            await Delay(250);
+            await Delay(500);
             const mangas = await this.GetMangasFromPage(page, provider);
             mangaList.isMissingLastItemFrom(mangas) ? mangaList.push(...mangas) : run = false;
         }
@@ -93,7 +107,7 @@ export default class extends DecoratableMangaScraper {
                 }
             }
         `, { page: page });
-        return edges.map(manga => new Manga(this, provider, manga._id, manga.englishName ?? manga.name));
+        return edges.map(({ _id, englishName, name }) => new Manga(this, provider, _id, englishName ?? name));
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
@@ -123,16 +137,87 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const { tobeparsed: encrypted } = await FetchGraphQL<{ tobeparsed: string; }>(new Request(this.apiURL), '', undefined, {
+        const { chapterString, translationType } = <ChapterID>JSON.parse(chapter.Identifier);
+        const chapterURL = new URL(`./manga/${chapter.Parent.Identifier}/chapter-${chapterString}-${translationType}`, this.URI);
+        const { epoch, partB } = await FetchWindowScript<CryptoParams>(new Request(chapterURL), 'window.__aaCrypto', 1500);
+
+        const pagesQuery = `
+            query(
+                $mangaId: String!
+                        $translationType: VaildTranslationTypeMangaEnumType!
+                        $chapterString: String!
+                        $limit: Int!
+                        $offset: Int
+            ) {
+                chapterPages(
+                    mangaId: $mangaId
+                            translationType: $translationType
+                            chapterString: $chapterString
+                            limit: $limit
+                            offset: $offset
+                ) {
+                    edges {
+                        pictureUrlHead
+                        pictureUrls
+                    }
+                    manga {
+                        _id
+                        countryOfOrigin
+                    }
+                }
+            }
+        `;
+
+        const sha256Hash = GetHexFromBytes(new Uint8Array(await this.SHA256(pagesQuery)));
+        const aaReq = await this.GenerateSignature(partB, epoch, sha256Hash);
+        const { tobeparsed: encrypted } = await FetchGraphQL<{ tobeparsed: string; }>(new Request(this.apiURL), '', pagesQuery, {
             ...<ChapterID>JSON.parse(chapter.Identifier),
             mangaId: chapter.Parent.Identifier,
             limit: 999,
             offset: 0,
-        }, { persistedQuery: { version: 1, sha256Hash: '466783e19a7540387e34265be906bebbe853857088d45d28af922ab8668ebb31' } });
+        }, {
+            persistedQuery: {
+                version: 1, sha256Hash, aaReq
+            }
+        });
         const { chapterPages: { edges: [{ pictureUrlHead, pictureUrls }] } } = await this.Decrypt<APIPages>(encrypted);
         let origin = pictureUrlHead ?? this.URI.origin;
         origin = origin.startsWith('https://') ? origin : 'https://' + origin;
         return pictureUrls.map(({ url }) => new Page(this, chapter, new URL(url, origin), { Referer: this.URI.href }));
+    }
+
+    private async GenerateSignature(partB: string, epoch: number, queryHash: string): Promise<string> {
+        const BUILD_ID = '20';
+        //derive key
+        const xorKey = GetBytesFromHex('78ebe40583e4f360cd9f56926b775a780054367c826123dcd0577a231eee4e73');
+        const keyData = GetBytesFromBase64(partB);
+        const rawKey = new Uint8Array(32);
+        for (let i = 0; i < 32; i++) {
+            rawKey[i] = keyData[i] ^ xorKey[i % xorKey.length];
+        }
+
+        const key = await crypto.subtle.importKey('raw', rawKey, { name: 'AES-GCM' }, false, ['encrypt']);
+        const ts = Math.floor(Date.now() / 300_000) * 300_000;
+        const iv = (await this.SHA256(`${epoch}:${BUILD_ID}:${queryHash}:${ts}`)).slice(0, 12);
+
+        const payload = JSON.stringify({
+            v: 1,
+            ts,
+            epoch,
+            buildId: BUILD_ID,
+            qh: queryHash,
+        });
+
+        const ciphertext = new Uint8Array(await crypto.subtle.encrypt({ name: 'AES-GCM', iv, tagLength: 128 }, key, GetBytesFromUTF8(payload)));
+        const out = new Uint8Array(13 + ciphertext.length);
+        out[0] = 1;
+        out.set(new Uint8Array(iv), 1);
+        out.set(ciphertext, 13);
+        return GetBase64FromBytes(out);
+    }
+
+    private async SHA256(message: string): Promise<ArrayBuffer> {
+        return crypto.subtle.digest({ name: 'SHA-256' }, GetBytesFromUTF8(message));
     }
 
     private async Decrypt<T>(data: string): Promise<T> {
@@ -140,7 +225,7 @@ export default class extends DecoratableMangaScraper {
         const ciphertext = message.slice(13, message.length - 16);
         const tag = message.slice(message.length - 16);
         const algorithm = { name: 'AES-GCM', iv: message.slice(1, 13) };
-        const key = await crypto.subtle.importKey('raw', await crypto.subtle.digest('SHA-256', GetBytesFromUTF8('Xot36i3lK3:v1')), algorithm, false, ['decrypt']);
+        const key = await crypto.subtle.importKey('raw', await this.SHA256('Xot36i3lK3:v1'), algorithm, false, ['decrypt']);
         const result = await crypto.subtle.decrypt(algorithm, key, new Uint8Array([...ciphertext, ...tag]));
         return JSON.parse(GetUTF8FromBytes(result)) as T;
     }

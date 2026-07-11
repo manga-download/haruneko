@@ -1,146 +1,149 @@
-import { DecoratableMangaScraper, type MangaPlugin, type Manga, type Chapter, Page } from '../../providers/MangaPlugin';
+import { type Chapter, DecoratableMangaScraper, type MangaPlugin, type Manga, Page } from '../../providers/MangaPlugin';
 import * as Common from '../decorators/Common';
-import { FetchWindowScript } from '../../platform/FetchProvider';
+import { FetchWindowScript, Fetch, } from '../../platform/FetchProvider';
 import { Priority } from '../../taskpool/DeferredTask';
 import DeScramble from '../../transformers/ImageDescrambler';
 import { TaskPool } from '../../taskpool/TaskPool';
 import { RateLimit } from '../../taskpool/RateLimit';
 
-const defaultPageScript = `
-    new Promise(async (resolve, reject) => {
-        try {
-            // Process motion webtoon
-            if (document.querySelector('div#ozViewer div.oz-pages')) {
-                const templateURLs = window.__motiontoonViewerState__.motiontoonParam.pathRuleParam;
-                const uri = window.__motiontoonViewerState__.motiontoonParam.viewerOptions.documentURL;
-                const response = await fetch(uri);
-                const data = await response.json();
-                for (const page of data.pages) {
-                    for (const layer of page.layers) {
-                        const layerAsset = layer.asset.split('/');
-                        const layerAssetFile = data.assets[layerAsset[0]][layerAsset[1]];
-                        const layerAssetExtension = layerAssetFile.split('.').pop();
-                        if (layer.type === 'image') {
-                            layer.asset = templateURLs['image'][layerAssetExtension].replace('{=filename}', layerAssetFile);
-                        }
-                        for (const keyframe in layer.effects) {
-                            const effect = layer.effects[keyframe]['sprite'];
-                            if (effect && effect.type === 'sprite') {
-                                const effectAsset = effect.asset.split('/');
-                                const effectAssetFile = data.assets[effectAsset[0]][effectAsset[1]];
-                                const effectAssetExtension = effectAssetFile.split('.').pop();
-                                effect.asset = templateURLs['image'][effectAssetExtension].replace('{=filename}', effectAssetFile);
-                                for (const index in effect.collection) {
-                                    const collectionAsset = effect.collection[index].split('/');
-                                    const collectionAssetFile = data.assets[collectionAsset[0]][collectionAsset[1]];
-                                    const collectionAssetExtension = collectionAssetFile.split('.').pop();
-                                    effect.collection[index] = templateURLs['image'][collectionAssetExtension].replace('{=filename}', collectionAssetFile);
-                                }
-                            }
-                        }
-                    }
-                }
-                resolve(data.pages);
-            } else {
-            // Process hard-sub webtoon (default)
-                const images = [...document.querySelectorAll('div.viewer div.viewer_lst div.viewer_img img[data-url]')];
-                const links = images.map(element => new URL(element.dataset.url, window.location).href);
-                resolve(links);
-            }
-        } catch (error) {
-            reject(error);
-        }
-    });
-`;
-
 type PageData = {
-    width: number,
-    height: number,
-    layers: ImageLayer[],
+    width: number;
+    height: number;
+    layers: ImageLayer[];
     background: {
-        image: string,
-        color: string
-    }
-}
+        image: string;
+        color: string;
+    };
+};
 
 type ImageLayer = {
-    type: string,
-    asset: string,
-    width: number,
-    height: number,
-    left: number,
-    top: number
-}
-
-function ChapterExtractor(element: HTMLAnchorElement) {
-    const chapter = element.querySelector('span.tx');
-    let title = chapter ? chapter.textContent.trim() + ' - ' : '';
-    title += element.querySelector('span.subj span').textContent.trim();
-    const id = /'/.test(element.href) ? decodeURIComponent(element.href).match(/'([^']+)'/)[1] : element.pathname + element.search;
-    return { id, title };
-}
+    type: string;
+    asset: string;
+    width: number;
+    height: number;
+    left: number;
+    top: number;
+};
 
 @Common.MangasNotSupported()
-@Common.ChaptersMultiPageCSS('div.detail_body div.detail_lst ul li > a', Common.PatternLinkGenerator('{id}&page={page}'), 0, ChapterExtractor)
 export class LineWebtoonBase extends DecoratableMangaScraper {
 
-    protected mangaRegexp = /[a-z]{2}\/[^/]+\/[^/]+\/list\?title_no=\d+$/;
-    private queryMangaTitleURI = 'div.info .subj';
-    protected pageScript = defaultPageScript;
-    private readonly interactionTaskPool = new TaskPool(1, RateLimit.PerMinute(30));
+    private mangaRegexp = /[a-z]{2}\/[^/]+\/[^/]+\/list\?title_no=\d+$/;
+    protected readonly interactionTaskPool = new TaskPool(1, RateLimit.PerMinute(30));
+
+    public WithMangaRegex(regex: RegExp): LineWebtoonBase {
+        this.mangaRegexp = regex;
+        return this;
+    }
 
     public override ValidateMangaURL(url: string): boolean {
         return this.mangaRegexp.test(url) && url.startsWith(this.URI.origin);
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
-        return this.interactionTaskPool.Add(async () => Common.FetchMangaCSS.call(this, provider, url, this.queryMangaTitleURI, Common.WebsiteInfoExtractor({ includeSearch: true })), Priority.Normal);
+        return this.interactionTaskPool.Add(async () => Common.FetchMangaCSS.call(this, provider, url, 'div.info .subj', Common.WebsiteInfoExtractor({ includeSearch: true })), Priority.Normal);
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const data = await this.interactionTaskPool.Add(async () => FetchWindowScript(new Request(new URL(chapter.Identifier, this.URI)), this.pageScript, 1500), Priority.Normal);
+        const data = await this.interactionTaskPool.Add(async () => FetchWindowScript(new Request(new URL(chapter.Identifier, this.URI)), `
+            new Promise(async (resolve, reject) => {
+                try {
+                    // Process motion webtoon
+                    if (document.querySelector('div#ozViewer div.oz-pages')) {
+                        const templateURLs = window.__motiontoonViewerState__.motiontoonParam.pathRuleParam;
+                        const uri = window.__motiontoonViewerState__.motiontoonParam.viewerOptions.documentURL;
+                        const response = await fetch(uri);
+                        const data = await response.json();
+                        for (const page of data.pages) {
+                            for (const layer of page.layers) {
+                                const layerAsset = layer.asset.split('/');
+                                const layerAssetFile = data.assets[layerAsset[0]][layerAsset[1]];
+                                const layerAssetExtension = layerAssetFile.split('.').pop();
+                                if (layer.type === 'image') {
+                                    layer.asset = templateURLs['image'][layerAssetExtension].replace('{=filename}', layerAssetFile);
+                                }
+                                for (const keyframe in layer.effects) {
+                                    const effect = layer.effects[keyframe]['sprite'];
+                                    if (effect && effect.type === 'sprite') {
+                                        const effectAsset = effect.asset.split('/');
+                                        const effectAssetFile = data.assets[effectAsset[0]][effectAsset[1]];
+                                        const effectAssetExtension = effectAssetFile.split('.').pop();
+                                        effect.asset = templateURLs['image'][effectAssetExtension].replace('{=filename}', effectAssetFile);
+                                        for (const index in effect.collection) {
+                                            const collectionAsset = effect.collection[index].split('/');
+                                            const collectionAssetFile = data.assets[collectionAsset[0]][collectionAsset[1]];
+                                            const collectionAssetExtension = collectionAssetFile.split('.').pop();
+                                            effect.collection[index] = templateURLs['image'][collectionAssetExtension].replace('{=filename}', collectionAssetFile);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        resolve(data.pages);
+                    } else {
+                    // Process hard-sub webtoon (default)
+                        const images = [...document.querySelectorAll('div.viewer div.viewer_lst div.viewer_img img[data-url]')];
+                        const links = images.map(element => new URL(element.dataset.url, window.location).href);
+                        resolve(links);
+                    }
+                } catch (error) {
+                    reject(error);
+                }
+            });
+
+        `, 1500), Priority.Normal);
         if (!Array.isArray(data)) return [];
         return typeof data[0] === 'string' ? (data as Array<string>).map(page => {
             const pageUrl = new URL(page);
             pageUrl.searchParams.delete('type');
             return new Page(this, chapter, pageUrl);
-        }) : this.CreatePagesfromData(chapter, data as PageData[]);
-    }
-
-    private CreatePagesfromData(chapter: Chapter, data: PageData[]): Page<PageData>[] {
-        return data.map(page => new Page<PageData>(this, chapter, new URL(this.URI), { Referer: this.URI.origin, ...page }));
+        }) : (data as PageData[]).map(page => new Page<PageData>(this, chapter, new URL(this.URI), { Referer: this.URI.href, ...page }));
     }
 
     public override async FetchImage(page: Page<PageData>, priority: Priority, signal: AbortSignal): Promise<Blob> {
         return page.Parameters?.layers ? this.imageTaskPool.Add(async () => {
-            const payload = page.Parameters;
-            return DeScramble(new ImageData(payload.width, payload.height,), async (_, ctx) => {
-                ctx.canvas.width = payload.width;
-                ctx.canvas.height = payload.height;
+            const { layers, width, background, height } = page.Parameters;
+            return DeScramble(new ImageData(width, height,), async (_, ctx) => {
+                ctx.canvas.width = width;
+                ctx.canvas.height = height;
 
-                if (payload.background.image) {
-                    const image = await LoadImage(payload.background.image);
+                if (background.image) {
+                    const image = await this.LoadImage(background.image);
                     ctx.canvas.width = image.width;
                     ctx.canvas.height = image.height;
                     ctx.drawImage(image, 0, 0);
+                    image.close();
                 }
-                if (payload.background.color) {
-                    ctx.fillStyle = payload.background.color;
+                if (background.color) {
+                    ctx.fillStyle = background.color;
                     ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
                 }
-                for (const layer of payload.layers) {
+                for (const layer of layers) {
                     const type = layer.type.split('|');
                     if (type[0] === 'image') {
-                        const image = await LoadImage(layer.asset);
+                        const image = await this.LoadImage(layer.asset);
                         if (type[1] === 'text') {
                             AdjustTextLayerVisibility(layer, image.width, image.height, ctx.canvas.width, ctx.canvas.height);
                         }
                         // TODO: process layer.keyframes in case top/left/width/height is animated?
                         ctx.drawImage(image, layer.left, layer.top, layer.width || image.width, layer.height || image.height);
+                        image.close();
                     }
                 }
             });
         }, priority, signal) : this.interactionTaskPool.Add(async () => Common.FetchImageAjax.call(this, page, priority, signal, true), Priority.Normal);
+    }
+
+    async LoadImage(url: string): Promise<ImageBitmap> {
+        const uri = new URL(url);
+        uri.searchParams.delete('type');
+        const response = await Fetch(new Request(uri, {
+            headers: {
+                Referer: this.URI.href
+            }
+        }));
+        const blob = await response.blob();
+        return await createImageBitmap(blob);
     }
 }
 
@@ -169,15 +172,4 @@ function AdjustTextLayerVisibility(layer: ImageLayer, textLayerWidth: number, te
             layer.left = 0;
         }
     }
-}
-
-async function LoadImage(url: string): Promise<HTMLImageElement> {
-    return new Promise((resolve, reject) => {
-        const uri = new URL(url);
-        uri.searchParams.delete('type');
-        const image = new Image();
-        image.onload = () => resolve(image);
-        image.onerror = error => reject(error);
-        image.src = uri.href;
-    });
 }
