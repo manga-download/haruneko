@@ -4,7 +4,7 @@ import { Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from 
 import { Fetch, FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
 import type { Priority } from '../taskpool/TaskPool';
 import DeScramble from '../transformers/ImageDescrambler';
-import { GetHexFromBytes, GetBytesFromUTF8 } from '../BufferEncoder';
+import { GetHexFromBytes } from '../BufferEncoder';
 import { SHA256 } from '../Crypto';
 
 type APIMangaPage = {
@@ -132,7 +132,7 @@ export default class extends DecoratableMangaScraper {
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
         const { pageProps: { salt } } = await FetchJSON<APISalt>(new Request(new URL(`/_next/data/${this.nextBuild}/viewer/stories/${chapter.Identifier}.json?id=${chapter.Identifier}`, this.URI)));
         const timestamp = new Date().toISOString().replace(/\.\d+Z$/, 'Z');
-        const hash = await crypto.subtle.digest('SHA-256', GetBytesFromUTF8(timestamp + salt));
+        const hash = await SHA256(timestamp + salt);
         const { data: { reading_episode: { pages } } } = await FetchJSON<APIPages>(new Request(new URL(`./episodes/${chapter.Identifier}/read_v4`, this.apiURL), {
             headers: {
                 'x-requested-with': 'pixivcomic',

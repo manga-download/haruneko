@@ -5,6 +5,7 @@ import { FetchGraphQL, FetchWindowScript } from '../platform/FetchProvider';
 import { GetBase64FromBytes, GetBytesFromBase64, GetBytesFromHex, GetBytesFromUTF8, GetHexFromBytes, GetUTF8FromBytes } from '../BufferEncoder';
 import { DecoratableMangaScraper, type MangaPlugin, Manga, Chapter, Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
+import { SHA256 } from '../Crypto';
 
 const primaryDomain = 'mkissa.to';
 const patternAliasDomains = [
@@ -168,7 +169,7 @@ export default class extends DecoratableMangaScraper {
             }
         `;
 
-        const sha256Hash = GetHexFromBytes(new Uint8Array(await this.SHA256(pagesQuery)));
+        const sha256Hash = GetHexFromBytes(new Uint8Array(await SHA256(pagesQuery)));
         const aaReq = await this.GenerateSignature(partB, epoch, sha256Hash);
         const { tobeparsed: encrypted } = await FetchGraphQL<{ tobeparsed: string; }>(new Request(this.apiURL), '', pagesQuery, {
             ...<ChapterID>JSON.parse(chapter.Identifier),
@@ -198,7 +199,7 @@ export default class extends DecoratableMangaScraper {
 
         const key = await crypto.subtle.importKey('raw', rawKey, { name: 'AES-GCM' }, false, ['encrypt']);
         const ts = Math.floor(Date.now() / 300_000) * 300_000;
-        const iv = (await this.SHA256(`${epoch}:${BUILD_ID}:${queryHash}:${ts}`)).slice(0, 12);
+        const iv = (await SHA256(`${epoch}:${BUILD_ID}:${queryHash}:${ts}`)).slice(0, 12);
 
         const payload = JSON.stringify({
             v: 1,
@@ -216,16 +217,12 @@ export default class extends DecoratableMangaScraper {
         return GetBase64FromBytes(out);
     }
 
-    private async SHA256(message: string): Promise<ArrayBuffer> {
-        return crypto.subtle.digest({ name: 'SHA-256' }, GetBytesFromUTF8(message));
-    }
-
     private async Decrypt<T>(data: string): Promise<T> {
         const message = GetBytesFromBase64(data);
         const ciphertext = message.slice(13, message.length - 16);
         const tag = message.slice(message.length - 16);
         const algorithm = { name: 'AES-GCM', iv: message.slice(1, 13) };
-        const key = await crypto.subtle.importKey('raw', await this.SHA256('Xot36i3lK3:v1'), algorithm, false, ['decrypt']);
+        const key = await crypto.subtle.importKey('raw', await SHA256('Xot36i3lK3:v1'), algorithm, false, ['decrypt']);
         const result = await crypto.subtle.decrypt(algorithm, key, new Uint8Array([...ciphertext, ...tag]));
         return JSON.parse(GetUTF8FromBytes(result)) as T;
     }
