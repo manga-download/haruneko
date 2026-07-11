@@ -3,8 +3,9 @@ import icon from './CreativeComic.webp';
 import type { Priority } from '../taskpool/TaskPool';
 import { Fetch, FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
 import { type MangaPlugin, Manga, Chapter, Page, DecoratableMangaScraper } from '../providers/MangaPlugin';
-import { GetBytesFromBase64, GetBytesFromHex, GetBytesFromUTF8, GetUTF8FromBytes } from '../BufferEncoder';
+import { GetBytesFromBase64, GetBytesFromHex, GetUTF8FromBytes } from '../BufferEncoder';
 import * as Common from './decorators/Common';
+import { SHA512 } from '../Crypto';
 
 type TokenData = {
     uuid: string;
@@ -49,7 +50,7 @@ class DRMProvider {
     //public get KeyData() { return this.#keyData; }
 
     public async Update(uuid: string, token: string) {
-        const hash = await crypto.subtle.digest({ name: 'SHA-512' }, GetBytesFromUTF8(token));
+        const hash = await SHA512(token);
         this.#uuid = uuid;
         this.#iv = new Uint8Array(hash, 15, 16);
         this.#keyData = new Uint8Array(hash, 0, 32);
@@ -79,7 +80,7 @@ export default class extends DecoratableMangaScraper {
 
     public override async Initialize(): Promise<void> {
         // TODO: update token and uuid after manual website interaction (i.e login)
-        const { uuid, token } = await FetchWindowScript<TokenData>(new Request(this.URI), `({
+        const { uuid, token } = await FetchWindowScript<TokenData>(new Request(new URL('/zh', this.URI)), `({
             uuid: localStorage.getItem('uuid'),
             token: localStorage.getItem('accessToken'),
         });`, 500);
