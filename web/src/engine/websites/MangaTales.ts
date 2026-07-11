@@ -50,7 +50,7 @@ type APISingleManga = {
             title: string;
         };
     };
-};;
+};
 
 type APIMangas = {
     mangas?: {
