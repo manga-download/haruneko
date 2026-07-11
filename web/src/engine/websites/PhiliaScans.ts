@@ -214,7 +214,7 @@ export default class extends DecoratableMangaScraper {
             const tileHeight = image.height / GridSize;
             const tileCount = GridSize * GridSize;
 
-            const indexes = new PRNG(signKey, PageIndex).Sequence(GridSize);
+            const indexes = await new PRNG(signKey, PageIndex).Sequence(GridSize);
 
             for (let tileIndex = 0; tileIndex < tileCount; tileIndex++) {
                 const srcIdx = indexes[tileIndex];
