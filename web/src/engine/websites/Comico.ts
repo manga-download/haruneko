@@ -6,6 +6,7 @@ import * as Common from './decorators/Common';
 import { GetHexFromBytes, GetBytesFromUTF8, GetBytesFromBase64, GetUTF8FromBytes } from '../BufferEncoder';
 import { Exception } from '../Error';
 import { WebsiteResourceKey as R} from '../../i18n/ILocale';
+import { SHA256 } from '../Crypto';
 
 type APIResult<T> = {
     data: T;
@@ -168,7 +169,7 @@ export default class extends DecoratableMangaScraper {
     protected async FetchPOST<T extends JSONElement>(path: string, language: string): Promise<T> {
         const timestamp = Math.round(new Date().getTime() / 1000);
         const seed = GetBytesFromUTF8('9241d2f090d01716feac20ae08ba791a' + '0.0.0.0' + `${timestamp}`);
-        const checksum = GetHexFromBytes(new Uint8Array(await crypto.subtle.digest('SHA-256', seed)));
+        const checksum = GetHexFromBytes(new Uint8Array(await SHA256(seed)));
         return (await FetchJSON<APIResult<T>>(new Request(new URL(path, this.apiUrl), {
             method: 'GET',
             headers: {
