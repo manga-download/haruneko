@@ -2,7 +2,7 @@ import { Tags } from '../Tags';
 import icon from './LerHentais.webp';
 import { Chapter, DecoratableMangaScraper, Manga, type MangaPlugin, Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { FetchJSON } from '../platform/FetchProvider';
+import { FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
 
 type APIResult<T> = {
     result: {
@@ -30,10 +30,16 @@ type APIPage = {
     webpUrl: string;
 };
 
+type APIHeader = {
+    key: string;
+    value: string;
+};
+
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
     private readonly apiURL: string;
+    private secretHeader: APIHeader;
 
     public constructor(...args: [] | ConstructorParameters<typeof DecoratableMangaScraper>) {
         if (args.length) {
@@ -46,6 +52,29 @@ export default class extends DecoratableMangaScraper {
 
     public override get Icon() {
         return icon;
+    }
+
+    public override async Initialize(): Promise<void> {
+        this.secretHeader = await FetchWindowScript(new Request(this.URI), `
+            new Promise( resolve => {
+                window.fetch = new Proxy(window.fetch, {
+                    apply(target, thisArg, args) {
+                        try {
+                            const request = new Request(...args);
+                            for (const [key,value]of request.headers) {
+                                if(key.toLowerCase().startsWith('x-')) {
+                                    resolve( { key, value } );
+                                }
+                            }
+                        } catch {}
+                        return Reflect.apply(target, thisArg, args);
+                    }
+                });
+
+                const [element] = [...document.querySelectorAll('main button:has(svg):not([disabled])')]
+                element.click();
+            });
+        `, 1500);
     }
 
     public override ValidateMangaURL(url: string): boolean {
@@ -103,7 +132,8 @@ export default class extends DecoratableMangaScraper {
         }));
         const [{ result: { data: { json } } }] = await FetchJSON<APIResult<T>>(new Request(new URL(uri), {
             headers: {
-                'X-Api-Key': 'LerHentaisAPI@SecretKey2024!XyZ'
+                [this.secretHeader.key]: this.secretHeader.value,
+                Referer: this.URI.href
             }
         }));
         return json;
