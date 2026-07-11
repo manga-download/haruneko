@@ -4,6 +4,7 @@ import { GetHexFromBytes } from '../BufferEncoder';
 import { FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
 import { DecoratableMangaScraper, Manga, Chapter, Page, type MangaPlugin } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
+import { SHA256 } from '../Crypto';
 
 type APIManga = {
     name: string;
@@ -83,7 +84,7 @@ export default class extends DecoratableMangaScraper {
 
     private async FetchAPI<T extends JSONElement>(endpoint: string): Promise<T> {
         const timestamp = `${Date.now() / 1000 | 0}`;
-        const signature = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(`${timestamp}.KL9K40zaSyC9K40vOMLLbEcepIFBhUKXwELqxlwTEF`));
+        const signature = await SHA256(`${timestamp}.KL9K40zaSyC9K40vOMLLbEcepIFBhUKXwELqxlwTEF`);
         return FetchJSON<T>(new Request(new URL(endpoint, 'https://klz9.com/api/'), {
             headers: {
                 'X-Client-Ts': timestamp,
