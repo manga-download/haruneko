@@ -28,7 +28,7 @@ type TPiece = {
     left: number;
     top: number;
     width: number;
-};
+} | null;
 
 type TPuzzleData = {
     from: TPiece;

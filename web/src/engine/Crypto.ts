@@ -8,6 +8,7 @@ export const HMAC256Algo = { name: 'HMAC', hash: { name: 'SHA-256' } };
  * @param key - XOR key
  */
 export function XOR(source: Uint8Array, key: Uint8Array): Uint8Array<ArrayBuffer> {
+    if (key.length === 0) throw new RangeError('XOR key must not be empty');
     return source.map((byte, index) => byte ^ key[index % key.length]);
 }
 
