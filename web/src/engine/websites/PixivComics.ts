@@ -5,6 +5,7 @@ import { Fetch, FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
 import type { Priority } from '../taskpool/TaskPool';
 import DeScramble from '../transformers/ImageDescrambler';
 import { GetHexFromBytes, GetBytesFromUTF8 } from '../BufferEncoder';
+import { SHA256 } from '../Crypto';
 
 type APIMangaPage = {
     data: {
@@ -108,7 +109,7 @@ export default class extends DecoratableMangaScraper {
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         type This = typeof this;
         return Array.fromAsync(async function* (this: This) {
-            for (let page = 1, run = true; run ; page++) {
+            for (let page = 1, run = true; run; page++) {
                 const { data: { episodes } } = await this.FetchAPI<APIChapters>(`./works/${manga.Identifier}/episodes?page=${page}`);
                 const chapters = episodes.filter(({ readable }) => readable)
                     .map(({ episode: { id, numbering_title: numberTitle, sub_title: subTitle } }) => {
@@ -164,69 +165,101 @@ export default class extends DecoratableMangaScraper {
             ctx.putImageData(new ImageData(descrambled, width, height), 0, 0);
         });
     }
+    private async DescrambleData(scrambledData: Uint8ClampedArray, bytesPerPixel: number, width: number, height: number, columnSize: number,
+        rowSize: number, salt: string, key: string, reverse: boolean): Promise<Uint8ClampedArray<ArrayBuffer>> {
 
-    private async DescrambleData(scrambledData: Uint8ClampedArray, t: number, width: number, height: number, colSize: number, rowSize: number, salt: string, key: string, reverse: boolean): Promise<Uint8ClampedArray<ArrayBuffer>> {
-        const d = Math.ceil(height / rowSize),
-            c = Math.floor(width / colSize),
-            u = Array(d).fill(null).map(() => Array.from(Array(c).keys()));
-        {
-            const keyBuffer = await crypto.subtle.digest('SHA-256', GetBytesFromUTF8(salt + key));
-            const shuffler = new PixivShuffler(new Uint32Array(keyBuffer, 0, 4));
+        const rowGroups = Math.ceil(height / rowSize);
+        const columns = Math.floor(width / columnSize);
 
-            for (let e = 0; e < 100; e++) shuffler.Next();
-            for (let e = 0; e < d; e++) {
-                const t = u[e];
-                for (let e = c - 1; e >= 1; e--) {
-                    const i = shuffler.Next() % (e + 1), n = t[e];
-                    t[e] = t[i], t[i] = n;
+        const shuffleTable = Array.from({ length: rowGroups }, () => Array.from({ length: columns }, (_, i) => i));
+        const seed = await SHA256(salt + key);
+        const random = new PRNG(new Uint32Array(seed, 0, 4));
+
+        for (let i = 0; i < 100; i++) random.Next();
+
+        for (let rowGroup = 0; rowGroup < rowGroups; rowGroup++) {
+            const order = shuffleTable[rowGroup];
+            for (let i = columns - 1; i > 0; i--) {
+                const j = random.Next() % (i + 1);
+                [order[i], order[j]] = [order[j], order[i]];
+            }
+        }
+
+        if (reverse) {
+            for (let rowGroup = 0; rowGroup < rowGroups; rowGroup++) {
+                const order = shuffleTable[rowGroup];
+                const inverse = order.map((_, i) => order.indexOf(i));
+                if (inverse.some(index => index < 0)) {
+                    throw new Error("Failed to reverse shuffle table");
+                }
+                shuffleTable[rowGroup] = inverse;
+            }
+        }
+
+        const output = new Uint8ClampedArray(scrambledData.length);
+        for (let y = 0; y < height; y++) {
+            const rowGroup = Math.floor(y / rowSize);
+            const columnOrder = shuffleTable[rowGroup];
+
+            for (let destinationColumn = 0; destinationColumn < columns; destinationColumn++) {
+                const sourceColumn = columnOrder[destinationColumn];
+
+                const destinationX = destinationColumn * columnSize;
+                const sourceX = sourceColumn * columnSize;
+
+                const destinationOffset = (y * width + destinationX) * bytesPerPixel;
+                const sourceOffset = (y * width + sourceX) * bytesPerPixel;
+
+                const bytesToCopy = columnSize * bytesPerPixel;
+
+                for (let i = 0; i < bytesToCopy; i++) {
+                    output[destinationOffset + i] = scrambledData[sourceOffset + i];
                 }
             }
-        }
-        if (reverse) for (let e = 0; e < d; e++) {
-            const t = u[e],
-                i = t.map((e, i) => t.indexOf(i));
-            if (i.some(e => e < 0)) throw Error('Failed to reverse shuffle table');
-            u[e] = i;
-        }
-        const h = new Uint8ClampedArray(scrambledData.length);
-        for (let a = 0; a < height; a++) {
-            const r = Math.floor(a / rowSize),
-                l = u[r];
-            for (let r = 0; r < c; r++) {
-                const s = l[r],
-                    o = r * colSize,
-                    d = (a * width + o) * t,
-                    c = s * colSize,
-                    u = (a * width + c) * t,
-                    p = colSize * t;
-                for (let t = 0; t < p; t++) h[d + t] = scrambledData[u + t];
-            }
-            {
-                const r = c * colSize,
-                    s = (a * width + r) * t,
-                    l = (a * width + width) * t;
-                for (let t = s; t < l; t++) h[t] = scrambledData[t];
+
+            const remainderStartX = columns * columnSize;
+            const remainderStart = (y * width + remainderStartX) * bytesPerPixel;
+            const rowEnd = (y * width + width) * bytesPerPixel;
+
+            for (let i = remainderStart; i < rowEnd; i++) {
+                output[i] = scrambledData[i];
             }
         }
-        return h;
+        return output;
     }
 }
 
-class PixivShuffler {
+//32 bit variant of xoroshiro128 PRNG
+class PRNG {
 
-    private readonly s = new Uint32Array(4);
+    private readonly state = new Uint32Array(4);
 
     public Next() {
-        const e = 9 * this.Tj(5 * this.s[1] >>> 0, 7) >>> 0, t = this.s[1] << 9 >>> 0;
-        return this.s[2] = (this.s[2] ^ this.s[0]) >>> 0, this.s[3] = (this.s[3] ^ this.s[1]) >>> 0, this.s[1] = (this.s[1] ^ this.s[2]) >>> 0, this.s[0] = (this.s[0] ^ this.s[3]) >>> 0, this.s[2] = (this.s[2] ^ t) >>> 0, this.s[3] = this.Tj(this.s[3], 11), e;
+        const result = 9 * this.RotateLeft(5 * this.state[1] >>> 0, 7) >>> 0;
+        const temp = this.state[1] << 9 >>> 0;
+        this.state[2] = (this.state[2] ^ this.state[0]) >>> 0;
+        this.state[3] = (this.state[3] ^ this.state[1]) >>> 0;
+        this.state[1] = (this.state[1] ^ this.state[2]) >>> 0;
+        this.state[0] = (this.state[0] ^ this.state[3]) >>> 0;
+        this.state[2] = (this.state[2] ^ temp) >>> 0;
+        this.state[3] = this.RotateLeft(this.state[3], 11);
+        return result;
     }
 
-    constructor(e: Uint32Array) {
+    constructor(seed: Uint32Array) {
         //if (4 !== e.length) throw Error('seed.length !== 4 (seed.length: '.concat(e.length, ')'));
-        this.s = new Uint32Array(e), 0 === this.s[0] && 0 === this.s[1] && 0 === this.s[2] && 0 === this.s[3] && (this.s[0] = 1);
+        this.state = new Uint32Array(seed);
+
+        const allZeros =
+            this.state[0] === 0 &&
+            this.state[1] === 0 &&
+            this.state[2] === 0 &&
+            this.state[3] === 0;
+
+        if (allZeros) this.state[0] = 1;
     }
 
-    private Tj(e: number, t: number) {
-        return (e << (t %= 32) >>> 0 | e >>> 32 - t) >>> 0;
+    private RotateLeft(value: number, shift: number) {
+        return (value << (shift %= 32) >>> 0 | value >>> 32 - shift) >>> 0;
     }
 }
