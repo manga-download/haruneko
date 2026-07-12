@@ -313,7 +313,6 @@ export { default as MangaBall } from './MangaBall';
 export { default as MangaBANG } from './MangaBANG';
 export { default as MangaBat } from './MangaBat';
 export { default as Mangabox } from './Mangabox';
-export { default as MangaBTT } from './MangaBTT';
 export { default as MangaBuff } from './MangaBuff';
 export { default as MangaBz } from './MangaBz';
 export { default as MangaCanBlog } from './MangaCanBlog';
