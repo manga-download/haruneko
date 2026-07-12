@@ -6,7 +6,7 @@ new TestFixture({
         title: 'YuriGarden'
     },
     container: {
-        url: 'https://yurigarden.com/comic/797',
+        url: 'https://yurigarden.moe/comic/797',
         id: '797',
         title: 'Tuyển tập PokeTaki cực gay!!!'
     },

@@ -61,12 +61,12 @@ const pageScript = `
 `;
 
 export default class extends DecoratableMangaScraper {
-    private apiUrl = 'https://api.yurigarden.com/api/';
-    private CDNUrl = 'https://db.yurigarden.com/storage/v1/object/public/yuri-garden-store/';
+    private apiUrl = 'https://api.yurigarden.moe/api/';
+    private CDNUrl = 'https://db.yurigarden.moe/storage/v1/object/public/yuri-garden-store/';
     private AESKEY = 'FYgicJ8oFdIYfgLv';
 
     public constructor() {
-        super('yurigarden', 'YuriGarden', 'https://yurigarden.com', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Vietnamese, Tags.Source.Aggregator);
+        super('yurigarden', 'YuriGarden', 'https://yurigarden.moe', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Vietnamese, Tags.Source.Aggregator);
     }
 
     public override get Icon() {
@@ -230,7 +230,7 @@ export default class extends DecoratableMangaScraper {
         };
     }
 
-    private MD5(input: Uint8Array): Uint8Array {
+    private MD5(input: Uint8Array<ArrayBuffer>): Uint8Array<ArrayBuffer> {
         const l = input.length;
 
         const padded = new Uint8Array(((l + 8 >> 6) + 1) * 64);
