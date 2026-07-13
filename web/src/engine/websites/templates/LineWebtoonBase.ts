@@ -1,6 +1,6 @@
-import { DecoratableMangaScraper, type MangaPlugin, type Manga, type Chapter, Page } from '../../providers/MangaPlugin';
+import { type Chapter, DecoratableMangaScraper, type MangaPlugin, type Manga, Page } from '../../providers/MangaPlugin';
 import * as Common from '../decorators/Common';
-import { FetchWindowScript, Fetch } from '../../platform/FetchProvider';
+import { FetchWindowScript, Fetch, } from '../../platform/FetchProvider';
 import { Priority } from '../../taskpool/DeferredTask';
 import DeScramble from '../../transformers/ImageDescrambler';
 import { TaskPool } from '../../taskpool/TaskPool';
@@ -25,19 +25,11 @@ type ImageLayer = {
     top: number;
 };
 
-export function ChapterExtractor(element: HTMLAnchorElement) {
-    const chapter = element.querySelector('span.tx');
-    let title = chapter ? chapter.textContent.trim() + ' - ' : '';
-    title += element.querySelector('span.subj span').textContent.trim();
-    const id = /'/.test(element.href) ? decodeURIComponent(element.href).match(/'([^']+)'/)[1] : element.pathname + element.search;
-    return { id, title };
-}
-
 @Common.MangasNotSupported()
 export class LineWebtoonBase extends DecoratableMangaScraper {
 
     private mangaRegexp = /[a-z]{2}\/[^/]+\/[^/]+\/list\?title_no=\d+$/;
-    private readonly interactionTaskPool = new TaskPool(1, RateLimit.PerMinute(30));
+    protected readonly interactionTaskPool = new TaskPool(1, RateLimit.PerMinute(30));
 
     public WithMangaRegex(regex: RegExp): LineWebtoonBase {
         this.mangaRegexp = regex;
@@ -105,11 +97,7 @@ export class LineWebtoonBase extends DecoratableMangaScraper {
             const pageUrl = new URL(page);
             pageUrl.searchParams.delete('type');
             return new Page(this, chapter, pageUrl);
-        }) : this.CreatePagesfromData(chapter, data as PageData[]);
-    }
-
-    private CreatePagesfromData(chapter: Chapter, data: PageData[]): Page<PageData>[] {
-        return data.map(page => new Page<PageData>(this, chapter, new URL(this.URI), { Referer: this.URI.href, ...page }));
+        }) : (data as PageData[]).map(page => new Page<PageData>(this, chapter, new URL(this.URI), { Referer: this.URI.href, ...page }));
     }
 
     public override async FetchImage(page: Page<PageData>, priority: Priority, signal: AbortSignal): Promise<Blob> {
