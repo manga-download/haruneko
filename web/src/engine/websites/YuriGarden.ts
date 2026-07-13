@@ -6,7 +6,7 @@ import * as Common from './decorators/Common';
 import { FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
 import type { Priority } from '../taskpool/DeferredTask';
 import DeScramble from '../transformers/ImageDescrambler';
-import { GetBytesFromBase64, GetBytesFromHex, GetBytesFromUTF8, GetHexFromBytes } from '../BufferEncoder';
+import { GetBytesFromBase64, GetBytesFromUTF8, GetUTF8FromBytes } from '../BufferEncoder';
 
 // TODO : Properly detect Turnstile on chapters, DONT PUSH T MASTER WITHOUT THAT
 
@@ -44,7 +44,7 @@ type PageKey = {
 const pageScript = `
     new Promise(async(resolve, reject) => {
         try {
-            const res = await fetch('https://api.yurigarden.com/api/chapters/pages/' + location.pathname.split('/').at(-1), {
+            const res = await fetch('https://api.yurigarden.moe/api/chapters/pages/' + location.pathname.split('/').at(-1), {
                 "credentials": "include",
                 headers: {
                     "Accept": "application/json",
@@ -61,7 +61,7 @@ const pageScript = `
 `;
 
 export default class extends DecoratableMangaScraper {
-    private apiUrl = 'https://api.yurigarden.moe/api/';
+    private apiURL = 'https://api.yurigarden.moe/api/';
     private CDNUrl = 'https://db.yurigarden.moe/storage/v1/object/public/yuri-garden-store/';
     private AESKEY = 'FYgicJ8oFdIYfgLv';
 
@@ -102,7 +102,9 @@ export default class extends DecoratableMangaScraper {
     public override async FetchPages(chapter: Chapter): Promise<Page<PageKey>[]> {
         // request page data within window because they have turnstile
         const response = await FetchWindowScript<CryptedData & PagesData>(new Request(new URL(`./comic/${chapter.Parent.Identifier}/${chapter.Identifier}`, this.URI)), pageScript, 10_000, 60_000);
-        const { pages } = !!response.encrypted ? JSON.parse(await this.OpenSSLMD5Decrypt(response.data, this.AESKEY)) as PagesData : response as PagesData;
+        const { pages } = !!response.encrypted ?
+            <PagesData>JSON.parse(GetUTF8FromBytes(await this.OpenSSLMD5Decrypt(GetBytesFromBase64(response.data), this.AESKEY)))
+            : <PagesData>response;
         return pages.map(({ key, url }) => new Page<PageKey>(this, chapter, new URL((url.startsWith('http') ? url : this.CDNUrl + url).replace('_credit', '')), { key, Referer: this.URI.href }));
     }
 
@@ -112,7 +114,7 @@ export default class extends DecoratableMangaScraper {
         const MAGIC = 4;
         return !page.Parameters.key ? blob : DeScramble(blob, async (image, ctx) => {
 
-            const DecodedKey = this.ComputeKey(this.Base58ToNumber(page.Parameters.key.slice(5, -1)), numRows);
+            const DecodedKey = this.LehmerPermutations(this.Base58ToNumber(page.Parameters.key.slice(5, -1)), numRows);
             const piecesOrder = this.SwapIndexAndValues(DecodedKey);
             const computedHeight = image.height - MAGIC * (numRows - 1);
 
@@ -123,10 +125,10 @@ export default class extends DecoratableMangaScraper {
             const orderedPiecesHeight = piecesOrder.map(r => piecesHeight[r]);
 
             const piecesX = [0];
-            for (let g = 0; g < orderedPiecesHeight.length; g++) piecesX[g + 1] = piecesX[g] + orderedPiecesHeight[g];
+            for (let index = 0; index < orderedPiecesHeight.length; index++) piecesX[index + 1] = piecesX[index] + orderedPiecesHeight[index];
             let destX = 0;
-            for (let g = 0; g < piecesOrder.length; g++) {
-                const pieceIndex = piecesOrder[g];
+            for (let index = 0; index < piecesOrder.length; index++) {
+                const pieceIndex = piecesOrder[index];
                 const sourceX = piecesX[pieceIndex] + MAGIC * pieceIndex;
                 const sourceHeight = orderedPiecesHeight[pieceIndex];
                 ctx.drawImage(image, 0, sourceX, image.width, sourceHeight, 0, destX, image.width, sourceHeight);
@@ -135,98 +137,121 @@ export default class extends DecoratableMangaScraper {
         });
     }
 
-    private ComputeKey(t: number, e: number = 10): number[] {
-        const B = [1, 1, 2, 6, 24, 120, 720, 5040, 40320, 362880, 3628800];
-        let r = t;
-        const n = Array.from({ length: e }, (a, c) => c);
-        const o = [];
-        for (let a = e - 1; a >= 0; a--) {
-            const c = B[a];
-            const i = Math.floor(r / c);
-            r = r % c;
-            o.push(n.splice(i, 1)[0]);
+    private LehmerPermutations(permutationIndex: number, keyLength: number = 10): number[] {
+        const factorials: number[] = [1];
+
+        for (let i = 1; i <= keyLength; i++) {
+            factorials.push(factorials[i - 1] * i);
         }
-        return o;
+
+        const availableNumbers = Array.from({ length: keyLength }, (_, index) => index);
+        const resultingKey: number[] = [];
+        let remainingIndex = permutationIndex;
+
+        for (let i = keyLength - 1; i >= 0; i--) {
+            const currentFactorial = factorials[i];
+            const targetIndex = Math.floor(remainingIndex / currentFactorial);
+            remainingIndex = remainingIndex % currentFactorial;
+            const removedNumber = availableNumbers.splice(targetIndex, 1)[0];
+            resultingKey.push(removedNumber);
+        }
+        return resultingKey;
     }
 
     private Base58ToNumber(str: string): number {
-        const BASE58_ALPHABET = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
-        let result = 0;
-        for (const char of str) {
-            const index = BASE58_ALPHABET.indexOf(char);
-            result = result * 58 + index;
-        }
-        return result;
+        return str.split('').reduce((result, char) => {
+            const index = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz".indexOf(char);
+            return result * 58 + index;
+        }, 0);
     }
 
-    private ComputePiecesHeight(computedHeight: number, numRows: number): number[] {
-        const s = Math.floor(computedHeight / numRows),
-            o = computedHeight % numRows,
-            a = [];
-        for (let l = 0; l < numRows; l++) a.push(s + (l < o ? 1 : 0));
-        return a;
+    private ComputePiecesHeight(totalHeight: number, numRows: number): number[] {
+        const baseHeight = Math.floor(totalHeight / numRows);
+        const remainingPixels = totalHeight % numRows;
+        const pieceHeights: number[] = [];
+
+        for (let i = 0; i < numRows; i++) {
+            const extraPixel = i < remainingPixels ? 1 : 0;
+            pieceHeights.push(baseHeight + extraPixel);
+        }
+        return pieceHeights;
     }
 
     private SwapIndexAndValues(originArray: number[]): number[] {
-        const newArray = Array(originArray.length).fill(0);
-        for (let s = 0; s < originArray.length; s++) newArray[originArray[s]] = s;
-        return newArray as number[];
+        const invertedArray = Array(originArray.length).fill(0);
+        originArray.forEach((targetIndex, currentIndex) => {
+            invertedArray[targetIndex] = currentIndex;
+        });
+        return invertedArray;
     }
 
     private async FetchAPI<T extends JSONElement>(endpoint: string): Promise<T> {
-        return FetchJSON<T>(new Request(new URL(endpoint, this.apiUrl), {
+        return FetchJSON<T>(new Request(new URL(endpoint, this.apiURL), {
             method: 'GET',
             headers: {
                 Origin: this.URI.origin,
                 Referer: this.URI.href,
-                'x-app-origin': this.URI.origin,
-                'x-custom-lang': 'vi',
+                'X-App-Origin': this.URI.origin,
+                'X-Custom-Lang': 'vi',
             },
         }));
     }
 
-    private async OpenSSLMD5Decrypt(cipherText: string, password: string): Promise<string> {
-        const ctBytes = GetBytesFromBase64(cipherText);
-        const saltBytes = ctBytes.slice(8, 16);
-        const cipherTextBytes = ctBytes.slice(16);
+    private async OpenSSLMD5Decrypt(message: Uint8Array<ArrayBuffer>, password: string): Promise<ArrayBuffer> {
+        const saltBytes = message.slice(8, 16);
+        const cipherTextBytes = message.slice(16);
 
-        const { key, iv } = await this.DeriveKeyAndIV(password, saltBytes);
+        const { key, iv } = this.EvpBytesToKey(password, saltBytes);
 
         const cryptoKey = await crypto.subtle.importKey(
             'raw',
-            GetBytesFromHex(key),
+            key,
             { name: 'AES-CBC' },
             false,
             ['decrypt']
         );
 
         const decrypted = await crypto.subtle.decrypt(
-            { name: 'AES-CBC', iv: GetBytesFromHex(iv) },
+            { name: 'AES-CBC', iv },
             cryptoKey,
             cipherTextBytes
         );
 
-        return new TextDecoder().decode(decrypted);
+        return decrypted;
 
     }
-
-    private DeriveKeyAndIV(password: string, salt: Uint8Array): { key: string, iv: string } {
+    /** OpenSSL legacy key derivation (MD5)
+     * *
+     * @param data - Input string / bytes to derive key from
+     * @param salt - arbitrary value
+     */
+    //
+    private EvpBytesToKey(password: string, salt: Uint8Array<ArrayBuffer>): { key: Uint8Array<ArrayBuffer>, iv: Uint8Array<ArrayBuffer> } {
         // Helper to concatenate two arrays
-        const concatArrays = (a, b) => new Uint8Array([...a, ...b]);
+        const concatArrays = (a: Uint8Array<ArrayBuffer>, b: Uint8Array<ArrayBuffer>): Uint8Array<ArrayBuffer> => {
+            const out = new Uint8Array(a.length + b.length);
+            out.set(a);
+            out.set(b, a.length);
+            return out;
+        };
 
         const passwordBytes = GetBytesFromUTF8(password);
-        const combined1 = concatArrays(passwordBytes, salt);
-        const hash1 = this.MD5(combined1);
+        const baseBuffer = concatArrays(passwordBytes, salt);
 
-        const combined2 = concatArrays(hash1, concatArrays(passwordBytes, salt));
-        const hash2 = this.MD5(combined2);
+        const hashes: Uint8Array<ArrayBuffer>[] = [];
+        let currentInput = baseBuffer;
 
-        const combined3 = concatArrays(hash2, concatArrays(passwordBytes, salt));
-        const hash3 = this.MD5(combined3);
+        for (let i = 0; i < 3; i++) {
+            const currentHash = this.MD5(currentInput);
+            hashes.push(currentHash);
+            currentInput = concatArrays(currentHash, baseBuffer);
+        }
+
+        const [hash1, hash2, iv] = hashes;
 
         return {
-            key: GetHexFromBytes(concatArrays(hash1, hash2)), // key = hash1 || hash2
-            iv: GetHexFromBytes(hash3)// iv = hash3
+            key: concatArrays(hash1, hash2),
+            iv: iv
         };
     }
 
