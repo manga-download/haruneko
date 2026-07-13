@@ -4,7 +4,7 @@ new TestFixture({
     plugin: {
         id: 'yurigarden',
         title: 'YuriGarden'
-    },
+    }, /* Mandatory Login
     container: {
         url: 'https://yurigarden.moe/comic/797',
         id: '797',
@@ -18,5 +18,5 @@ new TestFixture({
         index: 1,
         size: 1_829_254,
         type: 'image/png'
-    }
+    }*/
 }).AssertWebsite();
