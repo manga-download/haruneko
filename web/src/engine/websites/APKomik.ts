@@ -1,14 +1,15 @@
 import { Tags } from '../Tags';
 import icon from './APKomik.webp';
-import { DecoratableMangaScraper } from '../providers/MangaPlugin';
+import { type Chapter, DecoratableMangaScraper, Page } from '../providers/MangaPlugin';
 import * as MangaStream from './decorators/WordPressMangaStream';
 import * as Common from './decorators/Common';
+import { FetchWindowScript } from '../platform/FetchProvider';
 
 @MangaStream.MangaCSS(/^{origin}\/manga\/[^/]+\/$/)
-@Common.MangasMultiPageCSS('div.bs div.bsx a', Common.PatternLinkGenerator('/manga/?page={page}'), 0, Common.AnchorInfoExtractor(true))
+@MangaStream.MangasSinglePageCSS()
 @MangaStream.ChaptersSinglePageCSS()
 @MangaStream.PagesSinglePageJS()
-@Common.ImageAjax()
+@Common.ImageElement(true)
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
@@ -17,5 +18,15 @@ export default class extends DecoratableMangaScraper {
 
     public override get Icon() {
         return icon;
+    }
+
+    public override async Initialize(): Promise<void> {
+        //trigger Cloudflare at initialization
+        return await FetchWindowScript(new Request(new URL('/manga/-/', this.URI)), '');
+    }
+
+    public override async FetchPages(chapter: Chapter): Promise<Page[]> {
+        const pages = await FetchWindowScript<string[]>(new Request(new URL(chapter.Identifier, this.URI)), 'ts_reader_control.getImages();');
+        return pages.map(page => new Page(this, chapter, new URL(page, this.URI), { Referer: this.URI.href }));
     }
 }

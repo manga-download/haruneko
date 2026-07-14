@@ -6,7 +6,7 @@ import { FetchWindowScript } from '../platform/FetchProvider';
 export default class extends KiruBase {
 
     public constructor() {
-        super('kiryuu', 'Kiryuu', 'https://v6.kiryuu.to', Tags.Media.Manga, Tags.Language.Indonesian, Tags.Source.Aggregator, Tags.Accessibility.DomainRotation);
+        super('kiryuu', 'Kiryuu', 'https://v7.kiryuu.to', Tags.Media.Manga, Tags.Language.Indonesian, Tags.Source.Aggregator, Tags.Accessibility.DomainRotation);
     }
 
     public override get Icon() {
