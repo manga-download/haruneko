@@ -28,6 +28,7 @@ import '../FbSquads_e2e';
 import '../FireComics_e2e';
 import '../GarciaManga_e2e';
 import '../GDScans_e2e';
+import '../GedeComix_e2e';
 import '../GourmetScans_e2e';
 import '../GrabberZone_e2e';
 import '../HadesNoFansub_e2e';
