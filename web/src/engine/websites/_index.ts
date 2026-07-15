@@ -369,6 +369,7 @@ export { default as MangaLivreTo } from './MangaLivreTo';
 export { default as MangaLover } from './MangaLover';
 export { default as MangaMana } from './MangaMana';
 export { default as MangaNato } from './MangaNato';
+export { default as MangaNight } from './MangaNight';
 export { default as MangaNo } from './MangaNo';
 export { default as MangaOneJp } from './MangaOneJp';
 export { default as MangaOni } from './MangaOni';

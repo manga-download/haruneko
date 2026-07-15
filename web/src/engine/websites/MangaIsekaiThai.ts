@@ -20,6 +20,7 @@ export default class extends DecoratableMangaScraper {
     public override get Icon() {
         return icon;
     }
+
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
         const images = await FetchWindowScript<JSImageData[]>(new Request(new URL(chapter.Identifier, this.URI)), `
             new Promise(resolve => {
