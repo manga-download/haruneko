@@ -299,6 +299,7 @@ export { default as LupiTeam } from './LupiTeam';
 export { default as Luscious } from './Luscious';
 export { default as Luvyaa } from './Luvyaa';
 export { default as LxHentai } from './LxHentai';
+export { default as Lycantoons } from './Lycantoons';
 export { default as MadaraDex } from './MadaraDex';
 export { default as MadaraScans } from './MadaraScans';
 export { default as MagComi } from './MagComi';
