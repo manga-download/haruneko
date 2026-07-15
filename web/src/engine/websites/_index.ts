@@ -350,6 +350,7 @@ export { default as MangaHot } from './MangaHot';
 export { default as MangaHub } from './MangaHub';
 export { default as MangaHubFR } from './MangaHubFR';
 export { default as MangaHubRU } from './MangaHubRU';
+export { default as MangaIsekaiThai } from './MangaIsekaiThai';
 export { default as MangaKakalot } from './MangaKakalot';
 export { default as MangaKakalotFun } from './MangaKakalotFun';
 export { default as MangaKatana } from './MangaKatana';
