@@ -473,6 +473,7 @@ export { default as MirrorKomik } from './MirrorKomik';
 export { default as mkzhan } from './mkzhan';
 export { default as Mojoin } from './Mojoin';
 export { default as MonochromeScans } from './MonochromeScans';
+export { default as MonteTai } from './MonteTai';
 export { default as MugiwarasOficial } from './MugiwarasOficial';
 export { default as MultPorn } from './MultPorn';
 export { default as MundoManhwa } from './MundoManhwa';
