@@ -1,5 +1,5 @@
 import { Tags } from '../Tags';
-import icon from './MangaIsekaiThai.webp';
+import icon from './MangaNight.webp';
 import { type Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from '../providers/MangaPlugin';
 import { FetchJSON } from '../platform/FetchProvider';
 import * as Common from './decorators/Common';
