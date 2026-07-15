@@ -32,6 +32,7 @@ export { default as AsmHentai } from './AsmHentai';
 export { default as AsmodeusScans } from './AsmodeusScans';
 export { default as AstralManga } from './AstralManga';
 export { default as AstraToons } from './AstraToons';
+export { default as AstreaScans } from './AstreaScans';
 export { default as AsuraScans } from './AsuraScans';
 export { default as AsuraScansTR } from './AsuraScansTR';
 export { default as Atikrost } from './Atikrost';
