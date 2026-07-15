@@ -589,6 +589,7 @@ export { default as RNCalation } from './RNCalation';
 export { default as RokariComics } from './RokariComics';
 export { default as RokuHentai } from './RokuHentai';
 export { default as RoliaScan } from './RoliaScan';
+export { default as Roxinha } from './Roxinha';
 export { default as RuManhua } from './RuManhua';
 export { default as RuyaManga } from './RuyaManga';
 export { default as RuyaMangaNet } from './RuyaMangaNet';
