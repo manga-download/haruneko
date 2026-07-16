@@ -679,6 +679,7 @@ export { default as ToonFR } from './ToonFR';
 export { default as ToonGod } from './ToonGod';
 export { default as Toonily } from './Toonily';
 export { default as Toonkor } from './Toonkor';
+export { default as ToonTop } from './ToonTop';
 export { default as TopComicPorno } from './TopComicPorno';
 export { default as TopManhua } from './TopManhua';
 export { default as TopManhuaNet } from './TopManhuaNet';
