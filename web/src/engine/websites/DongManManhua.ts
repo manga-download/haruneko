@@ -17,7 +17,7 @@ function ChapterExtractor(element: HTMLAnchorElement) {
 export default class extends LineWebtoonBase {
     public constructor() {
         super('dongmanmanhua', `咚漫 (DongMan Manhua)`, 'https://www.dongmanmanhua.cn', Tags.Language.Chinese, Tags.Media.Manhua, Tags.Source.Official);
-        this.WithMangaRegex(/[^/]+\/[^/]+\/list\?title_no=\d+$/);
+        this.WithMangaRegex(/[^/]+\/[^/]+\/list\?title_no=\d+$/).WithMangaTitleCSS('div.info .subj');
     }
 
     public override get Icon() {
