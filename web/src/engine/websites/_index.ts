@@ -527,6 +527,7 @@ export { default as NyxScans } from './NyxScans';
 export { default as OlympusScanlation } from './OlympusScanlation';
 export { default as OnePieceTube } from './OnePieceTube';
 export { default as OnMangaMe } from './OnMangaMe';
+export { default as OnyxReader } from './OnyxReader';
 export { default as Opiatoon } from './Opiatoon';
 export { default as Oremanga } from './Oremanga';
 export { default as OrigamiOrpheans } from './OrigamiOrpheans';
