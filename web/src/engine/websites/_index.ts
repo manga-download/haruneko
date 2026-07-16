@@ -707,6 +707,7 @@ export { default as Usagi } from './Usagi';
 export { default as Utoon } from './Utoon';
 export { default as UzayManga } from './UzayManga';
 export { default as ValirScans } from './ValirScans';
+export { default as Vegitoons } from './Vegitoons';
 export { default as VerComicsPorno } from './VerComicsPorno';
 export { default as VerMangasPorno } from './VerMangasPorno';
 export { default as VerManhwa } from './VerManhwa';
