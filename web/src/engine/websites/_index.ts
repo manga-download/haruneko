@@ -613,6 +613,7 @@ export { default as SeiManga } from './SeiManga';
 export { default as SeinagiAdultoFansub } from './SeinagiAdultoFansub';
 export { default as SeinagiFansubEN } from './SeinagiFansubEN';
 export { default as SeinagiFansubES } from './SeinagiFansubES';
+export { default as Seitoon } from './Seitoon';
 export { default as SekaiKomik } from './SekaiKomik';
 export { default as SekteKomik } from './SekteKomik';
 export { default as SelfManga } from './SelfManga';
