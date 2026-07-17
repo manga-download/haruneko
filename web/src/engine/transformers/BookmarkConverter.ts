@@ -40,7 +40,6 @@ export const legacyWebsiteIdentifierMap = new Map([
     [ 'sushiscanfr', 'animesama' ],
     [ 'vermanhwas', 'vermanhwa' ],
     [ 'visualikigai', 'ikigaimangas' ],
-    [ 'webtoontrcom', 'webtoontrnet' ],
 ]);
 
 type BookmarkLegacy = {
