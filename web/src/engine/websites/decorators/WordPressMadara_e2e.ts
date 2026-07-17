@@ -122,7 +122,6 @@ import '../SamuraiScan_e2e';
 import '../ShinobiScans_e2e';
 import '../ShootingStarScans_e2e';
 import '../SiiManga_e2e';
-import '../Summertoon_e2e';
 import '../TaurusManga_e2e';
 import '../TheBlank_e2e';
 import '../TiaManhwa_e2e';
