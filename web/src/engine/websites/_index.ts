@@ -260,6 +260,7 @@ export { default as KomikStation } from './KomikStation';
 export { default as KomikTap } from './KomikTap';
 export { default as Komiku } from './Komiku';
 export { default as KomikuCOM } from './KomikuCOM';
+export { default as KoreliManga } from './KoreliManga';
 export { default as KSGroupScans } from './KSGroupScans';
 export { default as Kuaikanmanhua } from './Kuaikanmanhua';
 export { default as kuimh } from './kuimh';
