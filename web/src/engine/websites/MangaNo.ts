@@ -29,7 +29,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page<PageParams>[]> {
-        const { pages, choJuGiga } = await FetchWindowScript<JSONPages>(new Request(new URL(chapter.Identifier, this.URI)), `JSON.parse( document.querySelector('giga-viewer[page-structure]')?.getAttribute('page-structure') ?? '{}')`, 1500);
+        const { pages, choJuGiga } = await FetchWindowScript<JSONPages>(new Request(new URL(chapter.Identifier, this.URI)), `JSON.parse( document.querySelector('giga-viewer[page-structure]')?.getAttribute('page-structure') ?? '{}')`, 2500);
         return !pages ? [] : pages.filter(({ type }) => type === 'main')
             .map(({ src }) => new Page(this, chapter, new URL(decodeURIComponent(new URL(src).pathname.match(/http.*/).at(0))), { scrambled: choJuGiga === 'baku' }));
     }
