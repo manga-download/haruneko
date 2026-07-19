@@ -6,7 +6,7 @@ new TestFixture({
         title: 'Big Comics'
     },
     container: {
-        url: 'https://bigcomics.jp/series/48eef350d364a',
+        url: 'https://bigcomics.jp/series/48eef350d364a/new',
         id: '/series/48eef350d364a',
         title: '岳'
     },

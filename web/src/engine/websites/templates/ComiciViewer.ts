@@ -25,8 +25,14 @@ type APIChapters = {
     }
 };
 
-@Common.MangaCSS(/^{origin}\/series\/[^/]+$/, 'h1.series-h-title', Common.WebsiteInfoExtractor({ queryBloat: 'span' }))
-@Common.MangasMultiPageCSS<HTMLAnchorElement>('a.series-list-item-link', Common.PatternLinkGenerator('/series/list/up/{page}', 1), 0, anchor => ({ id: anchor.pathname, title: anchor.querySelector('div.series-list-item-h span').textContent.trim() }))
+const CleanMangaPath = (path: string) => path.replace(/\/new$/, '');
+function MangaExtractor(element: HTMLElement, uri: URL) {
+    const { id, title } = Common.WebsiteInfoExtractor({ queryBloat: 'span' }).call(this, element, uri);
+    return { id: CleanMangaPath(id), title };
+};
+
+@Common.MangaCSS(/^{origin}(\/[^/]+)?\/series\/[^/]+(\/new)?$/, 'h1.series-h-title', MangaExtractor)
+@Common.MangasMultiPageCSS<HTMLAnchorElement>('a.series-list-item-link', Common.PatternLinkGenerator('/series/list/up/{page}', 1), 0, anchor => ({ id: CleanMangaPath(anchor.pathname), title: anchor.querySelector('div.series-list-item-h span').textContent.trim() }))
 export class ComiciViewer extends DecoratableMangaScraper {
 
     readonly #identityTileMap = new Array(16).fill(null).map((_, index) => ({ col: index / 4 >> 0, row: index % 4 >> 0 }));
@@ -43,9 +49,9 @@ export class ComiciViewer extends DecoratableMangaScraper {
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const [, prefix, seriesHash] = manga.Identifier.match(/^(.*)\/series\/([^/]+)$/)!;
+        const [, prefix, seriesHash] = manga.Identifier.match(/^(\/[^/]+)?\/series\/([^/]+)$/);
         const { series: { episodes }, } = await FetchJSON<APIChapters>(new Request(new URL(`./episodes?seriesHash=${seriesHash}&episodeFrom=1&episodeTo=9999`, this.#apiURL)));
-        return episodes.map(({ id, title }) => new Chapter(this, manga, `${prefix}/episodes/${id}`, title));
+        return episodes.map(({ id, title }) => new Chapter(this, manga, `${prefix ?? ''}/episodes/${id}`, title));
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page<ScrambleData>[]> {
