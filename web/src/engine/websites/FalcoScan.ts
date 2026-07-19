@@ -12,7 +12,11 @@ import * as Common from './decorators/Common';
     id: new URL(element.getAttribute('onclick').match(/location\.href\s*=\s*['"]([^'"]+)/)[1]).pathname,
     title: element.querySelector<HTMLSpanElement>('div div span.color-white.d-block').textContent.trim()
 }))
-@Common.PagesSinglePageCSS('div.page-content div.container div.img-blade img')
+@Common.PagesSinglePageJS(`
+    [... document.querySelectorAll('div#canvas-reader canvas')].map( canvas => {
+        return new URL(atob(canvas.dataset.src.match(/\\/img-serve\\/([^/]+)/).at(-1)), window.location.origin).href
+    })
+`)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
