@@ -44,7 +44,6 @@ import '../InmortalScan_e2e';
 import '../KissmangaIN_e2e';
 import '../KlikManga_e2e';
 import '../Kmansin09_e2e';
-import '../KnightNoFansub_e2e';
 import '../KSGroupScans_e2e';
 import '../LaviniaFansub_e2e';
 import '../LectorMangaLat_e2e';
