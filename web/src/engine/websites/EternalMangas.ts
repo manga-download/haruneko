@@ -1,7 +1,9 @@
 import { Tags } from '../Tags';
 import icon from './EternalMangas.webp';
 import { VTheme } from './templates/VTheme';
+import * as Common from './decorators/Common';
 
+@Common.PagesSinglePageCSS('div#em-reader-pages img.em-reader-img')
 export default class extends VTheme {
 
     public constructor() {
