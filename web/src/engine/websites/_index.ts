@@ -248,6 +248,7 @@ export { default as KlikManga } from './KlikManga';
 export { default as KLManga } from './KLManga';
 export { default as KLMangash } from './KLMangash';
 export { default as Kmansin09 } from './Kmansin09';
+export { default as KnightNoFansub } from './KnightNoFansub';
 export { default as KolNovel } from './KolNovel';
 export { default as KomBatch } from './KomBatch';
 export { default as KomikCast } from './KomikCast';
