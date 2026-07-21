@@ -7,7 +7,7 @@ import * as Common from './decorators/Common';
 export default class extends InitManga {
 
     public constructor() {
-        super('grimelek', 'Grimelek', 'https://siyahmelek.fun', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Language.Turkish, Tags.Source.Aggregator);
+        super('grimelek', 'Siyah Melek', 'https://siyahmelek.lat', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Language.Turkish, Tags.Source.Aggregator);
     }
 
     public override get Icon() {

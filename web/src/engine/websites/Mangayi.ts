@@ -5,9 +5,11 @@ import * as Common from './decorators/Common';
 import { FetchJSON } from '../platform/FetchProvider';
 
 type APIMangas = {
-    i: string;
-    t: string;
-}[];
+    results: {
+        i: string;
+        t: string;
+    }[];
+};
 
 @Common.MangaCSS<HTMLMetaElement>(/^{origin}\/read\/[^/]+\/$/, 'aside h1.title')
 @Common.ChaptersSinglePageCSS<HTMLAnchorElement>('div.chapters a:not(.unreleased)', undefined, anchor => ({
@@ -27,13 +29,19 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        const mangas = await FetchJSON<APIMangas>(new Request(new URL('./api/search', this.URI), {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ t: 1 })
-        }));
-        return mangas.map(({ t, i }) => new Manga(this, provider, `/read/${i}/`, t));
+        type This = typeof this;
+        return Array.fromAsync(async function* (this: This) {
+            for (let page = 1, run = true; run; page++) {
+                const { results } = await FetchJSON<APIMangas>(new Request(new URL('./api/search', this.URI), {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ t: 1, p: page })
+                }));
+                const mangas = results.map(({ t, i }) => new Manga(this, provider, `/read/${i}/`, t));
+                mangas.length > 0 ? yield* mangas : run = false;
+            }
+        }.call(this));
     }
 }

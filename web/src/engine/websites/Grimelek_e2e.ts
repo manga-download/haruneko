@@ -3,10 +3,10 @@
 new TestFixture({
     plugin: {
         id: 'grimelek',
-        title: 'Grimelek'
+        title: 'Siyah Melek'
     },
     container: {
-        url: 'https://siyahmelek.fun/manga/friends/',
+        url: 'https://siyahmelek.lat/manga/friends/',
         id: '/manga/friends/',
         title: 'Friends'
     },

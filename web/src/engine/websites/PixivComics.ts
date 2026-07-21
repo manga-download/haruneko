@@ -1,60 +1,55 @@
 import { Tags } from '../Tags';
 import icon from './PixivComics.webp';
 import { Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from '../providers/MangaPlugin';
-import { Fetch, FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
+import { Fetch, FetchCSS, FetchJSON } from '../platform/FetchProvider';
 import type { Priority } from '../taskpool/TaskPool';
 import DeScramble from '../transformers/ImageDescrambler';
-import { GetHexFromBytes } from '../BufferEncoder';
-import { SHA256 } from '../Crypto';
+import { GetHexFromBytes, GetBytesFromUTF8 } from '../BufferEncoder';
+
+type APIResult<T> = {
+    data: T;
+};
 
 type APIMangaPage = {
-    data: {
-        magazines: { id: number; }[];
-    };
+    magazines: { id: number; }[];
 };
 
 type APIManga = {
-    data: {
-        official_work: {
-            id: number;
-            name: string;
-        };
+    official_work: {
+        id: number;
+        name: string;
     };
 };
 
 type APIMangas = {
-    data: {
-        official_works: {
-            id: number;
-            title: string;
-        }[];
-    };
+    official_works: {
+        id: number;
+        title: string;
+    }[];
 };
 
 type APIChapters = {
-    data: {
-        episodes: {
-            readable: boolean;
-            episode: {
-                id: number;
-                numbering_title: string;
-                sub_title: string;
-            };
-        }[];
-    };
+    episodes: {
+        readable: boolean;
+        episode: {
+            id: number;
+            numbering_title: string;
+            sub_title: string;
+        };
+    }[];
 };
 
-type APISalt = {
-    pageProps: {
-        salt: string;
+type ChapterSalt = {
+    props: {
+        pageProps: {
+            salt: string;
+        };
     };
 };
 
 type APIPages = {
-    data: {
-        reading_episode: {
-            pages: APIPage[];
-        };
+    reading_episode: {
+        pages: APIPage[];
     };
 };
 
@@ -69,7 +64,6 @@ type APIPage = {
 export default class extends DecoratableMangaScraper {
 
     private readonly apiURL = 'https://comic.pixiv.net/api/app/';
-    private nextBuild = 'qLzb8dhGOIox-xYNKI0tH';
 
     public constructor() {
         super('pixivcomics', `pixivコミック`, 'https://comic.pixiv.net', Tags.Language.Japanese, Tags.Media.Manga, Tags.Source.Official);
@@ -79,27 +73,22 @@ export default class extends DecoratableMangaScraper {
         return icon;
     }
 
-    public override async Initialize(): Promise<void> {
-        this.nextBuild = await FetchWindowScript(new Request(new URL(this.URI)), `__NEXT_DATA__.buildId`, 2500) ?? this.nextBuild;
-    }
-
     public override ValidateMangaURL(url: string): boolean {
         return new RegExpSafe(`^${this.URI.origin}/works/\\d+$`).test(url);
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
-        const uri = new URL(url);
-        const { data: { official_work: { id, name } } } = await this.FetchAPI<APIManga>(`./works/v5/${uri.pathname.match(/\d+$/).at(0)}`);
+        const { official_work: { id, name } } = await this.FetchAPI<APIManga>(`./works/v5/${new URL(url).pathname.match(/\d+$/).at(0)}`);
         return new Manga(this, provider, `${id}`, name);
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        const { data: { magazines } } = await this.FetchAPI<APIMangaPage>('./magazines');
+        const { magazines } = await this.FetchAPI<APIMangaPage>('./magazines');
         const pages = magazines.map(({ id }) => id);
         type This = typeof this;
         return Array.fromAsync(async function* (this: This) {
             for (const page of pages) {
-                const { data: { official_works } } = await this.FetchAPI<APIMangas>(`./magazines/v2/${page}/works`);
+                const { official_works } = await this.FetchAPI<APIMangas>(`./magazines/v2/${page}/works`);
                 const mangas = official_works.map(({ id, title }) => new Manga(this, provider, `${id}`, title));
                 yield* mangas;
             }
@@ -110,7 +99,7 @@ export default class extends DecoratableMangaScraper {
         type This = typeof this;
         return Array.fromAsync(async function* (this: This) {
             for (let page = 1, run = true; run; page++) {
-                const { data: { episodes } } = await this.FetchAPI<APIChapters>(`./works/${manga.Identifier}/episodes?page=${page}`);
+                const { episodes } = await this.FetchAPI<APIChapters>(`./works/${manga.Identifier}/episodes?page=${page}`);
                 const chapters = episodes.filter(({ readable }) => readable)
                     .map(({ episode: { id, numbering_title: numberTitle, sub_title: subTitle } }) => {
                         return new Chapter(this, manga, `${id}`, numberTitle + (!subTitle ? '' : ' - ' + subTitle));
@@ -120,26 +109,10 @@ export default class extends DecoratableMangaScraper {
         }.call(this));
     }
 
-    private async FetchAPI<T extends JSONElement>(endpoint: string): Promise<T> {
-        return FetchJSON<T>(new Request(new URL(endpoint, this.apiURL), {
-            headers: {
-                'X-Requested-With': 'pixivcomic',
-                Referer: this.URI.href
-            }
-        }));
-    }
-
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const { pageProps: { salt } } = await FetchJSON<APISalt>(new Request(new URL(`/_next/data/${this.nextBuild}/viewer/stories/${chapter.Identifier}.json?id=${chapter.Identifier}`, this.URI)));
-        const timestamp = new Date().toISOString().replace(/\.\d+Z$/, 'Z');
-        const hash = await SHA256(timestamp + salt);
-        const { data: { reading_episode: { pages } } } = await FetchJSON<APIPages>(new Request(new URL(`./episodes/${chapter.Identifier}/read_v4`, this.apiURL), {
-            headers: {
-                'x-requested-with': 'pixivcomic',
-                'x-client-time': timestamp,
-                'x-client-hash': GetHexFromBytes(new Uint8Array(hash)),
-            }
-        }));
+        const [{ text }] = await FetchCSS<HTMLScriptElement>(new Request(new URL(`/viewer/stories/${chapter.Identifier}`, this.URI)), 'script#__NEXT_DATA__');
+        const { props: { pageProps: { salt } } } = <ChapterSalt>JSON.parse(text);
+        const { reading_episode: { pages } } = await this.FetchAPI<APIPages>(`./episodes/${chapter.Identifier}/read_v4`, salt);
         return pages.map(image => new Page<APIPage>(this, chapter, new URL(image.url), { ...image }));
     }
 
@@ -165,6 +138,21 @@ export default class extends DecoratableMangaScraper {
             ctx.putImageData(new ImageData(descrambled, width, height), 0, 0);
         });
     }
+
+    private async FetchAPI<T extends JSONElement>(endpoint: string, salt: string = undefined): Promise<T> {
+        const timestamp = new Date().toISOString().replace(/\.\d+Z$/, 'Z');
+        return (await FetchJSON<APIResult<T>>(new Request(new URL(endpoint, this.apiURL), {
+            headers: {
+                'X-Requested-With': 'pixivcomic',
+                Referer: this.URI.href,
+                ...salt && {
+                    'X-Client-Time': timestamp,
+                    'X-Client-Hash': GetHexFromBytes(new Uint8Array(await crypto.subtle.digest('SHA-256', GetBytesFromUTF8(timestamp + salt)))),
+                }
+            }
+        }))).data;
+    }
+
     private async DescrambleData(scrambledData: Uint8ClampedArray, bytesPerPixel: number, width: number, height: number, columnSize: number,
         rowSize: number, salt: string, key: string, reverse: boolean): Promise<Uint8ClampedArray<ArrayBuffer>> {
 
@@ -172,7 +160,7 @@ export default class extends DecoratableMangaScraper {
         const columns = Math.floor(width / columnSize);
 
         const shuffleTable = Array.from({ length: rowGroups }, () => Array.from({ length: columns }, (_, i) => i));
-        const seed = await SHA256(salt + key);
+        const seed = await crypto.subtle.digest('SHA-256', GetBytesFromUTF8(salt + key));
         const random = new PRNG(new Uint32Array(seed, 0, 4));
 
         for (let i = 0; i < 100; i++) random.Next();
@@ -247,7 +235,6 @@ class PRNG {
     }
 
     constructor(seed: Uint32Array) {
-        //if (4 !== e.length) throw Error('seed.length !== 4 (seed.length: '.concat(e.length, ')'));
         this.state = new Uint32Array(seed);
 
         const allZeros =

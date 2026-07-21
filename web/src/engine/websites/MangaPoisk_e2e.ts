@@ -6,12 +6,12 @@ new TestFixture({
         title: 'MangaPoisk',
     },
     container: {
-        url: 'https://mangapsk.ru/manga/dungeon-odyssey-abs3mJl',
+        url: 'https://mangapoisk.me/manga/dungeon-odyssey-abs3mJl',
         id: '/manga/dungeon-odyssey-abs3mJl',
         title: 'Подземная Одиссея'
     },
     child: {
-        id: '/manga/dungeon-odyssey/chapter/1-10',
+        id: '/manga/dungeon-odyssey-abs3mJl/chapter/1-10',
         title: 'Том 1 Глава 10'
     },
     entry: {
