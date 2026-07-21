@@ -4,7 +4,8 @@ import { Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from 
 import { Fetch, FetchCSS, FetchJSON } from '../platform/FetchProvider';
 import type { Priority } from '../taskpool/TaskPool';
 import DeScramble from '../transformers/ImageDescrambler';
-import { GetHexFromBytes, GetBytesFromUTF8 } from '../BufferEncoder';
+import { GetHexFromBytes } from '../BufferEncoder';
+import { SHA256 } from '../Crypto';
 
 type APIResult<T> = {
     data: T;
@@ -147,7 +148,7 @@ export default class extends DecoratableMangaScraper {
                 Referer: this.URI.href,
                 ...salt && {
                     'X-Client-Time': timestamp,
-                    'X-Client-Hash': GetHexFromBytes(new Uint8Array(await crypto.subtle.digest('SHA-256', GetBytesFromUTF8(timestamp + salt)))),
+                    'X-Client-Hash': GetHexFromBytes(new Uint8Array(await SHA256(timestamp + salt))),
                 }
             }
         }))).data;
@@ -160,7 +161,7 @@ export default class extends DecoratableMangaScraper {
         const columns = Math.floor(width / columnSize);
 
         const shuffleTable = Array.from({ length: rowGroups }, () => Array.from({ length: columns }, (_, i) => i));
-        const seed = await crypto.subtle.digest('SHA-256', GetBytesFromUTF8(salt + key));
+        const seed = await SHA256(salt + key);
         const random = new PRNG(new Uint32Array(seed, 0, 4));
 
         for (let i = 0; i < 100; i++) random.Next();
