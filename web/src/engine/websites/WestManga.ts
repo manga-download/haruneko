@@ -2,8 +2,9 @@ import { Tags } from '../Tags';
 import icon from './WestManga.webp';
 import { Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { GetBytesFromUTF8, GetHexFromBytes } from '../BufferEncoder';
+import { GetHexFromBytes } from '../BufferEncoder';
 import { FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
+import { HMAC256 } from '../Crypto';
 
 type APIResult<T> = {
     data: T | null;
@@ -92,15 +93,8 @@ export default class extends DecoratableMangaScraper {
                 'Referer': this.URI.href,
                 'X-Wm-Request-Time': timestamp,
                 'X-Wm-Accses-Key': this.api.accessKey,
-                'X-Wm-Request-Signature': await this.HMAC256(this.api.nonce, timestamp, 'GET', url.pathname, this.api.accessKey, this.api.secretKey)
+                'X-Wm-Request-Signature': GetHexFromBytes(new Uint8Array( await HMAC256(this.api.nonce, [timestamp, 'GET', url.pathname, this.api.accessKey, this.api.secretKey].join(''))))
             }
         }));
-    }
-
-    private async HMAC256(data: string, ...keyData: string[]): Promise<string> {
-        const algorithm = { name: 'HMAC', hash: { name: 'SHA-256' } };
-        const key = await crypto.subtle.importKey('raw', GetBytesFromUTF8(keyData.join('')), algorithm, false, ['sign']);
-        const signature = await crypto.subtle.sign(algorithm, key, GetBytesFromUTF8(data));
-        return GetHexFromBytes(new Uint8Array(signature));
     }
 }
