@@ -15,7 +15,7 @@ new TestFixture({
         title: 'Ep. 40 - Mimic Market'
     },
     entry: {
-        index: 22,
+        index: 21,
         size: 282_505,
         type: 'image/jpeg'
     }

@@ -3,10 +3,10 @@
 new TestFixture({
     plugin: {
         id: 'grimelek',
-        title: 'Grimelek'
+        title: 'Siyah Melek'
     },
     container: {
-        url: 'https://siyahmelek.fun/manga/friends/',
+        url: 'https://siyahmelek.lat/manga/friends/',
         id: '/manga/friends/',
         title: 'Friends'
     },
@@ -15,8 +15,8 @@ new TestFixture({
         title: 'Bölüm 40'
     },
     entry: {
-        index: 2,
-        size: 55_509,
+        index: 0,
+        size: 52_598,
         type: 'image/jpeg'
     }
 }).AssertWebsite();

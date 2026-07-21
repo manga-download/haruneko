@@ -6,7 +6,7 @@ new TestFixture({
         title: 'G-Comi'
     },
     container: {
-        url: 'https://g-comi.jp/series/c2f3978c40eea',
+        url: 'https://g-comi.jp/series/c2f3978c40eea/new',
         id: '/series/c2f3978c40eea',
         title: 'ぱらのいあけ〜じ'
     },

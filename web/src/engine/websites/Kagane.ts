@@ -32,7 +32,7 @@ type APIPages = {
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
-    readonly #apiURL = 'https://yuzuki.kagane.to/api/v2/';
+    readonly #apiURL = `${this.URI.origin}/api/v2/`;
 
     public constructor() {
         super('kagane', 'Kagane', 'https://kagane.to', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.English, Tags.Source.Aggregator, ...Tags.Rating.toArray());

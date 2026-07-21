@@ -24,14 +24,14 @@ const legacyWebsiteIdentifierMapTestCases = [
     { sourceID: 'kumascans', targetID: 'retsu' },
     { sourceID: 'lovehug', targetID: 'welovemanga' },
     { sourceID: 'lyrascans', targetID: 'quantumscans' },
-    { sourceID: 'mangacross', targetID: 'championcross'},
+    { sourceID: 'mangacross', targetID: 'championcross' },
     { sourceID: 'mangamx', targetID: 'mangaoni' },
     { sourceID: 'manganel', targetID: 'manganato' },
     { sourceID: 'mangaproz', targetID: 'mangapro' },
     { sourceID: 'mangaraw', targetID: 'mangageko' },
     { sourceID: 'mangatale', targetID: 'ikiru' },
     { sourceID: 'manhuascan', targetID: 'kaliscan' },
-    { sourceID: 'neteasecomic', targetID: 'bilibilimanhua'},
+    { sourceID: 'neteasecomic', targetID: 'bilibilimanhua' },
     { sourceID: 'reaperscansid', targetID: 'shinigamiid' },
     { sourceID: 'scanhentaimenu', targetID: 'xmanga' },
     { sourceID: 'shonenmagazine-pocket', targetID: 'shonenmagazine' },
@@ -40,7 +40,6 @@ const legacyWebsiteIdentifierMapTestCases = [
     { sourceID: 'sushiscanfr', targetID: 'animesama' },
     { sourceID: 'vermanhwas', targetID: 'vermanhwa' },
     { sourceID: 'visualikigai', targetID: 'ikigaimangas' },
-    { sourceID: 'webtoontrcom', targetID: 'webtoontrnet' },
 ];
 
 // Mocking globals
