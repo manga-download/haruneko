@@ -17,11 +17,10 @@ type APIChapter = {
     cap_nome: string;
 };
 
-@Common.PagesSinglePageJS(`[...document.querySelectorAll('div.manga-content div.images-container img')].map(img => img.src);`, 1500)
+@Common.PagesSinglePageJS(`[...document.querySelectorAll('div.mx-auto img[alt^="Página"]')].map(img => img.src);`, 3000)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
-    private readonly apiUrl = 'https://api.verdinha.wtf/';
-    private readonly CDNurl = 'https://cdn.verdinha.wtf/';
+    private readonly apiURL = 'https://api2.empreguetes.wtf/';
 
     public constructor() {
         super('maidscan', 'Maid Scan', 'https://empreguetes.wtf', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Portuguese, Tags.Source.Scanlator);
@@ -32,7 +31,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override ValidateMangaURL(url: string): boolean {
-        return new RegExpSafe(`^${this.URI.origin}/obra/[^/]+$`).test(url);
+        return new RegExpSafe(`^${this.URI.origin}/obras/[^/]+$`).test(url);
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
@@ -48,11 +47,11 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const { capitulos } = await this.FetchAPI<APIManga>(`./obras/${manga.Identifier}`);
-        return capitulos.map(({ cap_id: id, cap_nome: name }) => new Chapter(this, manga, `/capitulo/${id}`, name));
+        return capitulos.reverse().map(({ cap_id: id, cap_nome: name }) => new Chapter(this, manga, `/capitulo/${id}`, name));
     }
 
     private async FetchAPI<T extends JSONElement>(endpoint: string): Promise<T> {
-        return FetchJSON<T>(new Request(new URL(endpoint, this.apiUrl), {
+        return FetchJSON<T>(new Request(new URL(endpoint, this.apiURL), {
             headers: {
                 'scan-id': '3'
             }
