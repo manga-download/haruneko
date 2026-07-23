@@ -210,6 +210,7 @@ export { default as HolonoMetria } from './HolonoMetria';
 export { default as HolyScans } from './HolyScans';
 export { default as Honeytoon } from './Honeytoon';
 export { default as HorrorFC } from './HorrorFC';
+export { default as HotManga } from './HotManga';
 export { default as HqNow } from './HqNow';
 export { default as HunterScan } from './HunterScan';
 export { default as IchijinPlus } from './IchijinPlus';

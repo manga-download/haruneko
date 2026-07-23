@@ -15,8 +15,8 @@ new TestFixture({
         title: 'Tome 01'
     },
     entry: {
-        index: 8,
-        size: 2_086_731,
+        index: 1,
+        size: 2_541_467,
         type: 'image/png'
     }
 }).AssertWebsite();
