@@ -7,6 +7,8 @@ import type { Priority } from '../taskpool/DeferredTask';
 import { Exception } from '../Error';
 import { WebsiteResourceKey as R } from '../../i18n/ILocale';
 import { GetBytesFromHex } from '../BufferEncoder';
+import { GetTypedData } from './decorators/Common';
+import { XOR } from '../Crypto';
 
 type APIResult<T> = {
     results: T;
@@ -98,18 +100,10 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchImage(page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
         const blob = await Common.FetchImageAjax.call(this, page, priority, signal);
-        return this.DecryptImage(blob);
+        return GetTypedData(XOR(new Uint8Array(await blob.arrayBuffer()), GetBytesFromHex('57e87c8a4d50b7c3456dbab4ab144b200826e62459039c9915d1e5f5e0bf3a51')).buffer);
     }
 
     private async FetchAPI<T extends JSONElement>(endpoint: string): Promise<T> {
         return FetchJSON<T>(new Request(new URL(endpoint, this.apiURL)));
-    }
-
-    private async DecryptImage(blob: Blob): Promise<Blob> {
-        const xorKey = GetBytesFromHex('57e87c8a4d50b7c3456dbab4ab144b200826e62459039c9915d1e5f5e0bf3a51');
-        const bytes = new Uint8Array(await blob.arrayBuffer());
-        for (let n = 0; n < bytes.length; n++)
-            bytes[n] = bytes[n] ^ xorKey[n % xorKey.length];
-        return Common.GetTypedData(bytes.buffer);
     }
 }

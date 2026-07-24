@@ -4,6 +4,7 @@ import { FetchCSS, FetchJSON } from '../platform/FetchProvider';
 import { type MangaPlugin, Manga, Chapter, Page, DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Grouple from './decorators/Grouple';
 import { GetBytesFromBase64, GetBytesFromHex, GetBytesFromUTF8, GetUTF8FromBytes } from '../BufferEncoder';
+import { XOR } from '../Crypto';
 
 type NEXTDATA<T> = {
     props: {
@@ -82,7 +83,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
-        const { manga: { slug, name } } = await this.GetEmbeddedJSON<APIMangaDetails>(new URL(url));
+        const { manga: { slug, name } } = await this.GetEmbeddedJSON<APIMangaDetails>(url);
         return new Manga(this, provider, `/manga/${slug}`, name);
     }
 
@@ -102,14 +103,14 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const { manga: { chapters } } = await this.GetEmbeddedJSON<APIMangaDetails>(new URL(manga.Identifier, this.URI));
+        const { manga: { chapters } } = await this.GetEmbeddedJSON<APIMangaDetails>(manga.Identifier);
         return chapters.map(({ name, title, path }) => new Chapter(this, manga, `/manga/${path.replace('-ch-', '/ch-')}`, `${name ?? title}`));
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const { chapter: { id, manga_id, uuid, _b, _d, _t, _p } } = await this.GetEmbeddedJSON<APIChapterDetails>(new URL(chapter.Identifier, this.URI));
+        const { chapter: { id, manga_id, uuid, _b, _d, _t, _p } } = await this.GetEmbeddedJSON<APIChapterDetails>(chapter.Identifier);
         const { d } = await FetchJSON<CryptedPagesData>(new Request(new URL(`/${manga_id}/${id}.json`, this.apiURL)));
-        const pagesData: PagesData = JSON.parse(GetUTF8FromBytes(this.XOR(this.B64Decode(d), GetBytesFromUTF8('/fuCkYou!!!'))));
+        const pagesData: PagesData = JSON.parse(GetUTF8FromBytes(XOR(this.B64Decode(d), GetBytesFromUTF8('/fuCkYou!!!'))));
 
         const AESKEY = GetBytesFromHex(uuid);
         const XORKEY = GetBytesFromUTF8('202508055d0db38bae2e86cc41649f90');
@@ -130,7 +131,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     private async GenerateFileName(host: string, encryptedFileName: string, xorKey: Uint8Array<ArrayBuffer>, aesKey: Uint8Array<ArrayBuffer>): Promise<string> {
-        const ciphertext = this.XOR(this.B64Decode(encryptedFileName), xorKey);
+        const ciphertext = XOR(this.B64Decode(encryptedFileName), xorKey);
         const algorithm = { name: 'AES-CTR', counter: ciphertext.subarray(0, 16), length: 128 };
         const key = await crypto.subtle.importKey('raw', aesKey, algorithm, false, ['decrypt']);
         const filename = GetUTF8FromBytes(await crypto.subtle.decrypt(algorithm, key, ciphertext.subarray(16)));
@@ -141,12 +142,8 @@ export default class extends DecoratableMangaScraper {
         return GetBytesFromBase64(data.replace(/-/g, '+').replace(/_/g, '/').trim().padEnd(data.length + (4 - data.length % 4) % 4, '='));
     }
 
-    private XOR(data: Uint8Array, key: Uint8Array): Uint8Array<ArrayBuffer> {
-        return data.map((byte, index) => byte ^ key[index % key.length]);
-    }
-
-    private async GetEmbeddedJSON<T>(uri: URL): Promise<T> {
-        const [script] = await FetchCSS<HTMLScriptElement>(new Request(uri), 'script#__NEXT_DATA__');
+    private async GetEmbeddedJSON<T>(endpoint: string): Promise<T> {
+        const [script] = await FetchCSS<HTMLScriptElement>(new Request(new URL(endpoint, this.URI)), 'script#__NEXT_DATA__');
         return (JSON.parse(script.text) as NEXTDATA<T>).props.pageProps.data;
     }
 }

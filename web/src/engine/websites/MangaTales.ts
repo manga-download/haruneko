@@ -3,7 +3,8 @@ import icon from './MangaTales.webp';
 import { Chapter, DecoratableMangaScraper, Page, Manga, type MangaPlugin } from '../providers/MangaPlugin';
 import { Fetch, FetchCSS, FetchJSON } from '../platform/FetchProvider';
 import type { Priority } from '../taskpool/DeferredTask';
-import { GetBytesFromBase64, GetBytesFromUTF8, GetUTF8FromBytes } from '../BufferEncoder';
+import { GetBytesFromBase64, GetUTF8FromBytes } from '../BufferEncoder';
+import { SHA256 } from '../Crypto';
 
 type EncryptedData = {
     iv: boolean;
@@ -47,15 +48,15 @@ type APISingleManga = {
         mangaData: {
             id: number;
             title: string;
-        }
-    }
+        };
+    };
 };
 
 type APIMangas = {
     mangas?: {
         id: number;
         title: string;
-    }[]
+    }[];
 };
 
 type APIChapters = {
@@ -64,7 +65,7 @@ type APIChapters = {
         teams: {
             id: number;
             name: string;
-        }[],
+        }[];
         volume: number;
         title: string;
         chapter: number;
@@ -78,9 +79,9 @@ type APIPages = {
             configs: {
                 http_media_server: string
                 media_server: string;
-            }
-        }
-    },
+            };
+        };
+    };
     readerDataAction: {
         readerData: {
             release: {
@@ -88,13 +89,13 @@ type APIPages = {
                 mq_pages: string;
                 lq_pages: string
             };
-        }
-    }
+        };
+    };
 };
 
 export default class extends DecoratableMangaScraper {
 
-    private readonly apiUrl = 'https://mangatales.com/api/mangas/';
+    private readonly apiURL = 'https://mangatales.com/api/mangas/';
 
     public constructor() {
         super('mangatales', 'MangaTales', 'https://mangatales.com', Tags.Language.Arabic, Tags.Media.Manga, Tags.Source.Aggregator);
@@ -109,8 +110,8 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
-        const elements = await FetchCSS(new Request(url), 'script[data-component-name="HomeApp"]');
-        const { mangaDataAction: { mangaData: { id, title } } } = JSON.parse(elements.at(0).textContent) as APISingleManga;
+        const [element] = await FetchCSS(new Request(url), 'script[data-component-name="HomeApp"]');
+        const { mangaDataAction: { mangaData: { id, title } } } = <APISingleManga>JSON.parse(element.textContent);
         return new Manga(this, provider, `${id}`, title);
     }
 
@@ -119,7 +120,7 @@ export default class extends DecoratableMangaScraper {
         const unrestricted = { include: [], exclude: [] };
         return Array.fromAsync(async function* (this: This) {
             for (let page = 1, run = true; run; page++) {
-                const data = await FetchJSON<EncryptedData | PackedData | APIMangas>(new Request(new URL('search', this.apiUrl), {
+                const data = await FetchJSON<EncryptedData | PackedData | APIMangas>(new Request(new URL('search', this.apiURL), {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -142,7 +143,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const data = await FetchJSON<EncryptedData & PackedData & APIChapters>(new Request(new URL(manga.Identifier, this.apiUrl)));
+        const data = await FetchJSON<EncryptedData & PackedData & APIChapters>(new Request(new URL(manga.Identifier, this.apiURL)));
         return TryUnpack(await TryDecrypt(data)).mangaReleases.map(chapter => {
             const team = chapter.teams.find(team => team.id === chapter.team_id);
             const title = [
@@ -192,7 +193,7 @@ async function Decrypt(serialized: string): Promise<string> {
     const encrypted = serialized.split('|');
     const data = GetBytesFromBase64(encrypted[0]);
     const algorithm = { name: 'AES-CBC', iv: GetBytesFromBase64(encrypted[2]) };
-    const hash = await crypto.subtle.digest('SHA-256', GetBytesFromUTF8(encrypted[3]));
+    const hash = await SHA256(encrypted[3]);
     const key = await crypto.subtle.importKey('raw', hash, algorithm, false, ['decrypt']);
     const decrypted = await crypto.subtle.decrypt(algorithm, key, data);
     return GetUTF8FromBytes(decrypted);

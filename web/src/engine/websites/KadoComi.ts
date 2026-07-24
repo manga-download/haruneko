@@ -4,6 +4,8 @@ import { Chapter, DecoratableMangaScraper, Manga, type MangaPlugin, Page } from 
 import * as Common from './decorators/Common';
 import { FetchJSON } from '../platform/FetchProvider';
 import type { Priority } from '../taskpool/DeferredTask';
+import { XOR } from '../Crypto';
+import { GetBytesFromHex } from '../BufferEncoder';
 
 type APIResult<T> = {
     result: T[];
@@ -95,32 +97,19 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchImage(page: Page<APIPage>, priority: Priority, signal: AbortSignal): Promise<Blob> {
-        const data = await Common.FetchImageAjax.call(this, page, priority, signal, true);
+        const blob = await Common.FetchImageAjax.call(this, page, priority, signal, true);
         const { drmMode, drmHash } = page.Parameters;
         switch (drmMode) {
             case 'raw':
-                return data;
+                return blob;
             case 'xor':
-                return this.DecryptXor(new Uint8Array(await data.arrayBuffer()), drmHash);
+                return this.DecryptXor(new Uint8Array(await blob.arrayBuffer()), drmHash);
             default:
                 throw Error('Encryption not supported');
         }
     }
 
-    private async DecryptXor(encrypted: Uint8Array, passphrase: string): Promise<Blob> {
-        return Common.GetTypedData(this.Xor(encrypted, this.GenerateKey(passphrase)));
-    }
-
-    private GenerateKey(t: string): Uint8Array {
-        const e = t.slice(0, 16).match(/[\da-f]{2}/gi);
-        if (null != e) return new Uint8Array(e.map(t => parseInt(t, 16)));
-        throw new Error("failed generate key.");
-    }
-
-    private Xor(sourceArray: Uint8Array, keyArray: Uint8Array) {
-        const result = new Uint8Array(sourceArray.length);
-        for (let index = 0; index < sourceArray.length; index++)
-            result[index] = sourceArray[index] ^ keyArray[index % keyArray.length];
-        return result.buffer;
+    private async DecryptXor(encrypted: Uint8Array, keyData: string): Promise<Blob> {
+        return Common.GetTypedData(XOR(encrypted, GetBytesFromHex(keyData.slice(0, 16))).buffer);
     }
 }

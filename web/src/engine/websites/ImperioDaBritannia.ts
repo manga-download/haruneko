@@ -3,7 +3,8 @@ import icon from './ImperioDaBritannia.webp';
 import { Chapter, DecoratableMangaScraper, Manga, type MangaPlugin, Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import { Fetch } from '../platform/FetchProvider';
-import { GetBytesFromHex, GetBytesFromUTF8, GetUTF8FromBytes } from '../BufferEncoder';
+import { GetBytesFromHex, GetUTF8FromBytes } from '../BufferEncoder';
+import { SHA256 } from '../Crypto';
 
 type APIManga = {
     obra: {
@@ -111,7 +112,7 @@ export default class extends DecoratableMangaScraper {
         const [iv, encrypted] = text.split(':');
         const algorithm = { name: 'AES-CBC', iv: GetBytesFromHex(iv) };
         const key = await crypto.subtle.importKey('raw',
-            await crypto.subtle.digest('SHA-256', GetBytesFromUTF8('mangotoons_encryption_key_2025' + 'salt')),
+            await SHA256('mangotoons_encryption_key_2025' + 'salt'),
             algorithm, false, ['decrypt']);
         const decrypted = await crypto.subtle.decrypt(algorithm, key, GetBytesFromHex(encrypted));
         return JSON.parse(GetUTF8FromBytes(decrypted)) as T;
