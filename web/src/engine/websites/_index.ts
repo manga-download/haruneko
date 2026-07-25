@@ -571,7 +571,6 @@ export { default as RawLazy } from './RawLazy';
 export { default as RawOtaku } from './RawOtaku';
 export { default as RawSenManga } from './RawSenManga';
 export { default as RawXZ } from './RawXZ';
-export { default as ReadAllComics } from './ReadAllComics';
 export { default as ReadComicOnline } from './ReadComicOnline';
 export { default as ReadComicsOnline } from './ReadComicsOnline';
 export { default as ReadKomik } from './ReadKomik';
