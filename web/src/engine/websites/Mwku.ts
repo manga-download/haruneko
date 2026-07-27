@@ -3,25 +3,27 @@ import icon from './Mwku.webp';
 import { type Chapter, DecoratableMangaScraper, Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import { FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
+import type { Priority } from '../taskpool/DeferredTask';
+import { GetBytesFromUTF8 } from '../BufferEncoder';
+import { GetTypedData } from './decorators/Common';
 
 type APIPages = {
     data: {
         images: {
-            url: string
+            url: string;
         }[];
     };
 };
 
-@Common.MangaCSS(/^{origin}\/comic\/\d+$/, 'h2.comic-title')
+@Common.MangaCSS(/^{origin}\/comic\/\d+$/, 'h2#page-title')
 @Common.MangasMultiPageCSS<HTMLAnchorElement>('div#dataList div.item a', Common.PatternLinkGenerator('/cate/{page}'), 0,
     anchor => ({ id: anchor.pathname, title: anchor.querySelector<HTMLDivElement>('div.title').textContent.trim() }))
 @Common.ChaptersSinglePageCSS<HTMLAnchorElement>('#chapter-grid-container > a.chapter-item', undefined,
     anchor => ({ id: anchor.pathname, title: anchor.dataset.title.trim() }))
-@Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('mwku', 'Mwku', 'https://manwapi.cc', Tags.Language.Chinese, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Source.Aggregator, Tags.Accessibility.DomainRotation);
+        super('mwku', 'Mwku', 'https://manwali.cc', Tags.Language.Chinese, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Source.Aggregator, Tags.Accessibility.DomainRotation);
     }
 
     public override get Icon() {
@@ -35,10 +37,22 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
         //some chapters got different lazy loading, some are multipaged. Using API for reliabillity;
-        const CDN = await FetchWindowScript<string>(new Request(new URL(chapter.Identifier, this.URI)), 'CURRENT_IMAGE_SOURCE');
-        const requestUrl = new URL(`./api/comic/image/${chapter.Identifier.split('/').at(-1)}?page=1&page_size=9999`, this.URI);
-        requestUrl.searchParams.set('image_source', CDN);
-        const { data: { images } } = await FetchJSON<APIPages>(new Request(requestUrl));
+        const CDN = await FetchWindowScript<string>(new Request(new URL(chapter.Identifier, this.URI)), 'CURRENT_IMAGE_SOURCE', 1500);
+        const { data: { images } } = await FetchJSON<APIPages>(new Request(new URL(`./api/comic/image/${chapter.Identifier.split('/').at(-1)}?page=1&page_size=9999&image_source=${encodeURIComponent(CDN)}`, this.URI)));
         return images.map(({ url }) => new Page(this, chapter, new URL(url, CDN)));
     };
+
+    public override async FetchImage(page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
+        const blob = await Common.FetchImageAjax.call(this, page, priority, signal, true);
+        if (blob.type.startsWith('image')) return blob;
+
+        const buffer = await blob.arrayBuffer();
+        const keyBytes = GetBytesFromUTF8('0B6666A0-BB59-1381-B746-a0E4C9AC').slice(0, 32);
+        const cryptoKey = await window.crypto.subtle.importKey('raw', keyBytes, { name: 'AES-CBC' }, false, ['decrypt']);
+        return GetTypedData(await window.crypto.subtle.decrypt(
+            { name: 'AES-CBC', iv: new Uint8Array(buffer.slice(0, 16)) },
+            cryptoKey,
+            buffer.slice(16)
+        ));
+    }
 }
