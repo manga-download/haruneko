@@ -2,6 +2,7 @@ import { Tags } from '../Tags';
 import icon from './Jjaptoon.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
+import { FetchWindowScript } from '../platform/FetchProvider';
 
 @Common.MangaCSS<HTMLImageElement>(/^{origin}\/comics\/\d+$/, 'img.object-cover.h-full:not([alt=""])', (el, uri) => ({
     id: uri.pathname,
@@ -20,10 +21,15 @@ import * as Common from './decorators/Common';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('jjaptoon', 'Jjaptoon', 'https://www.jjaptoon003.com', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Language.Korean, Tags.Source.Aggregator);
+        super('jjaptoon', 'Jjaptoon', 'https://www.jjaptoon004.com', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Language.Korean, Tags.Source.Aggregator);
     }
 
     public override get Icon() {
         return icon;
+    }
+
+    public override async Initialize(): Promise<void> {
+        this.URI.href = await FetchWindowScript(new Request(this.URI), 'window.location.origin');
+        console.log(`Assigned URL '${this.URI}' to ${this.Title}`);
     }
 }

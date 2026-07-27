@@ -1,13 +1,29 @@
 ﻿import { Tags } from '../Tags';
 import icon from './MangasBrasuka.webp';
-import { type Chapter, DecoratableMangaScraper, Page } from '../providers/MangaPlugin';
-import * as Madara from './decorators/WordPressMadara';
+import { Chapter, DecoratableMangaScraper, Manga, type MangaPlugin, Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { FetchWindowScript } from '../platform/FetchProvider';
+import { FetchNextJS, FetchWindowScript } from '../platform/FetchProvider';
 
-@Madara.MangaCSS(/^{origin}\/manga\/[^/]+\/$/, 'ol.breadcrumb li:last-of-type')
-@Madara.MangasMultiPageAJAX()
-@Madara.ChaptersSinglePageAJAXv2()
+type HydratedMangas = {
+    series: {
+        slug: string;
+        title: string;
+    }[];
+};
+
+type HydratedManga = {
+    chapters: {
+        number: string;
+    }[];
+};
+
+type HydratedPages = {
+    pages: {
+        url: string;
+    }[];
+};
+
+@Common.MangaCSS(/^{origin}\/manga\/[^/]+$/, 'meta[property="og:title"]')
 @Common.ImageAjax(true)
 export default class extends DecoratableMangaScraper {
 
@@ -24,22 +40,32 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async Initialize(): Promise<void> {
-        return FetchWindowScript(new Request(this.URI), `window.cookieStore.set('wpmanga-adault', '1')`);
+        return FetchWindowScript(new Request(this.URI), `window.cookieStore.set('mnx_adulto', '1')`);
+    }
+
+    public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
+        const { series } = await FetchNextJS<HydratedMangas>(new Request(new URL('/catalogo', this.URI)), data => 'series' in data);
+        return series.map(({ slug, title }) => new Manga(this, provider, `/manga/${slug}`, title));
+    }
+
+    public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
+        const { chapters } = await FetchNextJS<HydratedManga>(new Request(new URL(manga.Identifier, this.URI)), data => 'chapters' in data);
+        return chapters.map(({ number }) => new Chapter(this, manga, `${manga.Identifier}/ler/${number}`, `Capítulo ${number}`));
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const images = await FetchWindowScript<string[]>(new Request(new URL(chapter.Identifier, this.URI)), `
+        const chapterURL = new URL(chapter.Identifier, this.URI);
+        await FetchWindowScript<string[]>(new Request(chapterURL), `
             new Promise(async (resolve, reject) => {
                 try {
-                    const auth = new URL(document.querySelector('div.page-break a').href).searchParams.get('a');
-                    const response = await fetch('/campanha.php?auth=' + encodeURIComponent(auth));
-                    const body = new DOMParser().parseFromString((await response.text()), 'text/html');
-                    resolve([...body.querySelectorAll('div.manga-content img')].map(img => img.src));
-                } catch (error) {
-                    reject(error)
+                    await window.cookieStore.set('mnx_gate_${chapter.Identifier.split('/').at(-1)}', '1');
+                    resolve();
+                } catch(error) {
+                    reject(error);
                 }
-            })
+            });
         `);
-        return images.map(image => new Page(this, chapter, new URL(image, this.URI), { Referer: this.URI.href }));
+        const { pages } = await FetchNextJS<HydratedPages>(new Request(chapterURL), data => 'pages' in data);
+        return pages.map(({ url }) => new Page(this, chapter, new URL(url, this.URI), { Referer: this.URI.href }));
     }
 }
