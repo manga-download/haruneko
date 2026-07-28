@@ -35,6 +35,7 @@ export { default as AstraToons } from './AstraToons';
 export { default as AstreaScans } from './AstreaScans';
 export { default as AsuraScans } from './AsuraScans';
 export { default as AsuraScansTR } from './AsuraScansTR';
+export { default as AsuraToons } from './AsuraToons';
 export { default as Atikrost } from './Atikrost';
 export { default as Atsumaru } from './Atsumaru';
 export { default as Aymry } from './Aymry';
