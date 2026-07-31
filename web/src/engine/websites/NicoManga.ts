@@ -3,13 +3,13 @@ import icon from './NicoManga.webp';
 import { FetchWindowScript } from '../platform/FetchProvider';
 import { DecoratableMangaScraper, } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { CleanTitle, ClipBoardExtractor } from './templates/FlatManga';
+import { queryMangas, CleanTitle, ClipBoardExtractor, queryMangaTitle } from './templates/FlatManga';
 
-@Common.MangaCSS<HTMLSpanElement>(/^{origin}\/manga\d+\/[^/]+\.html$/, 'h1.manga-main-title', ClipBoardExtractor)
-@Common.MangasMultiPageCSS<HTMLAnchorElement>('a.manga-title', Common.PatternLinkGenerator('/manga-list.html?p={page}'), 0, anchor => ({ id: anchor.pathname, title: CleanTitle(anchor.text) }))
+@Common.MangaCSS(/^{origin}\/manga\d+\/[^/]+\.html$/, queryMangaTitle, ClipBoardExtractor)
+@Common.MangasMultiPageCSS<HTMLAnchorElement>(queryMangas, Common.PatternLinkGenerator('/manga-list.html?p={page}'), 0, anchor => ({ id: anchor.pathname, title: CleanTitle(anchor.text) }))
 @Common.ChaptersSinglePageCSS<HTMLAnchorElement>('a.chapter-grid-item', undefined, anchor => ({
     id: anchor.pathname,
-    title: anchor.querySelector('div.chapter-name-grid').textContent.trim()
+    title: CleanTitle(anchor.querySelector('div.chapter-name-grid').textContent.trim())
 }))
 @Common.PagesSinglePageJS(`PageReader.getImages();`, 500)
 @Common.ImageAjax()

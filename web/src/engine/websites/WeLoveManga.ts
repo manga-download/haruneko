@@ -1,9 +1,8 @@
 import { Tags } from '../Tags';
 import icon from './WeLoveManga.webp';
 import { FetchWindowScript } from '../platform/FetchProvider';
-import { DecoratableMangaScraper, type Manga, type Chapter } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { queryMangaTitle, ClipBoardExtractor, queryMangas, MangasLinkGenerator, queryPages, queryChapters, FetchChaptersAJAX, CleanTitle } from './templates/FlatManga';
+import { queryMangaTitle, ClipBoardExtractor, queryMangas, MangasLinkGenerator, CleanTitle, FlatManga } from './templates/FlatManga';
 
 function MangaExtractor(element: HTMLElement, uri: URL) {
     const { id, title } = ClipBoardExtractor(element, uri); //extract pathname and clean title
@@ -22,12 +21,12 @@ function CleanPathname(path: string): string {
     id: CleanPathname(anchor.pathname),
     title: CleanTitle(anchor.title)
 }))
-@Common.PagesSinglePageCSS(queryPages)
-@Common.ImageAjax()
-export default class extends DecoratableMangaScraper {
+export default class extends FlatManga {
 
     public constructor() {
         super('welovemanga', 'WeloveManga', 'https://love4u.net', Tags.Language.Japanese, Tags.Media.Manga, Tags.Source.Aggregator);
+        this.WithChapterAjaxEndpoint('/app/manga/controllers/cont.Listchapter.php?mid={manga}')
+            .WithMangaSlugExtractor(mangaId => mangaId.match(/\d+/).at(0));
     }
 
     public override get Icon() {
@@ -35,13 +34,6 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override Initialize(): Promise<void> {
-        return FetchWindowScript(new Request(this.URI), `
-            window.cookieStore.set('smartlink_shown_guest', '1');
-            window.cookieStore.set('smartlink_shown', '1');
-        `);
-    }
-
-    public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        return FetchChaptersAJAX.call(this, manga, '/app/manga/controllers/cont.Listchapter.php?mid={manga}', queryChapters, (manga: Manga) => manga.Identifier.match(/\d+/).at(0));
+        return FetchWindowScript(new Request(this.URI), `window.cookieStore.set('unlock_chapter_guest', '1')`);
     }
 }
