@@ -2,12 +2,27 @@ import { Tags } from '../Tags';
 import icon from './WeLoveManga.webp';
 import { FetchWindowScript } from '../platform/FetchProvider';
 import { DecoratableMangaScraper, type Manga, type Chapter } from '../providers/MangaPlugin';
-import * as FlatManga from './templates/FlatManga';
 import * as Common from './decorators/Common';
+import { queryMangaTitle, ClipBoardExtractor, queryMangas, MangasLinkGenerator, queryPages, queryChapters, FetchChaptersAJAX, CleanTitle } from './templates/FlatManga';
 
-@Common.MangaCSS(/^{origin}\/\d+\/$/, FlatManga.queryMangaTitle)
-@Common.MangasMultiPageCSS(FlatManga.queryMangas, FlatManga.MangasLinkGenerator)
-@Common.PagesSinglePageCSS(FlatManga.queryPages)
+function MangaExtractor(element: HTMLElement, uri: URL) {
+    const { id, title } = ClipBoardExtractor(element, uri); //extract pathname and clean title
+    return {
+        id: CleanPathname(id), //remove manga- from pathname
+        title
+    };
+}
+
+function CleanPathname(path: string): string {
+    return path.replace(/^\/manga-/, '/');
+}
+
+@Common.MangaCSS(/^{origin}\/(manga-)?\d+\/$/, queryMangaTitle, MangaExtractor)
+@Common.MangasMultiPageCSS<HTMLAnchorElement>(queryMangas, MangasLinkGenerator, 0, anchor => ({
+    id: CleanPathname(anchor.pathname),
+    title: CleanTitle(anchor.title)
+}))
+@Common.PagesSinglePageCSS(queryPages)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
@@ -27,6 +42,6 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        return FlatManga.FetchChaptersAJAX.call(this, manga, '/app/manga/controllers/cont.Listchapter.php?mid={manga}', FlatManga.queryChapters, (manga: Manga) => manga.Identifier.match(/\d+/).at(0));
+        return FetchChaptersAJAX.call(this, manga, '/app/manga/controllers/cont.Listchapter.php?mid={manga}', queryChapters, (manga: Manga) => manga.Identifier.match(/\d+/).at(0));
     }
 }

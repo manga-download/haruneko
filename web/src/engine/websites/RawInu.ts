@@ -2,12 +2,12 @@ import { Tags } from '../Tags';
 import icon from './RawInu.webp';
 import { FetchWindowScript } from '../platform/FetchProvider';
 import { DecoratableMangaScraper, type Manga, type Chapter } from '../providers/MangaPlugin';
-import * as FlatManga from './templates/FlatManga';
 import * as Common from './decorators/Common';
+import { queryMangaTitle, queryMangas, MangasLinkGenerator, queryPages, FetchChaptersAJAX, queryChapters, AnchorExtractor, ClipBoardExtractor } from './templates/FlatManga';
 
-@Common.MangaCSS(/^{origin}\/manga-[^/]+\.html$/, FlatManga.queryMangaTitle)
-@Common.MangasMultiPageCSS(FlatManga.queryMangas, FlatManga.MangasLinkGenerator)
-@Common.PagesSinglePageCSS(FlatManga.queryPages)
+@Common.MangaCSS(/^{origin}\/manga-[^/]+\.html$/, queryMangaTitle, ClipBoardExtractor)
+@Common.MangasMultiPageCSS(queryMangas, MangasLinkGenerator, 0, AnchorExtractor)
+@Common.PagesSinglePageCSS(queryPages)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
@@ -27,6 +27,6 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        return FlatManga.FetchChaptersAJAX.call(this, manga, '/app/manga/controllers/cont.Listchapter.php?slug={manga}', FlatManga.queryChapters);
+        return FetchChaptersAJAX.call(this, manga, '/app/manga/controllers/cont.Listchapter.php?slug={manga}', queryChapters);
     }
 }

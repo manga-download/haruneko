@@ -2,14 +2,13 @@ import { Tags } from '../Tags';
 import icon from './WeLoMa.webp';
 import { FetchWindowScript } from '../platform/FetchProvider';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
-import * as FlatManga from './templates/FlatManga';
 import * as Common from './decorators/Common';
-import { GetBytesFromBase64, GetUTF8FromBytes } from '../BufferEncoder';
+import { AnchorExtractor, queryMangaTitle, ClipBoardExtractor, queryMangas, MangasLinkGenerator, queryChapters, queryPages } from './templates/FlatManga';
 
-@Common.MangaCSS(/^{origin}\/m\/[^/]+$/, 'ol.breadcrumb li:last-of-type')
-@Common.MangasMultiPageCSS(FlatManga.queryMangas, FlatManga.MangasLinkGenerator)
-@Common.ChaptersSinglePageCSS(FlatManga.queryChapters, undefined, Common.AnchorInfoExtractor(true))
-@Common.PagesSinglePageCSS(FlatManga.queryPages, (img: HTMLImageElement) => GetUTF8FromBytes(GetBytesFromBase64(img.dataset.img)))
+@Common.MangaCSS(/^{origin}\/m\/[^/]+$/, queryMangaTitle, ClipBoardExtractor)
+@Common.MangasMultiPageCSS(queryMangas, MangasLinkGenerator, 0, AnchorExtractor)
+@Common.ChaptersSinglePageCSS(queryChapters, undefined, Common.AnchorInfoExtractor(true))
+@Common.PagesSinglePageCSS<HTMLImageElement>(queryPages, img => window.atob(img.dataset.img))
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
