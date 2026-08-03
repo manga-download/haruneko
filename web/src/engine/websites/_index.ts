@@ -487,6 +487,7 @@ export { default as Mwku } from './Mwku';
 export { default as MyComic } from './MyComic';
 export { default as MyComicList } from './MyComicList';
 export { default as MyHentaiGallery } from './MyHentaiGallery';
+export { default as MyMangaList } from './MyMangaList';
 export { default as MyReadingManga } from './MyReadingManga';
 export { default as NabiManga } from './NabiManga';
 export { default as NamiComi } from './NamiComi';
