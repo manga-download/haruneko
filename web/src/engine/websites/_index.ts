@@ -564,6 +564,7 @@ export { default as RageScans } from './RageScans';
 export { default as RagnarScans } from './RagnarScans';
 export { default as RaijinScans } from './RaijinScans';
 export { default as RainDropFansub } from './RainDropFansub';
+export { default as RankerManga } from './RankerManga';
 export { default as RavenScans } from './RavenScans';
 export { default as RavenSeries } from './RavenSeries';
 export { default as Raw18 } from './Raw18';
