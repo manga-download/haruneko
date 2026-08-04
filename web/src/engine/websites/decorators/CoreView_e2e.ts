@@ -8,7 +8,6 @@ import '../ComicTrail_e2e';
 import '../ComicSeasons_e2e';
 import '../ComicZenon_e2e';
 import '../FeelWeb_e2e';
-import '../HerosWeb_e2e';
 import '../IchijinPlus_e2e';
 import '../KurageBunch_e2e';
 import '../MagComi_e2e';
