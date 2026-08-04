@@ -5,7 +5,7 @@ import { KiruBase } from './templates/KiruBase';
 export default class extends KiruBase {
 
     public constructor() {
-        super('ikiru', 'Ikiru', 'https://06.ikiru.wtf', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Indonesian, Tags.Source.Aggregator);
+        super('ikiru', 'Ikiru', 'https://07.ikiru.wtf', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Indonesian, Tags.Source.Aggregator);
     }
 
     public override get Icon() {

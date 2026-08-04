@@ -6,17 +6,17 @@ new TestFixture({
         title: 'Mugiwaras Oficial'
     },
     container: {
-        url: 'https://mugiwarasoficial.com/manga/tengoku-daimakyou/',
-        id: JSON.stringify({ post: '170', slug: '/manga/tengoku-daimakyou/' }),
+        url: 'https://mugiwarasoficial.com/manga/tengoku-daimakyou',
+        id: '/manga/tengoku-daimakyou',
         title: 'Tengoku Daimakyou'
     },
     child: {
-        id: '/manga/tengoku-daimakyou/capitulo-1/',
-        title: 'Capitulo 1'
-    }, /* Region Lock : Brazil
+        id: '/manga/tengoku-daimakyou/ler/1',
+        title: 'Capítulo 1'
+    },
     entry: {
-        index: 3,
-        size: 299_817,
-        type: 'image/avif'
-    }*/
+        index: 10,
+        size: 516_054,
+        type: 'image/webp'
+    }
 }).AssertWebsite();

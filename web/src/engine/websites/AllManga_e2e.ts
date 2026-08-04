@@ -7,13 +7,14 @@ new TestFixture({
         title: 'AllManga'
     },
     container: {
-        url: 'https://allmanga.to/manga/kFvrdRcbubPjrhr63',
+        url: 'https://mkissa.to/manga/kFvrdRcbubPjrhr63',
         id: 'kFvrdRcbubPjrhr63',
         title: 'Dragon Prince Yuan'
     },
     child: {
         id: JSON.stringify({ chapterString: '652.5', translationType: 'sub' }),
-        title: 'Chapter 652.5'
+        title: 'Chapter 652.5',
+        timeout: 15_000
     },
     entry: {
         index: 0,
@@ -35,7 +36,8 @@ new TestFixture({
     },
     child: {
         id: JSON.stringify({ chapterString: '261', translationType: 'raw' }),
-        title: 'Chapter 261 - Appeal for Aid [raw]'
+        title: 'Chapter 261 - Appeal for Aid [raw]',
+        timeout: 15_000
     },
     entry: {
         index: 0,

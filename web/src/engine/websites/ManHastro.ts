@@ -32,7 +32,7 @@ type APIChapters = APIResult<APIChapter[]>;
 
 type APIMangas = APIResult<APIManga[]>;
 
-@Common.ImageElement(true)
+@Common.ImageElement(true, true)
 export default class extends DecoratableMangaScraper {
 
     private readonly apiUrl = 'https://api2.manhastro.net/';

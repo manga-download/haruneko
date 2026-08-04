@@ -6,7 +6,7 @@ new TestFixture({
         title: 'NatsuID'
     },
     container: {
-        url: 'https://natsu.tv/manga/spare-me-great-lord/',
+        url: 'https://natsu.one/manga/spare-me-great-lord/',
         id: '/manga/spare-me-great-lord/',
         title: 'Spare Me, Great Lord!'
     },
