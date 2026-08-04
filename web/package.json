@@ -2,8 +2,8 @@
     "name": "hakuneko-web",
     "type": "module",
     "engines": {
-        "node": ">=22.13.0",
-        "npm": ">=10.9.2"
+        "node": ">=24.8.0",
+        "npm": ">=11.6.0"
     },
     "dependencies": {
         "exifr": "7.1.3",
