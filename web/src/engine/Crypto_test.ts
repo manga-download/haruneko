@@ -130,4 +130,54 @@ describe('Crypto', () => {
             return expect(testee.HMAC256('dummy', key as any)).rejects.toThrow();
         });
     });
+
+    describe('AESEncrypt & AESDecrypt', () => {
+        const key = '1234567890123456'; // 16 bytes key for AES-128
+        const message = 'Secret message for AES 🔒';
+
+        it('Should encrypt and decrypt properly with CBC mode', async () => {
+            const iv = new Uint8Array(16);
+            const options: testee.AesOptions = { mode: 'CBC', iv };
+
+            const ciphertext = await testee.AESEncrypt(message, key, options);
+            const decrypted = await testee.AESDecrypt(ciphertext, key, options);
+
+            const decoded = new TextDecoder().decode(decrypted);
+            expect(decoded).toBe(message);
+        });
+
+        it('Should encrypt and decrypt properly with GCM mode', async () => {
+            const iv = new Uint8Array(12); // Recommended 12 bytes for GCM
+            const options: testee.AesOptions = { mode: 'GCM', iv, tagLength: 128 };
+
+            const ciphertext = await testee.AESEncrypt(message, key, options);
+            const decrypted = await testee.AESDecrypt(ciphertext, key, options);
+
+            const decoded = new TextDecoder().decode(decrypted);
+            expect(decoded).toBe(message);
+        });
+
+        it('Should encrypt and decrypt properly with CTR mode', async () => {
+            const counter = new Uint8Array(16);
+            const options: testee.AesOptions = { mode: 'CTR', counter, length: 64 };
+
+            const ciphertext = await testee.AESEncrypt(message, key, options);
+            const decrypted = await testee.AESDecrypt(ciphertext, key, options);
+
+            const decoded = new TextDecoder().decode(decrypted);
+            expect(decoded).toBe(message);
+        });
+
+        it('Should throw on missing required IV for CBC mode', async () => {
+            const options: testee.AesOptions = { mode: 'CBC' };
+            await expect(testee.AESEncrypt(message, key, options)).rejects.toThrow();
+            await expect(testee.AESDecrypt(new ArrayBuffer(16), key, options)).rejects.toThrow();
+        });
+
+        it('Should throw on missing required counter for CTR mode', async () => {
+            const options: testee.AesOptions = { mode: 'CTR' };
+            await expect(testee.AESEncrypt(message, key, options)).rejects.toThrow();
+            await expect(testee.AESDecrypt(new ArrayBuffer(16), key, options)).rejects.toThrow();
+        });
+    });
 });
