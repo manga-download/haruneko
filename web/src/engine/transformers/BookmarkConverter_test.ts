@@ -11,7 +11,6 @@ const legacyWebsiteIdentifierMapTestCases = [
     { sourceID: 'apolltoons', targetID: 'mundomanhwa' },
     { sourceID: 'azoramanga', targetID: 'azoraworld' },
     { sourceID: 'bananascan', targetID: 'harmonyscan' },
-    { sourceID: 'cocomanhua', targetID: 'colamanga' },
     { sourceID: 'comicbushi', targetID: 'comicgrowl' },
     { sourceID: 'comicwalker', targetID: 'kadocomi' },
     { sourceID: 'firescans', targetID: 'firecomics' },
@@ -25,14 +24,14 @@ const legacyWebsiteIdentifierMapTestCases = [
     { sourceID: 'kumascans', targetID: 'retsu' },
     { sourceID: 'lovehug', targetID: 'welovemanga' },
     { sourceID: 'lyrascans', targetID: 'quantumscans' },
-    { sourceID: 'mangacross', targetID: 'championcross'},
+    { sourceID: 'mangacross', targetID: 'championcross' },
     { sourceID: 'mangamx', targetID: 'mangaoni' },
     { sourceID: 'manganel', targetID: 'manganato' },
     { sourceID: 'mangaproz', targetID: 'mangapro' },
     { sourceID: 'mangaraw', targetID: 'mangageko' },
     { sourceID: 'mangatale', targetID: 'ikiru' },
     { sourceID: 'manhuascan', targetID: 'kaliscan' },
-    { sourceID: 'neteasecomic', targetID: 'bilibilimanhua'},
+    { sourceID: 'neteasecomic', targetID: 'bilibilimanhua' },
     { sourceID: 'reaperscansid', targetID: 'shinigamiid' },
     { sourceID: 'scanhentaimenu', targetID: 'xmanga' },
     { sourceID: 'shonenmagazine-pocket', targetID: 'shonenmagazine' },
@@ -51,7 +50,6 @@ const legacyWebsiteIdentifierMapTestCases = [
     { sourceID: 'toomics-tc', targetID: 'toomics' },
     { sourceID: 'vermanhwas', targetID: 'vermanhwa' },
     { sourceID: 'visualikigai', targetID: 'ikigaimangas' },
-    { sourceID: 'webtoontrcom', targetID: 'webtoontrnet' },
 ];
 
 // Mocking globals

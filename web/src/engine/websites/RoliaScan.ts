@@ -11,5 +11,4 @@ export default class extends MangaPeakBase {
     public override get Icon() {
         return icon;
     }
-
 }

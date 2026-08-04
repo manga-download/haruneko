@@ -11,7 +11,6 @@ export const legacyWebsiteIdentifierMap = new Map([
     [ 'azoramanga', 'azoraworld' ],
     [ 'apolltoons', 'mundomanhwa' ],
     [ 'bananascan', 'harmonyscan' ],
-    [ 'cocomanhua', 'colamanga' ],
     [ 'comicbushi', 'comicgrowl' ],
     [ 'comicwalker', 'kadocomi' ],
     [ 'firescans', 'firecomics' ],
@@ -51,7 +50,6 @@ export const legacyWebsiteIdentifierMap = new Map([
     [ 'toomics-tc', 'toomics' ],
     [ 'vermanhwas', 'vermanhwa' ],
     [ 'visualikigai', 'ikigaimangas' ],
-    [ 'webtoontrcom', 'webtoontrnet' ],
 ]);
 
 type BookmarkLegacy = {
