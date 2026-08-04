@@ -190,7 +190,7 @@ export async function AESDecrypt(data: BufferSourceLike, key: BufferSourceLike |
             algorithm = { name: 'AES-GCM', iv: ToUint8Array(iv), tagLength: tagLength ?? 128 };
             break;
     }
-    return crypto.subtle.decrypt(algorithm, cryptoKey, dataBytes,);
+    return crypto.subtle.decrypt(algorithm, cryptoKey, dataBytes);
 }
 
 /**
@@ -246,5 +246,5 @@ export async function AESEncrypt(data: BufferSourceLike, key: BufferSourceLike |
             algorithm = { name: 'AES-GCM', iv: ToUint8Array(iv), tagLength: tagLength ?? 128 };
             break;
     }
-    return crypto.subtle.encrypt(algorithm, cryptoKey, dataBytes,);
+    return crypto.subtle.encrypt(algorithm, cryptoKey, dataBytes);
 }
