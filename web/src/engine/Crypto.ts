@@ -7,9 +7,17 @@ export const HMAC256Algo = { name: 'HMAC', hash: { name: 'SHA-256' } };
  * @param source - Bytes to be xored
  * @param key - XOR key
  */
-export function XOR(source: Uint8Array, key: Uint8Array): Uint8Array<ArrayBuffer> {
-    if (key.length === 0) throw new RangeError('XOR key must not be empty');
-    return source.map((byte, index) => byte ^ key[index % key.length]);
+export function XOR(source: Uint8Array | string, key: Uint8Array | string): Uint8Array<ArrayBuffer> {
+    if (!key) throw new Error(`Argument 'key' is missing !`);
+    if (!source) throw new Error(`Argument 'source' is missing !`);
+
+    const sourceBytes = source instanceof Uint8Array ? source : GetBytesFromUTF8(source);
+    const keyBytes = key instanceof Uint8Array ? key : GetBytesFromUTF8(key);
+
+    if (keyBytes.length === 0) throw new RangeError('Key must not be empty !');
+    if (sourceBytes.length === 0) throw new RangeError('Source must not be empty !');
+
+    return sourceBytes.map((byte, index) => byte ^ keyBytes[index % keyBytes.length]);
 }
 
 /**
@@ -53,5 +61,13 @@ export async function HMAC256ImportKey(key: string | BufferSource | CryptoKey): 
     // execution context (e.g. Puppeteer), making `instanceof` unreliable.
     if (typeof key === 'string') key = GetBytesFromUTF8(key);
     if (key instanceof ArrayBuffer || ArrayBuffer.isView(key)) key = await crypto.subtle.importKey('raw', key, HMAC256Algo, false, ['sign']);
+
+    const isCryptoKey = typeof key === 'object' && key !== null &&
+        typeof (key as CryptoKey).type === 'string' &&
+        typeof (key as CryptoKey).algorithm === 'object' &&
+        typeof (key as CryptoKey).extractable === 'boolean' &&
+        Array.isArray((key as CryptoKey).usages);
+
+    if (!isCryptoKey) throw new TypeError('Expected key must be a string, a BufferSource, or already a CryptoKey');
     return key;
 }
