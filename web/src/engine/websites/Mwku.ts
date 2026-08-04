@@ -48,15 +48,5 @@ export default class extends DecoratableMangaScraper {
         if (blob.type.startsWith('image')) return blob;
         const buffer = await blob.arrayBuffer();
         return GetTypedData(await AESDecrypt(buffer.slice(16), GetBytesFromUTF8('0B6666A0-BB59-1381-B746-a0E4C9AC').slice(0, 32), { mode: 'CBC', iv: buffer.slice(0, 16) } ));
-
-        /*
-        const buffer = await blob.arrayBuffer();
-        const keyBytes = GetBytesFromUTF8('0B6666A0-BB59-1381-B746-a0E4C9AC').slice(0, 32);
-        const cryptoKey = await window.crypto.subtle.importKey('raw', keyBytes, { name: 'AES-CBC' }, false, ['decrypt']);
-        return GetTypedData(await window.crypto.subtle.decrypt(
-            { name: 'AES-CBC', iv: new Uint8Array(buffer.slice(0, 16)) },
-            cryptoKey,
-            buffer.slice(16)
-        ));*/
     }
 }

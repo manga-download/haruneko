@@ -75,10 +75,5 @@ export default class extends DecoratableMangaScraper {
     private async DecryptImage(encrypted: ArrayBuffer, keyData: string): Promise<ArrayBuffer> {
         const data = new Uint8Array(encrypted);
         return AESDecrypt(data.slice(16), GetBytesFromHex(keyData), { mode: 'CBC', iv: data.slice(0, 16) });
-        /*const data = new Uint8Array(encrypted);
-        const algorithm = { name: 'AES-CBC', iv: data.slice(0, 16) };
-        const key = await crypto.subtle.importKey('raw', GetBytesFromHex(keyData), algorithm, false, ['decrypt']);
-        const decrypted = await crypto.subtle.decrypt(algorithm, key, data.slice(16));
-        return decrypted;*/
     }
 }

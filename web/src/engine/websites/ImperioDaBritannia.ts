@@ -111,13 +111,6 @@ export default class extends DecoratableMangaScraper {
     private async Decrypt<T extends JSONElement>(text: string): Promise<T> {
         const [iv, encrypted] = text.split(':');
         const decrypted = await AESDecrypt(GetBytesFromHex(encrypted), await SHA256('mangotoons_encryption_key_2025' + 'salt'), { mode: 'CBC', iv: GetBytesFromHex(iv) });
-        /*
-        const algorithm = { name: 'AES-CBC', iv: GetBytesFromHex(iv) };
-        const key = await crypto.subtle.importKey('raw',
-            await SHA256('mangotoons_encryption_key_2025' + 'salt'),
-            algorithm, false, ['decrypt']);
-        const decrypted = await crypto.subtle.decrypt(algorithm, key, GetBytesFromHex(encrypted));
-        */
         return <T>JSON.parse(GetUTF8FromBytes(decrypted));
     }
 
