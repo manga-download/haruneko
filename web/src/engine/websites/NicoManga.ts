@@ -1,22 +1,17 @@
 import { Tags } from '../Tags';
 import icon from './NicoManga.webp';
 import { FetchWindowScript } from '../platform/FetchProvider';
-import { DecoratableMangaScraper, type Manga} from '../providers/MangaPlugin';
-import * as FlatManga from './templates/FlatManga';
+import { DecoratableMangaScraper, } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
+import { queryMangas, CleanTitle, ClipBoardExtractor, queryMangaTitle } from './templates/FlatManga';
 
-function CleanMangaTitle(title: string): string {
-    return title.replace(/\(Manga\)/i, '').replace(/- RAW/i, '').trim();
-}
-
-function ChapterLinkResolver(this: DecoratableMangaScraper, manga: Manga) {
-    return new URL(`/app/manga/controllers/cont.Listchapter.php?slug=${FlatManga.ExtractSlug(manga)}`, this.URI);
-}
-
-@Common.MangaCSS<HTMLSpanElement>(/^{origin}\/manga-[^/]+\.html$/, 'div.breadcrumb-navigation span:last-of-type', (span, uri) => ({ id: uri.pathname, title: CleanMangaTitle(span.innerText) }))
-@Common.MangasMultiPageCSS<HTMLAnchorElement>('a.manga-title', Common.PatternLinkGenerator('/manga-post.html?page={page}'), 0, anchor => ({ id: anchor.pathname, title: CleanMangaTitle(anchor.text) }))
-@Common.ChaptersSinglePageCSS('ul.list-chapters a', ChapterLinkResolver, Common.AnchorInfoExtractor(true))
-@Common.PagesSinglePageJS(`chapterImages.map(image => image.trim());`, 500)
+@Common.MangaCSS(/^{origin}\/manga\d+\/[^/]+\.html$/, queryMangaTitle, ClipBoardExtractor)
+@Common.MangasMultiPageCSS<HTMLAnchorElement>(queryMangas, Common.PatternLinkGenerator('/manga-list.html?p={page}'), 0, anchor => ({ id: anchor.pathname, title: CleanTitle(anchor.text) }))
+@Common.ChaptersSinglePageCSS<HTMLAnchorElement>('a.chapter-grid-item', undefined, anchor => ({
+    id: anchor.pathname,
+    title: CleanTitle(anchor.querySelector('div.chapter-name-grid').textContent.trim())
+}))
+@Common.PagesSinglePageJS(`PageReader.getImages();`, 500)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
