@@ -1,11 +1,10 @@
 import { Tags } from '../Tags';
 import icon from './AllManga.webp';
 import { Delay } from '../BackgroundTimers';
-import { FetchGraphQL, FetchWindowScript } from '../platform/FetchProvider';
-import { GetBase64FromBytes, GetBytesFromBase64, GetBytesFromHex, GetBytesFromUTF8, GetHexFromBytes, GetUTF8FromBytes } from '../BufferEncoder';
+import { FetchGraphQL, FetchWindowPreloadScript, FetchWindowScript } from '../platform/FetchProvider';
 import { DecoratableMangaScraper, type MangaPlugin, Manga, Chapter, Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { SHA256 } from '../Crypto';
+import { RandomText } from '../Random';
 
 const primaryDomain = 'mkissa.to';
 const patternAliasDomains = [
@@ -38,14 +37,6 @@ type APIChapters = {
         uploadDates: Record<ChapterID['translationType'], string>;
         notes?: string;
     }[];
-};
-
-type CryptoParams = {
-    epoch: number;
-    epocjMS: number;
-    graceMS: number;
-    partB: string;
-    switchAt: number;
 };
 
 type APIPages = {
@@ -140,90 +131,38 @@ export default class extends DecoratableMangaScraper {
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
         const { chapterString, translationType } = <ChapterID>JSON.parse(chapter.Identifier);
         const chapterURL = new URL(`./manga/${chapter.Parent.Identifier}/chapter-${chapterString}-${translationType}`, this.URI);
-        const { epoch, partB } = await FetchWindowScript<CryptoParams>(new Request(chapterURL), 'window.__aaCrypto', 1500);
 
-        const pagesQuery = `
-            query(
-                $mangaId: String!
-                        $translationType: VaildTranslationTypeMangaEnumType!
-                        $chapterString: String!
-                        $limit: Int!
-                        $offset: Int
-            ) {
-                chapterPages(
-                    mangaId: $mangaId
-                            translationType: $translationType
-                            chapterString: $chapterString
-                            limit: $limit
-                            offset: $offset
-                ) {
-                    edges {
-                        pictureUrlHead
-                        pictureUrls
-                    }
-                    manga {
-                        _id
-                        countryOfOrigin
-                    }
-                }
-            }
-        `;
+        const eventName = RandomText(Math.random() * 8 + 8);
+        const { chapterPages: { edges: [{ pictureUrlHead, pictureUrls }] } } = await FetchWindowPreloadScript<APIPages>(new Request(chapterURL), `
+                (function () {
+                    const originalJson = Response.prototype.json;
+                    Response.prototype.json = function() {
+                        return originalJson.call(this).then(data => {
+                            if (data && data.chapterPages) {
+                                setInterval(() => window.dispatchEvent(new CustomEvent('${eventName}', { detail: data })), 250);
+                            }
+                            return data;
+                        });
+                    };
 
-        const sha256Hash = GetHexFromBytes(new Uint8Array(await SHA256(pagesQuery)));
-        const aaReq = await this.GenerateSignature(partB, epoch, sha256Hash);
-        const { tobeparsed: encrypted } = await FetchGraphQL<{ tobeparsed: string; }>(new Request(this.apiURL), '', pagesQuery, {
-            ...<ChapterID>JSON.parse(chapter.Identifier),
-            mangaId: chapter.Parent.Identifier,
-            limit: 999,
-            offset: 0,
-        }, {
-            persistedQuery: {
-                version: 1, sha256Hash, aaReq
-            }
-        });
-        const { chapterPages: { edges: [{ pictureUrlHead, pictureUrls }] } } = await this.Decrypt<APIPages>(encrypted);
+                    JSON.parse = new Proxy(JSON.parse, {
+                        apply(target, thisArg, args) {
+                            const result = Reflect.apply(target, thisArg, args);
+                            if (result && result.chapterPages) {
+                                setInterval(() => window.dispatchEvent(new CustomEvent('${eventName}', { detail: result })), 250);
+                            }
+                            return result;
+                        }
+                    });
+                })();
+            `, `
+            new Promise(resolve => {
+                window.addEventListener('${eventName}', event => resolve(event.detail), { once: true });
+            });
+        `);
+
         let origin = pictureUrlHead ?? this.URI.origin;
         origin = origin.startsWith('https://') ? origin : 'https://' + origin;
         return pictureUrls.map(({ url }) => new Page(this, chapter, new URL(url, origin), { Referer: this.URI.href }));
-    }
-
-    private async GenerateSignature(partB: string, epoch: number, queryHash: string): Promise<string> {
-        const BUILD_ID = '20';
-        //derive key
-        const xorKey = GetBytesFromHex('78ebe40583e4f360cd9f56926b775a780054367c826123dcd0577a231eee4e73');
-        const keyData = GetBytesFromBase64(partB);
-        const rawKey = new Uint8Array(32);
-        for (let i = 0; i < 32; i++) {
-            rawKey[i] = keyData[i] ^ xorKey[i % xorKey.length];
-        }
-
-        const key = await crypto.subtle.importKey('raw', rawKey, { name: 'AES-GCM' }, false, ['encrypt']);
-        const ts = Math.floor(Date.now() / 300_000) * 300_000;
-        const iv = (await SHA256(`${epoch}:${BUILD_ID}:${queryHash}:${ts}`)).slice(0, 12);
-
-        const payload = JSON.stringify({
-            v: 1,
-            ts,
-            epoch,
-            buildId: BUILD_ID,
-            qh: queryHash,
-        });
-
-        const ciphertext = new Uint8Array(await crypto.subtle.encrypt({ name: 'AES-GCM', iv, tagLength: 128 }, key, GetBytesFromUTF8(payload)));
-        const out = new Uint8Array(13 + ciphertext.length);
-        out[0] = 1;
-        out.set(new Uint8Array(iv), 1);
-        out.set(ciphertext, 13);
-        return GetBase64FromBytes(out);
-    }
-
-    private async Decrypt<T>(data: string): Promise<T> {
-        const message = GetBytesFromBase64(data);
-        const ciphertext = message.slice(13, message.length - 16);
-        const tag = message.slice(message.length - 16);
-        const algorithm = { name: 'AES-GCM', iv: message.slice(1, 13) };
-        const key = await crypto.subtle.importKey('raw', await SHA256('Xot36i3lK3:v1'), algorithm, false, ['decrypt']);
-        const result = await crypto.subtle.decrypt(algorithm, key, new Uint8Array([...ciphertext, ...tag]));
-        return JSON.parse(GetUTF8FromBytes(result)) as T;
     }
 }

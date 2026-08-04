@@ -55,7 +55,7 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
         const chapterURL = new URL(chapter.Identifier, this.URI);
-        await FetchWindowScript<string[]>(new Request(chapterURL), `
+        await FetchWindowScript<void>(new Request(chapterURL), `
             new Promise(async (resolve, reject) => {
                 try {
                     await window.cookieStore.set('mnx_gate_${chapter.Identifier.split('/').at(-1)}', '1');

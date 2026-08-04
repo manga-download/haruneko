@@ -6,7 +6,7 @@ new TestFixture({
         title: 'Siyah Melek'
     },
     container: {
-        url: 'https://siyahmelek.lat/manga/friends/',
+        url: 'https://siyahmelek.live/manga/friends/',
         id: '/manga/friends/',
         title: 'Friends'
     },
