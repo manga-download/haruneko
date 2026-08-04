@@ -22,7 +22,7 @@ type ChapterJSON = {
                 type: string;
                 src: string;
             }[]
-        }
+        } | null;
     }
 };
 
@@ -167,7 +167,7 @@ export async function FetchChaptersMultiPageAJAXV2(this: MangaScraper, manga: Ma
                 aggregate_id: aggregateId,
                 type,
                 sort_order: 'desc',
-                offset: offset.toString()
+                offset: `${offset}`
             }).toString();
 
             const data = await FetchJSON<APIChapterV2[]>(new Request(url));
@@ -192,11 +192,14 @@ export async function FetchChaptersMultiPageAJAXV2(this: MangaScraper, manga: Ma
  */
 async function FetchPagesSinglePageJSON(this: MangaScraper, chapter: Chapter, query = queryEpisodeJSON): Promise<Page<PageParams>[]> {
     const request = new Request(new URL(chapter.Identifier, this.URI));
-    const dataElement = await FetchCSS(request, query);
-    const { readableProduct: { isPublic, hasPurchased, pageStructure: { pages, choJuGiga } } } = <ChapterJSON>JSON.parse(dataElement[0].dataset.value);
-    if (!isPublic && !hasPurchased) {
+    const [dataElement] = await FetchCSS(request, query);
+    const { readableProduct: { isPublic, hasPurchased, pageStructure } } = <ChapterJSON>JSON.parse(dataElement.dataset.value);
+
+    if (!hasPurchased && !isPublic || !pageStructure) {
         throw new Exception(R.Plugin_Common_Chapter_UnavailableError);
     }
+
+    const { pages, choJuGiga } = pageStructure;
     return pages.filter(({ type }) => type === 'main').map(({ src }) => {
         // NOTE: 'usagi' is not scrambled
         return new Page<PageParams>(this, chapter, new URL(src, request.url), { Referer: this.URI.href, scrambled: choJuGiga === 'baku' });
