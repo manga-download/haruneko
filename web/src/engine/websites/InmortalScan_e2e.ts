@@ -6,7 +6,7 @@ new TestFixture({
         title: 'Inmortal Scan'
     },
     container: {
-        url: 'https://scanimnortal.com/mg/memoir-of-the-king-of-war/',
+        url: 'https://scan-inmortal.com/mg/memoir-of-the-king-of-war/',
         id: JSON.stringify({ post: '1864', slug: '/mg/memoir-of-the-king-of-war/' }),
         title: 'Memorias del Rey de la Guerra'
     },

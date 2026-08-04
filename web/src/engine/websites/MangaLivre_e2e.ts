@@ -11,7 +11,7 @@ new TestFixture({
         title: 'Missões na Vida Real'
     },
     child: {
-        id: './mangas/obra-f286b166/chapters/cap-047f0f0f-206',
+        id: 'cap-047f0f0f-206',
         title: 'Capítulo 206'
     },
     entry: {
