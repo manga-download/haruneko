@@ -28,9 +28,9 @@ jobs:
       - name: Install NodeJS
         uses: actions/setup-node@v4
         with:
-          node-version: 22.13.x
+          node-version: 24.x
       - name: Install NPM Packages
-        run: npm install
+        run: npm run npm:clean-install
       - name: Code Inspection
         run: npm run check
       - name: Unit & Component Tests

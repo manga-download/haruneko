@@ -13,7 +13,7 @@
     },
     "devDependencies": {
         "@fluentui/svg-icons": "1.1.331",
-        "@fluentui/web-components": "rc",
+        "@fluentui/web-components": "3.0.0",
         "@svelte-put/dragscroll": "4.0.0",
         "@sveltejs/vite-plugin-svelte": "7.1.2",
         "@tsconfig/svelte": "5.0.8",
@@ -32,7 +32,7 @@
         "svelte": "5.56.4",
         "svelte-check": "4.7.1",
         "vue": "3.5.39",
-        "vue-tsc": "3.3.5"
+        "vue-tsc": "3.3.6"
     },
     "scripts": {
         "update-website-index": "node ./scripts/website-index.mjs",
