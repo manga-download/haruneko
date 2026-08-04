@@ -101,7 +101,7 @@ class PRNG {
         return value >>> 0;
     }
 
-    public async BuildIndexes(gridSize: number): Promise<number[]> {
+    public async Sequence(gridSize: number): Promise<number[]> {
         this.nCounter = 0;
         this.rBuf = new Uint8Array(0);
         this.aIndex = 8;
@@ -203,7 +203,7 @@ export default class extends DecoratableMangaScraper {
         const signKey = await crypto.subtle.importKey('raw', GetBytesFromHex(KeyData), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']);
 
         const encryptionType = this.GetEncryptionType(buffer);
-        const encrypted = new Uint8Array(buffer, encryptionType === 'AESV3' || 'AESV4' || 'CHACHA20' ? 6 : 4);
+        const encrypted = new Uint8Array(buffer, encryptionType === 'AESV3' || encryptionType === 'AESV4' || encryptionType === 'CHACHA20' ? 6 : 4);
 
         const blob = await this.DecryptImage(encrypted, encryptionType, signKey, PageIndex);
         if (encryptionType === 'CHACHA20' || encryptionType === 'AESV4') return blob;
@@ -213,7 +213,7 @@ export default class extends DecoratableMangaScraper {
             const tileHeight = image.height / GridSize;
             const tileCount = GridSize * GridSize;
 
-            const indexes = new PRNG(signKey, PageIndex).BuildIndexes(GridSize);
+            const indexes = await new PRNG(signKey, PageIndex).Sequence(GridSize);
 
             for (let tileIndex = 0; tileIndex < tileCount; tileIndex++) {
                 const srcIdx = indexes[tileIndex];
