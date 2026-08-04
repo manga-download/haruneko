@@ -1,10 +1,16 @@
 import { Tags } from '../Tags';
 import icon from './AllManga.webp';
 import { Delay } from '../BackgroundTimers';
-import { FetchGraphQL, FetchWindowScript } from '../platform/FetchProvider';
-import { GetBytesFromBase64, GetBytesFromUTF8, GetUTF8FromBytes } from '../BufferEncoder';
+import { FetchGraphQL, FetchWindowPreloadScript, FetchWindowScript } from '../platform/FetchProvider';
 import { DecoratableMangaScraper, type MangaPlugin, Manga, Chapter, Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
+import { RandomText } from '../Random';
+
+const primaryDomain = 'mkissa.to';
+const patternAliasDomains = [
+    primaryDomain,
+    'allmanga.to'
+].join('|').replaceAll('.', '\\.');
 
 type APIManga = {
     manga: {
@@ -47,10 +53,10 @@ type APIPages = {
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
-    private readonly apiURL = 'https://api.allanime.day/api';
+    private readonly apiURL = 'https://api.mkissa.net/api';
 
     public constructor() {
-        super('allmanga', 'AllManga', 'https://allmanga.to', Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Language.English, Tags.Source.Aggregator);
+        super('allmanga', 'AllManga', 'https://mkissa.to', Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Language.English, Tags.Source.Aggregator);
     }
 
     public override get Icon() {
@@ -62,7 +68,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override ValidateMangaURL(url: string): boolean {
-        return new RegExp(`^${this.URI.origin}/manga/[^/]+$`).test(url);
+        return new RegExpSafe(`^https?://(${patternAliasDomains})/manga/[^/]+$`).test(url);
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
@@ -78,7 +84,7 @@ export default class extends DecoratableMangaScraper {
         // TODO: Use Array.fromAsync
         const mangaList: Manga[] = [];
         for (let page = 1, run = true; run; page++) {
-            await Delay(250);
+            await Delay(500);
             const mangas = await this.GetMangasFromPage(page, provider);
             mangaList.isMissingLastItemFrom(mangas) ? mangaList.push(...mangas) : run = false;
         }
@@ -93,7 +99,7 @@ export default class extends DecoratableMangaScraper {
                 }
             }
         `, { page: page });
-        return edges.map(manga => new Manga(this, provider, manga._id, manga.englishName ?? manga.name));
+        return edges.map(({ _id, englishName, name }) => new Manga(this, provider, _id, englishName ?? name));
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
@@ -123,25 +129,40 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const { tobeparsed: encrypted } = await FetchGraphQL<{ tobeparsed: string; }>(new Request(this.apiURL), '', undefined, {
-            ...<ChapterID>JSON.parse(chapter.Identifier),
-            mangaId: chapter.Parent.Identifier,
-            limit: 999,
-            offset: 0,
-        }, { persistedQuery: { version: 1, sha256Hash: '466783e19a7540387e34265be906bebbe853857088d45d28af922ab8668ebb31' } });
-        const { chapterPages: { edges: [{ pictureUrlHead, pictureUrls }] } } = await this.Decrypt<APIPages>(encrypted);
+        const { chapterString, translationType } = <ChapterID>JSON.parse(chapter.Identifier);
+        const chapterURL = new URL(`./manga/${chapter.Parent.Identifier}/chapter-${chapterString}-${translationType}`, this.URI);
+
+        const eventName = RandomText(Math.random() * 8 + 8);
+        const { chapterPages: { edges: [{ pictureUrlHead, pictureUrls }] } } = await FetchWindowPreloadScript<APIPages>(new Request(chapterURL), `
+                (function () {
+                    const originalJson = Response.prototype.json;
+                    Response.prototype.json = function() {
+                        return originalJson.call(this).then(data => {
+                            if (data && data.chapterPages) {
+                                setInterval(() => window.dispatchEvent(new CustomEvent('${eventName}', { detail: data })), 250);
+                            }
+                            return data;
+                        });
+                    };
+
+                    JSON.parse = new Proxy(JSON.parse, {
+                        apply(target, thisArg, args) {
+                            const result = Reflect.apply(target, thisArg, args);
+                            if (result && result.chapterPages) {
+                                setInterval(() => window.dispatchEvent(new CustomEvent('${eventName}', { detail: result })), 250);
+                            }
+                            return result;
+                        }
+                    });
+                })();
+            `, `
+            new Promise(resolve => {
+                window.addEventListener('${eventName}', event => resolve(event.detail), { once: true });
+            });
+        `);
+
         let origin = pictureUrlHead ?? this.URI.origin;
         origin = origin.startsWith('https://') ? origin : 'https://' + origin;
         return pictureUrls.map(({ url }) => new Page(this, chapter, new URL(url, origin), { Referer: this.URI.href }));
-    }
-
-    private async Decrypt<T>(data: string): Promise<T> {
-        const message = GetBytesFromBase64(data);
-        const ciphertext = message.slice(13, message.length - 16);
-        const tag = message.slice(message.length - 16);
-        const algorithm = { name: 'AES-GCM', iv: message.slice(1, 13) };
-        const key = await crypto.subtle.importKey('raw', await crypto.subtle.digest('SHA-256', GetBytesFromUTF8('Xot36i3lK3:v1')), algorithm, false, ['decrypt']);
-        const result = await crypto.subtle.decrypt(algorithm, key, new Uint8Array([...ciphertext, ...tag]));
-        return JSON.parse(GetUTF8FromBytes(result)) as T;
     }
 }

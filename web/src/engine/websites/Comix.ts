@@ -1,13 +1,14 @@
 import { Tags } from '../Tags';
 import icon from './Comix.webp';
-import { Fetch, FetchJSON } from '../platform/FetchProvider';
+import { Fetch, /*FetchJSON*/ } from '../platform/FetchProvider';
 import type { Priority } from '../taskpool/DeferredTask';
-import { DecoratableMangaScraper, type MangaPlugin, Manga, Chapter, Page } from '../providers/MangaPlugin';
+import { DecoratableMangaScraper, /*type MangaPlugin,*/ type Manga, Chapter, Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import { DRMProvider } from './Comix.DRM';
 import DeScramble from '../transformers/ImageDescrambler';
 import { RateLimit } from '../taskpool/RateLimit';
 
+/*
 type APIMangas = {
     result: {
         items: {
@@ -16,7 +17,7 @@ type APIMangas = {
             slug: string;
         }[];
     };
-};
+};*/
 
 const GetOdd = (value: number) => value | 1;
 
@@ -84,6 +85,7 @@ class PRNG {
 }
 
 @Common.MangaCSS(/^{origin}\/title\/[^/]+$/, 'meta[property="og:title"]')
+@Common.MangasNotSupported()
 export default class extends DecoratableMangaScraper {
 
     readonly #drm = new DRMProvider();
@@ -98,16 +100,21 @@ export default class extends DecoratableMangaScraper {
         return icon;
     }
 
+    /*
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
         type This = typeof this;
         return Array.fromAsync(async function* (this: This) {
             for (let page = 1, run = true; run; page++) {
-                const { result: { items } } = await FetchJSON<APIMangas>(new Request(new URL(`./manga?limit=100&page=${page}`, this.apiURL)));
+                const { result: { items } } = await FetchJSON<APIMangas>(new Request(new URL(`./manga?limit=100&page=${page}`, this.apiURL), {
+                    headers: {
+                        Referer: this.URI.href
+                    }
+                }));
                 const mangas = items.map(({ hash_id: hash, title, slug }) => new Manga(this, provider, `/title/${hash}-${slug}`, title));
                 mangas.length > 0 ? yield* mangas : run = false;
             }
         }.call(this));
-    }
+    }*/
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const chapters = await this.#drm.GetChaptersData(new URL(manga.Identifier, this.URI));
