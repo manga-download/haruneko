@@ -53,6 +53,16 @@ function ToUint8Array(data: BufferSourceLike) {
     return typeof data === 'string' ? GetBytesFromUTF8(data) : data;
 }
 
+function IsCryptoKey(key: any): boolean {
+    // Don't use `instanceof CryptoKey` here: CryptoKeys may come from a different
+    // execution context (e.g. Puppeteer), making `instanceof` unreliable.
+    return typeof key === 'object' && key !== null &&
+        typeof (key as CryptoKey).type === 'string' &&
+        typeof (key as CryptoKey).algorithm === 'object' &&
+        typeof (key as CryptoKey).extractable === 'boolean' &&
+        Array.isArray((key as CryptoKey).usages);
+}
+
 /**
  * Performs a byte-wise XOR operation.
  *
@@ -128,18 +138,9 @@ export async function HMAC256(message: BufferSourceLike, key: BufferSourceLike |
  * @returns A promise that resolves to an HMAC signing key.
  */
 export async function HMAC256ImportKey(key: BufferSourceLike | CryptoKey): Promise<CryptoKey> {
-    // Don't use `instanceof CryptoKey` here: CryptoKeys may come from a different
-    // execution context (e.g. Puppeteer), making `instanceof` unreliable.
-    const isCryptoKey = typeof key === 'object' && key !== null &&
-        typeof (key as CryptoKey).type === 'string' &&
-        typeof (key as CryptoKey).algorithm === 'object' &&
-        typeof (key as CryptoKey).extractable === 'boolean' &&
-        Array.isArray((key as CryptoKey).usages);
-    if (isCryptoKey) return key as CryptoKey;
-
+    if (IsCryptoKey(key)) return key as CryptoKey;
     key = ToUint8Array(key as BufferSourceLike); //convert to UintArray in case of a string
     if (key instanceof ArrayBuffer || ArrayBuffer.isView(key)) key = await crypto.subtle.importKey('raw', key, HMAC256Algo, false, ['sign']);
-
     return key;
 }
 
@@ -160,13 +161,16 @@ export async function HMAC256ImportKey(key: BufferSourceLike | CryptoKey): Promi
  * @param options - AES algorithm options.
  * @returns A promise that resolves to the decrypted plaintext.
  */
-export async function AESDecrypt(data: BufferSourceLike, key: BufferSourceLike, options: AesOptions): Promise<ArrayBuffer> {
+export async function AESDecrypt(data: BufferSourceLike, key: BufferSourceLike | CryptoKey, options: AesOptions): Promise<ArrayBuffer> {
 
-    const keyBytes = ToUint8Array(key);
     const dataBytes = ToUint8Array(data);
-
     const { mode, counter, iv, length, tagLength } = options;
-    const cryptoKey = await crypto.subtle.importKey('raw', keyBytes, 'AES-' + mode, false, ['decrypt']);
+
+    let cryptoKey: CryptoKey = undefined;
+    if (!IsCryptoKey(key)) {
+        const keyBytes = ToUint8Array(key as BufferSourceLike);
+        cryptoKey = await crypto.subtle.importKey('raw', keyBytes, 'AES-' + mode, false, ['decrypt']);
+    } else cryptoKey = key as CryptoKey;
 
     let algorithm: AesCtrParams | AesCbcParams | AesGcmParams;
 
@@ -213,13 +217,16 @@ export async function AESDecrypt(data: BufferSourceLike, key: BufferSourceLike, 
  * encrypted ciphertext. For AES-GCM, the authentication tag is appended to
  * the ciphertext as defined by the Web Crypto API.s.
  */
-export async function AESEncrypt(data: BufferSourceLike, key: BufferSourceLike, options: AesOptions): Promise<ArrayBuffer> {
+export async function AESEncrypt(data: BufferSourceLike, key: BufferSourceLike | CryptoKey, options: AesOptions): Promise<ArrayBuffer> {
 
-    const keyBytes = ToUint8Array(key);
     const dataBytes = ToUint8Array(data);
     const { mode, counter, iv, length, tagLength } = options;
 
-    const cryptoKey = await crypto.subtle.importKey('raw', keyBytes, 'AES-' + mode, false, ['encrypt'],);
+    let cryptoKey: CryptoKey = undefined;
+    if (!IsCryptoKey(key)) {
+        const keyBytes = ToUint8Array(key as BufferSourceLike);
+        cryptoKey = await crypto.subtle.importKey('raw', keyBytes, 'AES-' + mode, false, ['encrypt']);
+    } else cryptoKey = key as CryptoKey;
 
     let algorithm: AesCtrParams | AesCbcParams | AesGcmParams;
 

@@ -5,7 +5,7 @@ import { Fetch, FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
 import { type MangaPlugin, Manga, Chapter, Page, DecoratableMangaScraper } from '../providers/MangaPlugin';
 import { GetBytesFromBase64, GetBytesFromHex, GetUTF8FromBytes } from '../BufferEncoder';
 import * as Common from './decorators/Common';
-import { SHA512 } from '../Crypto';
+import { AESDecrypt, SHA512 } from '../Crypto';
 
 type TokenData = {
     uuid: string;
@@ -23,7 +23,7 @@ type APIChapters = {
     chapters: {
         id: number;
         vol_name: string;
-    }[]
+    }[];
 };
 
 type APIPages = {
@@ -31,12 +31,12 @@ type APIPages = {
         proportion: {
             id: number;
         }[]
-    }
+    };
 };
 
 type PageParameters = {
     EncryptionEndpoint: string;
-}
+};
 
 class DRMProvider {
 
@@ -57,10 +57,7 @@ class DRMProvider {
     }
 
     public async Decrypt(encrypted: BufferSource, iv = this.#iv, keyData = this.#keyData): Promise<string> {
-        const algorithm = { name: 'AES-CBC', iv };
-        const key = await crypto.subtle.importKey('raw', keyData, algorithm, false, ['decrypt']);
-        const decrypted = await crypto.subtle.decrypt(algorithm, key, encrypted);
-        return GetUTF8FromBytes(decrypted);
+        return GetUTF8FromBytes( await AESDecrypt(encrypted, keyData, { mode: 'CBC', iv }));
     }
 }
 

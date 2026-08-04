@@ -5,8 +5,8 @@ import { Fetch, FetchJSON } from '../platform/FetchProvider';
 import * as Common from './decorators/Common';
 import { GetHexFromBytes, GetBytesFromUTF8, GetBytesFromBase64, GetUTF8FromBytes } from '../BufferEncoder';
 import { Exception } from '../Error';
-import { WebsiteResourceKey as R} from '../../i18n/ILocale';
-import { SHA256 } from '../Crypto';
+import { WebsiteResourceKey as R } from '../../i18n/ILocale';
+import { AESDecrypt, SHA256 } from '../Crypto';
 
 type APIResult<T> = {
     data: T;
@@ -83,8 +83,7 @@ type MangaID = {
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
-    private readonly keyData = GetBytesFromUTF8('a7fc9dc89f2c873d79397f8a0028a4cd');
-    private readonly apiUrl = 'https://api.comico.jp';
+    private readonly apiURL = 'https://api.comico.jp';
 
     public constructor() {
         super('comico', 'Comico (コミコ)', 'https://www.comico.jp', Tags.Language.Japanese, Tags.Media.Manga, Tags.Source.Official);
@@ -144,7 +143,7 @@ export default class extends DecoratableMangaScraper {
         const { chapterEpubIncludedFile } = epub;
         const { rootPath, rootFileName, url: opfUrl, parameter: opfParameter, m2Parameter } = chapterEpubIncludedFile;
 
-        const epubRootUrl = GetUTF8FromBytes(await this.AESDecrypt(GetBytesFromBase64(opfUrl))) + rootPath;
+        const epubRootUrl = GetUTF8FromBytes(await this.Decrypt(GetBytesFromBase64(opfUrl))) + rootPath;
         const epubUrl = `${epubRootUrl}${rootFileName}?${opfParameter}`;
 
         const response = await Fetch(new Request(new URL(epubUrl)));
@@ -156,21 +155,19 @@ export default class extends DecoratableMangaScraper {
     }
 
     private async DecryptPictureUrl(page: APIImage): Promise<string> {
-        const decrypted = await this.AESDecrypt(GetBytesFromBase64(page.url));
+        const decrypted = await this.Decrypt(GetBytesFromBase64(page.url));
         return GetUTF8FromBytes(decrypted) + '?' + page.parameter;
     }
 
-    private async AESDecrypt(data: Uint8Array<ArrayBuffer>): Promise<ArrayBuffer> {
-        const algorithm = { name: 'AES-CBC', iv: new Uint8Array(16).buffer };
-        const secretKey = await crypto.subtle.importKey('raw', this.keyData, algorithm, false, ['decrypt']);
-        return await crypto.subtle.decrypt(algorithm, secretKey, data);
+    private async Decrypt(data: Uint8Array<ArrayBuffer>): Promise<ArrayBuffer> {
+        return AESDecrypt(data, 'a7fc9dc89f2c873d79397f8a0028a4cd', { mode: 'CBC', iv: new Uint8Array(16) });
     }
 
     protected async FetchPOST<T extends JSONElement>(path: string, language: string): Promise<T> {
         const timestamp = Math.round(new Date().getTime() / 1000);
         const seed = GetBytesFromUTF8('9241d2f090d01716feac20ae08ba791a' + '0.0.0.0' + `${timestamp}`);
         const checksum = GetHexFromBytes(new Uint8Array(await SHA256(seed)));
-        return (await FetchJSON<APIResult<T>>(new Request(new URL(path, this.apiUrl), {
+        return (await FetchJSON<APIResult<T>>(new Request(new URL(path, this.apiURL), {
             method: 'GET',
             headers: {
                 'x-referer': this.URI.origin,
@@ -185,6 +182,6 @@ export default class extends DecoratableMangaScraper {
                 'X-comico-client-platform': 'web',
                 'X-comico-client-accept-mature': 'Y',
             }
-        }))).data as T;
+        }))).data;
     }
 }
