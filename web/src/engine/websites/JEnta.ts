@@ -4,7 +4,7 @@ import { ComiciViewer } from './templates/ComiciViewer';
 export default class extends ComiciViewer {
 
     public constructor() {
-        super('jenta', 'J-Enta', 'https://comic.j-nbooks.jp/', Tags.Media.Manga, Tags.Language.Japanese, Tags.Source.Official);
+        super('jenta', 'J-Enta', 'https://comic.j-nbooks.jp', Tags.Media.Manga, Tags.Language.Japanese, Tags.Source.Official);
     }
 
     public override get Icon() {
