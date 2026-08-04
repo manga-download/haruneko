@@ -2,13 +2,13 @@ import { Tags } from '../Tags';
 import icon from './PhiliaScans.webp';
 import type { Priority } from '../taskpool/DeferredTask';
 import { Fetch, FetchJSON } from '../platform/FetchProvider';
-import { GetHexFromBytes, GetBytesFromHex, GetBytesFromBase64, GetBytesFromUTF8 } from '../BufferEncoder';
+import { GetHexFromBytes, GetBytesFromHex, GetBytesFromBase64 } from '../BufferEncoder';
 import { Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from '../providers/MangaPlugin';
 import DeScramble from '../transformers/ImageDescrambler';
 import { GetTypedData } from './decorators/Common';
 import { Exception } from '../Error';
 import { WebsiteResourceKey as R } from '../../i18n/ILocale';
-import { HMAC256, HMAC256ImportKey, XOR } from '../Crypto';
+import { AESDecrypt, HMAC256, HMAC256ImportKey, XOR } from '../Crypto';
 
 type APIResult<T> = {
     items: T[];
@@ -245,7 +245,7 @@ export default class extends DecoratableMangaScraper {
         switch (encryptionType) {
             case 'AESV3':
             case 'AESV4': {
-                imageData = await this.AESDecrypt(signKey, pageIndex, encrypted, encryptionType === 'AESV3' ? 'aesctr' : 'aesctr4');
+                imageData = await this.AESDecryptCustom(signKey, pageIndex, encrypted, encryptionType === 'AESV3' ? 'aesctr' : 'aesctr4');
                 break;
             }
             case 'CHACHA20': {
@@ -265,22 +265,16 @@ export default class extends DecoratableMangaScraper {
         const result = new Uint8Array(32 * numBlocks);
 
         for (let r = 0; r < numBlocks; r++) {
-            const data = GetBytesFromUTF8(`page:${pageIndex}:${r}`);
-            const sign = await HMAC256(data, key);
+            const sign = await HMAC256(`page:${pageIndex}:${r}`, key);
             result.set(new Uint8Array(sign), 32 * r);
         }
         return result.subarray(0, length);
     }
 
     // AES
-    private async AESDecrypt(signKey: CryptoKey, pageIndex: number, data: Uint8Array<ArrayBuffer>, prefix: string): Promise<ArrayBuffer> {
+    private async AESDecryptCustom(signKey: CryptoKey, pageIndex: number, data: Uint8Array<ArrayBuffer>, prefix: string): Promise<ArrayBuffer> {
         const keyData = new Uint8Array(await HMAC256(`${prefix}:${pageIndex}`, signKey));
-        const key = await crypto.subtle.importKey('raw', keyData, { name: 'AES-CTR' }, false, ['decrypt']);
-        return crypto.subtle.decrypt({
-            name: 'AES-CTR',
-            counter: new Uint8Array(16),
-            length: 128
-        }, key, data);
+        return AESDecrypt(data, keyData, { mode: 'CTR', counter: new Uint8Array(16), length: 128 });
     }
 
     // CHACHA20

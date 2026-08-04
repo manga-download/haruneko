@@ -4,7 +4,7 @@ import { FetchCSS, FetchJSON } from '../platform/FetchProvider';
 import { type MangaPlugin, Manga, Chapter, Page, DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Grouple from './decorators/Grouple';
 import { GetBytesFromBase64, GetBytesFromHex, GetUTF8FromBytes } from '../BufferEncoder';
-import { XOR } from '../Crypto';
+import { AESDecrypt, XOR } from '../Crypto';
 
 type NEXTDATA<T> = {
     props: {
@@ -129,9 +129,7 @@ export default class extends DecoratableMangaScraper {
 
     private async GenerateFileName(host: string, encryptedFileName: string, aesKey: Uint8Array<ArrayBuffer>): Promise<string> {
         const ciphertext = XOR(this.B64Decode(encryptedFileName), '202508055d0db38bae2e86cc41649f90');
-        const algorithm = { name: 'AES-CTR', counter: ciphertext.subarray(0, 16), length: 128 };
-        const key = await crypto.subtle.importKey('raw', aesKey, algorithm, false, ['decrypt']);
-        const filename = GetUTF8FromBytes(await crypto.subtle.decrypt(algorithm, key, ciphertext.subarray(16)));
+        const filename = GetUTF8FromBytes(await AESDecrypt(ciphertext.subarray(16), aesKey, { mode: 'CTR', counter: ciphertext.subarray(0, 16), length: 128 }));
         return `${host}/${filename}`;
     }
 
