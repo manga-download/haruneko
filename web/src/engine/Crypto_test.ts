@@ -13,7 +13,7 @@ describe('Crypto', () => {
             [
                 'Hello World 👌',
                 'Hello World 👌',
-                [0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00]
+                new Array(16)
             ]
         ])('Should get bytes from valid input', (input: string | Uint8Array, key: string | Uint8Array, expected: number[]) => {
             const actual = testee.XOR(input, key);
