@@ -47,9 +47,10 @@ export type PageParams = {
  */
 function CreateMangaExtractor(queryTitle: string) {
     return function (element: HTMLElement) {
-        const id = element instanceof HTMLAnchorElement ? element.pathname : element.querySelector<HTMLAnchorElement>('a').pathname;
-        const title = (element.querySelector<HTMLElement>(queryTitle) || element).textContent.trim();
-        return { id, title };
+        return {
+            id: element instanceof HTMLAnchorElement ? element.pathname : element.querySelector<HTMLAnchorElement>('a').pathname,
+            title: (element.querySelector<HTMLElement>(queryTitle) || element).textContent.trim()
+        };
     };
 }
 
@@ -170,10 +171,7 @@ export async function FetchChaptersMultiPageAJAXV2(this: MangaScraper, manga: Ma
             }).toString();
 
             const data = await FetchJSON<APIChapterV2[]>(new Request(url));
-            const chapters = data.map(chapter => {
-                const title = chapter.title.replace(manga.Title, '').trim() || chapter.title;
-                return new Chapter(this, manga, new URL(chapter.viewer_uri).pathname, title);
-            });
+            const chapters = data.map(({ viewer_uri: uri, title }) => new Chapter(this, manga, new URL(uri).pathname, title.replace(manga.Title, '').trim() || title));
             chapters.length > 0 ? chapterList.push(...chapters) : run = false;
             offset += chapters.length;
         }
@@ -195,14 +193,13 @@ export async function FetchChaptersMultiPageAJAXV2(this: MangaScraper, manga: Ma
 async function FetchPagesSinglePageJSON(this: MangaScraper, chapter: Chapter, query = queryEpisodeJSON): Promise<Page<PageParams>[]> {
     const request = new Request(new URL(chapter.Identifier, this.URI));
     const dataElement = await FetchCSS(request, query);
-    const { readableProduct }: ChapterJSON = JSON.parse(dataElement[0].dataset.value);
-    if (!readableProduct.isPublic && !readableProduct.hasPurchased) {
+    const { readableProduct: { isPublic, hasPurchased, pageStructure: { pages, choJuGiga } } } = <ChapterJSON>JSON.parse(dataElement[0].dataset.value);
+    if (!isPublic && !hasPurchased) {
         throw new Exception(R.Plugin_Common_Chapter_UnavailableError);
     }
-    return readableProduct.pageStructure.pages.filter(page => page.type === 'main').map(page => {
+    return pages.filter(({ type }) => type === 'main').map(({ src }) => {
         // NOTE: 'usagi' is not scrambled
-        const parameters = { Referer: this.URI.href, scrambled: readableProduct.pageStructure.choJuGiga === 'baku' };
-        return new Page<PageParams>(this, chapter, new URL(page.src, request.url), parameters);
+        return new Page<PageParams>(this, chapter, new URL(src, request.url), { Referer: this.URI.href, scrambled: choJuGiga === 'baku' });
     });
 }
 

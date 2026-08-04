@@ -12,6 +12,7 @@ import '../HerosWeb_e2e';
 import '../IchijinPlus_e2e';
 import '../KurageBunch_e2e';
 import '../MagComi_e2e';
+import '../MangaNo_e2e';
 import '../OurFeel_e2e';
 import '../ShonenJumpPlus_e2e';
 import '../SundayWebry_e2e';

@@ -6,7 +6,7 @@ new TestFixture({
         title: 'Mwku',
     },
     container: {
-        url: 'https://manwapi.cc/comic/117015',
+        url: 'https://manwali.cc/comic/117015',
         id: '/comic/117015',
         title: '彩虹甜甜圈 (台版)'
     },
@@ -17,6 +17,6 @@ new TestFixture({
     entry: {
         index: 0,
         size: 184_768,
-        type: 'image/jpeg'
+        type: 'image/webp'
     }
 }).AssertWebsite();

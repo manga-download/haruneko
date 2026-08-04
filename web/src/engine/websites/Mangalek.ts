@@ -13,7 +13,7 @@ import { FetchWindowScript } from '../platform/FetchProvider';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('mangalek', 'مانجا ليك (Mangalek)', 'https://lek-manga.net', Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Media.Manga, Tags.Language.Arabic);
+        super('mangalek', 'مانجا ليك (Mangalek)', 'https://mangalik.net', Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Media.Manga, Tags.Language.Arabic);
     }
 
     public override get Icon() {
