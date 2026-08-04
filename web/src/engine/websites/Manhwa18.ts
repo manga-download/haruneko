@@ -1,12 +1,12 @@
 import { Tags } from '../Tags';
 import icon from './Manhwa18.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
-import * as FlatManga from './templates/FlatManga';
 import * as Common from './decorators/Common';
+import { ClipBoardExtractor, queryMangas } from './templates/FlatManga';
 
-@Common.MangaCSS(/^{origin}\/manga\/[^/]+$/, 'meta[property="og:title"]')
-@Common.MangasMultiPageCSS(FlatManga.queryMangas, Common.PatternLinkGenerator('/manga-list?page={page}'))
-@Common.ChaptersSinglePageCSS(FlatManga.queryChapters, undefined, Common.AnchorInfoExtractor(true))
+@Common.MangaCSS(/^{origin}\/manga\/[^/]+$/, 'h1.au-info-title', ClipBoardExtractor)
+@Common.MangasMultiPageCSS(queryMangas, Common.PatternLinkGenerator('/manga-list?page={page}'))
+@Common.ChaptersSinglePageCSS('div.au-chgrid a.au-chtile', undefined, Common.AnchorInfoExtractor(true))
 @Common.PagesSinglePageCSS('div#chapter-content img.lazy')
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {

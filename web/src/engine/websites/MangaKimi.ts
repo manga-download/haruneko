@@ -7,20 +7,17 @@ import { FetchRegex, FetchWindowScript } from '../platform/FetchProvider';
 import type { Priority } from '../taskpool/DeferredTask';
 import DeScramble from '../transformers/ImageDescrambler';
 
-type JSImageData = {
+export type JSImageData = ImageData & {
     url: string;
-    pieces: ImagePiece[]
 };
 
-type ImageData = {
-    pieces: ImagePiece[]
-};
-
-type ImagePiece = {
-    destX: number;
-    destY: number;
-    srcX: number;
-    srcY: number;
+export type ImageData = {
+    pieces: {
+        destX: number;
+        destY: number;
+        srcX: number;
+        srcY: number;
+    }[];
 };
 
 @MangaStream.MangaCSS(/^{origin}\/manga\/[^/]+\/$/)
@@ -71,7 +68,7 @@ export default class extends DecoratableMangaScraper {
                 resolve(images);
             });
         `, 2500);
-        return images.map(image => new Page<ImageData>(this, chapter, new URL(image.url), { pieces: image.pieces }));
+        return images.map(({ url, pieces }) => new Page<ImageData>(this, chapter, new URL(url), { pieces }));
     }
 
     public override async FetchImage(page: Page<ImageData>, priority: Priority, signal: AbortSignal): Promise<Blob> {
