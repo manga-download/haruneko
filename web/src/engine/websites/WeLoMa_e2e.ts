@@ -6,12 +6,12 @@ new TestFixture({
         title: 'WeLoMa'
     },
     container: {
-        url: 'https://weloma.art/429/',
-        id: '/429/',
+        url: 'https://weloma.net/m/0zPkf',
+        id: '/m/0zPkf',
         title: 'SLIME TAOSHITE 300-NEN, SHIRANAI UCHI NI LEVEL MAX NI NATTEMASHITA - RAW'
     },
     child: {
-        id: '/429/131864/',
+        id: '/c/qCcUo',
         title: 'Chapter 73.1',
     },
     entry: {

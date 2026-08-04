@@ -11,12 +11,13 @@ new TestFixture({
         title: `Today’s Han Yoil is a Woman`
     },
     child: {
-        id: '/todays-han-yoil-is-a-woman-chapter-01/',
-        title: 'Chapter 1'
+        id: '/todays-han-yoil-is-a-woman-chapter-66/',
+        title: 'Chapter 66',
+        timeout: 10_000
     },
     entry: {
         index: 0,
-        size: 342_064,
+        size: 347_540,
         type: 'image/webp'
     }
 }).AssertWebsite();

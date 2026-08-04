@@ -16,7 +16,6 @@ type APIMangas = {
 };
 
 type APIChapters = {
-    id: string;
     chapters: {
         id: string;
         number: string;
@@ -28,12 +27,20 @@ type APIPages = {
     pages: string[];
 };
 
+type APIToken = {
+    token: string;
+};
+
 class CustomRequest extends Request {
-    constructor(input: RequestInfo | URL, init?: RequestInit ) {
-        const headers = new Headers(init?.headers);
-        headers.set('Accept-Language', 'pt-BR,en-US;q=0.9,en;q=0.8');
-        headers.set('X-Tly-Sec', 'web-z99');
-        super(input, { ...init, headers });
+    constructor(input: RequestInfo | URL, init?: RequestInit) {
+        super(input, {
+            ...init,
+            headers: {
+                'Accept-Language': 'pt-BR,en-US;q=0.9,en;q=0.8',
+                'Sec-Fetch-Site': 'same-origin',
+                ...init?.headers || {}
+            }
+        });
     }
 }
 
@@ -43,7 +50,7 @@ export default class extends DecoratableMangaScraper {
     private readonly apiURL = `${this.URI.origin}/api/`;
 
     public constructor() {
-        super('mangalivre', 'ToonLivre', 'https://toonlivre.net', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Source.Aggregator, Tags.Language.Portuguese, Tags.Accessibility.RegionLocked);
+        super('mangalivre', 'ToonLivre', 'https://toonlivre.net', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Source.Aggregator, Tags.Language.Portuguese);
     }
 
     public override get Icon() {
@@ -75,16 +82,38 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const { id: mangaId, chapters } = await this.FetchAPI<APIChapters>(`./manga-by-slug/${manga.Identifier}`);
-        return chapters.map(({ id, number, title }) => new Chapter(this, manga, `./mangas/${mangaId}/chapters/${id}`, ['Capítulo', number, title].joinTitleSegments()));
+        //open to get cookies
+        await FetchWindowScript(new CustomRequest(new URL(`/${this.Slugify(manga.Title)}`, this.URI)), '', 1500);
+
+        const { token } = await this.FetchAPI<APIToken>(`./chapter-token/${manga.Identifier}`);
+
+        type This = typeof this;
+        return Array.fromAsync(async function* (this: This) {
+            for (let page = 1, run = true; run; page++) {
+                const { chapters: chaptersData } = await this.FetchAPI<APIChapters>(`./mangas/${manga.Identifier}/chapters-paginated?page=${page}&limit=100`, token);
+                const chapters = chaptersData.map(({ id, number, title }) => new Chapter(this, manga, id, ['Capítulo', number, title].joinTitleSegments()));
+                chapters.length > 0 ? yield* chapters : run = false;
+            }
+        }.call(this));
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const { pages } = await this.FetchAPI<APIPages>(chapter.Identifier);
+        const { token } = await this.FetchAPI<APIToken>(`./chapter-token/${chapter.Parent.Identifier}/${chapter.Identifier}`);
+        const { pages } = await this.FetchAPI<APIPages>(`./mangas/${chapter.Parent.Identifier}/chapters/${chapter.Identifier}`, token);
         return pages.map(page => new Page(this, chapter, new URL(page, this.URI)));
     }
 
-    private async FetchAPI<T extends JSONElement>(endpoint: string): Promise<T> {
-        return FetchJSON<T>(new CustomRequest(new URL(endpoint, this.apiURL)));
+    private async FetchAPI<T extends JSONElement>(endpoint: string, token: string = undefined): Promise<T> {
+        return FetchJSON<T>(new Request(new URL(endpoint, this.apiURL), {
+            headers: {
+                'Accept-Language': 'pt-BR,en-US;q=0.9,en;q=0.8',
+                'Sec-Fetch-Site': 'same-origin',
+                ...token && { 'X-Toon-Route-Token': token }
+            }
+        }));
+    }
+
+    private Slugify(title: string): string {
+        return (title || '').toString().toLowerCase().normalize('NFD').replace(new RegExp('\\p{Diacritic}', 'gu'), "").replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
     }
 }

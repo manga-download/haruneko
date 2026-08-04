@@ -6,17 +6,17 @@ new TestFixture({
         title: 'Mangas Brasuka'
     },
     container: {
-        url: 'https://mangasbrasuka.com.br/manga/yotaka-futatabi/',
-        id: JSON.stringify({ post: '811', slug: '/manga/yotaka-futatabi/' }),
+        url: 'https://mangasbrasuka.com.br/manga/yotaka-futatabi',
+        id: '/manga/yotaka-futatabi',
         title: 'Yotaka Futatabi'
     },
     child: {
-        id: '/manga/yotaka-futatabi/capitulo-1_1/',
-        title: 'Capitulo 1'
-    }, /* Region Lock : Brazil
+        id: '/manga/yotaka-futatabi/ler/1',
+        title: 'Capítulo 1'
+    },
     entry: {
         index: 1,
-        size: 143_860,
+        size: 201_666,
         type: 'image/webp'
-    }*/
+    }
 }).AssertWebsite();
