@@ -8,12 +8,12 @@ import { FetchWindowScript } from '../platform/FetchProvider';
 @Madara.MangaCSS(/^{origin}\/manga\/[^/]+\/$/, 'div.post-title h1')
 @Madara.MangasMultiPageAJAX()
 @Madara.ChaptersSinglePageAJAXv1()
-@Madara.PagesSinglePageCSS()
+@Common.PagesSinglePageCSS('div.reading-content div.no-gaps img')
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('mangaspark', 'مانجا سبارك (MangaSpark)', 'https://manga-spark.com', Tags.Media.Manhwa, Tags.Media.Manga, Tags.Language.Arabic, Tags.Source.Aggregator);
+        super('mangaspark', 'مانجا سبارك (MangaSpark)', 'https://sparkmanga.net', Tags.Media.Manhwa, Tags.Media.Manga, Tags.Language.Arabic, Tags.Source.Aggregator);
     }
 
     public override get Icon() {

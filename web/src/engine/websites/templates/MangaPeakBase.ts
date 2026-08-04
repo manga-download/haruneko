@@ -49,7 +49,14 @@ export class MangaPeakBase extends DecoratableMangaScraper {
                 });
             });
         `);
-        const { chapters } = await FetchJSON<APIChapters>(new Request(new URL(`./auth/manga-chapters?manga_id=${mangaId}&offset=0&limit=9999&order=DESC&_t=${token}&_ts=${timestamp}`, this.URI)));
-        return chapters.map(({ chapter, title, url }) => new Chapter(this, manga, new URL(url).pathname, ['Ch.', chapter, title].join(' ').trim()));
+
+        type This = typeof this;
+        return Array.fromAsync(async function* (this: This) {
+            for (let offset = 0, run = true; run ; offset+=500) {
+                const { chapters: chaptersData } = await FetchJSON<APIChapters>(new Request(new URL(`./auth/manga-chapters?manga_id=${mangaId}&offset=${offset}&limit=500&order=DESC&_t=${token}&_ts=${timestamp}`, this.URI)));
+                const chapters = chaptersData.map(({ chapter, title, url }) => new Chapter(this, manga, new URL(url).pathname, ['Ch.', chapter, title].joinTitleSegments()));
+                chapters.length > 0 ? yield* chapters : run = false;
+            }
+        }.call(this));
     }
 }
