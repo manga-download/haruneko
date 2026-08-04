@@ -3,7 +3,7 @@ import icon from './SoraRaw.webp';
 import { FetchCSS, FetchJSON } from '../platform/FetchProvider';
 import { type MangaPlugin, Manga, Chapter, Page, DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Grouple from './decorators/Grouple';
-import { GetBytesFromBase64, GetBytesFromHex, GetBytesFromUTF8, GetUTF8FromBytes } from '../BufferEncoder';
+import { GetBytesFromBase64, GetBytesFromHex, GetUTF8FromBytes } from '../BufferEncoder';
 import { XOR } from '../Crypto';
 
 type NEXTDATA<T> = {
@@ -110,10 +110,7 @@ export default class extends DecoratableMangaScraper {
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
         const { chapter: { id, manga_id, uuid, _b, _d, _t, _p } } = await this.GetEmbeddedJSON<APIChapterDetails>(chapter.Identifier);
         const { d } = await FetchJSON<CryptedPagesData>(new Request(new URL(`/${manga_id}/${id}.json`, this.apiURL)));
-        const pagesData: PagesData = JSON.parse(GetUTF8FromBytes(XOR(this.B64Decode(d), GetBytesFromUTF8('/fuCkYou!!!'))));
-
-        const AESKEY = GetBytesFromHex(uuid);
-        const XORKEY = GetBytesFromUTF8('202508055d0db38bae2e86cc41649f90');
+        const pagesData = <PagesData>JSON.parse(GetUTF8FromBytes(XOR(this.B64Decode(d), '/fuCkYou!!!')));
 
         return Promise.all(
             pagesData.map(async ({ b, d, p, t }) => {
@@ -124,14 +121,14 @@ export default class extends DecoratableMangaScraper {
                     b && { host: _b, file: b },
                 ].filter(Boolean) as { host: string; file: string }[];
 
-                const urls = await Promise.all(sources.map(s => this.GenerateFileName(s.host, s.file, XORKEY, AESKEY)));
+                const urls = await Promise.all(sources.map(({ file, host }) => this.GenerateFileName(host, file, GetBytesFromHex(uuid))));
                 return new Page(this, chapter, new URL(urls[0]), { Referer: this.URI.href, mirrors: urls.slice(1) });
             })
         );
     }
 
-    private async GenerateFileName(host: string, encryptedFileName: string, xorKey: Uint8Array<ArrayBuffer>, aesKey: Uint8Array<ArrayBuffer>): Promise<string> {
-        const ciphertext = XOR(this.B64Decode(encryptedFileName), xorKey);
+    private async GenerateFileName(host: string, encryptedFileName: string, aesKey: Uint8Array<ArrayBuffer>): Promise<string> {
+        const ciphertext = XOR(this.B64Decode(encryptedFileName), '202508055d0db38bae2e86cc41649f90');
         const algorithm = { name: 'AES-CTR', counter: ciphertext.subarray(0, 16), length: 128 };
         const key = await crypto.subtle.importKey('raw', aesKey, algorithm, false, ['decrypt']);
         const filename = GetUTF8FromBytes(await crypto.subtle.decrypt(algorithm, key, ciphertext.subarray(16)));
@@ -144,6 +141,6 @@ export default class extends DecoratableMangaScraper {
 
     private async GetEmbeddedJSON<T>(endpoint: string): Promise<T> {
         const [script] = await FetchCSS<HTMLScriptElement>(new Request(new URL(endpoint, this.URI)), 'script#__NEXT_DATA__');
-        return (JSON.parse(script.text) as NEXTDATA<T>).props.pageProps.data;
+        return (<NEXTDATA<T>>JSON.parse(script.text)).props.pageProps.data;
     }
 }

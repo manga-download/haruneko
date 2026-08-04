@@ -4,8 +4,8 @@ export const HMAC256Algo = { name: 'HMAC', hash: { name: 'SHA-256' } };
 
 /**
  * Perform a XOR operation
- * @param source - Bytes to be xored
- * @param key - XOR key
+ * @param source - data to be xored. If a string is passed, its UTF8 bytes will be used.
+ * @param key - XOR key. If a string is passed, its UTF8 bytes will be used.
  */
 export function XOR(source: Uint8Array | string, key: Uint8Array | string): Uint8Array<ArrayBuffer> {
     if (!key) throw new Error(`Argument 'key' is missing !`);
@@ -22,7 +22,7 @@ export function XOR(source: Uint8Array | string, key: Uint8Array | string): Uint
 
 /**
  * Perform a SHA256 operation
- * @param message - Bytes/string to be hashed
+ * @param message - Bytes/string to be hashed.If a string is passed, its UTF8 bytes will be used.
  */
 export async function SHA256(message: string | BufferSource): Promise<ArrayBuffer> {
     if (typeof message === 'string') message = GetBytesFromUTF8(message);
@@ -31,7 +31,7 @@ export async function SHA256(message: string | BufferSource): Promise<ArrayBuffe
 
 /**
  * Perform a SHA512 operation
- * @param message - Bytes/string to be hashed
+ * @param message - Bytes/string to be hashed. If a string is passed, its UTF8 bytes will be used.
  */
 export async function SHA512(message: string | BufferSource): Promise<ArrayBuffer> {
     if (typeof message === 'string') message = GetBytesFromUTF8(message);
@@ -44,8 +44,8 @@ async function HASH(message: BufferSource, hashType: string): Promise<ArrayBuffe
 
 /**
  * Compute a HMAC (with SHA-256) signature for the provided data
- * @param message - Bytes/string to be hashed
- * @param key - key used to sign.
+ * @param message - Bytes/string to be hashed. If a string is passed, its UTF8 bytes will be used.
+ * @param key - key used to sign. If a string is passed, its UTF8 bytes will be used.
  */
 export async function HMAC256(message: string | BufferSource, key: string | BufferSource | CryptoKey): Promise<ArrayBuffer> {
     if (typeof message === 'string') message = GetBytesFromUTF8(message);
@@ -54,7 +54,7 @@ export async function HMAC256(message: string | BufferSource, key: string | Buff
 
 /**
  * Compute a HMAC (with SHA-256) Key
- * @param key - data to use as key
+ * @param key - data to use as key. If a string is passed, its UTF8 bytes will be used.
  */
 export async function HMAC256ImportKey(key: string | BufferSource | CryptoKey): Promise<CryptoKey> {
     // Don't use `instanceof CryptoKey` here: CryptoKeys may come from a different
