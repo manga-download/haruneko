@@ -104,10 +104,7 @@ export class HeanCMS extends DecoratableMangaScraper {
 
     protected ComputePageUrl(image: string, storage: string): URL {
         if (image.startsWith('http')) return new URL(image);
-        switch (storage) {
-            case "s3": return new URL(image);
-            case "local": return new URL(`${this.mediaUrl}/${image}`);
-        }
+        return new URL(storage === 'local' ? `${this.mediaUrl}/${image}` : image);
     }
 
     private async FetchAPI<T extends JSONElement>(endpoint: string): Promise<T> {
