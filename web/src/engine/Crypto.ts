@@ -1,9 +1,7 @@
 import { GetBytesFromUTF8 } from './BufferEncoder';
 
-type DigestAlgorithm = 'SHA256' | 'SHA-256' | 'SHA512' | 'SHA-512';
-
 // TODO: Improve TS-DOC ...
-export async function HashUTF8(algorithm: DigestAlgorithm, text: string) {
+export async function HashUTF8(algorithm: 'SHA256' | 'SHA-256' | 'SHA512' | 'SHA-512', text: string) {
     return new Uint8Array(await crypto.subtle.digest(algorithm, GetBytesFromUTF8(text)));
 }
 
