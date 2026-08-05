@@ -11,7 +11,7 @@ new TestFixture({
         title: '鬼畜英雄【G!TOON版】'
     },
     child: {
-        id: '/free_chapters/2215258/download/050845030e9e52d07b2b83e66d130bdbb4b30aa6',
+        id: '/free_chapters/2215258/download/bef7c466c441b7468d0f43460276a94644f2bff9',
         title: '001話 - (1)',
     },
     entry: {
