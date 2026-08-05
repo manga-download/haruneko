@@ -12,12 +12,12 @@ new TestFixture({
         title: '悪徳貴族の生存戦略'
     },
     child: {
-        id: JSON.stringify({ code: 'CD00006-002-018', type: 'episode' }),
-        title: '第8話（2）'
+        id: JSON.stringify({ code: 'CD00006-002-013', type: 'episode' }),
+        title: '第6話（2）'
     },
     entry: {
         index: 0,
-        size: 358_462,
+        size: 359_516,
         type: 'image/webp'
     }
 }).AssertWebsite();

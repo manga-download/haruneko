@@ -3,9 +3,8 @@ import icon from './Mangacix.webp';
 import { Chapter, DecoratableMangaScraper, Manga, type MangaPlugin, Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import { RandomBytes } from '../Random';
-import { GetBase64FromBytes } from '../BufferEncoder';
+import { GetBase64FromBytes, GetBytesFromUTF8 } from '../BufferEncoder';
 import { FetchJSON } from '../platform/FetchProvider';
-import { AESEncrypt } from '../Crypto';
 
 type APIMangas = {
     pagination: {
@@ -71,7 +70,7 @@ export default class extends DecoratableMangaScraper {
 
     private async FetchAPI<T extends JSONElement>(endpoint: string): Promise<T> {
         const requestUrl = new URL(endpoint, this.apiURL);
-        const { ciphertext, iv } = await this.Encrypt(requestUrl.search.replace(/^\?/, ''), 'i4C7R2fXGocdYgFLzCbDlsJjukf8G58b');
+        const { ciphertext, iv } = await this.AESEncrypt(requestUrl.search.replace(/^\?/, ''), GetBytesFromUTF8('i4C7R2fXGocdYgFLzCbDlsJjukf8G58b'));
         return FetchJSON<T>(new Request(requestUrl, {
             headers: {
                 'X-E-H': `${ciphertext}.${iv}`
@@ -79,9 +78,12 @@ export default class extends DecoratableMangaScraper {
         }));
     }
 
-    private async Encrypt(data: string, key: string) {
+    private async AESEncrypt(data: string, keyData: Uint8Array<ArrayBuffer>) {
         const iv = RandomBytes(12);
-        const result = await AESEncrypt(`{version}${data}`, key, { mode: 'GCM', iv, length: 256 });
+        const result = await crypto.subtle.encrypt({ name: 'AES-GCM', iv },
+            await crypto.subtle.importKey('raw', keyData, {
+                name: 'AES-GCM', length: 256
+            }, false, ['encrypt']), GetBytesFromUTF8(`{version}${data}`));
         return {
             ciphertext: GetBase64FromBytes(new Uint8Array(result)),
             iv: GetBase64FromBytes(iv)

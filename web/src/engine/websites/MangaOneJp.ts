@@ -8,19 +8,18 @@ import { Exception } from '../Error';
 import { WebsiteResourceKey as R } from '../../i18n/ILocale';
 import type { Priority } from '../taskpool/DeferredTask';
 import { GetBytesFromHex } from '../BufferEncoder';
-import { AESDecrypt } from '../Crypto';
 
 type WebRensaiListResponse = {
     dayOfWeekTitleLists: {
-        titles: APITitle[];
-    }[];
+        titles: APITitle[]
+    }[]
 };
 
 type APITitle = {
     title: {
         titleId: number;
         titleName: string;
-    };
+    }
 };
 
 type WebChapterListForViewerResponse = {
@@ -46,7 +45,7 @@ type Volume = {
     volume: {
         id: number;
         name: string;
-    };
+    }
 };
 
 type ItemID = {
@@ -64,7 +63,7 @@ type WebViewerResponse = {
 type PageProto = {
     image?: {
         imageUrl: string;
-    };
+    }
 };
 
 type PageParameters = {
@@ -73,7 +72,7 @@ type PageParameters = {
 };
 
 export default class extends DecoratableMangaScraper {
-    private readonly apiURL = 'https://manga-one.com/api/client';
+    private readonly apiUrl = 'https://manga-one.com/api/client';
 
     public constructor() {
         super('mangaonejp', 'Manga One (Japan)', 'https://manga-one.com', Tags.Media.Manga, Tags.Language.Japanese, Tags.Source.Official);
@@ -94,7 +93,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        const { dayOfWeekTitleLists } = await FetchProto<WebRensaiListResponse>(new Request(new URL('?rq=rensai', this.apiURL)), protoTypes, 'MangaOneJp.WebRensaiListResponse');
+        const { dayOfWeekTitleLists } = await FetchProto<WebRensaiListResponse>(new Request(new URL('?rq=rensai', this.apiUrl)), protoTypes, 'MangaOneJp.WebRensaiListResponse');
         return dayOfWeekTitleLists.reduce((accumulator: Manga[], day) => {
             accumulator.push(...day.titles.map(({ title: { titleId, titleName } }) => new Manga(this, provider, `${titleId}`, titleName)));
             return accumulator;
@@ -109,7 +108,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     private async FetchMediaItem(manga: Manga, mediaType: 'chapter' | 'volume'): Promise<Chapter[]> {
-        const url = new URL(`?rq=viewer/chapter_list&title_id=${manga.Identifier}&page=1&limit=9999&sort_type=desc&type=${mediaType}`, this.apiURL);
+        const url = new URL(`?rq=viewer/chapter_list&title_id=${manga.Identifier}&page=1&limit=9999&sort_type=desc&type=${mediaType}`, this.apiUrl);
         switch (mediaType) {
             case 'chapter': {
                 const { chapterList: { chapterList } } = await FetchProto<WebChapterListForViewerResponse>(new Request(url), protoTypes, 'MangaOneJp.WebChapterListForViewerResponse');
@@ -127,7 +126,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page<PageParameters>[]> {
-        const { id, type } = <ItemID>JSON.parse(chapter.Identifier);
+        const { id, type }: ItemID = JSON.parse(chapter.Identifier);
         const { pages, aesIv, aesKey } = await this.GetWebViewerResponse(chapter.Parent.Identifier, `${id}`, type, data => 'pages' in data);
         if (!pages)
             throw new Exception(R.Plugin_Common_Chapter_UnavailableError);
@@ -137,7 +136,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     private async GetWebViewerResponse(mangaId: string, itemId: string, type: string, validator: (data: JSONObject<JSONElement> | JSONArray<JSONElement>) => unknown = undefined): Promise<WebViewerResponse> {
-        const url = new URL(`?rq=viewer_v2&title_id=${mangaId}&viewer_type=${type}&is_trial=false`, this.apiURL);
+        const url = new URL(`?rq=viewer_v2&title_id=${mangaId}&viewer_type=${type}&is_trial=false`, this.apiUrl);
         url.searchParams.set(type === 'volume' ? 'volume_id_for_read' : 'chapter_id', itemId);
 
         const result = await FetchProto<WebViewerResponse>(new Request(url, { method: 'POST' }), protoTypes, 'MangaOneJp.WebViewerResponse');
@@ -156,6 +155,9 @@ export default class extends DecoratableMangaScraper {
     }
 
     private async DecryptPicture(encrypted: Blob, key: string, iv: string): Promise<Blob> {
-        return Common.GetTypedData(await AESDecrypt(await encrypted.arrayBuffer(), GetBytesFromHex(key), { mode: 'CBC', iv: GetBytesFromHex(iv) } ));
+        const algorithm = { name: 'AES-CBC', iv: GetBytesFromHex(iv) };
+        const secretKey = await crypto.subtle.importKey('raw', GetBytesFromHex(key), algorithm, false, ['decrypt']);
+        const decrypted = await crypto.subtle.decrypt(algorithm, secretKey, await encrypted.arrayBuffer());
+        return Common.GetTypedData(decrypted);
     }
 }

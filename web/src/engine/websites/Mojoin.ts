@@ -3,9 +3,8 @@ import icon from './Mojoin.webp';
 import type { Priority } from '../taskpool/TaskPool';
 import { Fetch, FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
 import { type MangaPlugin, Manga, Chapter, Page, DecoratableMangaScraper } from '../providers/MangaPlugin';
-import { GetBytesFromBase64, GetBytesFromHex, GetUTF8FromBytes } from '../BufferEncoder';
+import { GetBytesFromBase64, GetBytesFromHex, GetBytesFromUTF8, GetUTF8FromBytes } from '../BufferEncoder';
 import * as Common from './decorators/Common';
-import { AESDecrypt, SHA512 } from '../Crypto';
 
 type TokenData = {
     uuid: string;
@@ -23,19 +22,19 @@ type APIChapters = {
     data: {
         customized_number: string;
         name: string;
-    }[];
+    }[]
 };
 
 type APIPages = {
     content: {
         url: string;
         key: string;
-    }[];
+    }[]
 };
 
 type PageParameters = {
     EncryptionKeyData: string;
-};
+}
 
 class DRMProvider {
 
@@ -52,7 +51,7 @@ class DRMProvider {
     //public get KeyData() { return this.#keyData; }
 
     public async Update(uuid: string, token: string) {
-        const hash = await SHA512(token);
+        const hash = await crypto.subtle.digest({ name: 'SHA-512' }, GetBytesFromUTF8(token));
         this.#uuid = uuid;
         this.#bearer = `Bearer ${token}`;
         this.#iv = new Uint8Array(hash, 15, 16);
@@ -60,7 +59,10 @@ class DRMProvider {
     }
 
     public async Decrypt(encrypted: BufferSource, iv = this.#iv, keyData = this.#keyData): Promise<string> {
-        return GetUTF8FromBytes(await AESDecrypt(encrypted, keyData, {mode: 'CBC', iv}));
+        const algorithm = { name: 'AES-CBC', iv };
+        const key = await crypto.subtle.importKey('raw', keyData, algorithm, false, ['decrypt']);
+        const decrypted = await crypto.subtle.decrypt(algorithm, key, encrypted);
+        return GetUTF8FromBytes(decrypted);
     }
 }
 

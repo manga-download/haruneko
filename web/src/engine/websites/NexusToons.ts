@@ -4,7 +4,6 @@ import { FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
 import { type MangaPlugin, Manga, Chapter, Page, DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import { GetBytesFromBase64, GetUTF8FromBytes } from '../BufferEncoder';
-import { SHA256 } from '../Crypto';
 
 type APICryptedData = {
     d: string;
@@ -46,7 +45,7 @@ type APIPages = {
 
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
-    private readonly apiURL = 'https://nexustoons.com/api/';
+    private readonly apiUrl = 'https://nexustoons.com/api/';
     private readonly seed = 'OrionNexus2025CryptoKey!Secure';
     private readonly keys: EncryptionKeys[] = [];
     private token: string = undefined;
@@ -91,11 +90,11 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
         const { pages, pageToken } = await this.FetchAPI<APIPages>(`./chapter/${chapter.Identifier}`);
-        return pages.map(({ imageUrl }, index) => new Page(this, chapter, new URL(imageUrl || `./p/${pageToken}/${index}`, this.apiURL)));
+        return pages.map(({ imageUrl }, index) => new Page(this, chapter, new URL(imageUrl || `./p/${pageToken}/${index}`, this.apiUrl)));
     }
 
     private async FetchAPI<T extends JSONElement>(endpoint: string): Promise<T> {
-        const data = await FetchJSON<APIResult<T>>(new Request(new URL(endpoint, this.apiURL), {
+        const data = await FetchJSON<APIResult<T>>(new Request(new URL(endpoint, this.apiUrl), {
             headers: {
                 ...this.token && { Authorization: `Bearer ${this.token}` },
                 'X-App-Key': 'NxT_s3cur3_k3y_2026!xK9mPqL'
@@ -128,7 +127,8 @@ export default class extends DecoratableMangaScraper {
 
     private async InitKeys(seed: string): Promise<void> {
         for (let index = 0; index < 5; index++) {
-            const key = new Uint8Array(await SHA256(`_orion_key_${index}_v2_${seed}`));
+            const buffer = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(`_orion_key_${index}_v2_${seed}`));
+            const key = new Uint8Array(buffer);
 
             // Init sboxes (this is RC4 KSA)
             const encryptionKeys: EncryptionKeys = {
