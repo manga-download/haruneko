@@ -75,14 +75,14 @@ function IsCryptoKey(key: any): boolean {
  * @returns The XOR result.
  */
 export function XOR(source: Uint8Array | string, key: Uint8Array | string): Uint8Array<ArrayBuffer> {
-    if (!key) throw new Error(`Argument 'key' is missing !`);
-    if (!source) throw new Error(`Argument 'source' is missing !`);
+    if (!key) throw new RangeError(`Incorrect Key parameter !`);
+    if (!source) throw new RangeError(`Incorrect Source parameter !`);
 
     const sourceBytes = source instanceof Uint8Array ? source : GetBytesFromUTF8(source);
     const keyBytes = key instanceof Uint8Array ? key : GetBytesFromUTF8(key);
 
-    if (keyBytes.length === 0) throw new RangeError('Key must not be empty !');
-    if (sourceBytes.length === 0) throw new RangeError('Source must not be empty !');
+    if (keyBytes.length === 0) throw new RangeError('Incorrect Key parameter !');
+    if (sourceBytes.length === 0) throw new RangeError('Incorrect Source parameter !');
 
     return sourceBytes.map((byte, index) => byte ^ keyBytes[index % keyBytes.length]);
 }
