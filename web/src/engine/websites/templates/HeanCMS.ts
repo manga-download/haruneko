@@ -18,7 +18,6 @@ type APIResult<T> = {
 };
 
 type APIChapter = {
-    index: string;
     id: number;
     chapter_name: string;
     chapter_title: string;
@@ -26,11 +25,9 @@ type APIChapter = {
 };
 
 type APIPages = {
-    chapter_type: string;
     paywall: boolean;
     data: string[] | string;
     chapter: {
-        chapter_type: string;
         storage: string;
         chapter_data?: {
             images?: string[];
@@ -46,7 +43,7 @@ type APIMediaID = {
     slug: string;
 };
 
-@Common.ImageAjax()
+@Common.ImageAjax(true)
 export class HeanCMS extends DecoratableMangaScraper {
 
     private apiURL = this.URI.origin.replace('://', '://api.');
@@ -91,7 +88,7 @@ export class HeanCMS extends DecoratableMangaScraper {
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
         const { slug: chapterSlug } = <APIMediaID>JSON.parse(chapter.Identifier);
         const { slug: mangaSlug } = <APIMediaID>JSON.parse(chapter.Parent.Identifier);
-        const { data, paywall, chapter: { chapter_type, chapter_data, storage } } = await this.FetchAPI<APIPages>(`./chapter/${mangaSlug}/${chapterSlug}`);
+        const { data, paywall, chapter: { chapter_data, storage } } = await this.FetchAPI<APIPages>(`./chapter/${mangaSlug}/${chapterSlug}`);
 
         if (paywall) {
             throw new Exception(R.Plugin_Common_Chapter_UnavailableError);
@@ -99,7 +96,7 @@ export class HeanCMS extends DecoratableMangaScraper {
 
         //old API vs new
         const listImages = Array.isArray(data) ? data as string[] : chapter_data.images ? chapter_data.images : chapter_data.files.map(file => file.url);
-        return listImages.map(image => new Page(this, chapter, this.ComputePageUrl(image, storage), { type: chapter_type }));
+        return listImages.map(image => new Page(this, chapter, this.ComputePageUrl(image, storage)));
     }
 
     protected ComputePageUrl(image: string, storage: string): URL {
