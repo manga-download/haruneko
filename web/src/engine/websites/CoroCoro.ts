@@ -6,6 +6,7 @@ import type { Priority } from '../taskpool/DeferredTask';
 import { Fetch, FetchProto } from '../platform/FetchProvider';
 import { DecoratableMangaScraper, type MangaPlugin, Manga, Chapter, Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
+import { AESDecrypt } from '../Crypto';
 
 // TODO : Check if website provide non crypted pictures (to remove useless checks)
 
@@ -93,13 +94,11 @@ export default class extends DecoratableMangaScraper {
             return response.arrayBuffer();
         }, priority, signal);
         const { keyData, iv } = page.Parameters;
-        return keyData && iv ? this.DecryptImage(bytes, keyData, iv) : Common.GetTypedData(bytes);
+        return Common.GetTypedData( keyData && iv ? await this.DecryptImage(bytes, keyData, iv) : bytes);
     }
 
-    private async DecryptImage(encrypted: ArrayBuffer, keyData: string, iv: string): Promise<Blob> {
-        const algorithm = { name: 'AES-CBC', iv: GetBytesFromHex(iv) };
-        const key = await crypto.subtle.importKey('raw', GetBytesFromHex(keyData), algorithm, false, [ 'decrypt' ]);
-        return Common.GetTypedData(await crypto.subtle.decrypt(algorithm, key, encrypted));
+    private async DecryptImage(encrypted: ArrayBuffer, keyData: string, iv: string): Promise<ArrayBuffer> {
+        return AESDecrypt(encrypted, GetBytesFromHex(keyData), { mode: 'CBC', iv: GetBytesFromHex(iv) });
     }
 
     private async FetchAPI<T extends JSONElement>(searchParamsInit: Record<string, string>, messageType: string, method: string = 'GET'): Promise<T> {

@@ -5,33 +5,34 @@ import type { Priority } from '../taskpool/DeferredTask';
 import { Fetch, FetchNextJS } from '../platform/FetchProvider';
 import { DecoratableMangaScraper, type Manga, Chapter, Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
+import { AESDecrypt } from '../Crypto';
 
 type HydratedChapters = {
     episodeList: {
-        href: string,
-        title: string,
-    }[]
+        href: string;
+        title: string;
+    }[];
 };
 
 type HydratedPages = {
-    accessKey: string,
-    keyBytes?: string,
-    ivBytes?: string,
-    base: string,
+    accessKey: string;
+    keyBytes?: string;
+    ivBytes?: string;
+    base: string;
     metadata: {
         pages: {
-            filename: string
-        }[]
-    }
+            filename: string;
+        }[];
+    };
 };
 
 type PageParams = {
-    keyData?: string,
-    iv?: string
+    keyData?: string;
+    iv?: string;
 };
 
 @Common.MangaCSS(/^{origin}\/episode\/\d+$/, 'meta[name="twitter:title"]')
-@Common.MangasSinglePageCSS('/series', '#main div.group a[href*="episode"]', (a: HTMLAnchorElement) => ({ id: a.pathname, title: a.querySelector('h3').innerText.trim() }))
+@Common.MangasSinglePageCSS<HTMLAnchorElement>('/series', '#main div.group a[href*="episode"]', anchor => ({ id: anchor.pathname, title: anchor.querySelector('h3').innerText.trim() }))
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
@@ -43,15 +44,13 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const request = new Request(new URL(manga.Identifier, this.URI));
-        const { episodeList } = await FetchNextJS<HydratedChapters>(request, data => 'episodeList' in data);
-        return episodeList.map(chapter => new Chapter(this, manga, new URL(chapter.href, this.URI).pathname, chapter.title.trim()));
+        const { episodeList } = await FetchNextJS<HydratedChapters>(new Request(new URL(manga.Identifier, this.URI)), data => 'episodeList' in data);
+        return episodeList.map(({ href, title }) => new Chapter(this, manga, new URL(href, this.URI).pathname, title.trim()));
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page<PageParams>[]> {
-        const request = new Request(new URL(chapter.Identifier, this.URI));
-        const { metadata: { pages }, accessKey, keyBytes, ivBytes, base } = await FetchNextJS<HydratedPages>(request, data => 'metadata' in data && 'accessKey' in data);
-        return pages.map(page => new Page<PageParams>(this, chapter, new URL(`${base}/${page.filename}?__token__=${accessKey}`), { keyData: keyBytes, iv: ivBytes }));
+        const { metadata: { pages }, accessKey, keyBytes, ivBytes, base } = await FetchNextJS<HydratedPages>(new Request(new URL(chapter.Identifier, this.URI)), data => 'metadata' in data && 'accessKey' in data);
+        return pages.map(({ filename }) => new Page<PageParams>(this, chapter, new URL(`${base}/${filename}?__token__=${accessKey}`), { keyData: keyBytes, iv: ivBytes }));
     }
 
     public override async FetchImage(page: Page<PageParams>, priority: Priority, signal: AbortSignal): Promise<Blob> {
@@ -60,13 +59,10 @@ export default class extends DecoratableMangaScraper {
             return response.arrayBuffer();
         }, priority, signal);
         const { keyData, iv } = page.Parameters;
-        return keyData && iv ? this.DecryptImage(bytes, keyData, iv) : Common.GetTypedData(bytes);
+        return Common.GetTypedData(keyData && iv ? await this.DecryptImage(bytes, keyData, iv) : bytes);
     }
 
-    private async DecryptImage(encrypted: ArrayBuffer, keyData: string, iv: string): Promise<Blob> {
-        const algorithm = { name: 'AES-CBC', iv: GetBytesFromHex(iv) };
-        const key = await crypto.subtle.importKey('raw', GetBytesFromHex(keyData), algorithm, false, ['decrypt']);
-        const decrypted = await crypto.subtle.decrypt(algorithm, key, encrypted);
-        return Common.GetTypedData(decrypted);
+    private async DecryptImage(encrypted: ArrayBuffer, keyData: string, iv: string): Promise<ArrayBuffer> {
+        return AESDecrypt(encrypted, GetBytesFromHex(keyData), { mode: 'CBC', iv: GetBytesFromHex(iv) });
     }
 }
