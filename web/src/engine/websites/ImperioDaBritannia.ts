@@ -4,7 +4,7 @@ import { Chapter, DecoratableMangaScraper, Manga, type MangaPlugin, Page } from 
 import * as Common from './decorators/Common';
 import { Fetch } from '../platform/FetchProvider';
 import { GetBytesFromHex, GetUTF8FromBytes } from '../BufferEncoder';
-import { AESDecrypt, SHA256 } from '../Crypto';
+import { AESDecrypt, HashUTF8 } from '../Crypto';
 
 type APIManga = {
     obra: {
@@ -110,8 +110,7 @@ export default class extends DecoratableMangaScraper {
 
     private async Decrypt<T extends JSONElement>(text: string): Promise<T> {
         const [iv, encrypted] = text.split(':');
-        const decrypted = await AESDecrypt(GetBytesFromHex(encrypted), await SHA256('mangotoons_encryption_key_2025' + 'salt'), { mode: 'CBC', iv: GetBytesFromHex(iv) });
+        const decrypted = await AESDecrypt(GetBytesFromHex(encrypted), await HashUTF8('SHA-256', 'mangotoons_encryption_key_2025salt'), { mode: 'CBC', iv: GetBytesFromHex(iv) });
         return <T>JSON.parse(GetUTF8FromBytes(decrypted));
     }
-
 }

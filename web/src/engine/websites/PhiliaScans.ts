@@ -2,13 +2,10 @@ import { Tags } from '../Tags';
 import icon from './PhiliaScans.webp';
 import type { Priority } from '../taskpool/DeferredTask';
 import { Fetch, FetchJSON } from '../platform/FetchProvider';
-import { GetHexFromBytes, GetBytesFromHex, GetBytesFromBase64 } from '../BufferEncoder';
+import { GetHexFromBytes, GetBytesFromHex, GetBytesFromBase64, GetBytesFromUTF8 } from '../BufferEncoder';
 import { Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from '../providers/MangaPlugin';
 import DeScramble from '../transformers/ImageDescrambler';
 import { GetTypedData } from './decorators/Common';
-import { Exception } from '../Error';
-import { WebsiteResourceKey as R } from '../../i18n/ILocale';
-import { AESDecrypt, HMAC256, HMAC256ImportKey, XOR } from '../Crypto';
 
 type APIResult<T> = {
     items: T[];
@@ -21,21 +18,15 @@ type APIManga = {
 
 type APIMangas = APIResult<APIManga>;
 
-type APIChapter = {
-    id: number;
+type APIChapters = APIResult<{
+    slug: string;
     number: string;
     title: string;
-    slug: string;
-    pages: {
-        url: string;
-    }[];
-    scrambled: boolean;
-};
-
-type APIChapters = APIResult<APIChapter>;
+}>;
 
 type APIPages = {
     chapter: {
+        id: number,
         pages: {
             url: string;
         }[];
@@ -69,11 +60,6 @@ type PageParameters = {
     KeyData: string;
 };
 
-type ChapterID = {
-    slug: string;
-    id: string;
-};
-
 // TODO: Major Code Revision
 class PRNG {
 
@@ -83,13 +69,13 @@ class PRNG {
     private readonly mac: Promise<CryptoKey>;
 
     constructor(signKey: CryptoKey, pageIndex: number) {
-        this.mac = HMAC256(`tiles:${pageIndex}`, signKey)
-            .then(tilesSig => HMAC256ImportKey(tilesSig));
+        this.mac = crypto.subtle.sign('HMAC', signKey, GetBytesFromUTF8(`tiles:${pageIndex}`))
+            .then(tilesSig => crypto.subtle.importKey('raw', tilesSig, { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']));
     }
 
     async #Next(): Promise<number> {
         if (this.aIndex >= 8) {
-            this.rBuf = new Uint8Array(await HMAC256(`perm:${this.nCounter++}`, await this.mac));
+            this.rBuf = new Uint8Array(await crypto.subtle.sign('HMAC', await this.mac, GetBytesFromUTF8(`perm:${this.nCounter++}`)));
             this.aIndex = 0;
         }
         const offset = this.aIndex * 4;
@@ -102,7 +88,7 @@ class PRNG {
         return value >>> 0;
     }
 
-    public async Sequence(gridSize: number): Promise<number[]> {
+    public async BuildIndexes(gridSize: number): Promise<number[]> {
         this.nCounter = 0;
         this.rBuf = new Uint8Array(0);
         this.aIndex = 8;
@@ -158,25 +144,20 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const { items } = await this.FetchAPI<APIChapters>(`./manga/${manga.Identifier}/chapters`);
-        return items.map(({ id, slug, title, number }) => new Chapter(this, manga, JSON.stringify({ slug, id: `${id}` }), [`Ch.${number}`, title].joinTitleSegments()));
+        return items.map(({ slug, title, number }) => new Chapter(this, manga, slug, [`Ch.${number}`, title].joinTitleSegments()));
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page<PageParameters>[]> {
-        const { id: chapterId, slug: chapterSlug } = <ChapterID>JSON.parse(chapter.Identifier);
-        const { chapter: { pages, scrambled } } = await this.FetchAPI<APIPages>(`./manga/${chapter.Parent.Identifier}/chapters/${chapterSlug}`);
+        const { chapter: { id, pages, scrambled } } = await this.FetchAPI<APIPages>(`./manga/${chapter.Parent.Identifier}/chapters/${chapter.Identifier}`);
 
-        if (pages.length === 0) {
-            throw new Exception(R.Plugin_Common_Chapter_UnavailableError);
-        }
-
-        const { chapterKeyB64, gridSize, sessionDefault } = await this.FetchAPI<APIPageKeys>(`./chapters/${chapterId}/page-keys`);
+        const { chapterKeyB64, gridSize, sessionDefault } = await this.FetchAPI<APIPageKeys>(`./chapters/${id}/page-keys`);
         let keyData: Uint8Array<ArrayBuffer> = GetBytesFromBase64(chapterKeyB64);
 
         if (sessionDefault) {
             const token = (await this.FetchAPI<APIToken>(`./reader/access-token`, undefined, 'POST')).token;
-            const { payloadA, sessionId } = await this.FetchAPI<APIOpenResponse>(`./chapters/${chapterId}/open`, token, 'POST');
-            const { payloadB } = await this.FetchAPI<APIDrmResponse>(`./chapters/${chapterId}/get-drm?session=${sessionId}`, token);
-            if (payloadA && payloadB) keyData = new Uint8Array(XOR(GetBytesFromBase64(payloadA), GetBytesFromBase64(payloadB)));
+            const { payloadA, sessionId } = await this.FetchAPI<APIOpenResponse>(`./chapters/${id}/open`, token, 'POST');
+            const { payloadB } = await this.FetchAPI<APIDrmResponse>(`./chapters/${id}/get-drm?session=${sessionId}`, token);
+            if (payloadA && payloadB) keyData = new Uint8Array(this.XOR(GetBytesFromBase64(payloadA), GetBytesFromBase64(payloadB)));
         }
 
         return pages.map(({ url }, index) => new Page<PageParameters>(this, chapter, new URL(url, this.URI), {
@@ -198,13 +179,13 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchImage(page: Page<PageParameters>, priority: Priority, signal: AbortSignal): Promise<Blob> {
         const buffer = await (await this.imageTaskPool.Add(() => Fetch(new Request(page.Link, { headers: { Referer: this.URI.href } })), priority, signal)).arrayBuffer();
-        if (!page.Link.href.includes('_s-sm.webp') && !page.Link.href.includes('_s.webp')) return GetTypedData(buffer);
+        if ( !page.Link.href.includes('_s-sm.webp') && !page.Link.href.includes('_s.webp')) return GetTypedData(buffer);
 
         const { PageIndex, IsScrambled, GridSize, KeyData } = page.Parameters;
-        const signKey = await HMAC256ImportKey(GetBytesFromHex(KeyData));
+        const signKey = await crypto.subtle.importKey('raw', GetBytesFromHex(KeyData), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']);
 
         const encryptionType = this.GetEncryptionType(buffer);
-        const encrypted = new Uint8Array(buffer, encryptionType === 'AESV3' || encryptionType === 'AESV4' || encryptionType === 'CHACHA20' ? 6 : 4);
+        const encrypted = new Uint8Array(buffer, encryptionType === 'AESV3' || 'AESV4' || 'CHACHA20' ? 6 : 4);
 
         const blob = await this.DecryptImage(encrypted, encryptionType, signKey, PageIndex);
         if (encryptionType === 'CHACHA20' || encryptionType === 'AESV4') return blob;
@@ -214,7 +195,7 @@ export default class extends DecoratableMangaScraper {
             const tileHeight = image.height / GridSize;
             const tileCount = GridSize * GridSize;
 
-            const indexes = await new PRNG(signKey, PageIndex).Sequence(GridSize);
+            const indexes = new PRNG(signKey, PageIndex).BuildIndexes(GridSize);
 
             for (let tileIndex = 0; tileIndex < tileCount; tileIndex++) {
                 const srcIdx = indexes[tileIndex];
@@ -245,7 +226,7 @@ export default class extends DecoratableMangaScraper {
         switch (encryptionType) {
             case 'AESV3':
             case 'AESV4': {
-                imageData = await this.AESDecryptCustom(signKey, pageIndex, encrypted, encryptionType === 'AESV3' ? 'aesctr' : 'aesctr4');
+                imageData = await this.AESDecrypt(signKey, pageIndex, encrypted, encryptionType === 'AESV3' ? 'aesctr' : 'aesctr4');
                 break;
             }
             case 'CHACHA20': {
@@ -253,11 +234,16 @@ export default class extends DecoratableMangaScraper {
                 break;
             }
             case 'XOR': {
-                imageData = XOR(await this.ComputeXorKey(signKey, pageIndex, encrypted.byteLength), encrypted).buffer;
+                imageData = this.XOR(await this.ComputeXorKey(signKey, pageIndex, encrypted.byteLength), encrypted).buffer;
                 break;
             }
         }
         return GetTypedData(imageData);
+    }
+
+    // XOR
+    private XOR(source: Uint8Array, key: Uint8Array): Uint8Array<ArrayBuffer> {
+        return source.map((byte, index) => byte ^ key[index]);
     }
 
     private async ComputeXorKey(key: CryptoKey, pageIndex: number, length: number): Promise<Uint8Array<ArrayBuffer>> {
@@ -265,16 +251,22 @@ export default class extends DecoratableMangaScraper {
         const result = new Uint8Array(32 * numBlocks);
 
         for (let r = 0; r < numBlocks; r++) {
-            const sign = await HMAC256(`page:${pageIndex}:${r}`, key);
+            const data = GetBytesFromUTF8(`page:${pageIndex}:${r}`);
+            const sign = await crypto.subtle.sign({ name: 'HMAC', hash: 'SHA-256' }, key, data);
             result.set(new Uint8Array(sign), 32 * r);
         }
         return result.subarray(0, length);
     }
 
     // AES
-    private async AESDecryptCustom(signKey: CryptoKey, pageIndex: number, data: Uint8Array<ArrayBuffer>, prefix: string): Promise<ArrayBuffer> {
-        const keyData = new Uint8Array(await HMAC256(`${prefix}:${pageIndex}`, signKey));
-        return AESDecrypt(data, keyData, { mode: 'CTR', counter: new Uint8Array(16), length: 128 });
+    private async AESDecrypt(signKey: CryptoKey, pageIndex: number, data: Uint8Array<ArrayBuffer>, prefix: string): Promise<ArrayBuffer> {
+        const keyData = new Uint8Array(await crypto.subtle.sign({ name: 'HMAC', hash: 'SHA-256' }, signKey, GetBytesFromUTF8(`${prefix}:${pageIndex}`)));
+        const key = await crypto.subtle.importKey('raw', keyData, { name: 'AES-CTR' }, false, ['decrypt']);
+        return crypto.subtle.decrypt({
+            name: 'AES-CTR',
+            counter: new Uint8Array(16),
+            length: 128
+        }, key, data);
     }
 
     // CHACHA20
@@ -308,8 +300,7 @@ export default class extends DecoratableMangaScraper {
             state[b] = Rotl32(state[b] ^ state[c], 7);
         }
 
-        const key = new Uint8Array(await HMAC256(`cc:${pageIndex}`, signKey));
-
+        const key = new Uint8Array(await crypto.subtle.sign({ name: 'HMAC', hash: 'SHA-256' }, signKey, GetBytesFromUTF8(`cc:${pageIndex}`)));
         const keyWords = BytesToUint32ArrayLE(key);
         const nonceWords = BytesToUint32ArrayLE(new Uint8Array(12));
         const out = new Uint8Array(data);

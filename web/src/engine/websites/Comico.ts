@@ -3,10 +3,10 @@ import icon from './Comico.webp';
 import { Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from '../providers/MangaPlugin';
 import { Fetch, FetchJSON } from '../platform/FetchProvider';
 import * as Common from './decorators/Common';
-import { GetHexFromBytes, GetBytesFromUTF8, GetBytesFromBase64, GetUTF8FromBytes } from '../BufferEncoder';
+import { GetHexFromBytes, GetBytesFromBase64, GetBytesFromUTF8, GetUTF8FromBytes } from '../BufferEncoder';
+import { HashUTF8, DecryptAES } from '../Crypto';
 import { Exception } from '../Error';
 import { WebsiteResourceKey as R } from '../../i18n/ILocale';
-import { AESDecrypt, SHA256 } from '../Crypto';
 
 type APIResult<T> = {
     data: T;
@@ -83,6 +83,7 @@ type MangaID = {
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
+    readonly #decryptionKeyData = GetBytesFromUTF8('a7fc9dc89f2c873d79397f8a0028a4cd');
     private readonly apiURL = 'https://api.comico.jp';
 
     public constructor() {
@@ -133,7 +134,7 @@ export default class extends DecoratableMangaScraper {
             return await this.DecryptEpub(chapter, epub);
         }
 
-        if (!images || images?.length == 0) throw new Exception(R.Plugin_Common_Chapter_UnavailableError);
+        if (!images || images?.length === 0) throw new Exception(R.Plugin_Common_Chapter_UnavailableError);
         return Promise.all(images.map(async page => {
             return new Page(this, chapter, new URL(await this.DecryptPictureUrl(page)));
         }));
@@ -143,7 +144,7 @@ export default class extends DecoratableMangaScraper {
         const { chapterEpubIncludedFile } = epub;
         const { rootPath, rootFileName, url: opfUrl, parameter: opfParameter, m2Parameter } = chapterEpubIncludedFile;
 
-        const epubRootUrl = GetUTF8FromBytes(await this.Decrypt(GetBytesFromBase64(opfUrl))) + rootPath;
+        const epubRootUrl = await this.Decrypt(opfUrl) + rootPath;
         const epubUrl = `${epubRootUrl}${rootFileName}?${opfParameter}`;
 
         const response = await Fetch(new Request(new URL(epubUrl)));
@@ -155,18 +156,18 @@ export default class extends DecoratableMangaScraper {
     }
 
     private async DecryptPictureUrl(page: APIImage): Promise<string> {
-        const decrypted = await this.Decrypt(GetBytesFromBase64(page.url));
-        return GetUTF8FromBytes(decrypted) + '?' + page.parameter;
+        const decrypted = await this.Decrypt(page.url);
+        return decrypted + '?' + page.parameter;
     }
 
-    private async Decrypt(data: Uint8Array<ArrayBuffer>): Promise<ArrayBuffer> {
-        return AESDecrypt(data, 'a7fc9dc89f2c873d79397f8a0028a4cd', { mode: 'CBC', iv: new Uint8Array(16) });
+    private async Decrypt(encrypted: string): Promise<string> {
+        const decrypted = await DecryptAES(GetBytesFromBase64(encrypted), this.#decryptionKeyData, { name: 'AES-CBC', iv: new Uint8Array(16) });
+        return GetUTF8FromBytes(decrypted);
     }
 
     protected async FetchPOST<T extends JSONElement>(path: string, language: string): Promise<T> {
-        const timestamp = Math.round(new Date().getTime() / 1000);
-        const seed = GetBytesFromUTF8('9241d2f090d01716feac20ae08ba791a' + '0.0.0.0' + `${timestamp}`);
-        const checksum = GetHexFromBytes(new Uint8Array(await SHA256(seed)));
+        const timestamp = Math.round(Date.now() / 1000);
+        const checksum = GetHexFromBytes(await HashUTF8('SHA-256', `9241d2f090d01716feac20ae08ba791a0.0.0.0${timestamp}`));
         return (await FetchJSON<APIResult<T>>(new Request(new URL(path, this.apiURL), {
             method: 'GET',
             headers: {

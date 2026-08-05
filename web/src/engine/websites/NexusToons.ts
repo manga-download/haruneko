@@ -4,7 +4,7 @@ import { FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
 import { type MangaPlugin, Manga, Chapter, Page, DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import { GetBytesFromBase64, GetUTF8FromBytes } from '../BufferEncoder';
-import { SHA256 } from '../Crypto';
+import { HashUTF8 } from '../Crypto';
 
 type APICryptedData = {
     d: string;
@@ -128,7 +128,7 @@ export default class extends DecoratableMangaScraper {
 
     private async InitKeys(seed: string): Promise<void> {
         for (let index = 0; index < 5; index++) {
-            const key = new Uint8Array(await SHA256(`_orion_key_${index}_v2_${seed}`));
+            const key = await HashUTF8('SHA-256', `_orion_key_${index}_v2_${seed}`);
 
             // Init sboxes (this is RC4 KSA)
             const encryptionKeys: EncryptionKeys = {

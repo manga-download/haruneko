@@ -5,7 +5,7 @@ import { Fetch, FetchCSS, FetchJSON } from '../platform/FetchProvider';
 import type { Priority } from '../taskpool/TaskPool';
 import DeScramble from '../transformers/ImageDescrambler';
 import { GetHexFromBytes } from '../BufferEncoder';
-import { SHA256 } from '../Crypto';
+import { HashUTF8 } from '../Crypto';
 
 type APIResult<T> = {
     data: T;
@@ -148,7 +148,7 @@ export default class extends DecoratableMangaScraper {
                 Referer: this.URI.href,
                 ...salt && {
                     'X-Client-Time': timestamp,
-                    'X-Client-Hash': GetHexFromBytes(new Uint8Array(await SHA256(timestamp + salt))),
+                    'X-Client-Hash': GetHexFromBytes(await HashUTF8('SHA-256', timestamp + salt)),
                 }
             }
         }))).data;
@@ -161,8 +161,8 @@ export default class extends DecoratableMangaScraper {
         const columns = Math.floor(width / columnSize);
 
         const shuffleTable = Array.from({ length: rowGroups }, () => Array.from({ length: columns }, (_, i) => i));
-        const seed = await SHA256(salt + key);
-        const random = new PRNG(new Uint32Array(seed, 0, 4));
+        const seed = await HashUTF8('SHA-256', salt + key);
+        const random = new PRNG(seed.buffer);
 
         for (let i = 0; i < 100; i++) random.Next();
 
@@ -221,7 +221,7 @@ export default class extends DecoratableMangaScraper {
 //32 bit variant of xoroshiro128 PRNG
 class PRNG {
 
-    private readonly state = new Uint32Array(4);
+    private readonly state: Uint32Array;
 
     public Next() {
         const result = 9 * this.RotateLeft(5 * this.state[1] >>> 0, 7) >>> 0;
@@ -235,16 +235,9 @@ class PRNG {
         return result;
     }
 
-    constructor(seed: Uint32Array) {
-        this.state = new Uint32Array(seed);
-
-        const allZeros =
-            this.state[0] === 0 &&
-            this.state[1] === 0 &&
-            this.state[2] === 0 &&
-            this.state[3] === 0;
-
-        if (allZeros) this.state[0] = 1;
+    constructor(seed: ArrayBuffer) {
+        this.state = new Uint32Array(seed, 0, 4);
+        if (!this.state.some(n => n !== 0)) this.state[0] = 1;
     }
 
     private RotateLeft(value: number, shift: number) {

@@ -6,8 +6,8 @@ import * as Common from './decorators/Common';
 import { FetchCSS, FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
 import type { Priority } from '../taskpool/DeferredTask';
 import { GetBytesFromBase64, GetBytesFromUTF8 } from '../BufferEncoder';
+import { DecryptAES } from '../Crypto';
 import { GetTypedData } from './decorators/Common';
-import { AESDecrypt } from '../Crypto';
 
 type APIMangas = {
     hits: {
@@ -132,19 +132,19 @@ export default class extends DecoratableMangaScraper {
     private async Decrypt(pageData: PageData, decryptedKey: string): Promise<ArrayBuffer> {
 
         const { encrypted_image, iterations, iv, salt } = pageData;
-        //create decryptionKey
+
         const derivableKey = await crypto.subtle.importKey('raw', GetBytesFromUTF8(decryptedKey), {
             name: 'PBKDF2'
         }, false, ['deriveKey']);
 
-        const decryptionKey = await crypto.subtle.deriveKey({
+        const key = await crypto.subtle.deriveKey({
             name: 'PBKDF2',
             salt: GetBytesFromBase64(salt),
             iterations,
             hash: 'SHA-256'
         }, derivableKey, { name: 'AES-CBC', length: 256 }, false, ['decrypt']);
 
-        return AESDecrypt(GetBytesFromBase64(encrypted_image), decryptionKey, { mode: 'CBC', iv: GetBytesFromBase64(iv) });
+        return crypto.subtle.decrypt({ name: 'AES-CBC', iv: GetBytesFromBase64(iv) }, key, GetBytesFromBase64(encrypted_image));
     }
 
     private async FetchAPI<T extends JSONElement>(endpoint: string, body: JSONElement = undefined, referer: string = undefined): Promise<T> {
