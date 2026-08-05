@@ -7,6 +7,7 @@ import { FetchCSS, FetchJSON, FetchWindowScript } from '../platform/FetchProvide
 import type { Priority } from '../taskpool/DeferredTask';
 import { GetBytesFromBase64, GetBytesFromUTF8 } from '../BufferEncoder';
 import { GetTypedData } from './decorators/Common';
+import { AESDecrypt } from '../Crypto';
 
 type APIMangas = {
     hits: {
@@ -143,8 +144,7 @@ export default class extends DecoratableMangaScraper {
             hash: 'SHA-256'
         }, derivableKey, { name: 'AES-CBC', length: 256 }, false, ['decrypt']);
 
-        //decrypt picture
-        return crypto.subtle.decrypt({ name: 'AES-CBC', iv: GetBytesFromBase64(iv) }, decryptionKey, GetBytesFromBase64(encrypted_image));
+        return AESDecrypt(GetBytesFromBase64(encrypted_image), decryptionKey, { mode: 'CBC', iv: GetBytesFromBase64(iv) });
     }
 
     private async FetchAPI<T extends JSONElement>(endpoint: string, body: JSONElement = undefined, referer: string = undefined): Promise<T> {
