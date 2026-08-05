@@ -201,7 +201,6 @@ describe('Crypto', () => {
         });
 
         describe('AES-CTR', () => {
-
             it('encrypts using the NIST AES-128-CTR test vector', async () => {
                 const key = GetBytesFromHex('2b7e151628aed2a6abf7158809cf4f3c');
                 const counter = GetBytesFromHex('f0f1f2f3f4f5f6f7f8f9fafbfcfdfeff');
@@ -239,11 +238,9 @@ describe('Crypto', () => {
                 await expect(testee.AESEncrypt(GetBytesFromUTF8('test').buffer, key, options),).rejects.toThrow(TypeError);
                 await expect(testee.AESDecrypt(new ArrayBuffer(16), key, options),).rejects.toThrow(TypeError);
             });
-
         });
 
         describe('AES-GCM', () => {
-
             it('encrypts using the NIST AES-128-GCM test vector', async () => {
                 const key = GetBytesFromHex('00000000000000000000000000000000');
                 const iv = GetBytesFromHex('000000000000000000000000');
@@ -280,7 +277,6 @@ describe('Crypto', () => {
                 await expect(testee.AESEncrypt(GetBytesFromUTF8('test').buffer, key, options)).rejects.toThrow(TypeError);
                 await expect(testee.AESDecrypt(new ArrayBuffer(16), key, options)).rejects.toThrow(TypeError);
             });
-
         });
 
         it('accepts imported CryptoKeys', async () => {
