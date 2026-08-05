@@ -5,7 +5,6 @@ import type { Priority } from '../taskpool/DeferredTask';
 import { Fetch, FetchNextJS } from '../platform/FetchProvider';
 import { DecoratableMangaScraper, type MangaPlugin, Manga, Chapter, Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { AESDecrypt } from '../Crypto';
 
 type HydratedMangas = {
     weekdays: Record<string, HydratedManga[]>
@@ -78,6 +77,13 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchImage(page: Page<PageParams>, priority: Priority, signal: AbortSignal): Promise<Blob> {
         const response = await this.imageTaskPool.Add(() => Fetch(new Request(page.Link, { signal })), priority, signal);
-        return page.Parameters ? Common.GetTypedData(await AESDecrypt(await response.arrayBuffer(), GetBytesFromHex(page.Parameters.key), { mode: 'CBC', iv: GetBytesFromHex(page.Parameters.iv) })) : response.blob();
+        return page.Parameters ? this.DecryptImage(await response.arrayBuffer(), page.Parameters.key, page.Parameters.iv) : response.blob();
     }
+
+    private async DecryptImage(encrypted: ArrayBuffer, keyData: string, iv: string): Promise<Blob> {
+        const algorithm = { name: 'AES-CBC', iv: GetBytesFromHex(iv) };
+        const key = await crypto.subtle.importKey('raw', GetBytesFromHex(keyData), algorithm, false, [ 'decrypt' ]);
+        const decrypted = await crypto.subtle.decrypt(algorithm, key, encrypted);
+        return Common.GetTypedData(decrypted);
+    };
 }

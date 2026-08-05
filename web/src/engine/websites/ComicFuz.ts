@@ -7,7 +7,6 @@ import type { Priority } from '../taskpool/TaskPool';
 import { FetchProto } from '../platform/FetchProvider';
 import { DecoratableMangaScraper, type MangaPlugin, Manga, Chapter, Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { AESDecrypt } from '../Crypto';
 
 type APIManga = {
     manga: {
@@ -74,6 +73,7 @@ export default class extends DecoratableMangaScraper {
 
     public override ValidateMangaURL(url: string): boolean {
         return new RegExpSafe(`^${this.URI.origin}/manga/\\d+$`).test(url);
+
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
@@ -109,6 +109,9 @@ export default class extends DecoratableMangaScraper {
     }
 
     private async DecryptPicture(encrypted: Blob, page: PageParameters): Promise<Blob> {
-        return Common.GetTypedData(await AESDecrypt(await encrypted.arrayBuffer(), GetBytesFromHex(page.keyData), { mode: 'CBC', iv: GetBytesFromHex(page.iv) } ));
+        const algorithm = { name: 'AES-CBC', iv: GetBytesFromHex(page.iv) };
+        const key = await crypto.subtle.importKey('raw', GetBytesFromHex(page.keyData), algorithm, false, [ 'decrypt' ]);
+        const decrypted = await crypto.subtle.decrypt(algorithm, key, await encrypted.arrayBuffer());
+        return Common.GetTypedData(decrypted);
     }
 }

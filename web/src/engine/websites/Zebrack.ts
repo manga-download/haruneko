@@ -7,7 +7,6 @@ import { FetchProto, FetchWindowScript } from '../platform/FetchProvider';
 import type { Priority } from '../taskpool/TaskPool';
 import { GetTypedData } from './decorators/Common';
 import { GetBytesFromHex } from '../BufferEncoder';
-import { XOR } from '../Crypto';
 
 type ZebrackResponse = {
     titleDetailView?: TitleDetailView;
@@ -322,7 +321,11 @@ export default class extends DecoratableMangaScraper {
     }
 
     private async DecryptImage(blob: Blob, key: string): Promise<Blob> {
-        return GetTypedData(XOR(new Uint8Array(await blob.arrayBuffer()), new Uint8Array(GetBytesFromHex(key))).buffer);
+        const bytes = new Uint8Array(await blob.arrayBuffer());
+        const xorkey = new Uint8Array(GetBytesFromHex(key));
+        for (let n = 0; n < bytes.length; n++)
+            bytes[n] = bytes[n] ^ xorkey[n % xorkey.length];
+        return GetTypedData(bytes.buffer);
     }
 
     private ReplaceNotEmpty(source: string, replaceFrom: string): string {

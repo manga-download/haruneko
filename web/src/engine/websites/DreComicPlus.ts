@@ -7,7 +7,6 @@ import * as Common from './decorators/Common';
 import { GetBytesFromBase64 } from '../BufferEncoder';
 import { Exception } from '../Error';
 import { WebsiteResourceKey as R } from '../../i18n/ILocale';
-import { AESDecrypt } from '../Crypto';
 
 type APIResult<T> = {
     items: T;
@@ -49,7 +48,7 @@ type PageData = {
     title: el.textContent.trim()
 }))
 export default class extends DecoratableMangaScraper {
-    private readonly apiURL = 'https://api.drecomi-plus.jp/api/v1/app/';
+    private readonly apiUrl = 'https://api.drecomi-plus.jp/api/v1/app/';
 
     public constructor() {
         super('drecomicplus', 'DreComicPlus', 'https://drecomi-plus.jp', Tags.Media.Manga, Tags.Language.Japanese, Tags.Source.Official, Tags.Accessibility.RegionLocked);
@@ -63,7 +62,7 @@ export default class extends DecoratableMangaScraper {
         type This = typeof this;
         return Array.fromAsync(async function* (this: This) {
             for (let page = 1, run = true; run; page++) {
-                const { items } = await FetchJSON<APIMangas>(new Request(new URL(`./series?page=${page}&limit=100`, this.apiURL)));
+                const { items } = await FetchJSON<APIMangas>(new Request(new URL(`./series?page=${page}&limit=100`, this.apiUrl)));
                 const mangas = items.map(({ code, name }) => new Manga(this, provider, code, name));
                 mangas.length > 0 ? yield* mangas : run = false;
             }
@@ -75,7 +74,7 @@ export default class extends DecoratableMangaScraper {
 
         const chapters = await Array.fromAsync(async function* (this: This) {
             for (let page = 1, run = true; run; page++) {
-                const { items } = await FetchJSON<APIChapters>(new Request(new URL(`./episodes?series_code=${manga.Identifier}&page=${page}&limit=200`, this.apiURL)));
+                const { items } = await FetchJSON<APIChapters>(new Request(new URL(`./episodes?series_code=${manga.Identifier}&page=${page}&limit=200`, this.apiUrl)));
                 const chapters = items.map(({ code, name }) => new Chapter(this, manga, JSON.stringify({ code, type: 'episode' }), name.replace(manga.Title, '').trim() || name));
                 chapters.length > 0 ? yield* chapters : run = false;
             }
@@ -83,7 +82,7 @@ export default class extends DecoratableMangaScraper {
 
         const volumes = await Array.fromAsync(async function* (this: This) {
             for (let page = 1, run = true; run; page++) {
-                const { items } = await FetchJSON<APIChapters>(new Request(new URL(`./volumes?series_code=${manga.Identifier}&page=${page}&limit=200`, this.apiURL)));
+                const { items } = await FetchJSON<APIChapters>(new Request(new URL(`./volumes?series_code=${manga.Identifier}&page=${page}&limit=200`, this.apiUrl)));
                 const volumes = items.map(({ code, name }) => new Chapter(this, manga, JSON.stringify({ code, type: 'volume' }), name.replace(manga.Title, '').trim() || name));
                 volumes.length > 0 ? yield* volumes : run = false;
             }
@@ -98,14 +97,14 @@ export default class extends DecoratableMangaScraper {
         //url: `/viewer/episodes/${e}/session`,
         //url: `/viewer/volumes/${e}/session`,
 
-        let pagesData = await FetchJSON<APIPages>(new Request(new URL(`./viewer/${type}s/${code}/session`, this.apiURL), {
+        let pagesData = await FetchJSON<APIPages>(new Request(new URL(`./viewer/${type}s/${code}/session`, this.apiUrl), {
             method: 'POST',
             credentials: 'include'
         }));
 
         //No data for volume? test trial call
         if (type === 'volume' && !pagesData.pages) {
-            pagesData = await FetchJSON<APIPages>(new Request(new URL(`./viewer/volumes/${code}/trial-session`, this.apiURL), {
+            pagesData = await FetchJSON<APIPages>(new Request(new URL(`./viewer/volumes/${code}/trial-session`, this.apiUrl), {
                 method: 'POST',
                 credentials: 'include'
             }));
@@ -117,6 +116,13 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchImage(page: Page<PageData>, priority: Priority, signal: AbortSignal): Promise<Blob> {
         const blob = await Common.FetchImageAjax.call(this, page, priority, signal);
-        return Common.GetTypedData(await AESDecrypt(await blob.arrayBuffer(), GetBytesFromBase64(page.Parameters.key), { mode: 'CBC', iv: GetBytesFromBase64(page.Parameters.iv) } ));
+        return this.DecryptImage(await blob.arrayBuffer(), page.Parameters.key, page.Parameters.iv);
+    }
+
+    private async DecryptImage(encrypted: ArrayBuffer, keyData: string, iv: string): Promise<Blob> {
+        const algorithm = { name: 'AES-CBC', iv: GetBytesFromBase64(iv) };
+        const key = await crypto.subtle.importKey('raw', GetBytesFromBase64(keyData), algorithm, false, ['decrypt']);
+        const decrypted = await crypto.subtle.decrypt(algorithm, key, encrypted);
+        return Common.GetTypedData(decrypted);
     }
 }
