@@ -3,7 +3,7 @@ import icon from './CiaoPlus.webp';
 import { FetchJSON } from '../platform/FetchProvider';
 import type { Priority } from '../taskpool/DeferredTask';
 import DeScramble from '../transformers/ImageDescrambler';
-import { GetHexFromBytes, GetBytesFromUTF8 } from '../BufferEncoder';
+import { GetHexFromBytes } from '../BufferEncoder';
 import { HashUTF8 } from '../Crypto';
 import type { MangaPlugin } from '../providers/MangaPlugin';
 import { Chapter, DecoratableMangaScraper, Manga, Page } from '../providers/MangaPlugin';
