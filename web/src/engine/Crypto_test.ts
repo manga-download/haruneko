@@ -61,33 +61,32 @@ describe('AESEncrypt & AESDecrypt', () => {
             const decrypted = new Uint8Array(await testee.DecryptAES(ciphertext, key, { name: 'AES-CBC', iv }),);
             expect(decrypted).toEqual(GetBytesFromHex('6bc1bee22e409f96e93d7e117393172a'),);
         });
-        
+
         it('encrypts AES-256-CBC (WebCrypto/PKCS#7) (self-test with known values)', async () => {
             const key = GetBytesFromHex('603deb1015ca71be2b73aef0857d77811f352c073b6108d72d9810a30914dff4');
             const iv = GetBytesFromHex('000102030405060708090a0b0c0d0e0f');
             const plaintext = GetBytesFromHex('6bc1bee22e409f96e93d7e117393172a');
 
             //compare against Webcrypto values and not NIST (Webcrypto forces padding)
-            const cryptokey = await crypto.subtle.importKey('raw', key, { name: 'AES-CBC', iv }, false, ['encrypt']);
+            const cryptokey = await crypto.subtle.importKey('raw', key, { name: 'AES-CBC' }, false, ['encrypt']);
             const expected = new Uint8Array(await crypto.subtle.encrypt({ name: 'AES-CBC', iv }, cryptokey, plaintext ));
 
             const encrypted = new Uint8Array(await testee.EncryptAES(plaintext, key, { name: 'AES-CBC', iv }));
             expect(encrypted).toEqual(expected);
         });
-        
+
         it('decrypts AES-256-CBC (WebCrypto/PKCS#7) (self-test with known values)', async () => {
             const key = GetBytesFromHex('603deb1015ca71be2b73aef0857d77811f352c073b6108d72d9810a30914dff4');
             const iv = GetBytesFromHex('000102030405060708090a0b0c0d0e0f');
             const ciphertext = GetBytesFromHex('f58c4c04d6e5f1ba779eabfb5f7bfbd6485a5c81519cf378fa36d42b8547edc0');
 
             //compare against Webcrypto values and not NIST (Webcrypto forces padding)
-            const cryptokey = await crypto.subtle.importKey('raw', key, { name: 'AES-CBC', iv }, false, ['decrypt']);
+            const cryptokey = await crypto.subtle.importKey('raw', key, { name: 'AES-CBC' }, false, ['decrypt']);
             const expected = new Uint8Array(await crypto.subtle.decrypt({ name: 'AES-CBC', iv }, cryptokey, ciphertext));
 
             const decrypted = new Uint8Array(await testee.DecryptAES(ciphertext, key, { name: 'AES-CBC', iv }));
             expect(decrypted).toEqual(expected);
         });
-
     });
 
     describe('AES-CTR', () => {
@@ -130,7 +129,7 @@ describe('AESEncrypt & AESDecrypt', () => {
             const decrypted = new Uint8Array(await testee.EncryptAES(ciphertext, key, { name: 'AES-CTR', counter, length: 128 }));
             expect(decrypted).toEqual(expected);
         });
-    })
+    });
 
     describe('AES-GCM', () => {
         it('encrypts using the NIST AES-128-GCM test vector', async () => {
