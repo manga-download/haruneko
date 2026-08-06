@@ -31,7 +31,9 @@ export default class extends DecoratableMangaScraper {
                 const { html } = await FetchJSON<{ html: string }>(new Request(new URL(`./ajax/load_chapters.php?series_id=${mangaId}&page=${page}&order=oldest_first&_=${Date.now()}`, this.URI)));
                 const doc = new DOMParser().parseFromString(html, 'text/html');
                 const chapters = [...doc.querySelectorAll<HTMLAnchorElement>('div.comic-card a')].map(anchor => {
-                    return new Chapter(this, manga, `/${anchor.dataset.reader}?chapter=${anchor.dataset.chapter}`, anchor.querySelector<HTMLImageElement>('img').alt.trim());
+                    const reader = anchor.dataset.reader || 'reader_v2.php';
+                    const chapterKey = anchor.dataset.chapterKey || '';
+                    return new Chapter(this, manga, `/${reader}?chapter=${chapterKey}`, anchor.querySelector<HTMLImageElement>('img').alt.trim());
                 });
                 chapters.length > 0 ? yield* chapters : run = false;
             }
@@ -41,10 +43,13 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
         const chapterUrl = new URL(`${chapter.Identifier}&page=1`, this.URI);
-        const chapterOldId = chapterUrl.searchParams.get('chapter');
-        const { token, chapterId } = await FetchWindowScript<ChapterInfos>(new Request(new URL(chapter.Parent.Identifier, this.URI)), `solveAndGetToken('${chapterOldId}');`, 500);
+
+        const chapterNumber = chapterUrl.searchParams.get('chapter');
+        const seriesId = new URL(chapter.Parent.Identifier, this.URI).searchParams.get('id');
+
+        const { token, chapterId } = await FetchWindowScript<ChapterInfos>(new Request(new URL(chapter.Parent.Identifier, this.URI)), `solveAndGetToken({ chapterKey : '${chapterNumber}', seriesId: '${seriesId}'});`, 500);
         chapterUrl.searchParams.set('token', encodeURIComponent(token));
-        chapterUrl.searchParams.set('chapter', encodeURIComponent(chapterId ?? chapterOldId));
+        chapterUrl.searchParams.set('chapter', encodeURIComponent(chapterId ?? chapterNumber));
 
         const pages = await FetchWindowScript<string[]>(new Request(chapterUrl),
             `new Array(readerApp.totalPages).fill(0).map((_, index) => new URL('/image-proxy-v2.php?chapter='+ readerApp.chapterId+'&page='+(index+1)+'&context=preload&token='+encodeURIComponent(new URL(location).searchParams.get('token')), location).href)`
