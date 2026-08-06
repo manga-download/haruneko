@@ -8,7 +8,7 @@ import DeScramble from '../transformers/ImageDescrambler';
 import { GetTypedData } from './decorators/Common';
 import { Exception } from '../Error';
 import { WebsiteResourceKey as R } from '../../i18n/ILocale';
-import { Xor } from '../Crypto';
+import { DecryptAES, HMACImportKey, HMACSignWithKey, Xor } from '../Crypto';
 
 type APIResult<T> = {
     items: T[];
@@ -83,13 +83,13 @@ class PRNG {
     private readonly mac: Promise<CryptoKey>;
 
     constructor(signKey: CryptoKey, pageIndex: number) {
-        this.mac = crypto.subtle.sign('HMAC', signKey, GetBytesFromUTF8(`tiles:${pageIndex}`))
-            .then(tilesSig => crypto.subtle.importKey('raw', tilesSig, { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']));
+        this.mac = HMACSignWithKey(GetBytesFromUTF8(`tiles:${pageIndex}`), signKey)
+            .then(tilesSig => HMACImportKey(tilesSig, 'SHA-256'));
     }
 
     async #Next(): Promise<number> {
         if (this.aIndex >= 8) {
-            this.rBuf = new Uint8Array(await crypto.subtle.sign('HMAC', await this.mac, GetBytesFromUTF8(`perm:${this.nCounter++}`)));
+            this.rBuf = new Uint8Array(await HMACSignWithKey(GetBytesFromUTF8(`perm:${this.nCounter++}`), await this.mac));
             this.aIndex = 0;
         }
         const offset = this.aIndex * 4;
@@ -198,10 +198,10 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchImage(page: Page<PageParameters>, priority: Priority, signal: AbortSignal): Promise<Blob> {
         const buffer = await (await this.imageTaskPool.Add(() => Fetch(new Request(page.Link, { headers: { Referer: this.URI.href } })), priority, signal)).arrayBuffer();
-        if ( !page.Link.href.includes('_s-sm.webp') && !page.Link.href.includes('_s.webp')) return GetTypedData(buffer);
+        if (!page.Link.href.includes('_s-sm.webp') && !page.Link.href.includes('_s.webp')) return GetTypedData(buffer);
 
         const { PageIndex, IsScrambled, GridSize, KeyData } = page.Parameters;
-        const signKey = await crypto.subtle.importKey('raw', GetBytesFromHex(KeyData), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']);
+        const signKey = await HMACImportKey(GetBytesFromHex(KeyData), 'SHA-256');
 
         const encryptionType = this.GetEncryptionType(buffer);
         const encrypted = new Uint8Array(buffer, encryptionType === 'AESV3' || encryptionType === 'AESV4' || encryptionType === 'CHACHA20' ? 6 : 4);
@@ -265,22 +265,16 @@ export default class extends DecoratableMangaScraper {
         const result = new Uint8Array(32 * numBlocks);
 
         for (let r = 0; r < numBlocks; r++) {
-            const data = GetBytesFromUTF8(`page:${pageIndex}:${r}`);
-            const sign = await crypto.subtle.sign({ name: 'HMAC', hash: 'SHA-256' }, key, data);
-            result.set(new Uint8Array(sign), 32 * r);
+            const signature = await HMACSignWithKey(GetBytesFromUTF8(`page:${pageIndex}:${r}`), key);
+            result.set(new Uint8Array(signature), 32 * r);
         }
         return result.subarray(0, length);
     }
 
     // AES
     private async AESDecrypt(signKey: CryptoKey, pageIndex: number, data: Uint8Array<ArrayBuffer>, prefix: string): Promise<ArrayBuffer> {
-        const keyData = new Uint8Array(await crypto.subtle.sign({ name: 'HMAC', hash: 'SHA-256' }, signKey, GetBytesFromUTF8(`${prefix}:${pageIndex}`)));
-        const key = await crypto.subtle.importKey('raw', keyData, { name: 'AES-CTR' }, false, ['decrypt']);
-        return crypto.subtle.decrypt({
-            name: 'AES-CTR',
-            counter: new Uint8Array(16),
-            length: 128
-        }, key, data);
+        const keyData = new Uint8Array(await HMACSignWithKey(GetBytesFromUTF8(`${prefix}:${pageIndex}`), signKey));
+        return DecryptAES(data, keyData, { name: 'AES-CTR', counter: new Uint8Array(16), length: 128 });
     }
 
     // CHACHA20
@@ -314,7 +308,7 @@ export default class extends DecoratableMangaScraper {
             state[b] = Rotl32(state[b] ^ state[c], 7);
         }
 
-        const key = new Uint8Array(await crypto.subtle.sign({ name: 'HMAC', hash: 'SHA-256' }, signKey, GetBytesFromUTF8(`cc:${pageIndex}`)));
+        const key = new Uint8Array(await HMACSignWithKey(GetBytesFromUTF8(`cc:${pageIndex}`), signKey));
         const keyWords = BytesToUint32ArrayLE(key);
         const nonceWords = BytesToUint32ArrayLE(new Uint8Array(12));
         const out = new Uint8Array(data);
