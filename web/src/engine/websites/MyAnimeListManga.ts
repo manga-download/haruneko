@@ -7,6 +7,7 @@ import type { Priority } from '../taskpool/DeferredTask';
 import { GetTypedData } from './decorators/Common';
 import { Exception, NotImplementedError } from '../Error';
 import { WebsiteResourceKey as R } from '../../i18n/ILocale';
+import { Xor } from '../Crypto';
 
 // TODO: Handle Novels (modified Publus reader?)
 
@@ -72,17 +73,12 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchImage(page: Page<PageMode>, priority: Priority, signal: AbortSignal): Promise<Blob> {
         const blob = await Common.FetchImageAjax.call(this, page, priority, signal);
-        return GetTypedData(this.XOR(await blob.arrayBuffer()));
+        return GetTypedData(this.Decrypt(await blob.arrayBuffer()));
     }
 
-    private XOR(encrypted: ArrayBuffer): ArrayBuffer {
+    private Decrypt(encrypted: ArrayBuffer): ArrayBuffer {
         const data = new Uint8Array(encrypted);
         const keySize = data[1];
-        const key = data.slice(2, 2 + keySize);
-        const decrypted = data.slice(2 + keySize);
-        for (let index = 0; index < decrypted.length; index++) {
-            decrypted[index] ^= key[index % key.length];
-        }
-        return decrypted.buffer;
+        return Xor(data.slice(2 + keySize), data.slice(2, 2 + keySize)).buffer;
     }
 }
