@@ -3,10 +3,10 @@ import icon from './SafiCizgi.webp';
 import { Fetch, FetchJSON, FetchNextJS } from '../platform/FetchProvider';
 import { type MangaPlugin, Manga, Chapter, Page, DecoratableMangaScraper } from '../providers/MangaPlugin';
 import { type Priority } from '../taskpool/TaskPool';
-import { GetBytesFromBase64, GetBytesFromUTF8, GetUTF8FromBytes } from '../BufferEncoder';
+import { GetBytesFromBase64, GetUTF8FromBytes } from '../BufferEncoder';
 import { GetTypedData } from './decorators/Common';
 import DeScramble from '../transformers/ImageDescrambler';
-import { Xor } from '../Crypto';
+import { HashUTF8, Xor } from '../Crypto';
 
 type APICollection<T> = {
     items: T[];
@@ -217,6 +217,6 @@ export default class extends DecoratableMangaScraper {
     }
 
     private async GetXorKey(salt: string, pageName: string): Promise<Uint8Array> {
-        return new Uint8Array(await crypto.subtle.digest('SHA-256', GetBytesFromUTF8(`${salt}${pageName}`)));
+        return HashUTF8('SHA-256', `${salt}${pageName}`);
     }
 }
