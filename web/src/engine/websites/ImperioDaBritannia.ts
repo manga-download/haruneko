@@ -3,7 +3,8 @@ import icon from './ImperioDaBritannia.webp';
 import { Chapter, DecoratableMangaScraper, Manga, type MangaPlugin, Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import { Fetch } from '../platform/FetchProvider';
-import { GetBytesFromHex, GetBytesFromUTF8, GetUTF8FromBytes } from '../BufferEncoder';
+import { GetBytesFromHex, GetUTF8FromBytes } from '../BufferEncoder';
+import { DecryptAES, HashUTF8 } from '../Crypto';
 
 type APIManga = {
     obra: {
@@ -29,15 +30,15 @@ type APIChapters = {
 
 type APIPages = {
     capitulo: {
-        paginas: APIPage[]
-    }
+        paginas: APIPage[];
+    };
 };
 
 type APIPage = {
     cdn_id?: string;
     url?: string;
     numero: number;
-}
+};
 
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
@@ -109,12 +110,7 @@ export default class extends DecoratableMangaScraper {
 
     private async Decrypt<T extends JSONElement>(text: string): Promise<T> {
         const [iv, encrypted] = text.split(':');
-        const algorithm = { name: 'AES-CBC', iv: GetBytesFromHex(iv) };
-        const key = await crypto.subtle.importKey('raw',
-            await crypto.subtle.digest('SHA-256', GetBytesFromUTF8('mangotoons_encryption_key_2025' + 'salt')),
-            algorithm, false, ['decrypt']);
-        const decrypted = await crypto.subtle.decrypt(algorithm, key, GetBytesFromHex(encrypted));
-        return JSON.parse(GetUTF8FromBytes(decrypted)) as T;
+        const decrypted = await DecryptAES(GetBytesFromHex(encrypted), await HashUTF8('SHA-256', 'mangotoons_encryption_key_2025' + 'salt'), { name: 'AES-CBC', iv: GetBytesFromHex(iv) });
+        return <T>JSON.parse(GetUTF8FromBytes(decrypted));
     }
-
 }
