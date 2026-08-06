@@ -34,6 +34,11 @@ export async function DecryptAES(encrypted: BufferSource, keyData: BufferSource,
     return crypto.subtle.decrypt(algorithm, key, encrypted);
 }
 
+export async function EncryptAES(encrypted: BufferSource, keyData: BufferSource, algorithm: AesParams): Promise<ArrayBuffer> {
+    const key = await crypto.subtle.importKey('raw', keyData, algorithm.name, false, ['encrypt']);
+    return crypto.subtle.encrypt(algorithm, key, encrypted);
+}
+
 export async function HMACSign(message: BufferSource, keyData: BufferSource, hash: HashType): Promise<ArrayBuffer> {
     const key = await HMACImportKey(keyData, hash);
     return HMACSignWithKey(message, key);

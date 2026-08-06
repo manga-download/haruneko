@@ -5,6 +5,7 @@ import * as Common from './decorators/Common';
 import { RandomBytes } from '../Random';
 import { GetBase64FromBytes, GetBytesFromUTF8 } from '../BufferEncoder';
 import { FetchJSON } from '../platform/FetchProvider';
+import { EncryptAES } from '../Crypto';
 
 type APIMangas = {
     pagination: {
@@ -80,10 +81,7 @@ export default class extends DecoratableMangaScraper {
 
     private async AESEncrypt(data: string, keyData: Uint8Array<ArrayBuffer>) {
         const iv = RandomBytes(12);
-        const result = await crypto.subtle.encrypt({ name: 'AES-GCM', iv },
-            await crypto.subtle.importKey('raw', keyData, {
-                name: 'AES-GCM', length: 256
-            }, false, ['encrypt']), GetBytesFromUTF8(`{version}${data}`));
+        const result = await EncryptAES(GetBytesFromUTF8(`{version}${data}`), keyData, { name: 'AES-GCM', iv, length: 256 });
         return {
             ciphertext: GetBase64FromBytes(new Uint8Array(result)),
             iv: GetBase64FromBytes(iv)
