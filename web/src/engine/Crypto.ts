@@ -18,17 +18,6 @@ export function DecryptXOR(bytes: Uint8Array, key: Uint8Array): Uint8Array<Array
 }
 
 /**
- * Decrypts a UTF-8 encoded encrypted string using AES with raw key data.
- * @param encrypted - The encrypted string to decrypt.
- * @param keyData - The raw key material as a `BufferSource`.
- * @param algorithm - The AES parameters (e.g., CBC, GCM, CTR configuration).
- * @returns A promise that resolves to an `ArrayBuffer` containing the decrypted data.
- */
-export async function DecryptAESUTF8(encrypted: string, keyData: BufferSource, algorithm: AesParams): Promise<ArrayBuffer> {
-    return DecryptAES(GetBytesFromUTF8(encrypted), keyData, algorithm);
-}
-
-/**
  * Decrypts binary data using AES by importing raw key data with the matching algorithm identifier.
  * @param encrypted - The encrypted binary data to decrypt.
  * @param keyData - The raw key material as a `BufferSource`.
