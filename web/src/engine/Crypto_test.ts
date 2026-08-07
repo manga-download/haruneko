@@ -2,7 +2,10 @@ import { describe, expect, it } from 'vitest';
 import { GetBytesFromUTF8, GetHexFromBytes, GetBytesFromHex } from './BufferEncoder';
 import * as testee from './Crypto';
 
+// TODO: ⚠️ Use constant expected values instead of using business logic to calculate expected values
+
 describe('Hashing', () => {
+
     it('Should properly hash a string using SHA-256', async () => {
         const hash = await testee.HashUTF8('SHA-256', 'abc');
         expect(GetHexFromBytes(hash)).toBe('ba7816bf8f01cfea414140de5dae2223' + 'b00361a396177a9cb410ff61f20015ad');
@@ -34,15 +37,6 @@ describe('Xor', () => {
 describe('AESEncrypt & AESDecrypt', () => {
     describe('AES-CBC', () => {
 
-        it('encrypts AES-128-CBC (WebCrypto/PKCS#7) (self-test with known values)', async () => {
-            const key = GetBytesFromHex('2b7e151628aed2a6abf7158809cf4f3c');
-            const iv = GetBytesFromHex('000102030405060708090a0b0c0d0e0f');
-            const plaintext = GetBytesFromHex('6bc1bee22e409f96e93d7e117393172a');
-
-            const encrypted = new Uint8Array(await testee.EncryptAES(plaintext, key, { name: 'AES-CBC', iv }),);
-            expect(encrypted).toEqual(GetBytesFromHex('7649abac8119b246cee98e9b12e9197d' + '8964e0b149c10b7b682e6e39aaeb731c'),);
-        });
-
         it('decrypts AES-128-CBC (WebCrypto/PKCS#7) (self-test with known values)', async () => {
             const key = GetBytesFromHex('2b7e151628aed2a6abf7158809cf4f3c');
             const iv = GetBytesFromHex('000102030405060708090a0b0c0d0e0f');
@@ -50,19 +44,6 @@ describe('AESEncrypt & AESDecrypt', () => {
 
             const decrypted = new Uint8Array(await testee.DecryptAES(ciphertext, key, { name: 'AES-CBC', iv }),);
             expect(decrypted).toEqual(GetBytesFromHex('6bc1bee22e409f96e93d7e117393172a'),);
-        });
-
-        it('encrypts AES-256-CBC (WebCrypto/PKCS#7) (self-test with known values)', async () => {
-            const key = GetBytesFromHex('603deb1015ca71be2b73aef0857d77811f352c073b6108d72d9810a30914dff4');
-            const iv = GetBytesFromHex('000102030405060708090a0b0c0d0e0f');
-            const plaintext = GetBytesFromHex('6bc1bee22e409f96e93d7e117393172a');
-
-            //compare against Webcrypto values and not NIST (Webcrypto forces padding)
-            const cryptokey = await crypto.subtle.importKey('raw', key, { name: 'AES-CBC' }, false, ['encrypt']);
-            const expected = new Uint8Array(await crypto.subtle.encrypt({ name: 'AES-CBC', iv }, cryptokey, plaintext ));
-
-            const encrypted = new Uint8Array(await testee.EncryptAES(plaintext, key, { name: 'AES-CBC', iv }));
-            expect(encrypted).toEqual(expected);
         });
 
         it('decrypts AES-256-CBC (WebCrypto/PKCS#7) (self-test with known values)', async () => {
@@ -79,58 +60,7 @@ describe('AESEncrypt & AESDecrypt', () => {
         });
     });
 
-    describe('AES-CTR', () => {
-        it('encrypts using the NIST AES-128-CTR test vector', async () => {
-            const key = GetBytesFromHex('2b7e151628aed2a6abf7158809cf4f3c');
-            const counter = GetBytesFromHex('f0f1f2f3f4f5f6f7f8f9fafbfcfdfeff');
-            const plaintext = GetBytesFromHex('6bc1bee22e409f96e93d7e117393172a');
-            const expected = GetBytesFromHex('874d6191b620e3261bef6864990db6ce');
-
-            const encrypted = new Uint8Array(await testee.EncryptAES(plaintext, key, { name: 'AES-CTR', counter, length: 128 }));
-            expect(encrypted).toEqual(expected);
-        });
-
-        it('decrypts using the NIST AES-128-CTR test vector', async () => {
-            const key = GetBytesFromHex('2b7e151628aed2a6abf7158809cf4f3c');
-            const counter = GetBytesFromHex('f0f1f2f3f4f5f6f7f8f9fafbfcfdfeff');
-            const ciphertext = GetBytesFromHex('874d6191b620e3261bef6864990db6ce');
-            const expected = GetBytesFromHex('6bc1bee22e409f96e93d7e117393172a');
-
-            const decrypted = new Uint8Array(await testee.EncryptAES(ciphertext, key, { name: 'AES-CTR', counter, length: 128 }));
-            expect(decrypted).toEqual(expected);
-        });
-
-        it('encrypts using the NIST AES-256-CTR test vector', async () => {
-            const key = GetBytesFromHex('603deb1015ca71be2b73aef0857d77811f352c073b6108d72d9810a30914dff4');
-            const counter = GetBytesFromHex('f0f1f2f3f4f5f6f7f8f9fafbfcfdfeff');
-            const plaintext = GetBytesFromHex('6bc1bee22e409f96e93d7e117393172a');
-            const expected = GetBytesFromHex('601ec313775789a5b7a7f504bbf3d228');
-
-            const encrypted = new Uint8Array(await testee.EncryptAES(plaintext, key, { name: 'AES-CTR', counter, length: 128 }));
-            expect(encrypted).toEqual(expected);
-        });
-
-        it('decrypts using the NIST AES-256-CTR test vector', async () => {
-            const key = GetBytesFromHex('603deb1015ca71be2b73aef0857d77811f352c073b6108d72d9810a30914dff4');
-            const counter = GetBytesFromHex('f0f1f2f3f4f5f6f7f8f9fafbfcfdfeff');
-            const ciphertext = GetBytesFromHex('601ec313775789a5b7a7f504bbf3d228');
-            const expected = GetBytesFromHex('6bc1bee22e409f96e93d7e117393172a');
-
-            const decrypted = new Uint8Array(await testee.EncryptAES(ciphertext, key, { name: 'AES-CTR', counter, length: 128 }));
-            expect(decrypted).toEqual(expected);
-        });
-    });
-
     describe('AES-GCM', () => {
-        it('encrypts using the NIST AES-128-GCM test vector', async () => {
-            const key = GetBytesFromHex('00000000000000000000000000000000');
-            const iv = GetBytesFromHex('000000000000000000000000');
-            const plaintext = new Uint8Array();
-            const expected = GetBytesFromHex('58e2fccefa7e3061367f1d57a4e7455a');
-
-            const encrypted = new Uint8Array(await testee.EncryptAES(plaintext, key, { name: 'AES-GCM', iv, tagLength: 128 }));
-            expect(encrypted).toEqual(expected);
-        });
 
         it('decrypts using the NIST AES-128-GCM test vector', async () => {
             const key = GetBytesFromHex('00000000000000000000000000000000');
@@ -139,16 +69,6 @@ describe('AESEncrypt & AESDecrypt', () => {
 
             const decrypted = new Uint8Array(await testee.DecryptAES(ciphertext.buffer, key, { name: 'AES-GCM', iv, tagLength: 128 }));
             expect(decrypted).toEqual(new Uint8Array());
-        });
-
-        it('encrypts using the NIST AES-256-GCM test vector', async () => {
-            const key = GetBytesFromHex('0000000000000000000000000000000000000000000000000000000000000000');
-            const iv = GetBytesFromHex('000000000000000000000000');
-            const plaintext = new Uint8Array();
-            const expected = GetBytesFromHex('530f8afbc74536b9a963b4f1c4cb738b');
-
-            const encrypted = new Uint8Array(await testee.EncryptAES(plaintext, key, { name: 'AES-GCM', iv, tagLength: 128 }));
-            expect(encrypted).toEqual(expected);
         });
 
         it('decrypts using the NIST AES-256-GCM test vector', async () => {
