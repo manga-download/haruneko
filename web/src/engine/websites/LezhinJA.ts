@@ -7,7 +7,7 @@ import type { Priority } from '../taskpool/DeferredTask';
 import { Exception } from '../Error';
 import { WebsiteResourceKey as R } from '../../i18n/ILocale';
 import { GetBytesFromHex } from '../BufferEncoder';
-import { Xor } from '../Crypto';
+import { DecryptXOR } from '../Crypto';
 
 type APIResult<T> = {
     results: T;
@@ -99,7 +99,7 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchImage(page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
         const blob = await Common.FetchImageAjax.call(this, page, priority, signal);
-        return Common.GetTypedData(Xor(new Uint8Array(await blob.arrayBuffer()), GetBytesFromHex('57e87c8a4d50b7c3456dbab4ab144b200826e62459039c9915d1e5f5e0bf3a51')).buffer);
+        return Common.GetTypedData(DecryptXOR(new Uint8Array(await blob.arrayBuffer()), GetBytesFromHex('57e87c8a4d50b7c3456dbab4ab144b200826e62459039c9915d1e5f5e0bf3a51')).buffer);
     }
 
     private async FetchAPI<T extends JSONElement>(endpoint: string): Promise<T> {

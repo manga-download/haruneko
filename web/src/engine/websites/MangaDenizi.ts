@@ -5,7 +5,7 @@ import { Fetch, FetchJSON } from '../platform/FetchProvider';
 import type { Priority } from '../taskpool/DeferredTask';
 import { GetTypedData } from './decorators/Common';
 import DeScramble from '../transformers/ImageDescrambler';
-import { Xor } from '../Crypto';
+import { DecryptXOR } from '../Crypto';
 
 type APIManga = {
     data: {
@@ -145,7 +145,7 @@ export default class extends DecoratableMangaScraper {
         switch (algorithm) {
             case 'xor': {
                 const key = parseInt(response.headers.get('X-Scramble-Key'), 10);
-                return GetTypedData(Xor(new Uint8Array(await response.arrayBuffer()), new Uint8Array([key])).buffer);
+                return GetTypedData(DecryptXOR(new Uint8Array(await response.arrayBuffer()), new Uint8Array([key])).buffer);
             }
             case 'tiled-v1': {
                 const seed = page.Parameters.Init ?? parseInt(response.headers.get('X-Scramble-Seed'), 10);

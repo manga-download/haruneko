@@ -7,7 +7,7 @@ import type { Priority } from '../taskpool/DeferredTask';
 import { GetTypedData } from './decorators/Common';
 import { Exception, NotImplementedError } from '../Error';
 import { WebsiteResourceKey as R } from '../../i18n/ILocale';
-import { Xor } from '../Crypto';
+import { DecryptXOR } from '../Crypto';
 
 // TODO: Handle Novels (modified Publus reader?)
 
@@ -79,6 +79,6 @@ export default class extends DecoratableMangaScraper {
     private Decrypt(encrypted: ArrayBuffer): ArrayBuffer {
         const data = new Uint8Array(encrypted);
         const keySize = data[1];
-        return Xor(data.slice(2 + keySize), data.slice(2, 2 + keySize)).buffer;
+        return DecryptXOR(data.slice(2 + keySize), data.slice(2, 2 + keySize)).buffer;
     }
 }

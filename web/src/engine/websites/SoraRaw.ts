@@ -2,9 +2,9 @@ import { Tags } from '../Tags';
 import icon from './SoraRaw.webp';
 import { FetchCSS, FetchJSON } from '../platform/FetchProvider';
 import { type MangaPlugin, Manga, Chapter, Page, DecoratableMangaScraper } from '../providers/MangaPlugin';
-import * as Grouple from './decorators/Grouple';
 import { GetBytesFromBase64, GetBytesFromHex, GetBytesFromUTF8, GetUTF8FromBytes } from '../BufferEncoder';
-import { DecryptAES, Xor } from '../Crypto';
+import { DecryptAES, DecryptXOR } from '../Crypto';
+import * as Grouple from './decorators/Grouple';
 
 type NEXTDATA<T> = {
     props: {
@@ -110,7 +110,7 @@ export default class extends DecoratableMangaScraper {
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
         const { chapter: { id, manga_id, uuid, _b, _d, _t, _p } } = await this.GetEmbeddedJSON<APIChapterDetails>(chapter.Identifier);
         const { d } = await FetchJSON<CryptedPagesData>(new Request(new URL(`/${manga_id}/${id}.json`, this.apiURL)));
-        const pagesData = <PagesData>JSON.parse(GetUTF8FromBytes(Xor(this.B64Decode(d), GetBytesFromUTF8('/fuCkYou!!!'))));
+        const pagesData = <PagesData>JSON.parse(GetUTF8FromBytes(DecryptXOR(this.B64Decode(d), GetBytesFromUTF8('/fuCkYou!!!'))));
 
         return Promise.all(
             pagesData.map(async ({ b, d, p, t }) => {
@@ -128,7 +128,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     private async GenerateFileName(host: string, encryptedFileName: string, aesKey: Uint8Array<ArrayBuffer>): Promise<string> {
-        const ciphertext = Xor(this.B64Decode(encryptedFileName), GetBytesFromUTF8('202508055d0db38bae2e86cc41649f90'));
+        const ciphertext = DecryptXOR(this.B64Decode(encryptedFileName), GetBytesFromUTF8('202508055d0db38bae2e86cc41649f90'));
         const filename = GetUTF8FromBytes(await DecryptAES(ciphertext.subarray(16), aesKey, { name: 'AES-CTR', counter: ciphertext.subarray(0, 16), length: 128 }));
         return `${host}/${filename}`;
     }

@@ -3,7 +3,7 @@ import icon from './PhiliaScans.webp';
 import type { Priority } from '../taskpool/DeferredTask';
 import { Fetch, FetchJSON } from '../platform/FetchProvider';
 import { GetHexFromBytes, GetBytesFromHex, GetBytesFromBase64, GetBytesFromUTF8 } from '../BufferEncoder';
-import { Xor, DecryptAES } from '../Crypto';
+import { DecryptXOR, DecryptAES } from '../Crypto';
 import { Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from '../providers/MangaPlugin';
 import DeScramble from '../transformers/ImageDescrambler';
 import { GetTypedData } from './decorators/Common';
@@ -173,7 +173,7 @@ export default class extends DecoratableMangaScraper {
             const token = (await this.FetchAPI<APIToken>(`./reader/access-token`, undefined, 'POST')).token;
             const { payloadA, sessionId } = await this.FetchAPI<APIOpenResponse>(`./chapters/${chapterId}/open`, token, 'POST');
             const { payloadB } = await this.FetchAPI<APIDrmResponse>(`./chapters/${chapterId}/get-drm?session=${sessionId}`, token);
-            if (payloadA && payloadB) keyData = new Uint8Array(Xor(GetBytesFromBase64(payloadA), GetBytesFromBase64(payloadB)));
+            if (payloadA && payloadB) keyData = new Uint8Array(DecryptXOR(GetBytesFromBase64(payloadA), GetBytesFromBase64(payloadB)));
         }
 
         return pages.map(({ url }, index) => new Page<PageParameters>(this, chapter, new URL(url, this.URI), {
@@ -251,7 +251,7 @@ export default class extends DecoratableMangaScraper {
                 break;
             }
             case 'XOR': {
-                imageData = Xor(await this.ComputeXorKey(key, pageIndex, encrypted.byteLength), encrypted).buffer;
+                imageData = DecryptXOR(await this.ComputeXorKey(key, pageIndex, encrypted.byteLength), encrypted).buffer;
                 break;
             }
         }

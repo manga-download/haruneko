@@ -20,12 +20,12 @@ describe('Hashing', () => {
 describe('Xor', () => {
 
     it('should XOR source with key', () => {
-        const result = testee.Xor(new Uint8Array([0xff, 0x00, 0xaa, 0x55]), new Uint8Array([0x0f, 0xf0]));
+        const result = testee.DecryptXOR(new Uint8Array([0xff, 0x00, 0xaa, 0x55]), new Uint8Array([0x0f, 0xf0]));
         expect(Array.from(result)).toEqual([0xf0, 0xf0, 0xa5, 0xa5]);
     });
 
     it('should XOR source with repeated key', () => {
-        const result = testee.Xor(new Uint8Array([1, 2, 3, 4, 5]), new Uint8Array([1]));
+        const result = testee.DecryptXOR(new Uint8Array([1, 2, 3, 4, 5]), new Uint8Array([1]));
         expect(Array.from(result)).toEqual([0, 3, 2, 5, 4]);
     });
 });
