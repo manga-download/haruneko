@@ -3,7 +3,7 @@ import { GetBytesFromUTF8 } from './BufferEncoder';
 type AesParams = AesCtrParams | AesCbcParams | AesGcmParams;
 
 /**
- * Decode the bytes from a given {@link text} (UTF-8) and calculate its checksum based on the given {@link algorithm}.
+ * Decode the bytes from the given {@link text} (UTF8-based) and calculate its checksum for the provided {@link algorithm}.
  */
 export async function HashUTF8(algorithm: 'SHA-256' | 'SHA-512', text: string): Promise<Uint8Array<ArrayBuffer>> {
     return new Uint8Array(await crypto.subtle.digest(algorithm, GetBytesFromUTF8(text)));
@@ -17,16 +17,6 @@ export async function HashUTF8(algorithm: 'SHA-256' | 'SHA-512', text: string): 
  */
 export function Xor(encrypted: Uint8Array, key: Uint8Array): Uint8Array<ArrayBuffer> {
     return encrypted.map((byte, index) => byte ^ key[index % key.length]);
-}
-
-/**
- * Applies a repeating-key XOR operation between a UTF-8 encrypted string and a key.
- * @param encrypted - The input string to convert and process.
- * @param key - The key byte array used for the XOR operation.
- * @returns A new `Uint8Array` containing the XOR-transformed bytes.
- */
-export function XorUTF8(encrypted: string, key: Uint8Array): Uint8Array<ArrayBuffer> {
-    return Xor(GetBytesFromUTF8(encrypted), key);
 }
 
 /**

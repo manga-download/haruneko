@@ -18,6 +18,7 @@ describe('Hashing', () => {
 });
 
 describe('Xor', () => {
+
     it('should XOR source with key', () => {
         const result = testee.Xor(new Uint8Array([0xff, 0x00, 0xaa, 0x55]), new Uint8Array([0x0f, 0xf0]));
         expect(Array.from(result)).toEqual([0xf0, 0xf0, 0xa5, 0xa5]);
@@ -27,14 +28,10 @@ describe('Xor', () => {
         const result = testee.Xor(new Uint8Array([1, 2, 3, 4, 5]), new Uint8Array([1]));
         expect(Array.from(result)).toEqual([0, 3, 2, 5, 4]);
     });
-
-    it('should XOR text source with repeated key', () => {
-        const result = testee.XorUTF8('ABC', new Uint8Array([0xff]));
-        expect(Array.from(result)).toEqual([65 ^ 0xff, 66 ^ 0xff, 67 ^ 0xff]);
-    });
 });
 
 describe('AESEncrypt & AESDecrypt', () => {
+
     describe('AES-CBC', () => {
 
         it('decrypts AES-128-CBC (WebCrypto/PKCS#7) (self-test with known values)', async () => {
