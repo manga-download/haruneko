@@ -4,7 +4,6 @@ import { Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from 
 import * as Common from './decorators/Common';
 import { GetBytesFromUTF8, GetHexFromBytes } from '../BufferEncoder';
 import { FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
-import { HMACSign } from '../Crypto';
 
 type APIResult<T> = {
     data: T | null;
@@ -87,19 +86,17 @@ export default class extends DecoratableMangaScraper {
     private async FetchAPI<T extends JSONElement>(endpoint: string): Promise<APIResult<T>> {
         const url = new URL(endpoint, this.api.url);
         const timestamp = `${Date.now()}`.slice(0, -3);
+        const keyData = GetBytesFromUTF8([timestamp, 'GET', url.pathname, this.api.accessKey, this.api.secretKey].join(''));
+        const key = await crypto.subtle.importKey('raw', keyData, { name: 'HMAC', hash: 'SHA-256' }, false, ['sign', 'verify']);
+        const signature = new Uint8Array(await crypto.subtle.sign('HMAC', key, GetBytesFromUTF8(this.api.nonce)));
         return FetchJSON<APIResult<T>>(new Request(url, {
             headers: {
                 ...this.#token ? { Authorization: `Bearer ${this.#token}` } : {},
                 'Referer': this.URI.href,
                 'X-Wm-Request-Time': timestamp,
                 'X-Wm-Accses-Key': this.api.accessKey,
-                'X-Wm-Request-Signature': await this.Sign(this.api.nonce, [timestamp, 'GET', url.pathname, this.api.accessKey, this.api.secretKey])
+                'X-Wm-Request-Signature': GetHexFromBytes(signature),
             }
         }));
-    }
-
-    private async Sign(data: string, keyData: string[]): Promise<string> {
-        const signature = await HMACSign(GetBytesFromUTF8(data), GetBytesFromUTF8(keyData.join('')), 'SHA-256');
-        return GetHexFromBytes(new Uint8Array(signature));
     }
 }

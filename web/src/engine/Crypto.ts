@@ -51,35 +51,3 @@ export async function DecryptAES(encrypted: BufferSource, keyData: BufferSource,
     const key = await crypto.subtle.importKey('raw', keyData, algorithm.name, false, ['decrypt']);
     return crypto.subtle.decrypt(algorithm, key, encrypted);
 }
-
-/**
- * Generates an HMAC signature for a message using raw key data and a specified hash algorithm.
- * @param message - The message binary data to sign.
- * @param keyData - The raw key material as a `BufferSource`.
- * @param hash - The hashing algorithm to use for the HMAC ('SHA-256' or 'SHA-512').
- * @returns A promise that resolves to an `ArrayBuffer` containing the cryptographic signature.
- */
-export async function HMACSign(message: BufferSource, keyData: BufferSource, hash: 'SHA-256' | 'SHA-512'): Promise<ArrayBuffer> {
-    const key = await HMACImportKey(keyData, hash);
-    return HMACSignWithKey(message, key);
-}
-
-/**
- * Generates an HMAC signature for a message using an already imported `CryptoKey`.
- * @param message - The message binary data to sign.
- * @param key - The imported `CryptoKey` configured for signing.
- * @returns A promise that resolves to an `ArrayBuffer` containing the cryptographic signature.
- */
-export async function HMACSignWithKey(message: BufferSource, key: CryptoKey): Promise<ArrayBuffer> {
-    return crypto.subtle.sign('HMAC', key, message);
-}
-
-/**
- * Imports raw key data as an HMAC `CryptoKey` bound to a specific hash algorithm.
- * @param key - The raw key material as a `BufferSource`.
- * @param hash - The hashing algorithm to associate with the HMAC key ('SHA-256' or 'SHA-512').
- * @returns A promise that resolves to the imported `CryptoKey`.
- */
-export async function HMACImportKey(key: BufferSource, hash: 'SHA-256' | 'SHA-512'): Promise<CryptoKey> {
-    return crypto.subtle.importKey('raw', key, { name: 'HMAC', hash }, false, ['sign', 'verify']);
-}

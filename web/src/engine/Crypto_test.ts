@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { GetBytesFromUTF8, GetHexFromBytes, GetBytesFromHex } from './BufferEncoder';
+import { GetHexFromBytes, GetBytesFromHex } from './BufferEncoder';
 import * as testee from './Crypto';
 
 // TODO: ⚠️ Use constant expected values instead of using business logic to calculate expected values
@@ -79,23 +79,5 @@ describe('AESEncrypt & AESDecrypt', () => {
             const decrypted = new Uint8Array(await testee.DecryptAES(ciphertext.buffer, key, { name: 'AES-GCM', iv, tagLength: 128 }));
             expect(decrypted).toEqual(new Uint8Array());
         });
-    });
-});
-
-describe('HMAC', () => {
-    it('HMAC-SHA256 RFC 4231 vector', async () => {
-        const key = new Uint8Array(20).fill(0x0b);
-        const message = GetBytesFromUTF8('Hi There');
-        const signature = await testee.HMACSign(message, key, 'SHA-256');
-        expect(GetHexFromBytes(new Uint8Array(signature))).toBe('b0344c61d8db38535ca8afceaf0bf12b' + '881dc200c9833da726e9376c2e32cff7');
-    });
-
-    it('HMACSignWithKey matches HMACSign', async () => {
-        const keyData = GetBytesFromUTF8('secret');
-        const key = await testee.HMACImportKey(keyData, 'SHA-256');
-        const message = GetBytesFromUTF8('hello');
-        const sig1 = await testee.HMACSign(message, keyData, 'SHA-256');
-        const sig2 = await testee.HMACSignWithKey(message, key);
-        expect(GetHexFromBytes(new Uint8Array(sig1))).toBe(GetHexFromBytes(new Uint8Array(sig2)));
     });
 });
