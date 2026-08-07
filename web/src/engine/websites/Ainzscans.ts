@@ -2,7 +2,7 @@ import { Tags } from '../Tags';
 import icon from './Ainzscans.webp';
 import { Chapter, DecoratableMangaScraper, Manga, type MangaPlugin, Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { FetchJSON } from '../platform/FetchProvider';
+import { FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
 
 type APIResult<T> = {
     data: T;
@@ -39,11 +39,16 @@ export default class extends DecoratableMangaScraper {
     private readonly apiUrl = 'https://api.ainzscans01.com/api/';
 
     public constructor() {
-        super('ainzscans', 'Ainzscans', 'https://v1.ainzscans01.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Indonesian, Tags.Source.Scanlator);
+        super('ainzscans', 'Ainzscans', 'https://v3.ainzscans01.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Indonesian, Tags.Source.Scanlator, Tags.Accessibility.DomainRotation);
     }
 
     public override get Icon() {
         return icon;
+    }
+
+    public override async Initialize(): Promise<void> {
+        this.URI.href = await FetchWindowScript(new Request(this.URI), 'window.location.origin');
+        console.log(`Assigned URL '${this.URI}' to ${this.Title}`);
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
