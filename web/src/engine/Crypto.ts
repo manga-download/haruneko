@@ -1,30 +1,12 @@
 import { GetBytesFromUTF8 } from './BufferEncoder';
 
-type HashType = 'SHA-256' | 'SHA-512';
 type AesParams = AesCtrParams | AesCbcParams | AesGcmParams;
 
 /**
- * Hashes a UTF-8 encoded string using the specified cryptographic hash algorithm.
- * @param algorithm - The hashing algorithm to use ('SHA-256' or 'SHA-512').
- * @param text - The text string to hash.
- * @returns A promise that resolves to a `Uint8Array` containing the resulting hash digest.
- * * @example
- * ```typescript
- * const hashBytes = await HashUTF8('SHA-256', 'Hello, World!');
- * ```
+ * Decode the bytes from a given {@link text} (UTF-8) and calculate its checksum based on the given {@link algorithm}.
  */
-export async function HashUTF8(algorithm: HashType, text: string): Promise<Uint8Array<ArrayBuffer>> {
-    return Hash(algorithm, GetBytesFromUTF8(text));
-}
-
-/**
- * Hashes raw binary data using the specified cryptographic hash algorithm.
- * @param algorithm - The hashing algorithm to use ('SHA-256' or 'SHA-512').
- * @param message - The byte array message to hash.
- * @returns A promise that resolves to a `Uint8Array` containing the resulting hash digest.
- */
-export async function Hash(algorithm: HashType, message: Uint8Array<ArrayBuffer>): Promise<Uint8Array<ArrayBuffer>> {
-    return new Uint8Array(await crypto.subtle.digest(algorithm, message));
+export async function HashUTF8(algorithm: 'SHA-256' | 'SHA-512', text: string): Promise<Uint8Array<ArrayBuffer>> {
+    return new Uint8Array(await crypto.subtle.digest(algorithm, GetBytesFromUTF8(text)));
 }
 
 /**

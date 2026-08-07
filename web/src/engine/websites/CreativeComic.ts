@@ -3,9 +3,9 @@ import icon from './CreativeComic.webp';
 import type { Priority } from '../taskpool/TaskPool';
 import { Fetch, FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
 import { type MangaPlugin, Manga, Chapter, Page, DecoratableMangaScraper } from '../providers/MangaPlugin';
-import { GetBytesFromBase64, GetBytesFromHex, GetBytesFromUTF8, GetUTF8FromBytes } from '../BufferEncoder';
+import { GetBytesFromBase64, GetBytesFromHex, GetUTF8FromBytes } from '../BufferEncoder';
+import { DecryptAES, HashUTF8 } from '../Crypto';
 import * as Common from './decorators/Common';
-import { DecryptAES, Hash } from '../Crypto';
 
 type TokenData = {
     uuid: string;
@@ -50,7 +50,7 @@ class DRMProvider {
     //public get KeyData() { return this.#keyData; }
 
     public async Update(uuid: string, token: string) {
-        const hash = await Hash('SHA-512', GetBytesFromUTF8(token));
+        const hash = await HashUTF8('SHA-512', token);
         this.#uuid = uuid;
         this.#iv = hash.slice(15, 31);
         this.#keyData = hash.slice(0, 32);

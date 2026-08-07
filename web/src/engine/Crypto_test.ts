@@ -8,18 +8,8 @@ describe('Hashing', () => {
         expect(GetHexFromBytes(hash)).toBe('ba7816bf8f01cfea414140de5dae2223' + 'b00361a396177a9cb410ff61f20015ad');
     });
 
-    it('Should properly hash bytes using SHA-256', async () => {
-        const hash = await testee.Hash('SHA-256', GetBytesFromUTF8('abc'));
-        expect(GetHexFromBytes(hash)).toBe('ba7816bf8f01cfea414140de5dae2223' + 'b00361a396177a9cb410ff61f20015ad');
-    });
-
     it('Should properly hash a string using SHA-512', async () => {
         const hash = await testee.HashUTF8('SHA-512', 'abc');
-        expect(GetHexFromBytes(hash)).toBe('ddaf35a193617abacc417349ae204131' + '12e6fa4e89a97ea20a9eeee64b55d39a' + '2192992a274fc1a836ba3c23a3feebbd' + '454d4423643ce80e2a9ac94fa54ca49f');
-    });
-
-    it('Should properly hash bytes using SHA-512', async () => {
-        const hash = await testee.Hash('SHA-512', GetBytesFromUTF8('abc'));
         expect(GetHexFromBytes(hash)).toBe('ddaf35a193617abacc417349ae204131' + '12e6fa4e89a97ea20a9eeee64b55d39a' + '2192992a274fc1a836ba3c23a3feebbd' + '454d4423643ce80e2a9ac94fa54ca49f');
     });
 });
