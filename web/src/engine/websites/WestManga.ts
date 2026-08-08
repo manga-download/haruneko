@@ -86,21 +86,17 @@ export default class extends DecoratableMangaScraper {
     private async FetchAPI<T extends JSONElement>(endpoint: string): Promise<APIResult<T>> {
         const url = new URL(endpoint, this.api.url);
         const timestamp = `${Date.now()}`.slice(0, -3);
+        const keyData = GetBytesFromUTF8([timestamp, 'GET', url.pathname, this.api.accessKey, this.api.secretKey].join(''));
+        const key = await crypto.subtle.importKey('raw', keyData, { name: 'HMAC', hash: 'SHA-256' }, false, ['sign', 'verify']);
+        const signature = new Uint8Array(await crypto.subtle.sign('HMAC', key, GetBytesFromUTF8(this.api.nonce)));
         return FetchJSON<APIResult<T>>(new Request(url, {
             headers: {
                 ...this.#token ? { Authorization: `Bearer ${this.#token}` } : {},
                 'Referer': this.URI.href,
                 'X-Wm-Request-Time': timestamp,
                 'X-Wm-Accses-Key': this.api.accessKey,
-                'X-Wm-Request-Signature': await this.HMAC256(this.api.nonce, timestamp, 'GET', url.pathname, this.api.accessKey, this.api.secretKey)
+                'X-Wm-Request-Signature': GetHexFromBytes(signature),
             }
         }));
-    }
-
-    private async HMAC256(data: string, ...keyData: string[]): Promise<string> {
-        const algorithm = { name: 'HMAC', hash: { name: 'SHA-256' } };
-        const key = await crypto.subtle.importKey('raw', GetBytesFromUTF8(keyData.join('')), algorithm, false, ['sign']);
-        const signature = await crypto.subtle.sign(algorithm, key, GetBytesFromUTF8(data));
-        return GetHexFromBytes(new Uint8Array(signature));
     }
 }
