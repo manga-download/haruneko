@@ -52,15 +52,17 @@ async function createDesktopEntry(blinkDeploymentOutputDirectory) {
     const file = path.join(directory, `${pkgConfig.name}.desktop`);
     // A desktop entry is mandatory for xdg-desktop-portal to register the snap,
     // otherwise all portal requests (e.g. the file chooser) are denied.
-    await fs.writeFile(file, `[Desktop Entry]
-Type=Application
-Name=${pkgConfig.title}
-Comment=${pkgConfig.description}
-Exec=${pkgConfig.name}
-Terminal=false
-Categories=Network;
-StartupNotify=true
-`);
+    await fs.writeFile(file, [
+        '[Desktop Entry]',
+        'Type=Application',
+        `Name=${pkgConfig.title}`,
+        `Comment=${pkgConfig.description}`,
+        `Exec=${pkgConfig.name}`,
+        'Terminal=false',
+        'Categories=Network;',
+        'StartupNotify=true',
+        '',
+    ].join('\n'));
     return file;
 }
 
