@@ -16,7 +16,7 @@
     {:else if UI.contentscreen === '/bookmarks'}
         <Bookmarks />
     {:else}
-        Unkown content screen: {UI.contentscreen}
+        Unknown content screen: {UI.contentscreen}
     {/if}
 </main>
 
