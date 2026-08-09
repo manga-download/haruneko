@@ -137,9 +137,9 @@ export enum FrontendResourceKey {
     Frontend_Item_List = 'Frontend_Item_List',
     Frontend_Item_Select = 'Frontend_Item_Select',
     Frontend_Item_Selection = 'Frontend_Item_Selection',
-    Frontend_Welcome_Intro = 'Frontend_Classic_StartupGuide_Welcome_Intro',
-    Frontend_Welcome_Description = 'Frontend_Classic_StartupGuide_Welcome_Description',
-    Frontend_Welcome_Footer = 'Frontend_Classic_StartupGuide_Welcome_Footer',
+    Frontend_Welcome_Intro = 'Frontend_Welcome_Intro',
+    Frontend_Welcome_Description = 'Frontend_Welcome_Description',
+    Frontend_Welcome_Footer = 'Frontend_Welcome_Footer',
 }
 
 // [SECTION]: Frontend: Classic
