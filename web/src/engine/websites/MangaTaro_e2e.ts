@@ -12,7 +12,7 @@ new TestFixture({
     },
     child: {
         id: '/read/kaibutsu-shoujo-wa-hatsukoi-no-yume-wo-miru-ka/ch21-1-469378',
-        title: 'Chapter 21.1'
+        title: 'Ch. 21.1 N/A'
     },
     entry: {
         index: 0,

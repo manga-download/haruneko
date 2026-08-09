@@ -38,13 +38,13 @@
         class="previousitem"
         icon={ChevronLeft}
         iconDescription="Previous Item"
-        on:click={onPreviousItem}
+        onclick={onPreviousItem}
     />
     <HeaderGlobalAction
         class="nextitem"
         icon={ChevronRight}
         iconDescription="Next Item"
-        on:click={onNextItem}
+        onclick={onNextItem}
     />
     <HeaderAction
         icon={CloudServiceManagement}
@@ -60,14 +60,14 @@
                 kind="ghost"
                 size="small"
                 iconDescription="Previous item (ArrowLeft)"
-                on:click={onPreviousItem}
+                onclick={onPreviousItem}
             />
             <Button
                 icon={ChevronRight}
                 kind="ghost"
                 size="small"
                 iconDescription="Next item (ArrowRight)"
-                on:click={onNextItem}
+                onclick={onNextItem}
             />
             <Button
                 icon={ZoomIn}
@@ -137,7 +137,7 @@
                         selected={!Settings.ViewerReverseDirection.value}
                         on:click={() => (Settings.ViewerReverseDirection.value = false)}
                     >
-                        LeftToRight
+                        Left to Right
                     </Switch>
                     <Switch
                         selected={Settings.ViewerReverseDirection.value}

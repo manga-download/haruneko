@@ -96,8 +96,8 @@ const translations: VariantResource = { // NOTE: Use defaults for missing transl
   //
   Frontend_FluentCore_Settings_ThemeMode_Label: 'Theme',
   Frontend_FluentCore_Settings_ThemeMode_Description: 'Select the color mode for the user interface',
-  Frontend_FluentCore_Settings_ThemeMode_WebDark: 'Dark (Web)',
-  Frontend_FluentCore_Settings_ThemeMode_WebLight: 'Light (Web)',
+  Frontend_FluentCore_Settings_ThemeMode_WebDark: "深色模式(Web下)",
+  Frontend_FluentCore_Settings_ThemeMode_WebLight: "亮色模式(web下)",
   Frontend_FluentCore_Settings_ShowBookmarksPanel_Label: "书签列表",
   Frontend_FluentCore_Settings_ShowBookmarksPanel_Description: "切换书签列表开/关的可见性",
   Frontend_FluentCore_Settings_ShowDownloadsPanel_Label: "下载管理器",

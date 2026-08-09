@@ -6,17 +6,17 @@ new TestFixture({
         title: 'StoneScape'
     },
     container: {
-        url: 'https://stonescape.xyz/series/otakugal/',
-        id: JSON.stringify({ post: '36', slug: '/series/otakugal/' }),
-        title: 'Gals Can’t Be Kind to Otaku!?'
+        url: 'https://stonescape.xyz/series/gals-cant-be-kind-to-otaku',
+        id: 'gals-cant-be-kind-to-otaku',
+        title: `Gals Can't Be Kind to Otaku!?`
     },
     child: {
-        id: '/series/otakugal/ch-14/',
-        title: 'Ch. 14'
+        id: 'b7bb4ef0-0908-42af-8420-4726fb316ed3',
+        title: 'Chapter 14'
     },
     entry: {
-        index: 3,
-        size: 440_046,
-        type: 'image/png'
+        index: 1,
+        size: 688_516,
+        type: 'image/webp'
     }
 }).AssertWebsite();

@@ -5,7 +5,7 @@ import * as Common from './decorators/Common';
 import { FetchJSON } from '../platform/FetchProvider';
 
 type APIResult<T> = {
-    code: number;
+    code: string;
     data: T;
 };
 
@@ -36,16 +36,12 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const mangaId = manga.Identifier.match(/\/(\d+)\/$/)[1];
-        const request = new Request(new URL(`/chapter/v1/?comic_id=${mangaId}`, this.apiUrl).href);
-        const { code, data } = await FetchJSON<APIChapters>(request);
-        return code === 200 ? data.map(element => new Chapter(this, manga, String(element.chapter_id), element.title.trim())) : [];
+        const { code, data } = await FetchJSON<APIChapters>(new Request(new URL(`/chapter/v1/?comic_id=${manga.Identifier.match(/\/(\d+)\/$/).at(1)}`, this.apiUrl)));
+        return code === '200' ? data.map(({ chapter_id: id, title }) => new Chapter(this, manga, `${id}`, title.trim())) : [];
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const mangaId = chapter.Parent.Identifier.match(/\/(\d+)\/$/)[1];
-        const request = new Request(new URL(`/chapter/content/v1/?chapter_id=${chapter.Identifier}&comic_id=${mangaId}&format=1&quality=1&type=1`, this.apiUrl).href);
-        const { code, data } = await FetchJSON<APIPages>(request);
-        return code === 200 ? data.page.map(element => new Page(this, chapter, new URL(element.image))) : [];
+        const { code, data } = await FetchJSON<APIPages>(new Request(new URL(`/chapter/content/v1/?chapter_id=${chapter.Identifier}&comic_id=${chapter.Parent.Identifier.match(/\/(\d+)\/$/).at(1)}&format=1&quality=1&type=1`, this.apiUrl)));
+        return code === '200' ? data.page.map(({ image }) => new Page(this, chapter, new URL(image))) : [];
     }
 }

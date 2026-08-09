@@ -1,12 +1,12 @@
 import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'mangastarz',
         title: 'مانجا ستارز (Mangastarz)'
     },
     container: {
-        url: 'https://manga-starz.com/manga/getter-robo-go/',
+        url: 'https://manga-starz.net/manga/getter-robo-go/',
         id: JSON.stringify({ post: '82737', slug: '/manga/getter-robo-go/' }),
         title: 'Getter Robo Go'
     },
@@ -19,6 +19,4 @@ const config = {
         size: 358_957,
         type: 'image/jpeg'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

@@ -10,7 +10,7 @@ export default defineConfig({
             entry: resolve(__dirname, 'src', 'App.ts'),
             formats: [ 'cjs' ]
         },
-        rollupOptions: {
+        rolldownOptions: {
             output: {
                 entryFileNames: ({ name }) => `${name}.js`.toLowerCase(),
                 chunkFileNames: ({ name }) => `${name}.js`.toLowerCase(),

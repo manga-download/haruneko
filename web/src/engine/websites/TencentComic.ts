@@ -2,6 +2,7 @@ import { Tags } from '../Tags';
 import icon from './TencentComic.webp';
 import { DecoratableMangaScraper, type Chapter, Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
+
 import { DRMProvider } from './TencentComic.DRM.js';
 
 @Common.MangaCSS(/^{origin}\/Comic\/ComicInfo\/id\/\d+$/i, 'h2.works-intro-title')

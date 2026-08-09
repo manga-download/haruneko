@@ -6,7 +6,7 @@ new TestFixture({
         title: 'ReadComicOnline'
     },
     container: {
-        url: 'https://readcomiconline.li/Comic/Star-Wars-Legacy-War',
+        url: 'https://rcostation.xyz/Comic/Star-Wars-Legacy-War',
         id: '/Comic/Star-Wars-Legacy-War',
         title: 'Star Wars: Legacy War'
     },

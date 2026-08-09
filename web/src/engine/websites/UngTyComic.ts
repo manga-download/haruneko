@@ -4,7 +4,7 @@ import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Madara from './decorators/WordPressMadara';
 import * as Common from './decorators/Common';
 
-@Common.MangaCSS(/^{origin}\/[^.]+\.html$/, 'div.comics-detail-head h1.title-heading')
+@Common.MangaCSS(/^{origin}\/truyen\/[^/]+$/, 'div.comics-detail-head h1.title-heading')
 @Common.MangasMultiPageCSS('h4.content-title a', Common.PatternLinkGenerator('/truyen-tranh?page={page}'))
 @Common.ChaptersMultiPageCSS('div.list-comics-chapter div.episode-title a', Common.PatternLinkGenerator('{id}?page={page}'))
 @Madara.PagesSinglePageCSS()
@@ -12,7 +12,7 @@ import * as Common from './decorators/Common';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('ungtycomic', 'Ung Ty Comic', 'https://ungtycomicsa.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Vietnamese, Tags.Source.Aggregator);
+        super('ungtycomic', 'Ung Ty Comic', 'https://ungtycomics.net', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Vietnamese, Tags.Source.Aggregator, Tags.Rating.Pornographic);
     }
 
     public override get Icon() {

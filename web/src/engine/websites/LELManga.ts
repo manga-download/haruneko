@@ -4,7 +4,7 @@ import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as MangaStream from './decorators/WordPressMangaStream';
 import * as Common from './decorators/Common';
 
-@MangaStream.MangaCSS(/^https?:\/\/www\.lelmanga\.com\/manga\/[^/]+$/)
+@MangaStream.MangaCSS(/^{origin}\/manga\/[^/]+$/)
 @MangaStream.MangasSinglePageCSS()
 @MangaStream.ChaptersSinglePageCSS()
 @MangaStream.PagesSinglePageJS()

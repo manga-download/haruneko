@@ -1,12 +1,12 @@
 import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 's2manga',
         title: 'S2Manga'
     },
     container: {
-        url: 'https://s2manga.com/manga/the-villainous-moriarty-in-me/',
+        url: 'https://s2read.com/manga/the-villainous-moriarty-in-me/',
         id: JSON.stringify({ post: '76793', slug: '/manga/the-villainous-moriarty-in-me/' }),
         title: 'The Villainous Moriarty in Me'
     },
@@ -19,6 +19,4 @@ const config = {
         size: 294_546,
         type: 'image/jpeg'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

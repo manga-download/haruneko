@@ -1,10 +1,10 @@
 import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'topcomicporno',
         title: 'Top Comic Porno'
-    }, /* CloudFlare
+    },
     container: {
         url: 'https://topcomicporno.net/manga/netorare-manga-no-kuzu-otoko-ni-tensei-shita-hazu-ga-heroine-ga-yottekuru-ken/',
         id: JSON.stringify({ post: '13977', slug: '/manga/netorare-manga-no-kuzu-otoko-ni-tensei-shita-hazu-ga-heroine-ga-yottekuru-ken/' }),
@@ -16,9 +16,7 @@ const config = {
     },
     entry: {
         index: 3,
-        size: 351_558,
+        size: 361_558,
         type: 'image/webp'
-    }*/
-};
-
-new TestFixture(config).AssertWebsite();
+    }
+}).AssertWebsite();

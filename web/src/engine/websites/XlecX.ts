@@ -3,22 +3,16 @@ import icon from './XlecX.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 
-function MangaExtractor(anchor: HTMLAnchorElement) {
-    return {
-        id: anchor.pathname,
-        title: anchor.querySelector<HTMLHeadingElement>('h3.thumb__title ').textContent.trim()
-    };
-}
-
-@Common.MangaCSS(/^{origin}\/\d+-[\S]+\.html/, 'main div.sect__content div#dle-content article.page div.page__col-left h1')
-@Common.MangasMultiPageCSS('main section.sect div#dle-content > a.thumb', Common.PatternLinkGenerator('/page/{page}/'), 0, MangaExtractor)
+@Common.MangaCSS(/^{origin}\/\d+-[^/]+\.html/, 'meta[name="description"]')
+@Common.MangasMultiPageCSS<HTMLAnchorElement>('main section.sect div#dle-content > a.thumb', Common.PatternLinkGenerator('/page/{page}/'), 0,
+    anchor => ({ id: anchor.pathname, title: anchor.querySelector<HTMLHeadingElement>('h3.thumb__title ').textContent.trim() }))
 @Common.ChaptersUniqueFromManga()
-@Common.PagesSinglePageCSS('article.page a img, div.tabs ul.xfieldimagegallery.manyfotos li img')
+@Common.PagesSinglePageCSS('div.imagegall23 img')
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('xlecx', `XlecX`, 'https://xlecx.one', Tags.Language.English, Tags.Source.Aggregator, Tags.Media.Comic, Tags.Media.Manga, Tags.Rating.Pornographic);
+        super('xlecx', 'XlecX', 'https://xlecx.one', Tags.Language.English, Tags.Source.Aggregator, Tags.Media.Comic, Tags.Media.Manga, Tags.Rating.Pornographic);
     }
 
     public override get Icon() {

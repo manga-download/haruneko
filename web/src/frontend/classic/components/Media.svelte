@@ -20,7 +20,6 @@
     import { onDestroy, onMount } from 'svelte';
     import type { MediaContainer2 } from '../Types';
 
-
     interface Props {
         style?: string;
         // TODO: Instead of conditional pollution, split component into one for showing containers and one for showing bookmarks
@@ -35,6 +34,7 @@
     let isMediaOrphanedBookmark = $state(true);
     $effect(() => {
         if(!media) return;
+        findMediaUnFlaggedContent(media);
         isBookmarked = HakuNeko.BookmarkPlugin.IsBookmarked(media);
         isMediaOrphanedBookmark = media instanceof Bookmark && media.IsOrphaned;
     });
@@ -48,10 +48,9 @@
     let unFlaggedItems: MediaContainer<MediaChild>[] = $state([]);
     let delayedContentCheck;
 
-
     async function findMediaUnFlaggedContent(updatedmedia:MediaContainer<MediaChild>) {
         if (!updatedmedia.IsSameAs(media)) return;
-        
+
         unFlaggedItems = [];
         const delay = !UI.selectedMedia || UI.selectedMedia?.IsSameAs(HakuNeko.BookmarkPlugin) ? 0 : 800;
         delayedContentCheck = setTimeout(
@@ -61,7 +60,6 @@
             )) as MediaContainer<MediaChild>[];
         },delay);
     }
-    findMediaUnFlaggedContent(media);
 
     onMount(() => {
         HakuNeko.ItemflagManager.ContainerFlagsEventChannel.Subscribe(findMediaUnFlaggedContent);
@@ -82,11 +80,10 @@
             document.removeEventListener('contextmenu', outsideClickListener);
         }
     }
+
     function menuOpens() {
         document.addEventListener('contextmenu', outsideClickListener);
     }
-    
-
 </script>
 
 <div bind:this={mediadiv} class="media" {style} class:selected>
@@ -117,6 +114,7 @@
     {:else if isBookmarked}
         <span in:coinflip={{ duration: 200 }}>
             <Button
+                role="bookmark"
                 class="bookmarked"
                 size="small"
                 kind="ghost"
@@ -130,6 +128,7 @@
     {:else}
         <span in:coinflip={{ duration: 200 }}>
             <Button
+                role="bookmark"
                 size="small"
                 kind="ghost"
                 icon={Star}
@@ -141,7 +140,7 @@
         </span>
     {/if}
     {#if !isMediaOrphanedBookmark}
-        <button 
+        <button
             class="website"
             onclick={() => window.open(media.Parent.URI.href, '_blank')}
             title="Open {media.Parent.URI.href}"
@@ -209,7 +208,7 @@
         border: none;
         background: none;
         background-color: unset;
-        margin-right: 0.4em; 
+        margin-right: 0.4em;
         cursor: pointer;
     }
     .media .pluginIcon {

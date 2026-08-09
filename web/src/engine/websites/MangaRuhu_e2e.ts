@@ -6,18 +6,17 @@ new TestFixture({
         title: 'MangaRuhu'
     },
     container: {
-        url: 'https://mangaruhu.com/manga/boslugun-hukumdari/',
-        id: '/manga/boslugun-hukumdari/',
-        title: 'Boşluğun Hükümdarı'
+        url: 'https://mangaruhu.com/manga/the-dignity-of-a-chaebol/',
+        id: '/manga/the-dignity-of-a-chaebol/',
+        title: 'The Dignity of a Chaebol'
     },
     child: {
-        id: '/boslugun-hukumdari-bolum-1/',
-        title: 'Bölüm 1',
-        timeout: 9000
+        id: '/manga/the-dignity-of-a-chaebol/bolum-20/',
+        title: 'Bölüm 20',
     },
     entry: {
-        index: 0,
-        size: 715_642,
+        index: 2,
+        size: 1_274_976,
         type: 'image/jpeg'
     }
 }).AssertWebsite();

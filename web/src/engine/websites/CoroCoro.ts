@@ -48,7 +48,7 @@ type PageParameters = {
 
 export default class extends DecoratableMangaScraper {
 
-    private readonly apiUrl = `${this.URI.origin}/api/csr`;
+    private readonly apiURL = `${this.URI.origin}/api/csr`;
 
     public constructor () {
         super('corocoro', 'CoroCoro Online (コロコロオンライン)', 'https://www.corocoro.jp', Tags.Language.Japanese, Tags.Source.Official, Tags.Media.Manga);
@@ -64,14 +64,14 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
         const { title: { id, name } } = await this.FetchAPI<TitleDetailView>({ rq: 'title/detail', title_id: url.split('/').at(-1) }, 'TitleDetailView');
-        return new Manga(this, provider, id.toString(), name);
+        return new Manga(this, provider, `${id}`, name);
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
         const promises = [ 'mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun' ]
             .map(day => this.FetchAPI<TitleListView>({ rq: 'title/list/update_day', day }, 'TitleListView'));
         const mangaList = (await Promise.all(promises)).reduce((accumulator: Manga[], day) => {
-            const mangas = day.titles.titles.map(({ id, name }) => new Manga(this, provider, id.toString(), name));
+            const mangas = day.titles.titles.map(({ id, name }) => new Manga(this, provider, `${id}`, name));
             return [ ...accumulator, ...mangas ];
         }, []);
         return mangaList.distinct();
@@ -79,7 +79,7 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const { chapters } = await this.FetchAPI<TitleDetailView>({ rq: 'title/detail', title_id: manga.Identifier }, 'TitleDetailView');
-        return chapters.map(({ id, mainName, subName }) => new Chapter(this, manga, id.toString(), [ mainName, subName ].join(' ').trim()));
+        return chapters.map(({ id, mainName, subName }) => new Chapter(this, manga, `${id}`, [mainName, subName].joinTitleSegments()));
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page<PageParameters>[]> {
@@ -99,12 +99,11 @@ export default class extends DecoratableMangaScraper {
     private async DecryptImage(encrypted: ArrayBuffer, keyData: string, iv: string): Promise<Blob> {
         const algorithm = { name: 'AES-CBC', iv: GetBytesFromHex(iv) };
         const key = await crypto.subtle.importKey('raw', GetBytesFromHex(keyData), algorithm, false, [ 'decrypt' ]);
-        const decrypted = await crypto.subtle.decrypt(algorithm, key, encrypted);
-        return Common.GetTypedData(decrypted);
+        return Common.GetTypedData(await crypto.subtle.decrypt(algorithm, key, encrypted));
     }
 
     private async FetchAPI<T extends JSONElement>(searchParamsInit: Record<string, string>, messageType: string, method: string = 'GET'): Promise<T> {
-        const uri = new URL(this.apiUrl);
+        const uri = new URL(this.apiURL);
         uri.search = new URLSearchParams(searchParamsInit).toString();
         return FetchProto<T>(new Request(uri, { method }), prototypes, messageType);
     }

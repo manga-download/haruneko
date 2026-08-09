@@ -1,24 +1,22 @@
-import { TestFixture, type Config } from '../../../test/WebsitesFixture';
+import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config: Config = {
+new TestFixture({
     plugin: {
         id: 'shadowmangas',
         title: 'ShadowMangas'
     },
     container: {
-        url: 'https://shadowmangas.com/manga/realmente-no-soy-el-vasallo-del-dios-demonio/',
-        id: '/manga/realmente-no-soy-el-vasallo-del-dios-demonio/',
-        title: 'Realmente no soy el vasallo del dios demonio'
+        url: 'https://shademanga.com/serie/local/38721/',
+        id: '38721',
+        title: 'Realmente No Soy El Vasallo Del Dios Demonio'
     },
     child: {
-        id: '/realmente-no-soy-el-vasallo-del-dios-demonio-capitulo-1/',
-        title: 'Chapter 1'
+        id: '894436',
+        title: 'Cap. 184'
     },
     entry: {
-        index: 0,
-        size: 912_450,
-        type: 'image/jpeg'
+        index: 1,
+        size: 284_668,
+        type: 'image/webp'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

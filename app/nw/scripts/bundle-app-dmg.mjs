@@ -1,6 +1,6 @@
 import path from 'node:path';
 import fs from 'node:fs/promises';
-import plist from 'plist';
+import * as plist from 'plist';
 import { run, wait } from '../../tools.mjs';
 
 const pkgFile = 'package.json';

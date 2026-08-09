@@ -1,18 +1,11 @@
 import { Tags } from '../Tags';
 import icon from './MugiwarasOficial.webp';
-import { DecoratableMangaScraper } from '../providers/MangaPlugin';
-import * as Madara from './decorators/WordPressMadara';
-import * as Common from './decorators/Common';
+import MangasBrasuka from './MangasBrasuka';
 
-@Madara.MangaCSS(/^{origin}\/manga\/[^/]+\/$/, 'ol.breadcrumb li:last-of-type a')
-@Madara.MangasMultiPageAJAX()
-@Madara.ChaptersSinglePageAJAXv2()
-@Madara.PagesSinglePageCSS()
-@Common.ImageAjax()
-export default class extends DecoratableMangaScraper {
+export default class extends MangasBrasuka {
 
     public constructor() {
-        super('mugiwarasoficial', 'Mugiwaras Oficial', 'https://mugiwarasoficial.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Media.Manga, Tags.Language.Spanish, Tags.Source.Aggregator);
+        super('mugiwarasoficial', 'Mugiwaras Oficial', 'https://mugiwarasoficial.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Media.Manga, Tags.Language.Portuguese, Tags.Source.Aggregator, Tags.Accessibility.RegionLocked);
     }
 
     public override get Icon() {

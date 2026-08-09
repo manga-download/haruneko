@@ -1,5 +1,6 @@
 /**
  * This module provides various timing methods which will not hibernate when the application is in the background.
+ * The very same effect could probably achieved with the Chromium flag `--disable-background-timer-throttling`.
  * @see {@link https://developer.chrome.com/blog/timer-throttling-in-chrome-88}
  */
 

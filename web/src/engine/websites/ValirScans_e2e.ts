@@ -6,17 +6,17 @@ new TestFixture({
         title: 'Valir Scans'
     },
     container: {
-        url: 'https://valirscans.com/series/63d1d00732e/',
-        id: '/series/63d1d00732e/',
+        url: 'https://valirscans.org/series/comic/growing-the-seed-of-evil',
+        id: 'growing-the-seed-of-evil',
         title: 'Growing the Seed of Evil'
     },
     child: {
-        id: '/chapter/63d1d00732e-63daa67baa1/',
-        title: 'Chapter 21'
+        id: '/series/comic/growing-the-seed-of-evil/chapter/1',
+        title: 'Chapter 1'
     },
     entry: {
         index: 0,
-        size: 952_842,
-        type: 'image/jpeg'
+        size: 171_856,
+        type: 'image/webp'
     }
 }).AssertWebsite();

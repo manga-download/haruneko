@@ -5,7 +5,7 @@ import type {
     OnBeforeSendHeadersListenerDetails,
     OnHeadersReceivedListenerDetails,
 } from 'electron';
-import type { IPC } from './InterProcessCommunication';
+import type { IPC, Callback } from './InterProcessCommunication';
 import { FetchProvider as Channels } from '../../../src/ipc/Channels';
 
 export class FetchProvider {
@@ -13,7 +13,7 @@ export class FetchProvider {
     private fetchApiSupportedPrefix = 'X-FetchAPI-'.toLowerCase();
 
     constructor(private readonly ipc: IPC<Channels.Web, Channels.App>, private readonly webContents: WebContents) {
-        this.ipc.Listen(Channels.App.Initialize, this.Initialize.bind(this));
+        this.ipc.Listen(Channels.App.Initialize, this.Initialize.bind(this) as Callback);
     }
 
     private async Initialize(fetchApiSupportedPrefix: string): Promise<void> {

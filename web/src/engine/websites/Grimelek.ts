@@ -1,18 +1,13 @@
-import { Tags } from '../Tags';
+﻿import { Tags } from '../Tags';
 import icon from './Grimelek.webp';
-import { DecoratableMangaScraper } from '../providers/MangaPlugin';
-import * as Madara from './decorators/WordPressMadara';
+import { InitManga, queryMangas } from './templates/InitManga';
 import * as Common from './decorators/Common';
 
-@Madara.MangaCSS(/^{origin}\/seri\/[^/]+\/$/, 'div.post-title h1')
-@Madara.MangasMultiPageAJAX()
-@Madara.ChaptersSinglePageAJAXv2()
-@Madara.PagesSinglePageCSS()
-@Common.ImageAjax()
-export default class extends DecoratableMangaScraper {
+@Common.MangasMultiPageCSS(queryMangas, Common.PatternLinkGenerator('/manga/page/{page}/'))
+export default class extends InitManga {
 
     public constructor() {
-        super('grimelek', 'Grimelek', 'https://siyahmelek.pro', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Language.Turkish, Tags.Source.Aggregator);
+        super('grimelek', 'Siyah Melek', 'https://siyahmelek.live', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Language.Turkish, Tags.Source.Aggregator);
     }
 
     public override get Icon() {

@@ -27,7 +27,11 @@ const manifest = {
         'https://*.hakuneko.workers.dev/*',
         `${new URL(pkgConfig.url).origin}/*`,
     ],
-    'chromium-args': '--allow-running-insecure-content',
+    'chromium-args': [
+        '--allow-running-insecure-content',
+        '--disable-background-timer-throttling',
+        '--disable-backgrounding-occluded-windows',
+    ].join(' '),
     'user-agent': targetConfig['user-agent'] ?? null,
     dependencies: pkgConfig.dependencies
 };

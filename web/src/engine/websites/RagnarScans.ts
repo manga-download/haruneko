@@ -1,18 +1,13 @@
-import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import { Tags } from '../Tags';
-import * as Common from './decorators/Common';
 import icon from './RagnarScans.webp';
+import { InitManga } from './templates/InitManga';
+import * as Common from './decorators/Common';
 
-@Common.MangaCSS(/^{origin}\/manga\/[^/]+\/$/, 'ul.uk-breadcrumb li:last-of-type')
-@Common.MangasMultiPageCSS('div.manga-block h3 a.uk-link-heading', Common.PatternLinkGenerator('/manga/page/{page}/'))
-@Common.ChaptersMultiPageCSS<HTMLAnchorElement>('div.chapter-item a', Common.PatternLinkGenerator('{id}bolum/page/{page}/'), 0,
-    anchor => ({ id: anchor.pathname, title: anchor.querySelector<HTMLHeadingElement>('h3.uk-link-heading').innerText.trim().match(/^Bölüm[^:]+/).at(0).trim() }))
-@Common.PagesSinglePageJS(`[...document.querySelectorAll('div#chapter-content img')].map(img => img.src);`, 2500)
-@Common.ImageAjax()
-export default class extends DecoratableMangaScraper {
+@Common.MangasMultiPageCSS('div.manga-block div.manga-card h2.manga-card-title a', Common.PatternLinkGenerator('/manga/page/{page}/'))
+export default class extends InitManga {
 
     public constructor() {
-        super('ragnarscans', 'Ragnar Scans', 'https://ragnarscans.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Turkish, Tags.Source.Aggregator);
+        super('ragnarscans', 'Ragnar Scans', 'https://ragnarscans.net', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Turkish, Tags.Source.Aggregator);
     }
 
     public override get Icon() {

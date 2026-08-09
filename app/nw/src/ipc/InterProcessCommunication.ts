@@ -3,7 +3,7 @@ type Message = {
     parameters: JSONArray,
 }
 
-type Callback = (...parameters: JSONArray) => Promise<void>;
+export type Callback = (...parameters: JSONArray) => Promise<void>;
 
 export class IPC<TChannelsOut extends string, TChannelsIn extends string> {
 
@@ -15,7 +15,7 @@ export class IPC<TChannelsOut extends string, TChannelsIn extends string> {
 
     private OnMessage(message: Message, sender: chrome.runtime.MessageSender, callback: (response: void) => void): boolean {
         if(this.subscriptions.has(message.channel)) {
-            const promises = this.subscriptions.get(message.channel).map(method => method(...message.parameters));
+            const promises = this.subscriptions.get(message.channel)?.map(method => method(...message.parameters)) ?? [];
             Promise.allSettled(promises).then(() => callback());
             return true;
         } else {
@@ -28,7 +28,7 @@ export class IPC<TChannelsOut extends string, TChannelsIn extends string> {
             this.subscriptions.set(channel, []);
         }
         const methods = this.subscriptions.get(channel);
-        if(!methods.includes(callback)) {
+        if(methods && !methods.includes(callback)) {
             methods.push(callback);
         }
     }
@@ -38,7 +38,7 @@ export class IPC<TChannelsOut extends string, TChannelsIn extends string> {
         const tabs = await new Promise<chrome.tabs.Tab[]>(resolve => chrome.tabs.query({ active: true }, resolve));
         const tab = tabs.length > 0 ? tabs.at(0) : undefined;
         if(tab?.id) {
-            return new Promise<void>(resolve => chrome.tabs.sendMessage<Message, void>(tab.id, { channel, parameters }, resolve));
+            return new Promise<void>(resolve => chrome.tabs.sendMessage<Message, void>(<number>tab.id, { channel, parameters }, resolve));
         } else {
             throw new Error(); // TODO: Message
         }

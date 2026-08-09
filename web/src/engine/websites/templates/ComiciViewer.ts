@@ -1,5 +1,5 @@
-import { FetchCSS, FetchJSON } from '../../platform/FetchProvider';
-import { DecoratableMangaScraper, type Manga, type Chapter, Page } from '../../providers/MangaPlugin';
+import { FetchJSON, FetchWindowScript } from '../../platform/FetchProvider';
+import { DecoratableMangaScraper, type Manga, Chapter, Page } from '../../providers/MangaPlugin';
 import type { Priority } from '../../taskpool/DeferredTask';
 import DeScramble from '../../transformers/ImageDescrambler';
 import * as Common from '../decorators/Common';
@@ -16,73 +16,103 @@ type ScrambleData = {
     scramble: string;
 };
 
-function StripTrailingSlash(pathname: string): string {
-    return pathname.replace(/\/$/, '');
-}
+type APIChapters = {
+    series: {
+        episodes: {
+            id: string;
+            title: string;
+        }[]
+    }
+};
 
-function MangaInfoExtractor(div: HTMLDivElement) {
-    return {
-        id: StripTrailingSlash(div.querySelector('a').pathname),
-        title: div.querySelector<HTMLHeadingElement>('h2.title-text').innerText.trim(),
-    };
-}
+const CleanMangaPath = (path: string) => path.replace(/\/new$/, '');
+function MangaExtractor(element: HTMLElement, uri: URL) {
+    const { id, title } = Common.WebsiteInfoExtractor({ queryBloat: 'span' }).call(this, element, uri);
+    return { id: CleanMangaPath(id), title };
+};
 
-function ChapterInfoExtractor(element: HTMLElement) {
-    return {
-        id: new URL(element.dataset.href).pathname,
-        title: element.querySelector<HTMLSpanElement>('span.series-ep-list-item-h-text').innerText.trim()/*.replace(manga.Title, '').trim() || manga.Title*/,
-    };
-}
-
-function ChapterLinkResolver(manga: Manga): URL {
-    return new URL(`${manga.Identifier}/list`, this.URI);
-}
-
-@Common.MangaCSS(/^{origin}\/series\/[^/]+\/?$/, 'h1.series-h-title span:not([class])', (span, uri) => ({ id: StripTrailingSlash(uri.pathname), title: span.innerText.trim() }))
-@Common.MangasMultiPageCSS('div.series-box-vertical', Common.PatternLinkGenerator('/series/list?page={page}', 0), 0, MangaInfoExtractor)
-@Common.ChaptersSinglePageCSS('div.series-ep-list a[data-href]', ChapterLinkResolver, ChapterInfoExtractor)
+@Common.MangaCSS(/^{origin}(\/[^/]+)?\/series\/[^/]+(\/new)?$/, 'h1.series-h-title', MangaExtractor)
+@Common.MangasMultiPageCSS<HTMLAnchorElement>('a.series-list-item-link', Common.PatternLinkGenerator('/series/list/up/{page}', 1), 0, anchor => ({ id: CleanMangaPath(anchor.pathname), title: anchor.querySelector('div.series-list-item-h span').textContent.trim() }))
 export class ComiciViewer extends DecoratableMangaScraper {
 
-    protected apiUrl = this.URI;
-    private readonly identityTileMap = new Array(16).fill(null).map((_, index) => ({ col: index / 4 >> 0, row: index % 4 >> 0 }));
+    readonly #identityTileMap = new Array(16).fill(null).map((_, index) => ({ col: index / 4 >> 0, row: index % 4 >> 0 }));
+    #apiURL = new URL('./api/', this.URI);
+
+    async #FetchPages(chapter: Chapter, viewerID: string, userID: string, contentId: string = undefined) {
+        const uri = new URL('./book/contentsInfo', this.#apiURL);
+        const init = { headers: { Referer: new URL(chapter.Identifier, this.URI).href } };
+        uri.search = new URLSearchParams({ 'comici-viewer-id': viewerID, 'user-id': userID, 'page-from': '0', 'page-to': '1', contentId }).toString();
+        const { totalPages } = await FetchJSON<APIPages>(new Request(uri, init));
+        uri.searchParams.set('page-to', `${totalPages}`);
+        const { result } = await FetchJSON<APIPages>(new Request(uri, init));
+        return result;
+    }
+
+    public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
+        const [, prefix, seriesHash] = manga.Identifier.match(/^(\/[^/]+)?\/series\/([^/]+)$/);
+        const { series: { episodes }, } = await FetchJSON<APIChapters>(new Request(new URL(`./episodes?seriesHash=${seriesHash}&episodeFrom=1&episodeTo=9999`, this.#apiURL)));
+        return episodes.map(({ id, title }) => new Chapter(this, manga, `${prefix ?? ''}/episodes/${id}`, title));
+    }
 
     public override async FetchPages(chapter: Chapter): Promise<Page<ScrambleData>[]> {
-        const [viewer] = await FetchCSS(new Request(new URL(chapter.Identifier, this.URI)), '#comici-viewer');
-        const viewerId = viewer.getAttribute('comici-viewer-id') ?? viewer.dataset.comiciViewerId;
-        const { totalPages } = await this.FetchContentInfo(chapter, viewerId, viewer.dataset.memberJwt, 1);
-        const { result } = await this.FetchContentInfo(chapter, viewerId, viewer.dataset.memberJwt, totalPages);
-        return result.map(image => new Page<ScrambleData>(this, chapter, new URL(image.imageUrl), { scramble: image.scramble, Referer: this.URI.href }));
+        type AccountData = { viewerId: string, memberJwt: string, contentId: string };
+        const { viewerId, memberJwt, contentId } = await FetchWindowScript<AccountData>(new Request(new URL(chapter.Identifier, this.URI)), `
+            new Promise((resolve, reject) => {
+                let interval;
+                try {
+                    const checkElement = () => {
+                        const element = document.querySelector('#comici-viewer');
+                        if (element) {
+                            const { attributes, dataset: { memberJwt, comiciViewerId, contentId } } = element;
+                            return {
+                                memberJwt,
+                                viewerId: attributes.getNamedItem('comici-viewer-id')?.value ?? comiciViewerId,
+                                contentId
+                            };
+                        } else {
+                            return null;
+                        }
+                    };
+
+                    const endTime = Date.now() + 15000;
+
+                    interval = setInterval(() => {
+                        if (Date.now() > endTime) {
+                            clearInterval(interval);
+                            reject(new Error("Element #comici-viewer not found after 10 seconds."));
+                            return;
+                        }
+
+                        const result = checkElement();
+                        if (result) {
+                            clearInterval(interval);
+                            resolve(result);
+                        }
+                    }, 150);
+
+                } catch (error) {
+                    if (interval) clearInterval(interval);
+                    reject(error);
+                }
+            });
+        `, 0);
+        const pages = await this.#FetchPages(chapter, viewerId, memberJwt, contentId);
+        return pages.map(({ imageUrl, scramble }) => new Page<ScrambleData>(this, chapter, new URL(imageUrl), { scramble, Referer: this.URI.href }));
     }
 
     public override async FetchImage(page: Page<ScrambleData>, priority: Priority, signal: AbortSignal): Promise<Blob> {
-        const data = await Common.FetchImageAjax.call(this, page, priority, signal);
-        return !page.Parameters?.scramble ? data : DeScramble(data, async (image, ctx) => {
-            const scrambleTileMap = page.Parameters.scramble.replace(/\s+/g, '').slice(1).slice(0, -1).split(',').map(index => this.identityTileMap[index]);
+        const blob = await Common.FetchImageAjax.call(this, page, priority, signal);
+        return !page.Parameters?.scramble ? blob : DeScramble(blob, async (image, ctx) => {
+            const scrambleTileMap = page.Parameters.scramble.replace(/\s+/g, '').slice(1).slice(0, -1).split(',').map(index => this.#identityTileMap[index]);
             const tileWidth = Math.floor(image.width / 4);
             const tileHeight = Math.floor(image.height / 4);
-            for (let index = 0; index < this.identityTileMap.length; index++) {
+            for (let index = 0; index < this.#identityTileMap.length; index++) {
                 const sourceOffsetX = scrambleTileMap[index].col * tileWidth;
                 const sourceOffsetY = scrambleTileMap[index].row * tileHeight;
-                const targetOffsetX = this.identityTileMap[index].col * tileWidth;
-                const targetOffsetY = this.identityTileMap[index].row * tileHeight;
+                const targetOffsetX = this.#identityTileMap[index].col * tileWidth;
+                const targetOffsetY = this.#identityTileMap[index].row * tileHeight;
                 ctx.drawImage(image, sourceOffsetX, sourceOffsetY, tileWidth, tileHeight, targetOffsetX, targetOffsetY, tileWidth, tileHeight);
             }
         });
-    }
-
-    private FetchContentInfo(chapter: Chapter, viewerId: string, userId: string, pageTo: number): Promise<APIPages> {
-        const uri = new URL('./book/contentsInfo', this.apiUrl);
-        uri.search = new URLSearchParams({
-            'comici-viewer-id': viewerId,
-            'user-id': userId,
-            'page-from': '0',
-            'page-to': `${pageTo}`,
-        }).toString();
-        const request = new Request(uri, {
-            headers: {
-                Referer: new URL(chapter.Identifier, this.URI).href,
-            },
-        });
-        return FetchJSON<APIPages>(request);
     }
 }

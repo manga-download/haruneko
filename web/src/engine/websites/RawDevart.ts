@@ -5,31 +5,31 @@ import * as Common from './decorators/Common';
 import { FetchJSON } from '../platform/FetchProvider';
 
 type APIManga = {
-    manga_id: number
-    manga_name: string
-}
+    manga_id: number;
+    manga_name: string;
+};
 
 type APIMangas = {
-    manga_list: APIManga[]
-}
+    manga_list: APIManga[];
+};
 
 type APISingleManga = {
-    detail: APIManga,
-    chapters: APIChapter[]
-}
+    detail: APIManga;
+    chapters: APIChapter[];
+};
 
 type APIChapter = {
-    chapter_id: string,
-    chapter_title: string,
-    chapter_number: number
-}
+    chapter_id: string;
+    chapter_title: string;
+    chapter_number: number;
+};
 
 type APIPages = {
     chapter_detail: {
-        chapter_content: string,
-        server: string
+        chapter_content: string;
+        server: string;
     }
-}
+};
 
 @Common.ImageAjax(true)
 export default class extends DecoratableMangaScraper {
@@ -44,13 +44,12 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override ValidateMangaURL(url: string): boolean {
-        return new RegExpSafe(`^${this.URI.origin}/[^/]+-c\\d+`).test(url);
+        return new RegExpSafe(`^${this.URI.origin}/g/[^/]+$`).test(url);
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
-        const id = url.match(/-c(\d+)$/).at(1);
-        const { detail: { manga_id, manga_name } } = await FetchJSON<APISingleManga>(new Request(new URL(`manga/${id}`, this.apiUrl)));
-        return new Manga(this, provider, manga_id.toString(), manga_name.trim());
+        const { detail: { manga_id: id, manga_name: name } } = await FetchJSON<APISingleManga>(new Request(new URL(`./manga/${url.match(/\d+$/).at(0) }`, this.apiUrl)));
+        return new Manga(this, provider, `${id}`, name.trim()); //trimming name IS necessary
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
@@ -63,18 +62,18 @@ export default class extends DecoratableMangaScraper {
     }
 
     private async GetMangasFromPage(page: number, provider: MangaPlugin): Promise<Manga[]> {
-        const { manga_list } = await FetchJSON<APIMangas>(new Request(new URL(`latest-manga?page=${page}`, this.apiUrl)));
-        return manga_list.map(manga => new Manga(this, provider, manga.manga_id.toString(), manga.manga_name.trim()));
+        const { manga_list } = await FetchJSON<APIMangas>(new Request(new URL(`./latest-manga?page=${page}`, this.apiUrl)));
+        return manga_list.map(({ manga_id: id, manga_name: name }) => new Manga(this, provider, `${id}`, name.trim()));
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const { chapters } = await FetchJSON<APISingleManga>(new Request(new URL(`manga/${manga.Identifier}`, this.apiUrl)));
-        return chapters.map(chapter => new Chapter(this, manga, chapter.chapter_number.toString(), [chapter.chapter_number, chapter.chapter_title].join(' ').trim()));
+        const { chapters } = await FetchJSON<APISingleManga>(new Request(new URL(`./manga/${manga.Identifier}`, this.apiUrl)));
+        return chapters.map(({ chapter_number: number, chapter_title: title }) => new Chapter(this, manga, `${number}`, [number, title].join(' ').trim()));
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const { chapter_detail: { chapter_content, server } } = await FetchJSON<APIPages>(new Request(new URL(`manga/${chapter.Parent.Identifier}/${chapter.Identifier}`, this.apiUrl)));
+        const { chapter_detail: { chapter_content, server } } = await FetchJSON<APIPages>(new Request(new URL(`./manga/${chapter.Parent.Identifier}/${chapter.Identifier}`, this.apiUrl)));
         const dom = new DOMParser().parseFromString(chapter_content, 'text/html');
-        return [...dom.querySelectorAll<HTMLCanvasElement>('canvas[data-srcset]')].map(page => new Page(this, chapter, new URL(page.dataset.srcset, server)));
+        return [...dom.querySelectorAll<HTMLImageElement>('img[data-src]')].map(page => new Page(this, chapter, new URL(page.dataset.src, server)));
     }
 }

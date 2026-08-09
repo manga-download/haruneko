@@ -6,17 +6,17 @@ new TestFixture({
         title: 'DuaLeoTruyen'
     },
     container: {
-        url: 'https://dualeotruyenjd.com/truyen-tranh/peppermint-candy.html',
-        id: '/truyen-tranh/peppermint-candy.html',
+        url: 'https://dualeotruyendl.com/truyen-tranh/peppermint-candy',
+        id: '/truyen-tranh/peppermint-candy',
         title: '(ABO) Peppermint Candy'
     },
     child: {
-        id: '/truyen-tranh/peppermint-candy/chapter-13.html',
+        id: '/truyen-tranh/peppermint-candy/chapter-13',
         title: 'Chapter 13'
     },
     entry: {
-        index: 1,
-        size: 340_096,
+        index: 45,
+        size: 1_902_747,
         type: 'image/webp'
     }
 }).AssertWebsite();

@@ -5,22 +5,24 @@
     import type { IResource } from '../../../i18n/ILocale';
     import { GlobalSettings } from '../stores/Settings.svelte';
 
-    export let label: keyof IResource;
-    export let category: keyof IResource;
-    export let filter = false;
+    interface Props {
+        label: keyof IResource;
+        category: keyof IResource;
+        filter?: boolean;
+        class?: string;
+    }
+
+    let { label, category, filter = false, class: className = ''}: Props = $props();
 
     const colorTranslator: Map<keyof IResource, TagProps['type']> = new Map([
         [Tags.Language.Title, 'cyan'],
         [Tags.Media.Title, 'magenta'],
         [Tags.Source.Title, 'teal'],
     ]);
-    let color: TagProps['type'] = 'gray';
-    $: color = colorTranslator.has(category)
-        ? colorTranslator.get(category)
-        : color;
+    let color: TagProps['type'] = $derived(colorTranslator.has(category)? colorTranslator.get(category) : 'gray');
 </script>
 
-<Tag {filter} type={color} on:click>
+<Tag {filter} type={color} on:click on:close>
     <div class="tagContent {category} {$$props.class}">{GlobalSettings.Locale[label]()}</div>
 </Tag>
 

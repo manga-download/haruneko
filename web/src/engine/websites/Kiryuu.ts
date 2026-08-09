@@ -1,19 +1,12 @@
 import { Tags } from '../Tags';
 import icon from './Kiryuu.webp';
+import { KiruBase } from './templates/KiruBase';
 import { FetchWindowScript } from '../platform/FetchProvider';
-import { DecoratableMangaScraper } from '../providers/MangaPlugin';
-import * as MangaStream from './decorators/WordPressMangaStream';
-import * as Common from './decorators/Common';
 
-@MangaStream.MangaCSS(/^https:\/\/kiryuu\d+\.com\/manga\/[^/]+\/$/, 'h1[itemprop="name"]')
-@MangaStream.MangasSinglePageCSS()
-@MangaStream.ChaptersSinglePageCSS('div#chapter-list div[data-chapter-number] > a')
-@MangaStream.PagesSinglePageCSS()
-@Common.ImageAjax(true)
-export default class extends DecoratableMangaScraper {
+export default class extends KiruBase {
 
     public constructor() {
-        super('kiryuu', 'Kiryuu', 'https://kiryuu03.com', Tags.Media.Manga, Tags.Language.Indonesian, Tags.Source.Aggregator, Tags.Accessibility.DomainRotation);
+        super('kiryuu', 'Kiryuu', 'https://v7.kiryuu.to', Tags.Media.Manga, Tags.Language.Indonesian, Tags.Source.Aggregator, Tags.Accessibility.DomainRotation);
     }
 
     public override get Icon() {

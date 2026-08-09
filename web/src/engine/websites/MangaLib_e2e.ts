@@ -17,8 +17,8 @@ new TestFixture({
     },
     entry: {
         index: 4,
-        size: 314_272,
-        type: 'image/webp'
+        size: 247_910,
+        type: 'image/jpeg'
     }
 }).AssertWebsite();
 
@@ -39,7 +39,7 @@ new TestFixture({
     },
     entry: {
         index: 0,
-        size: 308_650,
+        size: 101_984,
         type: 'image/jpeg'
     }
 }).AssertWebsite();

@@ -17,7 +17,7 @@ type APIChapter = {
     chapterId: string;
     projectId: string;
     pageItem: {
-        pageName: string;
+        fileName: string;
         pageNo: number;
     }[];
 };
@@ -85,7 +85,7 @@ export default class extends DecoratableMangaScraper {
 
     private async GetMangasFromPage(page: number, provider: MangaPlugin): Promise<Manga[]> {
         try {
-            const request = new Request(new URL('./project/search', this.apiUrl), {
+            const { listProject } = await FetchJSON<APIMangas>(new Request(new URL('./project/search', this.apiUrl), {
                 method: 'POST',
                 body: JSON.stringify({
                     genre: [],
@@ -97,20 +97,18 @@ export default class extends DecoratableMangaScraper {
                 headers: {
                     'Content-Type': 'application/json',
                 }
-            });
-            const { listProject } = await FetchJSON<APIMangas>(request);
-            return listProject.filter(manga => manga.projectType === 'c' || manga.projectType === 'm')
+            }));
+            return listProject.filter(({ projectType }) => projectType === 'c' || projectType === 'm')
                 .map(({ pid, projectName, projectType }) => new Manga(this, provider, `/${projectType == 'c' ? 'comic' :'manga'}/${pid}`, projectName));
         } catch {
             return [];
         }
-
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
         const { pageItem, chapterId, projectId } = await FetchWindowScript<APIChapter>(new Request(new URL(chapter.Identifier, this.URI)), pageScript);
         return pageItem.sort((self, other) => self.pageNo - other.pageNo)
-            .map(({ pageName }) => new Page(this, chapter, new URL(`./collectManga/${projectId}/${chapterId}/${pageName}`, this.CDNUrl)));
+            .map(({ fileName }) => new Page(this, chapter, new URL(`./collectManga/${projectId}/${chapterId}/${fileName}`, this.CDNUrl)));
     }
 
 }

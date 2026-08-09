@@ -11,7 +11,7 @@ new TestFixture({
         title: '魔法使いの嫁'
     },
     child: {
-        id: '/episodes/100daaf157782/',
+        id: '/episodes/100daaf157782',
         title: '1'
     },
     entry: {

@@ -6,7 +6,7 @@ new TestFixture({
         title: 'Desu'
     }, /* Region Locked : Russia
     container: {
-        url: 'https://desu.city/manga/wondance.3628/',
+        url: 'https://desu.uno/manga/wondance.3628/',
         id: '/manga/wondance.3628/',
         title: 'WonDance'
     },

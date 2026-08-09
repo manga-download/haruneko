@@ -1,0 +1,115 @@
+import { Tags } from '../Tags';
+import icon from './LezhinJA.webp';
+import { Chapter, DecoratableMangaScraper, Manga, type MangaPlugin, Page } from '../providers/MangaPlugin';
+import * as Common from './decorators/Common';
+import { FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
+import type { Priority } from '../taskpool/DeferredTask';
+import { Exception } from '../Error';
+import { WebsiteResourceKey as R } from '../../i18n/ILocale';
+import { GetBytesFromHex } from '../BufferEncoder';
+
+type APIResult<T> = {
+    results: T;
+};
+
+type APIMangas = APIResult<{
+    comics: {
+        id: string;
+        name: string;
+    }[];
+}>;
+
+type APIVolumes = APIResult<{
+    data: {
+        hash_id: string;
+        name: string;
+        chapters: {
+            hash_id: string;
+            name: string;
+        }[];
+    }[];
+}>;
+
+type APIPages = APIResult<{
+    image_paths: {
+        image_path: string;
+    }[];
+}>;
+
+@Common.MangaCSS<HTMLTimeElement>(/^{origin}\/comic\/[^/]+$/, 'title', (element, uri) => ({ id: uri.pathname, title: element.textContent.split('｜').at(0).trim() }))
+export default class extends DecoratableMangaScraper {
+    private readonly apiURL = 'https://lezhin.jp/api/';
+
+    public constructor() {
+        super('lezhin-ja', 'Lezhin (Japanese)', 'https://lezhin.jp', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Japanese, Tags.Source.Official);
+    }
+
+    public override get Icon() {
+        return icon;
+    }
+
+    public override async Initialize(): Promise<void> {
+        return FetchWindowScript(new Request(this.URI), `window.cookieStore.set('ADULT_ENABLE', 'true')`);
+    }
+
+    public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
+        const promises = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').map(character => {
+            return this.FetchAPI<APIMangas>(`./search/quick?keyword=${character}`);
+        });
+        const results: Manga[] = (await Promise.all(promises)).reduce((accumulator: Manga[], element) => {
+            const mangas = element.results.comics.map(({ id, name }) => new Manga(this, provider, `/comic/${id}`, name));
+            accumulator.push(...mangas);
+            return accumulator;
+        }, []);
+        return results.distinct();
+    }
+
+    public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
+        return [
+            ...await this.GetEntries(manga, 'all-chapters'),
+            ...await this.GetEntries(manga, 'volumes')
+        ];
+    }
+
+    private async GetEntries(manga: Manga, type: string): Promise<Chapter[]> {
+        const { results: { data } } = await this.FetchAPI<APIVolumes>(`.${manga.Identifier}/${type}?page_size=9999&page=1`);
+        switch (type) {
+            case 'all-chapters': {
+                return data.reduce((accumulator: Chapter[], volume) => {
+                    const chapters = volume.chapters.map(({ hash_id: id, name }) => new Chapter(this, manga, `chapter/${id}`, name.replace(manga.Title, '').trim() || name));
+                    return accumulator.concat(chapters);
+                }, []);
+            }
+            case 'volumes': {
+                return data.map(({ hash_id: id, name }) => new Chapter(this, manga, `volume/${id}`, name.replace(manga.Title, '').trim() || name));
+            }
+        }
+        return [];
+    }
+
+    public override async FetchPages(chapter: Chapter): Promise<Page[]> {
+        try {
+            const { results: { image_paths } } = await this.FetchAPI<APIPages>(`.${chapter.Parent.Identifier}/${chapter.Identifier}/viewer`);
+            return image_paths.map(({ image_path: path }) => new Page(this, chapter, new URL(path)));
+        } catch { // in case of chapter unavailable error 400 is thrown :/
+            throw new Exception(R.Plugin_Common_Chapter_UnavailableError);
+        }
+    }
+
+    public override async FetchImage(page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
+        const blob = await Common.FetchImageAjax.call(this, page, priority, signal);
+        return this.DecryptImage(blob);
+    }
+
+    private async FetchAPI<T extends JSONElement>(endpoint: string): Promise<T> {
+        return FetchJSON<T>(new Request(new URL(endpoint, this.apiURL)));
+    }
+
+    private async DecryptImage(blob: Blob): Promise<Blob> {
+        const xorKey = GetBytesFromHex('57e87c8a4d50b7c3456dbab4ab144b200826e62459039c9915d1e5f5e0bf3a51');
+        const bytes = new Uint8Array(await blob.arrayBuffer());
+        for (let n = 0; n < bytes.length; n++)
+            bytes[n] = bytes[n] ^ xorKey[n % xorKey.length];
+        return Common.GetTypedData(bytes.buffer);
+    }
+}

@@ -1,4 +1,3 @@
-import { mock } from 'vitest-mock-extended';
 import { vi, describe, it, expect } from 'vitest';
 import { DownloadManager } from './DownloadManager';
 import { type MediaContainer, StoreableMediaContainer, type MediaChild, type MediaItem } from './providers/MediaPlugin';
@@ -6,18 +5,17 @@ import type { SettingsManager } from './SettingsManager';
 import type { StorageController } from './StorageController';
 
 function MockContainer(identifier: string, parent: MediaContainer<MediaChild> = undefined) {
-    const base = {};
-    Object.defineProperty(base, 'Parent', { get: () => parent });
-    Object.defineProperty(base, 'Identifier', { get: () => identifier });
-    const container = mock<StoreableMediaContainer<MediaItem>>(base);
-    container.IsSameAs.mockImplementation(StoreableMediaContainer.prototype.IsSameAs.bind(base));
-    return container;
+    const mockMediaContainer = {};
+    Object.defineProperty(mockMediaContainer, 'Parent', { get: () => parent });
+    Object.defineProperty(mockMediaContainer, 'Identifier', { get: () => identifier });
+    Object.defineProperty(mockMediaContainer, 'IsSameAs', { value: vi.fn(StoreableMediaContainer.prototype.IsSameAs.bind(mockMediaContainer)) });
+    return mockMediaContainer as StoreableMediaContainer<MediaItem>;
 }
 
 class TestFixture {
 
-    public readonly StorageControllerMock = mock<StorageController>();
-    public readonly SettingsManagerMock = mock<SettingsManager>();
+    public readonly StorageControllerMock = {} as StorageController;
+    public readonly SettingsManagerMock = {} as SettingsManager;
 
     public CreateTestee() {
         return new DownloadManager(this.StorageControllerMock);
@@ -53,7 +51,7 @@ describe('DownloadManager', () => {
 
             await testee.Enqueue(MockContainer('①'), MockContainer('②'));
             await testee.Enqueue(MockContainer('③'));
-            const tasks = await testee.Queue.Value;
+            const tasks = testee.Queue.Value;
 
             expect(tasks.length).toBe(3);
         });
@@ -176,8 +174,8 @@ describe('DownloadManager', () => {
             testee.Queue.Subscribe(callback);
             await testee.Enqueue(containers[2], containers[1], containers[0]);
 
-            expect(callback).toBeCalledTimes(1);
-            expect(callback).toBeCalledWith(testee.Queue.Value, testee);
+            expect(callback).toHaveBeenCalledTimes(1);
+            expect(callback).toHaveBeenCalledWith(testee.Queue.Value, testee);
         });
 
         it('Should invoke expected event when removing tasks', async () => {
@@ -190,8 +188,8 @@ describe('DownloadManager', () => {
             testee.Queue.Subscribe(callback);
             await testee.Dequeue(testee.Queue.Value[1], testee.Queue.Value[2]);
 
-            expect(callback).toBeCalledTimes(1);
-            expect(callback).toBeCalledWith(testee.Queue.Value, testee);
+            expect(callback).toHaveBeenCalledTimes(1);
+            expect(callback).toHaveBeenCalledWith(testee.Queue.Value, testee);
         });
     });
 });

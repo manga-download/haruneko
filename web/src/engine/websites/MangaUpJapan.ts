@@ -6,9 +6,9 @@ import { FetchNextJS } from '../platform/FetchProvider';
 
 type HydratedChapters = {
     chapters: {
-        id: number,
-        name: string,
-        subName: string,
+        id: number;
+        name: string;
+        subName: string;
     }[]
 };
 
@@ -30,15 +30,11 @@ const endpoints = [
     'yomikiri'
 ].map(slug => `/series/${slug}`);
 
-function MangasExtractor(element: HTMLAnchorElement) {
-    return {
-        id: element.pathname,
-        title: element.querySelector<HTMLElement>('div[class*="text-title-md"]').innerText
-    };
-}
-
 @Common.MangaCSS(/^{origin}\/titles\/\d+$/, 'h2[class*="text-title-lg"]')
-@Common.MangasMultiPageCSS('a:has(div[class*="text-title-md"])', Common.StaticLinkGenerator(...endpoints), 0, MangasExtractor)
+@Common.MangasMultiPageCSS<HTMLAnchorElement>('a:has(div[class*="text-title-md"])', Common.StaticLinkGenerator(...endpoints), 0, anchor => ({
+    id: anchor.pathname,
+    title: anchor.querySelector<HTMLDivElement>('div[class*="text-title-md"]').innerText
+}))
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
@@ -51,14 +47,12 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const request = new Request(new URL(manga.Identifier, this.URI));
-        const { chapters } = await FetchNextJS<HydratedChapters>(request, data => 'chapters' in data);
+        const { chapters } = await FetchNextJS<HydratedChapters>(new Request(new URL(manga.Identifier, this.URI)), data => 'chapters' in data);
         return chapters.map(({ id, name, subName }) => new Chapter(this, manga, `${manga.Identifier}/chapters/${id}`, `${subName} ${name}`.replace(/\s+/g, ' ').trim()));
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const request = new Request(new URL(chapter.Identifier, this.URI));
-        const { pages } = await FetchNextJS<HydratedPages>(request, data => 'pages' in data);
+        const { pages } = await FetchNextJS<HydratedPages>(new Request(new URL(chapter.Identifier, this.URI)), data => 'pages' in data);
         return pages
             .filter(page => page.content.value.imageUrl)
             .map(page => new Page(this, chapter, new URL(page.content.value.imageUrl, this.URI)));

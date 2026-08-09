@@ -6,7 +6,7 @@ new TestFixture({
         title: 'Manhwa List'
     },
     container: {
-        url: 'https://manhwalist02.site/manga/lookism/',
+        url: 'https://manhwalist02.asia/manga/lookism/',
         id: '/manga/lookism/',
         title: 'Lookism'
     },

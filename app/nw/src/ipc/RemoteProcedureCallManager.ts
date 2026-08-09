@@ -1,5 +1,5 @@
 import type { RPCServer } from '../../../src/rpc/Server';
-import type { IPC } from './InterProcessCommunication';
+import type { IPC, Callback } from './InterProcessCommunication';
 import { RemoteProcedureCallManager as Channels } from '../../../src/ipc/Channels';
 
 /**
@@ -9,7 +9,7 @@ export class RemoteProcedureCallManager {
 
     constructor(private readonly rpc: RPCServer, private readonly ipc: IPC<Channels.Web, Channels.App>) {
         this.ipc.Listen(Channels.App.Stop, this.Stop.bind(this));
-        this.ipc.Listen(Channels.App.Restart, this.Restart.bind(this));
+        this.ipc.Listen(Channels.App.Restart, this.Restart.bind(this) as Callback);
     }
 
     private async Stop(): Promise<void> {

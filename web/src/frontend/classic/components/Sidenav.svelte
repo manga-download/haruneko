@@ -45,12 +45,7 @@
     let isBookmarksImportModalOpen =  $state(false);
 </script>
 
-{#if isPluginModalOpen}
-    <PluginSelect
-        bind:isPluginModalOpen
-        on:close={() => (isPluginModalOpen = false)}
-    />
-{/if}$
+<PluginSelect bind:isPluginModalOpen on:close={() => (isPluginModalOpen = false)} />
 {#if isSettingsModalOpen}
     <SettingsMenu bind:isSettingsModalOpen selectedTab={settingsSelectedTabs} />
 {/if}
@@ -165,7 +160,7 @@
                     onclick={() => window.open('https://ipinfo.io/json')}
                 />
             </SideNavMenu>
-            <SideNavMenu>
+            <SideNavMenu  text={GlobalSettings.Locale.Frontend_About()} icon={Information}>
                 <SideNavLink
                     text="Code source"
                     icon={LogoGithub}
@@ -206,13 +201,10 @@
                 />
             </SideNavMenu>
         </SideNavItems>
-    </span>
 </SideNav>
 
 <style >
-    .menuleftpanel :global(a.clik-item) {
-        cursor: pointer;
-    }
+
 
     /* Theme Hack: https://github.com/carbon-design-system/carbon-components-svelte/issues/762#issuecomment-885484991 */
 

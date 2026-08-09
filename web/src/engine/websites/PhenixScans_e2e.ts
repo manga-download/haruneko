@@ -6,7 +6,7 @@ new TestFixture({
         title: 'Phenix Scans'
     },
     container: {
-        url: 'https://phenix-scans.com/manga/infinite-mage',
+        url: 'https://phenix-scans.co/manga/infinite-mage',
         id: '/manga/infinite-mage',
         title: 'Infinite Mage'
     },

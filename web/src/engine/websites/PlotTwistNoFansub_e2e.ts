@@ -6,17 +6,18 @@ new TestFixture({
         title: 'Plot Twist No Fansub'
     },
     container: {
-        url: 'https://plotnf.com/plotwist/manga/koibumi-to-13-sai-no-actress/',
-        id: '/plotwist/manga/koibumi-to-13-sai-no-actress/',
-        title: 'Koibumi to 13-sai no Actress'
+        url: 'https://plotnofansub.com/manga/seitokai-ni-mo-ana-wa-aru/',
+        id: '/manga/seitokai-ni-mo-ana-wa-aru/',
+        title: 'Seitokai ni mo Ana wa Aru!',
+        timeout: 10_000
     },
     child: {
-        id: '/reader/koibumi-to-13-sai-no-actress/chapter-9.00/',
-        title: 'Capítulo 9.00: Capítulo 9'
+        id: '/manga/seitokai-ni-mo-ana-wa-aru/121/',
+        title: '121 Dímelo a mí también',
     },
     entry: {
         index: 0,
-        size: 774_159,
-        type: 'image/jpeg'
+        size: 137_890,
+        type: 'image/webp'
     }
 }).AssertWebsite();

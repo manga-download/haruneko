@@ -12,7 +12,7 @@ import * as Common from './decorators/Common';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('noindexscan', 'No Index Scan', 'https://noindexscan.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Portuguese, Tags.Source.Aggregator, Tags.Rating.Pornographic);
+        super('noindexscan', 'Hanami Heaven', 'https://hanamiheaven.org', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Portuguese, Tags.Source.Aggregator, Tags.Rating.Pornographic);
     }
 
     public override get Icon() {

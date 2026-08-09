@@ -16,7 +16,7 @@ Additional functionalities or configurations can be found in the [Menu](#menu).
 
 ## Menu
 
-The menu provies extended functionality and configuration.
+The menu provides extended functionality and configuration.
 To open the menu, click the corresponding icon in the upper left corner of the application.
 To close the menu, click the button again or any space in the application other than the menu.
 
@@ -93,7 +93,7 @@ Use this to browse the website, to check its availability (e.g., domain moved, r
 The star action can be used to mark this website as favorite.
 Each website may have individual [settings](#website-settings) such as timeouts and more, which can be changed by using the corresponding settings action.
 
-In expanded state it shows an addtiional list of available websites and a search box.
+In expanded state it shows an additional list of available websites and a search box.
 The search field supports a simple text input that can be entered by the user.
 Furthermore a clear button in the search box can be used to quickly reset the text input.
 
@@ -109,14 +109,14 @@ This is a collapsible panel that can be collapsed/expanded by clicking on the he
 In collapsed state it shows the currently selected title, a counter and some actions.
 The counter in the top right corner shows the number of titles in this list and the number of titles which are currently filtered by applying the search.
 Use the synchronize action to load the latest list of titles from the website.
-This needs to be done initially when the list of titles is still empty and regulary to update the list with added, removed or renamed titles.
+This needs to be done initially when the list of titles is still empty and regularly to update the list with added, removed or renamed titles.
 With the bookmark action the currently selected title can be added to or removed from the [bookmark list](#bookmark-panel).
 The last action is used to directly paste a website link to a specific title and select it.
 ::: warning IMPORTANT
 The link must match a supported website and also point to a specific title such as manga or anime. Links to chapters or episodes cannot be used.
 :::
 
-In expanded state it shows an addtiional list of the last synchronized titles and a search box.
+In expanded state it shows an additional list of the last synchronized titles and a search box.
 The search field supports a simple text input that can be entered by the user.
 The search field has options which can be toggled on or off.
 By turning on case sensitivity, the list is filtered by exactly matching the case of the entered text.

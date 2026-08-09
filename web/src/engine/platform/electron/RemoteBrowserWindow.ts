@@ -1,7 +1,6 @@
 import type { BrowserWindowConstructorOptions, LoadURLOptions } from 'electron';
 import { Observable, type IObservable } from '../../Observable';
 import type { IRemoteBrowserWindow } from '../RemoteBrowserWindow';
-import type { ScriptInjection } from '../FetchProviderCommon';
 import type { IPC } from '../InterProcessCommunication';
 import { RemoteBrowserWindowController as Channels } from '../../../../../app/src/ipc/Channels';
 
@@ -45,7 +44,7 @@ export default class RemoteBrowserWindow implements IRemoteBrowserWindow {
         }
     }
 
-    public async Open(request: Request, show: boolean = false, preload: ScriptInjection<void> = '') {
+    public async Open(request: Request, show: boolean = false, preload: string = '') {
 
         const openOptions: BrowserWindowConstructorOptions = {
             show: show,
@@ -59,10 +58,14 @@ export default class RemoteBrowserWindow implements IRemoteBrowserWindow {
                 nodeIntegration: false,
                 nodeIntegrationInWorker: false,
                 nodeIntegrationInSubFrames: true, // Enabled to execute pre-load script in all sub-frames: https://github.com/electron/electron/issues/22582
+                backgroundThrottling: false, // Disabled to force timers, observers and animation frames to work in non-visible window: https://www.electronjs.org/docs/latest/api/browser-window#page-visibility
                 disableBlinkFeatures: 'AutomationControlled',
-                preload: preload instanceof Function ? `(${preload})()` : preload,
             }
         };
+
+        if (preload) {
+            openOptions.webPreferences.preload = preload;
+        }
 
         this.windowID = await this.ipc.Send<number>(Channels.App.OpenWindow, JSON.stringify(openOptions));
 
@@ -73,9 +76,14 @@ export default class RemoteBrowserWindow implements IRemoteBrowserWindow {
         */
 
         const loadOptions: LoadURLOptions = {
-            userAgent: request.headers.get('User-Agent') ?? navigator.userAgent,
-            httpReferrer: request.headers.get('Referer') ?? request.referrer ?? request.url,
+            userAgent: navigator.userAgent,
+            httpReferrer: request.referrer,
         };
+
+        // NOTE: Keep in mind that forbidden headers are concealed with the prefix 'X-FetchAPI-'
+        if(request.headers) loadOptions.extraHeaders = Array.from(request.headers, ([key, value]) => `${key}: ${value}`).join('\n');
+        // TODO: Add body for POST request e.g., in case of submitting a form ...
+        // if(/^POST$/i.test(request.method)) loadOptions.postData = ... // Array<(UploadRawData) | (UploadFile)>;
 
         await this.ipc.Send<void>(Channels.App.LoadURL, this.windowID, request.url, JSON.stringify(loadOptions));
     }
@@ -94,8 +102,8 @@ export default class RemoteBrowserWindow implements IRemoteBrowserWindow {
         return this.ipc.Send<void>(Channels.App.SetVisibility, this.windowID, false);
     }
 
-    public async ExecuteScript<T extends void | JSONElement>(script: ScriptInjection<T> = ''): Promise<T> {
-        return this.ipc.Send<T>(Channels.App.ExecuteScript, this.windowID, script instanceof Function ? `(${script})()` : script);
+    public async ExecuteScript<T extends void | JSONElement>(script: string = ''): Promise<T> {
+        return this.ipc.Send<T>(Channels.App.ExecuteScript, this.windowID, script);
     }
 
     public async SendDebugCommand<T extends void | JSONElement>(method: string, parameters?: JSONObject): Promise<T> {

@@ -7,9 +7,10 @@ import * as Common from './decorators/Common';
 @Common.MangasSinglePageCSS('/', 'div#Label1 li a.label-name', Common.AnchorInfoExtractor(false, 'span'))
 @Common.PagesSinglePageCSS('div.separator a img[alt]', PageLinkExtractor)
 export default class extends ZeistManga {
+
     public constructor() {
         super('mangaorigin', 'Manga Origin', 'https://mangaoriginread.blogspot.com', Tags.Media.Manga, Tags.Media.Comic, Tags.Language.Arabic, Tags.Source.Scanlator);
-        this.mangaSlugScript = `new URL(document.querySelector('div#blog-pager a')).pathname.split('/').at(-1);`;
+        this.WithMangaSlugScript(`new URL(document.querySelector('div#blog-pager a')).pathname.split('/').at(-1);`);
     }
 
     public override get Icon() {
