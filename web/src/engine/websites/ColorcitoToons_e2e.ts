@@ -2,11 +2,11 @@
 
 new TestFixture({
     plugin: {
-        id: 'colorcitoscans',
-        title: 'Colorcito Scans'
+        id: 'colorcitotoons',
+        title: 'Colorcito Toons'
     },
     container: {
-        url: 'https://coloresito.site/ver/antologia-yuri-verano-lluvioso',
+        url: 'https://colorcitotoons.site/ver/antologia-yuri-verano-lluvioso',
         id: 'antologia-yuri-verano-lluvioso',
         title: 'Antologia Yuri-Verano Lluvioso'
     },
