@@ -122,7 +122,7 @@ class UIClassicStore {
     checkNewContent = LoadSettingStore<boolean, Check>(globalScopeSettings, GlobalKey.CheckNewContent);
 
     StartupGuideEnabled = new SettingStore<boolean, Check>(new Check(
-        null,
+        Key.StartupGuideEnabled,
         R.Frontend_Classic_Settings_StartupGuideEnabled,
         R.Frontend_Classic_Settings_StartupGuideEnabledInfo,
         true
