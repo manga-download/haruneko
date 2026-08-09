@@ -64,8 +64,6 @@ const translations: VariantResource = { // NOTE: Use defaults for missing transl
   Frontend_Classic_Settings_SidenavTrailInfo: "Sinon la barre latérale gauche n'apparaîtra qu'en cliquant sur l'icône en haut à gauche",
   Frontend_Classic_Settings_SidenavIconsOnTop: "Icônes du menu en haut",
   Frontend_Classic_Settings_SidenavIconsOnTopInfo: "Les boutons d'accueil et de plugins apparaîtront en haut à la place de la barre latérale.",
-  Frontend_Classic_Settings_StartupGuideEnabled: "Afficher le guide de démarrage",
-  Frontend_Classic_Settings_StartupGuideEnabledInfo: "Afficher le guide de démarrage lors de l'ouverture de l'application",
   Frontend_Classic_Settings_ViewerMode: "Mode d'affichage",
   Frontend_Classic_Settings_ViewerModeInfo: "Modifier la façon dont les pages/images sont affichées dans le lecteur",
   Frontend_Classic_Settings_ViewerMode_Paginated: "Paginé (Manga)",
