@@ -74,14 +74,14 @@
                 kind="ghost"
                 size="small"
                 iconDescription="Zoom In (➕)"
-                on:click={() => Settings.ViewerZoom.increment}
+                on:click={() => Settings.ViewerZoom.increment()}
             />
             <Button
                 icon={ZoomOut}
                 kind="ghost"
                 size="small"
                 iconDescription="Zoom Out (➖)"
-                on:click={() => Settings.ViewerZoom.decrement}
+                on:click={() => Settings.ViewerZoom.decrement()}
             />
         </div>
         <div>
@@ -90,14 +90,14 @@
                 kind="ghost"
                 size="small"
                 iconDescription="Decrease spacing between images (CTRL ➖)"
-                on:click={() => Settings.ViewerPadding.decrement}
+                on:click={() => Settings.ViewerPadding.decrement()}
             />
             <Button
                 icon={IntentRequestScaleOut}
                 kind="ghost"
                 size="small"
                 iconDescription="Increase spacing between images (CTRL ➕)"
-                on:click={() => Settings.ViewerPadding.increment}
+                on:click={() => Settings.ViewerPadding.increment()}
             />
         </div>
         <HeaderPanelDivider>Reader</HeaderPanelDivider>
