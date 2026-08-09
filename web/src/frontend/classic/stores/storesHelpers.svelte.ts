@@ -85,6 +85,6 @@ export class SettingCountStore extends SettingStore<number, Numeric> {
  */
 export function LoadSettingStore<V extends IValue, S extends ISetting<V>>(scope:ISettings, settingKey:string) : SettingStore<V, S> {
     const existingSetting: S = scope.Get(settingKey);
-    if (!existingSetting) throw new InternalError(`Setting ${settingKey} in scope ${scope} does not exists`);
+    if (!existingSetting) throw new InternalError(`Setting ${settingKey} does not exist in the provided scope`);
     return new SettingStore(existingSetting);
 }
