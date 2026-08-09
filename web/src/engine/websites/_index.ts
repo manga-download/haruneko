@@ -60,7 +60,6 @@ export { default as Chochox } from './Chochox';
 export { default as CiaoPlus } from './CiaoPlus';
 export { default as CMangax } from './CMangax';
 export { default as Cocomic } from './Cocomic';
-export { default as CoffeeManga } from './CoffeeManga';
 export { default as ColorcitoScans } from './ColorcitoScans';
 export { default as ColorcitoToons } from './ColorcitoToons';
 export { default as ComicAction } from './ComicAction';

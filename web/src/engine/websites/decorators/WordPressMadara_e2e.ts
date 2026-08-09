@@ -13,7 +13,6 @@ import '../Bokugents_e2e';
 import '../BrainRotComics_e2e';
 import '../CatharsisWorld_e2e';
 import '../Cocomic_e2e';
-import '../CoffeeManga_e2e';
 import '../ComicsValley_e2e';
 import '../CovenScan_e2e';
 import '../DecadenceScans_e2e';
