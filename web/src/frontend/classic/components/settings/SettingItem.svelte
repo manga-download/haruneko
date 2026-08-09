@@ -1,18 +1,28 @@
 <script lang="ts">
     import { Tooltip } from 'carbon-components-svelte';
-    export let labelText: string = '';
-    export let helperText: string = '';
-    export let type: 'sub-menu' | 'item' = 'item';
+    interface Props {
+        labelText?: string;
+        helperText?: string;
+        type?: 'sub-menu' | 'item';
+        children?: import('svelte').Snippet;
+    }
+
+    let {
+        labelText = '',
+        helperText = '',
+        type = 'item',
+        children
+    }: Props = $props();
 </script>
 
-<div class={`menu-left-panel-${type}-container`}>
+<div class={`menu-left-panel-${type}-container`} >
+    
     {#if type === 'item'}
         <Tooltip triggerText={labelText} align="start">
             <p>{helperText}</p>
         </Tooltip>
     {/if}
-
-    <slot />
+    {@render children?.()}
 </div>
 
 <style>

@@ -92,14 +92,14 @@
         [Status.Failed]: 'error',
     };
 
-    async function deleteTasks(statusFilter?:Status) {
+    async function deleteTasks(statusFilter:Status = undefined) {
         downloadTasks.forEach((task) => {
             if(!statusFilter || statusFilter === task.Status.Value) window.HakuNeko.DownloadManager.Dequeue(task);
         });
         refreshStatus();
     }
 
-    async function retryTasks(statusFilter?:Status) {
+    async function retryTasks(statusFilter:Status = undefined) {
         downloadTasks.forEach((task) => {
             if(!statusFilter || statusFilter === task.Status.Value) task.Run();
         });

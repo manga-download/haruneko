@@ -1,5 +1,4 @@
 <script lang="ts">
-    import { fade } from 'svelte/transition';
     import {
         Button,
         ClickableTile,
@@ -10,7 +9,7 @@
     import StarFilled from 'carbon-icons-svelte/lib/StarFilled.svelte';
     import PlayFilled from 'carbon-icons-svelte/lib/PlayFilled.svelte';
     import WarningAltInverted from 'carbon-icons-svelte/lib/WarningAltInverted.svelte';
-    import { selectedMedia } from '../stores/Stores';
+    import { Store as UI } from '../stores/Stores.svelte';
     import { coinflip } from '../lib/transitions';
 
     import type {
@@ -29,7 +28,7 @@
     }
 
     let { style = '', media }: Props = $props();
-    let selected: boolean = $derived($selectedMedia?.IsSameAs(media));
+    let selected: boolean = $derived(UI.selectedMedia?.IsSameAs(media));
 
     // Bookmarks
     let isBookmarked=$state(false);
@@ -54,7 +53,7 @@
         if (!updatedmedia.IsSameAs(media)) return;
         
         unFlaggedItems = [];
-        const delay = !$selectedMedia || $selectedMedia?.IsSameAs(HakuNeko.BookmarkPlugin) ? 0 : 800;
+        const delay = !UI.selectedMedia || UI.selectedMedia?.IsSameAs(HakuNeko.BookmarkPlugin) ? 0 : 800;
         delayedContentCheck = setTimeout(
         async () => {
             unFlaggedItems = (await HakuNeko.ItemflagManager.GetUnFlaggedItems(
@@ -66,7 +65,6 @@
 
     onMount(() => {
         HakuNeko.ItemflagManager.ContainerFlagsEventChannel.Subscribe(findMediaUnFlaggedContent);
-       
     });
 
     onDestroy(() => {
@@ -94,7 +92,7 @@
 <div bind:this={mediadiv} class="media" {style} class:selected>
     <ContextMenu target={[mediadiv]} bind:open={menuOpen} on:open={menuOpens}>
         <ContextMenuOption indented labelText="Browse Chapters" shortcutText="⌘B" 
-            onclick={() => {$selectedMedia = media;}}
+            onclick={() => {UI.selectedMedia = media;}}
         />
         <ContextMenuOption
             indented
@@ -160,7 +158,7 @@
         class="title"
         onclick={(e: MouseEvent) => {
             e.preventDefault();
-            if(!isMediaOrphanedBookmark) $selectedMedia = media;
+            if(!isMediaOrphanedBookmark) UI.selectedMedia = media;
         }}
     >
         <span title={media.Title}>{media.Title}</span>
@@ -174,7 +172,7 @@
             tooltipPosition="left"
             onclick={(e:MouseEvent) => {
                 e.preventDefault();
-                $selectedMedia = media;
+                UI.selectedMedia = media;
             }}
         />
     {/if}

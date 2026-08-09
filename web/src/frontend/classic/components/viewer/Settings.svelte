@@ -1,38 +1,32 @@
 <script lang="ts">
     import { Select, SelectItem, Toggle } from 'carbon-components-svelte';
     import SettingItem from '../settings/SettingItem.svelte';
-    import {
-        Key,
-        Locale,
-        ViewerDoublePage,
-        ViewerMode,
-        ViewerReverseDirection,
-    } from '../../stores/Settings';
+    import { Key, GlobalSettings, Settings } from '../../stores/Settings.svelte';
 </script>
 
 <SettingItem
-    labelText={$Locale[ViewerMode.setting.Label]()}
-    helperText={$Locale[ViewerMode.setting.Description]()}
+    labelText={GlobalSettings.Locale[Settings.ViewerMode.setting.Label]()}
+    helperText={GlobalSettings.Locale[Settings.ViewerMode.setting.Description]()}
 >
-    <Select bind:selected={$ViewerMode}>
-        {#each ViewerMode.setting.Options as option}
-            <SelectItem value={option.key} text={$Locale[option.label]()} />
+    <Select bind:selected={Settings.ViewerMode.value}>
+        {#each Settings.ViewerMode.setting.Options as option}
+            <SelectItem value={option.key} text={GlobalSettings.Locale[option.label]()} />
         {/each}
     </Select>
 </SettingItem>
 
-{#if $ViewerMode === Key.ViewerMode_Paginated}
+{#if Settings.ViewerMode.value === Key.ViewerMode_Paginated}
     <SettingItem
-        labelText={$Locale[ViewerReverseDirection.setting.Label]()}
-        helperText={$Locale[ViewerReverseDirection.setting.Description]()}
+        labelText={GlobalSettings.Locale[Settings.ViewerReverseDirection.setting.Label]()}
+        helperText={GlobalSettings.Locale[Settings.ViewerReverseDirection.setting.Description]()}
     >
-        <Toggle bind:toggled={$ViewerReverseDirection} />
+        <Toggle bind:toggled={Settings.ViewerReverseDirection.value} />
     </SettingItem>
 
     <SettingItem
-        labelText={$Locale[ViewerDoublePage.setting.Label]()}
-        helperText={$Locale[ViewerDoublePage.setting.Description]()}
+        labelText={GlobalSettings.Locale[Settings.ViewerDoublePage.setting.Label]()}
+        helperText={GlobalSettings.Locale[Settings.ViewerDoublePage.setting.Description]()}
     >
-        <Toggle bind:toggled={$ViewerDoublePage} />
+        <Toggle bind:toggled={Settings.ViewerDoublePage.value} />
     </SettingItem>
 {/if}

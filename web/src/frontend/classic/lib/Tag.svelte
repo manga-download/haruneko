@@ -3,7 +3,7 @@
     import type { TagProps } from 'carbon-components-svelte/src/Tag/Tag.svelte';
     import { Tags } from '../../../engine/Tags';
     import type { IResource } from '../../../i18n/ILocale';
-    import { Locale } from '../stores/Settings';
+    import { GlobalSettings } from '../stores/Settings.svelte';
 
     export let label: keyof IResource;
     export let category: keyof IResource;
@@ -21,7 +21,7 @@
 </script>
 
 <Tag {filter} type={color} on:click>
-    <div class="tagContent {category} {$$props.class}">{$Locale[label]()}</div>
+    <div class="tagContent {category} {$$props.class}">{GlobalSettings.Locale[label]()}</div>
 </Tag>
 
 <style>
