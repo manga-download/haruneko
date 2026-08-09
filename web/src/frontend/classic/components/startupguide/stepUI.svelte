@@ -19,7 +19,7 @@
     <Tile light >
         <SettingsViewer
             settings={[
-                Settings.Theme.setting
+                Settings.Theme.Setting
             ]}
         />
     </Tile>

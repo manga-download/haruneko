@@ -39,18 +39,18 @@ export const frontendClassicSettingsViewer = HakuNeko.SettingsManager.OpenScope(
 
 export async function Initialize(): Promise<void> {
     await frontendClassicSettings.Initialize(
-        Settings.Theme.setting,
-        Settings.ContentPanel.setting,
-        Settings.SidenavTrail.setting,
-        Settings.SidenavIconsOnTop.setting,
-        Settings.FuzzySearch.setting,
-        Settings.StartupGuideEnabled.setting,
+        Settings.Theme.Setting,
+        Settings.ContentPanel.Setting,
+        Settings.SidenavTrail.Setting,
+        Settings.SidenavIconsOnTop.Setting,
+        Settings.FuzzySearch.Setting,
+        Settings.StartupGuideEnabled.Setting,
     );
 
     await frontendClassicSettingsViewer.Initialize(
-        Settings.ViewerMode.setting,
-        Settings.ViewerReverseDirection.setting,
-        Settings.ViewerDoublePage.setting,
+        Settings.ViewerMode.Setting,
+        Settings.ViewerReverseDirection.Setting,
+        Settings.ViewerDoublePage.Setting,
     );
 }
 
@@ -139,7 +139,7 @@ class UIClassicStore {
     10
     );
 
-    ViewerZoomRatio = $derived((100 + this.ViewerZoom.value) / 100);
+    ViewerZoomRatio = $derived((100 + this.ViewerZoom.Value) / 100);
     ViewerPadding = new SettingCountStore(new Numeric(
         null,
         R.Frontend_Classic_Settings_ViewerPadding,
@@ -152,6 +152,6 @@ export const Settings = new UIClassicStore();
 
 class GlobalStore {
     #Locale = LoadSettingStore<string, Choice>(globalScopeSettings, GlobalKey.Language);
-    Locale = $derived(GetLocale(this.#Locale.value as LocaleID));
+    Locale = $derived(GetLocale(this.#Locale.Value as LocaleID));
 }
 export const GlobalSettings = new GlobalStore();

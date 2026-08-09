@@ -103,67 +103,67 @@
         <HeaderPanelDivider>Reader</HeaderPanelDivider>
         <div class="setting block">
             <Tooltip
-                triggerText={GlobalSettings.Locale[Settings.ViewerMode.setting.Label]()}
+                triggerText={GlobalSettings.Locale[Settings.ViewerMode.Setting.Label]()}
                 align="start"
                 class="tooltip"
             >
-                <p>{GlobalSettings.Locale[Settings.ViewerMode.setting.Description]()}</p>
+                <p>{GlobalSettings.Locale[Settings.ViewerMode.Setting.Description]()}</p>
             </Tooltip>
             <ContentSwitcher size="sm">
-                {#each Settings.ViewerMode.setting.Options as option}
+                {#each Settings.ViewerMode.Setting.Options as option}
                     <Switch
-                        selected={Settings.ViewerMode.value === option.key}
+                        selected={Settings.ViewerMode.Value === option.key}
                         text={GlobalSettings.Locale[option.label]()}
-                        on:click={() => (Settings.ViewerMode.value = option.key)}
+                        on:click={() => (Settings.ViewerMode.Value = option.key)}
                     />
                 {/each}
             </ContentSwitcher>
         </div>
-        {#if Settings.ViewerMode.value === Key.ViewerMode_Paginated}
+        {#if Settings.ViewerMode.Value === Key.ViewerMode_Paginated}
             <div class="setting block">
                 <Tooltip
                     triggerText={GlobalSettings.Locale[
-                        Settings.ViewerReverseDirection.setting.Label
+                        Settings.ViewerReverseDirection.Setting.Label
                     ]()}
                     align="start"
                     class="tooltip"
                 >
                     <p>
-                        {GlobalSettings.Locale[Settings.ViewerReverseDirection.setting.Description]()}
+                        {GlobalSettings.Locale[Settings.ViewerReverseDirection.Setting.Description]()}
                     </p>
                 </Tooltip>
                 <ContentSwitcher size="sm">
                     <Switch
-                        selected={!Settings.ViewerReverseDirection.value}
-                        on:click={() => (Settings.ViewerReverseDirection.value = false)}
+                        selected={!Settings.ViewerReverseDirection.Value}
+                        on:click={() => (Settings.ViewerReverseDirection.Value = false)}
                     >
                         Left to Right
                     </Switch>
                     <Switch
-                        selected={Settings.ViewerReverseDirection.value}
-                        on:click={() => (Settings.ViewerReverseDirection.value = true)}
+                        selected={Settings.ViewerReverseDirection.Value}
+                        on:click={() => (Settings.ViewerReverseDirection.Value = true)}
                         >RightToLeft
                     </Switch>
                 </ContentSwitcher>
             </div>
             <div class="setting block">
                 <Tooltip
-                    triggerText={GlobalSettings.Locale[Settings.ViewerDoublePage.setting.Label]()}
+                    triggerText={GlobalSettings.Locale[Settings.ViewerDoublePage.Setting.Label]()}
                     align="start"
                     class="tooltip"
                 >
-                    <p>{GlobalSettings.Locale[Settings.ViewerDoublePage.setting.Description]()}</p>
+                    <p>{GlobalSettings.Locale[Settings.ViewerDoublePage.Setting.Description]()}</p>
                 </Tooltip>
                 <ContentSwitcher size="sm">
                     <Switch
-                        selected={!Settings.ViewerDoublePage.value}
-                        on:click={() => (Settings.ViewerDoublePage.value = false)}
+                        selected={!Settings.ViewerDoublePage.Value}
+                        on:click={() => (Settings.ViewerDoublePage.Value = false)}
                     >
                         Single
                     </Switch>
                     <Switch
-                        selected={Settings.ViewerDoublePage.value}
-                        on:click={() => (Settings.ViewerDoublePage.value = true)}
+                        selected={Settings.ViewerDoublePage.Value}
+                        on:click={() => (Settings.ViewerDoublePage.Value = true)}
                     >
                         Double
                     </Switch>

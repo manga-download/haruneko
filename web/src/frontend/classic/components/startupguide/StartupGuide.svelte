@@ -34,7 +34,7 @@
     }
 
     async function close() {
-        Settings.StartupGuideEnabled.value = false;
+        Settings.StartupGuideEnabled.Value = false;
     }
 
 </script>
@@ -54,6 +54,7 @@
         currentStep = steps.Welcome;
     }}
     open
+    on:close={close}
 >
     <ProgressIndicator bind:currentIndex={currentStep}>
         <ProgressStep

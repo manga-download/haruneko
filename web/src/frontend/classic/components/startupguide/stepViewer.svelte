@@ -16,13 +16,13 @@
     });
 </script>
 <div>
-    <h4>{GlobalSettings.Locale[Settings.ViewerMode.setting.Label]()}</h4>
-    <p class="subtitle">{GlobalSettings.Locale[Settings.ViewerMode.setting.Description]()}</p>
+    <h4>{GlobalSettings.Locale[Settings.ViewerMode.Setting.Label]()}</h4>
+    <p class="subtitle">{GlobalSettings.Locale[Settings.ViewerMode.Setting.Description]()}</p>
     <div id="viewermode">
         <ContentSwitcher>
             <Switch
-                selected={Settings.ViewerMode.value === Settings.ViewerMode.setting.Options[0].key}
-                on:click={() => (Settings.ViewerMode.value  = Settings.ViewerMode.setting.Options[0].key)}
+                selected={Settings.ViewerMode.Value === Settings.ViewerMode.Setting.Options[0].key}
+                on:click={() => (Settings.ViewerMode.Value  = Settings.ViewerMode.Setting.Options[0].key)}
                 >
                 <div class="mode">
                     <img class="mode" src={ViewerModeVertical} alt="Viewer Mode Vertical" />
@@ -32,8 +32,8 @@
                 </div>
             </Switch>
             <Switch
-                selected={Settings.ViewerMode.value === Settings.ViewerMode.setting.Options[1].key}
-                on:click={() => (Settings.ViewerMode.value  = Settings.ViewerMode.setting.Options[1].key)}
+                selected={Settings.ViewerMode.Value === Settings.ViewerMode.Setting.Options[1].key}
+                on:click={() => (Settings.ViewerMode.Value  = Settings.ViewerMode.Setting.Options[1].key)}
                 >
                 <div class="mode">
                     <img class="mode" src={ViewerModeHorizontal} alt="Viewer Mode Horizontal" />

@@ -51,7 +51,7 @@
     bind:isSideNavOpen
 >
     <div slot="platform">
-        {#if Settings.SidenavIconsOnTop.value}
+        {#if Settings.SidenavIconsOnTop.Value}
             <Button
                 class="clickable"
                 icon={Home}
@@ -75,7 +75,7 @@
                 }}
             />
         {/if}
-        <div id="AppTitle" class:padding-left={Settings.SidenavIconsOnTop.value}>
+        <div id="AppTitle" class:padding-left={Settings.SidenavIconsOnTop.Value}>
             {GlobalSettings.Locale.Frontend_Product_Title()}
             <span class="appdesc">{GlobalSettings.Locale.Frontend_Product_Description()}</span
             >
