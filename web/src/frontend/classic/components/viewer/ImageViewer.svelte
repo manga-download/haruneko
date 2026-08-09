@@ -163,7 +163,7 @@
         duration: 1500,
         easing: quintOut,
     });
-    const ViewerPadding = $derived(Settings.ViewerPadding.Value+'em');
+    const ViewerPadding = $derived(Settings.ViewerPadding.value+'em');
 </script>
 {#if wide}
     <ImageViewerWideSettings
@@ -181,8 +181,8 @@
     ondblclick={() => toggleFullScreen()}
     transition:fade
     class:wide={wide}
-    class:reverse={Settings.ViewerReverseDirection.Value}
-    class="{Settings.ViewerMode.Value}"
+    class:reverse={Settings.ViewerReverseDirection.value}
+    class="{Settings.ViewerMode.value}"
     style:--viewer-padding={ViewerPadding}
     style:--image-zoom={Settings.ViewerZoomRatio}
     use:dragscroll={{ axis: 'both' }}

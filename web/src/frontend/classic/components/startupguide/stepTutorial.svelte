@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { onMount } from 'svelte';
     import tutorial from "./HakunekoTutorial.avif";
     import { GlobalSettings } from '../../stores/Settings.svelte';
 
@@ -7,7 +8,9 @@
     }:{
         oncomplete: () => void
     } = $props();
-    oncomplete();
+    onMount(() => {
+        oncomplete();
+    });
 </script>
 <div id="tutorial">
     <h4>{GlobalSettings.Locale.Frontend_Classic_StartupGuide_Tutorial_Title()}</h4>

@@ -16,5 +16,5 @@ class UIClassicStore {
 export let Store:UIClassicStore = new UIClassicStore();
 
 async function refreshSuggestions() : Promise<Bookmark[]> {
-    return Settings.checkNewContent.Value ? await HakuNeko.BookmarkPlugin.GetEntriesWithUnflaggedContent() : [];
+    return Settings.checkNewContent.value ? await HakuNeko.BookmarkPlugin.GetEntriesWithUnflaggedContent() : [];
 }

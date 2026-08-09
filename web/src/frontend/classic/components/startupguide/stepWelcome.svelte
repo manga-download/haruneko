@@ -1,16 +1,21 @@
 <script lang="ts">
-    import Neko from '/src/img/Neko.svg'
+    import { onMount } from 'svelte';
+    
     import { Key,Scope as Global_Scope } from '../../../../engine/SettingsGlobal';
     import SettingsViewer from '../settings/SettingsViewer.svelte';
-    import { Tile } from 'carbon-components-svelte';
     import { GlobalSettings } from '../../stores/Settings.svelte';
+
+    import { Tile } from 'carbon-components-svelte';
+    import Neko from '/src/img/Neko.svg'
 
     let {
         oncomplete
     }:{
         oncomplete: () => void
     } = $props();
-    oncomplete();
+    onMount(() => {
+        oncomplete();
+    });
 
     const languageSetting=window.HakuNeko.SettingsManager.OpenScope(Global_Scope).Get(Key.Language);
 

@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { onMount } from 'svelte';
     import { ContentSwitcher, Switch } from 'carbon-components-svelte';
     import ViewerModeHorizontal from './ViewerModeHorizontal.png';
     import ViewerModeVertical from './ViewerModeVertical.png';
@@ -8,7 +9,9 @@
     }:{
         oncomplete: () => void
     } = $props();
-    oncomplete();
+    onMount(() => {
+        oncomplete();
+    });
 
     import { GlobalSettings, Settings } from '../../stores/Settings.svelte';
 </script>

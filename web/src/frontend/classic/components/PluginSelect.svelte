@@ -285,9 +285,6 @@
     #selectedTags {
         margin: 0.5em 0 0.5em 0;
     }
-    #tagsFilters {
-        margin: 0.5em 0 0.5em 0;
-    }
     .action-cell {
         text-align: right;
     }

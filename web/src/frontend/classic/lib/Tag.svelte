@@ -23,7 +23,7 @@
 </script>
 
 <Tag {filter} type={color} on:click on:close>
-    <div class="tagContent {category} {$$props.class}">{GlobalSettings.Locale[label]()}</div>
+    <div class="tagContent {category} {className}">{GlobalSettings.Locale[label]()}</div>
 </Tag>
 
 <style>

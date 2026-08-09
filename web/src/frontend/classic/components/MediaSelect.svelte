@@ -185,9 +185,9 @@
         }
     }
 
-    async function selectPlugin(id: ComboBoxItemId) {
+    async function selectPlugin(item: ComboBoxItem) {
         UI.selectedPlugin = [HakuNeko.BookmarkPlugin, ...orderedPlugins].find(
-            (plugin) => plugin.Identifier === id,
+            (plugin) => plugin.Identifier === item.id,
         );
     }
 
