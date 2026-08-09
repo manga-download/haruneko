@@ -86,7 +86,7 @@
         <SkipToContent />
     </div>
     <HeaderUtilities>
-        {#if UI.WindowController}
+        {#if UI.WindowController?.HasControls}
             <HeaderGlobalAction
                 on:click={minimize}
                 iconDescription="Minimize"
