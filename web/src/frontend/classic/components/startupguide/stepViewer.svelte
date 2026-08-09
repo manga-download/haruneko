@@ -1,5 +1,7 @@
 <script lang="ts">
     import { onMount } from 'svelte';
+    import { GlobalSettings, Settings } from '../../stores/Settings.svelte';
+
     import { ContentSwitcher, Switch } from 'carbon-components-svelte';
     import ViewerModeHorizontal from './ViewerModeHorizontal.png';
     import ViewerModeVertical from './ViewerModeVertical.png';
@@ -12,8 +14,6 @@
     onMount(() => {
         oncomplete();
     });
-
-    import { GlobalSettings, Settings } from '../../stores/Settings.svelte';
 </script>
 <div>
     <h4>{GlobalSettings.Locale[Settings.ViewerMode.setting.Label]()}</h4>

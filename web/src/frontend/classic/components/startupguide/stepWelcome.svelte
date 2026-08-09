@@ -1,12 +1,12 @@
 <script lang="ts">
     import { onMount } from 'svelte';
-    
+
     import { Key,Scope as Global_Scope } from '../../../../engine/SettingsGlobal';
     import SettingsViewer from '../settings/SettingsViewer.svelte';
     import { GlobalSettings } from '../../stores/Settings.svelte';
 
     import { Tile } from 'carbon-components-svelte';
-    import Neko from '/src/img/Neko.svg'
+    import Neko from '/src/img/WelcomeNeko.png';
 
     let {
         oncomplete

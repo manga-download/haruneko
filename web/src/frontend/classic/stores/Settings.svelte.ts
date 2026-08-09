@@ -101,8 +101,8 @@ class UIClassicStore {
         R.Frontend_Classic_Settings_ViewerMode,
         R.Frontend_Classic_Settings_ViewerModeInfo,
         Key.ViewerMode_Paginated,
-        { key: Key.ViewerMode_Paginated, label: R.Frontend_Classic_Settings_ViewerMode_Paginated },
         { key: Key.ViewerMode_Longstrip, label: R.Frontend_Classic_Settings_ViewerMode_Longstrip },
+        { key: Key.ViewerMode_Paginated, label: R.Frontend_Classic_Settings_ViewerMode_Paginated },
     ));
 
     ViewerReverseDirection = new SettingStore<boolean, Check>( new Check(
