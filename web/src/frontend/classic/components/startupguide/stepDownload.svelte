@@ -11,14 +11,15 @@
     }:{
         oncomplete: () => void
     } = $props();
-    oncomplete();
-
     const GlobalScope = window.HakuNeko.SettingsManager.OpenScope(Global_Scope);
     // Handpicked
     const MediaDirectorySetting:Directory=GlobalScope.Get(Key.MediaDirectory);
     const UseWebsiteSubDirectorySetting:Check=GlobalScope.Get(Key.UseWebsiteSubDirectory);
     const MangaExportFormatSetting:Choice=GlobalScope.Get(Key.MangaExportFormat);
 
+    $effect(() => {
+        if (MediaDirectorySetting?.Value) oncomplete();
+    });
 </script>
 <div>
     <h4>{GlobalSettings.Locale.Frontend_Classic_StartupGuide_Download_Title()}</h4>
