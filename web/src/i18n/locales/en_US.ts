@@ -49,6 +49,9 @@ const translations: VariantResource = {
   Frontend_Item_List: 'Item list',
   Frontend_Item_Select: 'Select an item',
   Frontend_Item_Selection: 'Item selection',
+  Frontend_Welcome_Intro: 'HakuNeko is a cross-platform downloader for manga and anime from various websites.',
+  Frontend_Welcome_Description: 'It was made to help users who download media for circumstances that requires offline usage.',
+  Frontend_Welcome_Footer: 'The philosophy is ad-hoc consumption, get it when you want to read/watch it. It is not meant to be a mass downloader to stock up thousands of chapters and will probably never be read.',
 
   // [SECTION]: Frontend Classic
 
@@ -70,6 +73,8 @@ const translations: VariantResource = {
   Frontend_Classic_Settings_SidenavTrailInfo: 'Left sidenav will only appear on top left icon click',
   Frontend_Classic_Settings_SidenavIconsOnTop: 'Menu icons on top',
   Frontend_Classic_Settings_SidenavIconsOnTopInfo: 'Home and plugins buttons will appear on top instead of sidenav.',
+  Frontend_Classic_Settings_StartupGuideEnabled: 'Show the startup guide',
+  Frontend_Classic_Settings_StartupGuideEnabledInfo: 'Show the startup guide when opening the app',
   Frontend_Classic_Settings_ViewerMode: 'Viewer Mode',
   Frontend_Classic_Settings_ViewerModeInfo: 'Change how pages/images will be shown in the reader',
   Frontend_Classic_Settings_ViewerMode_Paginated: 'Paginated (Manga)',
@@ -82,6 +87,20 @@ const translations: VariantResource = {
   Frontend_Classic_Sidenav_Settings_General: 'General',
   Frontend_Classic_Sidenav_Settings_Interface: 'Interface',
   Frontend_Classic_Sidenav_Settings_Trackers: 'Trackers',
+  Frontend_Classic_StartupGuide_Tutorial_Title: 'Tutorial',
+  Frontend_Classic_StartupGuide_Tutorial_Description: 'How to use.',
+  Frontend_Classic_StartupGuide_UI_Title: 'UI Settings',
+  Frontend_Classic_StartupGuide_UI_Description: 'Configure the user interface settings for HakuNeko.',
+  Frontend_Classic_StartupGuide_Viewer_Title: 'Viewer Settings',
+  Frontend_Classic_StartupGuide_Viewer_Description: 'Choose the layout that fits your reading style.',
+  Frontend_Classic_StartupGuide_Viewer_Vertical_Title: 'Vertical (top-down)',
+  Frontend_Classic_StartupGuide_Viewer_Vertical_Description: 'Manhwa (Webtoons)',
+  Frontend_Classic_StartupGuide_Viewer_Vertical_SubDescription: 'Manga, Comics',
+  Frontend_Classic_StartupGuide_Viewer_Horizontal_Title: 'Horizontal (left-right)',
+  Frontend_Classic_StartupGuide_Viewer_Horizontal_Description: 'Manga, Comics',
+  Frontend_Classic_StartupGuide_Viewer_Horizontal_SubDescription: ' ',
+  Frontend_Classic_StartupGuide_Download_Title: 'Download Settings',
+  Frontend_Classic_StartupGuide_Download_Description: 'Select the download location and file format',
 
   // [SECTION]: Frontend FluentCore
 

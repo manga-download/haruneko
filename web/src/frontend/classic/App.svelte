@@ -18,8 +18,9 @@
     import UserMessage from './components/UserMessages.svelte';
     import ContentPage from './components/content-pages/ContentRouter.svelte';
     // UI: Stores
-    import { ContentPanel, Theme as ThemeSetting } from './stores/Settings';
-    import { selectedItem, contentscreen } from './stores/Stores';
+    import { Settings } from './stores/Settings.svelte';
+    import { Store as UI} from './stores/Stores.svelte';
+    import StartupGuide from './components/startupguide/StartupGuide.svelte';
 
     let resolveFinishLoading: () => void;
     export const FinishLoading = Promise.race([
@@ -37,24 +38,28 @@
 </script>
 
 <UserMessage />
+{#if Settings.StartupGuideEnabled.value}
+    <StartupGuide/>
+{/if}
 
-<Theme theme={$ThemeSetting}>
+<Theme theme={Settings.Theme.value}>
     <AppBar
         onHome={() => {
-            $selectedItem = null;
-            $contentscreen = '/';
+            UI.selectedItem = null;
+            UI.contentscreen = '/';
         }}
     />
+
     <Content
         id="hakunekoapp"
-        class={$ContentPanel ? 'ui-mode-content' : 'ui-mode-download'}
+        class={Settings.ContentPanel.value ? 'ui-mode-content' : 'ui-mode-download'}
     >
         <MediaSelect />
         <MediaItemSelect />
-        {#if $ContentPanel}
+        {#if Settings.ContentPanel.value}
             <div id="Content" transition:fade>
-                {#if $selectedItem}
-                    <Viewer item={$selectedItem} />
+                {#if UI.selectedItem}
+                    <Viewer item={UI.selectedItem} />
                 {:else if showHome}
                     <ContentPage />
                 {/if}

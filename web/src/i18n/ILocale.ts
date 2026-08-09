@@ -137,6 +137,9 @@ export enum FrontendResourceKey {
     Frontend_Item_List = 'Frontend_Item_List',
     Frontend_Item_Select = 'Frontend_Item_Select',
     Frontend_Item_Selection = 'Frontend_Item_Selection',
+    Frontend_Welcome_Intro = 'Frontend_Classic_StartupGuide_Welcome_Intro',
+    Frontend_Welcome_Description = 'Frontend_Classic_StartupGuide_Welcome_Description',
+    Frontend_Welcome_Footer = 'Frontend_Classic_StartupGuide_Welcome_Footer',
 }
 
 // [SECTION]: Frontend: Classic
@@ -171,6 +174,26 @@ export enum FrontendResourceKey {
     Frontend_Classic_Sidenav_Settings_General = 'Frontend_Classic_Sidenav_Settings_General',
     Frontend_Classic_Sidenav_Settings_Interface = 'Frontend_Classic_Sidenav_Settings_Interface',
     Frontend_Classic_Sidenav_Settings_Trackers = 'Frontend_Classic_Sidenav_Settings_Trackers',
+    Frontend_Classic_Settings_StartupGuideEnabled = 'Frontend_Classic_Settings_StartupGuideEnabled',
+    Frontend_Classic_Settings_StartupGuideEnabledInfo = 'Frontend_Classic_Settings_StartupGuideEnabledInfo',
+    Frontend_Classic_Settings_ViewerZoom = 'Frontend_Classic_Settings_ViewerZoom',
+    Frontend_Classic_Settings_ViewerZoomInfo = 'Frontend_Classic_Settings_ViewerZoomInfo',
+    Frontend_Classic_Settings_ViewerPadding = 'Frontend_Classic_Settings_ViewerPadding',
+    Frontend_Classic_Settings_ViewerPaddingInfo = 'Frontend_Classic_Settings_ViewerPaddingInfo',
+    Frontend_Classic_StartupGuide_Download_Title = 'Frontend_Classic_StartupGuide_Download_Title',
+    Frontend_Classic_StartupGuide_Download_Description = 'Frontend_Classic_StartupGuide_Download_Description',
+    Frontend_Classic_StartupGuide_Tutorial_Title = 'Frontend_Classic_StartupGuide_Tutorial_Title',
+    Frontend_Classic_StartupGuide_Tutorial_Description = 'Frontend_Classic_StartupGuide_Tutorial_Description',
+    Frontend_Classic_StartupGuide_UI_Title = 'Frontend_Classic_StartupGuide_UI_Title',
+    Frontend_Classic_StartupGuide_UI_Description = 'Frontend_Classic_StartupGuide_UI_Description',
+    Frontend_Classic_StartupGuide_Viewer_Horizontal_Title = 'Frontend_Classic_StartupGuide_Viewer_Horizontal_Title',
+    Frontend_Classic_StartupGuide_Viewer_Horizontal_Description = 'Frontend_Classic_StartupGuide_Viewer_Horizontal_Description',
+    Frontend_Classic_StartupGuide_Viewer_Horizontal_SubDescription = 'Frontend_Classic_StartupGuide_Viewer_Horizontal_SubDescription',
+    Frontend_Classic_StartupGuide_Viewer_Title = 'Frontend_Classic_StartupGuide_Viewer_Title',
+    Frontend_Classic_StartupGuide_Viewer_Description = 'Frontend_Classic_StartupGuide_Viewer_Description',
+    Frontend_Classic_StartupGuide_Viewer_Vertical_Title = 'Frontend_Classic_StartupGuide_Viewer_Vertical_Title',
+    Frontend_Classic_StartupGuide_Viewer_Vertical_Description = 'Frontend_Classic_StartupGuide_Viewer_Vertical_Description',
+    Frontend_Classic_StartupGuide_Viewer_Vertical_SubDescription = 'Frontend_Classic_StartupGuide_Viewer_Vertical_SubDescription',
 }
 
 // [SECTION]: Frontend: FluentCore
