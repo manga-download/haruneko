@@ -30,7 +30,7 @@
     );
 
     async function nextStep() {
-        currentStep = (currentStep + 1) % 5;
+        currentStep = (currentStep + 1) % Object.values(steps).length;
     }
 
     async function close() {
