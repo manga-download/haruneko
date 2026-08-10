@@ -128,7 +128,7 @@ class UIClassicStore {
         true
     ));
 
-    // Non persistant settings
+    // Non persistent settings
     /** Viewer **/
 
     ViewerZoom = new SettingCountStore(new Numeric(
