@@ -5,7 +5,9 @@ describe.sequential('Front-End (Classic)', { timeout: 60_000 }, () => {
 
     const fixture = new TestFixture();
 
-    beforeEach(() => fixture.Reset('classic'));
+    beforeEach(() => {
+        fixture.Reset('classic');
+    });
 
     describe('SmokeTests', async () => {
 
@@ -24,6 +26,7 @@ describe.sequential('Front-End (Classic)', { timeout: 60_000 }, () => {
     describe('Bookmarks', async () => {
 
         it('Should bookmark a manga that is not yet bookmarked', async () => {
+            await fixture.CloseStartupGuide();
             await fixture.SetWebsiteFilter('Dex');
             await fixture.SelectWebsite('mangadex');
             await fixture.UpdateWebsiteMangaList(7500);
@@ -36,6 +39,7 @@ describe.sequential('Front-End (Classic)', { timeout: 60_000 }, () => {
         });
 
         it('Should load preview images of a chapter', async () => {
+            await fixture.CloseStartupGuide();
             await fixture.PasteMangaFromClipboard('https://mangadex.org/title/a037e450-6537-4725-aa7b-189fb2586e09/');
             await fixture.ClickChapterPreview('Vol.01 Ch.0004 - Thirsty (en) [The Company]');
             for (const link of await fixture.GetPreviewImageLinks(14)) {
