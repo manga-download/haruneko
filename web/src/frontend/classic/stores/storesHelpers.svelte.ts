@@ -63,9 +63,9 @@ export class SettingCountStore extends SettingStore<number, Numeric> {
     }
 
     // eslint-disable-next-line @typescript-eslint/naming-convention -- existing public API used by the classic frontend
-    increment (increment?: number) { this.Value = this.Value + (increment || this.#increment); }
+    increment (increment?: number) { this.Value = this.Value + (increment ?? this.#increment); }
     // eslint-disable-next-line @typescript-eslint/naming-convention -- existing public API used by the classic frontend
-    decrement (increment?: number) { this.Value = this.Value - (increment || this.#increment); }
+    decrement (increment?: number) { this.Value = this.Value - (increment ?? this.#increment); }
 }
 
 /**
@@ -79,7 +79,7 @@ export class SettingCountStore extends SettingStore<number, Numeric> {
  *
  *@returns A `SettingStore` instance for the specified setting.
  *
- *@throws \{InternalError\} If the setting with the given key does not exist in the provided scope.
+ *@throws {@link InternalError} If the setting with the given key does not exist in the provided scope.
  */
 export function LoadSettingStore<V extends IValue, S extends ISetting<V>>(scope:ISettings, settingKey:string) : SettingStore<V, S> {
     const existingSetting: S = scope.Get(settingKey);
