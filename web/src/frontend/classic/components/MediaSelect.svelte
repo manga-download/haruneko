@@ -185,7 +185,7 @@
         }
     }
 
-    async function selectPlugin(item: ComboBoxItem) {
+    async function selectPlugin(item: string) {
         UI.selectedPlugin = [HakuNeko.BookmarkPlugin, ...orderedPlugins].find(
             (plugin) => plugin.Identifier === item,
         );
