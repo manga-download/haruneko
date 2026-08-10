@@ -83,16 +83,16 @@
                 Settings.ViewerZoom.Value=Settings.ViewerZoom.Setting.Default;
                 break;
             case event.key === '+' && !event.ctrlKey:
-                Settings.ViewerZoom.increment();
+                Settings.ViewerZoom.Increment();
                 break;
             case event.key === '-' && !event.ctrlKey:
-                Settings.ViewerZoom.decrement();
+                Settings.ViewerZoom.Decrement();
                 break;
             case event.key === '+' && event.ctrlKey:
-                Settings.ViewerPadding.increment();
+                Settings.ViewerPadding.Increment();
                 break;
             case event.key === '-' && event.ctrlKey:
-                Settings.ViewerPadding.decrement();
+                Settings.ViewerPadding.Decrement();
                 break;
             case event.code === 'Escape':
                 viewerclose();

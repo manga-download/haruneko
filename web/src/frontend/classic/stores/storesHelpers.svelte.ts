@@ -62,10 +62,8 @@ export class SettingCountStore extends SettingStore<number, Numeric> {
         this.#increment = increment;
     }
 
-    // eslint-disable-next-line @typescript-eslint/naming-convention -- existing public API used by the classic frontend
-    increment (increment?: number) { this.Value = this.Value + (increment ?? this.#increment); }
-    // eslint-disable-next-line @typescript-eslint/naming-convention -- existing public API used by the classic frontend
-    decrement (increment?: number) { this.Value = this.Value - (increment ?? this.#increment); }
+    Increment (increment?: number) { this.Value = this.Value + (increment ?? this.#increment); }
+    Decrement (increment?: number) { this.Value = this.Value - (increment ?? this.#increment); }
 }
 
 /**
