@@ -43,7 +43,7 @@ export class SettingStore<V extends IValue, S extends ISetting<V>> {
  *
  * `SettingCountStore` extends `SettingStore` and adds methods to increment,
  * decrement, and reset the numeric value. The step amount is configurable
- * through `increment`, and `initialValue` is used by `Reset()`.
+ * through `increment`.
  *
  * @typeParam V - The type of the value managed by the setting.
  * @typeParam S - The type of the setting that extends `ISetting<V>`.
