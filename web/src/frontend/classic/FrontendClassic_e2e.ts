@@ -20,6 +20,7 @@ describe.sequential('Front-End (Classic)', { timeout: 60_000 }, () => {
                 'div#app > main#hakunekoapp > div#Content > main > div#Home',
                 'div#app > main#hakunekoapp > div#Bottom div.downloads',
             );
+            await fixture.CloseStartupGuide();
         });
     });
 
