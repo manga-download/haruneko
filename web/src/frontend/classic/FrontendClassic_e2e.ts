@@ -5,9 +5,7 @@ describe.sequential('Front-End (Classic)', { timeout: 60_000 }, () => {
 
     const fixture = new TestFixture();
 
-    beforeEach(() => {
-        fixture.Reset('classic');
-    });
+    beforeEach(() => fixture.Reset('classic'));
 
     describe('SmokeTests', async () => {
 
