@@ -1,13 +1,13 @@
 <script lang="ts">
-    import ChevronLeft from 'carbon-icons-svelte/lib/ChevronLeft.svelte';
-    import ChevronRight from 'carbon-icons-svelte/lib/ChevronRight.svelte';
-    import Misuse from 'carbon-icons-svelte/lib/Misuse.svelte';
-    import IntentRequestScaleIn from 'carbon-icons-svelte/lib/IntentRequestScaleIn.svelte';
-    import IntentRequestScaleOut from 'carbon-icons-svelte/lib/IntentRequestScaleOut.svelte';
-    import CloudServiceManagement from 'carbon-icons-svelte/lib/CloudServiceManagement.svelte';
-    import ScreenMap from 'carbon-icons-svelte/lib/ScreenMap.svelte';
-    import ZoomIn from 'carbon-icons-svelte/lib/ZoomIn.svelte';
-    import ZoomOut from 'carbon-icons-svelte/lib/ZoomOut.svelte';
+    import ChevronLeft from "carbon-icons-svelte/lib/ChevronLeft.svelte";
+    import ChevronRight from "carbon-icons-svelte/lib/ChevronRight.svelte";
+    import Misuse from "carbon-icons-svelte/lib/Misuse.svelte";
+    import IntentRequestScaleIn from "carbon-icons-svelte/lib/IntentRequestScaleIn.svelte";
+    import IntentRequestScaleOut from "carbon-icons-svelte/lib/IntentRequestScaleOut.svelte";
+    import CloudServiceManagement from "carbon-icons-svelte/lib/CloudServiceManagement.svelte";
+    import ScreenMap from "carbon-icons-svelte/lib/ScreenMap.svelte";
+    import ZoomIn from "carbon-icons-svelte/lib/ZoomIn.svelte";
+    import ZoomOut from "carbon-icons-svelte/lib/ZoomOut.svelte";
     import {
         ContentSwitcher,
         Switch,
@@ -16,21 +16,24 @@
         HeaderGlobalAction,
         HeaderPanelDivider,
         Tooltip,
-    } from 'carbon-components-svelte';
-    import { Key, GlobalSettings, Settings } from '../../stores/Settings.svelte';
+    } from "carbon-components-svelte";
+    import {
+        Key,
+        GlobalSettings,
+        Settings,
+    } from "../../stores/Settings.svelte";
     import type {
         MediaContainer,
         MediaItem,
-    } from '../../../../engine/providers/MediaPlugin';
+    } from "../../../../engine/providers/MediaPlugin";
 
     interface Props {
         item: MediaContainer<MediaItem>;
         onNextItem: () => void;
         onPreviousItem: () => void;
         onClose: () => void;
-    };
-    let { item, onNextItem, onPreviousItem, onClose }: Props  = $props();
-
+    }
+    let { item, onNextItem, onPreviousItem, onClose }: Props = $props();
 </script>
 
 <div id="vieweractions">
@@ -103,18 +106,25 @@
         <HeaderPanelDivider>Reader</HeaderPanelDivider>
         <div class="setting block">
             <Tooltip
-                triggerText={GlobalSettings.Locale[Settings.ViewerMode.Setting.Label]()}
+                triggerText={GlobalSettings.Locale[
+                    Settings.ViewerMode.Setting.Label
+                ]()}
                 align="start"
                 class="tooltip"
             >
-                <p>{GlobalSettings.Locale[Settings.ViewerMode.Setting.Description]()}</p>
+                <p>
+                    {GlobalSettings.Locale[
+                        Settings.ViewerMode.Setting.Description
+                    ]()}
+                </p>
             </Tooltip>
             <ContentSwitcher size="sm">
                 {#each Settings.ViewerMode.Setting.Options as option}
                     <Switch
                         selected={Settings.ViewerMode.Value === option.key}
                         text={GlobalSettings.Locale[option.label]()}
-                        on:click={() => (Settings.ViewerMode.Value = option.key)}
+                        on:click={() =>
+                            (Settings.ViewerMode.Value = option.key)}
                     />
                 {/each}
             </ContentSwitcher>
@@ -129,41 +139,52 @@
                     class="tooltip"
                 >
                     <p>
-                        {GlobalSettings.Locale[Settings.ViewerReverseDirection.Setting.Description]()}
+                        {GlobalSettings.Locale[
+                            Settings.ViewerReverseDirection.Setting.Description
+                        ]()}
                     </p>
                 </Tooltip>
                 <ContentSwitcher size="sm">
                     <Switch
                         selected={!Settings.ViewerReverseDirection.Value}
-                        on:click={() => (Settings.ViewerReverseDirection.Value = false)}
+                        on:click={() =>
+                            (Settings.ViewerReverseDirection.Value = false)}
+                        >Left to Right</Switch
                     >
-                        Left to Right
-                    </Switch>
                     <Switch
                         selected={Settings.ViewerReverseDirection.Value}
-                        on:click={() => (Settings.ViewerReverseDirection.Value = true)}
-                        >RightToLeft
-                    </Switch>
+                        on:click={() =>
+                            (Settings.ViewerReverseDirection.Value = true)}
+                        >Right to Left</Switch
+                    >
                 </ContentSwitcher>
             </div>
             <div class="setting block">
                 <Tooltip
-                    triggerText={GlobalSettings.Locale[Settings.ViewerDoublePage.Setting.Label]()}
+                    triggerText={GlobalSettings.Locale[
+                        Settings.ViewerDoublePage.Setting.Label
+                    ]()}
                     align="start"
                     class="tooltip"
                 >
-                    <p>{GlobalSettings.Locale[Settings.ViewerDoublePage.Setting.Description]()}</p>
+                    <p>
+                        {GlobalSettings.Locale[
+                            Settings.ViewerDoublePage.Setting.Description
+                        ]()}
+                    </p>
                 </Tooltip>
                 <ContentSwitcher size="sm">
                     <Switch
                         selected={!Settings.ViewerDoublePage.Value}
-                        on:click={() => (Settings.ViewerDoublePage.Value = false)}
+                        on:click={() =>
+                            (Settings.ViewerDoublePage.Value = false)}
                     >
                         Single
                     </Switch>
                     <Switch
                         selected={Settings.ViewerDoublePage.Value}
-                        on:click={() => (Settings.ViewerDoublePage.Value = true)}
+                        on:click={() =>
+                            (Settings.ViewerDoublePage.Value = true)}
                     >
                         Double
                     </Switch>
