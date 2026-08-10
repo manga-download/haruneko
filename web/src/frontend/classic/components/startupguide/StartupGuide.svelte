@@ -11,7 +11,7 @@
     import StepTutorial from "./stepTutorial.svelte";
     import StepWelcome from "./stepWelcome.svelte";
     import { SvelteSet } from "svelte/reactivity";
-    import { Settings } from "../../stores/Settings.svelte";
+    import { GlobalSettings, Settings } from "../../stores/Settings.svelte";
 
     const steps = {
         Welcome: 0,
@@ -44,9 +44,9 @@
     preventCloseOnClickOutside
     modalHeading="Hakuneko"
     hasForm
-    primaryButtonText={currentStep === steps.Tutorial && allStepsComplete ? "Close" : "Next"}
+    primaryButtonText={currentStep === steps.Tutorial && allStepsComplete ? GlobalSettings.Locale.Frontend_Classic_StartupGuide_Button_Close() : GlobalSettings.Locale.Frontend_Classic_StartupGuide_Button_Next()}
     primaryButtonDisabled={!allStepsComplete && currentStep === steps.Tutorial}
-    secondaryButtonText={currentStep === steps.Tutorial ? "Restart" : null}
+    secondaryButtonText={currentStep === steps.Tutorial ? GlobalSettings.Locale.Frontend_Classic_StartupGuide_Button_Restart() : null}
     on:click:button--primary={() => {
         if (currentStep === steps.Tutorial && allStepsComplete) close(); else nextStep();
     }}
@@ -59,20 +59,20 @@
     <ProgressIndicator bind:currentIndex={currentStep}>
         <ProgressStep
             complete={stepsComplete.has(steps.Welcome)}
-            label="Welcome"
+            label={GlobalSettings.Locale.Frontend_Classic_StartupGuide_Step_Welcome()}
         />
         <ProgressStep
             complete={stepsComplete.has(steps.Download)}
-            label="Downloads"
+            label={GlobalSettings.Locale.Frontend_Classic_StartupGuide_Step_Download()}
         />
-        <ProgressStep complete={stepsComplete.has(steps.UI)} label="UI" />
+        <ProgressStep complete={stepsComplete.has(steps.UI)} label={GlobalSettings.Locale.Frontend_Classic_StartupGuide_Step_UI()} />
         <ProgressStep
             complete={stepsComplete.has(steps.Viewer)}
-            label="Viewer"
+            label={GlobalSettings.Locale.Frontend_Classic_StartupGuide_Step_Viewer()}
         />
         <ProgressStep
             complete={stepsComplete.has(steps.Tutorial)}
-            label="Tutorial"
+            label={GlobalSettings.Locale.Frontend_Classic_StartupGuide_Step_Tutorial()}
         />
     </ProgressIndicator>
     <div id="startupguide">
