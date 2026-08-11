@@ -30,20 +30,18 @@ async function updateBinary(blinkApplicationResourcesDirectory, blinkDeploymentT
 
 async function createSnapImage(blinkDeploymentTemporaryDirectory, blinkDeploymentOutputDirectory) {
     const snapfile = path.basename(blinkDeploymentTemporaryDirectory).replace(/^electron/i, pkgConfig.name) + '.snap';
+    const yaml = path.join(blinkDeploymentOutputDirectory, 'snapcraft.yaml');
+    const desktop = path.join(blinkDeploymentOutputDirectory, 'snap', 'gui', `${pkgConfig.name}.desktop`);
     try {
-        const artifact = path.join(blinkDeploymentOutputDirectory, snapfile);
-        await fs.unlink(artifact);
+        await fs.unlink(path.join(blinkDeploymentOutputDirectory, snapfile));
+        await fs.unlink(yaml);
+        await fs.unlink(desktop);
     } catch { }
-    const yaml = await createSnapcraftYaml(blinkDeploymentTemporaryDirectory, blinkDeploymentOutputDirectory);
-    const desktop = await createDesktopEntry(blinkDeploymentOutputDirectory);
-    try {
-        await run('sudo snapcraft pack --destructive-mode', blinkDeploymentOutputDirectory);
-        await run(`sudo mv ${pkgConfig.name}*.snap ${snapfile}`, blinkDeploymentOutputDirectory);
-        await run('snapcraft upload *.snap --release=edge', blinkDeploymentOutputDirectory);
-    } finally {
-        fs.unlink(yaml);
-        fs.rm(path.dirname(path.dirname(desktop)), { recursive: true, force: true });
-    }
+    await createSnapcraftYaml(blinkDeploymentTemporaryDirectory, blinkDeploymentOutputDirectory);
+    await createDesktopEntry(blinkDeploymentOutputDirectory);
+    await run('sudo snapcraft pack --destructive-mode', blinkDeploymentOutputDirectory);
+    await run(`sudo mv ${pkgConfig.name}*.snap ${snapfile}`, blinkDeploymentOutputDirectory);
+    await run('snapcraft upload *.snap --release=edge', blinkDeploymentOutputDirectory);
 }
 
 async function createDesktopEntry(blinkDeploymentOutputDirectory) {
@@ -52,18 +50,16 @@ async function createDesktopEntry(blinkDeploymentOutputDirectory) {
     const file = path.join(directory, `${pkgConfig.name}.desktop`);
     // A desktop entry is mandatory for xdg-desktop-portal to register the snap,
     // otherwise all portal requests (e.g. the file chooser) are denied.
-    await fs.writeFile(file, [
-        '[Desktop Entry]',
-        'Type=Application',
-        `Name=${pkgConfig.title}`,
-        `Comment=${pkgConfig.description}`,
-        `Exec=${pkgConfig.name}`,
-        'Terminal=false',
-        'Categories=Network;',
-        'StartupNotify=true',
-        '',
-    ].join('\n'));
-    return file;
+    // Field semantics follow hakuneko/build-app.config (meta.type, meta.categories).
+    await fs.writeFile(file, `[Desktop Entry]
+Version=1.0
+Type=Application
+Name=${pkgConfig.title}
+GenericName=${pkgConfig.description}
+Exec=${pkgConfig.name}
+Icon=${pkgConfig.name}
+Categories=Network;FileTransfer;
+`);
 }
 
 async function createSnapcraftYaml(blinkDeploymentTemporaryDirectory, blinkDeploymentOutputDirectory) {
@@ -108,5 +104,4 @@ parts:
     - libnss3
     - libnspr4
 `);
-    return file;
 }
