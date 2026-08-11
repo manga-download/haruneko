@@ -6,7 +6,7 @@
     import { GlobalSettings } from '../../stores/Settings.svelte';
 
     import { Tile } from 'carbon-components-svelte';
-    import Neko from '/src/img/WelcomeNeko.png';
+    import Neko from '/src/img/welcomeneko.png';
 
     let {
         oncomplete
