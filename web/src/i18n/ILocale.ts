@@ -117,6 +117,9 @@ export enum FrontendResourceKey {
     FrontendController_Reload_ConfirmNotice = 'FrontendController_Reload_ConfirmNotice',
     Frontend_Product_Title = 'Frontend_Product_Title',
     Frontend_Product_Description = 'Frontend_Product_Description',
+    Frontend_Product_Description_Short = 'Frontend_Product_Description_Short',
+    Frontend_Product_Description_Long1 = 'Frontend_Product_Description_Long1',
+    Frontend_Product_Description_Long2 = 'Frontend_Product_Description_Long2',
     Frontend_Setting = 'Frontend_Setting',
     Frontend_Settings = 'Frontend_Settings',
     Frontend_Help = 'Frontend_Help',
@@ -137,9 +140,6 @@ export enum FrontendResourceKey {
     Frontend_Item_List = 'Frontend_Item_List',
     Frontend_Item_Select = 'Frontend_Item_Select',
     Frontend_Item_Selection = 'Frontend_Item_Selection',
-    Frontend_Welcome_Intro = 'Frontend_Welcome_Intro',
-    Frontend_Welcome_Description = 'Frontend_Welcome_Description',
-    Frontend_Welcome_Footer = 'Frontend_Welcome_Footer',
 }
 
 // [SECTION]: Frontend: Classic
