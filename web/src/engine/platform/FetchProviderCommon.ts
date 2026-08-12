@@ -5,6 +5,7 @@ import { CreateRemoteBrowserWindow } from './RemoteBrowserWindow';
 import { CheckAntiScrapingDetection, FetchRedirection } from './AntiScrapingDetection';
 import type { FeatureFlags } from '../FeatureFlags';
 import { Delay, SetTimeout, ClearTimeout } from '../BackgroundTimers';
+import { ExtractNextJS } from '../NextJS';
 
 export abstract class FetchProvider {
 
@@ -169,101 +170,12 @@ export abstract class FetchProvider {
     */
 
     /**
-     * Scans the members of the given {@link payload} recursively, searching for the first occurence that fulfills the given {@link predicate}
-     * and returns the corresponding value, or `undefined` if non was found.
-     */
-    #ExtractValueNextJS<T extends JSONElement>(payload: JSONElement, predicate: (data: JSONObject<JSONElement> | JSONArray<JSONElement>) => unknown): T {
-        if (payload && typeof payload === 'object') {
-            if (predicate(payload)) return payload as T;
-            for (const value of Object.values(payload)) {
-                const result = this.#ExtractValueNextJS<T>(value, predicate);
-                if (result) return result;
-            }
-        }
-        return undefined;
-    }
-
-    /**
      * Extract all NextJS hydrated flight data payloads from the HTML script tags of the provided {@link request}
      * and returns the first nested data element that fulfills the given {@link predicate} or `undefined` if non was found.
      * @remarks This is an extremely flakey extractor for NextJS flight data which needs much improvement for generic use.
      */
     public async FetchNextJS<T extends JSONElement>(request: Request, predicate: (data: JSONObject<JSONElement> | JSONArray<JSONElement>) => unknown): Promise<T | undefined> {
-        const scripts = await this.FetchCSS<HTMLScriptElement>(request, 'script:not([src])');
-
-        const payloads = scripts
-            .flatMap(script => {
-                // Split script text by lines or independent statements to handle multi-chunk scripts
-                const lines = script.text.split(/\r?\n/);
-                return lines;
-            })
-            .filter(line => line.includes('self.__next_f.push'))
-            .map(line => {
-                try {
-                    // Use a regex to capture the argument array inside self.__next_f.push(...)
-                    // e.g., matches: [1, "1:I[\"...\"]"]
-                    const match = line.match(/self\.__next_f\.push\(\s*(\[.+\])\s*\)/s);
-                    if (!match || !match[1]) return null;
-
-                    // Parse the outer array wrapper safely
-                    // Note: If the inner content is a Flight-encoded string, it may need secondary parsing
-                    const rawArgs = JSON.parse(match[1]);
-                    const chunkContent = rawArgs[1]; // Usually the second element contains the payload string/object
-
-                    if (typeof chunkContent === 'string') {
-                        // If it's a React Flight data string (e.g., "1:I[...]"), split by the first colon
-                        const colonIndex = chunkContent.indexOf(':');
-                        if (colonIndex !== -1) {
-                            const id = chunkContent.slice(0, colonIndex);
-                            const data = chunkContent.slice(colonIndex + 1);
-
-                            // Try parsing the data portion if it's JSON, otherwise keep as raw string
-                            try {
-                                return { id, data: JSON.parse(data) };
-                            } catch {
-                                return { id, data };
-                            }
-                        }
-                    }
-
-                    return { data: chunkContent };
-                } catch {
-                    // Fallback for malformed chunks
-                    return null;
-                }
-            })
-            .filter(item => item !== null);
-
-        for (const payload of payloads) {
-            if (typeof payload.data === 'string') {
-                const lines = payload.data.split('\n');
-                const parsedPayload = {};
-
-                for (const line of lines) {
-                    if (!line.trim()) continue;
-
-                    // Split by the first colon to separate the key/index from the value
-                    const colonIndex = line.indexOf(':');
-                    if (colonIndex === -1) continue;
-
-                    const key = line.slice(0, colonIndex);
-                    const value = line.slice(colonIndex + 1);
-
-                    try {
-                        // Attempt to parse standard JSON lines
-                        parsedPayload[key] = JSON.parse(value);
-                    } catch {
-                        // Keep raw string for non-JSON lines (like symbols or markers)
-                        parsedPayload[key] = value;
-                    }
-                }
-                payload.data = parsedPayload;
-            }
-            const data: T = this.#ExtractValueNextJS<T>(payload, predicate);
-            if (data) return data;
-        }
-
-        return undefined;
+        return ExtractNextJS<T>(await this.FetchHTML(request), predicate);
     }
 
     /**
