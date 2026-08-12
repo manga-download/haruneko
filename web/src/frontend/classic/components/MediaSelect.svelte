@@ -185,9 +185,9 @@
         }
     }
 
-    async function selectPlugin(id: string) {
+    async function selectPlugin(item: string) {
         UI.selectedPlugin = [HakuNeko.BookmarkPlugin, ...orderedPlugins].find(
-            (plugin) => plugin.Identifier === id,
+            (plugin) => plugin.Identifier === item,
         );
     }
 
@@ -232,17 +232,17 @@
             items={pluginsCombo}
             let:item
         >
-            {@const plugin = item as ComboBoxItemWithValue}
-            {#if plugin.value.IsSameAs(HakuNeko.BookmarkPlugin)}
-            <BookmarkFilled class="dropdown icon bookmarks" size={32} />
-                <div class="dropdown title favorite">{plugin.value.Title}</div>
-                <div>Your bookmarked medias</div>
-            {:else}
-                <img class="dropdown icon" alt={plugin.value.Title} src={plugin.value.Icon}/>
-                <div class="dropdown title" class:favorite={plugin.isFavorite}>{plugin.value.Title}</div>
-                <div>{plugin.value.URI}</div>
-            {/if}
-        </ComboBox>
+                {@const plugin = item as ComboBoxItemWithValue}
+                {#if plugin.value.IsSameAs(HakuNeko.BookmarkPlugin)}
+                <BookmarkFilled class="dropdown icon bookmarks" size={32} />
+                    <div class="dropdown title favorite">{plugin.value.Title}</div>
+                    <div>Your bookmarked medias</div>
+                {:else}
+                    <img class="dropdown icon" alt={plugin.value.Title} src={plugin.value.Icon}/>
+                    <div class="dropdown title" class:favorite={plugin.isFavorite}>{plugin.value.Title}</div>
+                    <div>{plugin.value.URI}</div>
+                {/if}
+                </ComboBox> 
         <Button
             id="MediaUpdateButton"
             icon={UpdateNow}

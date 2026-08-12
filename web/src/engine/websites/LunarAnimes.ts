@@ -3,7 +3,6 @@ import icon from './LunarAnimes.webp';
 import { FetchJSON, FetchWindowPreloadScript } from '../platform/FetchProvider';
 import { type MangaPlugin, Manga, Chapter, Page, DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { GetBytesFromBase64, GetBytesFromUTF8, GetUTF8FromBytes } from '../BufferEncoder';
 import { RandomText } from '../Random';
 
 type APIMangas = {
@@ -94,13 +93,4 @@ export default class extends DecoratableMangaScraper {
         const data = await FetchWindowPreloadScript<string[]>(new Request(new URL(chapter.Identifier, this.URI)), PagePreloadScript, PageScript);
         return data.map(image => new Page(this, chapter, new URL(image), { Referer: this.URI.href }));
     }
-
-    private async Decrypt<T extends JSONElement>(data: string, secretKey: string): Promise<T> {
-        const keyData = await crypto.subtle.digest('SHA-256', GetBytesFromUTF8(secretKey));
-        const algorithm = { name: 'AES-CBC', iv: new Uint8Array(16) };
-        const key = await crypto.subtle.importKey('raw', keyData, algorithm, false, ['decrypt']);
-        const decrypted = await crypto.subtle.decrypt(algorithm, key, GetBytesFromBase64(data));
-        return JSON.parse(GetUTF8FromBytes(decrypted)) as T;
-    }
-
 }
