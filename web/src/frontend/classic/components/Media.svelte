@@ -88,7 +88,7 @@
 
 <div bind:this={mediadiv} class="media" {style} class:selected>
     <ContextMenu target={[mediadiv]} bind:open={menuOpen} on:open={menuOpens}>
-        <ContextMenuOption indented labelText="Browse Chapters" shortcutText="⌘B"
+        <ContextMenuOption indented labelText="Browse Chapters" shortcutText="⌘B" 
             onclick={() => {UI.selectedMedia = media;}}
         />
         <ContextMenuOption
