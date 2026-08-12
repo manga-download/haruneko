@@ -9,13 +9,17 @@ type HydratedChapters = {
         id: number;
         name: string;
         subName: string;
-    }[]
+    }[];
 };
 
 type HydratedPages = {
     pages: {
-        content: { value: { imageUrl?: string } }
-    }[]
+        content: {
+            value: {
+                imageUrl?: string;
+            };
+        };
+    }[];
 };
 
 const endpoints = [
