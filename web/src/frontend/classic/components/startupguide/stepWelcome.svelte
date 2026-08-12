@@ -27,7 +27,7 @@
     <Tile light>
     <div id="presentation">
         <img class="neko" src={Neko} alt="Neko"/>
-        <p style="margin-top:0.5em;margin-bottom:1em;"><span class="hakuneko">HakuNeko</span> {GlobalSettings.Locale.Frontend_Product_Description_Short()}</p>
+        <p style="margin-top:0.5em;margin-bottom:1em;"><span class="hakuneko">{GlobalSettings.Locale.Frontend_Product_Title()}</span> {GlobalSettings.Locale.Frontend_Product_Description_Short()}</p>
         <p>{GlobalSettings.Locale.Frontend_Product_Description_Long1()}</p>
     </div>  
     <p class="footer">{GlobalSettings.Locale.Frontend_Product_Description_Long2()}</p>

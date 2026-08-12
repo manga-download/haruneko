@@ -29,7 +29,7 @@ const translations: VariantResource = {
   // [SECTION]: Frontend (Common/Shared)
   Frontend_Product_Title: 'HakuNeko',
   Frontend_Product_Description: 'Manga, Anime and Novel Downloader',
-  Frontend_Product_Description_Short: 'HakuNeko is a cross-platform downloader for manga and anime from various websites.',
+  Frontend_Product_Description_Short: 'is a cross-platform downloader for manga and anime from various websites.',
   Frontend_Product_Description_Long1: 'It was made to help users who download media for circumstances that requires offline usage.',
   Frontend_Product_Description_Long2: 'The philosophy is ad-hoc consumption, get it when you want to read/watch it. It is not meant to be a mass downloader to stock up thousands of chapters and will probably never be read.',
   Frontend_Setting: 'Setting',
