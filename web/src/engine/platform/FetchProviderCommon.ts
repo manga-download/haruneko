@@ -190,20 +190,7 @@ export abstract class FetchProvider {
      */
     public async FetchNextJS<T extends JSONElement>(request: Request, predicate: (data: JSONObject<JSONElement> | JSONArray<JSONElement>) => unknown): Promise<T | undefined> {
         const scripts = await this.FetchCSS<HTMLScriptElement>(request, 'script:not([src])');
-        /*
-        const payloads = scripts
-            .map(script => script.text)
-            .filter(script => script.includes('self.__next_f.push'))
-            .map(script => {
-                // TODO: Improve extraction robustness and variety (e.g., split line breaks into sub-scripts)
-                try {
-                    const content: string = JSON.parse(script.slice(script.indexOf(',"') + 1, -2));
-                    return JSON.parse(content.slice(content.indexOf(':') + 1)) as JSONElement;
-                } catch {
-                    return {} as JSONElement;
-                }
-            });
-            */
+
         const payloads = scripts
             .flatMap(script => {
                 // Split script text by lines or independent statements to handle multi-chunk scripts
