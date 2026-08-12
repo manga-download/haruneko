@@ -79,14 +79,12 @@ export default class extends DecoratableMangaScraper {
     }
 
     private async AESEncrypt(data: string, keyData: Uint8Array<ArrayBuffer>) {
-        const iv = RandomBytes(12);
-        const result = await crypto.subtle.encrypt({ name: 'AES-GCM', iv },
-            await crypto.subtle.importKey('raw', keyData, {
-                name: 'AES-GCM', length: 256
-            }, false, ['encrypt']), GetBytesFromUTF8(`{version}${data}`));
+        const algorithm = { name: 'AES-GCM', iv: RandomBytes(12) };
+        const key = await crypto.subtle.importKey('raw', keyData, algorithm.name, false, ['encrypt']);
+        const result = await crypto.subtle.encrypt(algorithm, key, GetBytesFromUTF8(`{version}${data}`));
         return {
             ciphertext: GetBase64FromBytes(new Uint8Array(result)),
-            iv: GetBase64FromBytes(iv)
+            iv: GetBase64FromBytes(algorithm.iv)
         };
     }
 }

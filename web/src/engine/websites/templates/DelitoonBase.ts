@@ -6,6 +6,7 @@ import { WebsiteResourceKey as R } from '../../../i18n/ILocale';
 import { GetBytesFromBase64, GetBytesFromUTF8, GetUTF8FromBytes } from '../../BufferEncoder';
 import DeScramble from '../../transformers/ImageDescrambler';
 import type { Priority } from '../../taskpool/DeferredTask';
+import { DecryptAES } from '../../Crypto';
 
 // TODO: Handle manual Logout from webview
 
@@ -53,7 +54,7 @@ type APIUser = {
     user?: {
         accessToken: Token;
         refreshToken: Token;
-    },
+    };
 };
 
 type RefreshTokenResult = {
@@ -192,12 +193,10 @@ export class DelitoonBase extends DecoratableMangaScraper {
     private async FetchScrambledPages(chapter: Chapter, images: ImageInfo): Promise<Page<ScrambleParams>[]> {
         const { data } = await this.drm.FetchBalconyJSON<string>(`./contents/images/${chapter.Parent.Identifier}/${chapter.Identifier}`, { line: images[0].line });
         const keyData = GetBytesFromUTF8(data);
-        const algorithm = { name: 'AES-CBC', iv: keyData.slice(0, 16), length: 256 };
-        const key = await crypto.subtle.importKey('raw', keyData, algorithm, false, ['decrypt']);
-        const promises = images.map(async image => {
-            const decrypted = await crypto.subtle.decrypt(algorithm, key, GetBytesFromBase64(image.point));
-            const scrambleIndex = JSON.parse(GetUTF8FromBytes(decrypted)) as number[];
-            return new Page<ScrambleParams>(this, chapter, new URL(image.imagePath), { scrambleIndex, defaultHeight: image.defaultHeight });
+        const promises = images.map(async ({ point, defaultHeight, imagePath }) => {
+            const decrypted = await DecryptAES(GetBytesFromBase64(point), keyData, { name: 'AES-CBC', iv: keyData.slice(0, 16), length: 128 });
+            const scrambleIndex = <number[]>JSON.parse(GetUTF8FromBytes(decrypted));
+            return new Page<ScrambleParams>(this, chapter, new URL(imagePath), { scrambleIndex, defaultHeight });
         });
         return Promise.all(promises);
     }
