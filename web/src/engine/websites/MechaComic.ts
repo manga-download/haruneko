@@ -5,7 +5,7 @@ import type { Priority } from '../taskpool/DeferredTask';
 import { Fetch, FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
 import { DecoratableMangaScraper, type Chapter, Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { AESDecrypt } from '../Crypto';
+import { DecryptAES } from '../Crypto';
 
 type ContentData = {
     images: Record<string, { src: string }[]>;
@@ -52,6 +52,7 @@ export default class extends DecoratableMangaScraper {
         //fetch manifest to get key data
         const manifest = params.get('manifest_url');
         const { cryptokey } = await FetchJSON<{ cryptokey: string }>(new Request(new URL(manifest, this.URI)));
+
         const contentURI = new URL(params.get('contents') || params.get('contents_vertical') || params.get('contents_page'), response.url);
         contentURI.searchParams.set('ver', ver);
         const { images } = await FetchJSON<ContentData>(new Request(contentURI));
@@ -64,16 +65,15 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchImage(page: Page<PageParameters>, priority: Priority, signal: AbortSignal): Promise<Blob> {
+        const { keyData } = page.Parameters;
         const bytes = await this.imageTaskPool.Add(async () => {
             const response = await Fetch(new Request(page.Link, { signal }));
             return response.arrayBuffer();
         }, priority, signal);
-        const { keyData } = page.Parameters;
-        return Common.GetTypedData(await this.DecryptImage(bytes, keyData));
+        return Common.GetTypedData(await this.Decrypt(bytes, keyData));
     }
 
-    private async DecryptImage(encrypted: ArrayBuffer, keyData: string): Promise<ArrayBuffer> {
-        const data = new Uint8Array(encrypted);
-        return AESDecrypt(data.slice(16), GetBytesFromHex(keyData), { mode: 'CBC', iv: data.slice(0, 16) });
+    private async Decrypt(encrypted: ArrayBuffer, keyData: string): Promise<ArrayBuffer> {
+        return DecryptAES(encrypted.slice(16), GetBytesFromHex(keyData), { name: 'AES-CBC', iv: encrypted.slice(0, 16) });
     }
 }

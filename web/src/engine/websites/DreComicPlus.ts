@@ -7,7 +7,7 @@ import * as Common from './decorators/Common';
 import { GetBytesFromBase64 } from '../BufferEncoder';
 import { Exception } from '../Error';
 import { WebsiteResourceKey as R } from '../../i18n/ILocale';
-import { AESDecrypt } from '../Crypto';
+import { DecryptAES } from '../Crypto';
 
 type APIResult<T> = {
     items: T;
@@ -117,6 +117,10 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchImage(page: Page<PageData>, priority: Priority, signal: AbortSignal): Promise<Blob> {
         const blob = await Common.FetchImageAjax.call(this, page, priority, signal);
-        return Common.GetTypedData(await AESDecrypt(await blob.arrayBuffer(), GetBytesFromBase64(page.Parameters.key), { mode: 'CBC', iv: GetBytesFromBase64(page.Parameters.iv) } ));
+        return Common.GetTypedData(await this.Decrypt(await blob.arrayBuffer(), page.Parameters.key, page.Parameters.iv));
+    }
+
+    private async Decrypt(encrypted: ArrayBuffer, keyData: string, iv: string): Promise<ArrayBuffer> {
+        return DecryptAES(encrypted, GetBytesFromBase64(keyData), { name: 'AES-CBC', iv: GetBytesFromBase64(iv) });
     }
 }

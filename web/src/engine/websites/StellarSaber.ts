@@ -6,7 +6,7 @@ import { FetchCSS, FetchJSON, FetchWindowScript } from '../platform/FetchProvide
 import type { Priority } from '../taskpool/DeferredTask';
 import { GetBytesFromBase64 } from '../BufferEncoder';
 import { GetTypedData } from './decorators/Common';
-import { AESDecrypt } from '../Crypto';
+import { DecryptAES } from '../Crypto';
 
 type JSONChapter = {
     team: string;
@@ -72,12 +72,13 @@ export default class extends DecoratableMangaScraper {
                 chapter_id: `${chapterId}`
             }).toString()
         }));
-        return images.map(page => new Page<KeyData>(this, chapter, new URL(page, this.URI), { Referer: this.URI.href, key }));
+        return images.map(page => new Page<KeyData>(this, chapter, new URL(page, this.URI), { key, Referer: this.URI.href }));
     }
 
     public override async FetchImage(page: Page<KeyData>, priority: Priority, signal: AbortSignal): Promise<Blob> {
         const blob = await Common.FetchImageAjax.call(this, page, priority, signal);
-        const buffer = new Uint8Array(await blob.arrayBuffer());
-        return GetTypedData( await AESDecrypt(buffer.subarray(12), GetBytesFromBase64(page.Parameters.key), { mode: 'GCM', iv: buffer.subarray(0, 12), tagLength: 128 }));
+        const arrayBuffer = await blob.arrayBuffer();
+        const { key } = page.Parameters;
+        return GetTypedData(await DecryptAES(new Uint8Array(arrayBuffer, 12), GetBytesFromBase64(key), { name: 'AES-GCM', iv: new Uint8Array(arrayBuffer, 0, 12), tagLength: 128 }));
     }
 }

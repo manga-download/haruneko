@@ -6,8 +6,8 @@ import protoTypes from './ShueishaMangaPlus.proto?raw';
 import { FetchProto, FetchWindowScript } from '../platform/FetchProvider';
 import type { Priority } from '../taskpool/DeferredTask';
 import { GetBytesFromHex } from '../BufferEncoder';
+import { DecryptXOR } from '../Crypto';
 import { GetTypedData } from './decorators/Common';
-import { XOR } from '../Crypto';
 
 type MangaPlusResponse = {
     success: {
@@ -133,7 +133,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     private async DecryptImage(blob: Blob, key: string): Promise<Blob> {
-        return GetTypedData(XOR(new Uint8Array(await blob.arrayBuffer()), new Uint8Array(GetBytesFromHex(key))).buffer);
+        return GetTypedData(DecryptXOR(new Uint8Array(await blob.arrayBuffer()), new Uint8Array(GetBytesFromHex(key))).buffer);
     }
 
     private async FetchAPI<T extends JSONElement>(endpoint: string, schema: string, message: string): Promise<T> {

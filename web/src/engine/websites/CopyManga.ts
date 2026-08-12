@@ -1,10 +1,10 @@
 import { Tags } from '../Tags';
 import icon from './CopyManga.webp';
-import { GetBytesFromHex, GetUTF8FromBytes } from '../BufferEncoder';
+import { GetBytesFromHex, GetBytesFromUTF8, GetUTF8FromBytes } from '../BufferEncoder';
 import { FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
 import { DecoratableMangaScraper, type MangaPlugin, Manga, Chapter, Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { AESDecrypt } from '../Crypto';
+import { DecryptAES } from '../Crypto';
 
 type EncryptedChapters = { results: string; };
 
@@ -79,7 +79,7 @@ export default class extends DecoratableMangaScraper {
 
     private async Decrypt<T>(encryptedString: string, keyData: string): Promise<T> {
         const encrypted = GetBytesFromHex(encryptedString.slice(16, encryptedString.length));
-        const decrypted = await AESDecrypt(encrypted, keyData, { mode: 'CBC', iv: encryptedString.slice(0, 16) });
+        const decrypted = await DecryptAES(encrypted, GetBytesFromUTF8(keyData), { name: 'AES-CBC', iv: GetBytesFromUTF8(encryptedString.slice(0, 16)) });
         return <T>JSON.parse(GetUTF8FromBytes(decrypted));
     }
 }

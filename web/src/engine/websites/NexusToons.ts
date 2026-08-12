@@ -4,7 +4,7 @@ import { FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
 import { type MangaPlugin, Manga, Chapter, Page, DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import { GetBytesFromBase64, GetUTF8FromBytes } from '../BufferEncoder';
-import { SHA256 } from '../Crypto';
+import { HashUTF8 } from '../Crypto';
 
 type APICryptedData = {
     d: string;
@@ -18,7 +18,7 @@ type EncryptionKeys = {
     key: Uint8Array;
     rsbox: Uint8Array;
     sbox: Uint8Array;
-}
+};
 
 type APIManga = {
     title: string;
@@ -41,13 +41,12 @@ type APIPages = {
     pages: {
         imageUrl?: string;
         pageNumber: number;
-    }[]
+    }[];
 };
 
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
     private readonly apiURL = 'https://nexustoons.com/api/';
-    private readonly seed = 'OrionNexus2025CryptoKey!Secure';
     private readonly keys: EncryptionKeys[] = [];
     private token: string = undefined;
 
@@ -60,7 +59,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async Initialize(): Promise<void> {
-        await this.InitKeys(this.seed);
+        await this.InitKeys('OrionNexus2025CryptoKey!Secure');
         this.token = await FetchWindowScript<string>(new Request(this.URI), `localStorage.getItem('token') || null;`);
     }
 
@@ -76,7 +75,7 @@ export default class extends DecoratableMangaScraper {
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
         type This = typeof this;
         return Array.fromAsync(async function* (this: This) {
-            for (let page = 1, run = true; run; page ++) {
+            for (let page = 1, run = true; run; page++) {
                 const { data } = await this.FetchAPI<APIMangas>(`./mangas?page=${page}&limit=500`);
                 const mangas = (data ?? []).map(({ slug, title }) => new Manga(this, provider, slug, title));
                 mangas.length > 0 ? yield* mangas : run = false;
@@ -123,12 +122,12 @@ export default class extends DecoratableMangaScraper {
             h ^= key[index % key.length];
             resultBuffer[index] = h;
         }
-        return JSON.parse(GetUTF8FromBytes(resultBuffer)) as T;
+        return <T>JSON.parse(GetUTF8FromBytes(resultBuffer));
     }
 
     private async InitKeys(seed: string): Promise<void> {
         for (let index = 0; index < 5; index++) {
-            const key = new Uint8Array(await SHA256(`_orion_key_${index}_v2_${seed}`));
+            const key = await HashUTF8('SHA-256', `_orion_key_${index}_v2_${seed}`);
 
             // Init sboxes (this is RC4 KSA)
             const encryptionKeys: EncryptionKeys = {

@@ -5,7 +5,7 @@ import * as Common from './decorators/Common';
 import { FetchWindowScript } from '../platform/FetchProvider';
 import type { Priority } from '../taskpool/DeferredTask';
 import { GetBytesFromUTF8 } from '../BufferEncoder';
-import { AESDecrypt } from '../Crypto';
+import { DecryptAES } from '../Crypto';
 
 type ImagesData = {
     source_id: string;
@@ -45,6 +45,6 @@ export default class extends DecoratableMangaScraper {
 
     private async DecryptImage(encrypted: ArrayBuffer): Promise<Blob> {
         const ivAndKey = GetBytesFromUTF8('my2ecret782ecret');
-        return Common.GetTypedData(await AESDecrypt(encrypted, ivAndKey, { mode: 'CBC', iv: ivAndKey } ));
+        return Common.GetTypedData(await DecryptAES(encrypted, ivAndKey, { name: 'AES-CBC', iv: ivAndKey }));
     }
 }
