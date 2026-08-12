@@ -80,7 +80,7 @@
                 Settings.ViewerZoom.Value = 100;
                 break;
             case event.key === '/':
-                Settings.ViewerZoom.Reset();
+                Settings.ViewerZoom.Value=Settings.ViewerZoom.Setting.Default;
                 break;
             case event.key === '+' && !event.ctrlKey:
                 Settings.ViewerZoom.Increment();

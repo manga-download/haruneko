@@ -6,9 +6,9 @@ new TestFixture({
         title: 'NihonKuni'
     },
     container: {
-        url: 'https://nihonkuni.com/manga-oshi-no-ko-raw.html',
-        id: '/manga-oshi-no-ko-raw.html',
-        title: 'OSHI NO KO - RAW'
+        url: 'https://nihonkuni.com/manga/oshi-no-ko-raw-475.html',
+        id: '/manga/oshi-no-ko-raw-475.html',
+        title: 'OSHI NO KO'
     },
     child: {
         id: '/read-oshi-no-ko-raw-chapter-146.html',
