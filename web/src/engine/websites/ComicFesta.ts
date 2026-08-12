@@ -13,16 +13,16 @@ type JSONChapters = {
             free: {
                 endAt: string;
                 startAt: string;
-            },
+            };
             trial: {
                 endAt: string;
                 startAt: string;
-            }
-        }
-    }[]
+            };
+        };
+    }[];
 };
 
-@Common.MangaCSS(/^{origin}\/titles\/\d+/, 'section[class*="title-name-section"] h2', Common.WebsiteInfoExtractor({ queryBloat: 'span' }))
+@Common.MangaCSS(/^{origin}\/titles\/\d+/, 'section[class*="title-name-section"]', Common.WebsiteInfoExtractor({ queryBloat: 'span' }))
 @Common.MangasNotSupported()
 @ClipStudioReader.PagesSinglePageAJAX()
 @ClipStudioReader.ImageAjax()

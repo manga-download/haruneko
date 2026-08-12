@@ -25,8 +25,8 @@ type PartData = {
 
 type ImagePart = {
     binaryArray?: Uint8Array;
-    image?: HTMLImageElement;
-    scramble: boolean;
+    image?: ImageBitmap;
+    scrambled: boolean;
 };
 
 enum PartType {
@@ -140,7 +140,7 @@ export async function FetchImageAjax(this: MangaScraper, page: Page<PageData>, p
     return this.imageTaskPool.Add(async () => {
         try {
 
-            const pageData = page.Parameters;
+            const { scramble, width, height } = page.Parameters;
 
             //fetch Page XML
             const XML = await FetchXML(new Request(page.Link));
@@ -156,36 +156,37 @@ export async function FetchImageAjax(this: MangaScraper, page: Page<PageData>, p
                 };
             });
 
-            return DeScramble(new ImageData(pageData.width, pageData.height), async (_, ctx) => {
+            return DeScramble(new ImageData(width, height), async (_, ctx) => {
 
-                for (const partData of parts) {
-                    switch (partData.type) {
+                for (const part of parts) {
+                    switch (part.type) {
                         case PartType.DATA_TYPE_JPEG:
                         case PartType.DATA_TYPE_GIF:
                         case PartType.DATA_TYPE_PNG:
                         case PartType.DATA_TYPE_LESIA:
                         case PartType.DATA_TYPE_LESIA_OLD: {
 
-                            const partFileName = [pageIndex.toString().padStart(4, '0'), partData.number.toString().padStart(4, '0')].join('_') + '.bin';
+                            const partFileName = [`${pageIndex}`.padStart(4, '0'), `${part.number}`.padStart(4, '0')].join('_') + '.bin';
                             const imageUrl = new URL(endpoint);
-                            let type = partData.type;
+                            let type = part.type;
                             type !== PartType.DATA_TYPE_LESIA && type !== PartType.DATA_TYPE_LESIA_OLD || (type = PartType.DATA_TYPE_JPEG);
-                            imageUrl.searchParams.set('mode', type.toString());
+                            imageUrl.searchParams.set('mode', `${type}`);
                             imageUrl.searchParams.set('file', partFileName);
                             imageUrl.searchParams.set('reqtype', RequestType.REQUEST_TYPE_FILE);
                             imageUrl.searchParams.set('param', authkey);
-                            const part = await LoadPart(imageUrl, partData);
 
-                            if (part.image) {
+                            const { image, scrambled } = await LoadPart(imageUrl, part);
 
-                                if (part.scramble) {
+                            if (image) {
 
-                                    const numCols = pageData.scramble.width;
-                                    const numRow = pageData.scramble.height;
-                                    const pieceWidth = 8 * Math.floor(Math.floor(part.image.width / numCols) / 8);
-                                    const pieceHeight = 8 * Math.floor(Math.floor(part.image.height / numRow) / 8);
+                                if (scrambled) {
 
-                                    if (!(scrambleArray.length < numCols * numRow || part.image.width < 8 * numCols || part.image.height < 8 * numRow)) {
+                                    const numCols = scramble.width;
+                                    const numRow = scramble.height;
+                                    const pieceWidth = 8 * Math.floor(Math.floor(image.width / numCols) / 8);
+                                    const pieceHeight = 8 * Math.floor(Math.floor(image.height / numRow) / 8);
+
+                                    if (!(scrambleArray.length < numCols * numRow || image.width < 8 * numCols || image.height < 8 * numRow)) {
                                         for (let scrambleIndex = 0; scrambleIndex < scrambleArray.length; scrambleIndex++) {
                                             const pieceX = scrambleIndex % numCols * pieceWidth;
                                             const pieceY = Math.floor(scrambleIndex / numCols) * pieceHeight;
@@ -193,12 +194,12 @@ export async function FetchImageAjax(this: MangaScraper, page: Page<PageData>, p
                                             const sourceX = p % numCols * pieceWidth;
                                             const sourceY = Math.floor(p / numCols) * pieceHeight;
                                             ctx.clearRect(pieceX, pieceY, pieceWidth, pieceHeight);
-                                            ctx.drawImage(part.image, sourceX, sourceY, pieceWidth, pieceHeight, pieceX, pieceY, pieceWidth, pieceHeight);
+                                            ctx.drawImage(image, sourceX, sourceY, pieceWidth, pieceHeight, pieceX, pieceY, pieceWidth, pieceHeight);
                                         }
-                                        part.image = null;
-
                                     }
-                                } else ctx.drawImage(part.image, 0, 0);
+                                } else ctx.drawImage(image, 0, 0);
+
+                                image.close();
                             } else throw new Error('Binary image not supported !');
                             break;
                         }
@@ -231,19 +232,24 @@ async function FetchXML(request: Request): Promise<XMLDocument> {
     const data = await response.text();
     return new DOMParser().parseFromString(data, 'text/xml');
 }
+
 async function LoadPart(imageUrl: URL, partData: PartData): Promise<ImagePart> {
     if (partData.type === PartType.DATA_TYPE_LESIA || partData.type === PartType.DATA_TYPE_LESIA_OLD) {
         throw new Error('Binary part not supported');
     } else {
-        return { image: await LoadImage(imageUrl), scramble: partData.scramble };
+        return { image: await LoadImage(imageUrl), scrambled: partData.scramble };
     }
 }
 
-async function LoadImage(url: URL): Promise<HTMLImageElement> {
-    return new Promise((resolve, reject) => {
-        const image = new Image();
-        image.onload = () => resolve(image);
-        image.onerror = error => reject(error);
-        image.src = url.href;
-    });
+async function LoadImage(url: URL): Promise<ImageBitmap> {
+    try {
+        const response = await Fetch(new Request(url));
+        if (!response.ok) {
+            throw new Error(`Failed to load image: ${response.statusText}`);
+        }
+        const blob = await response.blob();
+        return await createImageBitmap(blob);
+    } catch (error) {
+        throw error;
+    }
 }
