@@ -46,11 +46,17 @@
     async function updateMedia( media: MediaContainer<MediaChild> ): Promise<MediaContainer<MediaChild>> {
         items = [];
         selectedItems = [];
-        if (media) {
-            await media?.Update();
-            items = media?.Entries.Value as MediaContainer<MediaItem>[];
-        }
-        return media;
+        return new Promise(async (resolve, reject) => {
+            try {
+                if (media) {
+                    await media?.Update();
+                    items = media?.Entries.Value as MediaContainer<MediaItem>[];
+                }
+                resolve(media);
+            } catch (error) {
+                reject(error);
+            }
+        });
     }
 
     $effect(() => {

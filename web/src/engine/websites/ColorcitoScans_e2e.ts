@@ -6,17 +6,17 @@ new TestFixture({
         title: 'Colorcito Scans'
     },
     container: {
-        url: 'https://colorcitoscan.com/ver/por-fin-contigo',
-        id: 'por-fin-contigo',
-        title: 'Por Fin Contigo'
+        url: 'https://coloresito.site/ver/antologia-yuri-verano-lluvioso',
+        id: 'antologia-yuri-verano-lluvioso',
+        title: 'Antologia Yuri-Verano Lluvioso'
     },
     child: {
-        id: 'capitulo-23',
-        title: '23'
+        id: 'capitulo-1',
+        title: 'Cap. 1'
     },
     entry: {
         index: 0,
-        size: 2_603_681,
+        size: 703_240,
         type: 'image/jpeg'
     }
 }).AssertWebsite();
