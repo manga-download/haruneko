@@ -8,7 +8,14 @@ import { GetTypedData } from './decorators/Common';
 import DeScramble from '../transformers/ImageDescrambler';
 import { RateLimit } from '../taskpool/RateLimit';
 import { RandomInt } from '../Random';
-import { SHA256, XOR } from '../Crypto';
+import { DecryptXOR, HashUTF8 } from '../Crypto';
+import { AddAntiScrapingDetection, FetchRedirection } from '../platform/AntiScrapingDetection';
+
+AddAntiScrapingDetection(async (invoke) => {
+    const result = await invoke<boolean>(`document.querySelector('script[type="ignore"]') && true || false;`);
+    console.log(result);
+    return result ? FetchRedirection.Interactive : undefined;
+}, /https:\/\/saficizgi\.com/);
 
 type APICollection<T> = {
     items: T[];
@@ -47,7 +54,7 @@ type PageData = {
 };
 
 type DescramblingData = {
-    a: number; // used in RNG fucntion
+    a: number; // used in RNG function
     c: number; // number of columns
     h: number; // number of rows
     r: string; // used in scrambledBytes generation
@@ -60,6 +67,81 @@ type HeartBeat = {
     interval: number;
     lastTime: number;
 };
+
+class PRNG {
+    private combinedState: number;
+    private scrambleChoice: number;
+
+    constructor(seed: string, scrambleChoice: number) {
+        this.scrambleChoice = scrambleChoice;
+        let state1 = 0xDEADBEEF; // 3735928559
+        let state2 = 1103547991;
+
+        for (let t = 0; t < seed.length; t++) {
+            let charCode = seed.charCodeAt(t);
+            state1 = Math.imul(state1 ^ charCode, 2654435761);
+            state2 = Math.imul(state2 ^ charCode, 1597334677);
+        }
+
+        switch (scrambleChoice % 4) {
+            case 1:
+                state1 = Math.imul(state1 ^ state1 >>> 15, 2246822507);
+                state2 = Math.imul(state2 ^ state2 >>> 13, 3266489909);
+                break;
+            case 2:
+                state1 = Math.imul(state1 ^ state1 >>> 16, 2146121005);
+                state2 = Math.imul(state2 ^ state2 >>> 15, 2221713035);
+                break;
+            case 3:
+                state1 = Math.imul(state1 ^ state1 << 5, 2654435761);
+                state2 = Math.imul(state2 ^ state2 << 7, 2246822507);
+                break;
+            default:
+                state1 = Math.imul(state1 ^ state1 >>> 16, 2246822507) ^ Math.imul(state2 ^ state2 >>> 13, 3266489909);
+                state2 = Math.imul(state2 ^ state2 >>> 16, 2246822507) ^ Math.imul(state1 ^ state1 >>> 13, 3266489909);
+        }
+
+        this.combinedState = (state1 >>> 0) + (state2 >>> 0);
+    }
+
+    // Generates the next random number between 0 and 1
+    #Next(): number {
+        const multipliers = [1103515245, 1664525, 22695477, 134775813];
+        const increments = [12345, 1013904223, 1, 1];
+
+        let e = multipliers[this.scrambleChoice % 4];
+        let r = increments[this.scrambleChoice % 4];
+
+        this.combinedState = Math.imul(this.combinedState, e) + r;
+        this.combinedState = this.combinedState & 0x7FFFFFFF; // Keep 31 bits
+        return this.combinedState / 2147483648;
+    }
+
+    // Public method returning the desired tileOrder array
+    public Sequence(scrambledBytes: number[], numCols: number, numRows: number): number[] {
+        const tileOrder: number[] = [];
+        const numTiles = numCols * numRows;
+        let currentByteIndex = 0;
+
+        const threshold = () => 0.3 + 0.4 * this.#Next();
+
+        while (tileOrder.length < numTiles && currentByteIndex < scrambledBytes.length) {
+            const t = threshold();
+            if (this.#Next() > t && tileOrder.length < numTiles) {
+                tileOrder.push(scrambledBytes[currentByteIndex]);
+            } else {
+                this.#Next();
+            }
+            currentByteIndex++;
+        }
+
+        while (tileOrder.length < numTiles && currentByteIndex < scrambledBytes.length) {
+            tileOrder.push(scrambledBytes[currentByteIndex]);
+            currentByteIndex++;
+        }
+        return tileOrder;
+    }
+}
 
 export default class extends DecoratableMangaScraper {
     private readonly heartbeats = new Map<string, HeartBeat>();
@@ -102,7 +184,7 @@ export default class extends DecoratableMangaScraper {
         const { slug: mangaSlug } = <MediaID>JSON.parse(chapter.Parent.Identifier);
 
         //fetch in browser because of anti bot
-        const { images, heartbeatIntervalMs } = await FetchWindowScript<APIPages>(new Request(new URL(`/oku/${mangaSlug}/${chapterSlug}`, this.apiURL)), `
+        const { images, heartbeatIntervalMs } = await FetchWindowScript<APIPages>(new Request(new URL(`/oku/${mangaSlug}/${chapterSlug}`, this.URI)), `
             new Promise(async (resolve, reject) => {
                 try {
                     const response = await fetch('/api/reader/manifest/${chapterID}?from=0&count=9999&machine=0');
@@ -140,7 +222,7 @@ export default class extends DecoratableMangaScraper {
 
             const salt = page.Link.href.match(/\/api\/v\/[^/]+\/([^/]+)/).at(1);
             const encrypted = GetBytesFromBase64(armor);
-            const hash = await this.GetXorKey(salt, decodeURIComponent(page.Link.pathname.split('/').at(-1)));
+            const hash = new Uint8Array(await HashUTF8('SHA-256', `${salt}${decodeURIComponent(page.Link.pathname.split('/').at(-1))}`));
 
             const decrypted = GetUTF8FromBytes(this.XOR(encrypted, hash));
             const { s, r, c: numCols, h: numRows, a: scrambleChoice, ow, oh } = <DescramblingData>JSON.parse(decrypted);
@@ -149,9 +231,13 @@ export default class extends DecoratableMangaScraper {
             // TODO: Extract to PRNG class
             return DeScramble(blob, async (image, ctx) => {
                 const scrambledBytes = Array.from(this.XOR(GetBytesFromBase64(r), s).slice(2));
-                const tileOrder = [];
+                //const tileOrder = [];
+                // const numTiles = numCols * numRows;
+
+                const tileOrder = new PRNG(s + 'safi_v8_poly', scrambleChoice).Sequence(scrambledBytes, numCols, numRows);
+
+                /*
                 const generator = GetRNGenerator(s + 'safi_v8_poly', scrambleChoice);
-                const numTiles = numCols * numRows;
                 let currentByteIndex = 0;
 
                 const threshold = () => 0.3 + 0.4 * generator();
@@ -168,7 +254,7 @@ export default class extends DecoratableMangaScraper {
                 while (tileOrder.length < numTiles && currentByteIndex < scrambledBytes.length) {
                     tileOrder.push(scrambledBytes[currentByteIndex]);
                     currentByteIndex++;
-                }
+                }*/
 
                 const tileWidth = Math.floor(image.width / numCols);
                 const tileHeight = Math.floor(image.height / numRows);
@@ -179,55 +265,13 @@ export default class extends DecoratableMangaScraper {
                 ctx.canvas.width = JSON_imageWidth || image.width;
                 ctx.canvas.height = JSON__imageHeight || image.height;
 
-                for (let tileIndex = 0; tileIndex < numTiles; tileIndex++) {
+                for (let tileIndex = 0; tileIndex < numCols * numRows; tileIndex++) {
                     const sourceTileIndex = tileOrder[tileIndex];
                     const srcX = sourceTileIndex % numCols * tileWidth;
                     const srcY = Math.floor(sourceTileIndex / numCols) * tileHeight;
                     const destX = tileIndex % numCols * tileWidth;
                     const destY = Math.floor(tileIndex / numCols) * tileHeight;
                     ctx.drawImage(image, srcX, srcY, tileWidth, tileHeight, destX, destY, tileWidth, tileHeight);
-                }
-
-                function GetRNGenerator(seed: string, scrambleChoice: number): Function {
-                    let state1 = 0xDEADBEEF; // 3735928559
-                    let state2 = 1103547991;
-
-                    for (let t = 0; t < seed.length; t++) {
-                        let charCode = seed.charCodeAt(t);
-                        state1 = Math.imul(state1 ^ charCode, 2654435761);
-                        state2 = Math.imul(state2 ^ charCode, 1597334677);
-                    }
-
-                    switch (scrambleChoice % 4) {
-                        case 1:
-                            state1 = Math.imul(state1 ^ state1 >>> 15, 2246822507);
-                            state2 = Math.imul(state2 ^ state2 >>> 13, 3266489909);
-                            break;
-                        case 2:
-                            state1 = Math.imul(state1 ^ state1 >>> 16, 2146121005);
-                            state2 = Math.imul(state2 ^ state2 >>> 15, 2221713035);
-                            break;
-                        case 3:
-                            state1 = Math.imul(state1 ^ state1 << 5, 2654435761);
-                            state2 = Math.imul(state2 ^ state2 << 7, 2246822507);
-                            break;
-                        default:
-                            state1 = Math.imul(state1 ^ state1 >>> 16, 2246822507) ^ Math.imul(state2 ^ state2 >>> 13, 3266489909);
-                            state2 = Math.imul(state2 ^ state2 >>> 16, 2246822507) ^ Math.imul(state1 ^ state1 >>> 13, 3266489909);
-                    }
-
-                    let combinedState = (state1 >>> 0) + (state2 >>> 0);
-                    return function () {
-                        const multipliers = [1103515245, 1664525, 22695477, 134775813];
-                        const increments = [12345, 1013904223, 1, 1];
-
-                        let e = multipliers[scrambleChoice % 4];
-                        let r = increments[scrambleChoice % 4];
-
-                        combinedState = Math.imul(combinedState, e) + r;
-                        combinedState = combinedState & 0x7FFFFFFF; // Keep 31 bits
-                        return combinedState / 2147483648;
-                    };
                 }
             });
         }, priority, signal);
@@ -271,10 +315,6 @@ export default class extends DecoratableMangaScraper {
             return result;
         };
         const keyBytes: Uint8Array = key instanceof Uint8Array ? key : computeKey(key as string);
-        return XOR(data, keyBytes);
-    }
-
-    private async GetXorKey(salt: string, pageName: string): Promise<Uint8Array> {
-        return new Uint8Array(await SHA256(`${salt}${pageName}`));
+        return DecryptXOR(data, keyBytes);
     }
 }
