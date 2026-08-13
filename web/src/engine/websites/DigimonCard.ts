@@ -4,15 +4,11 @@ import { DecoratableMangaScraper, Manga, type MangaPlugin } from '../providers/M
 import * as Common from './decorators/Common';
 import * as ClipStudioReader from './decorators/ClipStudioReader';
 
-function ChapterExtractor(anchor: HTMLAnchorElement) {
-    return {
-        id: anchor.pathname + anchor.search,
-        title: anchor.querySelector<HTMLDivElement>('div.chapterListTitle').textContent.trim()
-    };
-}
-
 @Common.MangaCSS(/^{origin}\/digimon_liberator\/(en|jp)\/comic\/$/, 'meta[name="Description"]')
-@Common.ChaptersSinglePageCSS('section#chapters ul.chapterList li.chapterListBox > a:not(.closed)', undefined, ChapterExtractor)
+@Common.ChaptersSinglePageCSS<HTMLAnchorElement>('section#chapters ul.chapterList li.chapterListBox > a:not(.closed)', undefined, anchor => ({
+    id: anchor.pathname + anchor.search,
+    title: anchor.querySelector<HTMLDivElement>('div.chapterListTitle').textContent.trim()
+}))
 @ClipStudioReader.PagesSinglePageAJAX()
 @ClipStudioReader.ImageAjax()
 export default class extends DecoratableMangaScraper {
