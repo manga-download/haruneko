@@ -15,7 +15,7 @@ export async function bundle(blinkApplicationSourceDirectory, blinkApplicationRe
     // TODO: include ffmpeg
     // TODO: include imagemagick
     // TODO: include kindlegen
-    await createSnapImage(blinkDeploymentTemporaryDirectory, blinkDeploymentOutputDirectory);
+    await createSnapImage(blinkApplicationResourcesDirectory, blinkDeploymentTemporaryDirectory, blinkDeploymentOutputDirectory);
 }
 
 async function bundleApp(blinkApplicationSourceDirectory, blinkDeploymentTemporaryDirectory) {
@@ -28,38 +28,41 @@ async function updateBinary(blinkApplicationResourcesDirectory, blinkDeploymentT
     await fs.rename(binary, binary.replace(/electron$/i, `${pkgConfig.name}`));
 }
 
-async function createSnapImage(blinkDeploymentTemporaryDirectory, blinkDeploymentOutputDirectory) {
+async function createSnapImage(blinkApplicationResourcesDirectory, blinkDeploymentTemporaryDirectory, blinkDeploymentOutputDirectory) {
     const snapfile = path.basename(blinkDeploymentTemporaryDirectory).replace(/^electron/i, pkgConfig.name) + '.snap';
     const yaml = path.join(blinkDeploymentOutputDirectory, 'snapcraft.yaml');
     const desktop = path.join(blinkDeploymentOutputDirectory, 'snap', 'gui', `${pkgConfig.name}.desktop`);
-    try {
-        await fs.unlink(path.join(blinkDeploymentOutputDirectory, snapfile));
-        await fs.unlink(yaml);
-        await fs.unlink(desktop);
-    } catch { }
+    const icon = path.join(blinkDeploymentOutputDirectory, 'snap', 'gui', `${pkgConfig.name}.png`);
+    try { await fs.unlink(path.join(blinkDeploymentOutputDirectory, snapfile)); } catch { }
+    try { await fs.unlink(yaml); } catch { }
+    try { await fs.unlink(desktop); } catch { }
+    try { await fs.unlink(icon); } catch { }
     await createSnapcraftYaml(blinkDeploymentTemporaryDirectory, blinkDeploymentOutputDirectory);
-    await createDesktopEntry(blinkDeploymentOutputDirectory);
+    await createDesktopEntry(blinkApplicationResourcesDirectory, blinkDeploymentOutputDirectory);
     await run('sudo snapcraft pack --destructive-mode', blinkDeploymentOutputDirectory);
     await run(`sudo mv ${pkgConfig.name}*.snap ${snapfile}`, blinkDeploymentOutputDirectory);
     await run('snapcraft upload *.snap --release=edge', blinkDeploymentOutputDirectory);
 }
 
-async function createDesktopEntry(blinkDeploymentOutputDirectory) {
+async function createDesktopEntry(blinkApplicationResourcesDirectory, blinkDeploymentOutputDirectory) {
     const directory = path.join(blinkDeploymentOutputDirectory, 'snap', 'gui');
     await fs.mkdir(directory, { recursive: true });
     const file = path.join(directory, `${pkgConfig.name}.desktop`);
     // A desktop entry is mandatory for xdg-desktop-portal to register the snap,
     // otherwise all portal requests (e.g. the file chooser) are denied.
-    // Field semantics follow hakuneko/build-app.config (meta.type, meta.categories).
+    // Field semantics follow hakuneko/build-app.config (meta.type, meta.categories),
+    // except Icon which must be the absolute path of the icon file shipped in meta/gui.
     await fs.writeFile(file, `[Desktop Entry]
 Version=1.0
 Type=Application
 Name=${pkgConfig.title}
 GenericName=${pkgConfig.description}
 Exec=${pkgConfig.name}
-Icon=${pkgConfig.name}
+Icon=\${SNAP}/meta/gui/${pkgConfig.name}.png
 Categories=Network;FileTransfer;
 `);
+    // Snapcraft copies snap/gui into meta/gui of the snap
+    await fs.copyFile(path.join(blinkApplicationResourcesDirectory, process.platform, 'icon.png'), path.join(directory, `${pkgConfig.name}.png`));
 }
 
 async function createSnapcraftYaml(blinkDeploymentTemporaryDirectory, blinkDeploymentOutputDirectory) {
