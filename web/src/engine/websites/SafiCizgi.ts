@@ -11,6 +11,9 @@ import { RandomInt } from '../Random';
 import { DecryptXOR, HashUTF8 } from '../Crypto';
 import { AddAntiScrapingDetection, FetchRedirection } from '../platform/AntiScrapingDetection';
 
+// TODO : fix hydraded chapter coming empty for some series
+// TODO : fix Anubis detection (anti bot)
+
 AddAntiScrapingDetection(async (invoke) => {
     const result = await invoke<boolean>(`document.querySelector('script[type="ignore"]') && true || false;`);
     console.log(result);
@@ -208,7 +211,6 @@ export default class extends DecoratableMangaScraper {
                 const { interval, lastTime } = this.heartbeats.get(chapterId);
                 if (Date.now() > interval + lastTime) {
                     await this.SendHeartBeat(chapterId, page.Parameters.index);
-                    this.heartbeats.get(chapterId).lastTime = Date.now();
                 }
             }
 
@@ -228,33 +230,9 @@ export default class extends DecoratableMangaScraper {
             const { s, r, c: numCols, h: numRows, a: scrambleChoice, ow, oh } = <DescramblingData>JSON.parse(decrypted);
             const blob = await GetTypedData(this.XOR(new Uint8Array(await response.arrayBuffer()), hash).buffer);
 
-            // TODO: Extract to PRNG class
             return DeScramble(blob, async (image, ctx) => {
                 const scrambledBytes = Array.from(this.XOR(GetBytesFromBase64(r), s).slice(2));
-                //const tileOrder = [];
-                // const numTiles = numCols * numRows;
-
                 const tileOrder = new PRNG(s + 'safi_v8_poly', scrambleChoice).Sequence(scrambledBytes, numCols, numRows);
-
-                /*
-                const generator = GetRNGenerator(s + 'safi_v8_poly', scrambleChoice);
-                let currentByteIndex = 0;
-
-                const threshold = () => 0.3 + 0.4 * generator();
-                while (tileOrder.length < numTiles && currentByteIndex < scrambledBytes.length) {
-                    const t = threshold();
-                    if (generator() > t && tileOrder.length < numTiles) {
-                        tileOrder.push(scrambledBytes[currentByteIndex]);
-                    } else {
-                        generator();
-                    }
-                    currentByteIndex++;
-                }
-
-                while (tileOrder.length < numTiles && currentByteIndex < scrambledBytes.length) {
-                    tileOrder.push(scrambledBytes[currentByteIndex]);
-                    currentByteIndex++;
-                }*/
 
                 const tileWidth = Math.floor(image.width / numCols);
                 const tileHeight = Math.floor(image.height / numRows);
@@ -299,6 +277,7 @@ export default class extends DecoratableMangaScraper {
                 'Sec-Fetch-Site': 'same-origin'
             }
         }));
+        this.heartbeats.get(chapterId).lastTime = Date.now();
     }
 
     private XOR(data: Uint8Array, key: Uint8Array | string): Uint8Array<ArrayBuffer> {
