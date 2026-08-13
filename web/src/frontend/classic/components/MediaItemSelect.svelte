@@ -8,13 +8,10 @@
         Dropdown,
         InlineNotification,
         Loading,
-        MenuButton,
-        MenuItem,
         Search,
     } from 'carbon-components-svelte';
     import ChevronSort from 'carbon-icons-svelte/lib/ChevronSort.svelte';
     import EarthFilled from 'carbon-icons-svelte/lib/EarthFilled.svelte';
-    import CloudDownload from 'carbon-icons-svelte/lib/CloudDownload.svelte';
 
     import { fade } from 'svelte/transition';
 
@@ -46,12 +43,6 @@
         loadItem = updateMedia(UI.selectedMedia);
     });
 
-    /**
-     * Updates the displayed items from the selected media container.
-     *
-     * @param media - The media container whose entries should be displayed.
-     * @returns A promise resolving to the provided media container.
-     */
     async function updateMedia( media: MediaContainer<MediaChild> ): Promise<MediaContainer<MediaChild>> {
         items = [];
         selectedItems = [];
@@ -74,14 +65,7 @@
         UI.selectedItemNext = filteredItems[position - 1];
     });
 
-    /**
-     * Creates a handler that selects an item when it is viewed directly.
-     *
-     * @param item - The item associated with the handler.
-     * @returns A mouse event handler for the item.
-     */
-    const onItemView = (item: MediaContainer<MediaItem>) => (event:MouseEvent) => {
-        event.stopPropagation();
+    const onItemView = (item: MediaContainer<MediaItem>) => (event) => {
         if (item === UI.selectedItem || event.ctrlKey || event.shiftKey) return;
         UI.selectedItem = item;
     };
@@ -147,29 +131,10 @@
     let selectedDragItems: MediaContainer<MediaItem>[] = [];
     let contextItem: MediaContainer<MediaItem> = $state();
     
-    /** Clears the item associated with the context menu. */
     function onContextMenuClose() {
         contextItem = null;
     }
-
-    /** Resets item selection, drag state, and context-menu state. */
-    function resetSelection() {
-        multipleSelectionFrom = -1;
-        multipleSelectionTo = -1;
-        multipleSelectionDragFrom = -1;
-        multipleSelectionDragTo = -1;
-        selectedDragItems = [];
-        selectedItems = [];
-        contextItem = null;
-    }
-    /**
-     * Creates a pointer handler for selecting an item or starting a drag selection.
-     *
-     * @param item - The item associated with the pointer event.
-     * @returns A pointer event handler for the item.
-     */
-    const mouseHandler = (item: MediaContainer<MediaItem>) => (event: PointerEvent) => {
-        event.stopPropagation();
+    const mouseHandler = (item: MediaContainer<MediaItem>) => (event: any) => {
         if (event.button === 2) {
             contextItem = item;
         }
@@ -191,14 +156,8 @@
             }
         }
 
-        /**
-         * Applies click, range, toggle, or drag selection to the current item.
-         *
-         * @param event - The pointer event that completed the selection.
-         * @param item - The item selected by the event.
-         */
         function onItemClick(
-            event: PointerEvent,
+            event: MouseEvent,
             item: MediaContainer<MediaItem>,
         ) {
             if (multipleSelectionDragFrom !== multipleSelectionDragTo) {
@@ -262,11 +221,6 @@
         }
     };
 
-    /**
-     * Enqueues the supplied media items for download after obtaining directory access.
-     *
-     * @param items - The media items to enqueue.
-     */
     async function downloadItems(items: MediaContainer<MediaItem>[]) {
         try {
             await HakuNeko.SettingsManager.OpenScope().Get<Directory>(GlobalKey.MediaDirectory).EnsureAccess();
@@ -277,24 +231,7 @@
         }
         items.forEach(item => window.HakuNeko.DownloadManager.Enqueue(item as StoreableMediaContainer<MediaItem>));
     }
-    /**
-     * Enqueues all items that have not been viewed or are not currently being viewed.
-     *
-     * @param items - The media items to filter and enqueue.
-     */
-    async function downloadUnviewedItems(items: MediaContainer<MediaItem>[]) {
-        const unvieweditems = await items.reduce(async (accumP, current) => {
-            const accum = await accumP;
-            const flag = await window.HakuNeko.ItemflagManager.GetItemFlagType(current);
-            if (flag !== FlagType.Viewed && flag !== FlagType.Current) {
-                accum.push(current);
-            }
-            return accum;
-        }, Promise.resolve([]));
-        return downloadItems(unvieweditems);
-    }
 
-    /** Toggles the order in which the filtered items are displayed. */
     function reverseSort() {
         reverseSortOrder = !reverseSortOrder;
     }
@@ -398,9 +335,7 @@
     <div id="ItemFilter">
         <Search id="ItemFilterSearch" size="sm" bind:value={itemNameFilter} />
     </div>
-    <!-- svelte-ignore a11y_click_events_have_key_events -->
-    <!-- svelte-ignore a11y_no_static_element_interactions -->
-    <div id="ItemList" class="list" bind:this={itemsdiv} onclick={resetSelection}>
+    <div id="ItemList" class="list" bind:this={itemsdiv}>
         {#await loadItem}
             <div class="loading center">
                 <div><Loading withOverlay={false} /></div>
@@ -413,7 +348,7 @@
                     multilang={!langFilter && MediaLanguages.length > 1}
                     selected={selectedItems.includes(item)}
                     hover={item === contextItem}
-                    onView={(event) => onItemView(item)(event)}
+                    onView={(event) => onItemView(item)(event.detail)}
                     onmousedown={mouseHandler(item)}
                     onmouseup={mouseHandler(item)}
                     onmouseenter={mouseHandler(item)}
@@ -429,32 +364,6 @@
             </div>
         {/await}
     </div>
-    {#if items?.length > 0}
-        <div id="DownloadButtons">
-            {#if selectedItems.length > 0}
-                <MenuButton labelText="Download" size="sm" intrinsicAlign="end">
-                    {#if selectedItems.length === 1}
-                        <MenuItem on:click={() => downloadItems(selectedItems)}>Selected (1)</MenuItem>
-                    {:else }
-                        <MenuItem on:click={() => downloadItems(selectedItems.toReversed())}>Selecteds ({selectedItems.length})</MenuItem>
-                    {/if}
-                    <MenuItem
-                        on:click={() => downloadUnviewedItems(filteredItems.toReversed())}
-                    >All unviewed</MenuItem>
-                    <MenuItem on:click={() => downloadItems(filteredItems.toReversed())}>All</MenuItem>
-                </MenuButton>
-            {:else}
-                <Button
-                    size="small"
-                    icon={CloudDownload}
-                    iconDescription="Download all"
-                    onclick={() => downloadUnviewedItems(filteredItems.toReversed())}
-                >
-                    Download all unviewed
-                </Button>
-            {/if}
-        </div>
-    {/if}
     <div id="ItemBottom">
         Items: {filteredItems.length}/{items.length}
         <Button
@@ -480,14 +389,13 @@
         min-height: 0;
         height: 100%;
         grid-template-columns: 1fr 4px;
-        grid-template-rows: 2.2em 2.2em 2.2em 1fr fit-content(2em) 2em;
+        grid-template-rows: 2.2em 2.2em 2.2em 1fr 2em;
         gap: 0.3em 0.3em;
         grid-template-areas:
             'ItemTitle Nothing'
             'LanguageFilter Resize'
             'ItemFilter Resize'
             'ItemList Resize'
-            'DownloadButtons Resize'
             'ItemBottom Resize';
         grid-area: Item;
         min-width: 22em;
@@ -515,13 +423,6 @@
     #ItemBottom {
         grid-area: ItemBottom;
         margin: 0.25em;
-    }
-    #DownloadButtons {
-        grid-area: DownloadButtons;
-        margin: 0.25em;
-    }
-    #DownloadButtons > :global(button) {
-        width: 100%;
     }
     :global(#ItemList .list) {
         white-space: nowrap;
