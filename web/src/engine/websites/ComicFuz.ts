@@ -3,11 +3,11 @@ import icon from './ComicFuz.webp';
 import protoTypes from './ComicFuz.proto?raw';
 import protobuf from 'protobufjs';
 import { GetBytesFromHex } from '../BufferEncoder';
+import { DecryptAES } from '../Crypto';
 import type { Priority } from '../taskpool/TaskPool';
 import { FetchProto } from '../platform/FetchProvider';
 import { DecoratableMangaScraper, type MangaPlugin, Manga, Chapter, Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { AESDecrypt } from '../Crypto';
 
 type APIManga = {
     manga: {
@@ -105,10 +105,11 @@ export default class extends DecoratableMangaScraper {
     public override async FetchImage(page: Page<PageParameters>, priority: Priority, signal: AbortSignal): Promise<Blob> {
         const data = await Common.FetchImageAjax.call(this, page, priority, signal, true);
         const { keyData, iv } = page.Parameters;
-        return keyData && iv ? this.DecryptPicture(data, page.Parameters) : data;
+        return keyData && iv ? this.DecryptPicture(data, keyData, iv) : data;
     }
 
-    private async DecryptPicture(encrypted: Blob, page: PageParameters): Promise<Blob> {
-        return Common.GetTypedData(await AESDecrypt(await encrypted.arrayBuffer(), GetBytesFromHex(page.keyData), { mode: 'CBC', iv: GetBytesFromHex(page.iv) } ));
+    private async DecryptPicture(encrypted: Blob, keyData: string, iv: string): Promise<Blob> {
+        const decrypted = await DecryptAES(await encrypted.arrayBuffer(), GetBytesFromHex(keyData), { name: 'AES-CBC', iv: GetBytesFromHex(iv) });
+        return Common.GetTypedData(decrypted);
     }
 }

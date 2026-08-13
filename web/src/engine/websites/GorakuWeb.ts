@@ -5,7 +5,7 @@ import type { Priority } from '../taskpool/DeferredTask';
 import { Fetch, FetchNextJS } from '../platform/FetchProvider';
 import { DecoratableMangaScraper, type Manga, Chapter, Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { AESDecrypt } from '../Crypto';
+import { DecryptAES } from '../Crypto';
 
 type HydratedChapters = {
     episodeList: {
@@ -59,10 +59,10 @@ export default class extends DecoratableMangaScraper {
             return response.arrayBuffer();
         }, priority, signal);
         const { keyData, iv } = page.Parameters;
-        return Common.GetTypedData(keyData && iv ? await this.DecryptImage(bytes, keyData, iv) : bytes);
+        return Common.GetTypedData(keyData && iv ? await this.Decrypt(bytes, keyData, iv) : bytes);
     }
 
-    private async DecryptImage(encrypted: ArrayBuffer, keyData: string, iv: string): Promise<ArrayBuffer> {
-        return AESDecrypt(encrypted, GetBytesFromHex(keyData), { mode: 'CBC', iv: GetBytesFromHex(iv) });
+    private async Decrypt(encrypted: ArrayBuffer, keyData: string, iv: string): Promise<ArrayBuffer> {
+        return DecryptAES(encrypted, GetBytesFromHex(keyData), { name: 'AES-CBC', iv: GetBytesFromHex(iv) });
     }
 }

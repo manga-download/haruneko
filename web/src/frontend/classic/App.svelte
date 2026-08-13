@@ -20,6 +20,7 @@
     // UI: Stores
     import { Settings } from './stores/Settings.svelte';
     import { Store as UI} from './stores/Stores.svelte';
+    import StartupGuide from './components/startupguide/StartupGuide.svelte';
 
     let resolveFinishLoading: () => void;
     export const FinishLoading = Promise.race([
@@ -37,7 +38,9 @@
 </script>
 
 <UserMessage />
-
+{#if Settings.StartupGuideEnabled.Value}
+    <StartupGuide/>
+{/if}
 
 <Theme theme={Settings.Theme.Value}>
     <AppBar
