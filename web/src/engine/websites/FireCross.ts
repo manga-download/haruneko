@@ -31,7 +31,7 @@ function ChapterExtractor(element: HTMLElement) {
 @ClipStudioReader.ImageAjax()
 
 export default class extends DecoratableMangaScraper {
-    private readonly apiUrl = 'https://firecross.jp/api/';
+    private readonly apiURL = 'https://firecross.jp/api/';
 
     public constructor() {
         super('firecross', 'FireCross', 'https://firecross.jp', Tags.Media.Manga, Tags.Language.Japanese, Tags.Source.Official);
@@ -42,8 +42,8 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const chapterID: ChapterID = JSON.parse(chapter.Identifier);
-        const { redirect } = await FetchJSON<APIResponse>(new Request(new URL('reader', this.apiUrl), {
+        const { id, token } = <ChapterID>JSON.parse(chapter.Identifier);
+        const { redirect } = await FetchJSON<APIResponse>(new Request(new URL('reader', this.apiURL), {
             method: 'POST',
             headers: {
                 Accept: 'application/json',
@@ -51,8 +51,8 @@ export default class extends DecoratableMangaScraper {
                 'X-Requested-With': 'XMLHttpRequest'
             },
             body: new URLSearchParams({
-                _token: chapterID.token,
-                ebook_id: chapterID.id,
+                _token: token,
+                ebook_id: id,
             }).toString()
         }));
 
