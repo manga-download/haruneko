@@ -13,10 +13,10 @@ new TestFixture({
     child: {
         id: '181839',
         title: 'Capítulo 189'
-    },
+    }, /* Need login
     entry: {
         index: 2,
         size: 230_438,
         type: 'image/webp'
-    }
+    } */
 }).AssertWebsite();
