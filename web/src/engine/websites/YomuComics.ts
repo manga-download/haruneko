@@ -2,7 +2,8 @@ import { Tags } from '../Tags';
 import icon from './YomuComics.webp';
 import { Chapter, DecoratableMangaScraper, Manga, type MangaPlugin, Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { FetchJSON, FetchNextJS } from '../platform/FetchProvider';
+import { FetchJSON, FetchWindowPreloadScript } from '../platform/FetchProvider';
+import { RandomText } from '../Random';
 
 type APIMangas = {
     garimpo: {
@@ -11,12 +12,10 @@ type APIMangas = {
     }[];
 };
 
-type HydratedChapters = {
-    capitulos_lista: {
-        id: string;
-        title: string;
-    }[];
-};
+type JSONChapters = {
+    id: string;
+    title: string;
+}[];
 
 type APIPages = {
     chapter: {
@@ -44,8 +43,25 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const { capitulos_lista } = await FetchNextJS<HydratedChapters>(new Request(new URL(`./obra/${manga.Identifier}`, this.URI)), data => 'capitulos_lista' in data && 'author' in data);
-        return capitulos_lista.map(({ id, title }) => new Chapter(this, manga, id, title));
+        const eventName = RandomText(Math.random() * 8 + 8);
+
+        const chapters = await FetchWindowPreloadScript<JSONChapters>(new Request(new URL(`./obra/${manga.Identifier}`, this.URI)), `
+            JSON.parse = new Proxy(JSON.parse, {
+                apply(target, thisArg, args) {
+                    const result = Reflect.apply(target, thisArg, args);
+                    if (Array.isArray(result) && result.length > 0 && result[0].number && result[0].title) {
+                        setInterval(() => window.dispatchEvent(new CustomEvent('${eventName}', { detail: result })), 250);
+                    }
+                    return result;
+                }
+            });
+        `, `
+            new Promise(resolve => {
+                window.addEventListener('${eventName}', event => resolve(event.detail), { once: true });
+            });
+        `, 1500);
+
+        return chapters.map(({ id, title }) => new Chapter(this, manga, id, title));
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
