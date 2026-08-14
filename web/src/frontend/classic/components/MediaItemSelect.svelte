@@ -423,9 +423,15 @@
             <div class="error">
                 <InlineNotification
                     lowContrast
-                    title={error.name}
-                    subtitle={error.message}
-                />
+                    title={`Plugin failed to load items`}
+                >
+                    <svelte:fragment slot="subtitleChildren">
+                        {`${error.name} - ${error.message} `}
+                        <p class="error-source">
+                            Source: {UI.selectedMedia.Title} - {UI.selectedMedia?.Parent.Title}
+                        </p>
+                    </svelte:fragment>
+                </InlineNotification>
             </div>
         {/await}
     </div>
@@ -536,5 +542,13 @@
     }
     .resize:hover {
             background-color:var(--cds-ui-02); 
+    }
+    .error-source {
+        display: block;
+        margin: 0.25em 0 0 auto;
+        font-size: 0.7em;
+        font-style: italic;
+        color: var(--cds-text-03);
+        text-align: right;
     }
 </style>
