@@ -4,9 +4,9 @@ import { FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
 import { type Chapter, DecoratableMangaScraper, Page } from '../providers/MangaPlugin';
 import DeScramble from '../transformers/ImageDescrambler';
 import type { Priority } from '../taskpool/DeferredTask';
-import * as Common from './decorators/Common';
-import { XOR } from '../Crypto';
 import { GetBytesFromHex, GetBytesFromUTF8, GetUTF8FromBytes } from '../BufferEncoder';
+import { DecryptXOR } from '../Crypto';
+import * as Common from './decorators/Common';
 
 type ChapterCryptedData = {
     c: string; //SCRAMBLEDATA
@@ -42,7 +42,7 @@ function CleanupTitle(text: string): string {
 export function MangaLinkExtractor<T extends HTMLElement>(element: T, uri: URL) {
     return {
         id: uri.pathname,
-        title: CleanupTitle(element.innerText),
+        title: CleanupTitle(element.innerText)
     };
 }
 
@@ -90,7 +90,7 @@ export default class extends DecoratableMangaScraper {
 
     private Decrypt(encrypted: string, keyData: string = this.URI.host): string {
         const key = Uint8Array.of(GetBytesFromUTF8(keyData).reduce((acc, b) => acc ^ b, 0));
-        return GetUTF8FromBytes(XOR(GetBytesFromHex(encrypted), key));
+        return GetUTF8FromBytes(DecryptXOR(GetBytesFromHex(encrypted), key));
     }
 
     public override async FetchImage(page: Page<PageData>, priority: Priority, signal: AbortSignal): Promise<Blob> {

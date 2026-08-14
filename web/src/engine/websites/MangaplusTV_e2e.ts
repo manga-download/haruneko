@@ -8,11 +8,11 @@ new TestFixture({
     container: {
         url: 'https://mangaplus.shueisha.tv/truyen-tranh/one-piece-1-en',
         id: '/truyen-tranh/one-piece-1-en',
-        title: 'One Piece'
+        title: 'One Piece English'
     },
     child: {
-        id: '/truyen-tranh/ONE-PIECE-1-chap-1116-es.html',
-        title: 'Capítulo 1116'
+        id: '/truyen-tranh/one-piece-1-chap-1116-es.html',
+        title: 'Capítulo 1116 [es]'
     },
     entry: {
         index: 0,

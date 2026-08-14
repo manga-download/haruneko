@@ -6,12 +6,12 @@ new TestFixture({
         title: 'Witch Scans'
     },
     container: {
-        url: 'https://witchscans.com/manga/acting-gangster/',
-        id: '/manga/acting-gangster/',
+        url: 'https://witchtoons.net/series/comic/acting-gangster',
+        id: '/series/comic/acting-gangster',
         title: 'Acting Gangster'
     },
     child: {
-        id: '/acting-gangster-chapter-1/',
+        id: '/series/comic/acting-gangster/chapter/1',
         title: 'Chapter 1'
     },
     entry: {

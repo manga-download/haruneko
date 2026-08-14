@@ -6,7 +6,7 @@ import { WebsiteResourceKey as R } from '../../../i18n/ILocale';
 import { GetBytesFromBase64, GetBytesFromUTF8, GetUTF8FromBytes } from '../../BufferEncoder';
 import DeScramble from '../../transformers/ImageDescrambler';
 import type { Priority } from '../../taskpool/DeferredTask';
-import { AESDecrypt } from '../../Crypto';
+import { DecryptAES } from '../../Crypto';
 
 // TODO: Handle manual Logout from webview
 
@@ -54,7 +54,7 @@ type APIUser = {
     user?: {
         accessToken: Token;
         refreshToken: Token;
-    },
+    };
 };
 
 type RefreshTokenResult = {
@@ -187,15 +187,14 @@ export class DelitoonBase extends DecoratableMangaScraper {
                 throw new Exception(R.Plugin_Common_Chapter_UnavailableError);
         }
         const { images, isScramble } = data;
-        return isScramble ? this.FetchScrambledPages(chapter, images) : images.map(({ imagePath }) => new Page(this, chapter, new URL(imagePath)));
+        return isScramble ? this.FetchScrambledPages(chapter, images) : images.map(image => new Page(this, chapter, new URL(image.imagePath)));
     }
 
     private async FetchScrambledPages(chapter: Chapter, images: ImageInfo): Promise<Page<ScrambleParams>[]> {
         const { data } = await this.drm.FetchBalconyJSON<string>(`./contents/images/${chapter.Parent.Identifier}/${chapter.Identifier}`, { line: images[0].line });
         const keyData = GetBytesFromUTF8(data);
-        const iv = keyData.slice(0, 16);
         const promises = images.map(async ({ point, defaultHeight, imagePath }) => {
-            const decrypted = await AESDecrypt(GetBytesFromBase64(point), keyData, { mode: 'CBC', iv, length: 128 });
+            const decrypted = await DecryptAES(GetBytesFromBase64(point), keyData, { name: 'AES-CBC', iv: keyData.slice(0, 16), length: 128 });
             const scrambleIndex = <number[]>JSON.parse(GetUTF8FromBytes(decrypted));
             return new Page<ScrambleParams>(this, chapter, new URL(imagePath), { scrambleIndex, defaultHeight });
         });

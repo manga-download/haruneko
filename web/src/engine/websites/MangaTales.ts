@@ -4,7 +4,7 @@ import { Chapter, DecoratableMangaScraper, Page, Manga, type MangaPlugin } from 
 import { Fetch, FetchCSS, FetchJSON } from '../platform/FetchProvider';
 import type { Priority } from '../taskpool/DeferredTask';
 import { GetBytesFromBase64, GetUTF8FromBytes } from '../BufferEncoder';
-import { AESDecrypt, SHA256 } from '../Crypto';
+import { DecryptAES, HashUTF8 } from '../Crypto';
 
 type EncryptedData = {
     iv: boolean;
@@ -39,7 +39,7 @@ type MangaSearch = {
     dates: {
         start?: string;
         end?: string;
-    },
+    };
     page: number;
 };
 
@@ -69,7 +69,7 @@ type APIChapters = {
         volume: number;
         title: string;
         chapter: number;
-    }[]
+    }[];
 };
 
 type APIPages = {
@@ -77,7 +77,7 @@ type APIPages = {
         pageUrl: string;
         wla: {
             configs: {
-                http_media_server: string
+                http_media_server: string;
                 media_server: string;
             };
         };
@@ -191,7 +191,7 @@ async function TryDecrypt<T>(data: EncryptedData | T): Promise<T> {
 
 async function Decrypt(serialized: string): Promise<string> {
     const [base64Data, , base64iv, keydata] = serialized.split('|');
-    return GetUTF8FromBytes(await AESDecrypt(GetBytesFromBase64(base64Data), await SHA256(keydata), { mode: 'CBC', iv: GetBytesFromBase64(base64iv) }));
+    return GetUTF8FromBytes(await DecryptAES(GetBytesFromBase64(base64Data), await HashUTF8('SHA-256', keydata), { name: 'AES-CBC', iv: GetBytesFromBase64(base64iv) }));
 }
 
 function TryUnpack<T>(data: PackedData | T): T {
