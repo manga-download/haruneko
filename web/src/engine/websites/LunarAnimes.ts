@@ -48,7 +48,7 @@ export default class extends DecoratableMangaScraper {
     readonly #drm = new DRMProvider(this.URI, new URL('https://api.lunaranime.ru/api/manga/'));
 
     public constructor() {
-        super('lunaranimes', 'Lunar Animes', 'https://lunaranime.ru', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Multilingual, Tags.Source.Aggregator);
+        super('lunaranimes', 'Lunar Animes', 'https://lunarx.to', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Multilingual, Tags.Source.Aggregator);
     }
 
     public override get Icon() {

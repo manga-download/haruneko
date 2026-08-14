@@ -79,7 +79,6 @@ import '../MangaTilkisi_e2e';
 import '../MangaWOW_e2e';
 import '../MangaWT_e2e';
 import '../MangaZizi_e2e';
-import '../ManHatic_e2e';
 import '../ManhuaHot_e2e';
 import '../ManhuaNext_e2e';
 import '../ManhuaUs_e2e';

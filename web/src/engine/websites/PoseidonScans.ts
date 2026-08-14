@@ -1,5 +1,5 @@
 import { FetchNextJS, FetchWindowScript } from '../platform/FetchProvider';
-import { Chapter, DecoratableMangaScraper, Manga, type MangaPlugin, Page } from '../providers/MangaPlugin';
+import { Chapter, DecoratableMangaScraper, Manga, type MangaPlugin } from '../providers/MangaPlugin';
 import { Tags } from '../Tags';
 import * as Common from './decorators/Common';
 import icon from './PoseidonScans.webp';
@@ -15,12 +15,9 @@ type HydratedChapters = {
     chapters: { number: number; }[];
 };
 
-type HydratedPages = {
-    images: { originalUrl: string; }[];
-};
-
 @Common.MangasMultiPageCSS<HTMLAnchorElement>('div.grid a.block.group', Common.PatternLinkGenerator('/series?page={page}'), 0,
     anchor => ({ id: anchor.pathname.split('/').at(-1), title: anchor.querySelector('h2').innerText.trim() }))
+@Common.PagesSinglePageJS(`[...document.querySelectorAll('div.reader-vimg')].sort((self, other) => self.dataset.order - other.dataset.order).map(e => e.querySelector('img').src);`, 1500)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
@@ -50,10 +47,5 @@ export default class extends DecoratableMangaScraper {
         const uri = new URL(`/serie/${manga.Identifier}`, this.URI);
         const { chapters } = await FetchNextJS<HydratedChapters>(new Request(uri), data => 'chapters' in data);
         return chapters.map(chapter => new Chapter(this, manga, `${uri.pathname}/chapter/${chapter.number}`, `Chapitre ${chapter.number}`));
-    }
-
-    public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const { images } = await FetchNextJS<HydratedPages>(new Request(new URL(chapter.Identifier, this.URI)), data => 'images' in data);
-        return images.map(image => new Page(this, chapter, new URL(image.originalUrl, this.URI)));
     }
 }
