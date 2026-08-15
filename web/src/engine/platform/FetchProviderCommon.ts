@@ -348,67 +348,89 @@ export abstract class FetchProvider {
 
             win.DOMReady.Subscribe(async () => {
                 invocations.push({ name: 'DOMReady', info: `Window: ${win}` });
-                try {
-                    // FIX: give a Cloudflare "managed" challenge ("Just a moment…" / "Un instant…") time to
-                    // auto-resolve BEFORE inspecting the page. Running any script in the window during the
-                    // challenge's ~1-2s proof/finalize window (the detection below) disturbs the challenge
-                    // and makes it reload into a fresh challenge forever (probe-verified: detection at
-                    // dom-ready loops, detection after ~2s auto-resolves and lists the mangas).
-                    await Delay(2500);
 
-                    const cloudflare = await win.ExecuteScript<{ isChallenge: boolean; hasRealWidget: boolean }>(`
-                        (() => {
-                            const title = (document.title || '').toLowerCase();
-                            const body = (document.body?.innerText || '').toLowerCase();
-                            const isChallenge = title.includes('just a moment')
-                                || title.includes('un instant')
-                                || body.includes('checking your browser')
-                                || body.includes('verify you are human')
-                                || !!document.querySelector('.cf-turnstile, #challenge-stage, .challenge-form');
-                            const hasRealWidget = !!document.querySelector('.cf-turnstile iframe, iframe[src*="challenges.cloudflare.com"], #challenge-stage input[type="checkbox"], .challenge-form [type="checkbox"]');
-                            return { isChallenge, hasRealWidget };
-                        })()
-                    `);
+                let redirect: FetchRedirection;
 
-                    let redirect: FetchRedirection;
-                    if (cloudflare?.isChallenge) {
-                        redirect = cloudflare.hasRealWidget ? FetchRedirection.Interactive : FetchRedirection.Automatic;
-                        invocations.push({ name: 'CloudflareDetected', info: cloudflare.hasRealWidget ? 'Interactive (real widget)' : 'Automatic (managed, wait for auto-resolve)' });
-                    } else {
+                // FIX: give a Cloudflare "managed" challenge ("Just a moment…" / "Un instant…") time to
+                // auto-resolve BEFORE inspecting the page. Running any script in the window during the
+                // challenge's ~1-2s proof/finalize window (the detection below) disturbs the challenge
+                // and makes it reload into a fresh challenge forever (probe-verified: detection at
+                // dom-ready loops, detection after ~2s auto-resolves and lists the mangas).
+                await Delay(2500);
+
+                // The challenge may auto-resolve (and thus navigate) right around the grace delay, which
+                // tears down the execution context and makes `ExecuteScript` fail. Poll the read-only
+                // Cloudflare check until the page settles instead of giving up on the first navigation race.
+                const cloudflareDetectionScript = `
+                    (() => {
+                        const title = (document.title || '').toLowerCase();
+                        const body = (document.body?.innerText || '').toLowerCase();
+                        const isChallenge = title.includes('just a moment')
+                            || title.includes('un instant')
+                            || body.includes('checking your browser')
+                            || body.includes('verify you are human')
+                            || !!document.querySelector('.cf-turnstile, #challenge-stage, .challenge-form');
+                        const hasRealWidget = !!document.querySelector('.cf-turnstile iframe, iframe[src*="challenges.cloudflare.com"], #challenge-stage input[type="checkbox"], .challenge-form [type="checkbox"]');
+                        return { isChallenge, hasRealWidget };
+                    })()
+                `;
+
+                let cloudflare: { isChallenge: boolean; hasRealWidget: boolean } | undefined;
+                for (let attempt = 0; attempt < 20 && cloudflare === undefined; attempt++) {
+                    try {
+                        cloudflare = await win.ExecuteScript<{ isChallenge: boolean; hasRealWidget: boolean }>(cloudflareDetectionScript);
+                    } catch {
+                        await Delay(1000);
+                    }
+                }
+
+                if (cloudflare?.isChallenge) {
+                    redirect = cloudflare.hasRealWidget ? FetchRedirection.Interactive : FetchRedirection.Automatic;
+                    invocations.push({ name: 'CloudflareDetected', info: cloudflare.hasRealWidget ? 'Interactive (real widget)' : 'Automatic (managed, wait for auto-resolve)' });
+                } else {
+                    try {
                         redirect = await CheckAntiScrapingDetection(win, request.url);
+                    } catch (error) {
+                        // The obfuscated anti-scraping detections can throw on pages whose DOM they do
+                        // not expect (e.g. `removeChild` on a node missing after the reader hydrates).
+                        // A failing detection must not block scraping: treat it as "no challenge".
+                        console.warn('CheckAntiScrapingDetection failed, assuming no challenge:', error);
+                        redirect = FetchRedirection.None;
                     }
+                }
 
-                    invocations.push({ name: 'performRedirectionOrFinalize()', info: `Mode: ${FetchRedirection[ redirect ]}` });
+                invocations.push({ name: 'performRedirectionOrFinalize()', info: `Mode: ${FetchRedirection[ redirect ]}` });
 
-                    // Start poller only for sites that opted into the stalled-challenge reload
-                    // (reloading other sites' challenges — e.g. MangaFire's custom WAF — loops forever)
-                    if (ShouldReloadStalledChallenge(request.url)) {
-                        stopChallengePoller = await this.ReloadStalledCloudFlareChallenge(win, invocations);
-                    }
+                // Start poller only for sites that opted into the stalled-challenge reload
+                // (reloading other sites' challenges — e.g. MangaFire's custom WAF — loops forever)
+                if (ShouldReloadStalledChallenge(request.url)) {
+                    stopChallengePoller = await this.ReloadStalledCloudFlareChallenge(win, invocations);
+                }
 
-                    switch (redirect) {
-                        case FetchRedirection.Interactive:
-                            // NOTE: Allow the user to solve the captcha within 2.5 minutes before rejecting the request with an error
-                            ClearTimeout(cancellation);
-                            cancellation = await SetTimeout(() => {
-                                destroy();
-                                reject(new Exception(R.FetchProvider_FetchWindow_TimeoutError));
-                            }, 150_000);
-                            await win.Show();
-                            break;
-                        case FetchRedirection.Automatic:
-                            // Managed challenge without a real widget: wait in the background for the auto-resolve
-                            break;
-                        default:
-                            ClearTimeout(cancellation);
+                switch (redirect) {
+                    case FetchRedirection.Interactive:
+                        // NOTE: Allow the user to solve the captcha within 2.5 minutes before rejecting the request with an error
+                        ClearTimeout(cancellation);
+                        cancellation = await SetTimeout(() => {
+                            destroy();
+                            reject(new Exception(R.FetchProvider_FetchWindow_TimeoutError));
+                        }, 150_000);
+                        await win.Show();
+                        break;
+                    case FetchRedirection.Automatic:
+                        // Managed challenge without a real widget: wait in the background for the auto-resolve
+                        break;
+                    default:
+                        ClearTimeout(cancellation);
+                        try {
                             await Delay(delay);
                             const result = await win.ExecuteScript<T>(script);
                             await destroy();
                             resolve(result);
-                    }
-                } catch (error) {
-                    console.warn(error);
-                    await destroy();
+                        } catch (error) {
+                            await destroy();
+                            reject(error);
+                        }
                 }
             });
 
