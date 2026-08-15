@@ -11,6 +11,7 @@ import { RemoteBrowserWindowController } from './ipc/RemoteBrowserWindow';
 import { RPCServer } from '../../src/rpc/Server';
 import { RemoteProcedureCallManager } from './ipc/RemoteProcedureCallManager';
 import { RemoteProcedureCallContract } from './ipc/RemoteProcedureCallContract';
+
 process.env['ELECTRON_DISABLE_SECURITY_WARNINGS'] = 'true';
 
 type CLIOptions = {
@@ -102,7 +103,13 @@ async function OpenWindow(): Promise<void> {
         const argv = ParseCLI();
         const manifest = await LoadManifest();
         await SetupUserDataDirectory(manifest);
-        app.userAgentFallback = manifest['user-agent'] ?? app.userAgentFallback.split(/\s+/).filter(segment => !/(hakuneko|electron)/i.test(segment)).join(' ');
+        // FIX: Cloudflare flags the app's product token (e.g. "hakuneko-electron/43.3.0", inserted by
+        // Electron from package.json `name`/`version`) as a bot UA and serves an endless "Just a moment…"
+        // managed challenge (probe-verified: the standard Chromium/Electron UA passes instantly).
+        // Strip the product token so the default UA is the plain `... Chrome/x Electron/x Safari/x` one.
+        const productToken = `${app.getName()}/${app.getVersion()}`;
+        app.userAgentFallback = manifest['user-agent']
+            ?? app.userAgentFallback.replace(new RegExp(`(^|\\s)${productToken.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\s?`), '$1');
         await app.whenReady();
         const win = await CreateApplicationWindow();
         const ipc = new IPC(win.webContents);
