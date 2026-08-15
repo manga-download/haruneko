@@ -735,6 +735,7 @@ export { default as WeebCentral } from './WeebCentral';
 export { default as WeLoMa } from './WeLoMa';
 export { default as WeLoveManga } from './WeLoveManga';
 export { default as WestManga } from './WestManga';
+export { default as WhyToon } from './WhyToon';
 export { default as WitchScans } from './WitchScans';
 export { default as Wnacg } from './Wnacg';
 export { default as WritersScans } from './WritersScans';
