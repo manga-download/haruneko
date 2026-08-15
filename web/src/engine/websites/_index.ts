@@ -1,5 +1,6 @@
 // Implemented Websites
 export { default as ACGN } from './ACGN';
+export { default as AeroToon } from './AeroToon';
 export { default as AesirScans } from './AesirScans';
 export { default as AGCScanlation } from './AGCScanlation';
 export { default as AiluraScans } from './AiluraScans';
