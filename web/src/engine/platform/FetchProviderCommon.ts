@@ -3,6 +3,7 @@ import { Exception, InternalError } from '../Error';
 import { EngineResourceKey as R } from '../../i18n/ILocale';
 import { CreateRemoteBrowserWindow } from './RemoteBrowserWindow';
 import { CheckAntiScrapingDetection, FetchRedirection } from './AntiScrapingDetection';
+import { ShouldReloadStalledChallenge } from './ChallengeReload';
 import type { FeatureFlags } from '../FeatureFlags';
 import { Delay, SetTimeout, ClearTimeout } from '../BackgroundTimers';
 
@@ -39,8 +40,8 @@ export abstract class FetchProvider {
      * Fetch and parse the remote HTML content into a virtual {@link Document} for further processing.
      * @param request - The request used to fetch the remote content.
      * @returns A virtual DOM with limited capabilities:
-     *   - Since the document is detached it will not be rendered, therefore certain behavior may not be as expected (e.g., innerText is the same as textContent)
-     *   - The document uses the base URL of the application instead of `request.url`, which affects all expanded links in the document
+     *    - Since the document is detached it will not be rendered, therefore certain behavior may not be as expected (e.g., innerText is the same as textContent)
+     *    - The document uses the base URL of the application instead of `request.url`, which affects all expanded links in the document
      */
     public async FetchHTML(request: Request): Promise<Document> {
         const mime = 'text/html';
@@ -212,6 +213,80 @@ export abstract class FetchProvider {
     }
 
     /**
+     * Polls a Cloudflare challenge page and reloads it when the challenge is "managed" (no real widget rendered)
+     * and a cf_clearance cookie is already present. This works around stalls where the page stays on
+     * "Just a moment..." indefinitely because the invisible challenge never auto-resolves.
+     */
+    private async ReloadStalledCloudFlareChallenge(
+        win: ReturnType<typeof CreateRemoteBrowserWindow>,
+        invocations: { name: string; info: string }[]
+    ): Promise<() => void> {
+        let reloadCount = 0;
+        const maxReloads = 3;
+        const interval = 5000;
+
+        const checkScript = `
+            (() => {
+                const hasRealWidget = !!document.querySelector(
+                    '.cf-turnstile iframe, iframe[src*="challenges.cloudflare.com"], #challenge-stage input[type="checkbox"], .challenge-form [type="checkbox"]'
+                );
+                const title = (document.title || '').toLowerCase();
+                const bodyText = (document.body?.innerText || '').toLowerCase();
+                const isChallenge = title.includes('just a moment')
+                    || title.includes('un instant')
+                    || bodyText.includes('checking your browser')
+                    || bodyText.includes('un instant');
+                const cfClearance = document.cookie.split('; ').find(c => c.startsWith('cf_clearance='));
+                const cfClearanceValue = cfClearance ? cfClearance.split('=')[1] : '';
+                return {
+                    isChallenge,
+                    hasRealWidget,
+                    cfClearanceLength: cfClearanceValue.length
+                };
+            })()
+        `;
+
+        const doCheck = async () => {
+            if (reloadCount >= maxReloads) return;
+            try {
+                const result = await win.ExecuteScript<{
+                    isChallenge: boolean;
+                    hasRealWidget: boolean;
+                    cfClearanceLength: number;
+                }>(checkScript);
+
+                if (
+                    result?.isChallenge &&
+                    !result?.hasRealWidget &&
+                    result?.cfClearanceLength > 200
+                ) {
+                    reloadCount++;
+                    invocations.push({
+                        name: 'ReloadStalledCloudFlareChallenge',
+                        info: `Reload #${reloadCount} (managed challenge, no widget, cf_clearance=${result.cfClearanceLength})`
+                    });
+                    await win.ExecuteScript('window.location.reload()');
+                }
+            } catch {
+                // Ignore errors from ExecuteScript on a navigating/closed window
+            }
+        };
+
+        let timeoutId: number;
+        const schedule = async () => {
+            await doCheck();
+            if (reloadCount < maxReloads) {
+                timeoutId = await SetTimeout(schedule, interval);
+            }
+        };
+        timeoutId = await SetTimeout(schedule, interval);
+
+        return () => {
+            if (timeoutId) ClearTimeout(timeoutId);
+        };
+    }
+
+    /**
      * Open the given {@link request} in a new browser window and inject the given {@link script}.
      * @param request - ...
      * @param script - The JavaScript or function that will be evaluated within the browser window
@@ -241,11 +316,20 @@ export abstract class FetchProvider {
 
         win.BeforeWindowNavigate.Subscribe(async uri => {
             invocations.push({ name: 'BeforeNavigate', info: `URL: ${uri.href}` });
-            return this.featureFlags.VerboseFetchWindow.Value ? null : win.Hide();
+            // NOTE: Do NOT hide the window here. The window is already created with `show:false` (never
+            // shown), and calling `win.Hide()` flips the renderer to `document.hidden=true`, which makes
+            // Cloudflare's managed challenge pause forever ("Un instant…" / "Just a moment…").
+            // A never-shown window still reports `visibilityState: visible` (probe-verified), so the
+            // challenge runs and auto-resolves in the background. Only `win.Show()` (Interactive mode)
+            // brings the window on screen, e.g. for a real turnstile widget.
+            return null;
         });
+
+        let stopChallengePoller: (() => void) | undefined;
 
         const destroy = async () => {
             try {
+                stopChallengePoller?.();
                 if (this.featureFlags.VerboseFetchWindow.Value) {
                     console.log('FetchWindow()::invocations', invocations);
                 } else {
@@ -265,8 +349,43 @@ export abstract class FetchProvider {
             win.DOMReady.Subscribe(async () => {
                 invocations.push({ name: 'DOMReady', info: `Window: ${win}` });
                 try {
-                    const redirect = await CheckAntiScrapingDetection(win, request.url);
+                    // FIX: give a Cloudflare "managed" challenge ("Just a moment…" / "Un instant…") time to
+                    // auto-resolve BEFORE inspecting the page. Running any script in the window during the
+                    // challenge's ~1-2s proof/finalize window (the detection below) disturbs the challenge
+                    // and makes it reload into a fresh challenge forever (probe-verified: detection at
+                    // dom-ready loops, detection after ~2s auto-resolves and lists the mangas).
+                    await Delay(2500);
+
+                    const cloudflare = await win.ExecuteScript<{ isChallenge: boolean; hasRealWidget: boolean }>(`
+                        (() => {
+                            const title = (document.title || '').toLowerCase();
+                            const body = (document.body?.innerText || '').toLowerCase();
+                            const isChallenge = title.includes('just a moment')
+                                || title.includes('un instant')
+                                || body.includes('checking your browser')
+                                || body.includes('verify you are human')
+                                || !!document.querySelector('.cf-turnstile, #challenge-stage, .challenge-form');
+                            const hasRealWidget = !!document.querySelector('.cf-turnstile iframe, iframe[src*="challenges.cloudflare.com"], #challenge-stage input[type="checkbox"], .challenge-form [type="checkbox"]');
+                            return { isChallenge, hasRealWidget };
+                        })()
+                    `);
+
+                    let redirect: FetchRedirection;
+                    if (cloudflare?.isChallenge) {
+                        redirect = cloudflare.hasRealWidget ? FetchRedirection.Interactive : FetchRedirection.Automatic;
+                        invocations.push({ name: 'CloudflareDetected', info: cloudflare.hasRealWidget ? 'Interactive (real widget)' : 'Automatic (managed, wait for auto-resolve)' });
+                    } else {
+                        redirect = await CheckAntiScrapingDetection(win, request.url);
+                    }
+
                     invocations.push({ name: 'performRedirectionOrFinalize()', info: `Mode: ${FetchRedirection[ redirect ]}` });
+
+                    // Start poller only for sites that opted into the stalled-challenge reload
+                    // (reloading other sites' challenges — e.g. MangaFire's custom WAF — loops forever)
+                    if (ShouldReloadStalledChallenge(request.url)) {
+                        stopChallengePoller = await this.ReloadStalledCloudFlareChallenge(win, invocations);
+                    }
+
                     switch (redirect) {
                         case FetchRedirection.Interactive:
                             // NOTE: Allow the user to solve the captcha within 2.5 minutes before rejecting the request with an error
@@ -278,6 +397,7 @@ export abstract class FetchProvider {
                             await win.Show();
                             break;
                         case FetchRedirection.Automatic:
+                            // Managed challenge without a real widget: wait in the background for the auto-resolve
                             break;
                         default:
                             ClearTimeout(cancellation);
@@ -286,7 +406,8 @@ export abstract class FetchProvider {
                             await destroy();
                             resolve(result);
                     }
-                } catch {
+                } catch (error) {
+                    console.warn(error);
                     await destroy();
                 }
             });
