@@ -86,9 +86,13 @@
 
     // Debounce the filter input: re-filtering (and fuzzily searching) tens of
     // thousands of titles on every keystroke is expensive.
+    // Substring filtering (default) is fast (~5 ms), so a short debounce keeps
+    // typing responsive; fuzzy search runs in a web worker and takes ~200 ms
+    // itself, so it keeps a longer debounce to avoid stacking searches.
     $effect(() => {
         mediaNameFilter;
-        const timeout = setTimeout(() => debouncedMediaFilter = mediaNameFilter, 200);
+        const delay = Settings.FuzzySearch.Value ? 200 : 120;
+        const timeout = setTimeout(() => debouncedMediaFilter = mediaNameFilter, delay);
         return () => clearTimeout(timeout);
     });
 
