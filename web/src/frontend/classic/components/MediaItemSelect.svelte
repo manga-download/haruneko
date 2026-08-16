@@ -17,8 +17,10 @@
     import CloudDownload from 'carbon-icons-svelte/lib/CloudDownload.svelte';
 
     import { fade } from 'svelte/transition';
+    import { onDestroy } from 'svelte';
 
     import MediaComponent from './MediaItem.svelte';
+    import VirtualList from '../lib/VirtualList.svelte';
     import { Store as UI } from '../stores/Stores.svelte';
     import { Tags, type Tag } from '../../../engine/Tags';
     const availableLanguageTags = Tags.Language.toArray();
@@ -31,6 +33,8 @@
         MediaChild,
     } from '../../../engine/providers/MediaPlugin';
     import { FlagType } from '../../../engine/ItemflagManager';
+    import type { EntryFlagEventData } from '../../../engine/ItemflagManager';
+    import type { DownloadTask, Status } from '../../../engine/DownloadTask';
     import { resizeBar } from '../lib/actions';
     import { Key as GlobalKey } from '../../../engine/SettingsGlobal';
     import type { Directory } from '../../../engine/SettingsManager';
@@ -68,6 +72,123 @@
         });
     }
 
+    // -------------------------------------------------------------------------
+    // Centralized download-task & flag state
+    //
+    // Previously every MediaItem subscribed to the global flag channel and the
+    // download queue (~2 subscriptions per chapter, thousands in total for big
+    // series). The subscriptions now live here, once per list, and the per-item
+    // state is passed down as props.
+    // -------------------------------------------------------------------------
+    let flagMap: Map<string, FlagType> = $state(new Map());
+    let taskMap: Map<string, DownloadTask> = $state(new Map());
+    let taskStatusMap: Map<string, Status> = $state(new Map());
+    // Non-reactive bookkeeping of the active per-task status subscriptions.
+    const taskSubscriptions = new Map<string, DownloadTask>();
+    let flagsRequestId = 0;
+
+    /** Unique key for an item, stable across list reloads (mirrors `IsSameAs`). */
+    function itemKey(item: MediaContainer<MediaItem>): string {
+        return item.Parent
+            ? `${item.Parent.Identifier}::${item.Identifier}`
+            : item.Identifier;
+    }
+
+    /** Re-reads the flags of every item of the current media (one batch). */
+    async function refreshFlags() {
+        const requestId = ++flagsRequestId;
+        if (items.length === 0) {
+            flagMap = new Map();
+            return;
+        }
+        const flags = await Promise.all(
+            items.map((item) =>
+                window.HakuNeko.ItemflagManager.GetItemFlagType(item),
+            ),
+        );
+        if (requestId !== flagsRequestId) return; // superseded by a newer request
+        const map = new Map<string, FlagType>();
+        items.forEach((item, index) => {
+            const kind = flags[index];
+            if (kind !== undefined) map.set(itemKey(item), kind);
+        });
+        flagMap = map;
+    }
+
+    /** Applies a flag event to the local map (mirrors ItemflagManager semantics). */
+    function onFlagChanged(flagData: EntryFlagEventData) {
+        const entry = flagData.Entry as MediaContainer<MediaItem>;
+        if (flagData.Kind === FlagType.Current) {
+            // Flagging 'Current' marks every later chapter as Viewed and clears
+            // the flags of the earlier chapters.
+            const map = new Map<string, FlagType>();
+            map.set(itemKey(entry), FlagType.Current);
+            const index = items.findIndex((item) => item.IsSameAs(entry));
+            if (index >= 0) {
+                for (let i = index + 1; i < items.length; i++) {
+                    map.set(itemKey(items[i]), FlagType.Viewed);
+                }
+            }
+            flagMap = map;
+        } else if (flagData.Kind === FlagType.Viewed) {
+            flagMap = new Map(flagMap).set(itemKey(entry), FlagType.Viewed);
+        } else {
+            const map = new Map(flagMap);
+            map.delete(itemKey(entry));
+            flagMap = map;
+        }
+    }
+
+    /** Updates the status of the task that changed. */
+    function onTaskStatusChanged(newStatus: Status, task: DownloadTask) {
+        taskStatusMap = new Map(taskStatusMap).set(
+            itemKey(task.Media),
+            newStatus,
+        );
+    }
+
+    /** Reconciles the per-item task maps with the download queue (single subscription). */
+    function syncTasks() {
+        const tasks = window.HakuNeko.DownloadManager.Queue.Value;
+        const nextTasks = new Map<string, DownloadTask>();
+        const nextStatuses = new Map<string, Status>();
+        for (const task of tasks) {
+            const key = itemKey(task.Media);
+            nextTasks.set(key, task);
+            nextStatuses.set(key, task.Status.Value);
+            if (!taskSubscriptions.has(key)) {
+                task.Status.Subscribe(onTaskStatusChanged);
+                taskSubscriptions.set(key, task);
+            }
+        }
+        for (const [key, task] of taskSubscriptions) {
+            if (!nextTasks.has(key)) {
+                task.Status.Unsubscribe(onTaskStatusChanged);
+                taskSubscriptions.delete(key);
+            }
+        }
+        taskMap = nextTasks;
+        taskStatusMap = nextStatuses;
+    }
+
+    window.HakuNeko.ItemflagManager.EntryFlagEventChannel.Subscribe(onFlagChanged);
+    window.HakuNeko.DownloadManager.Queue.Subscribe(syncTasks);
+    onDestroy(() => {
+        window.HakuNeko.ItemflagManager.EntryFlagEventChannel.Unsubscribe(onFlagChanged);
+        window.HakuNeko.DownloadManager.Queue.Unsubscribe(syncTasks);
+        for (const task of taskSubscriptions.values()) {
+            task.Status.Unsubscribe(onTaskStatusChanged);
+        }
+        taskSubscriptions.clear();
+    });
+
+    // (Re)populate the flag/task maps whenever the displayed media changes.
+    $effect(() => {
+        items;
+        refreshFlags();
+        syncTasks();
+    });
+
     $effect(() => {
         const position = filteredItems.indexOf(UI.selectedItem);
         UI.selectedItemPrevious = filteredItems[position + 1];
@@ -104,6 +225,7 @@
     let showItems = $derived(reverseSortOrder ? filteredItems.toReversed() : filteredItems);
 
     let itemsdiv: HTMLElement = $state();
+    let itemsdivHeight = $state(0);
 
     let MediaLanguages: Tag[] = $derived(
         items.reduce((detectedLangaugeTags: Tag[], item) => {
@@ -398,32 +520,20 @@
     <div id="ItemFilter">
         <Search id="ItemFilterSearch" size="sm" bind:value={itemNameFilter} />
     </div>
+    <!-- svelte-ignore a11y_click_events_have_key_events -->
     <!-- svelte-ignore a11y_no_static_element_interactions -->
-    <div 
-        id="ItemList" 
-        class="list" 
-        bind:this={itemsdiv} 
-        onmouseup={(event) => { if (event.target === event.currentTarget && event.button === 0) resetSelection(); }}
+    <div
+        id="ItemList"
+        class="list"
+        bind:this={itemsdiv}
+        bind:clientHeight={itemsdivHeight}
+        onclick={resetSelection}
     >
         {#await loadItem}
             <div class="loading center">
                 <div><Loading withOverlay={false} /></div>
                 <div>... items</div>
             </div>
-        {:then}
-            {#each showItems as item (item)}
-                <MediaComponent
-                    {item}
-                    multilang={!langFilter && MediaLanguages.length > 1}
-                    selected={selectedItems.includes(item)}
-                    hover={item === contextItem}
-                    onView={(event) => onItemView(item)(event)}
-                    onmousedown={mouseHandler(item)}
-                    onmouseup={mouseHandler(item)}
-                    onmouseenter={mouseHandler(item)}
-                    oncontextmenu={() => { contextItem = item }}
-                />
-            {/each}
         {:catch error}
             <div class="error">
                 <InlineNotification
@@ -439,6 +549,29 @@
                 </InlineNotification>
             </div>
         {/await}
+        <VirtualList
+            items={showItems}
+            itemHeight={24}
+            container={itemsdiv}
+            containerHeight={itemsdivHeight}
+        >
+            {#snippet children(item)}
+                {@const key = itemKey(item)}
+                <MediaComponent
+                    {item}
+                    flag={flagMap.get(key)}
+                    task={taskMap.get(key)}
+                    taskStatus={taskStatusMap.get(key)}
+                    multilang={!langFilter && MediaLanguages.length > 1}
+                    selected={selectedItems.includes(item)}
+                    hover={item === contextItem}
+                    onView={(event) => onItemView(item)(event)}
+                    onmousedown={mouseHandler(item)}
+                    onmouseup={mouseHandler(item)}
+                    onmouseenter={mouseHandler(item)}
+                />
+            {/snippet}
+        </VirtualList>
     </div>
     {#if items?.length > 0}
         <div id="DownloadButtons">
