@@ -40,15 +40,24 @@ export async function LoadMediaList(storage: StorageController, identifier: stri
 /**
  * Stores a media list as fixed-size shards and prunes stale shards (and the
  * legacy single-key blob) left behind by previous runs.
+ *
+ * Only the shards whose content actually changed (and any newly added shards)
+ * are rewritten, so refreshing a mostly-unchanged list does not re-clone and
+ * re-store tens of thousands of entries on every update.
  */
 export async function SaveMediaList(storage: StorageController, identifier: string, entries: MediaListEntry[]): Promise<void> {
     const previous = await storage.LoadPersistent<MediaListMeta>(Store.MediaLists, MetaKey(identifier));
-    const previousChunks = previous && typeof previous.chunks === 'number' ? previous.chunks : 0;
+    const sharded = previous && typeof previous.chunks === 'number';
+    const previousChunks = sharded ? previous.chunks : 0;
+    const previousEntries = sharded ? await LoadMediaList(storage, identifier) : [];
     const chunkCount = Math.ceil(entries.length / MediaListChunkSize);
 
     for (let index = 0; index < chunkCount; index++) {
         const chunk = entries.slice(index * MediaListChunkSize, (index + 1) * MediaListChunkSize);
-        await storage.SavePersistent(chunk, Store.MediaLists, ChunkKey(identifier, index));
+        const previousChunk = previousEntries.slice(index * MediaListChunkSize, (index + 1) * MediaListChunkSize);
+        if (!sharded || !ChunksEqual(chunk, previousChunk)) {
+            await storage.SavePersistent(chunk, Store.MediaLists, ChunkKey(identifier, index));
+        }
     }
     await storage.SavePersistent({ chunks: chunkCount }, Store.MediaLists, MetaKey(identifier));
 
@@ -59,4 +68,10 @@ export async function SaveMediaList(storage: StorageController, identifier: stri
     }
     stale.push(identifier);
     await storage.RemovePersistent(Store.MediaLists, ...stale);
+}
+
+/** True when two shards contain the same entries (identifier + title). */
+function ChunksEqual(left: MediaListEntry[], right: MediaListEntry[]): boolean {
+    if (left.length !== right.length) return false;
+    return left.every((entry, index) => entry.id === right[index]?.id && entry.title === right[index]?.title);
 }

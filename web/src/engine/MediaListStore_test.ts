@@ -43,6 +43,18 @@ function entries(count: number): { id: string; title: string }[] {
     return Array.from({ length: count }, (_, index) => ({ id: `manga-${index}`, title: `Manga ${index}` }));
 }
 
+class WriteCountingStorage extends MemoryStorage {
+    public readonly writes = new Map<string, number>();
+
+    public override async SavePersistent<T>(value: T, store: Store, key?: string): Promise<void> {
+        await super.SavePersistent(value, store, key);
+        if (key !== undefined) {
+            const current = this.writes.get(key) ?? 0;
+            this.writes.set(key, current + 1);
+        }
+    }
+}
+
 describe('MediaListStore', () => {
 
     it('Should round-trip a multi-chunk list in order', async () => {
@@ -72,5 +84,23 @@ describe('MediaListStore', () => {
         await SaveMediaList(storage, 'empty', entries(MediaListChunkSize * 2));
         await SaveMediaList(storage, 'empty', []);
         expect(await LoadMediaList(storage, 'empty')).toEqual([]);
+    });
+
+    it('Should only rewrite shards whose content changed', async () => {
+        const storage = new WriteCountingStorage();
+        await SaveMediaList(storage, 'site', entries(MediaListChunkSize * 3));
+
+        // Change a single entry in the middle shard only.
+        const updated = entries(MediaListChunkSize * 3);
+        updated[MediaListChunkSize + 5] = { id: 'manga-new', title: 'New Manga' };
+        await SaveMediaList(storage, 'site', updated);
+
+        // First and last shards must not have been written again.
+        expect(storage.writes.get('site#0')).toBe(1);
+        expect(storage.writes.get('site#2')).toBe(1);
+        // The changed shard and the meta are rewritten.
+        expect(storage.writes.get('site#1')).toBe(2);
+        expect(storage.writes.get('site#meta')).toBe(2);
+        expect(await LoadMediaList(storage, 'site')).toEqual(updated);
     });
 });
