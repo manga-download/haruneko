@@ -81,6 +81,25 @@ describe('MediaListStore', () => {
         expect(await storage.LoadPersistent(Store.MediaLists, 'site#2')).toBeUndefined();
     });
 
+    it('Should prune stale shards without rewriting unchanged shards when the list shrinks', async () => {
+        const storage = new WriteCountingStorage();
+        await SaveMediaList(storage, 'site', entries(MediaListChunkSize * 3));
+
+        // Shrink by exactly one chunk boundary: both remaining shards are byte-identical.
+        const shrunk = entries(MediaListChunkSize * 2);
+        await SaveMediaList(storage, 'site', shrunk);
+
+        // Remaining shards are unchanged → never written again.
+        expect(storage.writes.get('site#0')).toBe(1);
+        expect(storage.writes.get('site#1')).toBe(1);
+        // The stale shard is pruned and was only ever written on the initial save.
+        expect(storage.writes.get('site#2')).toBe(1);
+        expect(await storage.LoadPersistent(Store.MediaLists, 'site#2')).toBeUndefined();
+        // The meta is rewritten with the new shard count.
+        expect(storage.writes.get('site#meta')).toBe(2);
+        expect(await LoadMediaList(storage, 'site')).toEqual(shrunk);
+    });
+
     it('Should fall back to the legacy single-key list', async () => {
         const storage = new MemoryStorage();
         const legacy = entries(42);
