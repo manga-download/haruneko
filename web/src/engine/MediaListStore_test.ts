@@ -45,6 +45,7 @@ function entries(count: number): { id: string; title: string }[] {
 
 class WriteCountingStorage extends MemoryStorage {
     public readonly writes = new Map<string, number>();
+    public readonly reads = new Map<string, number>();
 
     public override async SavePersistent<T>(value: T, store: Store, key?: string): Promise<void> {
         await super.SavePersistent(value, store, key);
@@ -52,6 +53,14 @@ class WriteCountingStorage extends MemoryStorage {
             const current = this.writes.get(key) ?? 0;
             this.writes.set(key, current + 1);
         }
+    }
+
+    public override async LoadPersistent<T>(store: Store, key?: string): Promise<T> {
+        if (key !== undefined) {
+            const current = this.reads.get(key) ?? 0;
+            this.reads.set(key, current + 1);
+        }
+        return super.LoadPersistent(store, key);
     }
 }
 
@@ -102,5 +111,19 @@ describe('MediaListStore', () => {
         expect(storage.writes.get('site#1')).toBe(2);
         expect(storage.writes.get('site#meta')).toBe(2);
         expect(await LoadMediaList(storage, 'site')).toEqual(updated);
+    });
+
+    it('Should compare shards one by one without loading the whole previous list', async () => {
+        const storage = new WriteCountingStorage();
+        await SaveMediaList(storage, 'site', entries(MediaListChunkSize * 3));
+        await SaveMediaList(storage, 'site', entries(MediaListChunkSize * 3));
+
+        // The legacy single-key blob must never be read during an update.
+        expect(storage.reads.get('site')).toBeUndefined();
+        // Each shard is read individually for comparison (meta + 3 shards).
+        expect(storage.reads.get('site#meta')).toBe(2);
+        expect(storage.reads.get('site#0')).toBe(1);
+        expect(storage.reads.get('site#1')).toBe(1);
+        expect(storage.reads.get('site#2')).toBe(1);
     });
 });

@@ -41,20 +41,23 @@ export async function LoadMediaList(storage: StorageController, identifier: stri
  * Stores a media list as fixed-size shards and prunes stale shards (and the
  * legacy single-key blob) left behind by previous runs.
  *
- * Only the shards whose content actually changed (and any newly added shards)
- * are rewritten, so refreshing a mostly-unchanged list does not re-clone and
- * re-store tens of thousands of entries on every update.
+ * Each shard is compared against its previously stored counterpart **one at a
+ * time**, so only the shards whose content actually changed (and any newly
+ * added shards) are rewritten — without ever materializing the whole previous
+ * list in memory. Refreshing a mostly-unchanged list therefore neither re-clones
+ * nor re-stores tens of thousands of entries on every update.
  */
 export async function SaveMediaList(storage: StorageController, identifier: string, entries: MediaListEntry[]): Promise<void> {
     const previous = await storage.LoadPersistent<MediaListMeta>(Store.MediaLists, MetaKey(identifier));
     const sharded = previous && typeof previous.chunks === 'number';
     const previousChunks = sharded ? previous.chunks : 0;
-    const previousEntries = sharded ? await LoadMediaList(storage, identifier) : [];
     const chunkCount = Math.ceil(entries.length / MediaListChunkSize);
 
     for (let index = 0; index < chunkCount; index++) {
         const chunk = entries.slice(index * MediaListChunkSize, (index + 1) * MediaListChunkSize);
-        const previousChunk = previousEntries.slice(index * MediaListChunkSize, (index + 1) * MediaListChunkSize);
+        const previousChunk = sharded
+            ? await storage.LoadPersistent<MediaListEntry[]>(Store.MediaLists, ChunkKey(identifier, index)) ?? []
+            : [];
         if (!sharded || !ChunksEqual(chunk, previousChunk)) {
             await storage.SavePersistent(chunk, Store.MediaLists, ChunkKey(identifier, index));
         }
