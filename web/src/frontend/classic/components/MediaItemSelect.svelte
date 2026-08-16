@@ -421,6 +421,7 @@
                     onmousedown={mouseHandler(item)}
                     onmouseup={mouseHandler(item)}
                     onmouseenter={mouseHandler(item)}
+                    oncontextmenu={() => { contextItem = item }}
                 />
             {/each}
         {:catch error}
