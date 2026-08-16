@@ -398,9 +398,13 @@
     <div id="ItemFilter">
         <Search id="ItemFilterSearch" size="sm" bind:value={itemNameFilter} />
     </div>
-    <!-- svelte-ignore a11y_click_events_have_key_events -->
     <!-- svelte-ignore a11y_no_static_element_interactions -->
-    <div id="ItemList" class="list" bind:this={itemsdiv} onclick={resetSelection}>
+    <div 
+        id="ItemList" 
+        class="list" 
+        bind:this={itemsdiv} 
+        onmouseup={(event) => { if (event.target === event.currentTarget && event.button === 0) resetSelection(); }}
+    >
         {#await loadItem}
             <div class="loading center">
                 <div><Loading withOverlay={false} /></div>
