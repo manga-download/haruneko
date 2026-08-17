@@ -219,9 +219,10 @@ export abstract class FetchProvider {
      */
     private async ReloadStalledCloudFlareChallenge(
         win: ReturnType<typeof CreateRemoteBrowserWindow>,
+        url: string,
+        budget: { remaining: number },
         invocations: { name: string; info: string }[]
     ): Promise<() => void> {
-        let reloadCount = 0;
         const maxReloads = 3;
         const interval = 5000;
 
@@ -236,36 +237,34 @@ export abstract class FetchProvider {
                     || title.includes('un instant')
                     || bodyText.includes('checking your browser')
                     || bodyText.includes('un instant');
-                const cfClearance = document.cookie.split('; ').find(c => c.startsWith('cf_clearance='));
-                const cfClearanceValue = cfClearance ? cfClearance.split('=')[1] : '';
                 return {
                     isChallenge,
-                    hasRealWidget,
-                    cfClearanceLength: cfClearanceValue.length
+                    hasRealWidget
                 };
             })()
         `;
 
         const doCheck = async () => {
-            if (reloadCount >= maxReloads) return;
+            if (budget.remaining <= 0) return;
             try {
                 const result = await win.ExecuteScript<{
                     isChallenge: boolean;
                     hasRealWidget: boolean;
-                    cfClearanceLength: number;
                 }>(checkScript);
 
-                if (
-                    result?.isChallenge &&
-                    !result?.hasRealWidget &&
-                    result?.cfClearanceLength > 200
-                ) {
-                    reloadCount++;
-                    invocations.push({
-                        name: 'ReloadStalledCloudFlareChallenge',
-                        info: `Reload #${reloadCount} (managed challenge, no widget, cf_clearance=${result.cfClearanceLength})`
-                    });
-                    await win.ExecuteScript('window.location.reload()');
+                if (result?.isChallenge && !result?.hasRealWidget) {
+                    // NOTE: `cf_clearance` is httpOnly, so `document.cookie` can never see it.
+                    // Read the cookie through the debugger (CDP) instead — same session, httpOnly visible.
+                    const cookies = await win.SendDebugCommand<{ cookies: { name: string; value: string }[] }>('Network.getCookies', { urls: [ url ] });
+                    const cfClearance = cookies?.cookies?.find(cookie => cookie.name === 'cf_clearance');
+                    if (budget.remaining > 0 && cfClearance && cfClearance.value.length > 200) {
+                        budget.remaining--;
+                        invocations.push({
+                            name: 'ReloadStalledCloudFlareChallenge',
+                            info: `Reload #${maxReloads - budget.remaining} (managed challenge, no widget, cf_clearance=${cfClearance.value.length})`
+                        });
+                        await win.ExecuteScript('window.location.reload()');
+                    }
                 }
             } catch {
                 // Ignore errors from ExecuteScript on a navigating/closed window
@@ -275,7 +274,7 @@ export abstract class FetchProvider {
         let timeoutId: number;
         const schedule = async () => {
             await doCheck();
-            if (reloadCount < maxReloads) {
+            if (budget.remaining > 0) {
                 timeoutId = await SetTimeout(schedule, interval);
             }
         };
@@ -316,20 +315,24 @@ export abstract class FetchProvider {
 
         win.BeforeWindowNavigate.Subscribe(async uri => {
             invocations.push({ name: 'BeforeNavigate', info: `URL: ${uri.href}` });
-            // NOTE: Do NOT hide the window here. The window is already created with `show:false` (never
-            // shown), and calling `win.Hide()` flips the renderer to `document.hidden=true`, which makes
-            // Cloudflare's managed challenge pause forever ("Un instant…" / "Just a moment…").
-            // A never-shown window still reports `visibilityState: visible` (probe-verified), so the
-            // challenge runs and auto-resolves in the background. Only `win.Show()` (Interactive mode)
-            // brings the window on screen, e.g. for a real turnstile widget.
+            // NOTE: Do NOT hide the window here. The window is created with `show:false` and calling
+            // `win.Hide()` flips the renderer to `document.hidden=true`, which makes Cloudflare's
+            // managed challenge pause forever ("Un instant…" / "Just a moment…"). The `cf_clearance`
+            // cookie is only issued while the window is actually visible, so sites that opted into the
+            // stalled-challenge reload get `win.Show()` in the Automatic branch below; all other sites
+            // keep the hidden window (no flash) and simply wait for the challenge to auto-resolve.
             return null;
         });
 
-        let stopChallengePoller: (() => void) | undefined;
+        const stopPollers: (() => void)[] = [];
+        const reloadBudget = { remaining: 3 };
 
         const destroy = async () => {
             try {
-                stopChallengePoller?.();
+                for (const stop of stopPollers) {
+                    stop();
+                }
+                stopPollers.length = 0;
                 if (this.featureFlags.VerboseFetchWindow.Value) {
                     console.log('FetchWindow()::invocations', invocations);
                 } else {
@@ -403,8 +406,9 @@ export abstract class FetchProvider {
 
                 // Start poller only for sites that opted into the stalled-challenge reload
                 // (reloading other sites' challenges — e.g. MangaFire's custom WAF — loops forever)
-                if (ShouldReloadStalledChallenge(request.url)) {
-                    stopChallengePoller = await this.ReloadStalledCloudFlareChallenge(win, invocations);
+                const stalledReloadEnabled = ShouldReloadStalledChallenge(request.url);
+                if (stalledReloadEnabled && reloadBudget.remaining > 0) {
+                    stopPollers.push(await this.ReloadStalledCloudFlareChallenge(win, request.url, reloadBudget, invocations));
                 }
 
                 switch (redirect) {
@@ -418,7 +422,15 @@ export abstract class FetchProvider {
                         await win.Show();
                         break;
                     case FetchRedirection.Automatic:
-                        // Managed challenge without a real widget: wait in the background for the auto-resolve
+                        // Managed challenge without a real widget. The `cf_clearance` cookie is only
+                        // issued while the window is actually visible (probe-verified: a hidden window
+                        // never receives it), so for sites that opted into the stalled-challenge reload
+                        // (e.g. crunchyscan.org) we show the window to let the cookie settle, then the
+                        // poller reloads once it is present. All other sites keep the fully-hidden
+                        // background wait to avoid flashing a window.
+                        if (stalledReloadEnabled) {
+                            await win.Show();
+                        }
                         break;
                     default:
                         ClearTimeout(cancellation);
