@@ -11,8 +11,8 @@ import { Delay, SetTimeout, ClearTimeout } from '../BackgroundTimers';
 
 import { DRMProvider } from './CrunchyScan.DRM';
 
-// Affiche la fenêtre navigateur quand Cloudflare présente son challenge
-// (page « Un instant… » / « Vérifiez que vous êtes humain »).
+// Show the browser window when Cloudflare presents its challenge
+// ("Just a moment…" / "Verify you are human").
 AddAntiScrapingDetection(async invoke => {
     const challenged = await invoke<boolean>(`
         (() => {
@@ -25,9 +25,9 @@ AddAntiScrapingDetection(async invoke => {
     return challenged ? FetchRedirection.Interactive : undefined;
 }, /^https:\/\/(?:www\.)?crunchyscan\.org/);
 
-// Opt-in pour le reload automatique des challenges Cloudflare « managés » sans widget
-// (la page garde un cf_clearance valide mais ne redirige jamais). C'est le seul site
-// dont on recharge la page pour obtenir le contenu réel.
+// Opt in to auto-reloading "managed" Cloudflare challenges without a rendered widget
+// (the page holds a valid cf_clearance but never redirects). This is the only site
+// whose page is reloaded to obtain the real content.
 AddStalledChallengeReload(/^https:\/\/(?:www\.)?crunchyscan\.org/);
 
 function CleanTitle(text: string) {
@@ -54,8 +54,8 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async Initialize(): Promise<void> {
-        // Ouvre une fenêtre navigateur sur la racine pour déclencher le challenge
-        // Cloudflare et conserver le cookie cf_clearance dans la session partagée.
+        // Open a browser window on the root to trigger the Cloudflare challenge
+        // and keep the cf_clearance cookie in the shared session.
         await FetchWindowScript(new Request(this.URI.href), '');
     }
 
@@ -71,8 +71,8 @@ export default class extends DecoratableMangaScraper {
 
     public async FetchImage(page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
         return this.imageTaskPool.Add(async () => {
-            // Cloudflare peut challenger ou faire traîner une requête image de façon
-            // intermittente (403 / connexion figée) → timeout par tentative + 3 essais.
+            // Cloudflare may challenge or stall an image request intermittently (403 /
+            // frozen connection) → per-attempt timeout + 3 retries.
             let lastError: unknown;
             for (let attempt = 0; attempt < 3; attempt++) {
                 if (signal.aborted) throw new DOMException('Aborted', 'AbortError');
