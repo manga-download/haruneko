@@ -117,9 +117,9 @@
     </div>
     <div class="settings-panel">
         <div class="section">
-            {item?.Parent.Title}
+            <span class="mediatitle" title={item?.Parent.Title}>{item?.Parent.Title}</span>
             <hr />
-            <div>{item?.Title}</div>
+            <span class="mediatitle" title={item?.Title}>{item?.Title}</span>
         </div>
 
         <div class="section">
@@ -253,6 +253,13 @@
     }
     #vieweractions .section {
         margin-bottom:2em;
+    }
+    #vieweractions .mediatitle {
+        display: block;
+        max-width: 25em;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
     }
     #vieweractions .setting.block {
         margin-bottom: 0.5em;
