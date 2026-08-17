@@ -28,31 +28,32 @@ export function scrollSmoothly(element:HTMLElement, distance:number) {
  */
 export function scrollMagic(element: HTMLElement, selector:string, defaultDistance: number, nextItemCallback: () => void) {
     const images = element.querySelectorAll(selector);
+    const lastImage = images[images.length - 1];
+
+    if (!lastImage) return;
+
     // Are we at the end of the page
-    if (images[images.length - 1].getBoundingClientRect().bottom -window.innerHeight < 1) {
+    if (lastImage.getBoundingClientRect().bottom - window.innerHeight < 1) {
         nextItemCallback();
         return;
     }
-    // Find current images within view
-    const targetScrollImages = [...images].filter((image) => {
-        const rect = image.getBoundingClientRect();
-        return rect.top <= window.innerHeight && rect.bottom > 1;
-    });
+
+    const bounds = [...images].map((image) => ({ image, rect: image.getBoundingClientRect() }));
+    const visibleImages = bounds.filter(({ rect }) => rect.top <= window.innerHeight && rect.bottom > 1);
 
     // If multiple images filtered, get the last one. If none use the top image
-    const targetScrollImage = targetScrollImages[targetScrollImages.length - 1] || images[0];
+    const { image: targetScrollImage, rect } = visibleImages[visibleImages.length - 1] || bounds[0];
 
     // Is the target image top within view ? then scroll to the top of it (unless the bottom is also within view)
-    if (targetScrollImage.getBoundingClientRect().top > 1 && window.innerHeight > targetScrollImage.getBoundingClientRect().bottom) {
+    if (rect.top > 1 && window.innerHeight > rect.bottom) {
         targetScrollImage.scrollIntoView({behavior: 'smooth', block: 'nearest', inline: 'start'});
     }
     // Do we stay within target ? (bottom is further than current view)
-    else if (window.innerHeight + 1 < targetScrollImage.getBoundingClientRect().bottom) {
+    else if (window.innerHeight + 1 < rect.bottom) {
         element.scrollBy({
             top: Math.min(
                 defaultDistance,
-                targetScrollImage.getBoundingClientRect().bottom -
-                    window.innerHeight
+                rect.bottom - window.innerHeight
             ),
             left: 0,
             behavior: 'smooth',
@@ -60,11 +61,8 @@ export function scrollMagic(element: HTMLElement, selector:string, defaultDistan
     }
     else {
         // Next image is the first after the viewport
-        const nextScrollImage = [...images].filter((image) => {
-            const rect = image.getBoundingClientRect();
-            return rect.top >= window.innerHeight;
-        })[0];
-        nextScrollImage.scrollIntoView({behavior: 'smooth', block: 'nearest', inline: 'start'});
+        const next = bounds.find(({ rect }) => rect.top >= window.innerHeight);
+        next?.image.scrollIntoView({behavior: 'smooth', block: 'nearest', inline: 'start'});
     }
 }
 
