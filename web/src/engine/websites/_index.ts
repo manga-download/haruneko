@@ -573,6 +573,7 @@ export { default as RavenScans } from './RavenScans';
 export { default as RavenSeries } from './RavenSeries';
 export { default as Raw18 } from './Raw18';
 export { default as RawDevart } from './RawDevart';
+export { default as RawFree } from './RawFree';
 export { default as RawInu } from './RawInu';
 export { default as Rawkuma } from './Rawkuma';
 export { default as RawLazy } from './RawLazy';
