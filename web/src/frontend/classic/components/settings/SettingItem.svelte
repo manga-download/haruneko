@@ -18,7 +18,7 @@
 <div class={`menu-left-panel-${type}-container`} >
     
     {#if type === 'item'}
-        <Tooltip triggerText={labelText} align="start">
+        <Tooltip triggerText={labelText}>
             <p>{helperText}</p>
         </Tooltip>
     {/if}
