@@ -110,6 +110,7 @@ export { default as Digimon } from './Digimon';
 export { default as DigitalTeam } from './DigitalTeam';
 export { default as Dilar } from './Dilar';
 export { default as DingManhua } from './DingManhua';
+export { default as DivaScans } from './DivaScans';
 export { default as Dm5 } from './Dm5';
 export { default as Dmzj } from './Dmzj';
 export { default as DomalFansub } from './DomalFansub';
