@@ -20,7 +20,6 @@
 <Modal
     id="settingModal"
     size="lg"
-    hasScrollingContent
     bind:open={isSettingsModalOpen}
     passiveModal
     modalHeading="Settings"
@@ -34,8 +33,7 @@
         <Tab label="Interface" />
         <Tab label="Viewer" />
         <Tab label="Trackers" />
-        <!-- TODO: selectedtab check: temporary cheat until carbon is svelte5 (snippets instead of slots) -->
-        <svelte:fragment slot="content">
+        {#snippet content()}
             <TabContent class="settingtab">
                 <SettingsViewer
                     settings={[
@@ -68,7 +66,7 @@
                     <SettingsViewer settings={[...tracker.Settings]} />
                 {/each}
             </TabContent>
-        </svelte:fragment>
+        {/snippet}
     </Tabs>
 </Modal>
 
