@@ -15,8 +15,8 @@ new TestFixture({
         title: 'Just A Little! Pervert Rui-Chan Went Out Of Control'
     },
     entry: {
-        index: 2,
-        size: 478_246,
+        index: 6,
+        size: 494_432,
         type: 'image/jpeg'
     }
 }).AssertWebsite();
