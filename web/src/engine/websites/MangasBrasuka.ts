@@ -66,6 +66,6 @@ export default class extends DecoratableMangaScraper {
             });
         `);
         const { pages } = await FetchNextJS<HydratedPages>(new Request(chapterURL), data => 'pages' in data);
-        return pages.map(({ url }) => new Page(this, chapter, new URL(`./api/img?url=${encodeURIComponent(url)}`, this.URI), { Referer: this.URI.href }));
+        return pages.map(({ url }) => new Page(this, chapter, new URL(url), { Referer: this.URI.href }));
     }
 }

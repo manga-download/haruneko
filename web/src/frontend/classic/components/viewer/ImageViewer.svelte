@@ -103,6 +103,7 @@
                     '.imgpreview',
                     window.innerHeight * 0.8,
                     onNextItemCallback,
+                    Settings.ViewerMode.Value === Key.ViewerMode_Paginated,
                 );
                 event.preventDefault();
                 break;

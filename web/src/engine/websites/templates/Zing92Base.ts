@@ -29,7 +29,7 @@ export function ChapterExtractor(anchor: HTMLAnchorElement) {
     };
 }
 
-function MangaExtractor(anchor: HTMLAnchorElement) {
+export function MangaExtractor(anchor: HTMLAnchorElement) {
     return {
         id: anchor.pathname,
         title: CleanTitle(anchor.text)
