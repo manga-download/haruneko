@@ -80,7 +80,7 @@
                 Settings.ViewerZoom.Value = 100;
                 break;
             case event.key === '/':
-                Settings.ViewerZoom.Reset();
+                Settings.ViewerZoom.Value=Settings.ViewerZoom.Setting.Default;
                 break;
             case event.key === '+' && !event.ctrlKey:
                 Settings.ViewerZoom.Increment();
@@ -103,6 +103,7 @@
                     '.imgpreview',
                     window.innerHeight * 0.8,
                     onNextItemCallback,
+                    Settings.ViewerMode.Value === Key.ViewerMode_Paginated,
                 );
                 event.preventDefault();
                 break;

@@ -7,7 +7,7 @@ new TestFixture({
         title: 'Crunchyscan'
     },
     container: {
-        url: 'https://crunchyscan.fr/lecture-en-ligne/appleseed',
+        url: 'https://crunchyscan.org/lecture-en-ligne/appleseed',
         id: '/lecture-en-ligne/appleseed',
         title: 'Appleseed'
     },
@@ -29,7 +29,7 @@ new TestFixture({
         title: 'Crunchyscan'
     },
     container: {
-        url: 'https://crunchyscan.fr/lecture-en-ligne/adulte-non-censuree-the-young-wife',
+        url: 'https://crunchyscan.org/lecture-en-ligne/adulte-non-censuree-the-young-wife',
         id: '/lecture-en-ligne/adulte-non-censuree-the-young-wife',
         title: 'The Young Wife'
     },
