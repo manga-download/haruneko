@@ -1,46 +1,77 @@
-type Message = {
+type Payload = {
     channel: string,
     parameters: JSONArray,
 }
 
-export type Callback = (...parameters: JSONArray) => Promise<void>;
+export namespace Channels {
 
-export class IPC<TChannelsOut extends string, TChannelsIn extends string> {
+    /**
+     * Supported IPC Channels for managing the RPC service.
+     */
+    export enum RemoteProcedureCallManager {
+        Stop = 'RemoteProcedureCallManager::Stop',
+        Restart = 'RemoteProcedureCallManager::Restart',
+    };
 
-    private readonly subscriptions = new Map<string, Callback[]>;
+    /**
+     * Supported IPC Channels for using the RPC service.
+     */
+    export enum RemoteProcedureCallContract {
+        LoadMediaContainerFromURL = 'RemoteProcedureCallContract::LoadMediaContainerFromURL',
+    };
+}
+
+type MessageCallback<TParameters extends JSONArray = JSONArray> = (...parameters: TParameters) => void | Promise<void>;
+type RequestCallback<TParameters extends JSONArray = JSONArray, TReturn extends JSONElement | undefined = JSONElement | undefined> = (...parameters: TParameters) => TReturn | Promise<TReturn>;
+
+export class IPC {
+
+    private readonly messageHandlers = new Map<string, MessageCallback>;
+    private readonly requestHandlers = new Map<string, RequestCallback>;
 
     constructor() {
         chrome.runtime.onMessage.addListener(this.OnMessage.bind(this));
     }
 
-    private OnMessage(message: Message, sender: chrome.runtime.MessageSender, callback: (response: void) => void): boolean {
-        if(this.subscriptions.has(message.channel)) {
-            const promises = this.subscriptions.get(message.channel)?.map(method => method(...message.parameters)) ?? [];
-            Promise.allSettled(promises).then(() => callback());
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    public Listen(channel: TChannelsIn, callback: Callback) {
-        if(!this.subscriptions.has(channel)) {
-            this.subscriptions.set(channel, []);
-        }
-        const methods = this.subscriptions.get(channel);
-        if(methods && !methods.includes(callback)) {
-            methods.push(callback);
-        }
-    }
-
-    public async Send(channel: TChannelsOut, ...parameters: JSONArray): Promise<void> {
+    private async GetTabID(): Promise<number> {
         // TODO: improve query filter e.g., windowID or tabID
         const tabs = await new Promise<chrome.tabs.Tab[]>(resolve => chrome.tabs.query({ active: true }, resolve));
-        const tab = tabs.length > 0 ? tabs.at(0) : undefined;
-        if(tab?.id) {
-            return new Promise<void>(resolve => chrome.tabs.sendMessage<Message, void>(<number>tab.id, { channel, parameters }, resolve));
-        } else {
-            throw new Error(); // TODO: Message
+        return tabs.at(0)?.id ?? Number.NaN;
+    }
+
+    private async OnMessage(message: Payload, _sender: chrome.runtime.MessageSender, sendResponse: (response?: JSONElement) => void): Promise<void> {
+        try {
+            if (this.messageHandlers.has(message.channel)) {
+                const handle = <MessageCallback>this.messageHandlers.get(message.channel);
+                await handle(...message.parameters);
+            }
+            if (this.requestHandlers.has(message.channel)) {
+                const handle = <RequestCallback>this.requestHandlers.get(message.channel);
+                sendResponse(await handle(...message.parameters));
+            }
+        } catch (error) {
+            console.warn(error);
         }
+    }
+
+    public On<TParameters extends JSONArray>(channel: string, callback: MessageCallback<TParameters>): void {
+        this.messageHandlers.set(channel, <MessageCallback>callback);
+    }
+
+    Send(channel: Channels.RemoteProcedureCallContract.LoadMediaContainerFromURL, url: string): void;
+    public async Send<TParameters extends JSONArray>(channel: string, ...parameters: TParameters): Promise<void> {
+        const tab = await this.GetTabID();
+        return chrome.tabs.sendMessage<Payload, void>(tab, { channel, parameters });
+    }
+
+    Handle(channel: Channels.RemoteProcedureCallManager.Stop, callback: () => Promise<undefined>): void;
+    Handle(channel: Channels.RemoteProcedureCallManager.Restart, callback: (port: number, secret: string) => Promise<undefined>): void;
+    public Handle<TParameters extends JSONArray, TReturn extends JSONElement>(channel: string, callback: RequestCallback<TParameters, TReturn | undefined>): void {
+        this.requestHandlers.set(channel, <RequestCallback>callback);
+    }
+
+    public async Invoke<TParameters extends JSONArray, TReturn extends JSONElement>(channel: string, ...parameters: TParameters): Promise<TReturn | undefined> {
+        const tab = await this.GetTabID();
+        return new Promise<TReturn | undefined>(resolve => chrome.tabs.sendMessage<Payload, TReturn>(tab, { channel, parameters }, resolve));
     }
 }

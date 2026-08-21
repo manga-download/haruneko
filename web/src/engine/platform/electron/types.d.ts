@@ -1,1 +1,1 @@
-declare var ipcRenderer: Pick<Electron.IpcRenderer, 'invoke' | 'on'>;
+declare var ipcRenderer: Pick<Electron.IpcRenderer, 'invoke' | 'send' | 'on'>;

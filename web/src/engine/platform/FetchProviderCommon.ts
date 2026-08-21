@@ -5,12 +5,14 @@ import { CreateRemoteBrowserWindow } from './RemoteBrowserWindow';
 import { CheckAntiScrapingDetection, FetchRedirection } from './AntiScrapingDetection';
 import type { FeatureFlags } from '../FeatureFlags';
 import { Delay, SetTimeout, ClearTimeout } from '../BackgroundTimers';
+import { ConcealedCookieHeaderName, type FetchConcealedRequest } from './FetchConcealedRequest';
+import { MergeCookiesIntoHeader, ParseCookiesFromHeader } from './CookieHelper';
 
 export abstract class FetchProvider {
 
     private featureFlags: FeatureFlags;
 
-    protected async ValidateResponse(response: Response): Promise<void> {
+    private async ValidateResponse(response: Response): Promise<void> {
         if (/challenge/i.test(response.headers.get('CF-Mitigated'))) {
             throw new Exception(R.FetchProvider_Fetch_CloudFlareChallenge, response.url);
         }
@@ -34,6 +36,23 @@ export abstract class FetchProvider {
      * @param request - ...
      */
     public abstract Fetch(request: Request): Promise<Response>;
+
+    protected async FetchConcealed(request: FetchConcealedRequest, sessionCookies: CookieList): Promise<Response> {
+        if (request.credentials === 'omit') {
+            request.headers.delete(ConcealedCookieHeaderName);
+            request.headers.delete('Authorization');
+        } else {
+            const cookie = MergeCookiesIntoHeader(
+                sessionCookies,
+                ParseCookiesFromHeader(request.headers.get(ConcealedCookieHeaderName) ?? ''));
+            request.headers.set(ConcealedCookieHeaderName, cookie);
+            //console.log('Merged Session Cookies:', cookie);
+        }
+        // Fetch API defaults => https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch
+        const response = await fetch(request);
+        await this.ValidateResponse(response);
+        return response;
+    }
 
     /**
      * Fetch and parse the remote HTML content into a virtual {@link Document} for further processing.
@@ -139,12 +158,7 @@ export abstract class FetchProvider {
         }
         const response = await fetch(request);
         const data = await response.text();
-        const result: string[] = [];
-        let match = undefined;
-        while (match = regex.exec(data)) {
-            result.push(match.at(1));
-        }
-        return result;
+        return Array.from(data.matchAll(regex), match => match.at(1));
     }
 
     /**
@@ -256,8 +270,8 @@ export abstract class FetchProvider {
             }
         };
 
-        return new Promise<T>(async (resolve, reject) => {
-            let cancellation = await SetTimeout(async () => {
+        return new Promise<T>((resolve, reject) => {
+            let cancellation = SetTimeout(async () => {
                 await destroy();
                 reject(new Exception(R.FetchProvider_FetchWindow_TimeoutError));
             }, timeout);
@@ -268,23 +282,27 @@ export abstract class FetchProvider {
                     const redirect = await CheckAntiScrapingDetection(win, request.url);
                     invocations.push({ name: 'performRedirectionOrFinalize()', info: `Mode: ${FetchRedirection[ redirect ]}` });
                     switch (redirect) {
-                        case FetchRedirection.Interactive:
+                        case FetchRedirection.Interactive: {
                             // NOTE: Allow the user to solve the captcha within 2.5 minutes before rejecting the request with an error
-                            ClearTimeout(cancellation);
-                            cancellation = await SetTimeout(() => {
+                            ClearTimeout(await cancellation);
+                            cancellation = SetTimeout(() => {
                                 destroy();
                                 reject(new Exception(R.FetchProvider_FetchWindow_TimeoutError));
                             }, 150_000);
                             await win.Show();
-                            break;
-                        case FetchRedirection.Automatic:
-                            break;
-                        default:
-                            ClearTimeout(cancellation);
+                            return;
+                        }
+                        case FetchRedirection.Automatic: {
+                            return;
+                        }
+                        default: {
+                            ClearTimeout(await cancellation);
                             await Delay(delay);
                             const result = await win.ExecuteScript<T>(script);
                             await destroy();
                             resolve(result);
+                            return;
+                        }
                     }
                 } catch {
                     await destroy();
@@ -292,7 +310,7 @@ export abstract class FetchProvider {
             });
 
             invocations.push({ name: 'Open', info: `Request URL: ${request.url}` });
-            await win.Open(request, this.featureFlags.VerboseFetchWindow.Value, preload);
+            win.Open(request, this.featureFlags.VerboseFetchWindow.Value, preload);
         });
     }
 }
