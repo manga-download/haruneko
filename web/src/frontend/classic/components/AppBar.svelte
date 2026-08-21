@@ -37,7 +37,6 @@
 
     window.addEventListener('resize', updateWindowState);
 
-    let showWindowControls = $derived(UI.WindowController?.HasControls ?? false);
     let minimize = $derived(UI.WindowController?.Minimize.bind(UI.WindowController));
     let maximize = $derived(UI.WindowController?.Maximize.bind(UI.WindowController));
     let restore = $derived(UI.WindowController?.Restore.bind(UI.WindowController));
@@ -78,8 +77,8 @@
         {/if}
         <div id="AppTitle" class:padding-left={Settings.SidenavIconsOnTop.Value}>
             {GlobalSettings.Locale.Frontend_Product_Title()}
-            <span class="appdesc">{GlobalSettings.Locale.Frontend_Product_Description()}</span
-            >
+            <span class="appdesc">{GlobalSettings.Locale.Frontend_Product_Description()}</span>
+            <span class="beta">(v10.0 beta "HaruNeko")</span>
         </div>
     </div>
 
@@ -87,7 +86,7 @@
         <SkipToContent />
     </div>
     <HeaderUtilities>
-        {#if showWindowControls}
+        {#if UI.WindowController?.HasControls}
             <HeaderGlobalAction
                 on:click={minimize}
                 iconDescription="Minimize"
@@ -126,6 +125,14 @@
     }
     #AppTitle .appdesc {
         font-weight: var(--cds-body-short-01-font-weight, 400);
+        padding-left: 1em;
+    }
+    #AppTitle .beta {
+        font-size: var(--cds-caption-01-font-size, .75rem);
+        font-weight: var(--cds-caption-01-font-weight, 400);
+        line-height: var(--cds-caption-01-line-height, 1.33333);
+        letter-spacing: var(--cds-caption-01-letter-spacing, .32px);
+        color: var(--cds-text-helper);
         padding-left: 1em;
     }
     div[slot='platform'] {

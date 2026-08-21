@@ -22,7 +22,7 @@
     let color: TagProps['type'] = $derived(colorTranslator.has(category)? colorTranslator.get(category) : 'gray');
 </script>
 
-<Tag {filter} type={color} on:click on:close>
+<Tag interactive {filter} type={color} on:click on:close>
     <div class="tagContent {category} {className}">{GlobalSettings.Locale[label]()}</div>
 </Tag>
 

@@ -13,6 +13,17 @@ export class TestFixture extends FrontendFixture {
     };
 
     /**
+     * Close the startup guide if it is open.
+     */
+    public async CloseStartupGuide() {
+        const page = await super.GetPage();
+        const selector = '#startupGuide button.bx--modal-close';
+        await page.waitForSelector(selector, { timeout: 5000 });
+        await page.click(selector);
+        return await page.waitForSelector('#startupGuide', { hidden: true, timeout: 5000 });
+    }
+
+    /**
      * Get the current text in the website search box.
      */
     public async GetWebsiteFilter() {
