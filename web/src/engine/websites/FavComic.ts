@@ -5,7 +5,7 @@ import * as Common from './decorators/Common';
 import { FetchWindowScript } from '../platform/FetchProvider';
 import type { Priority } from '../taskpool/DeferredTask';
 import { GetBytesFromBase64 } from '../BufferEncoder';
-import { AESDecrypt } from '../Crypto';
+import { DecryptAES } from '../Crypto';
 
 type PagesData = {
     images: string[];
@@ -53,6 +53,6 @@ export default class extends DecoratableMangaScraper {
     }
     private async DecryptImage(buffer: ArrayBuffer, key: string): Promise<Blob> {
         const message = new Uint8Array(buffer);
-        return Common.GetTypedData(await AESDecrypt(message.slice(16), GetBytesFromBase64(key), { mode: 'CBC', iv: message.slice(0, 16) }));
+        return Common.GetTypedData(await DecryptAES(message.slice(16), GetBytesFromBase64(key), { name: 'AES-CBC', iv: message.slice(0, 16) }));
     }
 }

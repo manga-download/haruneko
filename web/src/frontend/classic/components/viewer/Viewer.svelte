@@ -16,12 +16,11 @@
     let displayedItem: MediaContainer<MediaItem> = $state();;
     let currentImageIndex: number = $state(-1);
 
-    let updating: Promise<void> = $derived.by(async() => {
-        const promise = item.Update()
-        .catch(() => {displayedItem=undefined})
-        .then(() => { displayedItem = item;});
-        return promise;
-    });
+    let updating: Promise<void> = $derived.by(() =>
+        item.Update()
+            .then(() => { displayedItem = item; })
+            .catch((error) => { displayedItem = undefined; throw error; })
+    );
 
     function onPreviousItem() {
         currentImageIndex = -1;

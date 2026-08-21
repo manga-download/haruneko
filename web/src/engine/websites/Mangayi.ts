@@ -3,6 +3,7 @@ import icon from './Mangayi.webp';
 import { DecoratableMangaScraper, Manga, type MangaPlugin } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import { FetchJSON } from '../platform/FetchProvider';
+import { Delay } from '../BackgroundTimers';
 
 type APIMangas = {
     results: {
@@ -11,12 +12,12 @@ type APIMangas = {
     }[];
 };
 
-@Common.MangaCSS<HTMLMetaElement>(/^{origin}\/read\/[^/]+\/$/, 'aside h1.title')
-@Common.ChaptersSinglePageCSS<HTMLAnchorElement>('div.chapters a:not(.unreleased)', undefined, anchor => ({
+@Common.MangaCSS<HTMLMetaElement>(/^{origin}\/read\/[^/]+\/$/, 'aside h1.m-title')
+@Common.ChaptersSinglePageCSS<HTMLAnchorElement>('div.chapters-list a:not(.unreleased)', undefined, anchor => ({
     id: anchor.pathname,
     title: anchor.querySelector('p.t').textContent.trim()
 }))
-@Common.PagesSinglePageCSS('div.images img')
+@Common.PagesSinglePageCSS('div.c-images img')
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
@@ -32,6 +33,7 @@ export default class extends DecoratableMangaScraper {
         type This = typeof this;
         return Array.fromAsync(async function* (this: This) {
             for (let page = 1, run = true; run; page++) {
+                await Delay(300);
                 const { results } = await FetchJSON<APIMangas>(new Request(new URL('./api/search', this.URI), {
                     method: 'POST',
                     headers: {

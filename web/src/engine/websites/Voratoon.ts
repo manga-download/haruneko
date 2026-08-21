@@ -1,5 +1,5 @@
 import { Tags } from '../Tags';
-import icon from './KomikCast.webp';
+import icon from './Voratoon.webp';
 import { Chapter, DecoratableMangaScraper, Manga, type MangaPlugin, Page } from '../providers/MangaPlugin';
 import { FetchJSON } from '../platform/FetchProvider';
 import * as Common from './decorators/Common';
@@ -19,22 +19,22 @@ type APIChapter = {
     data: {
         index: number;
         title: string | null;
-    }
+    };
 };
 
 type APIPages = {
     data: {
         images: string[];
-    }
+    };
 };
 
 @Common.ImageAjax()
 
 export default class extends DecoratableMangaScraper {
-    private readonly apiUrl = 'https://be.komikcast.cc/series/';
+    private readonly apiURL = 'https://api.voratoon.com/series/';
 
     public constructor() {
-        super('komikcast', 'KomikCast', 'https://v3.komikcast.fit', Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Language.Indonesian, Tags.Source.Aggregator, Tags.Accessibility.DomainRotation);
+        super('komikcast', 'Voratoon', 'https://v1.voratoon.com', Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Language.Indonesian, Tags.Source.Aggregator, Tags.Accessibility.DomainRotation);
     }
 
     public override get Icon() {
@@ -72,7 +72,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     private async FetchAPI<T extends JSONElement>(endpoint: string): Promise<T> {
-        return (await FetchJSON<APIResult<T>>(new Request(new URL(endpoint, this.apiUrl), {
+        return (await FetchJSON<APIResult<T>>(new Request(new URL(endpoint, this.apiURL), {
             headers: {
                 Referer: this.URI.href,
                 Origin: this.URI.origin

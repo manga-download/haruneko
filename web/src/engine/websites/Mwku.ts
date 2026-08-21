@@ -6,7 +6,7 @@ import { FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
 import type { Priority } from '../taskpool/DeferredTask';
 import { GetBytesFromUTF8 } from '../BufferEncoder';
 import { GetTypedData } from './decorators/Common';
-import { AESDecrypt } from '../Crypto';
+import { DecryptAES } from '../Crypto';
 
 type APIPages = {
     data: {
@@ -47,6 +47,6 @@ export default class extends DecoratableMangaScraper {
         const blob = await Common.FetchImageAjax.call(this, page, priority, signal, true);
         if (blob.type.startsWith('image')) return blob;
         const buffer = await blob.arrayBuffer();
-        return GetTypedData(await AESDecrypt(buffer.slice(16), GetBytesFromUTF8('0B6666A0-BB59-1381-B746-a0E4C9AC').slice(0, 32), { mode: 'CBC', iv: buffer.slice(0, 16) } ));
+        return GetTypedData(await DecryptAES(buffer.slice(16), GetBytesFromUTF8('0B6666A0-BB59-1381-B746-a0E4C9AC').slice(0, 32), { name: 'AES-CBC', iv: buffer.slice(0, 16) }));
     }
 }

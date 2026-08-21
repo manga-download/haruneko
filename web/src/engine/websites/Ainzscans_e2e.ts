@@ -6,7 +6,7 @@ new TestFixture({
         title: 'Ainzscans'
     },
     container: {
-        url: 'https://v1.ainzscans01.com/comic/disastrous-necromancer',
+        url: 'https://v3.ainzscans01.com/comic/disastrous-necromancer',
         id: 'disastrous-necromancer',
         title: 'Disastrous Necromancer'
     },
