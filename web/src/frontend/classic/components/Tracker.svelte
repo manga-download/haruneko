@@ -16,15 +16,16 @@
         Info,
     } from '../../../engine/trackers/IMediaInfoTracker';
 
-    export let media: MediaContainer<MediaChild>;
-    export let tracker: MediaInfoTracker;
-    export let isTrackerModalOpen = false;
+    interface Props {
+        media: MediaContainer<MediaChild>;
+        tracker: MediaInfoTracker;
+        isTrackerModalOpen?: boolean;
+    }
 
-    let mediaSuggestions: Promise<Suggestion[]>;
-    let mediaTracked: Info;
+    let { media, tracker, isTrackerModalOpen = $bindable(false) }: Props = $props();
 
-    $: (mediaSuggestions = tracker.Search(media.Title)),
-        (mediaTracked = undefined);
+    let mediaSuggestions: Promise<Suggestion[]> = $derived(tracker.Search(media.Title));
+    let mediaTracked: Promise<Info> = $state();
 
     //Todo: give it some polish !
 </script>
@@ -46,24 +47,30 @@
     </div>
 
     {#if mediaTracked}
-        <div class="border" in:fade>
-            <img class="cover" src={mediaTracked.Cover} alt="" />
-            <p><span class="mediainfo">Type</span>: {mediaTracked.Type}</p>
-            <p><span class="mediainfo">Title</span>: {mediaTracked.Title}</p>
-            <p><span class="mediainfo">Titles</span>: {mediaTracked.Titles}</p>
-            <p>
-                <span class="mediainfo">Creator</span>: {mediaTracked.Creator}
-            </p>
-            <p>
-                <span class="mediainfo">Released</span>: {mediaTracked.Released.toISOString().substring(
-                    0,
-                    10
-                )}
-            </p>
-            <p>
-                <span class="mediainfo">Description</span>: {mediaTracked.Description}
-            </p>
-        </div>
+        {#await mediaTracked}
+            <Loading withOverlay={false} />
+        {:then mediaTracked}
+            <div class="border" in:fade>
+                <img class="cover" src={mediaTracked.Cover} alt="" />
+                <p><span class="mediainfo">Type</span>: {mediaTracked.Type}</p>
+                <p><span class="mediainfo">Title</span>: {mediaTracked.Title}</p>
+                <p><span class="mediainfo">Titles</span>: {mediaTracked.Titles}</p>
+                <p>
+                    <span class="mediainfo">Creator</span>: {mediaTracked.Creator}
+                </p>
+                <p>
+                    <span class="mediainfo">Released</span>: {mediaTracked.Released.toISOString().substring(
+                        0,
+                        10
+                    )}
+                </p>
+                <p>
+                    <span class="mediainfo">Description</span>: {mediaTracked.Description}
+                </p>
+            </div>
+        {:catch error}
+            <p class="error">Meh, it failed : {error}</p>
+        {/await}
     {:else}
         <div class="border" in:fade>
             {#await mediaSuggestions}
@@ -78,18 +85,13 @@
                             </p>
                             <p>
                                 <span class="mediainfo">Titles</span>:
-                                <span class="mediainfo-titles"
-                                    >{mediaSuggestion.Titles}</span
-                                >
+                                <span class="mediainfo-titles">{mediaSuggestion.Titles}</span>
                             </p>
                             <Button
                                 iconDescription="Track this media"
                                 icon={CheckmarkOutline}
                                 kind="secondary"
-                                on:click={async () =>
-                                    (mediaTracked = await tracker.GetInfo(
-                                        mediaSuggestion.Identifier
-                                    ))}
+                                on:click={async () =>(mediaTracked = tracker.GetInfo(mediaSuggestion.Identifier))}
                             />
                         </AccordionItem>
                     {/each}
