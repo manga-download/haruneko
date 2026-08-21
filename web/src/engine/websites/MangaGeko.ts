@@ -7,10 +7,10 @@ import { FetchCSS, FetchJSON } from '../platform/FetchProvider';
 type APIMangas = {
     results_html: string;
     num_pages: number;
-}
+};
 
 @Common.MangaCSS(/^{origin}\/manga\/[^/]+\/$/, 'div.main-head h1[itemprop="name"]')
-@Common.PagesSinglePageCSS('section.page-in div img[onerror]')
+@Common.PagesSinglePageCSS('section.page-in div img[onerror]:not([src*="credits-mgeko"])')
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
@@ -36,8 +36,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const request = new Request(new URL(`${manga.Identifier}all-chapters/`, this.URI));
-        const data = await FetchCSS<HTMLAnchorElement>(request, 'ul.chapter-list li a');
+        const data = await FetchCSS<HTMLAnchorElement>(new Request(new URL(`${manga.Identifier}all-chapters/`, this.URI)), 'ul.chapter-list li a');
         return data.map(element => {
             const title = element.querySelector('strong.chapter-title').textContent;
             return new Chapter(this, manga, element.pathname, title.replace(/-([a-z]+)-li/, ' ($1)').trim());
