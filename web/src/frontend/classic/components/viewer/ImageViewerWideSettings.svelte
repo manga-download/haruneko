@@ -240,7 +240,7 @@
         opacity: 5%;
         padding: 0 1.5em 0 1.5em;
         background-color: var(--cds-background-active);
-        transition: opacity 1s ease;
+        transition: opacity 0.5s ease;
     }
     #vieweractions:hover,#vieweractions.open  {
         opacity: 100%;
