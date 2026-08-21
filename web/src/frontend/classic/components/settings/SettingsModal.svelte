@@ -7,7 +7,6 @@
         TabContent,
     } from 'carbon-components-svelte';
     import SettingsViewer from './SettingsViewer.svelte';
-    import ViewerSettings from '../viewer/Settings.svelte';
     import { frontendClassicSettings, frontendClassicSettingsViewer } from '../../stores/Settings.svelte';
     import { Scope as Global_Scope } from '../../../../engine/SettingsGlobal';
 
@@ -21,7 +20,6 @@
 <Modal
     id="settingModal"
     size="lg"
-    hasScrollingContent
     bind:open={isSettingsModalOpen}
     passiveModal
     modalHeading="Settings"
@@ -35,38 +33,29 @@
         <Tab label="Interface" />
         <Tab label="Viewer" />
         <Tab label="Trackers" />
-        <!-- TODO: selectedtab check: temporary cheat until carbon is svelte5 (snippets instead of slots) -->
-        <svelte:fragment slot="content">
-            <TabContent
-                class="settingtab {selectedTab === 0 ? 'activetab' : 'hidden'}"
-            >
+        {#snippet content()}
+            <TabContent class="settingtab">
                 <SettingsViewer
                     settings={[
                         ...window.HakuNeko.SettingsManager.OpenScope(Global_Scope),
                     ]}
                 />
             </TabContent>
-            <TabContent
-                class="settingtab {selectedTab === 1 ? 'activetab' : 'hidden'}"
-            >
+            <TabContent class="settingtab">
                 <SettingsViewer
                     settings={[
                         ...frontendClassicSettings,
                     ]}
                 />
             </TabContent>
-            <TabContent
-                class="settingtab {selectedTab === 2 ? 'activetab' : 'hidden'}"
-            >
+            <TabContent class="settingtab">
                 <SettingsViewer
                     settings={[
                         ...frontendClassicSettingsViewer,
                     ]}
                 />
             </TabContent>
-            <TabContent
-                class="settingtab {selectedTab === 3 ? 'activetab' : 'hidden'}"
-            >
+            <TabContent class="settingtab">
                 <InlineNotification
                     kind="warning"
                     title="Not implemented"
@@ -77,15 +66,12 @@
                     <SettingsViewer settings={[...tracker.Settings]} />
                 {/each}
             </TabContent>
-        </svelte:fragment>
+        {/snippet}
     </Tabs>
 </Modal>
 
 <style>
     :global(#settingModal .settingtab) {
         height: 70vh;
-    }
-    :global(#settingModal .settingtab.hidden) {
-        display: none;
     }
 </style>
