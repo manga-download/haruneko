@@ -8,7 +8,7 @@ new TestFixture({
     container: {
         url: 'https://nicomanga.com/manga140/073b43f5.html',
         id: '/manga140/073b43f5.html',
-        title: 'TO BE A POWER IN THE SHADOWS!',
+        title: 'To Be a Power in the Shadows!',
     },
     child: {
         id: '/manga140/073b43f5/chapter-c10.2i6837.html',

@@ -45,7 +45,7 @@ jobs:
             npm run build --workspace=app/electron
             npx vitest run --reporter=dot --config=test/vitest.e2e.js "Frontend" --testNamePattern="SmokeTests"
       - name: Deploy App to CloudFlare
-        uses: cloudflare/wrangler-action@v3
+        uses: cloudflare/wrangler-action@v4
         env:
           WRANGLER_SEND_METRICS: false
         with:
@@ -56,7 +56,7 @@ jobs:
       - name: Build Documentation
         run: npm run build --workspace=docs
       - name: Deploy Docs to CloudFlare
-        uses: cloudflare/wrangler-action@v3
+        uses: cloudflare/wrangler-action@v4
         env:
           WRANGLER_SEND_METRICS: false
         with:
