@@ -4,7 +4,7 @@ import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import { FetchWindowScript } from '../platform/FetchProvider';
 
-@Common.MangaCSS<HTMLImageElement>(/^{origin}\/comics\/\d+$/, 'img.object-cover.h-full:not([alt=""])', (el, uri) => ({
+@Common.MangaCSS<HTMLImageElement>(/^https:\/\/(www\.)?jjaptoon\d+\.com\/comics\/\d+$/, 'img.object-cover.h-full:not([alt=""])', (el, uri) => ({
     id: uri.pathname,
     title: el.alt.trim()
 }))
@@ -21,7 +21,7 @@ import { FetchWindowScript } from '../platform/FetchProvider';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('jjaptoon', 'Jjaptoon', 'https://www.jjaptoon005.com', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Language.Korean, Tags.Source.Aggregator);
+        super('jjaptoon', 'Jjaptoon', 'https://www.jjaptoon006.com', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Language.Korean, Tags.Source.Aggregator);
     }
 
     public override get Icon() {

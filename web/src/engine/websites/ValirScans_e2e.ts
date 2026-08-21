@@ -7,7 +7,7 @@ new TestFixture({
     },
     container: {
         url: 'https://valirscans.org/series/comic/growing-the-seed-of-evil',
-        id: 'growing-the-seed-of-evil',
+        id: '/series/comic/growing-the-seed-of-evil',
         title: 'Growing the Seed of Evil'
     },
     child: {

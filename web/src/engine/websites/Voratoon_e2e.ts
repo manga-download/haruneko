@@ -3,10 +3,10 @@ import { TestFixture } from '../../../test/WebsitesFixture';
 new TestFixture({
     plugin: {
         id: 'komikcast',
-        title: 'KomikCast'
+        title: 'Voratoon'
     },
     container: {
-        url: 'https://v3.komikcast.fit/series/swordmasters-youngest-son',
+        url: 'https://v1.voratoon.com/series/swordmasters-youngest-son',
         id: 'swordmasters-youngest-son',
         title: 'Swordmaster’s Youngest Son'
     },
@@ -16,7 +16,7 @@ new TestFixture({
     },
     entry: {
         index: 1,
-        size: 267_484,
+        size: 347_696,
         type: 'image/jpeg'
     }
 }).AssertWebsite();

@@ -398,9 +398,13 @@
     <div id="ItemFilter">
         <Search id="ItemFilterSearch" size="sm" bind:value={itemNameFilter} />
     </div>
-    <!-- svelte-ignore a11y_click_events_have_key_events -->
     <!-- svelte-ignore a11y_no_static_element_interactions -->
-    <div id="ItemList" class="list" bind:this={itemsdiv} onclick={resetSelection}>
+    <div 
+        id="ItemList" 
+        class="list" 
+        bind:this={itemsdiv} 
+        onmouseup={(event) => { if (event.target === event.currentTarget && event.button === 0) resetSelection(); }}
+    >
         {#await loadItem}
             <div class="loading center">
                 <div><Loading withOverlay={false} /></div>
@@ -417,15 +421,22 @@
                     onmousedown={mouseHandler(item)}
                     onmouseup={mouseHandler(item)}
                     onmouseenter={mouseHandler(item)}
+                    oncontextmenu={() => { contextItem = item }}
                 />
             {/each}
         {:catch error}
             <div class="error">
                 <InlineNotification
                     lowContrast
-                    title={error.name}
-                    subtitle={error.message}
-                />
+                    title={`Plugin failed to load items`}
+                >
+                    <svelte:fragment slot="subtitleChildren">
+                        {`${error.name} - ${error.message} `}
+                        <p class="error-source">
+                            Source: {UI.selectedMedia.Title} - {UI.selectedMedia?.Parent.Title}
+                        </p>
+                    </svelte:fragment>
+                </InlineNotification>
             </div>
         {/await}
     </div>
@@ -536,5 +547,13 @@
     }
     .resize:hover {
             background-color:var(--cds-ui-02); 
+    }
+    .error-source {
+        display: block;
+        margin: 0.25em 0 0 auto;
+        font-size: 0.7em;
+        font-style: italic;
+        color: var(--cds-text-03);
+        text-align: right;
     }
 </style>
