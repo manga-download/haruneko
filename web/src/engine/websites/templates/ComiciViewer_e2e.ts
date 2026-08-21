@@ -10,6 +10,7 @@ import '../JEnta_e2e';
 import '../KimiComi_e2e';
 import '../MagKan_e2e';
 import '../MangaBANG_e2e';
+import '../MangaZegra_e2e';
 import '../RimacomiPlus_e2e';
 import '../TakeComic_e2e';
 import '../YoungAnimal_e2e';

@@ -6,17 +6,17 @@ new TestFixture({
         title: 'RF Dragon Scan',
     },
     container: {
-        url: 'https://rfdragonscan.com/deus-do-apocalipse/',
-        id: '/deus-do-apocalipse/',
-        title: 'Deus do Apocalipse',
-    },
+        url: 'https://rfdragonscan.net/dd3de284-e02c-4513-8541-09eb5eeaaa9a/jogador-renascido',
+        id: '/dd3de284-e02c-4513-8541-09eb5eeaaa9a/jogador-renascido',
+        title: 'Jogador Renascido',
+    }, /* Need Login
     child: {
-        id: '/deus-do-apocalipse/10/',
-        title: 'Capítulo 10',
+        id: '/dd3de284-e02c-4513-8541-09eb5eeaaa9a/jogador-renascido/capitulo/194',
+        title: 'Capítulo 194',
     },
     entry: {
         index: 0,
-        size: 273_580,
-        type: 'image/avif'
-    }
+        size: 196_008,
+        type: 'image/webp'
+    }*/
 }).AssertWebsite();

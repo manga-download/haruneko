@@ -26,7 +26,7 @@ export default class extends DecoratableMangaScraper {
     readonly #drm = new DRMProvider();
 
     public constructor() {
-        super('crunchyscan', 'Crunchyscan', 'https://crunchyscan.fr', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.French, Tags.Source.Aggregator);
+        super('crunchyscan', 'Crunchyscan', 'https://crunchyscan.org', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.French, Tags.Source.Aggregator);
         this.imageTaskPool.RateLimit = new RateLimit(2, 1);
     }
 
