@@ -10,7 +10,7 @@ export const queryPages = 'img.chapter-img';
 export function ClipBoardExtractor(element: HTMLElement, uri: URL) {
     return {
         id: uri.pathname,
-        title: CleanTitle(element.dataset.enc ? window.atob(element.dataset.enc) : element.textContent)
+        title: CleanTitle(element.dataset?.enc ? window.atob(element.dataset?.enc) : element.textContent)
     };
 }
 

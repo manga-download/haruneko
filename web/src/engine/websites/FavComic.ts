@@ -5,10 +5,10 @@ import * as Common from './decorators/Common';
 import { FetchWindowScript } from '../platform/FetchProvider';
 import type { Priority } from '../taskpool/DeferredTask';
 import { GetBytesFromBase64 } from '../BufferEncoder';
+import { DecryptAES } from '../Crypto';
 
 type PagesData = {
     images: string[];
-    network: number;
     base64Key: string;
 };
 
@@ -38,12 +38,12 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page<PageKey>[]> {
-        const { images, base64Key, network } = await FetchWindowScript<PagesData>(new Request(new URL(chapter.Identifier, this.URI)), `
+        const { images, base64Key } = await FetchWindowScript<PagesData>(new Request(new URL(chapter.Identifier, this.URI)), `
             new Promise(resolve => {
-                resolve({ images: chapter.imageUrls, network, base64Key });
+                resolve({ images: chapter.imageUrls, base64Key });
             });`
         , 1500);
-        return images.map(image => new Page<PageKey>(this, chapter, new URL(image), { key: network === 2 ? base64Key : '' }));
+        return images.map(image => new Page<PageKey>(this, chapter, new URL(image), { key: base64Key, Referer: this.URI.href }));
     }
 
     public override async FetchImage(page: Page<PageKey>, priority: Priority, signal: AbortSignal): Promise<Blob> {
@@ -53,9 +53,6 @@ export default class extends DecoratableMangaScraper {
     }
     private async DecryptImage(buffer: ArrayBuffer, key: string): Promise<Blob> {
         const message = new Uint8Array(buffer);
-        const algorithm = { name: 'AES-CBC', iv: message.slice(0, 16) };
-        const decryptionKey = await crypto.subtle.importKey('raw', GetBytesFromBase64(key), algorithm, false, ['decrypt']);
-        const decrypted = await crypto.subtle.decrypt(algorithm, decryptionKey, message.slice(16));
-        return Common.GetTypedData(decrypted);
+        return Common.GetTypedData(await DecryptAES(message.slice(16), GetBytesFromBase64(key), { name: 'AES-CBC', iv: message.slice(0, 16) }));
     }
 }
