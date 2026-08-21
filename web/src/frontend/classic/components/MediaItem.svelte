@@ -11,8 +11,9 @@
         onmouseup: (MouseEvent) => void;
         onmousedown: (MouseEvent) => void;
         onmouseenter: (MouseEvent) => void;
+        oncontextmenu: (MouseEvent) => void;
     };
-    let { item, selected, hover , multilang = false, onView, onmouseup, onmousedown, onmouseenter }: Props  = $props();
+    let { item, selected, hover , multilang = false, onView, onmouseup, onmousedown, onmouseenter, oncontextmenu }: Props  = $props();
 
     import { Button, ClickableTile } from 'carbon-components-svelte';
     import BookmarkFilled from 'carbon-icons-svelte/lib/BookmarkFilled.svelte';
@@ -126,6 +127,7 @@
     {onmouseup}
     {onmousedown}
     {onmouseenter}
+    {oncontextmenu}
 >
     {#if !downloadTaskStatus}
         <Button

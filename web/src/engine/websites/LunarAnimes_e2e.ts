@@ -6,7 +6,7 @@ new TestFixture({
         title: 'Lunar Animes'
     },
     container: {
-        url: 'https://lunaranime.ru/manga/the-unorthodox-genius-of-the-house-of-darkness',
+        url: 'https://lunarx.to/manga/the-unorthodox-genius-of-the-house-of-darkness',
         id: 'the-unorthodox-genius-of-the-house-of-darkness',
         title: 'The Unorthodox Genius of the House of Darkness'
     },

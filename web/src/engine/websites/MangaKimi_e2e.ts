@@ -13,11 +13,11 @@ new TestFixture({
     },
     child: {
         id: '/a-villainess-for-the-tyrant-104/',
-        title: 'Chapter 104'
+        title: 'ตอนที่ 104'
     },
     entry: {
         index: 4,
-        size: 1_212_603,
+        size: 1_279_513,
         type: 'image/png'
     }
 }).AssertWebsite();
@@ -35,7 +35,7 @@ new TestFixture({
     },
     child: {
         id: '/douluo-dalu-5-rebirth-of-tang-san-172/',
-        title: 'Chapter 172'
+        title: 'ตอนที่ 172'
     },
     entry: {
         index: 1,

@@ -6,8 +6,8 @@
     "main": "main.js",
     "url": "https://app.hakuneko.download",
     "engines": {
-        "node": ">=22.13.0",
-        "npm": ">=10.9.2"
+        "node": ">=24.0.0",
+        "npm": ">=11.3.0"
     },
     "dependencies": {
         "commander": "15.0.0",
@@ -15,7 +15,7 @@
     },
     "devDependencies": {
         "extract-zip": "2.0.1",
-        "electron": "42.5.0",
+        "electron": "43.3.0",
         "plist": "5.0.0"
     },
     "scripts": {

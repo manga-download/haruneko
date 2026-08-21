@@ -16,7 +16,7 @@ type APIManga = {
 export default class extends CiaoPlus {
 
     public constructor() {
-        super('shonenmagazine', '週刊少年マガジ (Weekly Shonen Magazine & Pocket Magazine)', 'https://pocket.shonenmagazine.com', [Tags.Media.Manga, Tags.Language.Japanese, Tags.Source.Official]);
+        super('shonenmagazine', '週刊少年マガジ (Weekly Shonen Magazine & Pocket Magazine)', 'https://pocket.shonenmagazine.com', Tags.Media.Manga, Tags.Language.Japanese, Tags.Source.Official);
         this.WithAlphabet(0, 'svdk0m7acl').WithAlphabet(1, 'q6jtf2xnog');
         this.drm
             .WithURL('https://api.pocket.shonenmagazine.com/')

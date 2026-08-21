@@ -6,17 +6,17 @@ new TestFixture({
         title: 'Kairatoon'
     },
     container: {
-        url: 'https://kairatoon.com/webtoon/buyuk-dukun-bas-belasi-yeni-gelini',
-        id: '/webtoon/buyuk-dukun-bas-belasi-yeni-gelini',
-        title: `Büyük Dük'ün Baş belası Yeni Gelini`
+        url: 'https://kairatoon.com/webtoon/ben-ilahi-siyah-ejderhanin-imugisiyim',
+        id: '/webtoon/ben-ilahi-siyah-ejderhanin-imugisiyim',
+        title: 'Ben İlahi Siyah Ejderha’nın İmugisiyim!'
     },
     child: {
-        id: '/webtoon/buyuk-dukun-bas-belasi-yeni-gelini/bolum-1',
+        id: '/webtoon/ben-ilahi-siyah-ejderhanin-imugisiyim/bolum-1',
         title: 'Bölüm 1'
     },
     entry: {
-        index: 2,
-        size: 142_634,
+        index: 0,
+        size: 218_292,
         type: 'image/webp'
     }
 }).AssertWebsite();
