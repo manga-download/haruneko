@@ -6,17 +6,17 @@ new TestFixture({
         title: 'LectorManga (.Lat)'
     },
     container: {
-        url: 'https://lectormangass.com/biblioteca/sin-dormir/',
-        id: JSON.stringify({ post: '20742', slug: '/biblioteca/sin-dormir/' }),
-        title: 'Sin dormir'
+        url: 'https://lectormangass.net/comics/linea-de-corte',
+        id: '/comics/linea-de-corte',
+        title: 'Linea De Corte'
     },
     child: {
-        id: '/biblioteca/sin-dormir/capitulo-72/',
-        title: 'Capítulo 72'
+        id: '/comics/linea-de-corte/capitulo-107',
+        title: 'Capítulo 107'
     },
     entry: {
-        index: 2,
-        size: 287_900,
+        index: 0,
+        size: 121_098,
         type: 'image/webp'
     }
 }).AssertWebsite();

@@ -8,11 +8,13 @@ new TestFixture({
     container: {
         url: 'https://merlintoon.com/seri/akademinin-dehasi/',
         id: '/seri/akademinin-dehasi/',
-        title: 'Akademinin Dehası'
+        title: 'Akademinin Dehası',
+        timeout: 15_000
     },
     child: {
         id: '/seri/akademinin-dehasi/bolum-65/',
-        title: 'Bölüm 65'
+        title: 'Bölüm 65',
+        timeout: 15_000
     },
     entry: {
         index: 1,

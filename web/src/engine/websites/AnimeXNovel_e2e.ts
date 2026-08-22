@@ -12,7 +12,7 @@ new TestFixture({
     },
     child: {
         id: '/manhua/as-100-maldicoes-da-casa-illeston/capitulo-1/',
-        title: ' – Capítulo 1'
+        title: 'Capítulo 1'
     },
     entry: {
         index: 7,

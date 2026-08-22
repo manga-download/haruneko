@@ -7,12 +7,7 @@ import * as Common from './decorators/Common';
 @Madara.MangaCSS(/^{origin}\/series\/[^/]+\/$/, 'ol.breadcrumb li:last-of-type a')
 @Madara.MangasMultiPageAJAX()
 @Madara.ChaptersSinglePageAJAXv2()
-@Common.PagesSinglePageJS(`
-    [...document.querySelectorAll('div.rk-page-wrap img')].map(({ src }) => {
-      const url = new URL(src).searchParams.get('url') || src;
-      return url.startsWith('http') ? url : 'https://' + url;
-    });`
-, 2500)
+@Madara.PagesSinglePageCSS()
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 

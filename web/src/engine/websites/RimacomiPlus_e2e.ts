@@ -6,12 +6,12 @@ new TestFixture({
         title: 'RimacomiPlus (リマコミ＋)',
     },
     container: {
-        url: 'https://rimacomiplus.jp/cocohana/series/853b5f1c905d4/',
+        url: 'https://rimacomiplus.jp/cocohana/series/853b5f1c905d4',
         id: '/cocohana/series/853b5f1c905d4',
         title: '包帯ごっこ',
     },
     child: {
-        id: '/cocohana/episodes/5e926ec620784/',
+        id: '/cocohana/episodes/5e926ec620784',
         title: '第1話',
     },
     entry: {

@@ -13,6 +13,17 @@ export class TestFixture extends FrontendFixture {
     };
 
     /**
+     * Close the startup guide if it is open.
+     */
+    public async CloseStartupGuide() {
+        const page = await super.GetPage();
+        const selector = '#startupGuide button.bx--modal-close';
+        await page.waitForSelector(selector, { timeout: 5000 });
+        await page.click(selector);
+        return await page.waitForSelector('#startupGuide', { hidden: true, timeout: 5000 });
+    }
+
+    /**
      * Get the current text in the website search box.
      */
     public async GetWebsiteFilter() {
@@ -30,7 +41,7 @@ export class TestFixture extends FrontendFixture {
      * Click the option in the website selection list that corresponds to the given website plugin {@link id}.
      */
     public async SelectWebsite(id: string, timeout = 1000) {
-        const selector = `#Plugin [role="listbox"] #${id}[role="option"] .title`;
+        const selector = `#Plugin #combo-PluginSelect #PluginSelect-${id}[role="option"] .title`;
         const page = await super.GetPage();
         await page.click(this.#selector.WebsiteFilter); // Required to open the drop-down
         await page.waitForSelector(selector, { timeout });

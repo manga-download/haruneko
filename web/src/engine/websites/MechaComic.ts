@@ -5,6 +5,7 @@ import type { Priority } from '../taskpool/DeferredTask';
 import { Fetch, FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
 import { DecoratableMangaScraper, type Chapter, Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
+import { DecryptAES } from '../Crypto';
 
 type ContentData = {
     images: Record<string, { src: string }[]>;
@@ -45,10 +46,13 @@ export default class extends DecoratableMangaScraper {
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
         const response = await Fetch(new Request(new URL(chapter.Identifier, this.URI)));
         const params = new URL(response.url).searchParams;
-        const cryptoKeyURL = params.get('cryptokey');
         const baseURL = params.get('directory');
         const ver = params.get('ver');
-        const keyData = cryptoKeyURL ? await (await Fetch(new Request(new URL(cryptoKeyURL, this.URI)))).text() : null;
+
+        //fetch manifest to get key data
+        const manifest = params.get('manifest_url');
+        const { cryptokey } = await FetchJSON<{ cryptokey: string }>(new Request(new URL(manifest, this.URI)));
+
         const contentURI = new URL(params.get('contents') || params.get('contents_vertical') || params.get('contents_page'), response.url);
         contentURI.searchParams.set('ver', ver);
         const { images } = await FetchJSON<ContentData>(new Request(contentURI));
@@ -56,21 +60,20 @@ export default class extends DecoratableMangaScraper {
         return Object.values(images).map(srcset => {
             const uri = new URL(srcset.at(0).src, baseURL);
             uri.searchParams.set('ver', ver);
-            return new Page<PageParameters>(this, chapter, uri, { keyData });
+            return new Page<PageParameters>(this, chapter, uri, { keyData: cryptokey });
         });
     }
 
     public override async FetchImage(page: Page<PageParameters>, priority: Priority, signal: AbortSignal): Promise<Blob> {
         const { keyData } = page.Parameters;
-        const response = await this.imageTaskPool.Add(() => Fetch(new Request(page.Link, { signal })), priority, signal);
-        return keyData ? this.DecryptImage(await response.arrayBuffer(), keyData) : response.blob();
+        const bytes = await this.imageTaskPool.Add(async () => {
+            const response = await Fetch(new Request(page.Link, { signal }));
+            return response.arrayBuffer();
+        }, priority, signal);
+        return Common.GetTypedData(await this.Decrypt(bytes, keyData));
     }
 
-    private async DecryptImage(encrypted: ArrayBuffer, keyData: string): Promise<Blob> {
-        const data = new Uint8Array(encrypted);
-        const algorithm = { name: 'AES-CBC', iv: data.slice(0, 16) };
-        const key = await crypto.subtle.importKey('raw', GetBytesFromHex(keyData), algorithm, false, ['decrypt']);
-        const decrypted = await crypto.subtle.decrypt(algorithm, key, data.slice(16));
-        return Common.GetTypedData(decrypted);
+    private async Decrypt(encrypted: ArrayBuffer, keyData: string): Promise<ArrayBuffer> {
+        return DecryptAES(encrypted.slice(16), GetBytesFromHex(keyData), { name: 'AES-CBC', iv: encrypted.slice(0, 16) });
     }
 }

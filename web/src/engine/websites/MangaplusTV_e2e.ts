@@ -6,17 +6,17 @@ new TestFixture({
         title: 'MangaPlus.tv'
     },
     container: {
-        url: 'https://mangaplus.shueisha.tv/truyen-tranh/wan-phis-1-th',
-        id: '/truyen-tranh/wan-phis-1-th',
-        title: 'วันพีซ'
+        url: 'https://mangaplus.shueisha.tv/truyen-tranh/one-piece-1-en',
+        id: '/truyen-tranh/one-piece-1-en',
+        title: 'One Piece English'
     },
     child: {
-        id: '/truyen-tranh/wan-phis-1-chap-1191-th.html',
-        title: 'ตอนที่ 1191'
+        id: '/truyen-tranh/one-piece-1-chap-1116-es.html',
+        title: 'Capítulo 1116 [es]'
     },
     entry: {
         index: 0,
-        size: 400_127,
+        size: 335_171,
         type: 'image/jpeg'
     }
 }).AssertWebsite();

@@ -36,10 +36,11 @@ export default class extends DecoratableMangaScraper {
         const { data } = await FetchJSON<APIResult<APIChapter[]>>(new Request(new URL(`.${manga.Identifier.replace('/manga/', '/comics/')}/chapter-list?translation_group_id=`, this.apiUrl)));
         return data.map(({ chapter, title, hash_id: hash, group_names: group }) => new Chapter(this, manga, `${manga.Identifier}/chapter-${chapter}-${hash}`,
             [
-                `Chapter ${chapter}`,
+                `Chapter`,
+                chapter,
                 title,
                 `[${group[0]}]`
-            ].filter(Boolean).join(' ').trim())
+            ].joinTitleSegments())
         ).distinct();
     }
 }

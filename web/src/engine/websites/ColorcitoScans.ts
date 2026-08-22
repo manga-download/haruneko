@@ -1,29 +1,29 @@
 import { Tags } from '../Tags';
 import icon from './ColorcitoScans.webp';
-import { FetchJSON } from '../platform/FetchProvider';
 import { DecoratableMangaScraper, type MangaPlugin, Manga, Chapter, Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
+import { FetchJSON } from '../platform/FetchProvider';
 
-type APIMangas = {
-    data: APIManga[];
+type APIResult<T> = {
+    response: T;
 };
 
 type APIManga = {
     name: string;
     slug: string;
-    chapters: APIChapter[];
-}
-
-type APIChapter = {
-    num: number;
-    slug: string;
-    pageches: {
-        urlImg: string;
-    };
 };
 
-type APIMangaDetails = {
-    serie: APIManga;
+type APIChapters = {
+    lastChapters: {
+        num: string;
+        slug: string;
+    }[];
+};
+
+type APIPages = {
+    pages: {
+        urlImg: string;
+    };
 };
 
 @Common.MangaCSS<HTMLMetaElement>(/^{origin}\/ver\/[^/]+$/, 'meta[property="og:title"]', (el, uri) => ({
@@ -32,10 +32,15 @@ type APIMangaDetails = {
 }))
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
-    private readonly apiUrl = 'https://api.colorcitoscan.com/';
+    private readonly apiURL: string;
 
-    public constructor() {
-        super('colorcitoscans', 'Colorcito Scans', 'https://colorcitoscan.com', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Spanish, Tags.Source.Scanlator, Tags.Rating.Pornographic);
+    public constructor(...args: [] | ConstructorParameters<typeof DecoratableMangaScraper>) {
+        if (args.length) {
+            super(...args as ConstructorParameters<typeof DecoratableMangaScraper>);
+        } else {
+            super('colorcitoscans', 'Colorcito Scans', 'https://coloresito.site', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Spanish, Tags.Source.Scanlator, Tags.Rating.Pornographic);
+        }
+        this.apiURL = `${this.URI.origin}/api/`;
     }
 
     public override get Icon() {
@@ -43,23 +48,17 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        type This = typeof this;
-        return Array.fromAsync(async function* (this: This) {
-            for (let page = 1, run = true; run; page++) {
-                const { data } = await FetchJSON<APIMangas>(new Request(new URL(`./filtrar?page=${page}&limit=50&loading=true`, this.apiUrl)));
-                const mangas = data.map(({ slug, name }) => new Manga(this, provider, slug, name));
-                mangas.length > 0 ? yield* mangas : run = false;
-            }
-        }.call(this));
+        const { response } = await FetchJSON<APIResult<APIManga[]>>(new Request(new URL(`./searchProject`, this.apiURL)));
+        return response.map(({ name, slug }) => new Manga(this, provider, slug, name));
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const { serie: { chapters } } = await FetchJSON<APIMangaDetails>(new Request(new URL(`./serie/${manga.Identifier}`, this.apiUrl)));
-        return chapters.map(({ num, slug }) => new Chapter(this, manga, slug, `${num}`));
+        const { response: { lastChapters } } = await FetchJSON<APIResult<APIChapters>>(new Request(new URL(`./showProject/${manga.Identifier}`, this.apiURL)));
+        return lastChapters.map(({ slug, num }) => new Chapter(this, manga, slug, `Cap. ${num}`));
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const { pageches: { urlImg } } = await FetchJSON<APIChapter>(new Request(new URL(`./serie/${chapter.Parent.Identifier}/${chapter.Identifier}`, this.apiUrl)));
-        return (JSON.parse(urlImg) as string[]).map(image => new Page(this, chapter, new URL(image)));
+        const { response: { pages: { urlImg } } } = await FetchJSON<APIResult<APIPages>>(new Request(new URL(`./showProject/${chapter.Parent.Identifier}/${chapter.Identifier}`, this.apiURL)));
+        return (<string[]>JSON.parse(urlImg)).map(url => new Page(this, chapter, new URL(url)));
     }
 }

@@ -1,14 +1,21 @@
 import { Tags } from '../Tags';
 import icon from './SoraRaw.webp';
-import { FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
+import { FetchCSS, FetchJSON } from '../platform/FetchProvider';
 import { type MangaPlugin, Manga, Chapter, Page, DecoratableMangaScraper } from '../providers/MangaPlugin';
-import * as Common from './decorators/Common';
 import { GetBytesFromBase64, GetBytesFromHex, GetBytesFromUTF8, GetUTF8FromBytes } from '../BufferEncoder';
+import { DecryptAES, DecryptXOR } from '../Crypto';
+import * as Grouple from './decorators/Grouple';
 
 type NEXTDATA<T> = {
-    pageProps: {
-        data: T;
-    }
+    props: {
+        pageProps: {
+            data: T;
+        };
+    };
+};
+
+type SiteSettings = {
+    apiImage: string;
 };
 
 type APIMangas = {
@@ -16,7 +23,6 @@ type APIMangas = {
 };
 
 type APIManga = {
-    id: number;
     name: string;
     slug: string;
     chapters: APIChapter[];
@@ -28,7 +34,9 @@ type APIMangaDetails = {
 
 type APIChapter = {
     id: number;
-    name: number;
+    name?: number;
+    title?: string;
+    path: string;
     manga_id: number;
     _b?: string;
     _d?: string;
@@ -46,17 +54,16 @@ type CryptedPagesData = {
 };
 
 type PagesData = {
-    id: number;
     b?: string;
     d?: string;
     p?: string;
     t?: string;
 }[];
 
-@Common.ImageAjax()
+@Grouple.ImageWithMirrors()
 export default class extends DecoratableMangaScraper {
-    private nextPath = `https://soraraw.com/_next/data/soraraw12/`;
-    private readonly pageApiUrl = 'https://api.mangarawgo.site';
+
+    private apiURL = 'https://api.mangarawgo.site';
 
     public constructor() {
         super('soraraw', 'SoraRaw', 'https://soraraw.com', Tags.Media.Manga, Tags.Language.Japanese, Tags.Source.Aggregator, Tags.Rating.Pornographic);
@@ -67,8 +74,8 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async Initialize(): Promise<void> {
-        const nextBuild = await FetchWindowScript(new Request(new URL(this.URI)), `__NEXT_DATA__.buildId`, 2500);
-        this.nextPath = `https://soraraw.com/_next/data/${nextBuild}/`;
+        await super.Initialize(); // Trigger CloudFlare
+        this.apiURL = (await FetchJSON<SiteSettings>(new Request(new URL('config.json', this.URI)))).apiImage;
     }
 
     public override ValidateMangaURL(url: string): boolean {
@@ -76,7 +83,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
-        const { manga: { slug, name } } = await this.FetchNextJSON<APIMangaDetails>(new URL(`.${new URL(url).pathname}.json`, this.nextPath));
+        const { manga: { slug, name } } = await this.GetEmbeddedJSON<APIMangaDetails>(url);
         return new Manga(this, provider, `/manga/${slug}`, name);
     }
 
@@ -96,33 +103,42 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const { manga: { chapters } } = await this.FetchNextJSON<APIMangaDetails>(new URL(`.${manga.Identifier}.json`, this.nextPath));
-        return chapters.map(({ name }) => new Chapter(this, manga, `${manga.Identifier}/ch-${name}`, `${name}`));
+        const { manga: { chapters } } = await this.GetEmbeddedJSON<APIMangaDetails>(manga.Identifier);
+        return chapters.map(({ name, title, path }) => new Chapter(this, manga, `/manga/${path.replace('-ch-', '/ch-')}`, `${name ?? title}`));
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const XOR = (data: Uint8Array, key: Uint8Array) => data.map((byte, index) => byte ^ key[index % key.length]);
-        const B64Decode = (data: string) => GetBytesFromBase64(data.replace(/-/g, '+').replace(/_/g, '/').trim().padEnd(data.length + (4 - data.length % 4) % 4, '='));
+        const { chapter: { id, manga_id, uuid, _b, _d, _t, _p } } = await this.GetEmbeddedJSON<APIChapterDetails>(chapter.Identifier);
+        const { d } = await FetchJSON<CryptedPagesData>(new Request(new URL(`/${manga_id}/${id}.json`, this.apiURL)));
+        const pagesData = <PagesData>JSON.parse(GetUTF8FromBytes(DecryptXOR(this.B64Decode(d), GetBytesFromUTF8('/fuCkYou!!!'))));
 
-        const { chapter: { id, manga_id, uuid, _b, _d, _t, _p } } = await this.FetchNextJSON<APIChapterDetails>(new URL(`.${chapter.Identifier}.json`, this.nextPath));
-        const { d } = await FetchJSON<CryptedPagesData>(new Request(new URL(`/${manga_id}/${id}.json`, this.pageApiUrl)));
-        const pagesData: PagesData = JSON.parse(GetUTF8FromBytes(XOR(B64Decode(d), GetBytesFromUTF8('/fuCkYou!!!'))));
+        return Promise.all(
+            pagesData.map(async ({ b, d, p, t }) => {
+                const sources = [
+                    t && { host: _t, file: t },
+                    p && { host: _p, file: p },
+                    d && { host: _d, file: d },
+                    b && { host: _b, file: b },
+                ].filter(Boolean) as { host: string; file: string }[];
 
-        const AESKEY = GetBytesFromHex(uuid);
-        const XORKEY = GetBytesFromUTF8('202508055d0db38bae2e86cc41649f90');
-
-        return Promise.all(pagesData.map(async ({ b, d, p, t }) => {
-            const host = t ? _t : p ? _p : d ? _d : _b;
-            const encryptedFileName = t || p || d || b;
-            const ciphertext = XOR(B64Decode(encryptedFileName), XORKEY);
-            const algorithm = { name: 'AES-CTR', counter: ciphertext.subarray(0, 16), length: 128 };
-            const key = await crypto.subtle.importKey('raw', AESKEY, algorithm, false, ['decrypt']);
-            const pathname = GetUTF8FromBytes(await crypto.subtle.decrypt(algorithm, key, ciphertext.subarray(16)));
-            return new Page(this, chapter, new URL(`${host}/${pathname}`));
-        }));
+                const urls = await Promise.all(sources.map(({ host, file }) => this.GenerateFileName(host, file, GetBytesFromHex(uuid))));
+                return new Page(this, chapter, new URL(urls[0]), { Referer: this.URI.href, mirrors: urls.slice(1) });
+            })
+        );
     }
 
-    private async FetchNextJSON<T extends JSONElement>(uri: URL): Promise<T> {
-        return (await FetchJSON<NEXTDATA<T>>(new Request(uri))).pageProps.data as T;
+    private async GenerateFileName(host: string, encryptedFileName: string, aesKey: Uint8Array<ArrayBuffer>): Promise<string> {
+        const ciphertext = DecryptXOR(this.B64Decode(encryptedFileName), GetBytesFromUTF8('202508055d0db38bae2e86cc41649f90'));
+        const filename = GetUTF8FromBytes(await DecryptAES(ciphertext.subarray(16), aesKey, { name: 'AES-CTR', counter: ciphertext.subarray(0, 16), length: 128 }));
+        return `${host}/${filename}`;
+    }
+
+    private B64Decode(data: string): Uint8Array<ArrayBuffer> {
+        return GetBytesFromBase64(data.replace(/-/g, '+').replace(/_/g, '/').trim().padEnd(data.length + (4 - data.length % 4) % 4, '='));
+    }
+
+    private async GetEmbeddedJSON<T>(endpoint: string): Promise<T> {
+        const [script] = await FetchCSS<HTMLScriptElement>(new Request(new URL(endpoint, this.URI)), 'script#__NEXT_DATA__');
+        return (<NEXTDATA<T>>JSON.parse(script.text)).props.pageProps.data;
     }
 }

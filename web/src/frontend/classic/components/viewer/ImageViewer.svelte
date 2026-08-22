@@ -74,13 +74,13 @@
                 onNextItem();
                 break;
             case event.code === 'ArrowLeft':
-                onNextItem();
+                onPreviousItem();
                 break;
             case event.key === '*':
                 Settings.ViewerZoom.Value = 100;
                 break;
             case event.key === '/':
-                Settings.ViewerZoom.Reset();
+                Settings.ViewerZoom.Value=Settings.ViewerZoom.Setting.Default;
                 break;
             case event.key === '+' && !event.ctrlKey:
                 Settings.ViewerZoom.Increment();
@@ -103,6 +103,7 @@
                     '.imgpreview',
                     window.innerHeight * 0.8,
                     onNextItemCallback,
+                    Settings.ViewerMode.Value === Key.ViewerMode_Paginated,
                 );
                 event.preventDefault();
                 break;
@@ -132,6 +133,25 @@
         }
     }
 
+    // Preload next item once all images of the current item finished loading
+    let loadedImageCount = $state(0);
+    $effect(() => {
+        entries; // reset counter whenever the item changes
+        loadedImageCount = 0;
+    });
+
+    function onImageLoaded() {
+        loadedImageCount++;
+        if (entries.length > 0 && loadedImageCount === entries.length) {
+            if (UI.selectedItemNext && Settings.ViewerPreloadNextItem.Value) preloadItem(UI.selectedItemNext);
+        }
+    }
+
+    function preloadItem(item: MediaContainer<MediaItem>) {
+        if (item.Entries && item.Entries.Value.length > 0) return;
+        item.Update();
+    }
+
     // Drag and drop scroll
     let pos = { top: 0, left: 0, x: 0, y: 0 };
 
@@ -142,11 +162,10 @@
                 // delay because of smooth transition
                 setTimeout(() => {
                     const targetScrollImage =
-                        viewer.querySelectorAll('ImageViewer>img')[
+                        viewer.querySelectorAll('#ImageViewer>button>img')[
                             currentImageIndex
                         ];
                     targetScrollImage?.scrollIntoView({
-                        behavior: 'smooth',
                         inline: 'center',
                     });
                     currentImageIndex = -1;
@@ -212,6 +231,7 @@
                 {wide}
                 alt="content_{index}"
                 page={content}
+                onLoad={onImageLoaded}
             />
         </button>
     {/each}

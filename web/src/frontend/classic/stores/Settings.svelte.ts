@@ -1,4 +1,4 @@
-import {type LocaleID, FrontendResourceKey as R } from '../../../i18n/ILocale';
+import { type LocaleID, FrontendResourceKey as R } from '../../../i18n/ILocale';
 import { Check, Choice, Numeric} from '../../../engine/SettingsManager';
 import { LoadSettingStore, SettingCountStore, SettingStore } from './storesHelpers.svelte';
 import { Key as GlobalKey, Scope as GlobalScope } from '../../../engine/SettingsGlobal';
@@ -27,30 +27,33 @@ export const enum Key {
     //
     ViewerDoublePage = 'viewer-double-page',
     //
+    ViewerPreloadNextItem = 'preload-next-item',
+    //
     StartupGuideEnabled = 'startup-guide-enabled',
 }
 
-const FrontendClasicScope = 'frontend.classic';
-const FrontendClasicScope_Viewer = 'frontend.classic.viewer';
+const FrontendClassicScope = 'frontend.classic';
+const FrontendClassicScope_Viewer = 'frontend.classic.viewer';
 
 export const globalScopeSettings = HakuNeko.SettingsManager.OpenScope(GlobalScope);
-export const frontendClassicSettings = HakuNeko.SettingsManager.OpenScope(FrontendClasicScope);
-export const frontendClassicSettingsViewer = HakuNeko.SettingsManager.OpenScope(FrontendClasicScope_Viewer);
+export const frontendClassicSettings = HakuNeko.SettingsManager.OpenScope(FrontendClassicScope);
+export const frontendClassicSettingsViewer = HakuNeko.SettingsManager.OpenScope(FrontendClassicScope_Viewer);
 
 export async function Initialize(): Promise<void> {
-
     await frontendClassicSettings.Initialize(
         Settings.Theme.Setting,
         Settings.ContentPanel.Setting,
         Settings.SidenavTrail.Setting,
         Settings.SidenavIconsOnTop.Setting,
         Settings.FuzzySearch.Setting,
+        Settings.StartupGuideEnabled.Setting,
     );
 
     await frontendClassicSettingsViewer.Initialize(
         Settings.ViewerMode.Setting,
         Settings.ViewerReverseDirection.Setting,
         Settings.ViewerDoublePage.Setting,
+        Settings.ViewerPreloadNextItem.Setting,
     );
 }
 
@@ -101,8 +104,8 @@ class UIClassicStore {
         R.Frontend_Classic_Settings_ViewerMode,
         R.Frontend_Classic_Settings_ViewerModeInfo,
         Key.ViewerMode_Paginated,
-        { key: Key.ViewerMode_Paginated, label: R.Frontend_Classic_Settings_ViewerMode_Paginated },
         { key: Key.ViewerMode_Longstrip, label: R.Frontend_Classic_Settings_ViewerMode_Longstrip },
+        { key: Key.ViewerMode_Paginated, label: R.Frontend_Classic_Settings_ViewerMode_Paginated },
     ));
 
     ViewerReverseDirection = new SettingStore<boolean, Check>( new Check(
@@ -119,36 +122,46 @@ class UIClassicStore {
         false
     ));
 
+    ViewerPreloadNextItem = new SettingStore<boolean, Check>(new Check(
+        Key.ViewerPreloadNextItem,
+        R.Frontend_Classic_Settings_ViewerPreloadNextItem,
+        R.Frontend_Classic_Settings_ViewerPreloadNextItemInfo,
+        false
+    ));
+
     checkNewContent = LoadSettingStore<boolean, Check>(globalScopeSettings, GlobalKey.CheckNewContent);
 
-    // Non Persistent settings
+    StartupGuideEnabled = new SettingStore<boolean, Check>(new Check(
+        Key.StartupGuideEnabled,
+        R.Frontend_Classic_Settings_StartupGuideEnabled,
+        R.Frontend_Classic_Settings_StartupGuideEnabledInfo,
+        true
+    ));
+
+    // Non persistent settings
     /** Viewer **/
 
-    ViewerZoom = new SettingCountStore(
-        new Numeric(
-            null,
-            R.Frontend_Classic_Settings_ViewerZoom,
-            R.Frontend_Classic_Settings_ViewerZoomInfo,
-            0, -100, 100
-        ),
-        10
+    ViewerZoom = new SettingCountStore(new Numeric(
+        null,
+        R.Frontend_Classic_Settings_ViewerZoom,
+        R.Frontend_Classic_Settings_ViewerZoomInfo,
+        0, -100, 100),
+    10
     );
 
     ViewerZoomRatio = $derived((100 + this.ViewerZoom.Value) / 100);
-    ViewerPadding = new SettingCountStore(
-        new Numeric(
-            null,
-            R.Frontend_Classic_Settings_ViewerPadding,
-            R.Frontend_Classic_Settings_ViewerPaddingInfo,
-            2, 0, Infinity
-        ),
-        0.5
+    ViewerPadding = new SettingCountStore(new Numeric(
+        null,
+        R.Frontend_Classic_Settings_ViewerPadding,
+        R.Frontend_Classic_Settings_ViewerPaddingInfo,
+        2, 0, Infinity),
+    0.5
     );
 }
 export const Settings = new UIClassicStore();
 
 class GlobalStore {
-    private storeLocale = LoadSettingStore<string, Choice>(globalScopeSettings, GlobalKey.Language);
-    Locale = $derived(GetLocale(this.storeLocale.Value as LocaleID));
+    #Locale = LoadSettingStore<string, Choice>(globalScopeSettings, GlobalKey.Language);
+    Locale = $derived(GetLocale(this.#Locale.Value as LocaleID));
 }
 export const GlobalSettings = new GlobalStore();

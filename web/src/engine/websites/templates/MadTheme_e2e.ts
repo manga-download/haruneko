@@ -1,4 +1,2 @@
 import '../KaliScan_e2e';
-import '../MangaMirror_e2e';
 import '../MgJinx_e2e';
-import '../Toonilyme_e2e';

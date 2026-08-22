@@ -6,7 +6,7 @@ new TestFixture({
         title: 'Mila Sub'
     },
     container: {
-        url: 'https://www.millascan.com/manga/ilkask/',
+        url: 'https://millascan.com/manga/ilkask/',
         id: JSON.stringify({ post: '39329', slug: '/manga/ilkask/' }),
         title: '#İlkAşk'
     },

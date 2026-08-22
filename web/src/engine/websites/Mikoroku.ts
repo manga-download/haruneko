@@ -40,7 +40,7 @@ export default class extends ZeistManga {
                     title : document.querySelector('h1#detailTitle').textContent.trim()
                 })
             });
-        `, 1500);
+        `, 2000);
         return new Manga(this, provider, id, title);
     }
 

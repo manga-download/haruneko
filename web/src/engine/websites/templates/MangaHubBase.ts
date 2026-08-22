@@ -3,6 +3,7 @@ import type { Tag } from '../../Tags';
 import { RandomHex } from '../../Random';
 import { RateLimit } from '../../taskpool/RateLimit';
 import { FetchCSS, FetchGraphQL, FetchWindowScript } from '../../platform/FetchProvider';
+import { DecodeEntities } from '../../transformers/HtmlEntityTranscoder';
 import { Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from '../../providers/MangaPlugin';
 import * as Common from '../decorators/Common';
 import { Delay } from '../../BackgroundTimers';
@@ -74,7 +75,7 @@ export class MangaHubBase extends DecoratableMangaScraper {
                     query ($scope: MangaSource) {
                         search(x: $scope, q: "", genre: "all", mod: ALPHABET, limit: 50, offset: ${offset}) { rows { id, slug, title } }
                     }`, { scope: this.scope });
-                const mangas = rows.map(manga => new Manga(this, provider, manga.slug, new DOMParser().parseFromString(manga.title, 'text/html').body.innerText.trim()));
+                const mangas = rows.map(manga => new Manga(this, provider, manga.slug, DecodeEntities(manga.title).trim()));
                 mangas.length > 0 ? yield* mangas : run = false;
             }
         }.call(this));

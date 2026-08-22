@@ -21,14 +21,14 @@ jobs:
       - name: Install NodeJS
         uses: actions/setup-node@v4
         with:
-          node-version: 22.13.x
+          node-version: 24.0.0
       - name: Install NPM Packages
-        run: npm install
+        run: npm run npm:clean-install
       - name: Build Web-Application
         run: npm run build --workspace=web
       - name: Deploy App to CloudFlare
         id: deployWebApp
-        uses: cloudflare/wrangler-action@v3
+        uses: cloudflare/wrangler-action@v4
         env:
           WRANGLER_SEND_METRICS: false
         with:
@@ -41,7 +41,7 @@ jobs:
         run: npm run build --workspace=docs
       - name: Deploy Docs to CloudFlare
         id: deployDocs
-        uses: cloudflare/wrangler-action@v3
+        uses: cloudflare/wrangler-action@v4
         env:
           WRANGLER_SEND_METRICS: false
         with:

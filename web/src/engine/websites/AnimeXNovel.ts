@@ -1,6 +1,7 @@
 import { Tags } from '../Tags';
 import icon from './AnimeXNovel.webp';
 import { FetchCSS, FetchJSON } from '../platform/FetchProvider';
+import { DecodeEntities } from '../transformers/HtmlEntityTranscoder';
 import { type Manga, Chapter, DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 
@@ -29,13 +30,11 @@ export default class extends DecoratableMangaScraper {
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const mangaId = (await FetchCSS(new Request(new URL(manga.Identifier, this.URI)), 'div#container-capitulos')).at(0).dataset.categoria.trim();
         const posts = await FetchJSON<APIChapter[]>(new Request(new URL(`./wp-json/wp/v2/posts?categories=${mangaId}&orderby=date&order=asc&per_page=5000&page=1`, this.URI)));
-        return posts.filter(({ link }) => link != new URL(manga.Identifier, this.URI).href)
-            .map(({ title: { rendered }, link }) => new Chapter(this, manga, new URL(link).pathname, this.DecodeEntities(rendered).replace(manga.Title, '') || this.DecodeEntities(rendered)));
-
-    }
-
-    private DecodeEntities(text: string): string {
-        const doc = new DOMParser().parseFromString(text, "text/html");
-        return doc.documentElement.textContent.trim();
+        return posts
+            .filter(({ link }) => link != new URL(manga.Identifier, this.URI).href)
+            .map(({ title: { rendered }, link }) => {
+                const title = DecodeEntities(rendered).trim();
+                return new Chapter(this, manga, new URL(link).pathname, title.replace(manga.Title, '').replace(/\s+–\s+/, '') || title);
+            });
     }
 }

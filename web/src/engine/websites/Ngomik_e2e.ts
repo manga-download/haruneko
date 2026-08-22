@@ -6,7 +6,7 @@ new TestFixture({
         title: 'Ngomik'
     },
     container: {
-        url: 'https://id.ngomik.cloud/manga/reborn-as-the-heavenly-demon/',
+        url: 'https://02.ngomik.cc/manga/reborn-as-the-heavenly-demon/',
         id: '/manga/reborn-as-the-heavenly-demon/',
         title: 'Reborn as The Heavenly Demon'
     },

@@ -12,7 +12,7 @@ new TestFixture({
         title: '光と影【連載】'
     },
     child: {
-        id: JSON.stringify({ id: '01k0r83mds2fk2y2q73e0kxp2w', type: 'chapter' }),
+        id: 'chapter/01k0r83mds2fk2y2q73e0kxp2w',
         title: '第1話'
     },
     entry: {
@@ -34,7 +34,7 @@ new TestFixture({
         title: '五等分の花嫁'
     },
     child: {
-        id: JSON.stringify({ id: '01jqf186spk0b7ce0vwm0804s6', type: 'volume' }),
+        id: 'volume/01jqf186spk0b7ce0vwm0804s6',
         title: '（１）'
     },
     entry: {

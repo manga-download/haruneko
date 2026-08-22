@@ -6,17 +6,17 @@ new TestFixture({
         title: 'Summertoon'
     },
     container: {
-        url: 'https://summertoons.net/manga/i-cant-get-enough-of-you/',
-        id: JSON.stringify({ post: '20', slug: '/manga/i-cant-get-enough-of-you/' }),
+        url: 'https://summertoons.tr/manga/i-cant-get-enough-of-you/',
+        id: JSON.stringify({ post: '327', slug: '/manga/i-cant-get-enough-of-you/' }),
         title: 'I Can’t Get Enough of You'
     },
     child: {
-        id: '/manga/i-cant-get-enough-of-you/bolum-46/',
+        id: '/manga/i-cant-get-enough-of-you/i-cant-get-enough-of-you-bolum-46/',
         title: 'Bölüm 46'
-    }, /* Need Login
+    },
     entry: {
-        index: 12,
-        size: 800_623,
+        index: 1,
+        size: 236_162,
         type: 'image/jpeg'
-    }*/
+    }
 }).AssertWebsite();

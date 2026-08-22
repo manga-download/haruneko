@@ -14,9 +14,9 @@ enum StatusCode {
 }
 
 const emojis = new Map([
-    [ StatusCode.OK, '✅' ],
-    [ StatusCode.WARNING, '⚠️' ],
-    [ StatusCode.ERROR, '❌' ],
+    [StatusCode.OK, '✅'],
+    [StatusCode.WARNING, '⚠️'],
+    [StatusCode.ERROR, '❌'],
 ]);
 
 type SimilarWebData = {
@@ -39,30 +39,24 @@ type Result = {
 };
 
 const expectedRedirectPatterns = new Map([
-    [ 'https://holymanga.net/', [ // REASON: The website uses redirects to rotating (sub-)domains (probably to avoid scraping or DMCA)
-        /^https:\/\/w+\d*\.holymanga\.net\/$/,
-    ] ],
-    [ 'https://mangafreak.me/', [ // REASON: The website uses redirects to rotating (sub-)domains (probably to avoid scraping or DMCA)
+    ['https://mangafreak.me/', [ // REASON: The website uses redirects to rotating (sub-)domains (probably to avoid scraping or DMCA)
         /^https:\/\/w+\d*\.mangafreak\.me\/$/,
-    ] ],
-    [ 'https://mintmanga.live/', [ // REASON: The website uses redirects to rotating (sub-)domains (probably to avoid scraping or DMCA)
+    ]],
+    ['https://mintmanga.live/', [ // REASON: The website uses redirects to rotating (sub-)domains (probably to avoid scraping or DMCA)
         /^https:\/\/\d+\.mintmanga\.one\/$/,
-    ] ],
-    [ 'https://pijamalikoi.com/', [ // REASON: The website redirects to a sub-domain when requesting the root path only (the top-level domain is still valid for non-empty paths)
-        /^https:\/\/www\.pijamalikoi\.com\/$/,
-    ] ],
-    [ 'https://www.toomics.com/', [ // REASON: The website requires a cookie which is set in the Initialize() method to prevent redirection
+    ]],
+    ['https://www.toomics.com/', [ // REASON: The website requires a cookie which is set in the Initialize() method to prevent redirection
         /^https:\/\/global\.toomics\.com\/en$/,
-    ] ],
-    [ 'https://web.6parkbbs.com/', [ // REASON: This is a valid sub-domain to categorize content from its top-level website
-        /^https:\/\/club\.6parkbbs\.com\/index.php$/,
-    ] ],
+    ]],
+    ['https://yomumangas.com/', [ // REASON: The website redirect to another (sub-)domain if not from contacted from a PT-BR IP (Geoblocking)
+        /^https:\/\/global\.yomumangas\.com\/$/,
+    ]],
 ]);
 
 class TestFixture {
 
     private readonly MockStorageController = { LoadPersistent: vi.fn() } as unknown as StorageController;
-    private readonly MockSettingsManager = { OpenScope: vi.fn(() => ({ Initialize: vi.fn() }))} as unknown as SettingsManager;
+    private readonly MockSettingsManager = { OpenScope: vi.fn(() => ({ Initialize: vi.fn() })) } as unknown as SettingsManager;
 
     public CreateTestee() {
         return new PluginController(this.MockStorageController, this.MockSettingsManager);
@@ -161,7 +155,7 @@ class TestFixture {
                 </tr>
             </thead>
         `;
-        const rows = [ ...results ].sort(sort).map(result => {
+        const rows = [...results].sort(sort).map(result => {
             return `
                 <tr>
                     <td style="white-space: nowrap; cursor: context-menu;" title="${result.status.info}">${emojis.get(result.status.code) ?? 'ℹ️'}</td>
@@ -187,7 +181,7 @@ describe('Website Status/Metrics', { concurrent: true }, async () => {
     });
 
     test.each(new TestFixture().CreateTestee().WebsitePlugins)('$Title ➔ $URI.href', { timeout: 60_000 }, async (plugin) => {
-        const [ { code, info }, { rank, visitors } ] = await Promise.all([
+        const [{ code, info }, { rank, visitors }] = await Promise.all([
             TestFixture.GetStatus(plugin.URI),
             TestFixture.GetSimilarWeb(plugin.URI),
         ]);

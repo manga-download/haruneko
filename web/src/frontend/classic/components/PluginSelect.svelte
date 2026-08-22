@@ -116,45 +116,41 @@
     hasForm
 >
     <div class="content tags">
-        <div id="tagsFilters">
-            <Grid fullWidth condensed>
-                <Row>
-                    <Column sm={1} md={4} lg={9}>
-                        <strong>{GlobalSettings.Locale[Tags.Language.Title]()}</strong>
-                        {#each langTags as item}
-                            <Chip
-                                class="cursor-pointer"
-                                category={item.Category}
-                                label={item.Title}
-                                on:click={() => addTagFilter(item)}
-                            />
-                        {/each}
-                    </Column>
-                    <Column sm={1} md={2} lg={3}>
-                        <strong>{GlobalSettings.Locale[Tags.Media.Title]()}</strong>
-                        {#each typeTags as item}
-                            <Chip
-                                class="cursor-pointer"
-                                category={item.Category}
-                                label={item.Title}
-                                on:click={() => addTagFilter(item)}
-                            />
-                        {/each}
-                    </Column>
-                    <Column sm={1} md={2} lg={4}>
-                        <strong>{GlobalSettings.Locale[R.Tags_Others]()}</strong>
-                        {#each otherTags as item}
-                            <Chip
-                                class="cursor-pointer"
-                                category={item.Category}
-                                label={item.Title}
-                                on:click={() => addTagFilter(item)}
-                            />
-                        {/each}
-                    </Column>
-                </Row>
-            </Grid>
-        </div>
+        <Tile>
+            <div class="lang">
+                <strong>{GlobalSettings.Locale[Tags.Language.Title]()}</strong>
+                {#each langTags as item}
+                    <Chip
+                        class="cursor-pointer"
+                        category={item.Category}
+                        label={item.Title}
+                        on:click={() => addTagFilter(item)}
+                    />
+                {/each}
+            </div>
+            <div class="type">
+                <strong>{GlobalSettings.Locale[Tags.Media.Title]()}</strong>
+                {#each typeTags as item}
+                    <Chip
+                        class="cursor-pointer"
+                        category={item.Category}
+                        label={item.Title}
+                        on:click={() => addTagFilter(item)}
+                    />
+                {/each}
+            </div>
+            <div class="other">
+                <strong>{GlobalSettings.Locale[R.Tags_Others]()}</strong>
+                {#each otherTags as item}
+                    <Chip
+                        class="cursor-pointer"
+                        category={item.Category}
+                        label={item.Title}
+                        on:click={() => addTagFilter(item)}
+                    />
+                {/each}
+            </div>
+        </Tile>
     </div>
     <div id="selectedTags" >
         <span>Tags:</span>
@@ -171,7 +167,7 @@
         zebra
         size="compact"
         headers={[
-            { key: 'favorite', empty: false },
+            { key: 'favorite', empty: true },
             { key: 'image', empty: true },
             { key: 'name', value: 'Name' },
             { key: 'website', value: 'Website' },
@@ -287,9 +283,6 @@
 
 <style>
     #selectedTags {
-        margin: 0.5em 0 0.5em 0;
-    }
-    #tagsFilters {
         margin: 0.5em 0 0.5em 0;
     }
     .action-cell {

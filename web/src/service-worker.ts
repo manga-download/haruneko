@@ -1,6 +1,6 @@
 const sw = self as unknown as ServiceWorkerGlobalScope;
 const currentCacheName = sw.location.hostname; // TODO: Get build ID from vite
-let currentCache: Cache = undefined;
+let currentCache: Cache;
 
 async function PrepareCache(): Promise<void> {
     const allCacheNames = await caches.keys();
@@ -26,14 +26,12 @@ async function PutCacheResponse(request: Request, response: Response): Promise<v
 }
 
 async function GetCacheResponse(request: Request): Promise<Response> {
-    let response: Response | undefined;
     try {
         const cache = await GetCache();
-        response = await cache.match(request);
+        return await cache.match(request);
     } catch(error) {
         console.warn('Failed to get response from cache:', request, error);
-    } finally {
-        return response ?? new Response('Service Unavailable', { status: 503 });
+        return new Response('Service Unavailable', { status: 503 });
     }
 }
 

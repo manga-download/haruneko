@@ -6,7 +6,7 @@ new TestFixture({
         title: 'Kagane'
     },
     container: {
-        url: 'https://kagane.org/series/019c2b1c-cc9b-745f-afed-09c230759162',
+        url: 'https://kagane.to/series/019c2b1c-cc9b-745f-afed-09c230759162',
         id: '019c2b1c-cc9b-745f-afed-09c230759162',
         title: 'Dungeon Porter',
     },
@@ -15,7 +15,7 @@ new TestFixture({
         title: 'Ep. 40 - Mimic Market'
     },
     entry: {
-        index: 22,
+        index: 21,
         size: 282_505,
         type: 'image/jpeg'
     }

@@ -7,7 +7,7 @@ new TestFixture({
     },
     container: {
         url: 'https://toonlivre.net/missoes-na-vida-real',
-        id: JSON.stringify({ id: 'obra-f286b166', slug: 'missoes-na-vida-real' }),
+        id: 'obra-f286b166',
         title: 'Missões na Vida Real'
     },
     child: {
