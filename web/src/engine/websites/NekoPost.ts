@@ -1,6 +1,6 @@
 ﻿import { Tags } from '../Tags';
 import icon from './NekoPost.webp';
-import { FetchJSON, FetchRegex, FetchWindowScript } from '../platform/FetchProvider';
+import { FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
 import { type MangaPlugin, Manga, type Chapter, Page, DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import { Delay } from '../BackgroundTimers';
@@ -10,15 +10,6 @@ type APIMangas = {
         pid: number;
         projectName: string;
         projectType: string;
-    }[];
-};
-
-type APIChapter = {
-    chapterId: string;
-    projectId: string;
-    pageItem: {
-        fileName: string;
-        pageNo: number;
     }[];
 };
 
@@ -33,28 +24,26 @@ const chapterScript = `
     });
 `;
 
-const pageScript = `
-    new Promise( resolve => {
-        window.decodeURIComponent = new Proxy(window.decodeURIComponent, {
-          apply(target, thisArg, args) {
-            const result = Reflect.apply(target, thisArg, args);
-            try{
-                const jsonData = JSON.parse(result);
-                if (jsonData.pageItem) resolve(jsonData);
-            } catch{}
+const mangaScript = `document.querySelector('h1')?.textContent.trim();`;
 
-            return result;
-          }
-        });
+const pageScript = `
+    new Promise(async resolve => {
+        let sources = [];
+        for(let index = 0; index < 60; index++) {
+            const images = [...document.querySelectorAll('img[alt^="page "]')];
+            window.scrollTo(0, document.documentElement.scrollHeight * (index + 1) / 60);
+            await new Promise(done => setTimeout(done, 100));
+            sources = images.map(image => image.src).filter(source => source && source !== location.href);
+            if(images.length > 0 && sources.length === images.length) break;
+        }
+        resolve(sources);
     });
 `;
 
-@Common.ChaptersSinglePageJS(chapterScript, 500)
+@Common.ChaptersSinglePageJS(chapterScript, 3000)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
     private readonly apiUrl = 'https://nekopost.net/api/';
-    private readonly CDNUrl = 'https://www.osemocphoto.com';
-
     public constructor() {
         super('nekopost', 'NekoPost', 'https://www.nekopost.net', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Thai, Tags.Source.Aggregator, Tags.Accessibility.RegionLocked);
     }
@@ -69,7 +58,7 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
         const uri = new URL(url);
-        const [title] = await FetchRegex(new Request(uri), /projectName:"([^"]+)"/g);
+        const title = await FetchWindowScript<string>(new Request(uri), mangaScript, 3000);
         return new Manga(this, provider, uri.pathname, title.trim());
     }
 
@@ -106,9 +95,8 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const { pageItem, chapterId, projectId } = await FetchWindowScript<APIChapter>(new Request(new URL(chapter.Identifier, this.URI)), pageScript);
-        return pageItem.sort((self, other) => self.pageNo - other.pageNo)
-            .map(({ fileName }) => new Page(this, chapter, new URL(`./collectManga/${projectId}/${chapterId}/${fileName}`, this.CDNUrl)));
+        const images = await FetchWindowScript<string[]>(new Request(new URL(chapter.Identifier, this.URI)), pageScript);
+        return images.map(image => new Page(this, chapter, new URL(image), { Referer: this.URI.href }));
     }
 
 }

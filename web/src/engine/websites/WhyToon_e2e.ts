@@ -1,22 +1,10 @@
-import { TestFixture } from '../../../test/WebsitesFixture';
+import { AssertThaiReader } from './ThaiReader_Fixture';
 
-new TestFixture({
-    plugin: {
-        id: 'whytoon',
-        title: 'WhyToon'
-    },
-    container: {
-        url: 'https://whytoon.com/content/expired-heart',
-        id: '/content/expired-heart',
-        title: 'Expired Heart - หัวใจหมดอายุ'
-    },
-    child: {
-        id: '/content/expired-heart/55',
-        title: 'ตอนที่ 55'
-    },
-    entry: {
-        index: 2,
-        size: 246_922,
-        type: 'image/webp'
-    }
-}).AssertWebsite();
+AssertThaiReader({
+    id: 'whytoon',
+    urls: [
+        'https://whytoon.com/content/jinx',
+        'https://whytoon.com/content/codename-anastasia',
+        'https://whytoon.com/content/blossom-under-the-suns-night'
+    ]
+});
