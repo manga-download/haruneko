@@ -4,8 +4,31 @@ import type { Priority } from '../taskpool/TaskPool';
 import { RateLimit } from '../taskpool/RateLimit';
 import { DecoratableMangaScraper, type Chapter, Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
+import { AddAntiScrapingDetection, FetchRedirection } from '../platform/AntiScrapingDetection';
+import { AddStalledChallengeReload } from '../platform/ChallengeReload';
+import { FetchWindowScript } from '../platform/FetchProvider';
+import { Delay, SetTimeout, ClearTimeout } from '../BackgroundTimers';
 
 import { DRMProvider } from './CrunchyScan.DRM';
+
+// Show the browser window when Cloudflare presents its challenge
+// ("Just a moment…" / "Verify you are human").
+AddAntiScrapingDetection(async invoke => {
+    const challenged = await invoke<boolean>(`
+        (() => {
+            const title = (document.title || '').trim().toLowerCase();
+            const text = (document.body?.innerText || '').toLowerCase();
+            return /just a moment|un instant|checking your browser/i.test(title)
+                || /vérification de sécurité|verify you(?:'re| are)? human|vérifiez que vous êtes humain|checking if the site connection is secure/i.test(text);
+        })()
+    `);
+    return challenged ? FetchRedirection.Interactive : undefined;
+}, /^https:\/\/(?:www\.)?crunchyscan\.org/);
+
+// Opt in to auto-reloading "managed" Cloudflare challenges without a rendered widget
+// (the page holds a valid cf_clearance but never redirects). This is the only site
+// whose page is reloaded to obtain the real content.
+AddStalledChallengeReload(/^https:\/\/(?:www\.)?crunchyscan\.org/);
 
 function CleanTitle(text: string) {
     return text.replace(/^\s*\(\s*adulte[^\)]*\)\s*/i, '');
@@ -30,6 +53,12 @@ export default class extends DecoratableMangaScraper {
         this.imageTaskPool.RateLimit = new RateLimit(2, 1);
     }
 
+    public override async Initialize(): Promise<void> {
+        // Open a browser window on the root to trigger the Cloudflare challenge
+        // and keep the cf_clearance cookie in the shared session.
+        await FetchWindowScript(new Request(this.URI.href), '');
+    }
+
     public override get Icon(): string {
         return icon;
     }
@@ -41,6 +70,28 @@ export default class extends DecoratableMangaScraper {
     }
 
     public async FetchImage(page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
-        return this.imageTaskPool.Add(() => this.#drm.GetImageData(page.Link, page.Parameters.Referer, signal), priority, signal);
+        return this.imageTaskPool.Add(async () => {
+            // Cloudflare may challenge or stall an image request intermittently (403 /
+            // frozen connection) → per-attempt timeout + 3 retries.
+            let lastError: unknown;
+            for (let attempt = 0; attempt < 3; attempt++) {
+                if (signal.aborted) throw new DOMException('Aborted', 'AbortError');
+                const attemptSignal = new AbortController();
+                const onAbort = () => attemptSignal.abort();
+                signal.addEventListener('abort', onAbort, { once: true });
+                const timeout = await SetTimeout(() => attemptSignal.abort(), 30_000);
+                try {
+                    return await this.#drm.GetImageData(page.Link, page.Parameters.Referer, attemptSignal.signal);
+                } catch (error) {
+                    if (signal.aborted) throw error;
+                    lastError = error;
+                } finally {
+                    ClearTimeout(timeout);
+                    signal.removeEventListener('abort', onAbort);
+                }
+                await Delay(1000 * (attempt + 1));
+            }
+            throw lastError instanceof Error ? lastError : new Error(String(lastError));
+        }, priority, signal);
     }
 }

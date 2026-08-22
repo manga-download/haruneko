@@ -1,7 +1,7 @@
 import os from 'node:os';
 import path from 'node:path';
 import fs from 'node:fs/promises';
-import { BrowserWindow, type BrowserWindowConstructorOptions } from 'electron';
+import { BrowserWindow, session, type BrowserWindowConstructorOptions } from 'electron';
 import type { IPC, Callback } from './InterProcessCommunication';
 import { RemoteBrowserWindowController as Channels } from '../../../src/ipc/Channels';
 
@@ -32,6 +32,11 @@ export class RemoteBrowserWindowController {
 
     private async OpenWindow(options: string): Promise<number> {
         const windowOptions: BrowserWindowConstructorOptions = JSON.parse(options);
+
+        // FIX: force same session so challenge cookies are shared with main app
+        if (!windowOptions.webPreferences) windowOptions.webPreferences = {};
+        windowOptions.webPreferences.session = session.defaultSession;
+
         if (windowOptions.webPreferences?.preload) {
             windowOptions.webPreferences.preload = await this.CreatePreloadScriptFile(windowOptions.webPreferences.preload);
         } else {

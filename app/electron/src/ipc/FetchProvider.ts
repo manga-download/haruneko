@@ -37,7 +37,8 @@ export class FetchProvider {
         const normalizedCookieHeaderName = (this.fetchApiSupportedPrefix + 'Cookie').toLowerCase();
         const originalCookieHeaderName = Object.keys(headers).find(header => header.toLowerCase() === normalizedCookieHeaderName) ?? normalizedCookieHeaderName;
         const headerCookies = headers[originalCookieHeaderName]?.split(';').filter(cookie => cookie.includes('=')).map(cookie => cookie.trim()) ?? [];
-        const browserCookies = await this.webContents.session.cookies.get({ url/*, partitionKey: {}*/ }); // TODO: When filter by URL partioned cookies may not be found (e.g., cf_clearance)
+        // FIX: remove partitionKey filter so partitioned cookies (e.g. cf_clearance) are included
+        const browserCookies = await this.webContents.session.cookies.get({ url });
         for(const browserCookie of browserCookies) {
             if(!headerCookies.some(cookie => cookie.startsWith(browserCookie.name + '='))) {
                 headerCookies.push(`${browserCookie.name}=${browserCookie.value}`);
@@ -89,7 +90,7 @@ export class FetchProvider {
             if (normalizedHeader === 'link') {
                 continue;
             }
-            // Currently electron des not include partitioned cookies when filtering with `session.cookies.get({ url })`
+            // Currently electron does not include partitioned cookies when filtering with `session.cookies.get({ url })`
             // => Workaround: Remove the partitioned flag from the server response
             if(normalizedHeader === 'set-cookie') {
                 details.responseHeaders[originalHeader] = details.responseHeaders[originalHeader].map(cookie => cookie.replace(/partitioned/gi, ''));
