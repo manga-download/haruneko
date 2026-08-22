@@ -80,13 +80,28 @@
     // Medias list
     let medias: MediaContainer<MediaChild>[] = $state([]);
     let mediaNameFilter = $state('');
+    let debouncedMediaFilter = $state('');
 
     let filteredmedias: MediaContainer<MediaChild>[] = $state([]);
+
+    // Debounce the filter input: re-filtering (and fuzzily searching) tens of
+    // thousands of titles on every keystroke is expensive.
+    // Substring filtering (default) is fast (~5 ms), so a short debounce keeps
+    // typing responsive; fuzzy search runs in a web worker and takes ~200 ms
+    // itself, so it keeps a longer debounce to avoid stacking searches.
+    $effect(() => {
+        mediaNameFilter;
+        const delay = Settings.FuzzySearch.Value ? 200 : 120;
+        const timeout = setTimeout(() => debouncedMediaFilter = mediaNameFilter, delay);
+        return () => clearTimeout(timeout);
+    });
+
+    // `medias` is already sorted alphabetically in `loadMedias`, so filtering
+    // preserves the order without re-sorting the whole list on each keystroke.
     $effect(() => {
         medias;
-        filteredmedias = filterMedia(mediaNameFilter).sort((a, b) =>
-            a.Title.localeCompare(b.Title)
-        );
+        debouncedMediaFilter;
+        filteredmedias = filterMedia(debouncedMediaFilter);
     });
     let fuse = new Fuse([]);
 
@@ -108,14 +123,18 @@
         if (!plugin) return;
         const loadedmedias =
             (plugin.Entries.Value as MediaContainer<MediaChild>[]) ?? [];
-        fuse = new Fuse(loadedmedias, {
+        // Sort once when the list is loaded; filtering below preserves this order.
+        const sortedmedias = loadedmedias.toSorted((a, b) =>
+            a.Title.localeCompare(b.Title)
+        );
+        fuse = new Fuse(sortedmedias, {
             keys: ['Title'],
             findAllMatches: true,
             ignoreLocation: true,
             minMatchCharLength: 1,
             fieldNormWeight: 0,
         });
-        medias = loadedmedias;
+        medias = sortedmedias;
         return plugin;
     }
 
