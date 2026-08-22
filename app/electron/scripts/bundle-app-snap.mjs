@@ -33,10 +33,7 @@ async function createSnapImage(blinkApplicationResourcesDirectory, blinkDeployme
     const yaml = path.join(blinkDeploymentOutputDirectory, 'snapcraft.yaml');
     const desktop = path.join(blinkDeploymentOutputDirectory, 'snap', 'gui', `${pkgConfig.name}.desktop`);
     const icon = path.join(blinkDeploymentOutputDirectory, 'snap', 'gui', `${pkgConfig.name}.png`);
-    try { await fs.unlink(path.join(blinkDeploymentOutputDirectory, snapfile)); } catch { }
-    try { await fs.unlink(yaml); } catch { }
-    try { await fs.unlink(desktop); } catch { }
-    try { await fs.unlink(icon); } catch { }
+    await Promise.allSettled([path.join(blinkDeploymentOutputDirectory, snapfile), yaml, desktop, icon].map(file => fs.unlink(file)));
     await createSnapcraftYaml(blinkDeploymentTemporaryDirectory, blinkDeploymentOutputDirectory);
     await createDesktopEntry(blinkApplicationResourcesDirectory, blinkDeploymentOutputDirectory);
     await run('sudo snapcraft pack --destructive-mode', blinkDeploymentOutputDirectory);
