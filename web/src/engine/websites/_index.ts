@@ -533,6 +533,7 @@ export { default as NyxScans } from './NyxScans';
 export { default as OlympusScanlation } from './OlympusScanlation';
 export { default as OmegaScans } from './OmegaScans';
 export { default as OnePieceTube } from './OnePieceTube';
+export { default as Onisaga } from './Onisaga';
 export { default as OnMangaMe } from './OnMangaMe';
 export { default as Opiatoon } from './Opiatoon';
 export { default as Oremanga } from './Oremanga';
