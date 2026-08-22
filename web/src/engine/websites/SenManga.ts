@@ -15,18 +15,6 @@ type JSONManga = {
     }
 };
 
-type JSONChapter = {
-    id: string;
-    chapter: string;
-    full_title: string;
-    pages: number;
-    series: string;
-    language: {
-        name: string;
-        code: string;
-    }
-};
-
 type APISingleManga = {
     success: boolean;
     data: JSONManga;
@@ -35,11 +23,6 @@ type APISingleManga = {
 type APIMultiManga = {
     success: boolean;
     data: JSONManga[];
-};
-
-type APIMultiChapter = {
-    success: boolean;
-    data: JSONChapter[];
 };
 
 const chapterLanguageMap = new Map([
@@ -67,6 +50,18 @@ const chapterLanguageMap = new Map([
     ['zh-hk', Tags.Language.Chinese]
 ]);
 
+const chapterScript = `
+    [...document.querySelectorAll('div.chapter-list > div > a.series[href^="/read/"]')].map(anchor => {
+        const flag = [...anchor.parentElement.querySelector('.flag-lg').classList]
+            .find(name => name.startsWith('flag-') && name !== 'flag-lg')?.slice(5);
+        return {
+            id: anchor.pathname,
+            title: anchor.textContent.trim(),
+            language: flag === 'gb' ? 'en' : flag === 'pt-br' ? 'pt-BR' : flag
+        };
+    });
+`;
+
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
@@ -75,7 +70,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async Initialize(): Promise<void> {
-        return FetchWindowScript(new Request(this.URI), `window.cookieStore.set('viewer', '1')`);
+        return Promise.resolve();
     }
 
     public override get Icon() {
@@ -104,10 +99,10 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const { data, success } = await FetchJSON<APIMultiChapter>(new Request(new URL(`./api/title/${manga.Identifier}/chapters`, this.URI)));
-        return success ? data.map(({ id, full_title: title, language: { code } }) => new Chapter(this, manga, `/read/${id}`, `${title.trim()} (${code})`,
-            ...chapterLanguageMap.has(code) ? [chapterLanguageMap.get(code)] : []
-        )) : [];
+        const data = await FetchWindowScript<{ id: string, title: string, language: string }[]>(new Request(new URL(`./title/${manga.Identifier}`, this.URI)), chapterScript, 1000);
+        return data.map(({ id, title, language }) => new Chapter(this, manga, id, `${title} (${language})`,
+            ...chapterLanguageMap.has(language) ? [chapterLanguageMap.get(language)] : []
+        ));
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {

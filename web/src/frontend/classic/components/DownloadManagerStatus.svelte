@@ -92,18 +92,18 @@
         [Status.Failed]: 'error',
     };
 
-    async function deleteTasks(statusFilter?:Status) {
-        downloadTasks.forEach((task) => {
-            if(!statusFilter || statusFilter === task.Status.Value) window.HakuNeko.DownloadManager.Dequeue(task);
-        });
+    async function clearTasks() {
+        await window.HakuNeko.DownloadManager.Dequeue(...downloadTasks);
         refreshStatus();
     }
 
-    async function retryTasks(statusFilter?:Status) {
-        downloadTasks.forEach((task) => {
-            if(!statusFilter || statusFilter === task.Status.Value) task.Run();
-        });
+    async function deleteTasks(status: Status) {
+        await window.HakuNeko.DownloadManager.Dequeue(...downloadTasks.filter(task => task.Status.Value === status));
         refreshStatus();
+    }
+
+    function retryTasks(status: Status) {
+        return Promise.all(downloadTasks.filter(task => task.Status.Value === status).map(task => task.Run()));
     }
 
 </script>
@@ -131,7 +131,7 @@
                 size="small"
                 icon={TrashCan}
                 iconDescription="Delete all tasks"
-                on:click={() => deleteTasks()}
+                on:click={() => clearTasks()}
             />
         </div>
     </Modal>
