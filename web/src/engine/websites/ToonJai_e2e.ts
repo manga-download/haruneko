@@ -8,7 +8,7 @@ new TestFixture({
     container: {
         url: 'https://toonjai.com/content/my-beloved-goblin',
         id: 'my-beloved-goblin',
-        title: 'O Neto Genial do Rei dos Agiotas'
+        title: 'My Beloved Goblin - ก๊อบลินที่รักของข้า'
     },
     child: {
         id: '43.2',
