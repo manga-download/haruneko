@@ -271,6 +271,7 @@ export { default as Kuaikanmanhua } from './Kuaikanmanhua';
 export { default as kuimh } from './kuimh';
 export { default as KuManga } from './KuManga';
 export { default as KurageBunch } from './KurageBunch';
+export { default as KuroToon } from './KuroToon';
 export { default as LagoonScans } from './LagoonScans';
 export { default as Laimanhua8 } from './Laimanhua8';
 export { default as LamiManga } from './LamiManga';
