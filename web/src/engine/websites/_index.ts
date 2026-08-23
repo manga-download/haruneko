@@ -165,6 +165,7 @@ export { default as GenzToon } from './GenzToon';
 export { default as Gntai } from './Gntai';
 export { default as GodaComic } from './GodaComic';
 export { default as GodaManhua } from './GodaManhua';
+export { default as GodDoujin } from './GodDoujin';
 export { default as GolgeBahcesi } from './GolgeBahcesi';
 export { default as GorakuWeb } from './GorakuWeb';
 export { default as GourmetScans } from './GourmetScans';
