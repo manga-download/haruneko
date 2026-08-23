@@ -20,7 +20,7 @@ type HydratedManga = {
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
     public constructor() {
-        super('toonjai', 'ToonJai', 'https://toonjai.com', Tags.Media.Manhwa, Tags.Media.Manga, Tags.Language.Thai, Tags.Source.Aggregator, Tags.Rating.Erotica);
+        super('toonjai', 'ToonJai', 'https://toonjai.com', Tags.Media.Manhwa, Tags.Media.Manga, Tags.Language.Thai, Tags.Source.Aggregator, Tags.Rating.Pornographic);
     }
 
     public override get Icon() {
