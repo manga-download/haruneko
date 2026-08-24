@@ -711,7 +711,6 @@ export { default as TRWebtoon } from './TRWebtoon';
 export { default as TuhaoManhua } from './TuhaoManhua';
 export { default as TurkceMangaOku } from './TurkceMangaOku';
 export { default as Tuttoanimemanga } from './Tuttoanimemanga';
-export { default as TwentyFourHNovel } from './TwentyFourHNovel';
 export { default as TwoAnimx } from './TwoAnimx';
 export { default as UchuujinProjects } from './UchuujinProjects';
 export { default as UlasComic } from './UlasComic';

@@ -129,7 +129,6 @@ import '../TortugaCeviri_e2e';
 import '../TritiniaScans_e2e';
 import '../TruyenTranhDammy_e2e';
 import '../TurkceMangaOku_e2e';
-import '../TwentyFourHNovel_e2e';
 import '../UmeTruyen_e2e';
 import '../UngTyComic_e2e';
 import '../Utoon_e2e';
