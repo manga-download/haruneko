@@ -505,6 +505,7 @@ export { default as NaverMobile } from './NaverMobile';
 export { default as NekoPost } from './NekoPost';
 export { default as NemesisScans } from './NemesisScans';
 export { default as NetTruyenAR } from './NetTruyenAR';
+export { default as NetTruyenGG } from './NetTruyenGG';
 export { default as NetTruyenOK } from './NetTruyenOK';
 export { default as NetTruyenViet } from './NetTruyenViet';
 export { default as NeuManga } from './NeuManga';

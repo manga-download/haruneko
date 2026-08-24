@@ -2,11 +2,11 @@ import { TestFixture } from '../../../test/WebsitesFixture';
 
 new TestFixture({
     plugin: {
-        id: 'nettruyen#BFBB5C98',
-        title: 'NetTruyen Viet/WW',
+        id: 'nettruyengg',
+        title: 'NetTruyen GG',
     },
     container: {
-        url: 'https://nettruyenviet10.com/truyen-tranh/ta-co-90-ty-tien-liem-cau',
+        url: 'https://nettruyen.gg/truyen-tranh/ta-co-90-ty-tien-liem-cau',
         id: '/truyen-tranh/ta-co-90-ty-tien-liem-cau',
         title: 'Ta Có 90 Tỷ Tiền Liếm Cẩu!',
     },
