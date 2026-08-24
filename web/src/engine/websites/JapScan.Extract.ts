@@ -45,7 +45,7 @@ export async function ExtractPagesFromReader(referer: string): Promise<string[]>
         })()
     `;
     try {
-        const pages = await FetchWindowScript<string[]>(new Request(referer), script, 1000, 150000, true);
+        const pages = await FetchWindowScript<string[]>(new Request(referer), script, 1000, 150000);
         return (pages ?? []).filter((link, index, all) => all.indexOf(link) === index);
     } catch {
         return [];

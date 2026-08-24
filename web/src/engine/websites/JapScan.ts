@@ -18,10 +18,6 @@ AddAntiScrapingDetection(async invoke => {
 @Common.ImageAjax(true)
 export default class extends DecoratableMangaScraper {
 
-    // JapScan présente un challenge interactif (#jc-overlay) qui nécessite une
-    // vraie fenêtre visible — la vérification silencieuse saute donc ce site.
-    public override readonly RequiresVisibleBrowserWindow = true;
-
     readonly #drm = new DRMProvider();
 
     public constructor() {
