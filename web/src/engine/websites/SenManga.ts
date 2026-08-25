@@ -2,7 +2,7 @@ import { Tags } from '../Tags';
 import icon from './SenManga.webp';
 import { Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
+import { FetchJSON, FetchNextProps, FetchWindowScript } from '../platform/FetchProvider';
 import { Delay } from '../BackgroundTimers';
 
 type APIResult<T> = {
@@ -29,6 +29,14 @@ type APIChapter = {
     language: {
         name: string;
         code: string;
+    };
+};
+
+type JSONPages = {
+    chapter: {
+        pageList: {
+            url: string[];
+        };
     };
 };
 
@@ -90,7 +98,7 @@ export default class extends DecoratableMangaScraper {
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
         type This = typeof this;
         return (await Array.fromAsync(async function* (this: This) {
-            for (let offset = 0, run = true; run; offset+=100) {
+            for (let offset = 0, run = true; run; offset += 100) {
                 await Delay(500);
                 const { data, success } = await FetchJSON<APIMangas>(new Request(new URL(`./api/search?limit=100&offset=${offset}`, this.URI)));
                 const mangas = success ? data.map(({ id, title }) => new Manga(this, provider, id, title.trim())) : [];
@@ -107,7 +115,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const images = await Common.FetchPagesSinglePageJS.call(this, chapter, '__NEXT_DATA__.props.pageProps.chapter.pageList.url', 500);
-        return images.map(page => new Page(this, chapter, page.Link, { Referer: page.Link.origin }));
+        const { chapter: { pageList: { url } } } = await FetchNextProps<JSONPages>(new Request(new URL(chapter.Identifier, this.URI)));
+        return url.map(page => new Page(this, chapter, new URL(`/api/proxy?imageUrl=${page}`, this.URI), { Referer: this.URI.href }));
     }
 }

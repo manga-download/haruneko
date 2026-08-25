@@ -32,6 +32,8 @@ export const FetchProto: typeof instance.FetchProto = (request, schema, messageT
 export const FetchGraphQL: typeof instance.FetchGraphQL = (request, operationName, query, variables, extensions) => instance.FetchGraphQL(request, operationName, query, variables, extensions);
 /** {@inheritDoc FetchProvider.FetchNextJS} @see {@link FetchProvider.FetchNextJS} */
 export const FetchNextJS: typeof instance.FetchNextJS = (request, predicate) => instance.FetchNextJS(request, predicate);
+/** {@inheritDoc FetchProvider.FetchNextProps} @see {@link FetchProvider.FetchNextProps} */
+export const FetchNextProps: typeof instance.FetchNextProps = (request) => instance.FetchNextProps(request);
 /** {@inheritDoc FetchProvider.FetchWindowScript} @see {@link FetchProvider.FetchWindowScript} */
 export const FetchWindowScript: typeof instance.FetchWindowScript = (request, script, delay?, timeout?) => instance.FetchWindowScript(request, script, delay, timeout);
 /** {@inheritDoc FetchProvider.FetchWindowPreloadScript} @see {@link FetchProvider.FetchWindowPreloadScript} */
