@@ -55,6 +55,7 @@ const patterns = [
     '*://*/**/devtools-detect*',
     '*://*/**/devtools-detector*',
     '*://*/**/disable-devtool*',
+    '*://*/**/screenshot-guard*',
     '*://*/Ads/*',
     '*://*/js/ads*',
     '*://ad-blocker.co/*',
