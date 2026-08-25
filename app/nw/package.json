@@ -15,7 +15,7 @@
     },
     "devDependencies": {
         "extract-zip": "2.0.1",
-        "nw": "0.114.0-sdk",
+        "nw": "0.115.0-sdk",
         "plist": "5.0.0"
     },
     "scripts": {
