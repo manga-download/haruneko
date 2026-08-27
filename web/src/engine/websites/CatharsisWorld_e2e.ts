@@ -6,14 +6,13 @@ new TestFixture({
         title: 'Catharsis World'
     },
     container: {
-        url: 'https://catharsisworld.dig-it.info/serie/mision-romance-sincero/',
-        id: '/serie/mision-romance-sincero/',
+        url: 'https://newcatharsis.dig-it.info/manga/mision-romance-sincero',
+        id: '996',
         title: 'Misión: Romance Sincero'
     },
     child: {
-        id: '/serie/mision-romance-sincero/capitulo-1/',
+        id: '32336',
         title: 'Capitulo 1',
-        timeout: 30000
     },
     entry: {
         index: 0,
