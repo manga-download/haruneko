@@ -11,7 +11,7 @@ type APIManga = {
     chapters?: {
         id: string;
         title: string;
-    }[]
+    }[];
 };
 
 type APIMangas = {
@@ -24,15 +24,15 @@ type APIPages = {
     readChapter: {
         pages: {
             image: string;
-        }[]
-    }
+        }[];
+    };
 };
 
 @Common.MangaCSS<HTMLMetaElement>(/^{origin}\/manga\/[^/]+$/, 'meta[property="og:title"]', (element, uri) => ({ id: uri.pathname.split('/').at(-1), title: element.content.trim() }))
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
-    private readonly apiUrl = 'https://atsu.moe/api/';
+    private readonly apiURL = 'https://atsu.moe/api/';
 
     public constructor() {
         super('atsumaru', 'Atsumaru', 'https://atsu.moe', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.English, Tags.Source.Aggregator);
@@ -55,12 +55,12 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const { chapters } = await FetchJSON<APIManga>(new Request(new URL(`./manga/info?mangaId=${manga.Identifier}`, this.apiUrl)));
-        return chapters.map(({ id, title }) => new Chapter(this, manga, id, title));
+        const { chapters } = await FetchJSON<APIManga>(new Request(new URL(`./manga/info?mangaId=${manga.Identifier}`, this.apiURL)));
+        return chapters.reverse().map(({ id, title }) => new Chapter(this, manga, id, title));
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const { readChapter: { pages } } = await FetchJSON<APIPages>(new Request(new URL(`./read/chapter?mangaId=${chapter.Parent.Identifier}&chapterId=${chapter.Identifier}`, this.apiUrl)));
+        const { readChapter: { pages } } = await FetchJSON<APIPages>(new Request(new URL(`./read/chapter?mangaId=${chapter.Parent.Identifier}&chapterId=${chapter.Identifier}`, this.apiURL)));
         return pages.map(({ image }) => new Page(this, chapter, new URL(image, this.URI)));
     }
 }
