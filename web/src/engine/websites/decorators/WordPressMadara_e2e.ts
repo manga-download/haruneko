@@ -87,6 +87,7 @@ import '../ManhwaClub_e2e';
 import '../ManhwaDashRaw_e2e';
 import '../ManhwaHub_e2e';
 import '../ManhwaLatino_e2e';
+import '../ManhwaNex_e2e';
 import '../ManhwaTop_e2e';
 import '../MHScans_e2e';
 import '../MilaSub_e2e';
