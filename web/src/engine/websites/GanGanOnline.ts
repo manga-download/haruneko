@@ -4,18 +4,18 @@ import { Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from 
 import * as Common from './decorators/Common';
 import { FetchNextProps } from '../platform/FetchProvider';
 
-type APIWrapper<T> = {
+type APIResult<T> = {
     data: T;
 };
 
-type APIManga = APIWrapper<{
+type APIManga = APIResult<{
     default: {
         titleId: number;
         titleName: string;
     };
 }>;
 
-type APIMangas = APIWrapper<{
+type APIMangas = APIResult<{
     titleSections: {
         titles: {
             titleId: number;
@@ -24,7 +24,7 @@ type APIMangas = APIWrapper<{
     }[];
 }>;
 
-type APIChapters = APIWrapper<{
+type APIChapters = APIResult<{
     default: {
         chapters: {
             id: number;
@@ -35,7 +35,7 @@ type APIChapters = APIWrapper<{
     };
 }>;
 
-type APIPages = APIWrapper<{
+type APIPages = APIResult<{
     pages: {
         image: {
             imageUrl: string;

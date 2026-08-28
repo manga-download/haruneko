@@ -183,48 +183,29 @@ export abstract class FetchProvider {
     /**
      * Extract all NextJS hydrated flight data payloads from the HTML script tags of the provided {@link request}
      * and returns the first nested data element that fulfills the given {@link predicate} or `undefined` if non was found.
+     * Extraction part from https://github.com/alcoceba/next.js-explorer
      */
-    public async FetchNextJS<T extends JSONElement>(request: Request, predicate: (data: JSONObject<JSONElement> | JSONArray<JSONElement>) => unknown): Promise<T | undefined> {
-        return this.ExtractNextJS<T>(await this.FetchHTML(request), predicate);
+    public async FetchNextJS<T extends JSONElement>(request: Request, predicate: (data: JSONArray<JSONElement> | JSONObject<JSONElement>) => unknown): Promise<T | undefined> {
+        const rawData = this.NextJSGetRawdata(await this.FetchHTML(request));
+        const payload = this.NextJSDecodeData(rawData);
+        return this.#ExtractValueNextJS<T>(payload, predicate);
     }
 
-    /**
-     * NextJS Flight Data extractor & search
-     * Extraction part from https://github.com/alcoceba/next.js-explorer
-    */
-    private ExtractNextJS<T extends JSONElement>(document: Document, predicate: (data: JSONObject<JSONElement> | JSONArray<JSONElement>) => unknown): T | undefined {
-        const rawData = this.NextJSGetRawdata(document);
-        const payloads = this.NextJSDecodeData(rawData);
+    #ExtractValueNextJS<T extends JSONElement>(payload: JSONElement, predicate: (data: JSONElement) => unknown): T {
+        if (payload === null || payload === undefined) return undefined;
 
-        function search(target: any): T | undefined {
-            if (target === null || target === undefined) return undefined;
-
-            //make the predicate fails gracefully.
-            //i.e predicate  = ( data => 'something' in data) and target is not an object (string number etc..)
-            try {
-                if (predicate(target)) {
-                    return target as T;
-                }
-            } catch { };
-
-            if (typeof target === 'object') {
-                for (const key of Object.keys(target)) {
-                    const result = search(target[key]);
-                    if (result !== undefined) {
-                        return result; // Short-circuit on first find
-                    }
-                }
+        //make the predicate fails gracefully.
+        //i.e predicate  = ( data => 'something' in data) and payload is a primitive type (string, number, etc)
+        try {
+            if (predicate(payload)) {
+                return payload as T;
             }
-            return undefined;
-        }
+        } catch { };
 
-        // Iterate over the root Record<number, any> entries
-        if (payloads && typeof payloads === 'object') {
-            for (const key of Object.keys(payloads)) {
-                const result = search(payloads[key]);
-                if (result !== undefined) {
-                    return result as T;
-                }
+        if (payload && typeof payload === 'object') {
+            for (const value of Object.values(payload)) {
+                const result = this.#ExtractValueNextJS<T>(value, predicate);
+                if (result) return result;
             }
         }
         return undefined;
