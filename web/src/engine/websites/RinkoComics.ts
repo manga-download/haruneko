@@ -12,7 +12,7 @@ export default class extends DecoratableMangaScraper {
     private nonce = '';
 
     public constructor() {
-        super('rinkocomics', 'Rinko Comics', 'https://rinkocomics.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Chinese, Tags.Source.Aggregator);
+        super('rinkocomics', 'Rinko Comics', 'https://rinkocomics.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.English, Tags.Source.Aggregator);
     }
 
     public override get Icon() {

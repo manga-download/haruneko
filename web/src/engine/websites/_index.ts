@@ -459,6 +459,7 @@ export { default as ManhwaHub } from './ManhwaHub';
 export { default as ManhwaIndo } from './ManhwaIndo';
 export { default as ManhwaLatino } from './ManhwaLatino';
 export { default as ManhwaList } from './ManhwaList';
+export { default as ManhwaNex } from './ManhwaNex';
 export { default as ManhwaRead } from './ManhwaRead';
 export { default as ManhwaTop } from './ManhwaTop';
 export { default as ManhwaWeb } from './ManhwaWeb';
