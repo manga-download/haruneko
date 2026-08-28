@@ -51,6 +51,7 @@ export class RemoteBrowserWindowController {
     private async CloseWindow(windowID: number): Promise<void> {
         const win = this.FindWindow(windowID);
         win.webContents.debugger.detach();
+        win.removeAllListeners();
         win.destroy();
     }
 
