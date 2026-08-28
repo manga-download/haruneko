@@ -6,12 +6,12 @@ new TestFixture({
         title: 'Manga Crab'
     },
     container: {
-        url: 'https://mangacrab.org/series/mi-sistema-es-muy-serio/',
-        id: '/series/mi-sistema-es-muy-serio/',
+        url: 'https://es.mangacrab.org/series/mi-sistema-es-muy-serio/',
+        id: '30840',
         title: 'Mi Sistema Es Muy serio'
     },
     child: {
-        id: '/series/mi-sistema-es-muy-serio/capitulo-19',
+        id: '25',
         title: 'Capitulo 19'
     },
     entry: {
