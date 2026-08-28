@@ -599,6 +599,7 @@ export { default as RfDragonScan } from './RfDragonScan';
 export { default as RidiBooks } from './RidiBooks';
 export { default as RimacomiPlus } from './RimacomiPlus';
 export { default as RimuScans } from './RimuScans';
+export { default as RinkoComics } from './RinkoComics';
 export { default as RisenToons } from './RisenToons';
 export { default as RitharScans } from './RitharScans';
 export { default as RizzComics } from './RizzComics';
