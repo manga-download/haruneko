@@ -471,6 +471,7 @@ export { default as MeianPlus } from './MeianPlus';
 export { default as MeiToon } from './MeiToon';
 export { default as MenudoFansub } from './MenudoFansub';
 export { default as MerlinScans } from './MerlinScans';
+export { default as MerlinShoujo } from './MerlinShoujo';
 export { default as MgJinx } from './MgJinx';
 export { default as Mgkomik } from './Mgkomik';
 export { default as MHScans } from './MHScans';
