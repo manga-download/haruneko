@@ -44,12 +44,16 @@ export class RemoteBrowserWindowController {
         win.webContents.setWindowOpenHandler(() => { return { action: 'deny' }; });
         win.webContents.on('dom-ready', () => this.ipc.Send(Channels.RemoteBrowserWindowController.OnDomReady, win.id));
         win.webContents.on('did-start-navigation', event => this.ipc.Send(Channels.RemoteBrowserWindowController.OnBeforeNavigate, win.id, event.url, event.isMainFrame, event.isSameDocument));
-        win.once('closed', () => windowOptions.webPreferences?.preload && fs.rm(windowOptions.webPreferences?.preload).catch(err => console.warn(err)));
+        win.once('closed', () => windowOptions.webPreferences?.preload && fs.rm(windowOptions.webPreferences?.preload).catch(console.warn));
+        win.once('close', () => this.Close(win).catch(console.warn));
         return win.id;
     }
 
-    private async CloseWindow(windowID: number): Promise<void> {
-        const win = this.FindWindow(windowID);
+    private CloseWindow(windowID: number): Promise<void> {
+        return this.Close(this.FindWindow(windowID));
+    }
+
+    private async Close(win: BrowserWindow) {
         win.webContents.debugger.detach();
         win.removeAllListeners();
         win.destroy();
