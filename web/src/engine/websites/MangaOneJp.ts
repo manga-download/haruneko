@@ -12,8 +12,13 @@ import { DecryptAES } from '../Crypto';
 
 type WebRensaiListResponse = {
     dayOfWeekTitleLists: {
-        titles: APITitle[];
+        titles?: APITitle[];
+        titlesV2?: WebDayOfWeekTitle[] ;
     }[];
+};
+
+type WebDayOfWeekTitle = {
+    title: APITitle;
 };
 
 type APITitle = {
@@ -95,10 +100,11 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
         const { dayOfWeekTitleLists } = await FetchProto<WebRensaiListResponse>(new Request(new URL('?rq=rensai', this.apiURL)), protoTypes, 'MangaOneJp.WebRensaiListResponse');
-        return dayOfWeekTitleLists.reduce((accumulator: Manga[], day) => {
-            accumulator.push(...day.titles.map(({ title: { titleId, titleName } }) => new Manga(this, provider, `${titleId}`, titleName)));
-            return accumulator;
-        }, []);
+        return dayOfWeekTitleLists.flatMap(dayList => {
+            const v2Titles = dayList.titlesV2?.map(({ title: { title: { titleId, titleName } } }) => new Manga(this, provider, `${titleId}`, titleName)) || [];
+            const v1Titles = dayList.titles?.map(({ title: { titleId, titleName } }) => new Manga(this, provider, `${titleId}`, titleName)) || [];
+            return [...v1Titles, ...v2Titles];
+        }).distinct();
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {

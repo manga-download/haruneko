@@ -10,11 +10,16 @@
         page: MediaItem;
         alt: string;
         wide: boolean;
+        onLoad?: () => void;
     }
 
-    let { page, alt, wide}: Props = $props();
+    let { page, alt, wide, onLoad }: Props = $props();
     let dataload: Promise<Blob> = $derived(page.Fetch(Priority.High, new AbortController().signal));
     let image: HTMLImageElement = $state();
+
+    $effect(() => {
+        dataload.then(() => onLoad?.());
+    });
 
     onDestroy(() => {
         dataload.then((_src) => {
