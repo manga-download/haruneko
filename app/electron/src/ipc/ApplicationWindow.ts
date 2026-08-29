@@ -38,15 +38,18 @@ export class ApplicationWindow extends BrowserWindow {
                     allowRunningInsecureContent: false,
                 },
             });
+            this.splash.on('closed', () => {
+                this.splash = undefined;
+                super.show();
+            });
             this.splash.removeMenu();
             this.splash.setMenu(null);
             this.splash.setMenuBarVisibility(false);
-            this.splash.on('closed', () => super.show());
         }
         return this.splash?.loadURL(url);
     }
 
     private async CloseSplash() {
-        this.splash?.close();
+        return this.splash?.close();
     }
 }
