@@ -175,15 +175,16 @@ describe('FetchProvider', () => {
             const actual = await fixture.InvokeOnHeadersReceived({
                 responseHeaders: {
                     'X-Link': [ '=' ],
-                    'Link': [ '-' ],
+                    'link': [ '-' ],
+                    'Link': [ '--' ],
                     'Test-Keep-Header': [ '===' ],
                 }
             });
             expect(actual).toStrictEqual({
                 cancel: false,
                 responseHeaders: {
-                    'x-link': [ '=' ],
-                    'test-keep-header': [ '===' ],
+                    'X-Link': [ '=' ],
+                    'Test-Keep-Header': [ '===' ],
                 },
             });
         });

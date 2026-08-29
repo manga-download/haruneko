@@ -85,31 +85,23 @@ export class FetchProvider {
     // See also: web/.../platform/nw/FetchProvider.ts
     private ModifyResponseHeaders(originalHeaders: Record<string, string | string[]>): HeadersReceivedResponse {
 
-        const result = Object.fromEntries(Object.entries(originalHeaders).map(([name, value]) => [name.toLowerCase(), value]));
-
-        // Remove the `link` header to prevent prefetch/preload and a corresponding warning about 'resource preloaded but not used',
-        // especially when scraping with headless requests (see: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Link)
-        if ('link' in result) delete result.link;
-
-        /*
-        if(details.method.toUpperCase() === 'OPTIONS') {
-            result['access-control-allow-origin'] = '*';
-            result['access-control-allow-methods'] = '*';
-            result['access-control-allow-headers'] = '*';
-            result['access-control-allow-credentials'] = 'true';
-        }
-        */
-
-        // Currently electron does not include partitioned cookies when filtering with `session.cookies.get({ url })`
-        // => Workaround: Remove the partitioned flag from the server response
-        if ('set-cookie' in result) {
-            const value = result['set-cookie'];
-            result['set-cookie'] = typeof value === 'string' ? value.replace(/partitioned/gi, '') : value.map(cookie => cookie.replace(/partitioned/gi, ''));
-        }
+        const result = Object.entries(originalHeaders)
+            .filter(([name, _value]) => {
+                // Remove the `link` header to prevent prefetch/preload and a corresponding warning about 'resource preloaded but not used',
+                // especially when scraping with headless requests (see: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Link)
+                return name.toLowerCase() !== 'link';
+            }).map(([name, value]) => {
+                // Currently electron does not include partitioned cookies when filtering with `session.cookies.get({ url })`
+                // => Workaround: Remove the partitioned flag from the server response
+                if (name.toLowerCase() === 'set-cookie') {
+                    value = typeof value === 'string' ? value.replace(/partitioned/gi, '') : value.map(cookie => cookie.replace(/partitioned/gi, ''));
+                }
+                return [name, value];
+            });
 
         return {
             cancel: false,
-            responseHeaders: result,
+            responseHeaders: Object.fromEntries(result),
         };
     }
 }

@@ -89,15 +89,16 @@ export default class FetchProviderNW extends FetchProvider {
     // See also: app/electron/.../ipc/FetchProvider.ts
     readonly #ModifyResponseHeaders = function ModifyResponseHeaders(this: FetchProviderNW, details: chrome.webRequest.OnHeadersReceivedDetails): chrome.webRequest.BlockingResponse {
 
-        const result = Object.fromEntries(details.responseHeaders.map(({ name, value }) => [name.toLowerCase(), value]));
-
-        // Remove the `link` header to prevent prefetch/preload and a corresponding warning about 'resource preloaded but not used',
-        // especially when scraping with headless requests (see: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Link)
-        if ('link' in result) delete result.link;
+        const result = details.responseHeaders
+            .filter(({ name, value: _value }) => {
+                // Remove the `link` header to prevent prefetch/preload and a corresponding warning about 'resource preloaded but not used',
+                // especially when scraping with headless requests (see: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Link)
+                return name.toLowerCase() !== 'link';
+            });
 
         return {
             cancel: false,
-            responseHeaders: Object.entries(result).map(([name, value]) => ({ name, value })),
+            responseHeaders: result,
         };
     }.bind(this);
 }

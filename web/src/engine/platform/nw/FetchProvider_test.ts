@@ -102,8 +102,8 @@ describe('FetchProvider', () => {
 
             expect(onHeadersReceivedListener.name).toBe('bound ModifyResponseHeaders');
             expect(actual.responseHeaders).toStrictEqual([
-                { name: 'x-fetchapi-origin', value: '😈' },
-                { name: 'host', value: '😇' },
+                { name: 'X-FetchAPI-Origin', value: '😈' },
+                { name: 'Host', value: '😇' },
             ]);
         });
     });
