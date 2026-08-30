@@ -186,8 +186,36 @@ export abstract class FetchProvider {
      * Extraction part from https://github.com/alcoceba/next.js-explorer
      */
     public async FetchNextJS<T extends JSONElement>(request: Request, predicate: (data: JSONArray<JSONElement> | JSONObject<JSONElement>) => unknown): Promise<T | undefined> {
-        const rawData = this.NextJSGetRawdata(await this.FetchHTML(request));
-        const payload = this.NextJSDecodeData(rawData);
+
+        // 1: Gather raw flight data
+        const scripts = await this.FetchCSS<HTMLScriptElement>(request, 'script:not([src])');
+        const flightData = [];
+
+        for (const script of scripts) {
+            const content = script.textContent || '';
+            const args = this.NextJSParsePushCalls(content);
+
+            for (const arg of args) {
+                try {
+                    const parsed = JSON.parse(arg);
+                    flightData.push(parsed);
+                } catch {
+                    try {
+                        const parsed = new Function('return ' + arg)();
+                        if (Array.isArray(parsed)) {
+                            flightData.push(parsed);
+                        }
+                    } catch {
+                        // Skip malformed entries
+                    }
+                }
+            }
+        }
+
+        // 2: Decode flight Data
+        const payload = this.NextJSDecodeData(flightData);
+
+        // 3: look for requested value
         return this.#ExtractValueNextJS<T>(payload, predicate);
     }
 
@@ -209,33 +237,6 @@ export abstract class FetchProvider {
             }
         }
         return undefined;
-    }
-
-    private NextJSGetRawdata(doc: Document): JSONElement {
-        const scriptTags = doc.querySelectorAll('script');
-        const flightData: any[] = [];
-
-        for (const script of scriptTags) {
-            const content = script.textContent || '';
-            const args = this.NextJSParsePushCalls(content);
-
-            for (const arg of args) {
-                try {
-                    const parsed = JSON.parse(arg);
-                    flightData.push(parsed);
-                } catch {
-                    try {
-                        const parsed = new Function('return ' + arg)();
-                        if (Array.isArray(parsed)) {
-                            flightData.push(parsed);
-                        }
-                    } catch {
-                        // Skip malformed entries
-                    }
-                }
-            }
-        }
-        return flightData;
     }
 
     private NextJSDecodeData(appRawData: any): JSONElement | null {
