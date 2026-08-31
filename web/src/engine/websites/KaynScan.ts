@@ -1,13 +1,11 @@
 import { Tags } from '../Tags';
 import icon from './KaynScan.webp';
-import { VTheme } from './templates/VTheme';
-import * as Common from './decorators/Common';
+import { NovelDexTheme } from './templates/NovelDexTheme';
 
-@Common.PagesSinglePageCSS('section[itemprop="articleBody"] figure img:not([itemprop])')
-export default class extends VTheme {
+export default class extends NovelDexTheme {
 
     public constructor() {
-        super('kaynscan', 'Kayn Scan', 'https://kaynscan.org', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.English, Tags.Source.Scanlator);
+        super('kaynscan', 'Kayn Scan', 'https://kaynscans.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.English, Tags.Source.Scanlator);
     }
 
     public override get Icon() {

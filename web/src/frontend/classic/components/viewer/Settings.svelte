@@ -30,3 +30,10 @@
         <Toggle bind:toggled={Settings.ViewerDoublePage.Value} />
     </SettingItem>
 {/if}
+
+<SettingItem
+    labelText={GlobalSettings.Locale[Settings.ViewerPreloadNextItem.Setting.Label]()}
+    helperText={GlobalSettings.Locale[Settings.ViewerPreloadNextItem.Setting.Description]()}
+>
+    <Toggle bind:toggled={Settings.ViewerPreloadNextItem.Value} />
+</SettingItem>

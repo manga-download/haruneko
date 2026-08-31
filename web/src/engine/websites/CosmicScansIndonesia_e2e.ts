@@ -6,7 +6,7 @@ new TestFixture({
         title: 'Cosmic Scans Indonesia'
     },
     container: {
-        url: 'https://02.cosmicscans.to/series/eleceed/',
+        url: 'https://03.cosmicscans.to/series/eleceed/',
         id: 'eleceed',
         title: 'Eleceed'
     },
