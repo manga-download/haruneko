@@ -1,5 +1,5 @@
 import type { VariantResource } from '../ILocale';
-// HACK: Import a reference to the en-US tranlsation itself, so the auto-generated translation files are based on the en-US translation
+// HACK: Import a reference to the en-US translation itself, so the auto-generated translation files are based on the en-US translation
 import enUS from './en_US';
 
 /**
@@ -91,6 +91,8 @@ const translations: VariantResource = {
   Frontend_Classic_Settings_ViewerReverseDirectionInfo: 'Show pages/images in reverse order (like in tradional Manga)',
   Frontend_Classic_Settings_ViewerDoublePage: 'Show Double Pages',
   Frontend_Classic_Settings_ViewerDoublePageInfo: 'Show two pages/images at once (like in tradional Manga)',
+  Frontend_Classic_Settings_ViewerPreloadNextItem: 'Preload Next Item',
+  Frontend_Classic_Settings_ViewerPreloadNextItemInfo: 'Start loading the next chapter/item once all images of the current one are loaded',
   Frontend_Classic_Sidenav_Home: 'Home',
   Frontend_Classic_Sidenav_Settings_General: 'General',
   Frontend_Classic_Sidenav_Settings_Interface: 'Interface',

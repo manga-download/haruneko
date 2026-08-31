@@ -27,15 +27,17 @@ export const enum Key {
     //
     ViewerDoublePage = 'viewer-double-page',
     //
+    ViewerPreloadNextItem = 'preload-next-item',
+    //
     StartupGuideEnabled = 'startup-guide-enabled',
 }
 
-const FrontendClasicScope = 'frontend.classic';
-const FrontendClasicScope_Viewer = 'frontend.classic.viewer';
+const FrontendClassicScope = 'frontend.classic';
+const FrontendClassicScope_Viewer = 'frontend.classic.viewer';
 
 export const globalScopeSettings = HakuNeko.SettingsManager.OpenScope(GlobalScope);
-export const frontendClassicSettings = HakuNeko.SettingsManager.OpenScope(FrontendClasicScope);
-export const frontendClassicSettingsViewer = HakuNeko.SettingsManager.OpenScope(FrontendClasicScope_Viewer);
+export const frontendClassicSettings = HakuNeko.SettingsManager.OpenScope(FrontendClassicScope);
+export const frontendClassicSettingsViewer = HakuNeko.SettingsManager.OpenScope(FrontendClassicScope_Viewer);
 
 export async function Initialize(): Promise<void> {
     await frontendClassicSettings.Initialize(
@@ -51,6 +53,7 @@ export async function Initialize(): Promise<void> {
         Settings.ViewerMode.Setting,
         Settings.ViewerReverseDirection.Setting,
         Settings.ViewerDoublePage.Setting,
+        Settings.ViewerPreloadNextItem.Setting,
     );
 }
 
@@ -116,6 +119,13 @@ class UIClassicStore {
         Key.ViewerDoublePage,
         R.Frontend_Classic_Settings_ViewerDoublePage,
         R.Frontend_Classic_Settings_ViewerDoublePageInfo,
+        false
+    ));
+
+    ViewerPreloadNextItem = new SettingStore<boolean, Check>(new Check(
+        Key.ViewerPreloadNextItem,
+        R.Frontend_Classic_Settings_ViewerPreloadNextItem,
+        R.Frontend_Classic_Settings_ViewerPreloadNextItemInfo,
         false
     ));
 
