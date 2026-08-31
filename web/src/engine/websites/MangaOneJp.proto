@@ -19,6 +19,11 @@ message WebRensaiListResponse {
 
 message DayOfWeekTitleList {
 	repeated WebTitle titles = 2;
+	repeated WebDayOfWeekTitle titlesV2 = 3;
+}
+
+message WebDayOfWeekTitle {
+	optional WebTitle title = 1;
 }
 
 //Chapters and volumes

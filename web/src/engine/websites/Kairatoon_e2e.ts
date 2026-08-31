@@ -7,11 +7,11 @@ new TestFixture({
     },
     container: {
         url: 'https://kairatoon.com/webtoon/ben-ilahi-siyah-ejderhanin-imugisiyim',
-        id: '/webtoon/ben-ilahi-siyah-ejderhanin-imugisiyim',
+        id: 'abce9e85-63cc-40bf-8f77-adba13916ade',
         title: 'Ben İlahi Siyah Ejderha’nın İmugisiyim!'
     },
     child: {
-        id: '/webtoon/ben-ilahi-siyah-ejderhanin-imugisiyim/bolum-1',
+        id: '54eace61-1236-4c6d-88ca-932caf0a50b7',
         title: 'Bölüm 1'
     },
     entry: {

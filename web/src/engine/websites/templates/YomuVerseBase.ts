@@ -37,10 +37,10 @@ type APIPages = {
 export class YomuVerseBase extends DecoratableMangaScraper {
 
     private NextActions: Record<string, string> = {
-        PaginatedMangas: '403672a959063bc57f102d828ca4d48fa74a43ba70',
-        MangaInfos: '60d532a2a6a7a0ff42de5f69dcdf2db5860a2f76b0',
-        Chapters: '607bcd9f90d5db5edaa2cf1aff7a002b5b14ead30a',
-        Pages: '60390ae612bb67d3d0614b47c7fa396fa4201aa323'
+        PaginatedMangas: '',
+        MangaInfos: '',
+        Chapters: '',
+        Pages: ''
     };
 
     public override ValidateMangaURL(url: string): boolean {
