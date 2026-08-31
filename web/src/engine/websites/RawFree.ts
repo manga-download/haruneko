@@ -9,7 +9,7 @@ import * as Common from './decorators/Common';
 export default class extends Zing92Base {
 
     public constructor() {
-        super('rawfree', 'Raw FREE', 'https://rawfree.spot', Tags.Media.Manga, Tags.Language.Japanese, Tags.Source.Aggregator);
+        super('rawfree', 'Raw FREE', 'https://rawfree.voto', Tags.Media.Manga, Tags.Language.Japanese, Tags.Source.Aggregator, Tags.Accessibility.DomainRotation);
         this.WithChapterParameterName('p');
     }
 

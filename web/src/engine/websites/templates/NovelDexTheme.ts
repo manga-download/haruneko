@@ -1,6 +1,6 @@
 // https://noveldex.io/
 
-import { Fetch, FetchJSON, FetchNextJS } from '../../platform/FetchProvider';
+import { Fetch, FetchJSON, FetchNextJS, FetchWindowScript } from '../../platform/FetchProvider';
 import { Chapter, DecoratableMangaScraper, Manga, type MangaPlugin, Page } from "../../providers/MangaPlugin";
 import * as Common from '../decorators/Common';
 import type { Priority } from '../../taskpool/DeferredTask';
@@ -28,6 +28,10 @@ type HydratedPages = {
 export class NovelDexTheme extends DecoratableMangaScraper {
 
     private readonly apiURL = `${this.URI.origin}/api/`;
+
+    public override Initialize(): Promise<void> {
+        return FetchWindowScript(new Request(new URL('/welcome', this.URI)), '');
+    }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
         type This = typeof this;

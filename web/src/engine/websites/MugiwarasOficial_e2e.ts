@@ -6,7 +6,7 @@ new TestFixture({
         title: 'Mugiwaras Oficial'
     },
     container: {
-        url: 'https://mugiwarasoficial.com/manga/tengoku-daimakyou',
+        url: 'https://mugiwarasoficial.org/manga/tengoku-daimakyou',
         id: '/manga/tengoku-daimakyou',
         title: 'Tengoku Daimakyou'
     },

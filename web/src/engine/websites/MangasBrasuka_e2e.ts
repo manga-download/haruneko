@@ -6,7 +6,7 @@ new TestFixture({
         title: 'Mangas Brasuka'
     },
     container: {
-        url: 'https://mangasbrasuka.com.br/manga/yotaka-futatabi',
+        url: 'https://mangasbrasuka.org/manga/yotaka-futatabi',
         id: '/manga/yotaka-futatabi',
         title: 'Yotaka Futatabi'
     },
