@@ -5,9 +5,9 @@ export default defineConfig({
     build: {
         ssr: true,
         emptyOutDir: false,
-        outDir: resolve(__dirname, 'build'),
+        outDir: resolve(import.meta.dirname, 'build'),
         lib: {
-            entry: resolve(__dirname, 'src', 'App.ts'),
+            entry: resolve(import.meta.dirname, 'src', 'App.ts'),
             formats: [ 'cjs' ]
         },
         rolldownOptions: {
