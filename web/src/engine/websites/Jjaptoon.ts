@@ -21,7 +21,7 @@ import { FetchWindowScript } from '../platform/FetchProvider';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('jjaptoon', 'Jjaptoon', 'https://www.jjaptoon006.com', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Language.Korean, Tags.Source.Aggregator);
+        super('jjaptoon', 'Jjaptoon', 'https://www.jjaptoon007.com', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Language.Korean, Tags.Source.Aggregator);
     }
 
     public override get Icon() {
