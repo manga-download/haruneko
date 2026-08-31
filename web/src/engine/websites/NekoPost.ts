@@ -1,6 +1,6 @@
 ﻿import { Tags } from '../Tags';
 import icon from './NekoPost.webp';
-import { FetchJSON, FetchRegex, FetchWindowScript } from '../platform/FetchProvider';
+import { FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
 import { type MangaPlugin, Manga, type Chapter, Page, DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import { Delay } from '../BackgroundTimers';
@@ -19,10 +19,11 @@ type APIChapter = {
     pageItem: {
         fileName: string;
         pageNo: number;
+        pageName: string;
     }[];
 };
 
-const chapterScript = `
+@Common.ChaptersSinglePageJS(`
     new Promise ( resolve => {
         resolve( [...document.querySelectorAll('a.chapter-link')].map(chapter => {
             return {
@@ -31,29 +32,10 @@ const chapterScript = `
             }
         }));
     });
-`;
-
-const pageScript = `
-    new Promise( resolve => {
-        window.decodeURIComponent = new Proxy(window.decodeURIComponent, {
-          apply(target, thisArg, args) {
-            const result = Reflect.apply(target, thisArg, args);
-            try{
-                const jsonData = JSON.parse(result);
-                if (jsonData.pageItem) resolve(jsonData);
-            } catch{}
-
-            return result;
-          }
-        });
-    });
-`;
-
-@Common.ChaptersSinglePageJS(chapterScript, 500)
+`, 500)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
-    private readonly apiUrl = 'https://nekopost.net/api/';
-    private readonly CDNUrl = 'https://www.osemocphoto.com';
+    private readonly apiURL = 'https://nekopost.net/api/';
 
     public constructor() {
         super('nekopost', 'NekoPost', 'https://www.nekopost.net', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Thai, Tags.Source.Aggregator, Tags.Accessibility.RegionLocked);
@@ -69,8 +51,8 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
         const uri = new URL(url);
-        const [title] = await FetchRegex(new Request(uri), /projectName:"([^"]+)"/g);
-        return new Manga(this, provider, uri.pathname, title.trim());
+        const title = await FetchWindowScript<string>(new Request(uri), `document.querySelector('meta[property="og:title"]').content.trim();`, 3000);
+        return new Manga(this, provider, uri.pathname, title);
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
@@ -85,7 +67,7 @@ export default class extends DecoratableMangaScraper {
 
     private async GetMangasFromPage(page: number, provider: MangaPlugin): Promise<Manga[]> {
         try {
-            const { listProject } = await FetchJSON<APIMangas>(new Request(new URL('./project/search', this.apiUrl), {
+            const { listProject } = await FetchJSON<APIMangas>(new Request(new URL('./project/search', this.apiURL), {
                 method: 'POST',
                 body: JSON.stringify({
                     genre: [],
@@ -106,9 +88,24 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const { pageItem, chapterId, projectId } = await FetchWindowScript<APIChapter>(new Request(new URL(chapter.Identifier, this.URI)), pageScript);
-        return pageItem.sort((self, other) => self.pageNo - other.pageNo)
-            .map(({ fileName }) => new Page(this, chapter, new URL(`./collectManga/${projectId}/${chapterId}/${fileName}`, this.CDNUrl)));
-    }
+        const { pageItem, chapterId, projectId } = await FetchWindowScript<APIChapter>(new Request(new URL(chapter.Identifier, this.URI)), `
+            new Promise( resolve => {
+                window.decodeURIComponent = new Proxy(window.decodeURIComponent, {
+                  apply(target, thisArg, args) {
+                    const result = Reflect.apply(target, thisArg, args);
+                    try{
+                        const jsonData = JSON.parse(result);
+                        if (jsonData.pageItem) resolve(jsonData);
+                    } catch{}
 
+                    return result;
+                  }
+                });
+            });
+        `);
+
+        const CDNUrl = parseInt(projectId) > 17500 ? 'https://fs.osemocphoto.com' : 'https://www.osemocphoto.com';
+        return pageItem.sort((self, other) => self.pageNo - other.pageNo)
+            .map(({ fileName, pageName }) => new Page(this, chapter, new URL(`./collectManga/${projectId}/${chapterId}/${pageName ?? fileName}`, CDNUrl)));
+    }
 }

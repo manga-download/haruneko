@@ -172,6 +172,8 @@ export enum FrontendResourceKey {
     Frontend_Classic_Settings_ViewerDoublePageInfo = 'Frontend_Classic_Settings_ViewerDoublePageInfo',
     Frontend_Classic_Settings_ViewerPadding = 'Frontend_Classic_Settings_ViewerPadding',
     Frontend_Classic_Settings_ViewerPaddingInfo = 'Frontend_Classic_Settings_ViewerPaddingInfo',
+    Frontend_Classic_Settings_ViewerPreloadNextItem = 'Frontend_Classic_Settings_ViewerPreloadNextItem',
+    Frontend_Classic_Settings_ViewerPreloadNextItemInfo = 'Frontend_Classic_Settings_ViewerPreloadNextItemInfo',
     Frontend_Classic_Settings_ViewerZoom = 'Frontend_Classic_Settings_ViewerZoom',
     Frontend_Classic_Settings_ViewerZoomInfo = 'Frontend_Classic_Settings_ViewerZoomInfo',
     Frontend_Classic_Sidenav_Home = 'Frontend_Classic_Sidenav_Home',
