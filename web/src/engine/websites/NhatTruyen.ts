@@ -7,7 +7,7 @@ import * as Common from './decorators/Common';
 @Common.MangaCSS(/^{origin}\/truyen-tranh\/[^/]+$/, MojoPortalComic.queryManga)
 @Common.MangasMultiPageCSS(MojoPortalComic.queryMangas, MojoPortalComic.MangasLinkGenerator)
 @MojoPortalComic.ChaptersSinglePageAJAX()
-@Common.PagesSinglePageCSS(MojoPortalComic.queryPages, (img: HTMLImageElement) => img.src || img.dataset.src)
+@Common.PagesSinglePageCSS(MojoPortalComic.queryPages)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 

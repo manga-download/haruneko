@@ -13,14 +13,28 @@
     }
     let { mode = 'Image', item }: Props = $props();
 
-    let displayedItem: MediaContainer<MediaItem> = $state();;
+    let currentItem: MediaContainer<MediaItem> = $state();
     let currentImageIndex: number = $state(-1);
 
-    let updating: Promise<void> = $derived.by(() =>
-        item.Update()
-            .then(() => { displayedItem = item; })
-            .catch((error) => { displayedItem = undefined; throw error; })
-    );
+    let updating: Promise<MediaContainer<MediaItem>> = $state();
+    $effect(() => {
+        updating = loadItem(item);
+    });
+
+    async function loadItem(item: MediaContainer<MediaItem>) {
+        if(item.Entries.Value.length > 0){
+            return currentItem = item;
+        }
+        else {
+            try {
+                await item.Update();
+                return currentItem = item;
+            } catch (error) {
+                currentItem = undefined;
+                throw error;
+            }
+        }
+    }
 
     function onPreviousItem() {
         currentImageIndex = -1;
@@ -51,11 +65,11 @@
         class="info error"
         />
     {/await}
-    {#if displayedItem}
-        {#key displayedItem}
+    {#if currentItem}
+        {#key currentItem}
             {#if mode === 'Image'}
                 <ImageViewer
-                    item={displayedItem}
+                    item={currentItem}
                     {currentImageIndex}
                     bind:wide
                     {onNextItem}
