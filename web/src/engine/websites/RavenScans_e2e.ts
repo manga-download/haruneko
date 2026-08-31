@@ -6,12 +6,12 @@ new TestFixture({
         title: 'Raven Scans'
     },
     container: {
-        url: 'https://ravenscans.net/series/seitokai-ni-mo-ana-wa-aru/',
-        id: '/series/seitokai-ni-mo-ana-wa-aru/',
+        url: 'https://ravenscans.org/manga/seitokai-ni-mo-ana-wa-aru/',
+        id: '/manga/seitokai-ni-mo-ana-wa-aru/',
         title: 'Seitokai ni mo Ana wa Aru!',
     },
     child: {
-        id: '/series/seitokai-ni-mo-ana-wa-aru/chapter-51853/',
+        id: '/seitokai-ni-mo-ana-wa-aru-chapter-1/',
         title: 'Chapter 1',
     },
     entry: {

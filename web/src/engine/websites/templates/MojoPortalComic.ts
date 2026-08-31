@@ -15,8 +15,8 @@ type APIChapters = {
         chapter_id: number;
         chapter_name: string;
         chapter_slug: string;
-    }[]
-}
+    }[];
+};
 
 /**
  * An extension method for extracting all chapters for the given {@link manga} using the given CSS {@link query}.
