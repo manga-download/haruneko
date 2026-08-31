@@ -6,7 +6,7 @@ new TestFixture({
         title: 'LectorManga (.Lat)'
     },
     container: {
-        url: 'https://lectormangass.net/comics/linea-de-corte',
+        url: 'https://lector-mangas.com/comics/linea-de-corte',
         id: '/comics/linea-de-corte',
         title: 'Linea De Corte'
     },
@@ -15,8 +15,8 @@ new TestFixture({
         title: 'Capítulo 107'
     },
     entry: {
-        index: 0,
-        size: 121_098,
+        index: 1,
+        size: 67_474,
         type: 'image/webp'
     }
 }).AssertWebsite();

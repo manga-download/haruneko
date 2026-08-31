@@ -112,7 +112,7 @@ export default class RemoteBrowserWindow implements IRemoteBrowserWindow {
             await chrome.debugger.detach(this.nwDebugTarget);
         }
         this.nwWindow?.removeAllListeners();
-        this.nwWindow?.close();
+        this.nwWindow?.close(true);
     }
 
     public async Show(): Promise<void> {

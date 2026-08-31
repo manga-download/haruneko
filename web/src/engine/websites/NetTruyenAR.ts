@@ -7,9 +7,9 @@ import * as MangaStream from './decorators/WordPressMangaStream';
 import { FetchWindowScript } from '../platform/FetchProvider';
 
 @Common.MangaCSS(/^{origin}\/truyen-tranh\/[^/]+$/, MojoPortalComic.queryManga)
-@Common.MangasMultiPageCSS(MojoPortalComic.queryMangas, MojoPortalComic.MangasLinkGenerator, 2500)
+@Common.MangasMultiPageCSS(MojoPortalComic.queryMangas, MojoPortalComic.MangasLinkGenerator, 500)
 @MojoPortalComic.ChaptersSinglePageAJAX(true)
-@MangaStream.PagesSinglePageCSS([/nettruyenviet\.webp$/], MojoPortalComic.queryPages)
+@MangaStream.PagesSinglePageCSS([/nettruyenviet[^/]*\.(webp|jpeg|jpg|png|avif|bmp|gif)$/], MojoPortalComic.queryPages)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 

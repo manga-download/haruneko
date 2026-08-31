@@ -6,12 +6,12 @@ new TestFixture({
         title: 'OriManga'
     },
     container: {
-        url: 'https://orimanga.net/manga/akademide-hayatta-kalma-yollari/',
-        id: '/manga/akademide-hayatta-kalma-yollari/',
+        url: 'https://orimanga.net/manga/the-extras-academy-survival-guide/',
+        id: '/manga/the-extras-academy-survival-guide/',
         title: 'The Extra’s Academy Survival Guide'
     },
     child: {
-        id: '/manga/akademide-hayatta-kalma-yollari/bolum-117/',
+        id: '/manga/the-extras-academy-survival-guide/bolum-117/',
         title: 'Bölüm 117',
     },
     entry: {
