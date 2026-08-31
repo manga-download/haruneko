@@ -33,7 +33,7 @@ type APIChapter = {
 , 1500)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
-    private readonly apiUrl = 'https://apis.traduccionesmoonlight.com/api/';
+    private readonly apiURL = `${this.URI.origin}/api/`;
 
     public constructor() {
         super('traduccionesmoonlight', 'Traducciones Moonlight', 'https://traduccionesmoonlight.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Spanish, Tags.Source.Scanlator);
@@ -44,7 +44,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        const { response } = await FetchJSON<APIResult<APIManga[]>>(new Request(new URL('./searchProject', this.apiUrl)));
+        const { response } = await FetchJSON<APIResult<APIManga[]>>(new Request(new URL('./searchProject', this.apiURL)));
         return response.map(({ slug, name }) => new Manga(this, provider, `/ver/${slug}`, name));
     }
 

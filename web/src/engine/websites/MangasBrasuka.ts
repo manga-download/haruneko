@@ -2,7 +2,10 @@
 import icon from './MangasBrasuka.webp';
 import { Chapter, DecoratableMangaScraper, Manga, type MangaPlugin, Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { FetchNextJS, FetchWindowScript } from '../platform/FetchProvider';
+import { FetchJSON, FetchNextJS, FetchWindowScript } from '../platform/FetchProvider';
+import type { Priority } from '../taskpool/DeferredTask';
+import { GetBytesFromBase64, GetBytesFromURLBase64, GetUTF8FromBytes } from '../BufferEncoder';
+import { DecryptXOR } from '../Crypto';
 
 type HydratedMangas = {
     series: {
@@ -23,16 +26,23 @@ type HydratedPages = {
     }[];
 };
 
+type PageData = {
+    cryptedUrl: string;
+};
+
 @Common.MangaCSS(/^{origin}\/manga\/[^/]+$/, 'meta[property="og:title"]')
-@Common.ImageAjax(true)
 export default class extends DecoratableMangaScraper {
+
+    private readonly apiURL: string;
 
     public constructor(...args: [] | ConstructorParameters<typeof DecoratableMangaScraper>) {
         if (args.length) {
             super(...args as ConstructorParameters<typeof DecoratableMangaScraper>);
         } else {
-            super('mangasbrasuka', 'Mangas Brasuka', 'https://mangasbrasuka.com.br', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Media.Manga, Tags.Language.Portuguese, Tags.Source.Scanlator, Tags.Accessibility.RegionLocked);
+            super('mangasbrasuka', 'Mangas Brasuka', 'https://mangasbrasuka.org', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Media.Manga, Tags.Language.Portuguese, Tags.Source.Scanlator, Tags.Accessibility.RegionLocked);
         }
+
+        this.apiURL = `${this.URI.origin}/api/`;
     }
 
     public override get Icon() {
@@ -66,6 +76,52 @@ export default class extends DecoratableMangaScraper {
             });
         `);
         const { pages } = await FetchNextJS<HydratedPages>(new Request(chapterURL), data => 'pages' in data);
-        return pages.map(({ url }) => new Page(this, chapter, new URL(url), { Referer: this.URI.href }));
+        return pages.map(({ url }) => new Page<PageData>(this, chapter, this.URI, { cryptedUrl: url, Referer: this.URI.href }));
+    }
+
+    public override async FetchImage(page: Page<PageData>, priority: Priority, signal: AbortSignal): Promise<Blob> {
+        const { cryptedUrl } = page.Parameters;
+        if (cryptedUrl.startsWith('http')) {
+            page.Link.href = new URL(cryptedUrl).href;
+        } else {
+            const decoded = GetBytesFromURLBase64(cryptedUrl);
+
+            // Get XOR KEY
+            const v = decoded[0];
+            const e = new DataView(decoded.buffer, decoded.byteOffset + 1).getUint32(0, false);
+
+            const { k } = await FetchJSON<{ k: string }>(new Request(new URL(`./atfield/key?v=${v}&e=${e}`, this.apiURL)));
+            const keyData = GetBytesFromBase64(k);
+
+            const seed = decoded.subarray(5, 13);
+            const xoredData = decoded.subarray(13);
+
+            const xorKey = await this.ComputeKey(keyData, seed, xoredData.length);
+            page.Link.href = GetUTF8FromBytes(DecryptXOR(xoredData, xorKey));
+        }
+        return Common.FetchImageAjax.call(this, page, priority, signal, true);
+    }
+
+    private async ComputeKey(keyMaterial: Uint8Array, seed: Uint8Array, length: number): Promise<Uint8Array> {
+        const cryptoKey = await crypto.subtle.importKey('raw', keyMaterial.slice(), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']);
+
+        const outputBuffer = new Uint8Array(length);
+        let offset = 0;
+        let counter = 0;
+
+        while (offset < length) {
+            const counterBuffer = new Uint8Array(seed.length + 1);
+            counterBuffer.set(seed, 0);
+            counterBuffer[seed.length] = counter & 255;
+
+            const hmacDigest = new Uint8Array(await crypto.subtle.sign('HMAC', cryptoKey, counterBuffer));
+
+            const bytesToCopy = Math.min(hmacDigest.length, length - offset);
+            outputBuffer.set(hmacDigest.subarray(0, bytesToCopy), offset);
+
+            offset += bytesToCopy;
+            counter++;
+        }
+        return outputBuffer;
     }
 }
