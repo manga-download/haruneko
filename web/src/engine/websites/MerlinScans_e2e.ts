@@ -6,17 +6,19 @@ new TestFixture({
         title: 'MerlinToon'
     },
     container: {
-        url: 'https://merlintoon.com/seri/akademinin-dehasi',
-        id: '/seri/akademinin-dehasi',
-        title: 'Akademinin Dehası'
+        url: 'https://merlintoon.com/seri/akademinin-dehasi/',
+        id: '/seri/akademinin-dehasi/',
+        title: 'Akademinin Dehası',
+        timeout: 15_000
     },
     child: {
-        id: '48a11203-5c30-4eb2-bc06-94c25e038926/65',
-        title: 'Bölüm 65'
+        id: '/seri/akademinin-dehasi/bolum-65/',
+        title: 'Bölüm 65',
+        timeout: 15_000
     },
     entry: {
         index: 1,
-        size: 247_508,
+        size: 553_600,
         type: 'image/webp'
     }
 }).AssertWebsite();

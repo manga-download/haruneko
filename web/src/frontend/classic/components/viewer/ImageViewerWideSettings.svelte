@@ -20,6 +20,7 @@
         Button,
         Tooltip,
         Stack,
+        Toggle,
     } from "carbon-components-svelte";
     import {
         Key,
@@ -133,11 +134,9 @@
                     portalTooltip
                     class="tooltip"
                 >
-                    <p>
                         {GlobalSettings.Locale[
                             Settings.ViewerMode.Setting.Description
                         ]()}
-                    </p>
                 </Tooltip>
                 <ContentSwitcher size="sm">
                         <Switch
@@ -165,11 +164,9 @@
                         portalTooltip
                         class="tooltip"
                     >
-                        <p>
                             {GlobalSettings.Locale[
                                 Settings.ViewerReverseDirection.Setting.Description
                             ]()}
-                        </p>
                     </Tooltip>
                     <ContentSwitcher size="sm">
                         <Switch
@@ -196,11 +193,9 @@
                         portalTooltip
                         class="tooltip"
                     >
-                        <p>
                             {GlobalSettings.Locale[
                                 Settings.ViewerDoublePage.Setting.Description
                             ]()}
-                        </p>
                     </Tooltip>
                     <ContentSwitcher size="sm">
                         <Switch
@@ -220,6 +215,19 @@
                     </ContentSwitcher>
                 </div>
             {/if}
+            <Toggle class="setting block" bind:toggled={Settings.ViewerPreloadNextItem.Value} >
+                <svelte:fragment slot="labelChildren">
+                    <Tooltip
+                        triggerText={GlobalSettings.Locale[Settings.ViewerPreloadNextItem.Setting.Label]()}
+                        portalTooltip
+                        class="tooltip"
+                    >
+                            {GlobalSettings.Locale[
+                                Settings.ViewerPreloadNextItem.Setting.Description
+                            ]()}
+                    </Tooltip>
+                </svelte:fragment>
+            </Toggle>
         </div>
     </div>
 </div>
@@ -232,7 +240,7 @@
         opacity: 5%;
         padding: 0 1.5em 0 1.5em;
         background-color: var(--cds-background-active);
-        transition: opacity 1s ease;
+        transition: opacity 0.5s ease;
     }
     #vieweractions:hover,#vieweractions.open  {
         opacity: 100%;
@@ -262,7 +270,7 @@
         white-space: nowrap;
     }
     #vieweractions .setting.block {
-        margin-bottom: 0.5em;
+        margin-bottom: 1em;
     }
     #vieweractions :global(.tooltip) {
         margin-bottom:0.25em;

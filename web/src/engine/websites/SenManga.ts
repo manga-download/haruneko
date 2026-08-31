@@ -5,17 +5,22 @@ import * as Common from './decorators/Common';
 import { FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
 import { Delay } from '../BackgroundTimers';
 
-type JSONManga = {
+type APIResult<T> = {
+    success: boolean;
+    data: T;
+};
+
+type APIManga = {
     id: string;
     title: string;
     description: string;
     language: {
         name: string;
         code: string;
-    }
+    };
 };
 
-type JSONChapter = {
+type APIChapter = {
     id: string;
     chapter: string;
     full_title: string;
@@ -24,23 +29,14 @@ type JSONChapter = {
     language: {
         name: string;
         code: string;
-    }
+    };
 };
 
-type APISingleManga = {
-    success: boolean;
-    data: JSONManga;
-};
+type APISingleManga = APIResult<APIManga>;
 
-type APIMultiManga = {
-    success: boolean;
-    data: JSONManga[];
-};
+type APIMangas = APIResult<APIManga[]>;
 
-type APIMultiChapter = {
-    success: boolean;
-    data: JSONChapter[];
-};
+type APIChapters = APIResult<APIChapter[]>;
 
 const chapterLanguageMap = new Map([
     ['ar', Tags.Language.Arabic],
@@ -96,7 +92,7 @@ export default class extends DecoratableMangaScraper {
         return (await Array.fromAsync(async function* (this: This) {
             for (let offset = 0, run = true; run; offset+=100) {
                 await Delay(500);
-                const { data, success } = await FetchJSON<APIMultiManga>(new Request(new URL(`./api/search?limit=100&offset=${offset}`, this.URI)));
+                const { data, success } = await FetchJSON<APIMangas>(new Request(new URL(`./api/search?limit=100&offset=${offset}`, this.URI)));
                 const mangas = success ? data.map(({ id, title }) => new Manga(this, provider, id, title.trim())) : [];
                 mangas.length > 0 ? yield* mangas : run = false;
             }
@@ -104,7 +100,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const { data, success } = await FetchJSON<APIMultiChapter>(new Request(new URL(`./api/title/${manga.Identifier}/chapters`, this.URI)));
+        const { data, success } = await FetchJSON<APIChapters>(new Request(new URL(`./api/title/${manga.Identifier}/chapters`, this.URI)));
         return success ? data.map(({ id, full_title: title, language: { code } }) => new Chapter(this, manga, `/read/${id}`, `${title.trim()} (${code})`,
             ...chapterLanguageMap.has(code) ? [chapterLanguageMap.get(code)] : []
         )) : [];
