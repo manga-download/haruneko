@@ -36,7 +36,7 @@ export abstract class MangaScraper extends MediaScraper<MangaPlugin> {
 
     /**
      * Get the chapters for the given {@link manga}.
-     * Chapters can be in arbitrary order (usually as provided by the website), the frontend may be responsible for sorting.
+     * Chapters are guaranteed to be in the exact same order as shown in the viewer/reader on the website, the frontend may provide additional sorting.
      */
     public abstract FetchChapters(manga: Manga): Promise<Chapter[]>;
 
