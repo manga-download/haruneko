@@ -76,7 +76,7 @@ export default class extends DecoratableMangaScraper {
                         return new Manga(this, provider, `${titleId}`, header);
                     });
                     return accumulator.concat(mangas);
-                }, []);
+                }, [] as Manga[]);
                 yield* mangasSection;
             }
         }.call(this));
