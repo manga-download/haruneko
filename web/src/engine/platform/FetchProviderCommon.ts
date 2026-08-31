@@ -219,7 +219,7 @@ export abstract class FetchProvider {
         return this.#ExtractValueNextJS<T>(payload, predicate);
     }
 
-    #ExtractValueNextJS<T extends JSONElement>(payload: JSONElement, predicate: (data: JSONElement) => unknown): T {
+    #ExtractValueNextJS<T extends JSONElement>(payload: any, predicate: (data: JSONArray<JSONElement> | JSONObject<JSONElement>) => unknown): T {
         if (payload === null || payload === undefined) return undefined;
 
         //make the predicate fails gracefully.
@@ -239,7 +239,7 @@ export abstract class FetchProvider {
         return undefined;
     }
 
-    private NextJSDecodeData(appRawData: any): JSONElement | null {
+    private NextJSDecodeData(appRawData: any): JSONArray<JSONElement> | JSONObject<JSONElement> | null {
         if (appRawData) {
             const flightRawData: string[] = [];
 
