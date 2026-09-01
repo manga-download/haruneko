@@ -59,7 +59,8 @@ export default class extends DecoratableMangaScraper {
         const validChapters = Object.entries(chapters).filter(([_, chapter]) => !chapter.licensed);
         return validChapters
             .map(([key, chapter]) =>
-                new Chapter(this, manga, chapter.source.id, [validChapters.length > 1 ? key : '', chapter.title].join(' ').trim()));
+                new Chapter(this, manga, chapter.source.id, [validChapters.length > 1 ? key : '', chapter.title].join(' ').trim()))
+            .reverse();
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
