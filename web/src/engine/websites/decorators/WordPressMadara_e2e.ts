@@ -9,7 +9,6 @@ import '../AsuraScansTR_e2e';
 import '../Atikrost_e2e';
 import '../BakaMH_e2e';
 import '../BarManga_e2e';
-import '../Bokugents_e2e';
 import '../BrainRotComics_e2e';
 import '../CatharsisWorld_e2e';
 import '../Cocomic_e2e';
