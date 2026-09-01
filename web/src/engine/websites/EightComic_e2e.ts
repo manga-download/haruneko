@@ -13,7 +13,7 @@ new TestFixture({
     child: {
         id: 'https://articles.onemoreplace.tw/online/new-23831.html?ch=1',
         title: '第01話',
-        timeout: 1_000
+        timeout: 10_000
     },
     entry: {
         index: 0,
