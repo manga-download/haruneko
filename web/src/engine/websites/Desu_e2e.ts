@@ -4,7 +4,7 @@ new TestFixture({
     plugin: {
         id: 'desu',
         title: 'Desu'
-    }, /* Region Locked : Russia
+    },
     container: {
         url: 'https://desu.uno/manga/wondance.3628/',
         id: '/manga/wondance.3628/',
@@ -18,5 +18,5 @@ new TestFixture({
         index: 5,
         size: 146_711,
         type: 'image/jpeg'
-    }*/
+    }
 }).AssertWebsite();
