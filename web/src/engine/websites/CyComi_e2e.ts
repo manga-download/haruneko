@@ -29,19 +29,17 @@ new TestFixture({
         title: 'CyComi'
     },
     container: {
-        url: 'https://cycomi.com/title/147',
-        id: '147',
-        title: 'JACK FOX　キツネ男と鋼鉄の女'
+        url: 'https://cycomi.com/title/193',
+        id: '193',
+        title: 'すきだから、だよ'
     },
     child: {
-        id: JSON.stringify({ id: 363, type: 2 }),
-        title: '第１巻 - (1-10話)'
+        id: JSON.stringify({ id: 635, type: 2 }),
+        title: '第１巻 - (1-4話)'
     },
     entry: {
         index: 0,
-        size: 9_928,
+        size: 212_406,
         type: 'image/jpeg'
     }
 }).AssertWebsite();
-
-// CASE: Unencrypted Image (e.g., https://cycomi.com/title/191)
