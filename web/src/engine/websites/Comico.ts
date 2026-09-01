@@ -122,7 +122,8 @@ export default class extends DecoratableMangaScraper {
         const { volume: { content: volumeContent }, episode: { content: episodeContent } } = await this.FetchPOST<APIChapters>(id, lang);
         return (episodeContent ?? volumeContent).chapters
             .filter(({ activity: { rented, unlocked }, salesConfig: { free }, hasTrial }) => rented || unlocked || free || hasTrial)
-            .map(({ id, name }) => new Chapter(this, manga, `${id}`, name));
+            .map(({ id, name }) => new Chapter(this, manga, `${id}`, name))
+            .reverse();
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
