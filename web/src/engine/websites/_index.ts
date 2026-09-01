@@ -41,7 +41,6 @@ export { default as Atsumaru } from './Atsumaru';
 export { default as Aymry } from './Aymry';
 export { default as AzoraWorld } from './AzoraWorld';
 export { default as BacaKomik } from './BacaKomik';
-export { default as Baek100 } from './Baek100';
 export { default as BakaMH } from './BakaMH';
 export { default as Baozimh } from './Baozimh';
 export { default as BarManga } from './BarManga';
