@@ -344,8 +344,9 @@ export function MangasMultiPageCSS<E extends HTMLElement>(query: string, generat
 * - A relative path for the website's base URL or an absolute URL from which the chapters shall be extracted
 * - A function to create the URL or endpoint based on the provided media container (manga) from which the chapters shall be extracted
 * @param extract - A function to extract the chapter identifier and title from a single element (found with {@link query})
- */
-export async function FetchChaptersSinglePageCSS<E extends HTMLElement>(this: MangaScraper, manga: Manga, query: string, resource: string | LinkResolver<Manga> = DefaultMediaLinkResolver, extract = DefaultElementInfoExtractor as InfoExtractor<E>): Promise<Chapter[]> {
+* @param reverseList - Set to true if website chapter list use ascending order, as engin must produce descending order.
+*/
+export async function FetchChaptersSinglePageCSS<E extends HTMLElement>(this: MangaScraper, manga: Manga, query: string, resource: string | LinkResolver<Manga> = DefaultMediaLinkResolver, extract = DefaultElementInfoExtractor as InfoExtractor<E>, reverseList: boolean = false): Promise<Chapter[]> {
     const uri = typeof resource === 'string' ? new URL(resource, this.URI) : new URL(resource.call(this, manga), this.URI);
     const request = new Request(uri, {
         headers: {
@@ -353,6 +354,7 @@ export async function FetchChaptersSinglePageCSS<E extends HTMLElement>(this: Ma
         }
     });
     const data = await FetchCSS<E>(request, query);
+    if (reverseList) data.reverse();
     return data.map(element => {
         const { id, title } = extract.call(this, element, uri);
         return new Chapter(this, manga, id, title.replace(manga.Title, '').trim() || manga.Title);
@@ -367,13 +369,14 @@ export async function FetchChaptersSinglePageCSS<E extends HTMLElement>(this: Ma
  * - A relative path for the website's base URL or an absolute URL from which the chapters shall be extracted
  * - A function to create the URL or endpoint based on the provided media container (manga) from which the chapters shall be extracted
  * @param extract - A function to extract the chapter identifier and title from a single element (found with {@link query})
+ * @param reverseList - Set to true if website chapter list use ascending order, as engin must produce descending order.
  */
-export function ChaptersSinglePageCSS<E extends HTMLElement>(query: string, resource: string | LinkResolver<Manga> = DefaultMediaLinkResolver, extract = DefaultElementInfoExtractor as InfoExtractor<E>): ClassDecorator {
+export function ChaptersSinglePageCSS<E extends HTMLElement>(query: string, resource: string | LinkResolver<Manga> = DefaultMediaLinkResolver, extract = DefaultElementInfoExtractor as InfoExtractor<E>, reverseList : boolean = false): ClassDecorator {
     return function DecorateClass<T extends Constructor>(ctor: T, context?: ClassDecoratorContext): T {
         ThrowOnUnsupportedDecoratorContext(context);
         return class extends ctor {
             public async FetchChapters(this: MangaScraper, manga: Manga): Promise<Chapter[]> {
-                return FetchChaptersSinglePageCSS.call(this, manga, query, resource, extract as InfoExtractor<HTMLElement>);
+                return FetchChaptersSinglePageCSS.call(this, manga, query, resource, extract as InfoExtractor<HTMLElement>, reverseList);
             }
         };
     };
