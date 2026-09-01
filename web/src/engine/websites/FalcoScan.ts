@@ -3,14 +3,14 @@ import icon from './FalcoScan.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 
-@Common.MangaCSS<HTMLMetaElement>(/^{origin}\/comics\/[^/]+$/, 'meta[property="og:title"]', (meta, uri) => ({ id: uri.pathname, title: meta.content.split('|').at(0).trim() }))
-@Common.MangasSinglePageCSS('/comics', 'div.col-xxl-9 div.row a[href*="/comics/"]', element => ({
-    id: new URL(element.getAttribute('onclick').match(/location\.href\s*=\s*['"]([^'"]+)/).at(1)).pathname,
-    title: element.querySelector<HTMLSpanElement>('div div span.color-white.d-block').textContent.trim()
+@Common.MangaCSS(/^{origin}\/comics\/[^/]+$/, 'div.series-main h1')
+@Common.MangasSinglePageCSS<HTMLAnchorElement>('/comics', 'div.list-grid a.falco-card', anchor => ({
+    id: anchor.pathname,
+    title: anchor.querySelector('div.info h4').textContent.trim()
 }))
-@Common.ChaptersSinglePageCSS('div.specmobile div[onclick]', undefined, element => ({
-    id: new URL(element.getAttribute('onclick').match(/location\.href\s*=\s*['"]([^'"]+)/)[1]).pathname,
-    title: element.querySelector<HTMLSpanElement>('div div span.color-white.d-block').textContent.trim()
+@Common.ChaptersSinglePageCSS<HTMLAnchorElement>('a.chapter-card', undefined, anchor => ({
+    id: anchor.pathname,
+    title: anchor.querySelector('div.ch-name').textContent.trim()
 }))
 @Common.PagesSinglePageJS(`
     [... document.querySelectorAll('div#canvas-reader canvas')].map( canvas => {

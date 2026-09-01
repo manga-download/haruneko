@@ -12,7 +12,7 @@ new TestFixture({
     },
     child: {
         id: '/comics/cafeina/capitulo-01',
-        title: 'Cápitulo 01'
+        title: 'Capítulo 01'
     },
     entry: {
         index: 0,
