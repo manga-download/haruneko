@@ -11,16 +11,16 @@ type APIMangas = {
         [tag: string]: {
             permalink: string;
             name: string;
-        }[]
+        }[];
     }[];
 }
 
 type APIChapters = {
-    taggings: [{ title: string, permalink: string, header?: JSONElement }]
+    taggings: [{ title: string; permalink: string; header?: JSONElement; }];
 };
 
 type APIPages = {
-    pages: [{ name: string, url: string }]
+    pages: [{ name: string; url: string; }];
 };
 
 @Common.MangaCSS(/^{origin}\/[^/]+/, 'h2.tag-title b')
@@ -67,9 +67,10 @@ export default class extends DecoratableMangaScraper {
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const { taggings } = await FetchJSON<APIChapters>(new Request(new URL(`${manga.Identifier}.json`, this.URI).href));
         return taggings
-            .filter(chapter => !chapter.header)
-            .map(chapter => new Chapter(this, manga, `/chapters/${chapter.permalink}`, chapter.title.trim()))
-            .distinct();
+            .filter(({ header }) => !header)
+            .map(({ permalink, title }) => new Chapter(this, manga, `/chapters/${permalink}`, title.trim()))
+            .distinct()
+            .reverse();
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
