@@ -35,7 +35,7 @@ new TestFixture({
     },
     child: {
         id: '/photo/557769',
-        title: '第1话 上流社會～我要成為人生勝利組～',
+        title: '第1話 上流社會～我要成為人生勝利組～',
         timeout: 10_000
     },
     entry: {
