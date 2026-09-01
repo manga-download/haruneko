@@ -4,7 +4,7 @@ import { DecoratableMangaScraper, Manga, type MangaPlugin } from '../providers/M
 import * as Common from './decorators/Common';
 import { FetchCSS } from '../platform/FetchProvider';
 
-const chapterScript = `
+@Common.ChaptersSinglePageJS(`
     new Promise(resolve => {
         const mangaId = window.location.hash.replace('#', '');
         resolve([...document.querySelectorAll('div[id="'+mangaId+'"] li.pg-ep_list__item a')].map(chapter => {
@@ -12,11 +12,9 @@ const chapterScript = `
                 id: new URL(chapter.pathname, window.location).pathname,
                 title: chapter.text.trim()
             }
-        }).filter(element => element.id != window.location.pathname));
+        }).filter(element => element.id != window.location.pathname).reverse());
     });
-`;
-
-@Common.ChaptersSinglePageJS(chapterScript, 500)
+`, 500)
 @Common.PagesSinglePageJS(`[...document.querySelectorAll('div.swiper ul li[aria-label] > img')].reverse().map(image => new URL(image.src, window.location).href);`, 500)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
@@ -40,11 +38,13 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        const paths = [ '/digimoncomic/', '/digimoncomic/en/' ];
         const mangaList: Manga[] = [];
-        for (const path of paths) {
-            const data = await FetchCSS<HTMLDivElement>(new Request(new URL(path, this.URI)), 'div.digimoncomic div.pg-container > div[data-inview]');
-            mangaList.push(...data.map(manga => new Manga(this, provider, `${path}#${manga.id}`, manga.querySelector<HTMLHeadingElement>('h3.pg-works_tit__tit').textContent.trim())));
+        for (const path of ['/digimoncomic/', '/digimoncomic/en/']) {
+            const mangas = await Common.FetchMangasSinglePageCSS.call(this, provider, path, 'div.digimoncomic div.pg-container > div[data-inview]', element => ({
+                id: `${path}#${element.id}`,
+                title: element.querySelector<HTMLHeadingElement>('h3.pg-works_tit__tit').textContent.trim()
+            }));
+            mangaList.push(...mangas);
         };
         return mangaList;
     }
