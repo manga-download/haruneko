@@ -1,6 +1,6 @@
-import { TestFixture, type Config } from '../../../test/WebsitesFixture';
+import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config: Config = {
+new TestFixture( {
     plugin: {
         id: '8musesxxx',
         title: '8 MUSES XXX'
@@ -11,7 +11,7 @@ const config: Config = {
         title: 'Hirama Hirokazu'
     },
     child: {
-        id: '/comics/hirama-hirokazu/issue-1',
+        id: '/comics/hirama-hirokazu/issue-1/read/',
         title: 'Issue 1'
     },
     entry: {
@@ -19,6 +19,4 @@ const config: Config = {
         size: 823_794,
         type: 'image/jpeg'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();
