@@ -7,48 +7,35 @@ import type { Priority } from '../taskpool/DeferredTask';
 import DeScramble from '../transformers/ImageDescrambler';
 
 type APIMangas = {
-    code: number,
+    code: number;
     result: {
-        list: APIManga[]
-    },
-}
+        list: APIManga[];
+    };
+};
 
 type APIManga = {
-    id: number,
-    title: string
-}
+    id: number;
+    title: string;
+};
 
 type PageData = {
-    images: string[],
-    scrambled: boolean
-}
+    images: string[];
+    scrambled: boolean;
+};
 
 type PageParameters = {
-    scrambled: boolean
-}
-
-const chapterScript = `
-    new Promise( resolve => {
-        resolve ( [...document.querySelectorAll('li.chapter-btn a')].map(chapter => {
-            return { id: chapter.pathname, title : chapter.text.trim()};
-        }));
-    });
-`;
-
-const pageScript = `
-    new Promise( resolve => {
-        const scrambled = firstMergeImg.toString().indexOf('do_mergeImg') > -1;
-        const images =  [...document.querySelectorAll('div.reader-cartoon-image img.lazy')].filter(img => img.dataset.original );
-        resolve({ scrambled, images : images.map (image => image.dataset.original)});
-    });
-`;
-
-// TODO: Check for possible revision
+    scrambled: boolean;
+};
 
 @Common.MangaCSS(/^{origin}\/home\/book\/index\/id\/\d+$/, 'div.stui-content__detail div.title h1')
-@Common.ChaptersSinglePageJS(chapterScript, 1500)
+@Common.ChaptersSinglePageJS(`
+    [...document.querySelectorAll('li.chapter-btn a')].map(chapter => {
+        return { id: chapter.pathname, title : chapter.text.trim()};
+    }).reverse();
+`, 1500)
 export default class extends DecoratableMangaScraper {
-    private readonly apiUrl = 'https://boylove.cc/home/api/';
+
+    private readonly apiURL = 'https://boylove.cc/home/api/';
 
     public constructor() {
         super('boylovecc', 'Boylove.cc', 'https://boylove.cc', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Chinese, Tags.Source.Aggregator, Tags.Rating.Pornographic);
@@ -62,15 +49,21 @@ export default class extends DecoratableMangaScraper {
         type This = typeof this;
         return Array.fromAsync(async function* (this: This) {
             for (let page = 1, run = true; run; page++) {
-                const { result: { list } } = await FetchJSON<APIMangas>(new Request(new URL(`./cate/tp/1-0-2-1-${page}-0-1-2`, this.apiUrl)));
-                const mangas = list.map(item => new Manga(this, provider, `/home/book/index/id/${item.id}`, item.title));
+                const { result: { list } } = await FetchJSON<APIMangas>(new Request(new URL(`./cate/tp/1-0-2-1-${page}-0-1-2`, this.apiURL)));
+                const mangas = list.map(({ id, title }) => new Manga(this, provider, `/home/book/index/id/${id}`, title));
                 mangas.length > 0 ? yield* mangas : run = false;
             }
         }.call(this));
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page<PageParameters>[]> {
-        const { images, scrambled } = await FetchWindowScript<PageData>(new Request(new URL(chapter.Identifier, this.URI)), pageScript);
+        const { images, scrambled } = await FetchWindowScript<PageData>(new Request(new URL(chapter.Identifier, this.URI)), `
+            new Promise( resolve => {
+                const scrambled = firstMergeImg.toString().indexOf('do_mergeImg') > -1;
+                const images =  [...document.querySelectorAll('div.reader-cartoon-image img.lazy')].filter(img => img.dataset.original );
+                resolve({ scrambled, images : images.map (image => image.dataset.original)});
+            });
+        `, 500);
         return images.map(page => new Page<PageParameters>(this, chapter, new URL(page), { scrambled }));
     }
 
