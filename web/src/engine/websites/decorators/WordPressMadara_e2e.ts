@@ -31,7 +31,6 @@ import '../GrabberZone_e2e';
 import '../HadesNoFansub_e2e';
 import '../HarmonyScan_e2e';
 import '../Hayalistic_e2e';
-import '../HentaiScantrad_e2e';
 import '../HentaiXYuri_e2e';
 import '../HentaiZone_e2e';
 import '../HolyScans_e2e';
