@@ -38,7 +38,7 @@ export default class extends DecoratableMangaScraper {
         return chapters.map(chapter => {
             const title = chapter.querySelector<HTMLParagraphElement>('p.manga-detail__list-title').textContent.trim();
             return new Chapter(this, manga, chapter.pathname, title.replace(mangaTitle, '').trim());
-        });
+        }).reverse();
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
