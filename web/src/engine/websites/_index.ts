@@ -276,6 +276,7 @@ export { default as LectorJPG } from './LectorJPG';
 export { default as LectorMangaLat } from './LectorMangaLat';
 export { default as LectorXD } from './LectorXD';
 export { default as LeerCapitulo } from './LeerCapitulo';
+export { default as LeerManhwas } from './LeerManhwas';
 export { default as LegionScans } from './LegionScans';
 export { default as LeituraManga } from './LeituraManga';
 export { default as LELManga } from './LELManga';
