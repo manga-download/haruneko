@@ -10,13 +10,12 @@ new TestFixture({
         id: '/manhwa/la-tumba-del-cisne/',
         title: 'La tumba del cisne'
     },
-    child: {
-        id: '/manhwa/la-tumba-del-cisne/capitulo-1/',
-        title: 'Capítulo 1'
+ child: {
+        id: '/manhwa/la-tumba-del-cisne/capitulo-51/',
+        title: 'Capítulo 51'
     },
     entry: {
-        index: 0,
-        size: 504_665,
-        type: 'image/jpeg'
+        index: 5,
+        size: 460_986,
     }
 }).AssertWebsite();
