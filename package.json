@@ -13,7 +13,7 @@
     ],
     "devDependencies": {
         "@stylistic/eslint-plugin": "5.10.0",
-        "@types/chrome": "0.2.7",
+        "@types/chrome": "0.2.8",
         "@types/nw.js": "0.115.0",
         "eslint": "10.9.1",
         "eslint-plugin-tsdoc": "0.5.2",
