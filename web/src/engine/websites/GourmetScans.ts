@@ -4,7 +4,10 @@ import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Madara from './decorators/WordPressMadara';
 import * as Common from './decorators/Common';
 
-const pageScript = `
+@Madara.MangaCSS(/^{origin}\/project\/[^/]+\/$/, 'meta[property="og:title"]:not([content*="Gourmet Scans"])')
+@Madara.MangasMultiPageCSS()
+@Madara.ChaptersSinglePageAJAXv2()
+@Common.PagesSinglePageJS(`
     new Promise( (resolve, reject) => {
         const start = Date.now();
         const interval = setInterval(function () {
@@ -27,14 +30,8 @@ const pageScript = `
             }
         }, 1000);
        window.dispatchEvent(new KeyboardEvent('keydown'));
-
     });
-`;
-
-@Madara.MangaCSS(/^{origin}\/project\/[^/]+\/$/, 'meta[property="og:title"]:not([content*="Gourmet Scans"])')
-@Madara.MangasMultiPageAJAX()
-@Madara.ChaptersSinglePageAJAXv2()
-@Common.PagesSinglePageJS(pageScript, 5000)
+`, 5000)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
