@@ -44,7 +44,7 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const chapters = await Common.FetchChaptersSinglePageCSS.call(this, manga, 'div.episode ul a', undefined, Common.AnchorInfoExtractor(false, 'span'));
-        return chapters.length > 0 ? chapters : [new Chapter(this, manga, manga.Identifier.replace('/album/', '/photo/'), manga.Title)];
+        return chapters.length > 0 ? chapters.reverse() : [new Chapter(this, manga, manga.Identifier.replace('/album/', '/photo/'), manga.Title)];
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page<ScrambleData>[]> {
