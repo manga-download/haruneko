@@ -79,7 +79,6 @@ jobs:
         run: |
           DESCRIPTION=$(cat ./release-templates/pre-release.md | jq -sR | sed s/{TAG}/$RELEASE_TAG/g)
           DESCRIPTION=$(echo $DESCRIPTION | sed s/{WIN_X64_ZIP}/$(ls ./bundle-electron-* | grep 'x64.zip')/g)
-          DESCRIPTION=$(echo $DESCRIPTION | sed s/{WIN_X32_ZIP}/$(ls ./bundle-electron-* | grep 'ia32.zip')/g)
           DESCRIPTION=$(echo $DESCRIPTION | sed s/{MACOS_X64_DMG}/$(ls ./bundle-electron-* | grep 'x64.dmg')/g)
           DESCRIPTION=$(echo $DESCRIPTION | sed s/{MACOS_ARM64_DMG}/$(ls ./bundle-electron-* | grep 'arm64.dmg')/g)
           DESCRIPTION=$(echo $DESCRIPTION | sed s/{LINUX_X64_SNAP}/$(ls ./bundle-electron-* | grep 'x64.snap')/g)
