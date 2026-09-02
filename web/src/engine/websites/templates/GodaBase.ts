@@ -30,7 +30,6 @@ export class GodaBase extends DecoratableMangaScraper {
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const mangaId = (await FetchCSS(new Request(new URL(manga.Identifier, this.URI)), '#mangachapters')).at(0).dataset.mid;
         const { data: { chapters } } = await FetchJSON<APIChapters>(new Request(new URL(`./manga/get?mid=${mangaId}&mode=all`, this.apiURL)));
-        return chapters.map(({ attributes: { title, slug } }) => new Chapter(this, manga, `${manga.Identifier}/${slug}`, title.replace(manga.Title, '').trim() || title.trim()));
+        return chapters.map(({ attributes: { title, slug } }) => new Chapter(this, manga, `${manga.Identifier}/${slug}`, title.replace(manga.Title, '').trim() || title.trim())).reverse();
     }
-
 }
