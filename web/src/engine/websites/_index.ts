@@ -225,7 +225,6 @@ export { default as InfraFandub } from './InfraFandub';
 export { default as InManga } from './InManga';
 export { default as InmortalScan } from './InmortalScan';
 export { default as iqiyi } from './iqiyi';
-export { default as IrisScanlator } from './IrisScanlator';
 export { default as JapScan } from './JapScan';
 export { default as JeazScans } from './JeazScans';
 export { default as JEnta } from './JEnta';
