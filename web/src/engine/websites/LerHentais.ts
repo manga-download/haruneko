@@ -55,7 +55,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async Initialize(): Promise<void> {
-        this.secretHeader = await FetchWindowScript(new Request(this.URI), `
+        this.secretHeader = await FetchWindowScript(new Request(new URL('/search', this.URI)), `
             new Promise( resolve => {
                 window.fetch = new Proxy(window.fetch, {
                     apply(target, thisArg, args) {
@@ -71,7 +71,7 @@ export default class extends DecoratableMangaScraper {
                     }
                 });
 
-                const [element] = [...document.querySelectorAll('main button:has(svg):not([disabled])')]
+                const element = [...document.querySelectorAll('button[data-loc*="SearchPage.tsx"]')].at(-1)
                 element.click();
             });
         `, 1500);
