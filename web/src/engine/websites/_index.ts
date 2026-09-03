@@ -266,7 +266,6 @@ export { default as KurageBunch } from './KurageBunch';
 export { default as KuroToon } from './KuroToon';
 export { default as LagoonScans } from './LagoonScans';
 export { default as Laimanhua8 } from './Laimanhua8';
-export { default as LamiManga } from './LamiManga';
 export { default as LaviniaFansub } from './LaviniaFansub';
 export { default as LectorJPG } from './LectorJPG';
 export { default as LectorMangaLat } from './LectorMangaLat';
