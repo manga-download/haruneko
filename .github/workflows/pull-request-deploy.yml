@@ -23,7 +23,14 @@ jobs:
         with:
           node-version: 24.0.0
       - name: Install NPM Packages
-        run: npm run npm:clean-install
+        run: |
+          for attempt in 1 2 3; do
+            npm run npm:clean-install && exit 0
+            echo "npm install failed (attempt $attempt/3)"
+            [ "$attempt" -lt 3 ] && sleep 10
+          done
+          echo "npm install failed after 3 attempts" >&2
+          exit 1
       - name: Build Web-Application
         run: npm run build --workspace=web
       - name: Deploy App to CloudFlare
