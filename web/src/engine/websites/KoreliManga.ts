@@ -1,9 +1,9 @@
 import { Tags } from '../Tags';
 import icon from './KoreliManga.webp';
-import { InitManga, queryMangas, queryChapters, ChapterExtractor } from './templates/InitManga';
+import { InitManga, queryChapters, ChapterExtractor } from './templates/InitManga';
 import * as Common from './decorators/Common';
 
-@Common.MangasMultiPageCSS(queryMangas, Common.PatternLinkGenerator('/manga/page/{page}/'))
+@Common.MangasMultiPageCSS('h2.manga-card-title a', Common.PatternLinkGenerator('/manga/page/{page}/'))
 @Common.ChaptersMultiPageCSS<HTMLAnchorElement>(queryChapters, Common.PatternLinkGenerator('{id}chapter/page/{page}/'), 0, ChapterExtractor)
 export default class extends InitManga {
     public constructor() {
