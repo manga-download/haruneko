@@ -2,7 +2,8 @@ import { Tags } from '../Tags';
 import icon from './MangaCrab.webp';
 import { Chapter, DecoratableMangaScraper, Manga, type MangaPlugin, Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { FetchJSON } from '../platform/FetchProvider';
+import { Fetch, FetchJSON } from '../platform/FetchProvider';
+import type { Priority } from '../taskpool/DeferredTask';
 
 type APIManga = {
     id: number;
@@ -28,7 +29,10 @@ type APIChapters = {
     items: APIChapter[];
 };
 
-@Common.ImageAjax()
+type PageParameter = {
+    header: string;
+};
+
 export default class extends DecoratableMangaScraper {
 
     private readonly apiURL = `${this.URI.origin}/api/mv/`;
@@ -66,13 +70,29 @@ export default class extends DecoratableMangaScraper {
         return items.map(({ index, title }) => new Chapter(this, manga, `${index}`, title));
     }
 
-    public override async FetchPages(chapter: Chapter): Promise<Page[]> {
+    public override async FetchPages(chapter: Chapter): Promise<Page<PageParameter>[]> {
         const { security, content: { pages } } = await FetchJSON<APIChapter>(new Request(new URL(`./mangas/${chapter.Parent.Identifier}/chapter?cap_index=${chapter.Identifier}`, this.apiURL)));
+        const header = security?.enabled && security.header || '';
+
         return pages.map(page => {
-            return new Page(this, chapter, new URL(security?.enabled != 1 || !security.header || !page.includes(`/encript.php?`) ? page : `/api/reader-image?${new URLSearchParams({
-                u: page,
-                h: security.header
-            }).toString()}`, this.URI));
+            const mustAddHeader = !!header && page.includes(`/encript.php?`);
+            return new Page<PageParameter>(this, chapter, new URL(page), { header: mustAddHeader ? header : undefined });
         });
+    }
+
+    public override async FetchImage(page: Page<PageParameter>, priority: Priority, signal: AbortSignal): Promise<Blob> {
+        if (!page.Parameters.header) return Common.FetchImageAjax.call(this, page, priority, signal);
+        return this.imageTaskPool.Add(async () => {
+            const response = await Fetch(new Request(page.Link.href, {
+                credentials: 'omit',
+                signal: signal,
+                headers: {
+                    Origin: this.URI.origin,
+                    Fansy: page.Parameters.header,
+                    'Sec-Fetch-Site': 'same-site'
+                }
+            }));
+            return response.blob();
+        }, priority, signal);
     }
 }
