@@ -1,7 +1,7 @@
 import { describe, beforeEach, it/*, expect*/ } from 'vitest';
 import { TestFixture } from './FrontendFluentCore_fixture';
 
-describe.sequential('Front-End (Fluent-Core)', { timeout: 60_000 }, () => {
+describe('Front-End (Fluent-Core)', { concurrent: false, timeout: 60_000 }, () => {
 
     const fixture = new TestFixture();
 
