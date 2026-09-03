@@ -6,17 +6,17 @@ new TestFixture({
         title: 'Komiku.COM'
     },
     container: {
-        url: 'https://01.komiku.asia/manga/my-wife-and-i-dominate-the-three-realms/',
-        id: '/manga/my-wife-and-i-dominate-the-three-realms/',
+        url: 'https://01.komiku.asia/manga/my-wife-and-i-dominate-the-three-realms',
+        id: '173650',
         title: 'My Wife and I Dominate the Three Realms'
     },
     child: {
-        id: '/my-wife-and-i-dominate-the-three-realms-chapter-01/',
-        title: 'Chapter 01'
+        id: '173653',
+        title: 'Chapter 1'
     },
     entry: {
-        index: 0,
-        size: 21_669,
+        index: 5,
+        size: 314_758,
         type: 'image/jpeg'
     }
 }).AssertWebsite();
