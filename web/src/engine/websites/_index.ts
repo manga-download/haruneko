@@ -332,7 +332,6 @@ export { default as MangaDNA } from './MangaDNA';
 export { default as MangaDotNet } from './MangaDotNet';
 export { default as MangaEclipse } from './MangaEclipse';
 export { default as MangaEighteenClub } from './MangaEighteenClub';
-export { default as MangaEighteenUS } from './MangaEighteenUS';
 export { default as MangaEsp } from './MangaEsp';
 export { default as MangaFire } from './MangaFire';
 export { default as MangaForFree } from './MangaForFree';
