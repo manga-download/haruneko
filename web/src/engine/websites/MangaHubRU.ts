@@ -10,7 +10,7 @@ function ChapterLinkResolver(this: DecoratableMangaScraper, manga: Manga) {
 
 @Common.MangaCSS<HTMLImageElement>(/^{origin}\/title\/[^/]+/, 'img.cover', (img, uri) => ({ id: uri.pathname, title: img.getAttribute('alt').trim() }))
 @Common.MangasMultiPageCSS('div.container div.card a.fw-medium', Common.PatternLinkGenerator('/explore?page={page}'))
-@Common.ChaptersSinglePageCSS('div.detail-chapters a.d-inline-flex', ChapterLinkResolver)
+@Common.ChaptersSinglePageCSS('div.detail-items a.d-inline-flex', ChapterLinkResolver)
 @Common.PagesSinglePageCSS('img.reader-viewer-img')
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
