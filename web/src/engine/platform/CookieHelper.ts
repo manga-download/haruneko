@@ -2,8 +2,13 @@ export function ParseCookiesFromHeader(cookies: string): CookieList {
     return cookies
         .split(';')
         .filter(cookie => cookie.includes('='))
-        .map(cookie => cookie.split('='))
-        .map(([name, value]) => ({ name: name.trim(), value: value.trim() }))
+        .map(cookie => {
+            const index = cookie.indexOf('=');
+            return {
+                name: cookie.slice(0, index).trim(),
+                value: cookie.slice(index + 1).trim()
+            };
+        })
         .filter(({ name, value }) => name && value);
 }
 
