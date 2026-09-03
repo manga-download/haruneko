@@ -4,16 +4,20 @@ import { Chapter, DecoratableMangaScraper, Manga, type MangaPlugin } from '../pr
 import * as Common from './decorators/Common';
 import { FetchCSS, FetchWindowScript } from '../platform/FetchProvider';
 
-const cdn = 'https://cdn.mangakawaii.pics';
-
-const pagesScript = `
-    new Promise(resolve => {
-        resolve(pages.map(page => '${cdn}/uploads/manga/'+ oeuvre_slug +'/chapters_'+applocale+'/'+chapter_slug+ '/'+page.page_image));
-    });
-`;
-
 @Common.MangaCSS(/^{origin}\/manga\/[^/]+$/, 'div.manga-view__header h1[itemprop="name headline"]')
-@Common.PagesSinglePageJS(pagesScript, 500)
+@Common.PagesSinglePageJS(`
+    new Promise(resolve => {
+        const images = [];
+        for (let page of pages) {
+            if (page.external === 0) {
+                images.push('https://' + chapter_server + '.mangakawaii.io/uploads/manga/' + oeuvre_slug + '/chapters_' + applocale + '/' + chapter_slug + '/' + page.page_image + '?' + pages.page_version);
+            } else {
+                images.push(new URL(page.page_image + '?' + page.page_version, location).href);
+            }
+        }
+        resolve(images);
+    });
+`, 500)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
@@ -25,55 +29,28 @@ export default class extends DecoratableMangaScraper {
         return icon;
     }
 
-    public override async FetchMangas(provider: MangaPlugin) : Promise<Manga[]> {
-        const token = await this.GetToken();
-        const request = new Request(new URL('changeMangaList?type=text', this.URI).href);
-        request.headers.set('X-Requested-With', 'XMLHttpRequest');
-        request.headers.set('X-CSRF-TOKEN', token);
-        const data = await FetchCSS<HTMLAnchorElement>(request, 'ul.manga-list-text li a.alpha-link');
-        return data.map(element => {
-            const bloat = element.querySelector('span');
-            if (bloat) element.removeChild(bloat);
-            return new Manga(this, provider, element.pathname, element.text.trim());
+    public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
+        const token = (await FetchCSS<HTMLMetaElement>(new Request(this.URI), 'meta[name="csrf-token"]')).at(0).content;
+        const elements = await FetchCSS<HTMLAnchorElement>(new Request(new URL('changeMangaList?type=text', this.URI), {
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRF-TOKEN': token
+            }
+        }), 'ul.manga-list-text li a.alpha-link');
+        return elements.map(element => {
+            const { id, title } = Common.AnchorInfoExtractor(false, 'span').call(this, element, this.URI);
+            return new Manga(this, provider, id, title);
         });
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const languages = ['eng', 'fr'];
-        const chapters = [];
-        for (const lang of languages) {
-            chapters.push(await this.GetChaptersFromLanguage(manga, lang));
+        const chapters: Chapter[] = [];
+        for (const lang of ['en', 'fr']) {
+            await FetchWindowScript(new Request(new URL(`/lang/${lang}`, this.URI)), '');
+            const elements = await FetchCSS<HTMLAnchorElement>(new Request(new URL(manga.Identifier, this.URI)), 'div#chapters td.table__chapter a');
+            const chaptersLang = elements.map(anchor => new Chapter(this, manga, anchor.pathname, `${anchor.innerText.trim()} [${lang}]`, lang === 'fr' ? Tags.Language.French : Tags.Language.English));
+            chapters.push(...chaptersLang);
         }
         return chapters;
-    }
-
-    private async GetChaptersFromLanguage(manga: Manga, language: string): Promise<Chapter[]> {
-        await this.ChangeLanguage(language);
-        let uri = new URL(manga.Identifier, this.URI);
-        let request = new Request(uri.href);
-        const firstChapter = await FetchCSS<HTMLAnchorElement>(request, 'table.table--manga tbody td.table__chapter a');
-        if (typeof firstChapter[0] === 'undefined') {
-            return [];
-        }
-
-        uri = new URL(firstChapter[0].pathname, this.URI);
-        request = new Request(uri.href);
-        const data = await FetchCSS<HTMLAnchorElement>(request, '#dropdownMenuOffset+ul li a');
-        return data.map(element => {
-            return new Chapter(this, manga, element.pathname, `${element.textContent.trim()} [${language}]`);
-        });
-    }
-
-    private async GetToken() {
-        const request = new Request(this.URI.href);
-        const data = await FetchCSS <HTMLMetaElement>(request, 'meta[name="csrf-token"]');
-        return data[0].content;
-    }
-
-    private async ChangeLanguage(language) {
-        await FetchWindowScript(new Request(this.URI.href), ''); //necessary cause /lang redirect to last viewed manga
-        const uri = new URL('/lang/' + language, this.URI);
-        const request = new Request(uri.href);
-        await FetchWindowScript(request, '');
     }
 }
