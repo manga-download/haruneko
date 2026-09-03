@@ -15,11 +15,12 @@ type APIManga = {
 
 type APIChapters = {
     ALL_CHAPTERS: {
+        number: string;
         translations: {
             name: string;
             language: string;
             url: string;
-        }[]
+        }[];
     }[];
 }
 
@@ -45,7 +46,8 @@ const chapterLanguageMap = new Map([
 @Common.PagesSinglePageJS(`chapterImages`, 750)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
-    private readonly apiUrl = 'https://mangaball.net/api/v1/';
+
+    private readonly apiURL = 'https://mangaball.net/api/v1/';
     private token: string = '';
 
     public constructor() {
@@ -91,14 +93,14 @@ export default class extends DecoratableMangaScraper {
         }));
 
         return ALL_CHAPTERS.reduce((accumulator: Chapter[], entry) => {
-            const chapters = entry.translations.map(({ name, language, url }) => new Chapter(this, manga, new URL(url).pathname, [name.trim(), `[${language}]`].join(' ').trim(), ...[chapterLanguageMap.get(language)].filter(Boolean)));
+            const chapters = entry.translations.map(({ name, language, url }) => new Chapter(this, manga, new URL(url).pathname, [entry.number, name.trim(), `[${language}]`].joinTitleSegments(), ...[chapterLanguageMap.get(language)].filter(Boolean)));
             accumulator.push(...chapters);
             return accumulator;
         }, []);
     }
 
     private async FetchAPI<T extends JSONElement>(endpoint, body: URLSearchParams): Promise<T> {
-        return FetchJSON<T>(new Request(new URL(endpoint, this.apiUrl), {
+        return FetchJSON<T>(new Request(new URL(endpoint, this.apiURL), {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
