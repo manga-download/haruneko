@@ -14,9 +14,12 @@ type JSONPages = {
     choJuGiga?: string
 };
 
-@Common.MangaCSS(/^{origin}\/works\/[^/]+$/, 'section[class*="_workId__series_info"] > h2')
-@Common.MangasSinglePageCSS('/new_works', 'a[class*="MangaItem_work_title_link"]')
-@Common.ChaptersSinglePageCSS<HTMLAnchorElement>('ul li[class*="_workId__episode_container"] a', undefined, anchor => ({ id: anchor.pathname, title: anchor.querySelector('[class*="_workId__episode_title"]').textContent.trim() }))
+@Common.MangaCSS(/^{origin}\/works\/[^/]+$/, 'section[class*="_series_info"] h2')
+@Common.MangasSinglePageCSS('/new_works', 'a[class*="__work_title_link"]')
+@Common.ChaptersSinglePageCSS<HTMLAnchorElement>('ul li[class*="_episode_container"] a', undefined, anchor => ({
+    id: anchor.pathname,
+    title: anchor.querySelector('[class*="_episode_title"]').textContent.trim()
+}), true)
 @CoreView.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
