@@ -61,7 +61,6 @@ import '../MangaLink_e2e';
 import '../MangaLivreTo_e2e';
 import '../MangaLover_e2e';
 import '../MangaOwlio_e2e';
-import '../MangaReadCO_e2e';
 import '../MangaRead_e2e';
 import '../MangaScantrad_e2e';
 import '../MangaSehriNet_e2e';
