@@ -60,7 +60,6 @@ import '../Mangalek_e2e';
 import '../MangaLink_e2e';
 import '../MangaLivreTo_e2e';
 import '../MangaLover_e2e';
-import '../MangaOnlineBlog_e2e';
 import '../MangaOwlio_e2e';
 import '../MangaReadCO_e2e';
 import '../MangaRead_e2e';
