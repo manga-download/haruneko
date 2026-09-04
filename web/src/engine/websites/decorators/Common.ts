@@ -344,9 +344,9 @@ export function MangasMultiPageCSS<E extends HTMLElement>(query: string, generat
 * - A relative path for the website's base URL or an absolute URL from which the chapters shall be extracted
 * - A function to create the URL or endpoint based on the provided media container (manga) from which the chapters shall be extracted
 * @param extract - A function to extract the chapter identifier and title from a single element (found with {@link query})
-* @param reverseList - Set to true if website chapter list use ascending order, as engin must produce descending order.
+* @param reverseOrder - Set to true if website chapter list use ascending order, as engine must produce descending order.
 */
-export async function FetchChaptersSinglePageCSS<E extends HTMLElement>(this: MangaScraper, manga: Manga, query: string, resource: string | LinkResolver<Manga> = DefaultMediaLinkResolver, extract = DefaultElementInfoExtractor as InfoExtractor<E>, reverseList: boolean = false): Promise<Chapter[]> {
+export async function FetchChaptersSinglePageCSS<E extends HTMLElement>(this: MangaScraper, manga: Manga, query: string, resource: string | LinkResolver<Manga> = DefaultMediaLinkResolver, extract = DefaultElementInfoExtractor as InfoExtractor<E>, reverseOrder: boolean = false): Promise<Chapter[]> {
     const uri = typeof resource === 'string' ? new URL(resource, this.URI) : new URL(resource.call(this, manga), this.URI);
     const request = new Request(uri, {
         headers: {
@@ -354,7 +354,7 @@ export async function FetchChaptersSinglePageCSS<E extends HTMLElement>(this: Ma
         }
     });
     const data = await FetchCSS<E>(request, query);
-    if (reverseList) data.reverse();
+    if (reverseOrder) data.reverse();
     return data.map(element => {
         const { id, title } = extract.call(this, element, uri);
         return new Chapter(this, manga, id, title.replace(manga.Title, '').trim() || manga.Title);
@@ -369,14 +369,14 @@ export async function FetchChaptersSinglePageCSS<E extends HTMLElement>(this: Ma
  * - A relative path for the website's base URL or an absolute URL from which the chapters shall be extracted
  * - A function to create the URL or endpoint based on the provided media container (manga) from which the chapters shall be extracted
  * @param extract - A function to extract the chapter identifier and title from a single element (found with {@link query})
- * @param reverseList - Set to true if website chapter list use ascending order, as engin must produce descending order.
+ * @param reverseOrder - Set to true if website chapter list use ascending order, as engine must produce descending order.
  */
-export function ChaptersSinglePageCSS<E extends HTMLElement>(query: string, resource: string | LinkResolver<Manga> = DefaultMediaLinkResolver, extract = DefaultElementInfoExtractor as InfoExtractor<E>, reverseList : boolean = false): ClassDecorator {
+export function ChaptersSinglePageCSS<E extends HTMLElement>(query: string, resource: string | LinkResolver<Manga> = DefaultMediaLinkResolver, extract = DefaultElementInfoExtractor as InfoExtractor<E>, reverseOrder : boolean = false): ClassDecorator {
     return function DecorateClass<T extends Constructor>(ctor: T, context?: ClassDecoratorContext): T {
         ThrowOnUnsupportedDecoratorContext(context);
         return class extends ctor {
             public async FetchChapters(this: MangaScraper, manga: Manga): Promise<Chapter[]> {
-                return FetchChaptersSinglePageCSS.call(this, manga, query, resource, extract as InfoExtractor<HTMLElement>, reverseList);
+                return FetchChaptersSinglePageCSS.call(this, manga, query, resource, extract as InfoExtractor<HTMLElement>, reverseOrder);
             }
         };
     };
@@ -392,8 +392,9 @@ export function ChaptersSinglePageCSS<E extends HTMLElement>(query: string, reso
  * @param generate - A link generator that will provide the URLs from which the chapters shall be extracted
  * @param throttle - A delay [ms] for each request (only required for rate-limited websites)
  * @param extract - A function to extract the chapter identifier and title from a single element (found with {@link query})
+ * @param reverseOrder - Set to true if website chapter list use ascending order, as engine must produce descending order.
  */
-export async function FetchChaptersMultiPageCSS<E extends HTMLElement>(this: MangaScraper, manga: Manga, query: string, generate: LinkGenerator<Manga>, throttle = 0, extract = DefaultElementInfoExtractor as InfoExtractor<E>): Promise<Chapter[]> {
+export async function FetchChaptersMultiPageCSS<E extends HTMLElement>(this: MangaScraper, manga: Manga, query: string, generate: LinkGenerator<Manga>, throttle = 0, extract = DefaultElementInfoExtractor as InfoExtractor<E>, reverseOrder: boolean = false): Promise<Chapter[]> {
     const chapterList: Chapter[] = [];
     let reducer = Promise.resolve();
     for (const uri of generate.call(this, manga)) {
@@ -406,6 +407,7 @@ export async function FetchChaptersMultiPageCSS<E extends HTMLElement>(this: Man
             break;
         }
     }
+    if (reverseOrder) chapterList.reverse();
     return chapterList.distinct();
 }
 
@@ -417,13 +419,14 @@ export async function FetchChaptersMultiPageCSS<E extends HTMLElement>(this: Man
  * @param generate - A link generator that will provide the URLs from which the chapters shall be extracted
  * @param throttle - A delay [ms] for each request (only required for rate-limited websites)
  * @param extract - A function to extract the chapter identifier and title from a single element (found with {@link query})
+ * @param reverseOrder - Set to true if website chapter list use ascending order, as engine must produce descending order.
  */
-export function ChaptersMultiPageCSS<E extends HTMLElement>(query: string, generate: LinkGenerator<Manga>, throttle = 0, extract = DefaultElementInfoExtractor as InfoExtractor<E>): ClassDecorator {
+export function ChaptersMultiPageCSS<E extends HTMLElement>(query: string, generate: LinkGenerator<Manga>, throttle = 0, extract = DefaultElementInfoExtractor as InfoExtractor<E>, reverseOrder: boolean = false): ClassDecorator {
     return function DecorateClass<T extends Constructor>(ctor: T, context?: ClassDecoratorContext): T {
         ThrowOnUnsupportedDecoratorContext(context);
         return class extends ctor {
             public async FetchChapters(this: MangaScraper, manga: Manga): Promise<Chapter[]> {
-                return FetchChaptersMultiPageCSS.call(this, manga, query, generate, throttle, extract as InfoExtractor<E>);
+                return FetchChaptersMultiPageCSS.call(this, manga, query, generate, throttle, extract as InfoExtractor<E>, reverseOrder);
             }
         };
     };
