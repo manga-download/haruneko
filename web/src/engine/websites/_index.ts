@@ -376,7 +376,6 @@ export { default as MangaOnlineBlog } from './MangaOnlineBlog';
 export { default as MangaOnlineFun } from './MangaOnlineFun';
 export { default as MangaOrigin } from './MangaOrigin';
 export { default as MangaOwlio } from './MangaOwlio';
-export { default as MangaPanda } from './MangaPanda';
 export { default as MangaParkPublisher } from './MangaParkPublisher';
 export { default as MangaPill } from './MangaPill';
 export { default as MangaPlusCreators } from './MangaPlusCreators';
