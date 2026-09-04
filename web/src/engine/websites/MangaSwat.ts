@@ -29,7 +29,7 @@ type APIPages = {
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
-    private readonly apiUrl = 'https://appswat.com/v2/api/v2/';
+    private readonly apiURL = 'https://appswat.com/v2/api/v2/';
 
     public constructor() {
         super('mangaswat', 'MangaSwat', 'https://meshmanga.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Arabic, Tags.Source.Aggregator);
@@ -61,7 +61,7 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const { results } = await this.FetchAPI<APIChapters>(`./chapters/?serie=${manga.Identifier}&page_size=9999&page=1`);
-        return results?.map(({ id, chapter }) => new Chapter(this, manga, `${id}`, 'الفصل: ' + chapter)) ?? [];
+        return results?.map(({ id, chapter }) => new Chapter(this, manga, `${id}`, 'الفصل: ' + chapter)).reverse() ?? [];
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
@@ -70,7 +70,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     private async FetchAPI<T extends JSONElement>(endpoint: string): Promise<T> {
-        return await FetchJSON<T>(new Request(new URL(endpoint, this.apiUrl), {
+        return await FetchJSON<T>(new Request(new URL(endpoint, this.apiURL), {
             headers: {
                 'User-Agent': 'ktor-client'
             }
