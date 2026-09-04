@@ -28,7 +28,7 @@ type APIPages = {
 @Common.ImageAjax(undefined, true)
 export default class extends DecoratableMangaScraper {
 
-    private readonly apiUrl = 'https://manhwawebbackend-production.up.railway.app';
+    private readonly apiURL = 'https://manhwawebbackend-production.up.railway.app';
 
     public constructor () {
         super('manhwaweb', 'ManhwaWeb', 'https://manhwaweb.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Media.Manga, Tags.Media.Novel, Tags.Language.Spanish, Tags.Source.Aggregator, Tags.Rating.Pornographic);
@@ -44,7 +44,7 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
         const slug = url.split('/').pop();
-        const { the_real_name } = await FetchJSON<APIManga>(new Request(new URL(`./manhwa/see/${slug}`, this.apiUrl)));
+        const { the_real_name } = await FetchJSON<APIManga>(new Request(new URL(`./manhwa/see/${slug}`, this.apiURL)));
         return new Manga(this, provider, slug, the_real_name);
     }
 
@@ -52,7 +52,7 @@ export default class extends DecoratableMangaScraper {
         type This = typeof this;
         return Array.fromAsync(async function* (this: This) {
             for (let page = 0, run = true; run; page++) {
-                const { data } = await FetchJSON<APIMangas>(new Request(new URL(`./manhwa/library?estado=&tipo=&erotico=&demografia=&page=${page}`, this.apiUrl)));
+                const { data } = await FetchJSON<APIMangas>(new Request(new URL(`./manhwa/library?estado=&tipo=&erotico=&demografia=&page=${page}`, this.apiURL)));
                 const mangas = data.map(({ _id, the_real_name: name }) => new Manga(this, provider, _id, name));
                 mangas.length > 0 ? yield* mangas : run = false;
             }
@@ -60,12 +60,12 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const { chapters } = await FetchJSON<APIManga>(new Request(new URL(`./manhwa/see/${manga.Identifier}`, this.apiUrl)));
-        return chapters.map(chapter => new Chapter(this, manga, chapter.link.split('/').pop(), chapter.chapter.toString()));
+        const { chapters } = await FetchJSON<APIManga>(new Request(new URL(`./manhwa/see/${manga.Identifier}`, this.apiURL)));
+        return chapters.map(chapter => new Chapter(this, manga, chapter.link.split('/').pop(), `${chapter.chapter}`)).reverse();
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const { chapter: { img } } = await FetchJSON<APIPages>(new Request(new URL(`./chapters/see/${chapter.Identifier}`, this.apiUrl)));
-        return img.filter(page => page).map(page => new Page(this, chapter, new URL(page)));
+        const { chapter: { img } } = await FetchJSON<APIPages>(new Request(new URL(`./chapters/see/${chapter.Identifier}`, this.apiURL)));
+        return img.filter(page => page).map(page => new Page(this, chapter, new URL(page), { Referer: this.URI.href }));
     }
 }
