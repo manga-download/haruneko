@@ -1,4 +1,4 @@
-﻿import { Fetch, FetchCSS } from '../../platform/FetchProvider';
+﻿import { Fetch, FetchCSS, FetchWindowScript } from '../../platform/FetchProvider';
 import { type Manga, Chapter, Page, DecoratableMangaScraper } from '../../providers/MangaPlugin';
 import type { Priority } from '../../taskpool/DeferredTask';
 import * as Common from '../decorators/Common';
@@ -10,13 +10,30 @@ function CleanTitle(title: string): string {
 
 @Common.MangaCSS(/^{origin}\/(original|manga)\/[^/]+\.html/, 'h1.book-headline-name', (element, uri) => ({ id: uri.pathname, title: CleanTitle(element.textContent) }))
 @Common.MangasMultiPageCSS('div.manga-list td.manga-part > a', Common.PatternLinkGenerator('/search/?completed_series=either&page={page}'), 0, Common.AnchorInfoExtractor(true))
+@Common.ChaptersSinglePageCSS<HTMLAnchorElement>('section.detail-chp-list ul a', undefined, anchor => ({
+    id: anchor.href,
+    title: anchor.title.trim()
+}))
+@Common.PagesSinglePageJS('NiaddChpPageCtrl.options.all_imgs_url;', 2500)
+@Common.ImageAjax()
+
 export class NineMangaBase extends DecoratableMangaScraper {
 
+    /*
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const chapters = await FetchCSS<HTMLAnchorElement>(new Request(new URL(`${manga.Identifier.replace(/\.html$/, '/chapters.html')}`, this.URI)), 'ul.chapter-list > a');
         return chapters.map(({ pathname, title }) => new Chapter(this, manga, pathname, title.replace(manga.Title, '').replace(/^\s*:/, '').trim() || title));
-    }
+    }*/
 
+    /*
+    public override async FetchPages(chapter: Chapter): Promise<Page[]> {
+        const chapterUrl = new URL(chapter.Identifier, this.URI);
+        const pages = await FetchWindowScript<string[]>(this.CreateRequest(chapterUrl), 'NiaddChpPageCtrl.options.all_imgs_url;', 2500);
+        return pages.map(page => new Page(this, chapter, new URL(page), { Referer: chapterUrl.href }));
+    }*/
+
+
+    /*
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
         const chapterUrl = new URL(chapter.Identifier, this.URI);
         const pages = await FetchCSS(this.CreateRequest(chapterUrl), 'div[option_name="page_head"] div.chp-selection-item');
@@ -25,8 +42,9 @@ export class NineMangaBase extends DecoratableMangaScraper {
             url.hostname = this.URI.hostname;
             return new Page(this, chapter, url, { Referer: chapterUrl.href });
         });
-    }
+    }*/
 
+    /*
     public override async FetchImage(page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
         return await this.imageTaskPool.Add(async () => {
             const realimage = (await FetchCSS<HTMLImageElement>(this.CreateRequest(page.Link), 'img.manga_pic')).at(0).getAttribute('src');
@@ -47,5 +65,5 @@ export class NineMangaBase extends DecoratableMangaScraper {
                 'Referer': undefined //no referer is mandatory to bypass website protection
             }
         });
-    }
+    }*/
 }
