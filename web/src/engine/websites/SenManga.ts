@@ -116,6 +116,10 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
         const { chapter: { pageList: { url } } } = await FetchNextProps<JSONPages>(new Request(new URL(chapter.Identifier, this.URI)));
-        return url.map(page => new Page(this, chapter, new URL(`/api/proxy?imageUrl=${page}`, this.URI), { Referer: this.URI.href }));
+        return url.map(page => {
+            const proxy = new URL('/api/proxy', this.URI);
+            proxy.searchParams.set('imageUrl', page);
+            return new Page(this, chapter, proxy, { Referer: this.URI.href });
+        });
     }
 }
