@@ -3,12 +3,13 @@
 
 //import { Tags } from '../../Tags';
 import icon from './NovelcoolBR.webp';
-import { DecoratableMangaScraper } from '../../providers/MangaPlugin';
+import { NineMangaBase } from '../templates/NineMangaBase';
 
-export default class extends DecoratableMangaScraper {
+export default class extends NineMangaBase {
 
     public constructor() {
         super('novelcool-br', `Novel Cool (BR)`, 'https://br.novelcool.com' /*, Tags.Language.English, Tags ... */);
+        this.ChaptersOnMangaPage();
     }
 
     public override get Icon() {
