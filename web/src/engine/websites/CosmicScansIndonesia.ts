@@ -36,7 +36,7 @@ export default class extends DecoratableMangaScraper {
     private readonly apiURL = 'https://cdncid.csmcscns.id/v1/';
 
     public constructor() {
-        super('cosmicscansid', 'Cosmic Scans Indonesia', 'https://03.cosmicscans.to', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Indonesian, Tags.Source.Scanlator);
+        super('cosmicscansid', 'Cosmic Scans Indonesia', 'https://04.cosmicscans.to', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Indonesian, Tags.Source.Scanlator);
     }
 
     public override get Icon() {

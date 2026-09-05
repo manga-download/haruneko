@@ -6,7 +6,7 @@ new TestFixture({
         title: 'Madara Scans'
     },
     container: {
-        url: 'https://madarascans.org/series/accident-handling-department-new-recruit/',
+        url: 'https://madarascans.com/series/accident-handling-department-new-recruit/',
         id: '/series/accident-handling-department-new-recruit/',
         title: 'Accident handling department new recruit'
     },
