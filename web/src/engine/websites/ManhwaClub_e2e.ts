@@ -6,8 +6,8 @@ new TestFixture({
         title: 'ManhwaClub'
     },
     container: {
-        url: 'https://manhwaclub.org/manga/is-it-your-mother-or-sister/',
-        id: JSON.stringify({ post: '2898', slug: '/manga/is-it-your-mother-or-sister/'}),
+        url: 'https://manhwaclub.net/manga/is-it-your-mother-or-sister/',
+        id: JSON.stringify({ post: '513', slug: '/manga/is-it-your-mother-or-sister/'}),
         title: 'Is It Your Mother or Sister?'
     },
     child: {
@@ -16,7 +16,7 @@ new TestFixture({
     },
     entry: {
         index: 1,
-        size: 603_893,
+        size: 396_450,
         type: 'image/jpeg'
     }
 }).AssertWebsite();
