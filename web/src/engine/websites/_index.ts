@@ -460,7 +460,6 @@ export { default as MgJinx } from './MgJinx';
 export { default as Mgkomik } from './Mgkomik';
 export { default as MHScans } from './MHScans';
 export { default as MiauScan } from './MiauScan';
-export { default as Migudm } from './Migudm';
 export { default as Mikoroku } from './Mikoroku';
 export { default as MilaSub } from './MilaSub';
 export { default as MilfToon } from './MilfToon';
