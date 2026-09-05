@@ -796,7 +796,6 @@ export { default as NovelcoolFR } from './legacy/NovelcoolFR';
 export { default as NovelcoolIT } from './legacy/NovelcoolIT';
 export { default as NovelcoolRU } from './legacy/NovelcoolRU';
 export { default as Novelgo } from './legacy/Novelgo';
-export { default as NovelRingan } from './legacy/NovelRingan';
 export { default as Ohtabooks } from './legacy/Ohtabooks';
 export { default as OneTwoThreeHon } from './legacy/OneTwoThreeHon';
 export { default as SixMH7 } from './legacy/SixMH7';
