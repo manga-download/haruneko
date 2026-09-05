@@ -4,15 +4,15 @@ import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as MangaStream from './decorators/WordPressMangaStream';
 import * as Common from './decorators/Common';
 
-@MangaStream.MangaCSS(/^{origin}\/series\/[^/]+\/$/)
-@MangaStream.MangasSinglePageCSS(undefined, '/series/list-mode/')
+@MangaStream.MangaCSS(/^{origin}\/manga\/[^/]+\/$/)
+@MangaStream.MangasSinglePageCSS()
 @MangaStream.ChaptersSinglePageCSS()
 @MangaStream.PagesSinglePageJS()
-@Common.ImageAjax()
+@Common.ImageAjax(true)
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('ravenscans', 'Raven Scans', 'https://ravenscans.net', Tags.Source.Aggregator, Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Language.English);
+        super('ravenscans', 'Raven Scans', 'https://ravenscans.org', Tags.Source.Aggregator, Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Language.English);
     }
 
     public override get Icon(): string {
