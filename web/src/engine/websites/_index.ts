@@ -448,7 +448,6 @@ export { default as ManhwaNex } from './ManhwaNex';
 export { default as ManhwaRead } from './ManhwaRead';
 export { default as ManhwaTop } from './ManhwaTop';
 export { default as ManhwaWeb } from './ManhwaWeb';
-export { default as Manhwax } from './Manhwax';
 export { default as ManmanApp } from './ManmanApp';
 export { default as MaviManga } from './MaviManga';
 export { default as MechaComic } from './MechaComic';
