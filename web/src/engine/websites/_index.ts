@@ -395,7 +395,6 @@ export { default as MangaSehriNet } from './MangaSehriNet';
 export { default as MangasNoSekai } from './MangasNoSekai';
 export { default as MangasOrigines } from './MangasOrigines';
 export { default as MangaSpark } from './MangaSpark';
-export { default as MangasScans } from './MangasScans';
 export { default as MangaStarz } from './MangaStarz';
 export { default as MangaStep } from './MangaStep';
 export { default as MangasTop } from './MangasTop';
