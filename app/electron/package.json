@@ -15,7 +15,7 @@
     },
     "devDependencies": {
         "extract-zip": "2.0.1",
-        "electron": "44.1.1",
+        "electron": "44.2.0",
         "plist": "5.0.0"
     },
     "scripts": {
