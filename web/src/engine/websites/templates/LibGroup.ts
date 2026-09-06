@@ -123,7 +123,7 @@ export class LibGroup extends DecoratableMangaScraper {
 
     private Servers: TContentServers = { main: '', secondary: '', compress: '' };
     private tokenProvider: TokenProvider;
-    private apiUrl = 'https://api.cdnlibs.org/api/';
+    private apiURL = 'https://api.cdnlibs.org/api/';
     private siteID: number = 1;
 
     public WithSiteID(number: number) {
@@ -132,12 +132,12 @@ export class LibGroup extends DecoratableMangaScraper {
     }
 
     public SetAPI(apiUrl: string, authPath: string = './auth/oauth/token') {
-        this.apiUrl = apiUrl;
-        this.tokenProvider = new TokenProvider(this.URI, new URL(authPath, this.apiUrl));
+        this.apiURL = apiUrl;
+        this.tokenProvider = new TokenProvider(this.URI, new URL(authPath, this.apiURL));
     }
 
     public override async Initialize(): Promise<void> {
-        const { data: { imageServers } } = await FetchJSON<APIServers>(new Request(new URL('./constants?fields[]=imageServers', this.apiUrl)));
+        const { data: { imageServers } } = await this.FetchAPI<APIServers>('./constants?fields[]=imageServers');
 
         for (const serverName of ['main', 'secondary', 'compress']) {
             this.Servers[serverName] = imageServers.find(({ id, site_ids: siteIds }) => id === serverName && siteIds.includes(this.siteID))?.url;
@@ -193,9 +193,11 @@ export class LibGroup extends DecoratableMangaScraper {
     }
 
     private async FetchAPI<T extends JSONElement>(endpoint: string) {
-        return FetchJSON<T>(new Request(new URL(endpoint, this.apiUrl), {
+        return FetchJSON<T>(new Request(new URL(endpoint, this.apiURL), {
             headers: await this.tokenProvider.ApplyAuthorizationHeader({
-                'Site-Id': `${this.siteID}`
+                'Site-Id': `${this.siteID}`,
+                Origin: this.URI.origin,
+                Referer: this.URI.href
             }),
         }));
     }
