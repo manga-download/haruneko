@@ -3,8 +3,6 @@ import * as Common from '../decorators/Common';
 import { FetchJSON, FetchWindowScript } from '../../platform/FetchProvider';
 
 type APIResult<T> = {
-    code: number;
-    msg: string;
     data: T;
 };
 
