@@ -2,21 +2,21 @@
 
 new TestFixture({
     plugin: {
-        id: 'webcomicsapp-en',
-        title: 'WebComicsApp',
+        id: 'webcomicsapp-fr',
+        title: 'WebComicsApp (French)',
     },
     container: {
-        url: 'https://www.webcomicsapp.com/en/sci-fi/the-last-hero/60af57208c252b2d960bf732',
-        id: '60af57208c252b2d960bf732',
-        title: 'The Last Hero'
+        url: 'https://www.webcomicsapp.com/fr/action/je-ramasse-des-attributs-en-fin-du-monde/67c1216962661d3f187d74c9',
+        id: '67c1216962661d3f187d74c9',
+        title: 'Je ramasse des attributs en fin du monde'
     },
     child: {
-        id: '1',
-        title: 'Ch. 0 Prologue'
+        id: 'f1e3783d74b33ec32c45f5c2/1',
+        title: 'Chap. 1'
     },
     entry: {
         index: 0,
-        size: 51_713,
+        size: 66_018,
         type: 'image/png'
     }
 }).AssertWebsite();

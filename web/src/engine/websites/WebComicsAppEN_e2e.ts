@@ -11,12 +11,12 @@ new TestFixture({
         title: 'The Last Hero'
     },
     child: {
-        id: '1',
+        id: '79d1e9685a4f970782c28939/1',
         title: 'Ch. 0 Prologue'
     },
     entry: {
         index: 0,
-        size: 51_713,
+        size: 14_928,
         type: 'image/png'
     }
 }).AssertWebsite();

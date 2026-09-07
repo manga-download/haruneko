@@ -59,7 +59,7 @@ export class WebComicsAppBase extends DecoratableMangaScraper {
                     reject(error)
                 }
             })`
-            , 1500);
+        , 1500);
         this.udid = udid;
         this.userChannel = `${channel}`;
     }
