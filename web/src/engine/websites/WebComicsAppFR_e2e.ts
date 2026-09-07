@@ -1,12 +1,12 @@
 ﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
-        id: 'webcomicsapp',
+        id: 'webcomicsapp-en',
         title: 'WebComicsApp',
     },
     container: {
-        url: 'https://www.webcomicsapp.com/comic/The-Last-Hero/60af57208c252b2d960bf732',
+        url: 'https://www.webcomicsapp.com/en/sci-fi/the-last-hero/60af57208c252b2d960bf732',
         id: '60af57208c252b2d960bf732',
         title: 'The Last Hero'
     },
@@ -19,6 +19,4 @@ const config = {
         size: 51_713,
         type: 'image/png'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();
