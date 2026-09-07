@@ -5,7 +5,7 @@ import * as Common from './decorators/Common';
 import { FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
 
 type APIResult<T> = {
-    data: T
+    data: T;
 };
 
 type APIMangas = APIResult<{
@@ -18,10 +18,10 @@ type APIMangaDetails = APIResult<{
 }>;
 
 type APIManga = {
-    comicId: number,
+    comicId: number;
     information: {
         title: string;
-    }
+    };
 };
 
 type APIChapter = {
@@ -29,7 +29,7 @@ type APIChapter = {
     information: {
         title: string;
         subTitle: string;
-    }
+    };
 };
 
 type UserInfos = {
@@ -42,7 +42,7 @@ type UserInfos = {
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
-    private readonly apiUrl = 'https://api-global.toptoon.com/api/';
+    private readonly apiURL = 'https://api-global.toptoon.com/api/';
     private userInfos: UserInfos = {
         token: '',
         deviceId: '',
@@ -100,11 +100,11 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const { data: { episode } } = await this.FetchAPI<APIMangaDetails>(`./v1/page/episode?comicId=${manga.Identifier}`);
-        return episode.map(({ episodeId, information: { title, subTitle } }) => new Chapter(this, manga, `/content/${manga.Identifier}/${episodeId}`, [title, subTitle].filter(Boolean).join(' - ').trim()));
+        return episode.map(({ episodeId, information: { title, subTitle } }) => new Chapter(this, manga, `/content/${manga.Identifier}/${episodeId}`, [title, subTitle].filter(Boolean).join(' - ').trim())).reverse();
     }
 
     private async FetchAPI<T extends JSONElement>(endpoint: string): Promise<T> {
-        return FetchJSON<T>(new Request(new URL(endpoint, this.apiUrl), {
+        return FetchJSON<T>(new Request(new URL(endpoint, this.apiURL), {
             headers: {
                 deviceId: this.userInfos.deviceId,
                 token: this.userInfos.token,
