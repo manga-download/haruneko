@@ -35,7 +35,7 @@ new TestFixture({
     },
     child: {
         id: '87788599',
-        title: 'Chosen one'
+        title: '#75 Chosen one'
     },
     entry: {
         index: 0,

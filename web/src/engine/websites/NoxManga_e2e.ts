@@ -6,7 +6,7 @@ new TestFixture({
         title: 'NoxManga'
     },
     container: {
-        url: 'https://noxtoons.com/manga/despertar-em-tempo-integral',
+        url: 'https://noxmangas.org/manga/despertar-em-tempo-integral',
         id: 'despertar-em-tempo-integral',
         title: 'Despertar em Tempo Integral'
     },

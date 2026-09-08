@@ -6,7 +6,7 @@ new TestFixture({
         title: 'ManhwaDesu',
     },
     container: {
-        url: 'https://manhwadesu.tech/komik/sen-yen-de-oppai-misete/',
+        url: 'https://manhwadesu.wiki/komik/sen-yen-de-oppai-misete/',
         id: '/komik/sen-yen-de-oppai-misete/',
         title: '〇sen-yen de Oppai Misete'
     },

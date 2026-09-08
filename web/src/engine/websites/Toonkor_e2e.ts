@@ -6,7 +6,7 @@ new TestFixture({
         title: 'Toonkor'
     },
     container: {
-        url: 'https://tkor127.com/허니-트러블',
+        url: 'https://tkor150.com/허니-트러블',
         id: encodeURI('/허니-트러블'),
         title: '허니 트러블'
     },
@@ -16,7 +16,7 @@ new TestFixture({
     },
     entry: {
         index: 0,
-        size: 130_233,
+        size: 39_794,
         type: 'image/jpeg'
     }
 }).AssertWebsite();
