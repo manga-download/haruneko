@@ -3,7 +3,7 @@ import { TestFixture } from '../../../test/WebsitesFixture';
 new TestFixture({
     plugin: {
         id: 'ninemanga-it',
-        title: 'NineMangaIT'
+        title: 'Niadd (Italian)'
     },
     container: {
         url: 'https://it.niadd.com/manga/Level_Up_with_the_Gods.html',

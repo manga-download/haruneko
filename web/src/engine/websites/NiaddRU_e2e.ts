@@ -3,7 +3,7 @@ import { TestFixture } from '../../../test/WebsitesFixture';
 new TestFixture({
     plugin: {
         id: 'ninemanga-ru',
-        title: 'NineMangaRU'
+        title: 'Niadd (Russian)'
     },
     container: {
         url: 'https://ru.niadd.com/manga/Рождение сильнейшего мастера.html',
