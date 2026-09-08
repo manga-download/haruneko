@@ -19,8 +19,7 @@ describe('Hashing', () => {
 
     it('Should correctly compute MD5 hash of a Uint8Array', () => {
         const hash = MD5(new Uint8Array([104, 101, 108, 108, 111]));
-        const expectedHex = '5d41402abc4b2a76b9719d911017c592';
-        expect(GetHexFromBytes(hash)).toBe(expectedHex);
+        expect(GetHexFromBytes(hash)).toBe('5d41402abc4b2a76b9719d911017c592');
     });
 });
 
