@@ -1,26 +1,34 @@
 import { Tags } from '../Tags';
 import icon from './MangaTepesi.webp';
-import { DecoratableMangaScraper } from '../providers/MangaPlugin';
+import { Chapter, DecoratableMangaScraper, Manga, type MangaPlugin, Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
+import { FetchJSON } from '../platform/FetchProvider';
 
-function MangaInfoExtractor(anchor: HTMLAnchorElement) {
-    const title = anchor.querySelector('div.manga-card-mName').textContent.trim();
-    const id = anchor.pathname;
-    return { id, title };
-}
+type APIManga = {
+    mangaId: number;
+    title: string;
+    titleUrl: string;
+};
 
-function ChapterInfoExtractor(anchor: HTMLAnchorElement) {
-    const title = anchor.querySelector('div.manga-chapters-item-title').textContent.trim();
-    const id = anchor.pathname;
-    return { id, title };
-}
+type APIMangaDetails = {
+    manga: APIManga;
+    chapters: {
+        id: number;
+        chapterName: string;
+        chapterNameUrl: string;
+    }[];
+};
 
-@Common.MangaCSS(/^{origin}\/manga\//, 'div.about-manga-info h2')
-@Common.MangasSinglePageCSS('/mangalistesi', 'article.manga-card > a', MangaInfoExtractor)
-@Common.ChaptersSinglePageCSS('div#manga-chapters-item-list a', undefined, ChapterInfoExtractor)
-@Common.PagesSinglePageCSS('img.read-manga-image:not([style])')
+type APIPages = {
+    images: {
+        imgUrl: string;
+    }[];
+};
+
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
+
+    private readonly apiURL = 'https://api.mangatepesi.com/api/';
 
     public constructor() {
         super('mangatepesi', `MangaTepesi`, 'https://mangatepesi.com', Tags.Language.Turkish, Tags.Source.Scanlator, Tags.Media.Manga, Tags.Media.Manhwa);
@@ -28,5 +36,31 @@ export default class extends DecoratableMangaScraper {
 
     public override get Icon() {
         return icon;
+    }
+
+    public override ValidateMangaURL(url: string): boolean {
+        return new RegExpSafe(`^${this.URI.origin}/manga/[^/]+/\\d+$`).test(url);
+    }
+
+    public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
+        const id = new URL(url).pathname;
+        const { manga: { title } } = await FetchJSON<APIMangaDetails>(new Request(new URL(`.${id}`, this.apiURL)));
+        return new Manga(this, provider, id.replace(/^\/manga\//, ''), title);
+    }
+
+    public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
+        const mangas = await FetchJSON<APIManga[]>(new Request(new URL('./mangaList', this.apiURL)));
+        return mangas.map(({ mangaId, title, titleUrl }) => new Manga(this, provider, `${titleUrl}/${mangaId}`, title));
+    }
+
+    public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
+        const { chapters } = await FetchJSON<APIMangaDetails>(new Request(new URL(`./manga/${manga.Identifier}`, this.apiURL)));
+        return chapters.map(({ chapterNameUrl, chapterName, id }) => new Chapter(this, manga, `${chapterNameUrl}/${id}`, chapterName)).reverse();
+    }
+
+    public override async FetchPages(chapter: Chapter): Promise<Page[]> {
+        const [mangaSlug] = chapter.Parent.Identifier.split('/');
+        const { images } = await FetchJSON<APIPages>(new Request(new URL(`./manga/${mangaSlug}/chapter/${chapter.Identifier}`, this.apiURL)));
+        return images.map(({ imgUrl }) => new Page(this, chapter, new URL(imgUrl, this.URI)));
     }
 }
