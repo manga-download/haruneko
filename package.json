@@ -13,9 +13,9 @@
     ],
     "devDependencies": {
         "@stylistic/eslint-plugin": "5.10.0",
-        "@types/chrome": "0.2.8",
+        "@types/chrome": "0.2.9",
         "@types/nw.js": "0.115.0",
-        "eslint": "10.9.1",
+        "eslint": "10.10.0",
         "eslint-plugin-tsdoc": "0.5.2",
         "puppeteer-core": "25.10.0",
         "tslib": "2.8.1",
