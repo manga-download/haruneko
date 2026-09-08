@@ -1,24 +1,22 @@
-﻿import { TestFixture, type Config } from '../../../test/WebsitesFixture';
+﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config: Config = {
+new TestFixture({
     plugin: {
         id: 'lewdmanhwa',
         title: 'LewdManhwa'
     },
     container: {
-        url: 'https://lewdmanhwa.com/webtoon/island-puzzle/',
-        id: '/webtoon/island-puzzle/',
-        title: 'Island Puzzle',
+        url: 'https://lewdmanhwa.com/webtoon/antisocial-safety-zone',
+        id: '/webtoon/antisocial-safety-zone',
+        title: 'Antisocial Safety Zone',
     },
     child: {
-        id: '/webtoon/island-puzzle/chapter/0',
-        title: 'Chapter 0-Prologue'
+        id: '/webtoon/antisocial-safety-zone/chapter-23',
+        title: 'Chapter 18' // yeah, site is messed up like that
     },
     entry: {
         index: 0,
-        size: 27_130,
-        type: 'image/jpeg'
+        size: 513_476,
+        type: 'image/webp'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

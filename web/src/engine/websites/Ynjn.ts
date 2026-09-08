@@ -7,7 +7,7 @@ import type { Priority } from '../taskpool/TaskPool';
 import DeScramble from '../transformers/ImageDescrambler';
 
 type APIResult<T> = {
-    data: T,
+    data: T;
     is_success: boolean;
 };
 
@@ -19,7 +19,7 @@ type APIManga = {
 
 type APIChapters = {
     episodes: {
-        id: number,
+        id: number;
         name: string;
     }[];
 };
@@ -35,9 +35,9 @@ type APIPages = {
 @Common.MangasNotSupported()
 export default class extends DecoratableMangaScraper {
 
-    private readonly apiUrl = 'https://webapi.ynjn.jp';
+    private readonly apiURL = 'https://webapi.ynjn.jp';
 
-    public constructor () {
+    public constructor() {
         super('ynjn', `ヤンジャン！(ynjn)`, 'https://ynjn.jp', Tags.Language.Japanese, Tags.Source.Official, Tags.Media.Manga);
     }
 
@@ -51,26 +51,20 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
         const id = new URL(url).pathname.split('/').at(-1);
-        const request = new Request(new URL(`book/${id}`, this.apiUrl).href);
-        const { data } = await FetchJSON<APIResult<APIManga>>(request);
-        return new Manga(this, provider, id, data.book.name.trim());
+        const { data: { book: { name } } } = await FetchJSON<APIResult<APIManga>>(new Request(new URL(`book/${id}`, this.apiURL)));
+        return new Manga(this, provider, id, name);
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const uri = new URL(`title/${manga.Identifier}/episode`, this.apiUrl);
-        uri.searchParams.set('is_get_all', 'true');
-        const json = await FetchJSON<APIResult<APIChapters>>(new Request(uri.href));
-        return json.is_success ? json.data.episodes.map(episode => new Chapter(this, manga, episode.id.toString(), episode.name.trim())) : [];
+        const json = await FetchJSON<APIResult<APIChapters>>(new Request(new URL(`title/${manga.Identifier}/episode?is_get_all=true`, this.apiURL)));
+        return json.is_success ? json.data.episodes.map(({ id, name }) => new Chapter(this, manga, `${id}`, name)).reverse() : [];
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const uri = new URL('/viewer', this.apiUrl);
-        uri.searchParams.set('title_id', chapter.Parent.Identifier);
-        uri.searchParams.set('episode_id', chapter.Identifier);
-        const json = await FetchJSON<APIResult<APIPages>>(new Request(uri.href));
+        const json = await FetchJSON<APIResult<APIPages>>(new Request(new URL(`/viewer?title_id=${chapter.Parent.Identifier}&episode_id=${chapter.Identifier}`, this.apiURL)));
         return json.is_success ? json.data.pages
-            .filter(page => page.manga_page)
-            .map(page => new Page(this, chapter, new URL(page.manga_page.page_image_url))) : [];
+            .filter(({ manga_page: page }) => page)
+            .map(({ manga_page: { page_image_url: url } }) => new Page(this, chapter, new URL(url, this.URI))) : [];
     }
 
     public override async FetchImage(page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
