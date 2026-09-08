@@ -3,17 +3,11 @@ import icon from './Komiku.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 
-const endpoints = ['manga', 'manhua', 'manhwa'].map(genre => `/daftar-komik/?tipe=${genre}`);
-
-function MangaLinkExtractor(span: HTMLSpanElement, uri: URL) {
-    return {
-        id: uri.pathname,
-        title: span.innerText.replace(/^komik/i, '').trim(),
-    };
-}
-
-@Common.MangaCSS(/^{origin}\/manga\/[^/]+\/$/, 'article div#Judul h1 span[itemprop="name"]', MangaLinkExtractor)
-@Common.MangasMultiPageCSS('div.ls4 div.ls4j h4 a', Common.StaticLinkGenerator(...endpoints))
+@Common.MangaCSS(/^{origin}\/manga\/[^/]+\/$/, 'article div#Judul h1 span[itemprop="name"]', (span, uri) => ({
+    id: uri.pathname,
+    title: span.innerText.replace(/^komik/i, '').trim(),
+}))
+@Common.MangasMultiPageCSS('article.manga-card h4 a', Common.PatternLinkGenerator('/daftar-komik/?halaman={page}'))
 @Common.ChaptersSinglePageCSS('table#Daftar_Chapter td.judulseries a')
 @Common.PagesSinglePageCSS('div#Baca_Komik img')
 @Common.ImageAjax()

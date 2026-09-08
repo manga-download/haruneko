@@ -6,17 +6,17 @@ new TestFixture({
         title: 'MangaTime',
     },
     container: {
-        url: 'https://mangatime.org/manga/Blue-Lock/',
-        id: '/manga/Blue-Lock/',
-        title: 'Blue Lock'
+        url: 'https://mangatime.org/manga/blue-Lock',
+        id: '697df7820c5d340ac154519f/blue-lock',
+        title: 'بلو لوك'
     },
     child: {
-        id: '/manga/Blue-Lock/chapter-1',
+        id: '1',
         title: 'Chapter - 1'
     },
     entry: {
         index: 2,
-        size: 82_806,
-        type: 'image/jpeg'
+        size: 30_896,
+        type: 'image/webp'
     }
 }).AssertWebsite();

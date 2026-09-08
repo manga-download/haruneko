@@ -6,7 +6,7 @@ new TestFixture({
         title: 'SEKTEKOMIK.XYZ'
     },
     container: {
-        url: 'https://sektekomik.id/manga/existence',
+        url: 'https://01.sektekomik.id/manga/existence',
         id: '/manga/existence',
         title: 'Existence'
     },
