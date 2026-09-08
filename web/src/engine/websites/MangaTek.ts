@@ -3,7 +3,12 @@ import icon from './MangaTek.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 
-const chapterScript = `
+@Common.MangaCSS<HTMLImageElement>(/^{origin}\/manga\/[^/]+$/, 'img#mangaCover', (img, url) => ({ id: url.pathname, title: img.alt.trim() }))
+@Common.MangasMultiPageCSS<HTMLAnchorElement>('a.manga-card ', Common.PatternLinkGenerator('/manga-list?page={page}'), 0, anchor => ({
+    id: anchor.pathname,
+    title: anchor.querySelector('img').alt.trim()
+}))
+@Common.ChaptersSinglePageJS(`
     new Promise(resolve => {
         const element = document.querySelector('astro-island[component-url*="MangaChaptersLoader"]');
         element.hydrator = () => (_, props) => {
@@ -14,11 +19,7 @@ const chapterScript = `
         };
         element.hydrate();
     });
-`;
-
-@Common.MangaCSS<HTMLImageElement>(/^{origin}\/manga\/[^/]+$/, 'img#mangaCover', (img, url) => ({ id: url.pathname, title: img.alt.trim() }))
-@Common.MangasMultiPageCSS('div.manga-card a[dir]', Common.PatternLinkGenerator('/manga-list?page={page}'))
-@Common.ChaptersSinglePageJS(chapterScript, 1500)
+`, 1500)
 @Common.PagesSinglePageCSS('div.manga-page img')
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {

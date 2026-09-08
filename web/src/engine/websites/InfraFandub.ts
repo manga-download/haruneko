@@ -5,7 +5,7 @@ import * as Madara from './decorators/WordPressMadara';
 import * as Common from './decorators/Common';
 
 @Madara.MangaCSS(/^{origin}\/manga\/[^/]+\/$/, 'meta[property="og:title"]:not([content*="Infra Fandub"])')
-@Madara.MangasMultiPageAJAX()
+@Madara.MangasMultiPageAJAX('div.manga-item-overlay a')
 @Madara.ChaptersSinglePageCSS('a.chapter-item', (anchor: HTMLAnchorElement) => ({ id: anchor.pathname, title: anchor.querySelector<HTMLSpanElement>('span.chapter-number').textContent.trim() }))
 @Madara.PagesSinglePageCSS()
 @Common.ImageAjax()

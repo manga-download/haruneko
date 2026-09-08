@@ -1,25 +1,27 @@
-import type { IPC } from '../InterProcessCommunication';
 import { Observable, type IObservable } from '../../Observable';
 import type { IAppWindow } from '../AppWindow';
-import { ApplicationWindow as Channels } from '../../../../../app/src/ipc/Channels';
+import { GetIPC } from './InterProcessCommunication';
+import { Channels } from '../../../../../app/electron/src/ipc/InterProcessCommunicationChannels';
 
 export default class implements IAppWindow {
 
-    constructor(private readonly ipc: IPC<Channels.App, Channels.Web>, private readonly splashURL: string) {
+    private readonly ipc = GetIPC();
+
+    constructor (private readonly splashURL: string) {
         // TODO: Confirm really want to close => window.on('beforunload', ...)
 
         // TODO: Provisional fullscreen detection needs to be improved (e.g., via IPC BrowserWindow.on('move')) ...
-        setInterval(this.#DetectMaximized.bind(this), 250);
+        setInterval(this.#DetectMaximized.bind(this), 500);
     }
 
     public async ShowSplash(): Promise<void> {
-        await this.ipc.Send(Channels.App.HideWindow);
-        await this.ipc.Send(Channels.App.ShowWindow, this.splashURL);
+        this.ipc.Invoke(Channels.ApplicationWindow.HideWindow);
+        this.ipc.Invoke(Channels.ApplicationWindow.OpenSplash, this.splashURL);
     }
 
     public async HideSplash(): Promise<void> {
-        await this.ipc.Send(Channels.App.CloseSplash, this.splashURL);
-        await this.ipc.Send(Channels.App.ShowWindow);
+        this.ipc.Invoke(Channels.ApplicationWindow.CloseSplash);
+        this.ipc.Invoke(Channels.ApplicationWindow.ShowWindow);
     }
 
     public get HasControls() {
@@ -41,18 +43,18 @@ export default class implements IAppWindow {
     }
 
     public Minimize(): void {
-        this.ipc.Send(Channels.App.Minimize);
+        this.ipc.Invoke(Channels.ApplicationWindow.Minimize);
     }
 
     public Maximize(): void {
-        this.ipc.Send(Channels.App.Maximize);
+        this.ipc.Invoke(Channels.ApplicationWindow.Maximize);
     }
 
     public Restore(): void {
-        this.ipc.Send(Channels.App.Restore);
+        this.ipc.Invoke(Channels.ApplicationWindow.Restore);
     }
 
     public Close(): void {
-        this.ipc.Send(Channels.App.Close);
+        this.ipc.Invoke(Channels.ApplicationWindow.Close);
     }
 }
