@@ -5,6 +5,7 @@ import { IPC } from './InterProcessCommunication';
 vi.mock('electron', () => {
     return {
         ipcMain: {
+            on: vi.fn(),
             handle: vi.fn(),
         }
     };
@@ -12,12 +13,12 @@ vi.mock('electron', () => {
 
 class TestFixture {
 
-    public readonly mockWebContents = {
+    public readonly MockWebContents = {
         send: vi.fn(),
-    } as unknown as WebContents;
+    };
 
-    public CreatTestee(): IPC<string, string> {
-        return new IPC<string, string>(this.mockWebContents);
+    public CreatTestee(): IPC {
+        return new IPC(this.MockWebContents as unknown as WebContents);
     }
 }
 
@@ -30,18 +31,21 @@ describe('IPC', () => {
     describe('Constructor', () => {
 
         it('Should create instance', () => {
-            const testee = new IPC<string, string>(null as unknown as Electron.WebContents);
+            const fixture = new TestFixture();
+            const testee = fixture.CreatTestee();
             expect(testee).toBeDefined();
         });
     });
 
-    describe('Listen', () => {
+    describe('On', () => {
 
         it('Should relay subscription to Electron asynchronouos messaging', () => {
-            const testee = new IPC<string, string>(null as unknown as Electron.WebContents);
-            testee.Listen('😎', async () => {});
-            expect(ipcMain.handle).toHaveBeenCalledTimes(1);
-            expect(ipcMain.handle).toHaveBeenCalledWith('😎', expect.anything());
+            const fixture = new TestFixture();
+            const testee = fixture.CreatTestee();
+            const on = testee.On.bind(testee) as unknown as (channel: string, callback: unknown) => void;
+            on('😎', async () => { });
+            expect(ipcMain.on).toHaveBeenCalledTimes(1);
+            expect(ipcMain.on).toHaveBeenCalledWith('😎', expect.anything());
         });
     });
 
@@ -50,9 +54,22 @@ describe('IPC', () => {
         it('Should relay invocation to Electron asynchronouos messaging', () => {
             const fixture = new TestFixture();
             const testee = fixture.CreatTestee();
-            testee.Send('😎', 7);
-            expect(fixture.mockWebContents.send).toHaveBeenCalledTimes(1);
-            expect(fixture.mockWebContents.send).toHaveBeenCalledWith('😎', 7);
+            const send = testee.Send.bind(testee) as (channel: string, ...args: unknown[]) => void;
+            send('😎', '✅', 7);
+            expect(fixture.MockWebContents.send).toHaveBeenCalledTimes(1);
+            expect(fixture.MockWebContents.send).toHaveBeenCalledWith('😎', '✅', 7);
+        });
+    });
+
+    describe('Handle', () => {
+
+        it('Should relay subscription to Electron asynchronouos messaging', () => {
+            const fixture = new TestFixture();
+            const testee = fixture.CreatTestee();
+            const handle = testee.Handle.bind(testee) as (channel: string, callback: unknown) => void;
+            handle('😎', async () => { });
+            expect(ipcMain.handle).toHaveBeenCalledTimes(1);
+            expect(ipcMain.handle).toHaveBeenCalledWith('😎', expect.anything());
         });
     });
 });

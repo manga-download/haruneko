@@ -6,7 +6,7 @@ new TestFixture({
         title: 'LectorManga (.Lat)'
     },
     container: {
-        url: 'https://lector-mangas.com/comics/linea-de-corte',
+        url: 'https://lectormangaas.com/comics/linea-de-corte',
         id: '/comics/linea-de-corte',
         title: 'Linea De Corte'
     },

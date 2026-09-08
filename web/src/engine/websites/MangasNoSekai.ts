@@ -1,7 +1,7 @@
 import { Tags } from '../Tags';
 import icon from './MangasNoSekai.webp';
 import { RateLimit } from '../taskpool/RateLimit';
-import { FetchHTML, FetchJSON } from '../platform/FetchProvider';
+import { FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
 import { Chapter, DecoratableMangaScraper, type Manga } from '../providers/MangaPlugin';
 import * as Madara from './decorators/WordPressMadara';
 import * as Common from './decorators/Common';
@@ -12,6 +12,14 @@ type APIChapters = {
         name: string;
         name_extend: string;
     }[];
+};
+
+type ChaptersData = {
+    chapters: {
+        id: string;
+        title: string;
+    }[];
+    mangaID: string;
 };
 
 @Common.MangaCSS(/^{origin}\/manga\/[^/]+\/$/, 'p.titleMangaSingle')
@@ -30,16 +38,26 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const { chapters, mangaID } = await this.GetFirstChaptersAndMangaID(manga);
-        return [
-            ...chapters,
-            ...await this.GetChaptersFromAPI(manga, mangaID),
-        ];
-    }
+        //use script because of cloudflare
+        const { chapters, mangaID } = await FetchWindowScript<ChaptersData>(new Request(new URL(manga.Identifier, this.URI)), `
+            new Promise(resolve => {
+                const mangaID = new URL(document.querySelector('link[rel="shortlink"]').href).searchParams.get('p');
+                const chapters = [...document.querySelectorAll('.container-capitulos .grid-capitulos a.group')].map(anchor => {
+                    return {
+                        id: anchor.pathname,
+                        title: [
+                            anchor.querySelector('div.text-sm')?.innerText.trim(),
+                            anchor.querySelector('div.d-md-block')?.innerText.trim()
+                        ].join(' ').trim()
+                    }
+                });
+                resolve({ mangaID, chapters });
+            })
+        `, 1500);
+        const firstChapters = chapters.map(({ id, title }) => new Chapter(this, manga, id, title));
 
-    protected async GetChaptersFromAPI(manga: Manga, mangaID: string): Promise<Chapter[]> {
         type This = typeof this;
-        return Array.fromAsync(async function* (this: This) {
+        const otherChapters = await Array.fromAsync(async function* (this: This) {
             try {
                 // Start with second page
                 for (let page = 2, run = true; run; page++) {
@@ -60,18 +78,6 @@ export default class extends DecoratableMangaScraper {
                 }
             } catch { }
         }.call(this));
-    }
-
-    private async GetFirstChaptersAndMangaID(manga: Manga) {
-        // Always get first page using CSS (so we got a few chapters if not logged)
-        const dom = await FetchHTML(new Request(new URL(manga.Identifier, this.URI)));
-        const mangaID = new URL(dom.querySelector<HTMLLinkElement>('link[rel="shortlink"]').href).searchParams.get('p');
-        const chapters = [...dom.querySelectorAll<HTMLAnchorElement>('.container-capitulos .grid-capitulos a.group')].map(anchor => {
-            return new Chapter(this, manga, anchor.pathname, [
-                anchor.querySelector<HTMLDivElement>('div.text-sm')?.innerText.trim(),
-                anchor.querySelector<HTMLDivElement>('div.d-md-block')?.innerText.trim()
-            ].join(' ').trim());
-        }).filter(chapter => chapter.Title);
-        return { chapters, mangaID };
+        return [...firstChapters, ...otherChapters];
     }
 }

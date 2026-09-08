@@ -16,12 +16,8 @@ type APIManga = APIResult<{
 }>;
 
 type APIMangas = APIResult<{
-    titles: APIManga[ 'data' ][];
+    titles: APIManga['data'][];
 }[]>;
-
-type APIVolume = APIResult<{
-    chapters: { id: number; }[];
-}>;
 
 type APIMedias = {
     data: APIMedia[];
@@ -51,9 +47,6 @@ type MediaItem = {
     id: number;
     type: 1 /* Chapter */ | 2 /* Volume */;
 };
-
-// TODO: Check for possible revision
-
 export default class extends DecoratableMangaScraper {
 
     private readonly apiURL = 'https://web.cycomi.com/api/';
@@ -71,51 +64,53 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
         const id = new URL(url).pathname.split('/').at(-1);
-        const { data } = await this.FetchAPI<APIManga>(`./title/detail?titleId=${id}`);
-        return new Manga(this, provider, data.titleId.toString(), data.titleName);
+        const { data: { titleId, titleName } } = await this.FetchAPI<APIManga>(`./title/detail?titleId=${id}`);
+        return new Manga(this, provider, `${titleId}`, titleName);
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        const mangaList: Manga[] = [];
-        for (let page = 0, run = true; run; page++) {
-            const { data, resultCode } = await this.FetchAPI<APIMangas>(`./home/paginatedList?limit=${50}&page=${page}`);
-            const mangas = resultCode !== 1 || !data ? [] : data.reduce((accumulator: Manga[], entry) => {
-                if (entry) {
-                    const titles = entry.titles.map(manga => new Manga(this, provider, manga.titleId.toString(), manga.titleName));
-                    accumulator.push(...titles);
-                }
-                return accumulator;
-            }, []);
-            mangas.length ? mangaList.push(...mangas) : run = false;
-        }
-        return mangaList;
+        type This = typeof this;
+        return Array.fromAsync(async function* (this: This) {
+            for (let page = 0, run = true; run; page++) {
+                const { data, resultCode } = await this.FetchAPI<APIMangas>(`./home/paginatedList?limit=${50}&page=${page}`);
+                const mangas = resultCode !== 1 || !data ? [] : data.reduce((accumulator: Manga[], entry) => {
+                    if (entry) {
+                        const titles = entry.titles.map(manga => new Manga(this, provider, `${manga.titleId}`, manga.titleName));
+                        accumulator.push(...titles);
+                    }
+                    return accumulator;
+                }, []);
+                mangas.length > 0 ? yield* mangas : run = false;
+            }
+        }.call(this));
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         return [
-            ... await this.FetchMediaItem(manga, 'chapter'),
+            ...(await this.FetchMediaItem(manga, 'chapter')).reverse(),
             ... await this.FetchMediaItem(manga, 'singleBook'),
         ];
     }
 
     private async FetchMediaItem(manga: Manga, type: string): Promise<Chapter[]> {
-        const chapterList = [];
-        let cursor: number = undefined;
-        do {
-            const endpoint = [`./${type}/paginatedList?sort=1&limit=100&titleId=${manga.Identifier}&isWebOnly=0`, cursor ? `&cursor=${cursor}` : ''].join('');
-            const { data, resultCode, nextCursor: next } = await this.FetchAPI<APIMedias>(endpoint);
-            const chapters = resultCode === 1 && data?.length > 0 ? data.map(chapter => {
-                const title = [chapter.name, chapter.subName ?? chapter.stories].filter(item => item).join(' - ');
-                return new Chapter(this, manga, JSON.stringify({ id: chapter.id, type: chapter.dataType }), title);
-            }) : [];
-            chapterList.push(...chapters);
-            cursor = next;
-        } while (cursor);
-        return chapterList;
+        type This = typeof this;
+        return Array.fromAsync(async function* (this: This) {
+            let cursor: number;
+            for (let run = true; run;) {
+                const endpoint = [`./${type}/paginatedList?sort=1&limit=100&titleId=${manga.Identifier}&isWebOnly=0`, cursor ? `&cursor=${cursor}` : ''].join('');
+                const { data, resultCode, nextCursor: next } = await this.FetchAPI<APIMedias>(endpoint);
+                const chapters = resultCode === 1 && data?.length > 0 ? data.map(({ name, subName, stories, id, dataType }) => {
+                    const title = [name, subName ?? stories].filter(item => item).join(' - ');
+                    return new Chapter(this, manga, JSON.stringify({ id, type: dataType }), title);
+                }) : [];
+                next ? cursor = next : run = false;
+                yield* chapters;
+            }
+        }.call(this));
     }
 
     public override async FetchPages(container: Chapter): Promise<Page[]> {
-        const { type }: MediaItem = JSON.parse(container.Identifier);
+        const { type } = <MediaItem>JSON.parse(container.Identifier);
         switch (type) {
             case 1: return this.FetchChapterPages(container);
             case 2: return this.FetchVolumePages(container);
@@ -124,7 +119,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     private async FetchChapterPages(chapter: Chapter): Promise<Page[]> {
-        const { id }: MediaItem = JSON.parse(chapter.Identifier);
+        const { id } = <MediaItem>JSON.parse(chapter.Identifier);
         const { data: { pages }, resultCode } = await this.FetchAPI<APIPages>(`./chapter/page/list`, {
             titleId: parseInt(chapter.Parent.Identifier),
             chapterId: id
@@ -133,18 +128,15 @@ export default class extends DecoratableMangaScraper {
     }
 
     private async FetchVolumePages(volume: Chapter): Promise<Page[]> {
-        const { id: bookId }: MediaItem = JSON.parse(volume.Identifier);
-        const { data: { chapters } } = await this.FetchAPI<APIVolume>(`./singleBook/detail?singleBookId=${bookId}`);
-        return !chapters ? [] : chapters.reduce(async (accumulator: Promise<Page[]>, chapter) => {
-            const { data: { pages }, resultCode } = await this.FetchAPI<APIPages>(`./singleBook/page/list?singleBookId=${bookId}&chapterId=${chapter.id}`);//await FetchJSON<APIResult<APIPages>>(new Request(url));
-            return resultCode !== 1 ? accumulator : (await accumulator).concat(this.MapPages(volume, pages));
-        }, Promise.resolve<Page[]>([]));
+        const { id: bookId } = <MediaItem>JSON.parse(volume.Identifier);
+        const { data: { pages }, resultCode } = await this.FetchAPI<APIPages>(`./singleBook/page/list?singleBookId=${bookId}`);
+        return resultCode !== 1 ? [] : this.MapPages(volume, pages);
     }
 
     private MapPages(container: Chapter, pages: APIPage[]): Page[] {
-        return pages.filter(page => page.type === 'image')
+        return pages.filter(({ type }) => type === 'image')
             .sort((self, other) => self.pageNumber - other.pageNumber)
-            .map(page => new Page(this, container, new URL(page.image), { Referer: this.URI.href }));
+            .map(({ image }) => new Page(this, container, new URL(image), { Referer: this.URI.href }));
     }
 
     public override async FetchImage(page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {

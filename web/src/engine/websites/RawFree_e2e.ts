@@ -6,13 +6,13 @@ new TestFixture({
         title: 'Raw FREE'
     },
     container: {
-        url: 'https://rawfree.luxe/manga-raw/いらないスキル買い取ります-raw-free/',
+        url: 'https://rawfree.buzz/manga-raw/いらないスキル買い取ります-raw-free/',
         id: encodeURI('/manga-raw/いらないスキル買い取ります-raw-free/'),
         title: 'いらないスキル買い取ります'
     },
     child: {
         id: encodeURI('/いらないスキル買い取ります-raw-【第22-3話】/').toLowerCase(),
-        title: '【第22-3話】'
+        title: '【第22.3話】'
     },
     entry: {
         index: 0,
