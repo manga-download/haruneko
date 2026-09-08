@@ -6,17 +6,17 @@ new TestFixture({
         title: 'Astrea Scans'
     },
     container: {
-        url: 'https://astreascans.com/manga/sehrin-ilahi-buyuk-ustasi/',
-        id: '/manga/sehrin-ilahi-buyuk-ustasi/',
-        title: 'Şehrin İlahi Büyük Ustası'
+        url: 'https://astreascans.com/manga/tutsak-esim-bosanmak-istiyor/',
+        id: '/manga/tutsak-esim-bosanmak-istiyor/',
+        title: 'Tutsak Eşim Boşanmak İstiyor'
     },
     child: {
-        id: '/manga/sehrin-ilahi-buyuk-ustasi/bolum-1/',
+        id: '/manga/tutsak-esim-bosanmak-istiyor/bolum-1/',
         title: 'bölüm 1'
     },
     entry: {
         index: 0,
-        size: 256_024,
+        size: 179_672,
         type: 'image/webp'
     }
 }).AssertWebsite();

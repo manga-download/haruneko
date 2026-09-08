@@ -7,7 +7,7 @@ new TestFixture( {
     },
     container: {
         url: 'https://manhwa-es.com/manga/gunsmith-cats-burst-espanol/',
-        id: JSON.stringify({ post: '10221', slug: '/manga/gunsmith-cats-burst-espanol/' }),
+        id: '/manga/gunsmith-cats-burst-espanol/',
         title: 'Gunsmith Cats Burst - español'
     },
     child: {
