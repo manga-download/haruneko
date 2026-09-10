@@ -7,7 +7,7 @@ class IPC {
     On(channel: Channels.RemoteProcedureCallContract.LoadMediaContainerFromURL, callback: (url: string) => Promise<void>): void;
 
     /**
-     * Register a {@link callback} to handle a message from the _Main_ process via `webContents.send(channel, ...args)`.
+     * Register a {@link callback} to handle a message from the _Main_ process via `IPC.Send(channel, ...parameters)`.
      * The sender does not receive a response (fire & forget).
      */
     public On<TParameters extends JSONArray>(channel: string, callback: (...parameters: TParameters) => void): void {
@@ -17,7 +17,7 @@ class IPC {
     Send(channel: never, ...parameters: never): never;
 
     /**
-     * Send a message to the _Main_ process handled by `ipcMain.on(channel, listener)`.
+     * Send a message to the _Main_ process handled by `IPC.On(channel, callback)`.
      * The sender does not receive a response (fire & forget).
      */
     public Send<TParameters extends JSONArray>(channel: string, ...parameters: TParameters): void {
@@ -27,7 +27,7 @@ class IPC {
     Handle(channel: never, ...parameters: never): never;
 
     /**
-     * Register a {@link callback} to handle a request from the _MAin_ process via `ipcMain.invoke(channel, ...args)`.
+     * Register a {@link callback} to handle a request from the _Main_ process via `IPC.Invoke(channel, ...parameters)`.
      * The sender receives a response with the result from the {@link callback}.
      */
     public Handle<TParameters extends JSONArray, TReturn extends JSONElement>(_channel: string, _callback: (...parameters: TParameters) => TReturn | PromiseLike<TReturn>): void {
@@ -60,7 +60,7 @@ class IPC {
     Invoke(channel: Channels.RemoteProcedureCallManager.Restart, port: number, secret: string): Promise<void>;
 
     /**
-     * Send a request to the _Main_ process handled by `ipcMain.handle(channel, listener)`.
+     * Send a request to the _Main_ process handled by `IPC.Handle(channel, callback)`.
      * The sender receives a response with the result from the handler.
      */
     public Invoke<TParameters extends JSONArray, TReturn extends JSONElement>(channel: string, ...parameters: TParameters): TReturn | PromiseLike<TReturn> {
