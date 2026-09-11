@@ -50,7 +50,7 @@ type APIChapter = {
 export default class extends DecoratableMangaScraper {
 
     private readonly apiURL = 'https://comic.iqiyi.com/';
-    private readonly apiKey = '0n9wdzm8pcyl1obxe0n9qdzm2pcyf1ob';
+    private readonly websiteToken = '0n9wdzm8pcyl1obxe0n9qdzm2pcyf1ob';
     private authData: AuthData = undefined;
 
     public constructor() {
@@ -120,7 +120,7 @@ export default class extends DecoratableMangaScraper {
         url.searchParams.set('appVer', '100.0.0');
         url.searchParams.set('agentVersion', 'h5');
         if (this.authData.userID) url.searchParams.set('userId', this.authData.userID);
-        const cipher = `${url.pathname}${url.search.slice(1)}${this.authData.authCookie ?? ''}${this.apiKey}`;
+        const cipher = `${url.pathname}${url.search.slice(1)}${this.authData.authCookie ?? ''}${this.websiteToken}`;
 
         return (await FetchJSON<APIResult<T>>(new Request(url, {
             headers: {
