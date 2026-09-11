@@ -237,8 +237,12 @@ export abstract class FetchProvider {
         if (payload === null || payload === undefined) return undefined;
 
         if (payload && typeof payload === 'object') {
-            for (const value of Object.values(payload)) {
+            try {
                 if (predicate(payload)) return payload as T;
+            } catch {
+                // Handle predicate errors on objects
+            }
+            for (const value of Object.values(payload)) {
                 const result = this.#ExtractValueNextJS<T>(value, predicate);
                 if (result) return result;
             }
