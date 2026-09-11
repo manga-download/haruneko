@@ -15,6 +15,8 @@ import { WebsiteResourceKey as R } from '../../i18n/ILocale';
 type PagesInfos = {
     pagesCount: number,
     mangaID: string;
+    pageURLs: string[];
+    error?: string;
 };
 
 type ExifData = {
@@ -24,12 +26,44 @@ type ExifData = {
 };
 
 const PagesScript = `
-    new Promise(resolve => {
-        resolve({
+    (async () => {
+        const mangaID = mangaCommonId ?? currentMCid;
+        const authURL = new URL('/manga/auth', location.origin);
+        authURL.searchParams.set('device_id', '3');
+        authURL.searchParams.set('manga_id', mangaID);
+        const auth = await fetch(authURL, { credentials: 'include' }).then(response => response.json());
+        if (auth.ok !== 1 || auth.archive_info?.ok === 0) {
+            return {
+                pagesCount: pages,
+                mangaID,
+                pageURLs: [],
+                error: auth.archive_info?.err?.msg ?? JSON.stringify(auth),
+            };
+        }
+
+        // VIZ now accepts a comma-separated pages parameter and responds with
+        // JSON. The former singular page endpoint returns no_auth.
+        const indices = Array.from({ length: pages + 1 }, (_, index) => index);
+        const pagesURL = new URL('/manga/get_manga_url', location.origin);
+        pagesURL.searchParams.set('device_id', '3');
+        pagesURL.searchParams.set('manga_id', mangaID);
+        pagesURL.searchParams.set('pages', indices.join(','));
+        const result = await fetch(pagesURL, { credentials: 'include' }).then(response => response.json());
+        if (!result.data || typeof result.data !== 'object') {
+            return {
+                pagesCount: pages,
+                mangaID,
+                pageURLs: [],
+                error: typeof result.data === 'string' ? result.data : JSON.stringify(result),
+            };
+        }
+
+        return {
             pagesCount: pages,
-            mangaID: mangaCommonId ?? currentMCid
-        });
-    });
+            mangaID,
+            pageURLs: indices.map(index => result.data[index]).filter(url => typeof url === 'string' && url.startsWith('http')),
+        };
+    })();
 `;
 
 const MangasExtractor = Common.AnchorInfoExtractor(false, '.display-label');
@@ -90,26 +124,12 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
         const chapterurl = new URL(chapter.Identifier, this.URI);
-        const { pagesCount, mangaID } = await FetchWindowScript<PagesInfos>(new Request(chapterurl), PagesScript, 1500);
-        const pages = Array(pagesCount + 1).fill(0).map((_, index) => {
-            const url = new URL('/manga/get_manga_url', this.URI);
-            url.searchParams.set('device_id', '3');
-            url.searchParams.set('manga_id', mangaID);
-            url.searchParams.set('page', index.toString());
-            return new Page(this, chapter, url, { Referer: chapterurl.href });
-        });
-        return this.TestAccessAndDummyPage(pages);
-    }
-
-    private async TestAccessAndDummyPage(pages: Page[]): Promise<Page[]> {
-        // If chapter is not accessible : 'url' wont be an url at all => throw Plugin_Common_Chapter_UnavailableError.
-        const lastPage = pages.at(-1);
-        const url = await (await Fetch(new Request(lastPage.Link, { headers: { Referer: lastPage.Parameters.Referer, } }))).text();
-        if (!url.startsWith('http')) throw new Exception(R.Plugin_Common_Chapter_UnavailableError);
-
-        // last page may be a dummy (unavailable) page. In that case strip it from page array.
-        const response = await fetch(new Request(url, { method: 'HEAD', headers: { Referer: lastPage.Parameters.Referer } }));
-        return response.status != 403 ? pages: pages.slice(0, -1);
+        const { pageURLs, error } = await FetchWindowScript<PagesInfos>(new Request(chapterurl), PagesScript, 1500);
+        if (error || pageURLs.length === 0) {
+            const reason = error?.trim().replace(/\s+/g, ' ').slice(0, 300) || '(no image URLs returned)';
+            throw new Error(`${new Exception(R.Plugin_Common_Chapter_UnavailableError).message} Viz response: ${reason}`);
+        }
+        return pageURLs.map(url => new Page(this, chapter, new URL(url), { Referer: chapterurl.href }));
     }
 
     public override async FetchImage(page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
@@ -120,8 +140,7 @@ export default class extends DecoratableMangaScraper {
                     Referer: page.Parameters.Referer,
                 }
             };
-            const url = await (await Fetch(new Request(page.Link, init))).text();
-            const response = await Fetch(new Request(url, init));
+            const response = await Fetch(new Request(page.Link, init));
             return response.blob();
 
         }, priority, signal);

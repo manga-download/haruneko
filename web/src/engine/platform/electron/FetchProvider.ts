@@ -31,7 +31,9 @@ export default class FetchProviderElectron extends FetchProvider {
         // TODO: Older Electron desktop clients do not support `Channels.FetchProvider.GetSessionCookies`
         try {
             // TODO: When filter by URL partioned cookies may not be found (e.g., cf_clearance)
-            const cookies = await this.ipc.Invoke(Channels.FetchProvider.GetSessionCookies, { url: new URL(request.url).origin, /* partitionKey: {} */ });
+            // Use the complete URL so Electron also returns cookies scoped to endpoint paths
+            // such as `/manga`, rather than only cookies matching the origin's root path.
+            const cookies = await this.ipc.Invoke(Channels.FetchProvider.GetSessionCookies, { url: request.url, /* partitionKey: {} */ });
             return super.FetchConcealed(request, cookies);
         } catch {
             return super.FetchConcealed(request, []);

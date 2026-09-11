@@ -72,6 +72,25 @@ describe('FetchProvider', () => {
 
     describe('Fetch', () => {
 
+        it('Should request cookies for the complete request URL', async () => {
+            const fixture = new TestFixture();
+            const testee = fixture.CreateTestee();
+            testee.Initialize({} as FeatureFlags);
+            const request = new Request('https://www.viz.com/manga/get_manga_url?page=1');
+            const fetch = vi.spyOn(globalThis, 'fetch').mockResolvedValue(new Response());
+
+            try {
+                await testee.Fetch(request);
+            } finally {
+                fetch.mockRestore();
+            }
+
+            expect(fixture.MockIpcRenderer.invoke).toHaveBeenCalledWith(
+                Channels.FetchProvider.GetSessionCookies,
+                { url: request.url }
+            );
+        });
+
         it('Should passthru GET to native fetch', async () => {
             const fixture = new TestFixture();
             const testee = fixture.CreateTestee();
