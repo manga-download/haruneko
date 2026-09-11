@@ -12,7 +12,7 @@ new TestFixture({
     },
     child: {
         id: '43144',
-        title:'ตอนที่ 1'
+        title: 'ตอนที่ 1'
     },
     entry: {
         index: 5,
