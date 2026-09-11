@@ -34,7 +34,7 @@ export default class extends DecoratableMangaScraper {
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
         //HashTag.list.comic got the filtered manga list. Dont directly fetch the json at HashTag.fileUrl, it has junk mangas
         const data = await FetchWindowScript<APIComic[]>(new Request(new URL('/hashtag', this.URI)), 'HashTag.list.comic', 500);
-        return data.map(({ meta: { comicsListUrl, title } }) => new Manga(this, provider, comicsListUrl, title));
+        return data.map(({ meta: { comicsListUrl, title } }) => new Manga(this, provider, comicsListUrl, title.trim()));
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
