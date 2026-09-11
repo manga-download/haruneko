@@ -70,7 +70,7 @@ export default class extends DecoratableMangaScraper {
                 getHqsById(id: $id) { id, name, capitulos { id, name, number } }
             }
         `, { id: parseInt(manga.Identifier) });
-        return getHqsById.at(0).capitulos.map(({ id, name, number }) => new Chapter(this, manga, `${id}`, [number, name].filter(Boolean).join(' - '))).reverse();
+        return getHqsById.at(0).capitulos.map(({ id, name, number }) => new Chapter(this, manga, `${id}`, [`${number}`, name?.trim()].filter(Boolean).join(' - '))).reverse();
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
