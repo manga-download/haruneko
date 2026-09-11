@@ -1,7 +1,7 @@
 import type { Channels } from '../../../../../app/nw/src/ipc/InterProcessCommunication';
 
-type Payload = {
-    channel: string,
+type Request = {
+    replyID: string,
     parameters: JSONArray,
 }
 
@@ -10,34 +10,9 @@ type RequestCallback<TParameters extends JSONArray = JSONArray, TReturn extends 
 
 export class IPC {
 
-    private readonly messageHandlers = new Map<string, MessageCallback>;
-    private readonly requestHandlers = new Map<string, RequestCallback>;
-
     constructor() {
-        chrome.runtime.onMessage.addListener(this.OnMessage.bind(this));
-    }
-
-    private async GetTabID(): Promise<number> {
-        // TODO: improve query filter e.g., windowID or tabID
-        // FIXME: The returned tab ID is invalid and crashes chrome
-        const tabs = await new Promise<chrome.tabs.Tab[]>(resolve => chrome.tabs.query({ active: true }, resolve));
-        return tabs.at(0)?.id ?? Number.NaN;
-    }
-
-    private async OnMessage(message: Payload, _sender: chrome.runtime.MessageSender, sendResponse: (response?: JSONElement) => void): Promise<void> {
-        try {
-            if (this.messageHandlers.has(message.channel)) {
-                const handle = <MessageCallback>this.messageHandlers.get(message.channel);
-                await handle(...message.parameters);
-            }
-            if (this.requestHandlers.has(message.channel)) {
-                const handle = <RequestCallback>this.requestHandlers.get(message.channel);
-                sendResponse(await handle(...message.parameters));
-            }
-            console.warn('No appropriate handler registered for:', message.channel);
-        } catch (error) {
-            console.warn(error);
-        }
+        setTimeout(() => window.document.dispatchEvent(new CustomEvent('APP::MEOW', { detail: { web: true } })), 5000);
+        setTimeout(() => window.document.addEventListener('WEB::MEOW', evt => console.log('From App Context:', evt.detail)), 500);
     }
 
     On(channel: Channels.RemoteProcedureCallContract.LoadMediaContainerFromURL, callback: (url: string) => Promise<void>): void;
@@ -47,7 +22,7 @@ export class IPC {
      * The sender does not receive a response (fire & forget).
      */
     public On<TParameters extends JSONArray>(channel: string, callback: MessageCallback<TParameters>): void {
-        this.messageHandlers.set(channel, <MessageCallback>callback);
+        window.document.addEventListener(channel, ({ detail }: CustomEvent<TParameters>) => callback(...detail));
     }
 
     Send(channel: never, ...parameters: never): never;
@@ -57,8 +32,7 @@ export class IPC {
      * The sender does not receive a response (fire & forget).
      */
     public async Send<TParameters extends JSONArray>(channel: string, ...parameters: TParameters): Promise<void> {
-        const tab = await this.GetTabID();
-        return chrome.tabs.sendMessage<Payload, void>(tab, { channel, parameters });
+        window.document.dispatchEvent(new CustomEvent<TParameters>(channel, { detail: parameters }));
     }
 
     Handle(channel: never, ...parameters: never): never;
@@ -68,7 +42,7 @@ export class IPC {
      * The sender receives a response with the result from the {@link callback}.
      */
     public Handle<TParameters extends JSONArray, TReturn extends JSONElement>(channel: string, callback: RequestCallback<TParameters, TReturn | undefined>): void {
-        this.requestHandlers.set(channel, <RequestCallback>callback);
+        //this.requestHandlers.set(channel, <RequestCallback>callback);
     }
 
     // RemoteProcedureCallManager
@@ -80,8 +54,13 @@ export class IPC {
      * The sender receives a response with the result from the handler.
      */
     public async Invoke<TParameters extends JSONArray, TReturn extends JSONElement>(channel: string, ...parameters: TParameters): Promise<TReturn | undefined> {
-        const tab = await this.GetTabID();
-        return new Promise<TReturn | undefined>(resolve => chrome.tabs.sendMessage<Payload, TReturn>(tab, { channel, parameters }, resolve));
+        const dbg = await new Promise<TReturn | undefined>(resolve => {
+            const replyID = `${channel}::${Date.now()}#${Math.random()}`;
+            window.document.addEventListener(replyID, (evt: CustomEvent<TReturn | undefined>) => resolve(evt.detail), { once: true });
+            window.document.dispatchEvent(new CustomEvent<Request>(channel, { detail: { replyID, parameters } }));
+        });
+        console.log('WEB::Invoke::Response', '=>', dbg);
+        return dbg;
     }
 }
 
