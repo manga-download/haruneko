@@ -20,7 +20,6 @@ type APIMedia = {
 
 type APIPage = {
     url: string;
-    size: number;
 };
 
 export class MangaToonBase extends DecoratableMangaScraper {
@@ -73,7 +72,7 @@ export class MangaToonBase extends DecoratableMangaScraper {
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
         const pages = await this.FetchAPI<APIPage[]>(`./cartoons/pictures?id=${chapter.Identifier}`);
         if (!pages) throw new Exception(R.Plugin_Common_Chapter_UnavailableError);
-        return pages.map(({ url, size }) => new Page(this, chapter, new URL(url), { size }));
+        return pages.map(({ url }) => new Page(this, chapter, new URL(url)));
     }
 
     public override async FetchImage(page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
