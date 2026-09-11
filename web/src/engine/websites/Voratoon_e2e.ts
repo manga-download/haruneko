@@ -6,7 +6,7 @@ new TestFixture({
         title: 'Voratoon'
     },
     container: {
-        url: 'https://v1.voratoon.com/series/swordmasters-youngest-son',
+        url: 'https://v2.voratoon.com/series/swordmasters-youngest-son',
         id: 'swordmasters-youngest-son',
         title: 'Swordmaster’s Youngest Son'
     },
