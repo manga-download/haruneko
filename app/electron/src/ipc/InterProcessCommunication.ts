@@ -8,7 +8,7 @@ export class IPC {
     On(channel: never, callback: never): never;
 
     /**
-     * Register a {@link callback} to handle a message from the _Render_ process via `ipcRenderer.send(channel, ...args)`.
+     * Register a {@link callback} to handle a message from the _Render_ process via `IPC.Send(channel, ...parameters)`.
      * The sender does not receive a response (fire & forget).
      */
     public On<TParameters extends JSONArray>(channel: string, callback: (...parameters: TParameters) => void): void {
@@ -20,7 +20,7 @@ export class IPC {
     Send(channel: Channels.RemoteProcedureCallContract.LoadMediaContainerFromURL, url: string): void;
 
     /**
-     * Send a message to the _Render_ process handled by `ipcRenderer.on(channel, listener)`.
+     * Send a message to the _Render_ process handled by `IPC.On(channel, callback)`.
      * The sender does not receive a response (fire & forget).
      */
     public Send<TParameters extends JSONArray>(channel: string, ...parameters: TParameters): void {
@@ -53,7 +53,7 @@ export class IPC {
     Handle(channel: Channels.RemoteProcedureCallManager.Restart, callback: (port: number, secret: string) => Promise<void>): void;
 
     /**
-     * Register a {@link callback} to handle a request from the _Render_ process via `ipcRenderer.invoke(channel, ...args)`.
+     * Register a {@link callback} to handle a request from the _Render_ process via `IPC.Invoke(channel, ...parameters)`.
      * The sender receives a response with the result from the {@link callback}.
      */
     public Handle<TParameters extends JSONArray, TReturn extends JSONElement>(channel: string, callback: (...parameters: TParameters) => TReturn | PromiseLike<TReturn>): void {
@@ -63,7 +63,7 @@ export class IPC {
     Invoke(channel: never, ...parameters: never): never;
 
     /**
-     * Send a request to the _Render_ process handled by `ipcRenderer.handle(channel, listener)`.
+     * Send a request to the _Render_ process handled by `IPC.Handle(channel, callback)`.
      * The sender receives a response with the result from the handler.
      */
     public Invoke<TParameters extends JSONArray, TReturn extends JSONElement>(_channel: string, ..._parameters: TParameters): TReturn | PromiseLike<TReturn> {

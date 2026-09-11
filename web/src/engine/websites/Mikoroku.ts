@@ -4,6 +4,11 @@ import { type MangaPlugin, Chapter, Manga, Page } from '../providers/MangaPlugin
 import { FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
 import { PageLinkExtractor, ZeistManga, type FeedResults } from './templates/ZeistManga';
 
+type APIManga = {
+    title: string;
+    slug: string;
+};
+
 type ChapterData = {
     url: string;
     slug: string;
@@ -23,24 +28,47 @@ export default class extends ZeistManga {
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        const { feed: { entry } } = await FetchJSON<FeedResults>(new Request(new URL(`https://www.mikoroku.top/feeds/posts/default?alt=json&max-results=9999`)));
-        return entry
-            .filter(({ category }) => category && category.some(({ term }) => ["Manga", "Manhua", "Manhwa"].includes(term)))
-            .map(({ link, title: { $t } }) => {
-                const goodLink = link.find(link => link.rel === 'alternate').href;
-                return new Manga(this, provider, goodLink.split('/').at(-1).replace('.html', '').trim(), $t.trim() );
-            });
+        const mangas = await FetchJSON<APIManga[]>(new Request(new URL('https://raw.githubusercontent.com/moemaomao/mymangadata/main/all-manga.json')));
+        return mangas.map(({ title, slug }) => new Manga(this, provider, slug, title));
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
         const { id, title } = await FetchWindowScript<{ id: string, title: string }>(new Request(new URL(url)), `
-            new Promise ( resolve => {
-                resolve ({
-                    id: new URL(location).searchParams.get('slug'),
-                    title : document.querySelector('h1#detailTitle').textContent.trim()
-                })
+            new Promise((resolve, reject) => {
+                let interval;
+                try {
+                    const checkElement = () => {
+                        const element = document.querySelector('h1#detailTitle');
+                        if (element && !element.textContent.startsWith('Loading')) {
+                            return ({
+                                id: new URL(location).searchParams.get('slug'),
+                                title : document.querySelector('h1#detailTitle').textContent.trim()
+                            });
+                        } else return null;
+                    };
+
+                    const endTime = Date.now() + 15000;
+
+                    interval = setInterval(() => {
+                        if (Date.now() > endTime) {
+                            clearInterval(interval);
+                            reject(new Error("Element #detailTitle not found after 15 seconds."));
+                            return;
+                        }
+
+                        const result = checkElement();
+                        if (result) {
+                            clearInterval(interval);
+                            resolve(result);
+                        }
+                    }, 150);
+
+                } catch (error) {
+                    if (interval) clearInterval(interval);
+                    reject(error);
+                }
             });
-        `, 2000);
+        `, 0);
         return new Manga(this, provider, id, title);
     }
 
@@ -80,16 +108,20 @@ export default class extends ZeistManga {
     }
 
     private async FetchChapterEntries(mangaSlug: string): Promise<FeedResults['feed']['entry']> {
-        const { feed } = await FetchJSON<FeedResults>(new Request(new URL(`https://www.mikodrive.my.id/feeds/posts/default?alt=json&max-results=9999&q=${mangaSlug}`)));
-        return feed.entry
-            .filter(entry => {
-                const title = entry.title.$t.toLowerCase();
-                return (
-                    title.includes("chapter") ||
-                    title.match(/chapter\s*\d+/) ||
-                    title.match(/\d+/)
-                );
-            });
+        for (const domain of ['https://www.mikodrive.my.id', 'https://www.yomidays.my.id']) {
+            const data = await FetchJSON<FeedResults>(new Request(new URL(`/feeds/posts/default?alt=json&max-results=9999&q=${mangaSlug}`, domain)));
+            if (data.feed?.entry.length > 0) {
+                return data.feed.entry
+                    .filter(entry => {
+                        const title = entry.title.$t.toLowerCase();
+                        return (
+                            title.includes("chapter") ||
+                            title.match(/chapter\s*\d+/) ||
+                            title.match(/\d+/)
+                        );
+                    });
+            }
+        };
+        return [];
     }
-
 }

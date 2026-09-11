@@ -35,13 +35,13 @@ new TestFixture({
         title: 'Dragon Prince Yuan'
     },
     child: {
-        id: JSON.stringify({ chapterString: '261', translationType: 'raw' }),
-        title: 'Chapter 261 - Appeal for Aid [raw]',
+        id: JSON.stringify({ chapterString: '111', translationType: 'raw' }),
+        title: 'Chapter 111 - Opening The Qi Dwelling (First Half) [raw]',
         timeout: 15_000
     },
     entry: {
         index: 0,
-        size: 385_022,
+        size: 538_520,
         type: 'image/jpeg'
     }
 }).AssertWebsite();

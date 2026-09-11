@@ -34,7 +34,7 @@ export default class extends DecoratableMangaScraper {
     private readonly apiURL = 'https://api.voratoon.com/series/';
 
     public constructor() {
-        super('komikcast', 'Voratoon', 'https://v1.voratoon.com', Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Language.Indonesian, Tags.Source.Aggregator, Tags.Accessibility.DomainRotation);
+        super('komikcast', 'Voratoon', 'https://v2.voratoon.com', Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Language.Indonesian, Tags.Source.Aggregator, Tags.Accessibility.DomainRotation);
     }
 
     public override get Icon() {
