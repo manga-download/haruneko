@@ -1,5 +1,5 @@
 import { Delay } from '../../BackgroundTimers';
-import { FetchCSS, FetchJSON } from '../../platform/FetchProvider';
+import { FetchJSON, FetchNextProps } from '../../platform/FetchProvider';
 import * as Common from '../decorators/Common';
 import { Chapter, DecoratableMangaScraper, Manga, type MangaPlugin, Page } from '../../providers/MangaPlugin';
 
@@ -7,23 +7,17 @@ type APIResult<T> = {
     data: T;
 };
 
-type NEXTManga = {
-    props: {
-        pageProps: {
-            initialManga: {
-                id: string;
-                name: string;
-            };
-        };
+type JSONManga = {
+    initialManga: {
+        id: string;
+        name: string;
     };
 };
 
 type APIMangas = APIResult<{
     items: {
         id: string;
-        url: string;
         name: string;
-        slug: string;
     }[];
 }>;
 
@@ -50,8 +44,7 @@ export class MangakBase extends DecoratableMangaScraper {
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
-        const [{ text }] = await FetchCSS<HTMLScriptElement>(new Request(new URL(url)), 'script#__NEXT_DATA__');
-        const { props: { pageProps: { initialManga: { id, name } } } } = <NEXTManga>JSON.parse(text);
+        const { initialManga: { id, name } } = await FetchNextProps<JSONManga>(new Request(new URL(url)));
         return new Manga(this, provider, id, name);
     }
 
