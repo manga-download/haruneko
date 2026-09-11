@@ -233,19 +233,12 @@ export abstract class FetchProvider {
         return this.#ExtractValueNextJS<T>(payload, predicate);
     }
 
-    #ExtractValueNextJS<T extends JSONElement>(payload: any, predicate: (data: JSONArray<JSONElement> | JSONObject<JSONElement>) => unknown): T {
+    #ExtractValueNextJS<T extends JSONElement>(payload: JSONElement, predicate: (data: JSONArray<JSONElement> | JSONObject<JSONElement>) => unknown): T {
         if (payload === null || payload === undefined) return undefined;
-
-        //make the predicate fails gracefully.
-        //i.e predicate  = ( data => 'something' in data) and payload is a primitive type (string, number, etc)
-        try {
-            if (predicate(payload)) {
-                return payload as T;
-            }
-        } catch { };
 
         if (payload && typeof payload === 'object') {
             for (const value of Object.values(payload)) {
+                if (predicate(payload)) return payload as T;
                 const result = this.#ExtractValueNextJS<T>(value, predicate);
                 if (result) return result;
             }
