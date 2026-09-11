@@ -5,8 +5,8 @@ import { MangaToonBase } from './templates/MangaToonBase';
 export default class extends MangaToonBase {
 
     public constructor() {
-        super('mangatoon-cn', `MangaToon (Chinese)`, 'https://mangatoon.mobi/cn', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Chinese, Tags.Source.Official);
-        this.WithLanguage('cn');
+        super('mangatoon-de', `MangaToon (German)`, 'https://de.mangatoon.mobi', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.German, Tags.Source.Official);
+        this.WithLanguage('de');
     }
 
     public override get Icon() {

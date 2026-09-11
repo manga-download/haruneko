@@ -7,6 +7,7 @@ import { GetBytesFromUTF8, GetHexFromBytes, GetUTF8FromBytes } from '../../Buffe
 import { Exception } from '../../Error';
 import { WebsiteResourceKey as R } from '../../../i18n/ILocale';
 import { Delay } from '../../BackgroundTimers';
+import { MD5 } from '../../Crypto';
 
 type APIResult<T> = {
     data: T;
@@ -25,7 +26,7 @@ type APIPage = {
 export class MangaToonBase extends DecoratableMangaScraper {
     private language = 'en';
     private readonly apiURL = 'https://sg.mangatoon.mobi/api/';
-    private readonly mobileURL = new URL('https://h5.mangatoon.mobi');
+    private readonly mobileURI = new URL('https://h5.mangatoon.mobi');
     private udid: string = undefined;
 
     public override async Initialize(): Promise<void> {
@@ -38,11 +39,17 @@ export class MangaToonBase extends DecoratableMangaScraper {
     }
 
     public override ValidateMangaURL(url: string): boolean {
-        return new RegExpSafe(`^${this.URI.origin}/${this.language}/[^/]+?content_id=\\d+$`).test(url);
+        // websites got 2 url patterns
+        // https://de.mangatoon.mobi/1234-shone-fraulein
+        // https://mangatoon.mobi/id/my-disciples-cultivate-while-i-slack-off?content_id=3655551
+
+        return new RegExpSafe(`^${this.URI.origin}/${this.language}/[^/]+?content_id=\\d+$`).test(url)
+            || new RegExpSafe(`^${this.URI.origin}/\\d+-[^/]+$`).test(url);
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
-        const { id, title } = await this.FetchAPI<APIMedia>(`./content/detail?id=${new URL(url).searchParams.get('content_id')}`);
+        const mangaId = new URL(url).searchParams?.get('content_id') ?? url.match(/\/(\d+)-/).at(1);
+        const { id, title } = await this.FetchAPI<APIMedia>(`./content/detail?id=${mangaId}`);
         return new Manga(this, provider, `${id}`, title);
     }
 
@@ -60,7 +67,7 @@ export class MangaToonBase extends DecoratableMangaScraper {
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const chapters = await this.FetchAPI<APIMedia[]>(`./content/episodes?id=${manga.Identifier}`);
-        return chapters.map(({ id, title }) => new Chapter(this, manga, `${id}`, title));
+        return chapters.map(({ id, title }) => new Chapter(this, manga, `${id}`, title)).reverse();
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
@@ -71,17 +78,14 @@ export class MangaToonBase extends DecoratableMangaScraper {
 
     public override async FetchImage(page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
         const blob = await Common.FetchImageAjax.call(this, page, priority, signal);
-        console.log('api size', page.Parameters.size);
-        console.log('blob size', blob.size);
-
-        return await this.Decrypt(await blob.arrayBuffer());
+        return this.Decrypt(await blob.arrayBuffer());
     }
 
     private async FetchAPI<T extends JSONElement>(endpoint: string): Promise<T> {
         return (await FetchJSON<APIResult<T>>(new Request(this.GetSignedURL(endpoint), {
             headers: {
-                Referer: this.mobileURL.href,
-                Origin: this.mobileURL.origin
+                Referer: this.mobileURI.href,
+                Origin: this.mobileURI.origin
             }
         }))).data;
     }
@@ -157,120 +161,4 @@ export class MangaToonBase extends DecoratableMangaScraper {
         finalData.set(remainder, decryptedPart.length);
         return GetTypedData(finalData.buffer);
     }
-}
-
-function MD5(bytes: Uint8Array): Uint8Array {
-    const bitLen = bytes.length * 8;
-
-    // 1. Padding: Calculate total length needed (multiple of 64 bytes / 512 bits)
-    // Formula: original length + 1 byte (0x80) + padding bytes + 8 bytes for length
-    const originalLen = bytes.length;
-    const paddingLen = (64 - (originalLen + 9) % 64) % 64;
-    const totalLen = originalLen + 1 + paddingLen + 8;
-
-    const data = new Uint8Array(totalLen);
-    data.set(bytes);
-    data[originalLen] = 0x80; // Append single '1' bit (rest of byte is 0s)
-
-    // Append original length in bits as a 64-bit little-endian integer at the very end
-    const dv = new DataView(data.buffer);
-    dv.setUint32(totalLen - 8, bitLen, true);
-    // Upper 32 bits remain 0 since we only support up to 4GB arrays here
-
-    // 2. Initialize MD5 buffers (Magic Numbers)
-    let h0 = 0x67452301;
-    let h1 = 0xefcdab89;
-    let h2 = 0x98badcfe;
-    let h3 = 0x10325476;
-
-    // Helper functions for bitwise operations and rotations
-    const rotateLeft = (x: number, n: number) => x << n | x >>> 32 - n;
-    const addUnsigned = (x: number, y: number) => x + y >>> 0;
-
-    const computeStep = (q: number, a: number, b: number, x: number, s: number, t: number) =>
-        addUnsigned(rotateLeft(addUnsigned(addUnsigned(a, q), addUnsigned(x, t)), s), b);
-
-    const F = (a: number, b: number, c: number, d: number, x: number, s: number, t: number) =>
-        computeStep(b & c | ~b & d, a, b, x, s, t);
-
-    const G = (a: number, b: number, c: number, d: number, x: number, s: number, t: number) =>
-        computeStep(b & d | c & ~d, a, b, x, s, t);
-
-    const H = (a: number, b: number, c: number, d: number, x: number, s: number, t: number) =>
-        computeStep(b ^ c ^ d, a, b, x, s, t);
-
-    const I = (a: number, b: number, c: number, d: number, x: number, s: number, t: number) =>
-        computeStep(c ^ (b | ~d), a, b, x, s, t);
-
-    // MD5 Constants (K) and Shift amounts (S)
-    const K = new Uint32Array([
-        0xd76aa478, 0xe8c7b756, 0x242070db, 0xc1bdceee, 0xf57c0faf, 0x4787c62a, 0xa8304613, 0xfd469501,
-        0x698098d8, 0x8b44f7af, 0xffff5bb1, 0x895cd7be, 0x6b901122, 0xfd987193, 0xa679438e, 0x49b40821,
-        0xf61e2562, 0xc040b340, 0x265e5a51, 0xe9b6c7aa, 0xd62f105d, 0x02441453, 0xd8a1e681, 0xe7d3fbc8,
-        0x21e1cde6, 0xc33707d6, 0xf4d50d87, 0x455a14ed, 0xa9e3e905, 0xfcefa3f8, 0x676f02d9, 0x8d2a4c8a,
-        0xfffa3942, 0x8771f681, 0x6d9d6122, 0xfde5380c, 0xa4beea44, 0x4bdecfa9, 0xf6bb4b60, 0xbebfbc70,
-        0x289b7ec6, 0xeaa127fa, 0xd4ef3085, 0x04881d05, 0xd9d4d039, 0xe6db99e5, 0x1fa27cf8, 0xc4ac5665,
-        0xf4292244, 0x432aff97, 0xab9423a7, 0xfc93a039, 0x655b59c3, 0x8f0ccc92, 0xffeff47d, 0x85845dd1,
-        0x6fa87e4f, 0xfe2ce6e0, 0xa3014314, 0x4e0811a1, 0xf7537e82, 0xbd3af235, 0x2ad7d2bb, 0xeb86d391
-    ]);
-
-    const S = [
-        7, 12, 17, 22, 7, 12, 17, 22, 7, 12, 17, 22, 7, 12, 17, 22,
-        5, 9, 14, 20, 5, 9, 14, 20, 5, 9, 14, 20, 5, 9, 14, 20,
-        4, 11, 16, 23, 4, 11, 16, 23, 4, 11, 16, 23, 4, 11, 16, 23,
-        6, 10, 15, 21, 6, 10, 15, 21, 6, 10, 15, 21, 6, 10, 15, 21
-    ];
-
-    // 3. Process data in 512-bit (64-byte) blocks
-    for (let i = 0; i < data.length; i += 64) {
-        const X = new Uint32Array(16);
-        const block = new DataView(data.buffer, data.byteOffset + i, 64);
-
-        for (let j = 0; j < 16; j++) {
-            X[j] = block.getUint32(j * 4, true);
-        }
-
-        let a = h0, b = h1, c = h2, d = h3;
-
-        for (let j = 0; j < 64; j++) {
-            const round = j >> 4; // 0, 1, 2, or 3
-            let g = 0;
-            let fn = F;
-
-            if (round === 0) {
-                g = j;
-                fn = F;
-            } else if (round === 1) {
-                g = (5 * j + 1) % 16;
-                fn = G;
-            } else if (round === 2) {
-                g = (3 * j + 5) % 16;
-                fn = H;
-            } else {
-                g = 7 * j % 16;
-                fn = I;
-            }
-
-            const tmp = fn(a, b, c, d, X[g], S[j], K[j]);
-            a = d;
-            d = c;
-            c = b;
-            b = tmp;
-        }
-
-        h0 = addUnsigned(h0, a);
-        h1 = addUnsigned(h1, b);
-        h2 = addUnsigned(h2, c);
-        h3 = addUnsigned(h3, d);
-    }
-
-    // 4. Output results as a 16-byte Uint8Array (Little-Endian layout)
-    const out = new Uint8Array(16);
-    const outDv = new DataView(out.buffer);
-    outDv.setUint32(0, h0, true);
-    outDv.setUint32(4, h1, true);
-    outDv.setUint32(8, h2, true);
-    outDv.setUint32(12, h3, true);
-
-    return out;
 }
