@@ -271,10 +271,20 @@ export abstract class FetchProvider {
         };
 
         return new Promise<T>((resolve, reject) => {
-            let cancellation = SetTimeout(async () => {
+            let settled = false;
+            let cancellation: Promise<number>;
+
+            const settle = async (action: () => void) => {
+                if (settled) return;
+                settled = true;
+                ClearTimeout(await cancellation);
                 await destroy();
+                action();
+            };
+
+            cancellation = SetTimeout(() => settle(() => {
                 reject(new Exception(R.FetchProvider_FetchWindow_TimeoutError));
-            }, timeout);
+            }), timeout);
 
             win.DOMReady.Subscribe(async () => {
                 invocations.push({ name: 'DOMReady', info: `Window: ${win}` });
@@ -296,21 +306,21 @@ export abstract class FetchProvider {
                             return;
                         }
                         default: {
-                            ClearTimeout(await cancellation);
                             await Delay(delay);
                             const result = await win.ExecuteScript<T>(script);
-                            await destroy();
-                            resolve(result);
+                            await settle(() => resolve(result));
                             return;
                         }
                     }
-                } catch {
-                    await destroy();
+                } catch (error) {
+                    await settle(() => reject(error));
                 }
             });
 
             invocations.push({ name: 'Open', info: `Request URL: ${request.url}` });
-            win.Open(request, this.featureFlags.VerboseFetchWindow.Value, preload);
+            win.Open(request, this.featureFlags.VerboseFetchWindow.Value, preload).catch(error => {
+                settle(() => reject(error));
+            });
         });
     }
 }
