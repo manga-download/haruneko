@@ -11,8 +11,8 @@ type RequestCallback<TParameters extends JSONArray = JSONArray, TReturn extends 
 export class IPC {
 
     constructor() {
-        setTimeout(() => window.document.dispatchEvent(new CustomEvent('APP::MEOW', { detail: { web: true } })), 5000);
-        setTimeout(() => window.document.addEventListener('WEB::MEOW', evt => console.log('From App Context:', evt.detail)), 500);
+        setTimeout(() => window.dispatchEvent(new CustomEvent('APP::MEOW', { detail: { web: true } })), 5000);
+        setTimeout(() => window.addEventListener('WEB::MEOW', evt => console.log('From App Context:', evt.detail)), 500);
     }
 
     On(channel: Channels.RemoteProcedureCallContract.LoadMediaContainerFromURL, callback: (url: string) => Promise<void>): void;
@@ -22,7 +22,7 @@ export class IPC {
      * The sender does not receive a response (fire & forget).
      */
     public On<TParameters extends JSONArray>(channel: string, callback: MessageCallback<TParameters>): void {
-        window.document.addEventListener(channel, ({ detail }: CustomEvent<TParameters>) => callback(...detail));
+        window.addEventListener(channel, ({ detail }: CustomEvent<TParameters>) => callback(...detail));
     }
 
     Send(channel: never, ...parameters: never): never;
@@ -32,7 +32,7 @@ export class IPC {
      * The sender does not receive a response (fire & forget).
      */
     public async Send<TParameters extends JSONArray>(channel: string, ...parameters: TParameters): Promise<void> {
-        window.document.dispatchEvent(new CustomEvent<TParameters>(channel, { detail: parameters }));
+        window.dispatchEvent(new CustomEvent<TParameters>(channel, { detail: parameters }));
     }
 
     Handle(channel: never, ...parameters: never): never;
@@ -56,8 +56,8 @@ export class IPC {
     public async Invoke<TParameters extends JSONArray, TReturn extends JSONElement>(channel: string, ...parameters: TParameters): Promise<TReturn | undefined> {
         const dbg = await new Promise<TReturn | undefined>(resolve => {
             const replyID = `${channel}::${Date.now()}#${Math.random()}`;
-            window.document.addEventListener(replyID, (evt: CustomEvent<TReturn | undefined>) => resolve(evt.detail), { once: true });
-            window.document.dispatchEvent(new CustomEvent<Request>(channel, { detail: { replyID, parameters } }));
+            window.addEventListener(replyID, (evt: CustomEvent<TReturn | undefined>) => resolve(evt.detail), { once: true });
+            window.dispatchEvent(new CustomEvent<Request>(channel, { detail: { replyID, parameters } }));
         });
         console.log('WEB::Invoke::Response', '=>', dbg);
         return dbg;

@@ -46,6 +46,9 @@ async function OpenWindow() {
         position: 'center',
         //title: 'HakuNeko',
     }, win => win ? resolve(win) : reject()));
+    //console.log = win.window.console.log.bind(win.window.console);
+    //console.warn = win.window.console.warn.bind(win.window.console);
+    //console.error = win.window.console.error.bind(win.window.console);
 
     if(!url) {
         win.showDevTools();
