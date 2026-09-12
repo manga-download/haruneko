@@ -42,14 +42,78 @@
     let { item, currentImageIndex, wide = $bindable(), onNextItem, onPreviousItem, onClose }: Props = $props();
     let entries = $derived(item.Entries.Value);
     let viewer: HTMLElement;
+    const isPaged = $derived(Settings.ViewerMode.Value === Key.ViewerMode_Paged);
+    const isDoublePage = $derived(Settings.ViewerDoublePage.Value);
 
     function viewerclose() {
         wide = false;
         onClose();
     }
 
+    function nextPage() {
+        if (currentImageIndex >= entries.length - 1) return;
+        if (!isDoublePage || currentImageIndex === entries.length - 2) currentImageIndex++;
+        else currentImageIndex += 2;
+    }
+
+    // Advance by one page, allowing the user to shift the double-page spread
+    function nextPageByOne() {
+        if (currentImageIndex >= entries.length - 1) return;
+        else currentImageIndex++;
+    }
+
+    function previousPage() {
+        if (currentImageIndex <= 0) return;
+        if (!isDoublePage || currentImageIndex === 1) currentImageIndex--;
+        else currentImageIndex -= 2;
+    }
+
+    function onPageClick(event: MouseEvent) {
+        if (!wide || !isPaged) return;
+
+        const target = event.currentTarget as HTMLElement;
+        const rect = target.getBoundingClientRect();
+        const clickX = event.clientX - rect.left;
+        const reverse = Settings.ViewerReverseDirection.Value;
+
+        if (clickX < rect.width / 3 && !reverse || clickX > rect.width * 2 / 3 && reverse) {
+            previousPage();
+        } else if (clickX > rect.width * 2 / 3 && !reverse || clickX < rect.width / 3 && reverse) {
+            nextPage();
+        }
+    }
+
+    function onWheel(event: WheelEvent) {
+        if (!wide || !isPaged) return;
+
+        event.preventDefault();
+        if (event.deltaY > 0) {
+            nextPage();
+        } else if (event.deltaY < 0) {
+            previousPage();
+        }
+    }
+
     function onKeyDown(event: KeyboardEvent) {
         switch (true) {
+            case isPaged && (
+                event.code === 'ArrowUp' ||
+                event.code === 'PageUp'
+            ):
+                previousPage();
+                event.preventDefault();
+                break;
+            case isPaged && (
+                event.code === 'ArrowDown' ||
+                event.code === 'PageDown'
+            ):
+                nextPage();
+                event.preventDefault();
+                break;
+            case isPaged && event.code === 'Space':
+                nextPageByOne();
+                event.preventDefault();
+                break;
             case event.code === 'ArrowUp':
                 scrollSmoothly(viewer, -64);
                 break;
@@ -158,7 +222,11 @@
     // Entering wide mode : scroll to image
     $effect(() => {
         if (wide) {
-            if (currentImageIndex != -1) {
+            if (isPaged) {
+                if (currentImageIndex === -1) {
+                    currentImageIndex = 0;
+                }
+            } else if (currentImageIndex != -1) {
                 // delay because of smooth transition
                 setTimeout(() => {
                     const targetScrollImage =
@@ -195,9 +263,24 @@
 <div
     id="ImageViewer"
     bind:this={viewer}
+    onclick={onPageClick}
+    onwheel={onWheel}
     role="button"
     tabindex="-1"
-    ondblclick={() => toggleFullScreen()}
+    ondblclick={(event) => {
+        if (!isPaged) {
+            toggleFullScreen();
+            return;
+        }
+        const rect = viewer.getBoundingClientRect();
+        const clickX = event.clientX - rect.left;
+        if (
+            clickX >= rect.width / 3 &&
+            clickX <= rect.width * 2 / 3
+        ) {
+            toggleFullScreen();
+        }
+    }}
     transition:fade
     class:wide={wide}
     class:reverse={Settings.ViewerReverseDirection.Value}
@@ -220,7 +303,11 @@
 
     {#each entries as content, index (index)}
         <button
+            class:hidden={index !== currentImageIndex && (index !== currentImageIndex + 1 || !isDoublePage)}
+            class:double-page={isDoublePage}
             onclick={() => {
+                if (wide && isPaged) return;
+                event.stopPropagation();
                 currentImageIndex = index;
                 wide = true;
             }}
@@ -309,5 +396,24 @@
     /* TODO: implement RTL reading */
     #ImageViewer.wide.paginated.reverse {
         flex-flow: row-reverse;
+    }
+    #ImageViewer.wide.paged {
+        display: flex;
+        width: 100%;
+        height: 100%;
+        justify-content: center;
+    }
+    #ImageViewer.wide.paged.reverse {
+        flex-flow: row-reverse;
+    }
+    #ImageViewer.wide.paged button.hidden {
+        display: none !important;
+    }
+    #ImageViewer.wide.paged :global(img.imgpreview) {
+        max-height: 100vh;
+        max-width: 100vw;
+    }
+    #ImageViewer.wide.paged button.double-page :global(img.imgpreview) {
+        max-width: calc(50vw - var(--viewer-padding) / 2);
     }
 </style>
