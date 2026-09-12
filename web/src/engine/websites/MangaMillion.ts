@@ -234,7 +234,7 @@ export default class extends DecoratableMangaScraper {
         });
 
         const nestedChapters = await Promise.all(chapterPromises);
-        return nestedChapters.flat();
+        return nestedChapters.flat().reverse();
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page<PageData>[]> {

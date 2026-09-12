@@ -14,21 +14,21 @@ type APIMangas = {
             id: number;
             fields: {
                 title_name: string;
-            }
-        }[]
-    }
+            };
+        }[];
+    };
 };
 
-type JsonChapters = {
+type JSONChapters = {
     episodes: {
         id: number;
         number: string;
-    }[]
+    }[];
 };
 
 type APIPages = {
     image_data?: {
-        path: string
+        path: string;
     }[];
 };
 
@@ -45,20 +45,9 @@ type DecryptedKey = {
     decrypted_key: string;
 };
 
-const tokenAndMatureCookieScript = `
-    new Promise(async (resolve, reject) => {
-        try {
-            await window.cookieStore.set('is_mature', 'true');
-            resolve(document.querySelector('meta[name="csrf-token"]').content);
-        } catch(error) {
-            reject(error);
-        }
-    });
-`;
-
 @Common.MangaCSS(/^{origin}\/titles\/\d+$/, 'meta[property="og:title"]')
 export default class extends DecoratableMangaScraper {
-    protected readonly apiUrl = `${this.URI.origin}/api/v1/`;
+    protected readonly apiURL = `${this.URI.origin}/api/v1/`;
     private token: string = undefined;
 
     public constructor() {
@@ -70,7 +59,16 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async Initialize(): Promise<void> {
-        this.token = await FetchWindowScript<string>(new Request(this.URI), tokenAndMatureCookieScript);
+        this.token = await FetchWindowScript<string>(new Request(this.URI), `
+            new Promise(async (resolve, reject) => {
+                try {
+                    await window.cookieStore.set('is_mature', 'true');
+                    resolve(document.querySelector('meta[name="csrf-token"]').content);
+                } catch(error) {
+                    reject(error);
+                }
+            });
+        `);
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
@@ -101,8 +99,8 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const [jsonNode] = await FetchCSS(new Request(new URL(manga.Identifier, this.URI)), '[\\:page-objects]');
-        const { episodes } = JSON.parse(jsonNode.getAttribute(':page-objects')) as JsonChapters;
-        return episodes.map(({ id, number }) => new Chapter(this, manga, `${id}`, number.trim()));
+        const { episodes } = JSON.parse(jsonNode.getAttribute(':page-objects')) as JSONChapters;
+        return episodes.map(({ id, number }) => new Chapter(this, manga, `${id}`, number.trim())).reverse();
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
@@ -148,7 +146,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     private async FetchAPI<T extends JSONElement>(endpoint: string, body: JSONElement = undefined, referer: string = undefined): Promise<T> {
-        const request = new Request(new URL(endpoint, this.apiUrl), {
+        const request = new Request(new URL(endpoint, this.apiURL), {
             method: body ? 'POST' : 'GET',
             headers: {
                 Origin: this.URI.origin,

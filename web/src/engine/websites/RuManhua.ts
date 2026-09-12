@@ -18,7 +18,7 @@ type PageParameters = {
 
 @Common.MangaCSS(/^{origin}\/news\/\d+$/, 'div.comicInfo p.title', Common.WebsiteInfoExtractor({ queryBloat: 'span' }))
 @Common.MangasMultiPageCSS('div.ib.info p.title a', Common.PatternLinkGenerator('/category/page/{page}'))
-@Common.ChaptersSinglePageCSS('div#chapterlistload a.ib')
+@Common.ChaptersSinglePageCSS('div#chapterlistload a.ib', undefined, undefined, true)
 export default class extends DecoratableMangaScraper {
 
     public constructor() {

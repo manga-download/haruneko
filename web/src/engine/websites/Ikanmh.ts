@@ -6,13 +6,13 @@ import * as MH from './templates/MH';
 
 @Common.MangaCSS(/^{origin}\/book\/[^/]+$/, MH.queryMangaTitleFromURI)
 @Common.MangasMultiPageCSS(MH.queryMangas, MH.MangasLinkGenerator)
-@Common.ChaptersSinglePageCSS(MH.queryChapters, undefined, MH.ChapterExtractor)
+@Common.ChaptersSinglePageCSS(MH.queryChapters, undefined, MH.ChapterExtractor, true)
 @Common.PagesSinglePageCSS(MH.queryPages, MH.PageLinkExtractor)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('ikanmh', `Ikanmh`, 'https://www.ikanmh.top', Tags.Language.Chinese, Tags.Media.Manhua, Tags.Source.Aggregator);
+        super('ikanmh', `Ikanmh`, 'https://ikanmh.cc', Tags.Language.Chinese, Tags.Media.Manhua, Tags.Source.Aggregator);
     }
 
     public override get Icon() {

@@ -6,19 +6,6 @@ import { FetchWindowScript } from '../platform/FetchProvider';
 import type { Priority } from '../taskpool/DeferredTask';
 import DeScramble from '../transformers/ImageDescrambler';
 
-const pageScript = `
-    new Promise ( resolve => {
-        resolve ( [...document.querySelectorAll('div.row.thumb-overlay-albums img')].map(image => {
-            const imageNumber = image.parentNode.id.split('.')[0];
-            const numPieces = aid > scramble_id ? get_num(window.btoa(aid), window.btoa(imageNumber)) : 0;
-            return {
-                url : image.dataset.original,
-                numPieces
-            };
-        }));
-    });
-`;
-
 type PageData = {
     url: string;
     numPieces: number;
@@ -43,13 +30,24 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const chapters = await Common.FetchChaptersSinglePageCSS.call(this, manga, 'div.episode ul a', undefined, Common.AnchorInfoExtractor(false, 'span'));
+        const chapters = await Common.FetchChaptersSinglePageCSS.call(this, manga, 'div.episode ul a', undefined, Common.AnchorInfoExtractor(false, 'span'), true);
         return chapters.length > 0 ? chapters : [new Chapter(this, manga, manga.Identifier.replace('/album/', '/photo/'), manga.Title)];
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page<ScrambleData>[]> {
-        const pages = await FetchWindowScript<PageData[]>(new Request(new URL(chapter.Identifier, this.URI)), pageScript, 1500);
-        return pages.filter(page => page.url)
+        const pages = await FetchWindowScript<PageData[]>(new Request(new URL(chapter.Identifier, this.URI)), `
+            new Promise ( resolve => {
+                resolve ( [...document.querySelectorAll('div.row.thumb-overlay-albums img')].map(image => {
+                    const imageNumber = image.parentNode.id.split('.')[0];
+                    const numPieces = aid > scramble_id ? get_num(window.btoa(aid), window.btoa(imageNumber)) : 0;
+                    return {
+                        url : image.dataset.original,
+                        numPieces
+                    };
+                }));
+            });
+        `, 1500);
+        return pages.filter(({ url }) => url)
             .map(({ url, numPieces }) => new Page<ScrambleData>(this, chapter, new URL(url), { numPieces }));
     }
 

@@ -72,7 +72,8 @@ export default class extends DecoratableMangaScraper {
         const chapters = await this.FetchAPI<APIChapters>(`./comics/${manga.Identifier}/chapters?skipAgeRestriction=true`);
         return chapters
             .filter(({ isAccessible, isFree, isUserRented, isUserUnlocked }) => isAccessible && (isFree || isUserRented || isUserUnlocked))
-            .map(({ id, title }) => new Chapter(this, manga, `${id}`, title));
+            .map(({ id, title }) => new Chapter(this, manga, `${id}`, title))
+            .reverse();
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {

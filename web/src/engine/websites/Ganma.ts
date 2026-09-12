@@ -10,11 +10,11 @@ type APIFinishedMagazines = {
     magazinesByCategory: {
         magazines: {
             edges: {
-                node: APIMagazineDetails
+                node: APIMagazineDetails;
             }[];
-            pageInfo: PageInfo
-        }
-    }
+            pageInfo: PageInfo;
+        };
+    };
 };
 
 type APIMagazine = {
@@ -32,9 +32,9 @@ type APIMagazineDetails = {
     title: string;
     storyInfos: {
         edges: {
-            node: APIChapter
+            node: APIChapter;
         }[]
-        pageInfo: PageInfo
+        pageInfo: PageInfo;
     },
     storyContents: {
         error: string;
@@ -59,7 +59,7 @@ type MangaId = {
 
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
-    private apiUrl = 'https://ganma.jp/api/graphql';
+    private apiURL = 'https://ganma.jp/api/graphql';
 
     public constructor() {
         super('ganma', `GANMA!`, 'https://ganma.jp', Tags.Language.Japanese, Tags.Media.Manga, Tags.Source.Official);
@@ -79,16 +79,17 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        const mangasList: Manga[] = [];
-        for (let run = true, after = undefined; run;) {
-            const { magazinesByCategory: { magazines: { edges, pageInfo: { endCursor, hasNextPage } } } } = await this.FetchAPI<APIFinishedMagazines>('finishedMagazines', { after },
-                'ade49c46df5ef36f15485df70f656fb14f3261e90863fcd9ffbcc10baf30bc4c');
-            const mangas = edges.map(({ node }) => this.CreateManga(node, provider));
-            mangasList.push(...mangas);
-            after = endCursor;
-            run = hasNextPage;
-        }
-        return mangasList;
+        type This = typeof this;
+        return Array.fromAsync(async function* (this: This) {
+            for (let run = true, after = undefined; run;) {
+                const { magazinesByCategory: { magazines: { edges, pageInfo: { endCursor, hasNextPage } } } } = await this.FetchAPI<APIFinishedMagazines>('finishedMagazines', { after },
+                    'ade49c46df5ef36f15485df70f656fb14f3261e90863fcd9ffbcc10baf30bc4c');
+                const mangas = edges.map(({ node }) => this.CreateManga(node, provider));
+                yield* mangas;
+                after = endCursor;
+                run = hasNextPage;
+            }
+        }.call(this));
     }
 
     private CreateManga(mangasData: APIMagazineDetails, provider: MangaPlugin): Manga {
@@ -97,25 +98,22 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const { magazineId, isWebOnlySensitive } = JSON.parse(manga.Identifier) as MangaId;
-        const chaptersList: Chapter[] = [];
-        for (let run = true, after = undefined; run;) {
-            const { magazine: { storyInfos: { edges, pageInfo: { endCursor, hasNextPage } } } } = await this.FetchAPI<APIMagazine>('storyInfoList',
-                {
-                    magazineIdOrAlias: magazineId,
-                    first: 100,
-                    after
-                }, 'acd460c52a231029d09e1ccca0aa06b99ae8163d5edff661cd64984ebb6dc4c3', !isWebOnlySensitive);
-            const chapters = edges.map(({ node: { storyId, title, subtitle } }) => new Chapter(this, manga, storyId, [title, subtitle].join(' ').trim()));
-            chaptersList.push(...chapters);
-            after = endCursor;
-            run = hasNextPage;
-        }
-        return chaptersList;
+        const { magazineId, isWebOnlySensitive } = <MangaId>JSON.parse(manga.Identifier);
+        type This = typeof this;
+        return (await Array.fromAsync(async function* (this: This) {
+            for (let run = true, after = undefined; run;) {
+                const { magazine: { storyInfos: { edges, pageInfo: { endCursor, hasNextPage } } } } = await this.FetchAPI<APIMagazine>('storyInfoList',
+                    { magazineIdOrAlias: magazineId, first: 100, after }, 'acd460c52a231029d09e1ccca0aa06b99ae8163d5edff661cd64984ebb6dc4c3', !isWebOnlySensitive);
+                const chapters = edges.map(({ node: { storyId, title, subtitle } }) => new Chapter(this, manga, storyId, [title, subtitle].join(' ').trim()));
+                yield* chapters;
+                after = endCursor;
+                run = hasNextPage;
+            }
+        }.call(this))).reverse();
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const { magazineId, isWebOnlySensitive } = JSON.parse(chapter.Parent.Identifier) as MangaId;
+        const { magazineId, isWebOnlySensitive } = <MangaId>JSON.parse(chapter.Parent.Identifier);
         const { magazine: { storyContents } } = await this.FetchAPI<APIMagazine>('magazineStoryForReader', {
             magazineIdOrAlias: magazineId,
             storyId: chapter.Identifier,
@@ -129,7 +127,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     private async FetchAPI<T extends JSONElement>(operation: string, variables: JSONObject, queryID: string, useAppHeaders: boolean = true, queryVersion = 1): Promise<T> {
-        const request = new Request(new URL(this.apiUrl), {
+        const request = new Request(new URL(this.apiURL), {
             headers: {
                 'X-From': this.URI.href + 'web',
             }

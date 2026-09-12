@@ -7,10 +7,10 @@ import * as Common from './decorators/Common';
 type JSONPages = {
     pc: {
         image_url: string;
-    }[],
+    }[];
     sp: {
         image_url: string;
-    }[],
+    }[];
 };
 
 type APIMangas = {
@@ -18,17 +18,20 @@ type APIMangas = {
         contents_id: string;
         title: string;
         language: string;
-    }[]
+    }[];
 };
 
 @Common.MangaCSS(/^{origin}\/titles\/[^/]+$/, 'div.book-contents', (element, uri) => ({
     id: uri.pathname,
     title: [element.querySelector('.title').textContent.trim(), `(${element.querySelector('.book-locale').textContent.toLowerCase().trim()})`].join(' ').trim()
 }))
-@Common.ChaptersMultiPageCSS<HTMLAnchorElement>('a.mod-item-series', Common.PatternLinkGenerator('{id}?page={page}'), 0, anchor => ({ id: anchor.pathname, title: anchor.querySelector('.number').textContent.trim() }))
+@Common.ChaptersMultiPageCSS<HTMLAnchorElement>('a.mod-item-series', Common.PatternLinkGenerator('{id}?page={page}'), 0, anchor => ({
+    id: anchor.pathname,
+    title: anchor.querySelector('.number').textContent.trim()
+}), true)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
-    private readonly apiUrl = 'https://mangaplus-creators.jp/api/';
+    private readonly apiURL = 'https://mangaplus-creators.jp/api/';
 
     public constructor() {
         super('mangapluscreators', 'Manga Plus Creators', 'https://mangaplus-creators.jp', Tags.Media.Manga, Tags.Language.Multilingual, Tags.Source.Official);
@@ -44,8 +47,8 @@ export default class extends DecoratableMangaScraper {
             for (const language of ['en', 'es']) {
                 for (const genre of ['fantasy', 'action', 'romance', 'horror', 'slice_of_life', 'comedy', 'sports', 'sf', 'mystery', 'others']) {
                     for (let page = 1, run = true; run; page++) {
-                        const { titles } = await FetchJSON<APIMangas>(new Request(new URL(`./genres/${genre}/titles?page=${page}&l=${language}`, this.apiUrl)));
-                        const mangas = titles.map(({ contents_id: id, title, language }) => new Manga(this, provider, `/titles/${id}`, [title, `(${language.toLowerCase()})`].join(' ').trim()));
+                        const { titles } = await FetchJSON<APIMangas>(new Request(new URL(`./genres/${genre}/titles?page=${page}&l=${language}`, this.apiURL)));
+                        const mangas = titles.map(({ contents_id: id, title, language }) => new Manga(this, provider, `/titles/${id}`, [title, `(${language.toLowerCase()})`].joinTitleSegments()));
                         mangas.length > 0 ? yield* mangas : run = false;
                     }
                 }

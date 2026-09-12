@@ -28,7 +28,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const data = await FetchWindowScript<{ id: string, title: string }[]>(new Request(new URL(`${manga.Identifier}scan/vf/`, this.URI)), 'Object.keys(dataOeuvre).filter(key => parseInt(key)).map(key => ({id: key, title : "Chapitre " +key}))', 500);
+        const data = await FetchWindowScript<{ id: string, title: string }[]>(new Request(new URL(`${manga.Identifier}scan/vf/`, this.URI)), 'Object.keys(dataOeuvre).filter(key => parseInt(key)).map(key => ({id: key, title : "Chapitre " +key})).reverse()', 500);
         return data.map(({ id, title }) => new Chapter(this, manga, id, title));
     }
 

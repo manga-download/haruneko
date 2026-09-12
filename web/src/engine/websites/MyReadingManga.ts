@@ -22,6 +22,6 @@ export default class extends DecoratableMangaScraper {
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const [lastChapter] = await FetchCSS<HTMLAnchorElement>(new Request(new URL(manga.Identifier, this.URI)), 'a.page-numbers:not(.next):nth-last-child(2)');
         const lastChapterNumber = lastChapter ? parseInt(lastChapter.text.trim()) : 1;
-        return Array.from({ length: lastChapterNumber }, (_, index) => new Chapter(this, manga, `${manga.Identifier}${index + 1}/`, `${index + 1}`));
+        return Array.from({ length: lastChapterNumber }, (_, index) => new Chapter(this, manga, `${manga.Identifier}${index + 1}/`, `${index + 1}`)).reverse();
     }
 }
