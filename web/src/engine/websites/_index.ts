@@ -206,6 +206,7 @@ export { default as HentaiZone } from './HentaiZone';
 export { default as HerosWebNew } from './HerosWebNew';
 export { default as HijalaScans } from './HijalaScans';
 export { default as Hiperdex } from './Hiperdex';
+export { default as Hipertoon } from './Hipertoon';
 export { default as Hitomi } from './Hitomi';
 export { default as HiveScans } from './HiveScans';
 export { default as HniScanTrad } from './HniScanTrad';
