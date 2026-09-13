@@ -1,13 +1,13 @@
 import { Tags } from '../Tags';
-import icon from './LerHentais.webp';
+import icon from './Hipertoon.webp';
 import { HiperManga } from './templates/HiperManga';
 
 export default class extends HiperManga {
 
     public constructor() {
-        super('lerhentais', 'LerHentais', 'https://lerhentais.com', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Language.Portuguese, Tags.Rating.Pornographic, Tags.Source.Aggregator);
+        super('hipertoon', 'Hipertoon', 'https://hipertoon.com', Tags.Media.Manhwa, Tags.Source.Aggregator, Tags.Language.Portuguese);
+        this.WithSecretHeader(false);
     }
-
     public override get Icon() {
         return icon;
     }
