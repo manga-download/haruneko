@@ -3,7 +3,7 @@ import { TestFixture } from '../../../test/WebsitesFixture';
 new TestFixture({
     plugin: {
         id: 'ninemanga-fr',
-        title: 'NineMangaFR'
+        title: 'Niadd (French)'
     },
     container: {
         url: 'https://fr.niadd.com/manga/Lycoris_Recoil.html',
