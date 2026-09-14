@@ -102,7 +102,6 @@ export { default as DeathTollScans } from './DeathTollScans';
 export { default as DecadenceScans } from './DecadenceScans';
 export { default as DennoMavo } from './DennoMavo';
 export { default as Desu } from './Desu';
-export { default as DEXHentai } from './DEXHentai';
 export { default as DiamondFansub } from './DiamondFansub';
 export { default as Digimon } from './Digimon';
 export { default as DigitalTeam } from './DigitalTeam';
