@@ -223,6 +223,7 @@ export { default as Imgur } from './Imgur';
 export { default as IMHentai } from './IMHentai';
 export { default as ImperioDaBritannia } from './ImperioDaBritannia';
 export { default as InfraFandub } from './InfraFandub';
+export { default as Inkapk } from './Inkapk';
 export { default as InManga } from './InManga';
 export { default as InmortalScan } from './InmortalScan';
 export { default as iqiyi } from './iqiyi';
