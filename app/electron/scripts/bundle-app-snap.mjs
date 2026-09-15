@@ -77,7 +77,6 @@ confinement: strict
 apps:
   ${pkgConfig.name}:
     command: ${pkgConfig.name} --no-sandbox
-    desktop: snap/gui/${pkgConfig.name}.desktop
     extensions: [gnome]
     plugs:
     - home
