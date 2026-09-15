@@ -10,16 +10,16 @@ type JSONPages = {
     pages: {
         src: string;
         type: string;
-    }[],
+    }[];
     choJuGiga?: string
 };
 
-@Common.MangaCSS(/^{origin}\/works\/[^/]+$/, 'section[class*="_series_info"] h2')
+@Common.MangaCSS(/^{origin}\/works\/[^/]+$/, 'section[class*="__series_info"] > h2')
 @Common.MangasSinglePageCSS('/new_works', 'a[class*="__work_title_link"]')
-@Common.ChaptersSinglePageCSS<HTMLAnchorElement>('ul li[class*="_episode_container"] a', undefined, anchor => ({
+@Common.ChaptersSinglePageCSS<HTMLAnchorElement>('ul li[class*="__episode_container"] a', undefined, anchor => ({
     id: anchor.pathname,
-    title: anchor.querySelector('[class*="_episode_title"]').textContent.trim()
-}), true)
+    title: anchor.querySelector('[class*="__episode_title"]').textContent.trim()
+}))
 @CoreView.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
@@ -36,5 +36,4 @@ export default class extends DecoratableMangaScraper {
         return !pages ? [] : pages.filter(({ type }) => type === 'main')
             .map(({ src }) => new Page(this, chapter, new URL(decodeURIComponent(new URL(src).pathname.match(/http.*/).at(0))), { scrambled: choJuGiga === 'baku' }));
     }
-
 }
