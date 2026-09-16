@@ -68,6 +68,8 @@ export class NiaddBase extends DecoratableMangaScraper {
     }
 
     public override async FetchImage(page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
+        let realPage = page;
+
         if (page.Link.href.endsWith('.html')) {
             const image = await this.imageTaskPool.Add(async () => {
                 const request = new Request(page.Link.href, {
@@ -81,8 +83,8 @@ export class NiaddBase extends DecoratableMangaScraper {
                 return new Page(this, page.Parent as Chapter, new URL(realimage, request.url), parameters);
             }, priority, signal);
 
-            return await Common.FetchImageAjax.call(this, image, priority, signal);
-
-        } else return Common.FetchImageAjax.call(this, page, priority, signal);
+            realPage = image;
+        }
+        return Common.FetchImageAjax.call(this, realPage, priority, signal);
     }
 }
