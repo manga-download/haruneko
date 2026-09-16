@@ -57,7 +57,6 @@ export { default as CatharsisWorld } from './CatharsisWorld';
 export { default as ChampionCross } from './ChampionCross';
 export { default as Chochox } from './Chochox';
 export { default as CiaoPlus } from './CiaoPlus';
-export { default as CMangax } from './CMangax';
 export { default as Cocomic } from './Cocomic';
 export { default as ColorcitoScans } from './ColorcitoScans';
 export { default as ColorcitoToons } from './ColorcitoToons';
