@@ -4,14 +4,12 @@ import { FetchJSON } from '../platform/FetchProvider';
 import { DecoratableMangaScraper, type MangaPlugin, Manga, Chapter, Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 
-type APIPaginated<T> = {
-    items: T[];
+type APIEntries = {
+    items: {
+        slug: string;
+        title: string;
+    }[];
     totalPages: number;
-};
-
-type APIEntry = {
-    slug: string;
-    title: string;
 };
 
 type APIChapter = {
@@ -21,12 +19,14 @@ type APIChapter = {
     }[];
 };
 
-@Common.MangaCSS(/^{origin}\/series\/[^/]+$/, 'h1')
+@Common.MangaCSS(/^{origin}\/series\/[^/]+$/, 'h1', (element, uri) => ({ id: uri.pathname.split('/').at(-1), title: element.textContent.trim() }))
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
+    private readonly apiURL = `${this.URI.origin}/api/`;
+
     public constructor() {
-        super('mangaportali', 'Manga Portalı', 'https://www.mangaportali.com', Tags.Media.Manga, Tags.Language.Turkish, Tags.Source.Scanlator);
+        super('mangaportali', 'Manga Portalı', 'https://www.mangaportali.com', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Turkish, Tags.Source.Aggregator);
     }
 
     public override get Icon() {
@@ -36,37 +36,29 @@ export default class extends DecoratableMangaScraper {
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
         type This = typeof this;
         return Array.fromAsync(async function* (this: This) {
-            for (let page = 1, totalPages = 1; page <= totalPages; page++) {
-                const uri = new URL('/api/series', this.URI);
-                uri.searchParams.set('page', `${page}`);
-                uri.searchParams.set('pageSize', '20');
-                const data = await FetchJSON<APIPaginated<APIEntry>>(new Request(uri));
-                totalPages = data.totalPages;
-                yield* data.items.map(({ slug, title }) => new Manga(this, provider, `/series/${slug}`, title));
+            for (let page = 1, run = true; run; page++) {
+                const { items, totalPages } = await FetchJSON<APIEntries>(new Request(new URL(`./series?page=${page}&pageSize=50`, this.apiURL)));
+                const mangas = items.map(({ slug, title }) => new Manga(this, provider, slug, title));
+                yield* mangas;
+                run = page < totalPages;
             }
         }.call(this));
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const slug = manga.Identifier.split('/').pop();
         type This = typeof this;
         return Array.fromAsync(async function* (this: This) {
-            for (let page = 1, totalPages = 1; page <= totalPages; page++) {
-                const uri = new URL(`/api/series/${slug}/chapters`, this.URI);
-                uri.searchParams.set('page', `${page}`);
-                const data = await FetchJSON<APIPaginated<APIEntry>>(new Request(uri));
-                totalPages = data.totalPages;
-                yield* data.items.map(chapter => new Chapter(this, manga, `/reader/${slug}/${chapter.slug}`, chapter.title));
+            for (let page = 1, run = true; run; page++) {
+                const { items, totalPages } = await FetchJSON<APIEntries>(new Request(new URL(`./series/${manga.Identifier}/chapters?page=${page}&pageSize=100`, this.apiURL)));
+                const chapters = items.map(({ slug, title }) => new Chapter(this, manga, slug, title));
+                yield* chapters;
+                run = page < totalPages;
             }
-        }.call(this)).then(chapters => chapters.reverse());
+        }.call(this));
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const [ , , mangaSlug, chapterSlug ] = chapter.Identifier.split('/');
-        const uri = new URL(`/api/series/${mangaSlug}/chapters/${chapterSlug}`, this.URI);
-        const { pages } = await FetchJSON<APIChapter>(new Request(uri));
-        return pages
-            .sort((self, other) => self.index - other.index)
-            .map(page => new Page(this, chapter, new URL(page.imageUrl)));
+        const { pages } = await FetchJSON<APIChapter>(new Request(new URL(`./series/${chapter.Parent.Identifier}/chapters/${chapter.Identifier}`, this.apiURL)));
+        return pages.sort((self, other) => self.index - other.index).map(({ imageUrl }) => new Page(this, chapter, new URL(imageUrl)));
     }
 }

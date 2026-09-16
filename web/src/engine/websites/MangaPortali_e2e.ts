@@ -7,11 +7,11 @@ new TestFixture({
     },
     container: {
         url: 'https://www.mangaportali.com/series/solo-leveling',
-        id: '/series/solo-leveling',
+        id: 'solo-leveling',
         title: 'Solo Leveling',
     },
     child: {
-        id: '/reader/solo-leveling/bolum-1',
+        id: 'bolum-1',
         title: 'Bölüm 1',
     },
     entry: {
