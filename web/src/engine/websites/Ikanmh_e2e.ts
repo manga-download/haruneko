@@ -1,12 +1,12 @@
 ﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'ikanmh',
         title: 'Ikanmh'
     },
     container: {
-        url: 'https://www.ikanmh.top/book/610',
+        url: 'https://ikanmh.cc/book/610',
         id: '/book/610',
         title: '浪漫露營'
     },
@@ -19,6 +19,4 @@ const config = {
         size: 234_906,
         type: 'image/jpeg'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();
