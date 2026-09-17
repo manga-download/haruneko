@@ -17,7 +17,7 @@ type PageKey = {
 };
 
 @Common.MangaCSS(/^{origin}\/comic\/detail\/\d+$/, 'div.comic_title')
-@Common.ChaptersSinglePageCSS('div.catalog_box div.right_box a.item_box', undefined, Common.AnchorInfoExtractor(true))
+@Common.ChaptersSinglePageCSS('div.catalog_box div.right_box a.item_box', undefined, Common.AnchorInfoExtractor(true), true)
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
