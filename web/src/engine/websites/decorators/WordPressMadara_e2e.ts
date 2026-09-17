@@ -88,7 +88,6 @@ import '../MindaFanSub_e2e';
 import '../MiniTwoScan_e2e';
 import '../MonteTai_e2e';
 import '../MundoManhwa_e2e';
-import '../NemesisScans_e2e';
 import '../NijiTranslations_e2e';
 import '../NinjaScans_e2e';
 import '../NiveraFansub_e2e';

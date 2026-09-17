@@ -15,7 +15,7 @@ function CleanTitle(...elements: string[]) {
 @Common.ChaptersSinglePageCSS<HTMLAnchorElement>('a#episodeItemCon', undefined, anchor => ({
     id: anchor.pathname,
     title: CleanTitle(anchor.querySelector<HTMLParagraphElement>('p[href]').textContent.trim(), anchor.querySelector('p.episodeStitle').textContent.split('-').at(1) ?? '')
-}))
+}), true)
 @Common.PagesSinglePageCSS('div.imgSubWrapper img')
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {

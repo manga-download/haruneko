@@ -94,7 +94,7 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const { data } = await this.#FetchAPI<APIChapters>(`/comics/book/${manga.Identifier}/chapter?page=1&rows_per_page=9999`);
-        return data.map(({ customized_number: number, name }) => new Chapter(this, manga, number, name));
+        return data.map(({ customized_number: number, name }) => new Chapter(this, manga, number, name)).reverse();
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page<PageParameters>[]> {

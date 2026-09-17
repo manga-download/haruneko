@@ -19,7 +19,7 @@ type JSONPages = {
 @Common.ChaptersSinglePageCSS<HTMLAnchorElement>('ul li[class*="__episode_container"] a', undefined, anchor => ({
     id: anchor.pathname,
     title: anchor.querySelector('[class*="__episode_title"]').textContent.trim()
-}))
+}), true)
 @CoreView.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
