@@ -51,7 +51,7 @@ export class ComiciViewer extends DecoratableMangaScraper {
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const [, prefix, seriesHash] = manga.Identifier.match(/^(\/[^/]+)?\/series\/([^/]+)$/);
         const { series: { episodes }, } = await FetchJSON<APIChapters>(new Request(new URL(`./episodes?seriesHash=${seriesHash}&episodeFrom=1&episodeTo=9999`, this.#apiURL)));
-        return episodes.map(({ id, title }) => new Chapter(this, manga, `${prefix ?? ''}/episodes/${id}`, title));
+        return episodes.map(({ id, title }) => new Chapter(this, manga, `${prefix ?? ''}/episodes/${id}`, title)).reverse();
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page<ScrambleData>[]> {
