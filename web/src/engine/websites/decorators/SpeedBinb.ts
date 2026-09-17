@@ -175,7 +175,7 @@ export async function FetchPagesSinglePageAjax(this: MangaScraper, chapter: Chap
     } catch { }
 
     switch (configuration.ServerType as number) {
-        case 0: { //v016130 Booklive, ShukanManga , v016452 CMOA
+        case 0: { //v016130 ShukanManga , v016452 CMOA
             //Fix for ShukanManga that has only got a path in ContentsServer
             if (!configuration.ContentsServer.startsWith('http')) configuration.ContentsServer = new URL(configuration.ContentsServer, viewerUrl).href;
 
@@ -189,7 +189,7 @@ export async function FetchPagesSinglePageAjax(this: MangaScraper, chapter: Chap
                 uri.searchParams.set('u0', u0);
                 uri.searchParams.set('u1', u1);
             }
-            return await ExtractPages.call(this, uri, '/sbcGetCntnt.php', '/sbcGetImg.php', configuration, chapter, true);
+            return await ExtractPages.call(this, uri, '/sbcGetCntnt.php', 'sbcGetImg.php', configuration, chapter);
         }
 
         case 1: {//v016130 Futabanet, BookHodai, Booklive, OhtaBooks, SManga
@@ -200,8 +200,9 @@ export async function FetchPagesSinglePageAjax(this: MangaScraper, chapter: Chap
         case 2: {//v016130 MangaPlaza, Yanmaga, Yomonga
             const uri = GetSanitizedURL(configuration.ContentsServer, 'content');
             if (configuration.ContentDate) uri.searchParams.set('dmytime', configuration.ContentDate);
-            if (version === SpeedBindVersion.v016201) uri.searchParams.set('u1', u1); //YOUNGJUMP
-            return await ExtractPages.call(this, uri, '/content', '/img/{src}', configuration, chapter);
+            if (u0) uri.searchParams.set('u0', u0);
+            if (u1) uri.searchParams.set('u1', u1);
+            return await ExtractPages.call(this, uri, '/content', 'img/{src}', configuration, chapter);
         }
     }
     return Promise.reject(new Error('Content server type not supported!'));
@@ -225,8 +226,13 @@ export function PagesSinglePageAjax(version: SpeedBindVersion = SpeedBindVersion
     };
 }
 
-async function ExtractPages(uri: URL, replaceFrom: string, replaceto: string, configuration: ContentConfiguration, chapter: Chapter, setSrc = false): Promise<Page[]> {
-    const response = await Fetch(new Request(uri, { headers: { Referer: this.URI.href } }));
+async function ExtractPages(this: MangaScraper, uri: URL, replaceFrom: string, replaceto: string, configuration: ContentConfiguration, chapter: Chapter): Promise<Page[]> {
+    const response = await Fetch(new Request(uri, {
+        // credentials: 'include',
+        headers: {
+            Referer: this.URI.href,
+        }
+    }));
     const data = await response.text();
     const { ttx }: SBCDATA = data.startsWith('DataGet_Content(') ? JSON.parse(data.slice(16, -1)) : JSON.parse(data);
     const dom = new DOMParser().parseFromString(ttx, 'text/html');
@@ -235,10 +241,11 @@ async function ExtractPages(uri: URL, replaceFrom: string, replaceto: string, co
 
         const pageUri = new URL(uri);
         pageUri.hash = window.btoa(JSON.stringify(GetDescrambleKeyPair(src, configuration.ctbl as string[], configuration.ptbl as string[])));
-        if (setSrc) pageUri.searchParams.set('src', src);
 
-        if (!src.startsWith('/')) src = `/${src}`;
-        pageUri.href = pageUri.href.replace(replaceFrom, replaceto.replace('{src}', src));
+        if (!/{src}/.test(replaceto)) {
+            pageUri.searchParams.set('src', src);
+        }
+        pageUri.pathname = pageUri.pathname.replace(/[^\/]+$/, replaceto.replace('{src}', src));
         return new Page(this, chapter, pageUri);
 
     });

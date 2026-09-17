@@ -6,6 +6,8 @@ import * as SpeedBinb from './decorators/SpeedBinb';
 import { FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
 import { SpeedBindVersion } from './decorators/SpeedBinb';
 
+//BROKEN BECAUSE OF COOKIES
+
 type APIMagazine = {
     url: string;
     issue: string;
@@ -33,7 +35,6 @@ export default class extends DecoratableMangaScraper {
         const mangatitle = await FetchWindowScript<string>(new Request(url), 'document.title', 3000);
         const uri = new URL(url);
         return new Manga(this, provider, uri.pathname + uri.search, mangatitle.trim());
-
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {

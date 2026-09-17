@@ -10,11 +10,10 @@ import * as SpeedBinb from './decorators/SpeedBinb';
         id: element.querySelector<HTMLAnchorElement>('a').pathname,
         title: element.querySelector<HTMLDivElement>('div.contents-info div.title').textContent.trim()
     }))
-@Common.ChaptersSinglePageCSS<HTMLAnchorElement>('div.released_episodes div.items div.item a', undefined,
-    anchor => ({
-        id: anchor.pathname.replace(/index\.html$/, ''),
-        title: anchor.text.trim()
-    }))
+@Common.ChaptersSinglePageCSS<HTMLAnchorElement>('div.released_episodes div.items div.item a', undefined, anchor => ({
+    id: anchor.pathname.replace(/index\.html$/, ''),
+    title: anchor.text.trim()
+}), true)
 @SpeedBinb.PagesSinglePageAjax()
 @SpeedBinb.ImageAjax()
 export default class extends DecoratableMangaScraper {

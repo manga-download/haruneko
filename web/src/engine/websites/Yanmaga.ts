@@ -5,7 +5,14 @@ import * as Common from './decorators/Common';
 import * as SpeedBinb from './decorators/SpeedBinb';
 import { SpeedBindVersion } from './decorators/SpeedBinb';
 
-const chapterScript = `
+//BROKEN BECAUSE OF COOKIES
+
+@Common.MangaCSS(/^{origin}\/comics\/[^/]+$/, 'h1.detail-header-title, h1.detailv2-outline-title')
+@Common.MangasSinglePageCSS<HTMLAnchorElement>('/comics', 'a.ga-comics-book-item', anchor => ({
+    id: anchor.pathname,
+    title: anchor.querySelector('.mod-book-title').textContent.trim()
+}))
+@Common.ChaptersSinglePageJS(`
     new Promise(resolve => {
         const interval = setInterval(() => {
             let morebtn = document.querySelector('.mod-episode-more-button') ;
@@ -18,15 +25,11 @@ const chapterScript = `
                             id: chapter.pathname,
                             title: chapter.querySelector('.mod-episode-title').textContent.trim()
                         }
-                    }));
+                    }).reverse());
             }
          }, 1000);
     });
-`;
-
-@Common.MangaCSS(/^{origin}\/comics\/[^/]+$/, 'h1.detail-header-title, h1.detailv2-outline-title')
-@Common.MangasSinglePageCSS<HTMLAnchorElement>('/comics', 'a.ga-comics-book-item', anchor => ({ id: anchor.pathname, title: anchor.querySelector('.mod-book-title').textContent.trim() }))
-@Common.ChaptersSinglePageJS(chapterScript, 200)
+`, 200)
 @SpeedBinb.PagesSinglePageAjax(SpeedBindVersion.v016130, true)
 @SpeedBinb.ImageAjax()
 export default class extends DecoratableMangaScraper {

@@ -9,12 +9,14 @@ type APIMangas = {
     data: {
         url: string;
         name: string;
-    }[]
+    }[];
 };
 
 @Common.MangaCSS(/^{origin}\/[^/]+\/titles\/[^/]+$/, 'div.breadcrumb ul li:last-of-type')
-@Common.ChaptersSinglePageCSS('div.episode-item:has(a)', undefined, element =>
-    ({ id: element.querySelector<HTMLAnchorElement>('a').pathname, title: element.querySelector<HTMLDivElement>('div.episode-item-left').textContent.trim() }))
+@Common.ChaptersSinglePageCSS('div.episode-item:has(a)', undefined, element => ({
+    id: element.querySelector<HTMLAnchorElement>('a').pathname,
+    title: element.querySelector<HTMLDivElement>('div.episode-item-left').textContent.trim()
+}))
 @SpeedBinb.PagesSinglePageAjax()
 @SpeedBinb.ImageAjax()
 export default class extends DecoratableMangaScraper {

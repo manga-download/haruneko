@@ -3,12 +3,14 @@ import icon from './Ohtabooks.webp';
 import { Chapter, DecoratableMangaScraper, type Manga, type Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import * as SpeedBinb from './decorators/SpeedBinb';
-import { FetchCSS } from '../platform/FetchProvider';
+import { FetchCSS, FetchHTML } from '../platform/FetchProvider';
 import { SpeedBindVersion } from './decorators/SpeedBinb';
 
 @Common.MangaCSS(/^{origin}\/[^/]+\/$/, 'h2.contentTitle')
 @Common.MangasSinglePageCSS<HTMLAnchorElement>('/list/', 'div.bnrList ul li a', anchor => ({
-    id: anchor.pathname, title: anchor.querySelector('.title').textContent.trim()}))
+    id: anchor.pathname,
+    title: anchor.querySelector('.title').textContent.trim()
+}))
 @SpeedBinb.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
@@ -20,13 +22,6 @@ export default class extends DecoratableMangaScraper {
         return icon;
     }
 
-    public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        //find real reader url to send to SpeedBinb, since redirection is done by Javascript
-        const [ data ] = await FetchCSS<HTMLBodyElement>(new Request(chapter.Identifier), 'body');
-        const reallink = data.innerHTML.match(/location.href='(.*)'/).at(1);
-        return SpeedBinb.FetchPagesSinglePageAjax.call(this, new Chapter(this, chapter.Parent as Manga, reallink, chapter.Title), SpeedBindVersion.v016130);
-    }
-
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const data = await FetchCSS(new Request(new URL(manga.Identifier, this.URI)), 'a[onClick^="return !openBook("]');
         const chapterList = data.map(element => {
@@ -35,5 +30,12 @@ export default class extends DecoratableMangaScraper {
             return new Chapter(this, manga, `https://yondemill.jp/contents/${partId}?view=1&u0=1`, title.trim());
         });
         return chapterList.reverse().distinct();
+    }
+
+    public override async FetchPages(chapter: Chapter): Promise<Page[]> {
+        //find real reader url to send to SpeedBinb, since redirection is done by Javascript
+        const doc = await FetchHTML(new Request(chapter.Identifier));
+        const reallink = doc.documentElement.innerHTML.match(/location.href='(.*)'/).at(1);
+        return SpeedBinb.FetchPagesSinglePageAjax.call(this, new Chapter(this, chapter.Parent as Manga, reallink, chapter.Title), SpeedBindVersion.v016130);
     }
 }

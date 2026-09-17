@@ -10,7 +10,7 @@ type APIChapterResult = {
     data: {
         html_content: string;
         html_page: string;
-    }
+    };
 };
 
 function CleanTitle(title: string): string {

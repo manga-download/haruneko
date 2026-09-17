@@ -7,11 +7,10 @@ import { SpeedBindVersion } from './decorators/SpeedBinb';
 
 @Common.MangaCSS(/^{origin}\/product\/index\/title_id\/\d+\/vol_no\/\d+$/, 'li.contents span.book_title')
 @Common.MangasNotSupported()
-@Common.ChaptersSinglePageCSS<HTMLAnchorElement>('div#slide_up_top li.item div.buttons a.bl-bviewer[data-title][data-vol]', undefined,
-    anchor => ({
-        id: `/bviewer/s/?cid=${anchor.dataset.title}_${anchor.dataset.vol}`,
-        title: anchor.closest('.series_list_detail').querySelector<HTMLAnchorElement>('a[class*=sl-title]').text.trim()
-    }))
+@Common.ChaptersSinglePageCSS<HTMLAnchorElement>('div#slide_up_top li.item div.buttons a.bl-bviewer[data-title][data-vol]', undefined, anchor => ({
+    id: `/bviewer/s/?cid=${anchor.dataset.title}_${anchor.dataset.vol}`,
+    title: anchor.closest('.series_list_detail').querySelector<HTMLAnchorElement>('a[class*=sl-title]').text.trim()
+}), true)
 @SpeedBinb.PagesSinglePageAjax(SpeedBindVersion.v016130)
 @SpeedBinb.ImageAjax()
 

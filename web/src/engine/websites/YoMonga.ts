@@ -5,13 +5,17 @@ import * as Common from './decorators/Common';
 import * as SpeedBinb from './decorators/SpeedBinb';
 import { SpeedBindVersion } from './decorators/SpeedBinb';
 
+//BROKEN BECAUSE OF COOKIES
+
 @Common.MangaCSS(/^{origin}\/titles\/\d+\//, 'div.intr-title')
-@Common.MangasMultiPageCSS('div.book-box4', Common.PatternLinkGenerator('/titles/?page_num={page}'), 0, element => (
-    { id: element.querySelector<HTMLAnchorElement>('a').pathname, title: element.querySelector<HTMLDivElement>('div.book-box4-title').textContent.trim() }
-))
-@Common.ChaptersSinglePageCSS<HTMLAnchorElement>('div.episode-list a.button-type1', undefined, anchor => (
-    { id: anchor.pathname + anchor.search, title: anchor.parentNode.querySelector<HTMLSpanElement>('.episode-name').textContent.trim() }
-))
+@Common.MangasMultiPageCSS('div.book-box4', Common.PatternLinkGenerator('/titles/?page_num={page}'), 0, element => ({
+    id: element.querySelector<HTMLAnchorElement>('a').pathname,
+    title: element.querySelector<HTMLDivElement>('div.book-box4-title').textContent.trim()
+}))
+@Common.ChaptersSinglePageCSS<HTMLAnchorElement>('div.episode-list a.button-type1', undefined, anchor => ({
+    id: anchor.pathname + anchor.search,
+    title: anchor.parentNode.querySelector<HTMLSpanElement>('.episode-name').textContent.trim()
+}))
 @SpeedBinb.PagesSinglePageAjax(SpeedBindVersion.v016130, true)
 @SpeedBinb.ImageAjax()
 export default class extends DecoratableMangaScraper {

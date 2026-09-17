@@ -20,7 +20,7 @@ type APIChapters = {
 
 @Common.MangaCSS(/^{origin}\/[^/]+\/backnumber\/\d+$/, 'ol.c-breadcrumb li:last-of-type a, div.p-book-overview__detail h2.p-book-overview__detail-bookname', (element, uri) => ({
     id: uri.pathname,
-    title: element.textContent.split('＞').pop().trim() || element.textContent.trim()
+    title: element.textContent.split('＞')?.pop().trim() || element.textContent.trim()
 }))
 @SpeedBinb.PagesSinglePageAjax(SpeedBindVersion.v016130)
 @SpeedBinb.ImageAjax()
@@ -50,17 +50,16 @@ export default class extends DecoratableMangaScraper {
 
         //get first "chapter" (book) details
         const bookdetails = dom.querySelector<HTMLDivElement>('section.p-book-overview');
-        const bookInfosElement = dom.querySelector<HTMLElement>('[data-book-id]');
+        const { bookId, bookType } = dom.querySelector<HTMLElement>('[data-book-id]').dataset;
 
-        let title = (bookdetails.querySelector('span.p-book-overview__detail-volnumber') ?? bookdetails.querySelector('h2.p-book-overview__detail-vol')).textContent.replaceAll('\n', '').trim();
-        title = title.replace(manga.Title, '').trim() != '' ? title.replace(manga.Title, '').trim() : title;
-        const chapterlinkNode = bookdetails.querySelector<HTMLAnchorElement>('a.p-book-button[href*="viewer"]');
-        if (chapterlinkNode) firstChapter = new Chapter(this, manga, chapterlinkNode.pathname + chapterlinkNode.search, title);
+        const title = bookdetails.querySelector('.p-book-overview__detail-volnumber,.p-book-overview__detail-vol').textContent.replaceAll('\n', '').trim();
+        const link = bookdetails.querySelector<HTMLAnchorElement>('a.p-book-button[href*="viewer"]');
+        if (link) firstChapter = new Chapter(this, manga, link.pathname + link.search, title.replace(manga.Title, '').trim() ?? title);
 
         type This = typeof this;
         const moreChapters: Chapter[] = await Array.fromAsync(async function* (this: This) {
             for (let page = 1, run = true; run; page++) {
-                const { backnumber, max_backnumber_page } = await FetchJSON<APIChapters>(new Request(new URL(`./book/ajax_backnumber_series_page?book_id=${bookInfosElement.dataset.bookId}&member_id=0&book_type=${bookInfosElement.dataset.bookType}&page=${page}&matome=1`, this.URI), {
+                const { backnumber, max_backnumber_page } = await FetchJSON<APIChapters>(new Request(new URL(`./book/ajax_backnumber_series_page?book_id=${bookId}&member_id=0&book_type=${bookType}&page=${page}&matome=1`, this.URI), {
                     headers: {
                         'X-Requested-With': 'XMLHttpRequest'
                     }
@@ -70,6 +69,10 @@ export default class extends DecoratableMangaScraper {
                 run = max_backnumber_page > page;
             }
         }.call(this));
-        return [firstChapter, ...moreChapters,].filter(el => el);
+
+        const chapters = [firstChapter, ...moreChapters,].filter(el => el);
+        if (/^\/manga\//.test(manga.Identifier)) chapters.reverse();
+
+        return chapters;
     }
 }

@@ -6,7 +6,10 @@ import * as SpeedBinb from './decorators/SpeedBinb';
 import { FetchCSS } from '../platform/FetchProvider';
 
 @Common.MangaCSS(/{origin}\/rensai\/[^/]+\/$/, 'div.manga-overview-top-wrapper h2.manga-heading')
-@Common.MangasSinglePageCSS<HTMLAnchorElement>('/rensai', 'li.rensai-episode-list a', anchor => ({ id: anchor.pathname, title: anchor.querySelector('.rensai-episode-title').textContent.trim() }))
+@Common.MangasSinglePageCSS<HTMLAnchorElement>('/rensai', 'li.rensai-episode-list a', anchor => ({
+    id: anchor.pathname,
+    title: anchor.querySelector('.rensai-episode-title').textContent.trim()
+}))
 @SpeedBinb.PagesSinglePageAjax()
 @SpeedBinb.ImageAjax()
 export default class extends DecoratableMangaScraper {

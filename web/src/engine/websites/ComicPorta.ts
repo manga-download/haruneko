@@ -9,7 +9,7 @@ import * as SpeedBinb from './decorators/SpeedBinb';
 @Common.ChaptersSinglePageCSS('ul.episode-list li.episode div.inner div.wrap p.episode-btn', undefined, element => ({
     id: element.querySelector<HTMLAnchorElement>('a').pathname,
     title: element.parentNode.querySelector<HTMLParagraphElement>('p.title').textContent.trim()
-}))
+}), true)
 @SpeedBinb.PagesSinglePageAjax()
 @SpeedBinb.ImageAjax()
 export default class extends DecoratableMangaScraper {

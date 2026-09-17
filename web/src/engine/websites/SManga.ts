@@ -11,15 +11,15 @@ type SSD = {
         series_data: {
             series_name: string;
             series_id: number;
-        }
-    }],
+        };
+    }];
     data?: {
         item_datas?: [{
             ssid: number;
             isbn: string;
             item_name: string;
-        }]
-    }
+        }];
+    };
 };
 
 @Common.MangasNotSupported()
@@ -43,7 +43,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const { data: { item_datas } } = await FetchWindowScript<SSD>(new Request(new URL(`/search/search.html?seriesid=${manga.Identifier}&order=1`, this.URI)), 'window.ssd', 2000);
+        const { data: { item_datas } } = await FetchWindowScript<SSD>(new Request(new URL(`/search/search.html?seriesid=${manga.Identifier}`, this.URI)), 'window.ssd', 2000);
         return item_datas.map(({ isbn, item_name: name }) => new Chapter(this, manga, `/reader/main.php?cid=${this.IsbnToCid(isbn)}`, name.replace(manga.Title, '').trim().replace(/^／/, '').trim()));
     }
 
