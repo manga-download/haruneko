@@ -1,5 +1,5 @@
 import { DecryptXOR } from '../Crypto';
-import { FetchJSON } from '../platform/FetchProvider';
+import { Fetch, FetchJSON } from '../platform/FetchProvider';
 import { Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from '../providers/MangaPlugin';
 import { Tags } from '../Tags';
 import type { Priority } from '../taskpool/DeferredTask';
@@ -26,7 +26,8 @@ type APIChapter = {
 
 export default class extends DecoratableMangaScraper {
 
-    private readonly apiURL = 'https://api.catharsisfood.com/';
+    private readonly apiURL = `${this.URI.origin}/api/`;
+    private readonly CDN = `${this.apiURL}mangas/pages/`;
 
     public constructor() {
         super('catharsisworld', 'Catharsis World', 'https://newcatharsis.dig-it.info', Tags.Media.Manhwa, Tags.Media.Manga, Tags.Language.Spanish, Tags.Source.Aggregator, Tags.Accessibility.DomainRotation);
@@ -64,20 +65,30 @@ export default class extends DecoratableMangaScraper {
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
         const { paginas } = await this.FetchAPI<APIChapter>(`./mangas/${chapter.Parent.Identifier}/${chapter.Identifier}`);
         return paginas.map(page => {
-            const pageUrl: string = (typeof page === 'string' ? page : page.url).replace(/^\//, '');
-            return new Page(this, chapter, new URL(`https://api.catharsisfood.com/mangas/pages/${pageUrl ?? '/imgs/1 (1).png'}`));
+            let pageUrl: string = (typeof page === 'string' ? page : page.url).replace(/^\//, '');
+            pageUrl = pageUrl.startsWith('http') ? pageUrl : `${this.CDN}${pageUrl}`;
+            return new Page(this, chapter, new URL(pageUrl), { Referer: new URL(chapter.Identifier, this.URI).href });
         });
     }
 
     public override async FetchImage(page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
-        const blob = await Common.FetchImageAjax.call(this, page, priority, signal, true);
-        return Common.GetTypedData(DecryptXOR(new Uint8Array(await blob.arrayBuffer()), new Uint8Array([0x43])).buffer);
+        const buffer = await this.imageTaskPool.Add(async () => {
+            return (await Fetch(new Request(page.Link, {
+                headers: {
+                    Referer: page.Parameters.Referer,
+                    'Sec-Fetch-Site': 'same-origin',
+                    'X-Catharsis-Reader': '1'
+                },
+            }))).arrayBuffer();
+        }, priority, signal);
+        return Common.GetTypedData(DecryptXOR(new Uint8Array(buffer), new Uint8Array([0x43])).buffer);
     }
 
     private async FetchAPI<T extends JSONElement>(endpoint: string): Promise<T> {
         return FetchJSON<T>(new Request(new URL(endpoint, this.apiURL), {
             headers: {
                 'System': 'catharsis',
+                'X-Api-Key': 'SrfnigkBo3YLbySfIE0DU9WtmlF7Ov4mzakJlBV9ZCw',
                 'X-Fk-Sistema': '3'
             }
         }));

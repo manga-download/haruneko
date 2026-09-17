@@ -35,6 +35,7 @@ export class IPC {
 
     private async GetTabID(): Promise<number> {
         // TODO: improve query filter e.g., windowID or tabID
+        // FIXME: The returned tab ID is invalid and crashes chrome
         const tabs = await new Promise<chrome.tabs.Tab[]>(resolve => chrome.tabs.query({ active: true }, resolve));
         return tabs.at(0)?.id ?? Number.NaN;
     }
@@ -49,16 +50,28 @@ export class IPC {
                 const handle = <RequestCallback>this.requestHandlers.get(message.channel);
                 sendResponse(await handle(...message.parameters));
             }
+            console.warn('No appropriate handler registered for:', message.channel);
         } catch (error) {
             console.warn(error);
         }
     }
 
+    On(channel: never, callback: never): never;
+
+    /**
+     * Register a {@link callback} to handle a message from the _Web_ context via `IPC.Send(channel, ...parameters)`.
+     * The sender does not receive a response (fire & forget).
+     */
     public On<TParameters extends JSONArray>(channel: string, callback: MessageCallback<TParameters>): void {
         this.messageHandlers.set(channel, <MessageCallback>callback);
     }
 
     Send(channel: Channels.RemoteProcedureCallContract.LoadMediaContainerFromURL, url: string): void;
+
+    /**
+     * Send a message to the _Web_ context handled by `IPC.On(channel, callback)`.
+     * The sender does not receive a response (fire & forget).
+     */
     public async Send<TParameters extends JSONArray>(channel: string, ...parameters: TParameters): Promise<void> {
         const tab = await this.GetTabID();
         return chrome.tabs.sendMessage<Payload, void>(tab, { channel, parameters });
@@ -66,10 +79,21 @@ export class IPC {
 
     Handle(channel: Channels.RemoteProcedureCallManager.Stop, callback: () => Promise<undefined>): void;
     Handle(channel: Channels.RemoteProcedureCallManager.Restart, callback: (port: number, secret: string) => Promise<undefined>): void;
+
+    /**
+     * Register a {@link callback} to handle a request from the _Web_ context via `IPC.Invoke(channel, ...parameters)`.
+     * The sender receives a response with the result from the {@link callback}.
+     */
     public Handle<TParameters extends JSONArray, TReturn extends JSONElement>(channel: string, callback: RequestCallback<TParameters, TReturn | undefined>): void {
         this.requestHandlers.set(channel, <RequestCallback>callback);
     }
 
+    Invoke(channel: never, ...parameters: never): never;
+
+    /**
+     * Send a request to the _Web_ context handled by `IPC.Handle(channel, callback)`.
+     * The sender receives a response with the result from the handler.
+     */
     public async Invoke<TParameters extends JSONArray, TReturn extends JSONElement>(channel: string, ...parameters: TParameters): Promise<TReturn | undefined> {
         const tab = await this.GetTabID();
         return new Promise<TReturn | undefined>(resolve => chrome.tabs.sendMessage<Payload, TReturn>(tab, { channel, parameters }, resolve));
