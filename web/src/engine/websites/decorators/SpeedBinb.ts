@@ -6,21 +6,6 @@ import DeScramble from '../../transformers/ImageDescrambler';
 import { GetTypedData } from './Common';
 import { GetBytesFromBase64 } from '../../BufferEncoder';
 
-type ViewerData = {
-    viewerUrl: URL;
-    SBHtmlElement: HTMLElement;
-};
-
-type SpeedBinbParameters = {
-    viewerUrl: URL;
-    cid: string;
-    sharingKey: string;
-    dmytime: string;
-    u0: string;
-    u1: string;
-    config: ContentConfiguration;
-};
-
 type JSONPageData = {
     items: ContentConfiguration[];
 };
@@ -40,8 +25,8 @@ type JSONImageData = {
     resources: {
         i: {
             src: string;
-        }
-    }
+        };
+    };
     views: View[];
 };
 
@@ -55,7 +40,7 @@ type PageViewv016130 = {
     transfers: {
         index: number;
         coords: DrawImageCoords[];
-    }[],
+    }[];
     width: number;
     height: number;
 };
@@ -83,6 +68,19 @@ type Dimensions = {
     height: number;
 };
 
+type Piece = {
+    x: number;
+    y: number;
+    w: number;
+    h: number;
+};
+
+interface Descrambler {
+    IsValid(): boolean;
+    GetDimensions(dimensions: Dimensions): Dimensions;
+    GetCoords(dimensions: Dimensions): DrawImageCoords[];
+}
+
 const JsonFetchScript = `
     new Promise(async (resolve, reject) => {
         try {
@@ -97,66 +95,10 @@ const JsonFetchScript = `
 
 export enum SpeedBindVersion { v016061, v016452, v016201, v016130 };
 
-function getSanitizedURL(base: string, append: string): URL {
+function GetSanitizedURL(base: string, append: string): URL {
     const baseURI = new URL(append, base + '/');
     baseURI.pathname = baseURI.pathname.replaceAll(/\/\/+/g, '/');
     return baseURI;
-}
-
-/**
- *  Return real chapter url & SpeedBinb "pages" element from said page, so we can work
- * @param this - A reference to the {@link MangaScraper} instance which will be used as context for this method
- * @param chapter - A reference to the {@link Chapter} which shall be assigned as parent for the extracted pages
- */
-async function GetViewerInformations(this: MangaScraper, chapter: Chapter): Promise<ViewerData> {
-    let viewerUrl = new URL(chapter.Identifier, this.URI);
-    const response = await Fetch(new Request(viewerUrl, {
-        headers: {
-            Referer: this.URI.href
-        }
-    }));
-    const dom = new DOMParser().parseFromString(await response.text(), 'text/html');
-    const SBHtmlElement = dom.querySelector<HTMLElement>('div#content.pages');
-    //handle redirection. Sometimes chapter is redirected
-    if (response.redirected) {
-        viewerUrl = new URL(response.url);
-    }
-    return { viewerUrl, SBHtmlElement };
-}
-/**
- * Gather (cid, sharingkey, dmytime, u0, u1, configuration) using viewerUrl and SBHtmlElement
- * @param viewerUrl - Read Url of the SpeedBinb Viewer
- * @param sbHtmlElement - HTMLElement extracted from said page
- */
-async function GetSBParameters(viewerUrl: URL, sbHtmlElement: HTMLElement, needCookies: boolean = false): Promise<SpeedBinbParameters> {
-    let cid = viewerUrl.searchParams.get('cid') ?? sbHtmlElement.dataset['ptbinbCid'];
-
-    //in case cid is not in url and not in html, try to get it from page redirected by Javascript/ Meta
-    if (!cid) {
-        cid = await FetchWindowScript<string>(new Request(viewerUrl), 'new URL(window.location).searchParams.get("cid");', 5000);
-    }
-    if (!cid) throw new Error('Unable to find CID (content ID) !');
-
-    const sharingKey = _tt(cid);
-    const uri = getSanitizedURL(viewerUrl.href, sbHtmlElement.dataset.ptbinb);
-    const dmytime = Date.now().toString();
-    uri.searchParams.set('cid', cid);
-    uri.searchParams.set('dmytime', dmytime);
-    uri.searchParams.set('k', sharingKey);
-
-    const u0 = viewerUrl.searchParams.get('u0');
-    const u1 = viewerUrl.searchParams.get('u1');
-    if (u0) uri.searchParams.set('u0', u0);
-    if (u1) uri.searchParams.set('u1', u1);
-
-    const { items } = !needCookies ? await FetchJSON<JSONPageData>(new Request(uri, {
-        headers: {
-            Referer: viewerUrl.href
-        }
-    })) :
-        await FetchWindowScript<JSONPageData>(new Request(viewerUrl), JsonFetchScript.replace('{URI}', uri.href), 2000);
-
-    return { viewerUrl, cid, sharingKey, dmytime, u0, u1, config: items.at(0) };
 }
 
 /**********************************************
@@ -174,20 +116,95 @@ async function GetSBParameters(viewerUrl: URL, sbHtmlElement: HTMLElement, needC
 export async function FetchPagesSinglePageAjax(this: MangaScraper, chapter: Chapter, version: SpeedBindVersion, needCookies = false): Promise<Page[]> {
 
     //1 Fetch "div#content.pages" and "real" chapter url (since a redirection is possible)
-    const { viewerUrl, SBHtmlElement } = await GetViewerInformations.call(this, chapter);
+    let viewerUrl = new URL(chapter.Identifier, this.URI);
+    const response = await Fetch(new Request(viewerUrl, {
+        headers: {
+            Referer: this.URI.href
+        }
+    }));
+
+    const dom = new DOMParser().parseFromString(await response.text(), 'text/html');
+    const SBHtmlElement = dom.querySelector<HTMLElement>('div#content.pages');
+    //handle redirection. Sometimes chapter is redirected
+    if (response.redirected) {
+        viewerUrl = new URL(response.url);
+    }
 
     //easy mode : pages are just an array of div
     if (version == SpeedBindVersion.v016061) {
         //Kirapo, ComicPorta, Kimicomi, MichiKusa, OneTwoThreeHon, TKSuperheroComics
         const [...imageConfigurations] = SBHtmlElement.querySelectorAll<HTMLDivElement>('div[data-ptimg$="ptimg.json"]');
-        return imageConfigurations.map(element => new Page(this, chapter, new URL(element.dataset.ptimg, viewerUrl.href)));
+        return imageConfigurations.map(({ dataset }) => new Page(this, chapter, new URL(dataset.ptimg, viewerUrl)));
     }
 
     //2 Gather all informations using viewerUrl and SBHtmlElement (cid, sharingkey, dmytime, u0, u1, configuration)
-    const params = await GetSBParameters(viewerUrl, SBHtmlElement, needCookies);
+    let cid = viewerUrl.searchParams.get('cid') ?? SBHtmlElement.dataset.ptbinbCid;
+
+    //in case cid is not in url and not in html, try to get it from page redirected by Javascript/ Meta
+    if (!cid) {
+        cid = await FetchWindowScript<string>(new Request(viewerUrl), 'new URL(window.location).searchParams.get("cid");', 5000);
+    }
+    if (!cid) throw new Error('Unable to find CID (content ID) !');
+
+    const sharingKey = ComputeSharingKey(cid);
+    const uri = GetSanitizedURL(viewerUrl.href, SBHtmlElement.dataset.ptbinb);
+    const dmytime = `${Date.now()}`;
+    uri.searchParams.set('cid', cid);
+    uri.searchParams.set('dmytime', dmytime);
+    uri.searchParams.set('k', sharingKey);
+
+    const u0 = viewerUrl.searchParams.get('u0');
+    const u1 = viewerUrl.searchParams.get('u1');
+    if (u0) uri.searchParams.set('u0', u0);
+    if (u1) uri.searchParams.set('u1', u1);
+
+    const { items } = !needCookies ? await FetchJSON<JSONPageData>(new Request(uri, {
+        headers: {
+            Referer: viewerUrl.href
+        }
+    })) :
+        await FetchWindowScript<JSONPageData>(new Request(viewerUrl), JsonFetchScript.replace('{URI}', uri.href), 2000);
 
     //3 Fetch pages links using speedbinb informations
-    return FetchPagesLinks.call(this, params, chapter, version);
+    const configuration = items.at(0);
+    cid = version === SpeedBindVersion.v016452 ? cid : configuration.ContentID;
+    configuration.ctbl = ComputeTable(cid, sharingKey, configuration.ctbl as string);
+    configuration.ptbl = ComputeTable(cid, sharingKey, configuration.ptbl as string);
+    try {
+        configuration.ServerType = parseInt(configuration.ServerType as string);
+    } catch { }
+
+    switch (configuration.ServerType as number) {
+        case 0: { //v016130 Booklive, ShukanManga , v016452 CMOA
+            //Fix for ShukanManga that has only got a path in ContentsServer
+            if (!configuration.ContentsServer.startsWith('http')) configuration.ContentsServer = new URL(configuration.ContentsServer, viewerUrl).href;
+
+            const uri = GetSanitizedURL(configuration.ContentsServer, 'sbcGetCntnt.php');
+            uri.searchParams.set('cid', cid);
+            uri.searchParams.set('dmytime', configuration.ContentDate);
+            uri.searchParams.set('p', configuration.p);
+            uri.searchParams.set('vm', `${configuration.ViewMode}`);
+            if (version === SpeedBindVersion.v016452) { //CMOA
+                uri.searchParams.set('q', '1');
+                uri.searchParams.set('u0', u0);
+                uri.searchParams.set('u1', u1);
+            }
+            return await ExtractPages.call(this, uri, '/sbcGetCntnt.php', '/sbcGetImg.php', configuration, chapter, true);
+        }
+
+        case 1: {//v016130 Futabanet, BookHodai, Booklive, OhtaBooks, SManga
+            const uri = GetSanitizedURL(configuration.ContentsServer, 'content.js');
+            if (configuration.ContentDate) uri.searchParams.set('dmytime', configuration.ContentDate);
+            return await ExtractPages.call(this, uri, '/content.js', '{src}/M_H.jpg', configuration, chapter);
+        }
+        case 2: {//v016130 MangaPlaza, Yanmaga, Yomonga
+            const uri = GetSanitizedURL(configuration.ContentsServer, 'content');
+            if (configuration.ContentDate) uri.searchParams.set('dmytime', configuration.ContentDate);
+            if (version === SpeedBindVersion.v016201) uri.searchParams.set('u1', u1); //YOUNGJUMP
+            return await ExtractPages.call(this, uri, '/content', '/img/{src}', configuration, chapter);
+        }
+    }
+    return Promise.reject(new Error('Content server type not supported!'));
 }
 
 /**
@@ -208,54 +225,6 @@ export function PagesSinglePageAjax(version: SpeedBindVersion = SpeedBindVersion
     };
 }
 
-/**
- * Return pages links from SpeedBinB API for a chapter
- * @param params - A set of needed SpeedBinbParameters (cid, sharingkey, dmytime, u0, u1, configuration)
- * @param chapter - the Chapter who we cant to extract pages
- * @param version - SpeedBinB version to use.
- */
-async function FetchPagesLinks(this: MangaScraper, params: SpeedBinbParameters, chapter: Chapter, version: SpeedBindVersion): Promise<Page[]> {
-    const configuration = params.config;
-    const cid = version === SpeedBindVersion.v016452 ? params.cid : configuration.ContentID;
-    configuration.ctbl = _pt(cid, params.sharingKey, configuration.ctbl as string);
-    configuration.ptbl = _pt(cid, params.sharingKey, configuration.ptbl as string);
-    try {
-        configuration.ServerType = parseInt(configuration.ServerType as string);
-    } catch { }
-
-    switch (configuration.ServerType as number) {
-        case 0: { //v016130 Booklive, ShukanManga , v016452 CMOA
-            //Fix for ShukanManga that has only got a path in ContentsServer
-            if (!configuration.ContentsServer.startsWith('http')) configuration.ContentsServer = new URL(configuration.ContentsServer, params.viewerUrl).href;
-
-            const uri = getSanitizedURL(configuration.ContentsServer, 'sbcGetCntnt.php');
-            uri.searchParams.set('cid', cid);
-            uri.searchParams.set('dmytime', configuration.ContentDate);
-            uri.searchParams.set('p', configuration.p);
-            uri.searchParams.set('vm', configuration.ViewMode.toString());
-            if (version === SpeedBindVersion.v016452) { //CMOA
-                uri.searchParams.set('q', '1');
-                uri.searchParams.set('u0', params.u0);
-                uri.searchParams.set('u1', params.u1);
-            }
-            return await ExtractPages.call(this, uri, '/sbcGetCntnt.php', '/sbcGetImg.php', configuration, chapter, true);
-        }
-
-        case 1: {//v016130 Futabanet, BookHodai, Booklive, OhtaBooks, SManga
-            const uri = getSanitizedURL(configuration.ContentsServer, 'content.js');
-            if (configuration.ContentDate) uri.searchParams.set('dmytime', configuration.ContentDate);
-            return await ExtractPages.call(this, uri, '/content.js', '{src}/M_H.jpg', configuration, chapter);
-        }
-        case 2: {//v016130 MangaPlaza, Yanmaga, Yomonga
-            const uri = getSanitizedURL(configuration.ContentsServer, 'content');
-            if (configuration.ContentDate) uri.searchParams.set('dmytime', configuration.ContentDate);
-            if (version === SpeedBindVersion.v016201) uri.searchParams.set('u1', params.u1); //YOUNGJUMP
-            return await ExtractPages.call(this, uri, '/content', '/img/{src}', configuration, chapter);
-        }
-    }
-    return Promise.reject(new Error('Content server type not supported!'));
-}
-
 async function ExtractPages(uri: URL, replaceFrom: string, replaceto: string, configuration: ContentConfiguration, chapter: Chapter, setSrc = false): Promise<Page[]> {
     const response = await Fetch(new Request(uri, { headers: { Referer: this.URI.href } }));
     const data = await response.text();
@@ -265,7 +234,7 @@ async function ExtractPages(uri: URL, replaceFrom: string, replaceto: string, co
         let src = img.getAttribute('src');
 
         const pageUri = new URL(uri);
-        pageUri.hash = window.btoa(JSON.stringify(lt_001(src, configuration.ctbl as string[], configuration.ptbl as string[])));
+        pageUri.hash = window.btoa(JSON.stringify(GetDescrambleKeyPair(src, configuration.ctbl as string[], configuration.ptbl as string[])));
         if (setSrc) pageUri.searchParams.set('src', src);
 
         if (!src.startsWith('/')) src = `/${src}`;
@@ -291,7 +260,7 @@ async function ExtractPages(uri: URL, replaceFrom: string, replaceto: string, co
 export async function FetchImageAjax(this: MangaScraper, page: Page, priority: Priority, signal: AbortSignal, detectMimeType = false): Promise<Blob> {
     switch (true) {
         case page.Link.href.endsWith('ptimg.json'): {
-        // descramble_v016061
+            // descramble_v016061
             return this.imageTaskPool.Add(async () => {
                 //Fetch JSON
                 const { resources: { i: { src } }, views } = await FetchJSON<JSONImageData>(new Request(page.Link));
@@ -305,14 +274,6 @@ export async function FetchImageAjax(this: MangaScraper, page: Page, priority: P
                 const blob = detectMimeType ? await GetTypedData(await response.arrayBuffer()) : await response.blob();
                 return DeScramble(blob, async (image, ctx) => {
                     for (const part of views.at(0).coords) {
-                        /*const num = part.split(/[:,+>]/);
-                        const sourceX = parseInt(num[1]);
-                        const sourceY = parseInt(num[2]);
-                        const targetX = parseInt(num[5]);
-                        const targetY = parseInt(num[6]);
-                        const partWidth = parseInt(num[3]);
-                        const partHeight = parseInt(num[4]);
-                        */
                         const [, sourceX, sourceY, partWidth, partHeight, targetX, targetY] = part.split(/[:,+>]/).map(num => parseInt(num));
                         ctx.drawImage(image, sourceX, sourceY, partWidth, partHeight, targetX, targetY, partWidth, partHeight);
                     }
@@ -328,7 +289,7 @@ export async function FetchImageAjax(this: MangaScraper, page: Page, priority: P
             const blob: Blob = await Common.FetchImageAjax.call(this, page, priority, signal, detectMimeType);
             const { s, u }: DescrambleKP = JSON.parse(new TextDecoder().decode(GetBytesFromBase64(page.Link.hash.slice(1))));
             return DeScramble(blob, async (image, ctx) => {
-                const view = getImageDescrambleCoords(s, u, image.width, image.height);
+                const view = GetImageDescrambleCoords(s, u, image.width, image.height);
                 for (const part of view.transfers[0].coords) {
                     ctx.drawImage(image, part.xsrc, part.ysrc, part.width, part.height, part.xdest, part.ydest, part.width, part.height);
                 }
@@ -355,46 +316,63 @@ export function ImageAjax(detectMimeType = false) {
     };
 }
 
-function _tt(t: string): string {
-    const n = Date.now().toString(16).padStart(16, 'x'); // w.getRandomString(16)
-    const i = Array(Math.ceil(16 / t.length) + 1).join(t);
-    const r = i.substring(0, 16);
-    const e = i.substring(i.length - 16);
-    /*
-    const r = i.substr(0, 16);
-    const e = i.substr(-16, 16);
-    */
-    let s = 0;
-    let u = 0;
-    let h = 0;
-    return n.split("").map(function (t, i) {
-        return s ^= n.charCodeAt(i),
-        u ^= r.charCodeAt(i),
-        h ^= e.charCodeAt(i),
-        t + "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_"[s + u + h & 63];
-    }).join("");
+/**
+ * Compute a sharing key from a content ID (cid) (_tt speedbinb function)
+ * @param cid - The content ID string
+ * @returns - The generated sharing key
+ */
+function ComputeSharingKey(cid: string): string {
+    const timestampHex = Date.now().toString(16).padStart(16, 'x');
+
+    // Repeat the cid enough times to fill a 16-character length
+    const repeatedCid = cid.repeat(Math.ceil(16 / cid.length) + 1);
+    const prefixCid = repeatedCid.substring(0, 16);
+    const suffixCid = repeatedCid.substring(repeatedCid.length - 16);
+
+    let charCodeA = 0;
+    let charCodeB = 0;
+    let charCodeC = 0;
+
+    const base64UrlAlphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_";
+
+    return timestampHex.split('').map((currentChar, index) => {
+        charCodeA ^= timestampHex.charCodeAt(index);
+        charCodeB ^= prefixCid.charCodeAt(index);
+        charCodeC ^= suffixCid.charCodeAt(index);
+
+        const combinedIndex = charCodeA + charCodeB + charCodeC & 63;
+        return currentChar + base64UrlAlphabet[combinedIndex];
+    }).join('');
 }
 
-function _pt(t: string, i: string, n: string): string[] {
-    const r = t + ':' + i;
-    let e = 0;
+//SpeedBinb "_pt" function
+function ComputeTable(keyPart1: string, keyPart2: string, payload: string): string[] {
+    const combinedKey = `${keyPart1}:${keyPart2}`;
+    let seed = 0;
 
-    for (let s = 0; s < r.length; s++) {
-        e += r.charCodeAt(s) << s % 16;
+    // Generate a numeric seed from the combined key
+    for (let i = 0; i < combinedKey.length; i++) {
+        seed += combinedKey.charCodeAt(i) << i % 16;
     }
 
-    0 == (e &= 2147483647) && (e = 305419896);
-
-    let u = '';
-    let h = e;
-
-    for (let s = 0; s < n.length; s++) {
-        h = h >>> 1 ^ 1210056708 & -(1 & h);
-        const o = (n.charCodeAt(s) - 32 + h) % 94 + 32;
-        u += String.fromCharCode(o);
+    // Apply a 31-bit bitwise mask and handle zero edge-cases
+    seed &= 2147483647;
+    if (seed === 0) {
+        seed = 305419896;
     }
+
+    let decodedString = '';
+    let currentHash = seed;
+
+    // Transform each character of the payload using a pseudo-random shift
+    for (let i = 0; i < payload.length; i++) {
+        currentHash = currentHash >>> 1 ^ 1210056708 & -(currentHash & 1);
+        const charCode = (payload.charCodeAt(i) - 32 + currentHash) % 94 + 32;
+        decodedString += String.fromCharCode(charCode);
+    }
+
     try {
-        return JSON.parse(u);
+        return JSON.parse(decodedString);
     } catch {
         return null;
     }
@@ -403,43 +381,59 @@ function _pt(t: string, i: string, n: string): string[] {
 /**
  * Determine which descramble key pair from ctbl / ptbl shall be used
  * depending on the given image name  'pages/cu77gvXE.jpg'
+ * old function name : lt_001
  */
-function lt_001(t: string, ctbl: string[], ptbl: string[]): DescrambleKP {
-    const i = [0, 0];
-    const n = t.lastIndexOf("/") + 1;
-    const r = t.length - n;
-    if (t) {
-        for (let e = 0; e < r; e++)
-            i[e % 2] += t.charCodeAt(e + n);
-        i[0] %= 8,
-        i[1] %= 8;
+function GetDescrambleKeyPair(imageName: string, ctbl: string[], ptbl: string[]): DescrambleKP {
+    if (!imageName) {
+        return { s: ptbl[0], u: ctbl[0] };
     }
-    return { s: ptbl[i[0]], u: ctbl[i[1]] };
+
+    // Extract the filename portion after the last slash
+    const lastSlashIndex = imageName.lastIndexOf("/");
+    const filename = imageName.slice(lastSlashIndex + 1);
+
+    let sumEven = 0;
+    let sumOdd = 0;
+
+    // Sum character codes, separating even and odd character positions
+    for (let i = 0; i < filename.length; i++) {
+        const charCode = filename.charCodeAt(i);
+        if (i % 2 === 0) {
+            sumEven += charCode;
+        } else {
+            sumOdd += charCode;
+        }
+    }
+
+    // Map sums to indices within the 0-7 range
+    const ptblIndex = sumEven % 8;
+    const ctblIndex = sumOdd % 8;
+
+    return { s: ptbl[ptblIndex], u: ctbl[ctblIndex] };
 }
 
 /**
+ * /**
  * Copied from official SpeedBinb library
  * t  imagecontext containing src property ('pages/cu77gvXE.jpg')
- * s, u descramble key pair, used to determine descrambler object
- * i  width of descrambled image
- * n height of descrambled image
+ * @param sKey - first descrambling key (s)
+ * @param uKey - second descrambing key (u)
+ * @param width - width of descrambled image
+ * @param height - height of descrambled image
  */
-function getImageDescrambleCoords(/*t*/s: string, u: string, i: number, n: number): PageViewv016130 {
-    const r = _lt_002(s, u); // var r = this.lt(t.src);
-    if (!r || !r.vt())
+function GetImageDescrambleCoords(/*t*/sKey: string, uKey: string, width: number, height: number): PageViewv016130 {
+    const descrambler = GetDescrambler(sKey, uKey); // var r = this.lt(t.src);
+    if (!descrambler || !descrambler.IsValid())
         return null;
-    const e = r.dt({
-        width: i,
-        height: n
-    });
+    const dimensions = descrambler.GetDimensions({ width, height });
     return {
-        width: e.width,
-        height: e.height,
+        width: dimensions.width,
+        height: dimensions.height,
         transfers: [{
             index: 0,
-            coords: r.gt({
-                width: i,
-                height: n
+            coords: descrambler.GetCoords({
+                width,
+                height
             })
         }]
     };
@@ -447,261 +441,369 @@ function getImageDescrambleCoords(/*t*/s: string, u: string, i: number, n: numbe
 
 /**
  * Get a descrambler based on the descramble key pair from ctbl / ptbl
+ * old function named _lt_002
+ * @param sKey - first descrambling key (s)
+ * @param uKey - second descrambing key (u)
  */
-function _lt_002(s: string, u: string) {
-    return "=" === u.charAt(0) && "=" === s.charAt(0) ? new _speedbinb_f(u, s) : u.match(/^[0-9]/) && s.match(/^[0-9]/) ? new _speedbinb_a(u, s) : "" === u && "" === s ? new _speedbinb_h : null;
+function GetDescrambler(sKey: string, uKey: string): Descrambler {
+    return uKey.startsWith('=') && sKey.startsWith('=') ? new SpeedBinbF(uKey, sKey) :
+        uKey.match(/^[0-9]/) && sKey.match(/^[0-9]/) ? new SpeedBinbA(uKey, sKey) :
+            uKey === '' && sKey === '' ? new SpeedbinbH : null;
+}
+
+class SpeedBinbF implements Descrambler {
+    // Mapping array for scrambled image chunks, or null if invalid
+    private mappingTable: number[] | null = null;
+
+    private columns: number;
+    private rows: number;
+    private padding: number;
+    private sourceXCoords: number[];
+    private sourceYCoords: number[];
+    private targetXCoords: number[];
+    private targetYCoords: number[];
+
+    // Lookup table for decoding layout strings
+    private static readonly DECODE_TABLE: number[] = [
+        -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+        -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+        -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 62, -1, -1,
+        52, 53, 54, 55, 56, 57, 58, 59, 60, 61, -1, -1, -1, -1, -1, -1,
+        -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14,
+        15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, -1, -1, -1, -1, 63,
+        -1, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40,
+        41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, -1, -1, -1, -1, -1
+    ];
+
+    constructor(uKey: string, sKey: string) {
+        const keyPattern = /^=([0-9]+)-([0-9]+)([-+])([0-9]+)-([-_0-9A-Za-z]+)$/;
+        const uMatch = uKey.match(keyPattern);
+        const sMatch = sKey.match(keyPattern);
+
+        const isValidKeys =
+            uMatch !== null &&
+            sMatch !== null &&
+            uMatch[1] === sMatch[1] &&
+            uMatch[2] === sMatch[2] &&
+            uMatch[4] === sMatch[4] &&
+            uMatch[3] === "+" &&
+            sMatch[3] === "-";
+
+        if (isValidKeys) {
+            this.columns = parseInt(uMatch[1], 10);
+            this.rows = parseInt(uMatch[2], 10);
+            this.padding = parseInt(uMatch[4], 10);
+
+            const dimensionsValid = this.columns <= 8 && this.rows <= 8 && this.columns * this.rows <= 64;
+
+            if (dimensionsValid) {
+                const expectedLength = this.columns + this.rows + this.columns * this.rows;
+
+                if (uMatch[5].length === expectedLength && sMatch[5].length === expectedLength) {
+                    const uLayout = this.#ParseLayout(uMatch[5]);
+                    const sLayout = this.#ParseLayout(sMatch[5]);
+
+                    this.sourceXCoords = uLayout.xCoords;
+                    this.sourceYCoords = uLayout.yCoords;
+                    this.targetXCoords = sLayout.xCoords;
+                    this.targetYCoords = sLayout.yCoords;
+                    this.mappingTable = [];
+
+                    for (let i = 0; i < this.columns * this.rows; i++) {
+                        this.mappingTable.push(uLayout.positions[sLayout.positions[i]]);
+                    }
+                }
+            }
+        }
+    }
+
+    public IsValid(): boolean {
+        return this.mappingTable !== null;
+    }
+
+    #ValidateDimensions(dimensions: Dimensions): boolean {
+        const minWidth = 64 + 2 * this.columns * this.padding;
+        const minHeight = 64 + 2 * this.rows * this.padding;
+        const minArea = (320 + 2 * this.columns * this.padding) * (320 + 2 * this.rows * this.padding);
+
+        const widthMatch = dimensions.width >= minWidth;
+        const heightMatch = dimensions.height >= minHeight;
+        const areaMatch = dimensions.width * dimensions.height >= minArea;
+
+        return widthMatch && heightMatch && areaMatch;
+    }
+
+    public GetDimensions(dimensions: Dimensions): Dimensions {
+        if (!this.#ValidateDimensions(dimensions)) {
+            return dimensions;
+        }
+
+        return {
+            width: dimensions.width - 2 * this.columns * this.padding,
+            height: dimensions.height - 2 * this.rows * this.padding
+        };
+    }
+
+    public GetCoords(dimensions: Dimensions): DrawImageCoords[] | null {
+        if (!this.IsValid()) return null;
+
+        if (!this.#ValidateDimensions(dimensions)) {
+            return [{
+                xsrc: 0,
+                ysrc: 0,
+                width: dimensions.width,
+                height: dimensions.height,
+                xdest: 0,
+                ydest: 0
+            }];
+        }
+
+        const coordsList: DrawImageCoords[] = [];
+        const netWidth = dimensions.width - 2 * this.columns * this.padding;
+        const netHeight = dimensions.height - 2 * this.rows * this.padding;
+
+        const cellWidth = Math.floor((netWidth + this.columns - 1) / this.columns);
+        const extraWidth = netWidth - (this.columns - 1) * cellWidth;
+
+        const cellHeight = Math.floor((netHeight + this.rows - 1) / this.rows);
+        const extraHeight = netHeight - (this.rows - 1) * cellHeight;
+
+        for (let i = 0; i < this.columns * this.rows; ++i) {
+            const colIndex = i % this.columns;
+            const rowIndex = Math.floor(i / this.columns);
+
+            const targetXCheck = this.targetXCoords[rowIndex] < colIndex ? extraWidth - cellWidth : 0;
+            const srcX = this.padding + colIndex * (cellWidth + 2 * this.padding) + targetXCheck;
+
+            const targetYCheck = this.targetYCoords[colIndex] < rowIndex ? extraHeight - cellHeight : 0;
+            const srcY = this.padding + rowIndex * (cellHeight + 2 * this.padding) + targetYCheck;
+
+            const mappedTarget = this.mappingTable![i];
+            const targetCol = mappedTarget % this.columns;
+            const targetRow = Math.floor(mappedTarget / this.columns);
+
+            const sourceXCheck = this.sourceXCoords[targetRow] < targetCol ? extraWidth - cellWidth : 0;
+            const destX = targetCol * cellWidth + sourceXCheck;
+
+            const sourceYCheck = this.sourceYCoords[targetCol] < targetRow ? extraHeight - cellHeight : 0;
+            const destY = targetRow * cellHeight + sourceYCheck;
+
+            const finalWidth = this.targetXCoords[rowIndex] === colIndex ? extraWidth : cellWidth;
+            const finalHeight = this.targetYCoords[colIndex] === rowIndex ? extraHeight : cellHeight;
+
+            if (netWidth > 0 && netHeight > 0) {
+                coordsList.push({
+                    xsrc: srcX,
+                    ysrc: srcY,
+                    width: finalWidth,
+                    height: finalHeight,
+                    xdest: destX,
+                    ydest: destY
+                });
+            }
+        }
+
+        return coordsList;
+    }
+
+    #ParseLayout(layoutStr: string) {
+        const yCoords: number[] = [];
+        const xCoords: number[] = [];
+        const positions: number[] = [];
+
+        for (let i = 0; i < this.columns; i++) {
+            yCoords.push(SpeedBinbF.DECODE_TABLE[layoutStr.charCodeAt(i)]);
+        }
+
+        for (let i = 0; i < this.rows; i++) {
+            xCoords.push(SpeedBinbF.DECODE_TABLE[layoutStr.charCodeAt(this.columns + i)]);
+        }
+
+        for (let i = 0; i < this.columns * this.rows; i++) {
+            positions.push(SpeedBinbF.DECODE_TABLE[layoutStr.charCodeAt(this.columns + this.rows + i)]);
+        }
+
+        return {
+            yCoords,
+            xCoords,
+            positions
+        };
+    }
 }
 
 /**
  * Copied from official SpeedBinb library
- * define prototype for f
+ * Converted to a modern TypeScript class
  */
-const _speedbinb_f = function () {
-    function s(t: string, i: string) {
-        this.Mt = null;
-        const n = t.match(/^=([0-9]+)-([0-9]+)([-+])([0-9]+)-([-_0-9A-Za-z]+)$/),
-            r = i.match(/^=([0-9]+)-([0-9]+)([-+])([0-9]+)-([-_0-9A-Za-z]+)$/);
+class SpeedBinbA implements Descrambler {
+    private layoutA: any = null;
+    private layoutB: any = null;
 
-        if (null !== n && null !== r && n[1] === r[1] && n[2] === r[2] && n[4] === r[4] && "+" === n[3] && "-" === r[3] && (this.C = parseInt(n[1], 10),
-        this.I = parseInt(n[2], 10),
-        this.jt = parseInt(n[4], 10),
-        !(8 < this.C || 8 < this.I || 64 < this.C * this.I))) {
-            const e = this.C + this.I + this.C * this.I;
-            if (n[5].length === e && r[5].length === e) {
-                const s = this.yt(n[5]),
-                    u = this.yt(r[5]);
-                this.xt = s.n,
-                this.Et = s.t,
-                this.It = u.n,
-                this.St = u.t,
-                this.Mt = [];
-                for (let h = 0; h < this.C * this.I; h++)
-                    this.Mt.push(s.p[u.p[h]]);
+    constructor(uKey: string, sKey: string) {
+        const layout1 = this.#ParseLayout(uKey);
+        const layout2 = this.#ParseLayout(sKey);
+        if (layout1 && layout2 && layout1.ndx === layout2.ndx && layout1.ndy === layout2.ndy) {
+            this.layoutA = layout1;
+            this.layoutB = layout2;
+        }
+    }
+
+    public IsValid(): boolean {
+        return null !== this.layoutA && null !== this.layoutB;
+    }
+
+    #ValidateDimensions(dimensions: Dimensions): boolean {
+        return 64 <= dimensions.width && 64 <= dimensions.height && 102400 <= dimensions.width * dimensions.height;
+    }
+
+    public GetDimensions(dimensions: Dimensions): Dimensions {
+        return dimensions;
+    }
+
+    public GetCoords(dimensions: Dimensions): DrawImageCoords[] | null {
+        if (!this.IsValid())
+            return null;
+
+        const coordinatesList: DrawImageCoords[] = [];
+        const scaledWidth = dimensions.width - dimensions.width % 8;
+        const columnStep = Math.floor((scaledWidth - 1) / 7) - Math.floor((scaledWidth - 1) / 7) % 8;
+        const remainderWidth = scaledWidth - 7 * columnStep;
+        const scaledHeight = dimensions.height - dimensions.height % 8;
+        const rowStep = Math.floor((scaledHeight - 1) / 7) - Math.floor((scaledHeight - 1) / 7) % 8;
+        const remainderHeight = scaledHeight - 7 * rowStep;
+        const pieceCount = this.layoutA.piece.length;
+
+        if (!this.#ValidateDimensions(dimensions))
+            return [{
+                xsrc: 0,
+                ysrc: 0,
+                width: dimensions.width,
+                height: dimensions.height,
+                xdest: 0,
+                ydest: 0
+            }];
+
+        for (let index = 0; index < pieceCount; index++) {
+            const pieceA = this.layoutA.piece[index];
+            const pieceB = this.layoutB.piece[index];
+            coordinatesList.push({
+                xsrc: Math.floor(pieceA.x / 2) * columnStep + pieceA.x % 2 * remainderWidth,
+                ysrc: Math.floor(pieceA.y / 2) * rowStep + pieceA.y % 2 * remainderHeight,
+                width: Math.floor(pieceA.w / 2) * columnStep + pieceA.w % 2 * remainderWidth,
+                height: Math.floor(pieceA.h / 2) * rowStep + pieceA.h % 2 * remainderHeight,
+                xdest: Math.floor(pieceB.x / 2) * columnStep + pieceB.x % 2 * remainderWidth,
+                ydest: Math.floor(pieceB.y / 2) * rowStep + pieceB.y % 2 * remainderHeight
+            });
+        }
+
+        const totalWidthCalculated = columnStep * (this.layoutA.ndx - 1) + remainderWidth;
+        const totalHeightCalculated = rowStep * (this.layoutA.ndy - 1) + remainderHeight;
+
+        if (totalWidthCalculated < dimensions.width) {
+            coordinatesList.push({
+                xsrc: totalWidthCalculated,
+                ysrc: 0,
+                width: dimensions.width - totalWidthCalculated,
+                height: totalHeightCalculated,
+                xdest: totalWidthCalculated,
+                ydest: 0
+            });
+        }
+
+        if (totalHeightCalculated < dimensions.height) {
+            coordinatesList.push({
+                xsrc: 0,
+                ysrc: totalHeightCalculated,
+                width: dimensions.width,
+                height: dimensions.height - totalHeightCalculated,
+                xdest: 0,
+                ydest: totalHeightCalculated
+            });
+        }
+
+        return coordinatesList;
+    }
+
+    #ParseLayout(layoutString: string) {
+        if (!layoutString) return null;
+
+        const parts = layoutString.split("-");
+        if (3 != parts.length) return null;
+
+        const columns = parseInt(parts[0], 10);
+        const rows = parseInt(parts[1], 10);
+        const encodedData = parts[2];
+
+        if (encodedData.length != columns * rows * 2)
+            return null;
+
+        const pieces: Piece[] = [];
+        const limitA = (columns - 1) * (rows - 1) - 1;
+        const limitB = limitA + (columns - 1);
+        const limitC = limitB + (rows - 1);
+        const limitD = limitC + 1;
+
+        for (let pieceIndex = 0; pieceIndex < columns * rows; pieceIndex++) {
+            const charX = this.#GetCharValue(encodedData.charAt(2 * pieceIndex));
+            const charY = this.#GetCharValue(encodedData.charAt(2 * pieceIndex + 1));
+
+            let widthVal = 0, heightVal = 0;
+
+            if (pieceIndex <= limitA) {
+                heightVal = widthVal = 2;
+            } else if (pieceIndex <= limitB) {
+                widthVal = 2;
+                heightVal = 1;
+            } else if (pieceIndex <= limitC) {
+                widthVal = 1;
+                heightVal = 2;
+            } else if (pieceIndex <= limitD) {
+                heightVal = widthVal = 1;
             }
-        }
-    }
-    return s.prototype.vt = function (): boolean {
-        return null !== this.Mt;
-    }
-    ,
-    s.prototype.bt = function (t: Dimensions): boolean {
-        const i = 2 * this.C * this.jt,
-            n = 2 * this.I * this.jt;
-        return t.width >= 64 + i && t.height >= 64 + n && t.width * t.height >= (320 + i) * (320 + n);
-    }
-    ,
-    s.prototype.dt = function (t: Dimensions): Dimensions {
-        return this.bt(t) ? {
-            width: t.width - 2 * this.C * this.jt,
-            height: t.height - 2 * this.I * this.jt
-        } : t;
-    }
-    ,
-    s.prototype.gt = function (t: Dimensions): DrawImageCoords[] {
-        if (!this.vt())
-            return null;
-        if (!this.bt(t))
-            return [{
-                xsrc: 0,
-                ysrc: 0,
-                width: t.width,
-                height: t.height,
-                xdest: 0,
-                ydest: 0
-            }];
 
-        const h: DrawImageCoords[] = [];
-        const i = t.width - 2 * this.C * this.jt,
-            n = t.height - 2 * this.I * this.jt,
-            r = Math.floor((i + this.C - 1) / this.C),
-            e = i - (this.C - 1) * r,
-            s = Math.floor((n + this.I - 1) / this.I),
-            u = n - (this.I - 1) * s;
-
-        for (let o = 0; o < this.C * this.I; ++o) {
-            const a = o % this.C,
-                f = Math.floor(o / this.C),
-                c = this.jt + a * (r + 2 * this.jt) + (this.It[f] < a ? e - r : 0),
-                l = this.jt + f * (s + 2 * this.jt) + (this.St[a] < f ? u - s : 0),
-                v = this.Mt[o] % this.C,
-                d = Math.floor(this.Mt[o] / this.C),
-                g = v * r + (this.xt[d] < v ? e - r : 0),
-                p = d * s + (this.Et[v] < d ? u - s : 0),
-                b = this.It[f] === a ? e : r,
-                m = this.St[a] === f ? u : s;
-            0 < i && 0 < n && h.push({
-                xsrc: c,
-                ysrc: l,
-                width: b,
-                height: m,
-                xdest: g,
-                ydest: p
+            pieces.push({
+                x: charX,
+                y: charY,
+                w: widthVal,
+                h: heightVal
             });
         }
-        return h;
-    }
-    ,
-    s.prototype.yt = function (t: string) {
-        let i;
-        const n = [], r = [], e = [];
-        for (i = 0; i < this.C; i++)
-            n.push(s.Tt[t.charCodeAt(i)]);
-        for (i = 0; i < this.I; i++)
-            r.push(s.Tt[t.charCodeAt(this.C + i)]);
-        for (i = 0; i < this.C * this.I; i++)
-            e.push(s.Tt[t.charCodeAt(this.C + this.I + i)]);
+
         return {
-            t: n,
-            n: r,
-            p: e
+            ndx: columns,
+            ndy: rows,
+            piece: pieces
         };
     }
-    ,
-    s.Tt = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 62, -1, -1, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, -1, -1, -1, -1, -1, -1, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, -1, -1, -1, -1, 63, -1, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, -1, -1, -1, -1, -1],
-    s;
-}();
 
-/**
- * Copied from official SpeedBinb library
- * define prototype for a
- */
-const _speedbinb_a = function () {
-    function t(t: string, i: string) {
-        this.mt = null,
-        this.wt = null;
-        const n = this.yt(t);
-        const r = this.yt(i);
-        n && r && n.ndx === r.ndx && n.ndy === r.ndy && (this.mt = n,
-        this.wt = r);
-    }
-    return t.prototype.vt = function (): boolean {
-        return null !== this.mt && null !== this.wt;
-    }
-    ,
-    t.prototype.bt = function (t: Dimensions): boolean {
-        return 64 <= t.width && 64 <= t.height && 102400 <= t.width * t.height;
-    }
-    ,
-    t.prototype.dt = function (t: Dimensions): Dimensions {
-        return t;
-    }
-    ,
-    t.prototype.gt = function (t: Dimensions): DrawImageCoords[] {
-        if (!this.vt())
-            return null;
-        const i = [];
-        const n = t.width - t.width % 8,
-            r = Math.floor((n - 1) / 7) - Math.floor((n - 1) / 7) % 8,
-            e = n - 7 * r,
-            s = t.height - t.height % 8,
-            u = Math.floor((s - 1) / 7) - Math.floor((s - 1) / 7) % 8,
-            h = s - 7 * u,
-            o = this.mt.piece.length;
-        if (!this.bt(t))
-            return [{
-                xsrc: 0,
-                ysrc: 0,
-                width: t.width,
-                height: t.height,
-                xdest: 0,
-                ydest: 0
-            }];
-        for (let a = 0; a < o; a++) {
-            const f = this.mt.piece[a],
-                c = this.wt.piece[a];
-            i.push({
-                xsrc: Math.floor(f.x / 2) * r + f.x % 2 * e,
-                ysrc: Math.floor(f.y / 2) * u + f.y % 2 * h,
-                width: Math.floor(f.w / 2) * r + f.w % 2 * e,
-                height: Math.floor(f.h / 2) * u + f.h % 2 * h,
-                xdest: Math.floor(c.x / 2) * r + c.x % 2 * e,
-                ydest: Math.floor(c.y / 2) * u + c.y % 2 * h
-            });
+    #GetCharValue(t: string): number {
+        const upperIndex = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".indexOf(t);
+        if (upperIndex !== -1) {
+            return 1 + 2 * upperIndex; // Maps to odd numbers
         }
-        const l = r * (this.mt.ndx - 1) + e,
-            v = u * (this.mt.ndy - 1) + h;
-        return l < t.width && i.push({
-            xsrc: l,
-            ysrc: 0,
-            width: t.width - l,
-            height: v,
-            xdest: l,
-            ydest: 0
-        }),
-        v < t.height && i.push({
-            xsrc: 0,
-            ysrc: v,
-            width: t.width,
-            height: t.height - v,
-            xdest: 0,
-            ydest: v
-        }),
-        i;
-    }
-    ,
-    t.prototype.yt = function (t: string) {
-        if (!t)
-            return null;
-        const i = t.split("-");
-        if (3 != i.length)
-            return null;
-        const n = parseInt(i[0], 10),
-            r = parseInt(i[1], 10),
-            e = i[2];
-        if (e.length != n * r * 2)
-            return null;
-        const v = [];
-        const a = (n - 1) * (r - 1) - 1;
-        const f = a + (n - 1);
-        const c = f + (r - 1);
-        const l = c + 1;
 
-        for (let s, u, h, o, d = 0; d < n * r; d++)
-            s = this.Ot(e.charAt(2 * d)),
-            u = this.Ot(e.charAt(2 * d + 1)),
-            d <= a ? o = h = 2 : d <= f ? (h = 2, o = 1) : d <= c ? (h = 1, o = 2) : d <= l && (o = h = 1),
-            v.push({
-                x: s,
-                y: u,
-                w: h,
-                h: o
-            });
-        return {
-            ndx: n,
-            ndy: r,
-            piece: v
-        };
+        const lowerIndex = "abcdefghijklmnopqrstuvwxyz".indexOf(t);
+        if (lowerIndex !== -1) {
+            return 2 * lowerIndex;// Maps to even numbers
+        }
+        return -1;
     }
-    ,
-    t.prototype.Ot = function (t: string) {
-        let i = 0;
-        let n = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".indexOf(t);
-        return n < 0 ? n = "abcdefghijklmnopqrstuvwxyz".indexOf(t) : i = 1,
-        i + 2 * n;
-    }
-    ,
-    t;
-}();
+}
 
-/**
- * Copied from official SpeedBinb library
- * define prototype for h
- */
-const _speedbinb_h = function () {
-    function t() { }
-    return t.prototype.vt = function (): boolean {
-        return !0;
+class SpeedbinbH implements Descrambler {
+    public IsValid(): boolean {
+        return true;
     }
-    ,
-    t.prototype.bt = function (): boolean {
-        return !1;
+
+    #ValidateDimensions(): boolean {
+        return false;
     }
-    ,
-    t.prototype.dt = function (t: Dimensions): Dimensions {
+
+    public GetDimensions(t: Dimensions): Dimensions {
         return t;
     }
-    ,
-    t.prototype.gt = function (t: Dimensions): DrawImageCoords[] {
+
+    public GetCoords(t: Dimensions): DrawImageCoords[] {
         return [{
             xsrc: 0,
             ysrc: 0,
@@ -711,6 +813,4 @@ const _speedbinb_h = function () {
             ydest: 0
         }];
     }
-    ,
-    t;
-}();
+}
