@@ -152,7 +152,7 @@ export default class extends DecoratableMangaScraper {
                 chapters.push(...chaptersLang);
             }
         }
-        return chapters.distinct();
+        return chapters.distinct().reverse();
     }
 
     private async FetchLiveWire(body: LiveWireRequest): Promise<LiveWireResult> {
