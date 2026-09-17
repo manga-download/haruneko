@@ -12,7 +12,7 @@ new TestFixture({
     },
     child: {
         id: '/bib/speedreader/?cid=0000151961_jp_0021&u0=1&u1=0',
-        title: '呪術廻戦 21'
+        title: '21'
     },
     entry: {
         index: 0,

@@ -52,7 +52,7 @@ export default class extends DecoratableMangaScraper {
         const bookdetails = dom.querySelector<HTMLDivElement>('section.p-book-overview');
         const { bookId, bookType } = dom.querySelector<HTMLElement>('[data-book-id]').dataset;
 
-        const title = bookdetails.querySelector('.p-book-overview__detail-volnumber,.p-book-overview__detail-vol').textContent.replaceAll('\n', '').trim();
+        const title = bookdetails.querySelector('h2.p-book-overview__detail-vol > span.p-book-overview__detail-volnumber, h2.p-book-overview__detail-vol:not(:has(span))').textContent.replaceAll('\n', '').trim();
         const link = bookdetails.querySelector<HTMLAnchorElement>('a.p-book-button[href*="viewer"]');
         if (link) firstChapter = new Chapter(this, manga, link.pathname + link.search, title.replace(manga.Title, '').trim() ?? title);
 
