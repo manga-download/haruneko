@@ -183,7 +183,7 @@ export class LibGroup extends DecoratableMangaScraper {
                 return new Chapter(this, manga, `./manga/${manga.Identifier}/chapter?${search}`, `${title} ${scanlators}`.trim());
             });
             return [...accumulator, ...chapters];
-        }, []);
+        }, []).reverse();
     }
 
     public override async FetchPages(chapter: Chapter): Promise<MirroredPage[]> {
