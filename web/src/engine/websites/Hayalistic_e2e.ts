@@ -6,7 +6,7 @@ new TestFixture({
         title: 'Hayalistic'
     },
     container: {
-        url: 'https://hayalistic.blog/manga/gorunus/',
+        url: 'https://hayalistic.online/manga/gorunus/',
         id: JSON.stringify({ post: '3389', slug: '/manga/gorunus/' }),
         title: 'Görünüşçülük'
     },

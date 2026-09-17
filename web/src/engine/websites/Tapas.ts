@@ -12,20 +12,20 @@ type APIMangas = {
 
 type APISingleManga = {
     data: {
-        id: number,
+        id: number;
         title: string;
     };
 };
 
 type APIManga = {
-    seriesId: number,
+    seriesId: number;
     title: string;
 };
 
 type APIChapters = {
     data: {
         episodes: {
-            id: number,
+            id: number;
             title: string;
         }[];
     };
@@ -35,7 +35,7 @@ type APIChapters = {
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
-    private readonly apiUrl = 'https://story-api.tapas.io/cosmos/api/v1/landing/';
+    private readonly apiURL = 'https://story-api.tapas.io/cosmos/api/v1/landing/';
 
     public constructor() {
         super('tapas', `Tapas`, 'https://tapas.io', Tags.Media.Manhwa, Tags.Language.English, Tags.Source.Official, Tags.Accessibility.RegionLocked);
@@ -64,24 +64,21 @@ export default class extends DecoratableMangaScraper {
         type This = typeof this;
         return Array.fromAsync(async function* (this: This) {
             for (let page = 0, run = true; run; page++) {
-                const { data: { items } } = await FetchJSON<APIMangas>(new Request(new URL(`./genre?category_type=COMIC&size=200&page=${page}`, this.apiUrl)));
+                const { data: { items } } = await FetchJSON<APIMangas>(new Request(new URL(`./genre?category_type=COMIC&size=200&page=${page}`, this.apiURL)));
                 const mangas = items.map(({ seriesId, title }) => new Manga(this, provider, `${seriesId}`, title));
                 mangas.length > 0 ? yield* mangas : run = false;
             }
-
         }.call(this));
-
     }
 
     public async FetchChapters(manga: Manga): Promise<Chapter[]> {
         type This = typeof this;
-        return Array.fromAsync(async function* (this: This) {
+        return (await Array.fromAsync(async function* (this: This) {
             for (let page = 1, run = true; run; page++) {
                 const { data: { episodes } } = await FetchJSON<APIChapters>(new Request(new URL(`./series/${manga.Identifier}/episodes?page=${page}`, this.URI)));
                 const chapters = episodes.map(({ id, title }) => new Chapter(this, manga, `/episode/${id}`, title));
                 chapters.length > 0 ? yield* chapters : run = false;
             }
-
-        }.call(this));
+        }.call(this))).reverse();
     }
 }
