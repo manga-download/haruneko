@@ -6,7 +6,7 @@ new TestFixture({
         title: 'Raw FREE'
     },
     container: {
-        url: 'https://rawfree.mom/manga-raw/いらないスキル買い取ります-raw-free/',
+        url: 'https://rawfree.pics/manga-raw/いらないスキル買い取ります-raw-free/',
         id: encodeURI('/manga-raw/いらないスキル買い取ります-raw-free/'),
         title: 'いらないスキル買い取ります'
     },
