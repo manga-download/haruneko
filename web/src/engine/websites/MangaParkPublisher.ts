@@ -5,6 +5,7 @@ import * as Common from './decorators/Common';
 import { FetchJSON } from '../platform/FetchProvider';
 import type { Priority } from '../taskpool/DeferredTask';
 import { GetBytesFromBase64 } from '../BufferEncoder';
+import { DecryptXOR } from '../Crypto';
 
 type APIPages = {
     data: {
@@ -12,9 +13,9 @@ type APIPages = {
             images: {
                 path: string;
                 key: string;
-            }[]
-        }[]
-    }
+            }[];
+        }[];
+    };
 };
 
 type PageParameters = {
@@ -24,10 +25,14 @@ type PageParameters = {
 const endpoints = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun', 'end'].map(segment => `/series/${segment}`);
 
 @Common.MangaCSS(/^{origin}\/title\/\d+$/, 'div.titleMain div.titleInfo h1')
-@Common.MangasMultiPageCSS<HTMLAnchorElement>('div.list div.series ul.common-list li a', Common.StaticLinkGenerator(...endpoints), 0,
-    anchor => ({ id: anchor.pathname, title: anchor.querySelector('div.info h3').textContent.trim() }))
-@Common.ChaptersSinglePageCSS('div.chapter ul li[data-chapter-id]', undefined,
-    element => ({ id: element.dataset.chapterId, title: element.querySelector('.chapterTitle').textContent.trim() }))
+@Common.MangasMultiPageCSS<HTMLAnchorElement>('div.list div.series ul.common-list li a', Common.StaticLinkGenerator(...endpoints), 0, anchor => ({
+    id: anchor.pathname,
+    title: anchor.querySelector('div.info h3').textContent.trim()
+}))
+@Common.ChaptersSinglePageCSS('div.chapter ul li[data-chapter-id]', undefined, element => ({
+    id: element.dataset.chapterId,
+    title: element.querySelector('.chapterTitle').textContent.trim()
+}), true)
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
@@ -45,11 +50,7 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchImage(page: Page<PageParameters>, priority: Priority, signal: AbortSignal): Promise<Blob> {
         const blob = await Common.FetchImageAjax.call(this, page, priority, signal);
-        const decrypted = this.DecryptImage(await blob.arrayBuffer(), GetBytesFromBase64(page.Parameters.key));
-        return Common.GetTypedData(decrypted);
-    }
-
-    private DecryptImage(encrypted: ArrayBuffer, key: Uint8Array): ArrayBuffer {
-        return new Uint8Array(encrypted).map((byte, index) => byte ^ key[index % key.length]).buffer;
+        const decrypted = DecryptXOR(new Uint8Array(await blob.arrayBuffer()), GetBytesFromBase64(page.Parameters.key));
+        return Common.GetTypedData(decrypted.buffer);
     }
 }

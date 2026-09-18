@@ -107,7 +107,7 @@ export default class extends DecoratableMangaScraper {
         });
         const volumesData = await FetchJSON<APIVolumes>(new Request(new URL(`./manga/${manga.Identifier}/volumes`, this.apiURL)));
         const volumes = volumesData.map(({ id, volume_number: number }) => new Chapter(this, manga, `./uploads/${id}/images`, `Volume ${number}`));
-        return [...chapters, ...volumes];
+        return [...chapters.reverse(), ...volumes.reverse()];
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {

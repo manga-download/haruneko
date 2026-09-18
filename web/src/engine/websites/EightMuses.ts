@@ -3,14 +3,10 @@ import icon from './EightMuses.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 
-const extractor = Common.AnchorInfoExtractor(true);
-function ImageExtractor(element: HTMLImageElement): string {
-    return element.dataset.src.replace('/th/', '/fl/');
-}
 @Common.MangaCSS(/^{origin}\/comics\/album\/[^/]+\/[^/]+$/, 'div#content meta[itemprop="name"]')
 @Common.MangasNotSupported()
-@Common.ChaptersSinglePageCSS('div#content div.gallery a.c-tile', undefined, extractor)
-@Common.PagesSinglePageCSS('div.gallery div.image img', ImageExtractor)
+@Common.ChaptersSinglePageCSS('div#content div.gallery a.c-tile[href]', undefined, Common.AnchorInfoExtractor(true), true)
+@Common.PagesSinglePageCSS('div.gallery div.image img', element => element.dataset.src.replace('/th/', '/fl/'))
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
