@@ -7,16 +7,19 @@ import { FetchJSON } from '../platform/FetchProvider';
 type APIChapters = {
     data: {
         chapters: {
-            id: number,
-            contentId: number,
-            chapterName : string
-        }[]
-    }
-}
+            id: number;
+            contentId: number;
+            chapterName: string;
+        }[];
+    };
+};
 
-@Common.MangaCSS(/^{origin}\/comic\/\d+\.html$/, 'div.info > p')
-@Common.MangasMultiPageCSS('div.card-content > a', Common.PatternLinkGenerator('/sort?category=0&tag=0&page={page}'))
-@Common.PagesSinglePageCSS('div#comicContainer img.comic-image')
+@Common.MangaCSS(/^{origin}\/comic\/\d+\.html$/, 'h1#mangaTitle')
+@Common.MangasMultiPageCSS<HTMLAnchorElement>('article.manga-card > a', Common.PatternLinkGenerator('/sort?category=0&tag=0&page={page}'), 0, anchor => ({
+    id: anchor.pathname,
+    title: anchor.querySelector('.manga-title').textContent.trim()
+}))
+@Common.PagesSinglePageJS(`new Array(num).fill(null).map((_, index) =>  pasd + (index+1) + '.webp')`, 500)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 

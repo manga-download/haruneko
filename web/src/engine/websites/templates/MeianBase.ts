@@ -98,7 +98,7 @@ export class MeianBase extends DecoratableMangaScraper {
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const { licence: { articles } } = await this.FetchAPI<APISerie>(`./licence/?id_licence=${manga.Identifier}`);
         return articles.filter(item => item.ebook_statut)
-            .map(({ ref, titre }) => new Chapter(this, manga, `${ref}`, titre.replace(manga.Title, '').replace(/^\s*-\s*/, '').trim()));
+            .map(({ ref, titre }) => new Chapter(this, manga, `${ref}`, titre.replace(manga.Title, '').replace(/^\s*-\s*/, '').trim())).reverse();
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page<PageInfo>[]> {

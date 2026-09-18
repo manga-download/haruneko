@@ -1,6 +1,6 @@
 import { Tags } from '../Tags';
 import icon from './RainDropFansub.webp';
-import { DecoratableMangaScraper } from '../providers/MangaPlugin';
+import { type Chapter, DecoratableMangaScraper, type Manga } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import * as MangaStream from './decorators/WordPressMangaStream';
 import { AddAntiScrapingDetection, FetchRedirection } from '../platform/AntiScrapingDetection';
@@ -12,7 +12,6 @@ AddAntiScrapingDetection(async (invoke) => {
 
 @MangaStream.MangaCSS(/^{origin}\/manga\/[^/]+\/$/)
 @MangaStream.MangasSinglePageCSS()
-@MangaStream.ChaptersSinglePageCSS()
 @MangaStream.PagesSinglePageCSS()
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
@@ -23,5 +22,9 @@ export default class extends DecoratableMangaScraper {
 
     public override get Icon() {
         return icon;
+    }
+
+    public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
+        return (await MangaStream.FetchChaptersSinglePageCSS.call(this, manga)).reverse();
     }
 }

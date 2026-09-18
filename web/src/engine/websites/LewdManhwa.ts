@@ -1,24 +1,27 @@
 import { Tags } from '../Tags';
 import icon from './LewdManhwa.webp';
-import { DecoratableMangaScraper } from '../providers/MangaPlugin';
+import { Chapter, DecoratableMangaScraper, type Manga, Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
+import { FetchNextJS } from '../platform/FetchProvider';
 
-function MangaInfoExtractor(anchor: HTMLAnchorElement) {
-    const id = anchor.pathname;
-    const title = anchor.querySelector('h4.entry-title').textContent.trim();
-    return { id, title };
-}
+type HydratedChapters = {
+    chapters: {
+        title: string;
+        slug: string;
+    }[];
+};
 
-function ChapterInfoExtractor(anchor: HTMLAnchorElement) {
-    const id = anchor.pathname;
-    const title = anchor.querySelector('span.chapter-name').textContent.trim();
-    return { id, title };
-}
+type HydratedPages = {
+    images: {
+        filename: string;
+    }[];
+};
 
-@Common.MangaCSS(/^{origin}/, 'main#main header.entry-header h1.entry-title')
-@Common.MangasMultiPageCSS('div#content div.is-list-card div.column a', Common.PatternLinkGenerator('/webtoons/page/{page}/'), 0, MangaInfoExtractor)
-@Common.ChaptersSinglePageCSS('div.chapter-list div.chapter-list-items a', undefined, ChapterInfoExtractor)
-@Common.PagesSinglePageCSS('span.single-comic-page img')
+@Common.MangaCSS(/^{origin}\/webtoon\/[^/]+$/, 'meta[property="og:title"]')
+@Common.MangasMultiPageCSS<HTMLAnchorElement>('div.grid div.group > a[href*="/webtoon/"]', Common.PatternLinkGenerator('/webtoons?page={page}'), 0, anchor => ({
+    id: anchor.pathname,
+    title: anchor.getAttribute('aria-label').trim()
+}))
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
@@ -28,5 +31,15 @@ export default class extends DecoratableMangaScraper {
 
     public override get Icon() {
         return icon;
+    }
+
+    public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
+        const { chapters } = await FetchNextJS<HydratedChapters>(new Request(new URL(manga.Identifier, this.URI)), data => 'chapters' in data);
+        return chapters.map(({ title, slug }) => new Chapter(this, manga, `${manga.Identifier}/${slug}`, title));
+    }
+
+    public override async FetchPages(chapter: Chapter): Promise<Page[]> {
+        const { images } = await FetchNextJS<HydratedPages>(new Request(new URL(chapter.Identifier, this.URI)), data => 'images' in data);
+        return images.map(({ filename }) => new Page(this, chapter, new URL(filename, 'https://cdn.lewdmanhwa.com/uploads/')));
     }
 }

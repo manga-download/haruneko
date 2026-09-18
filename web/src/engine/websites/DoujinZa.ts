@@ -5,9 +5,9 @@ import * as Madara from './decorators/WordPressMadara';
 import * as Common from './decorators/Common';
 
 type MangaID = {
-    post: string,
-    slug: string
-}
+    post: string;
+    slug: string;
+};
 
 @Madara.MangaCSS(/^{origin}\/doujin\/[^/]+\/$/, 'div.post-title h1')
 @Madara.ChaptersSinglePageAJAXv2()
@@ -24,13 +24,13 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        const mangas = await Madara.FetchMangasMultiPageCSS.call(this, provider);
+        const mangas = await Madara.FetchMangasMultiPageAJAX.call(this, provider);
         return mangas.filter(manga => {
-            const mangaID: MangaID = JSON.parse(manga.Identifier);
+            const mangaID = <MangaID>JSON.parse(manga.Identifier);
             return mangaID.slug !== '/'; //some manga links are bugged, cant help it
         }).map(manga => {
-            const mangaID: MangaID = JSON.parse(manga.Identifier);
-            const link = mangaID.slug.match(/(^\/doujin\/[^/]+\/)/)[1]; //some mangas are direct links to the only chapter, so we keep only manga part
+            const mangaID = <MangaID>JSON.parse(manga.Identifier);
+            const link = mangaID.slug.match(/(^\/doujin\/[^/]+\/)/).at(1); //some mangas are direct links to the only chapter, so we keep only manga part
             mangaID.slug = link;
             return new Manga(this, provider, JSON.stringify(mangaID), manga.Title);
         });

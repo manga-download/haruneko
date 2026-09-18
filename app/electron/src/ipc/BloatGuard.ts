@@ -1,11 +1,11 @@
 import type { WebContents } from 'electron';
-import type { IPC, Callback } from './InterProcessCommunication';
-import { BloatGuard as Channels } from '../../../src/ipc/Channels';
+import type { IPC } from './InterProcessCommunication';
+import { Channels } from './InterProcessCommunicationChannels';
 
 export class BloatGuard {
 
-    constructor (private readonly ipc: IPC<Channels.Web, Channels.App>, private readonly webContents: WebContents) {
-        this.ipc.Listen(Channels.App.Initialize, this.Initialize.bind(this) as Callback);
+    constructor (private readonly ipc: IPC, private readonly webContents: WebContents) {
+        this.ipc.Handle(Channels.BloatGuard.Initialize, this.Initialize.bind(this));
     }
 
     private async Initialize(patterns: string[]): Promise<void> {
