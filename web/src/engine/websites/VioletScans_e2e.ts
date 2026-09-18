@@ -13,7 +13,7 @@ new TestFixture({
     child: {
         id: '/101st-confession-chapter-1/',
         title: 'Chapter 1',
-        timeout: 20_000,
+        timeout: 15_000,
     },
     entry: {
         index: 0,
