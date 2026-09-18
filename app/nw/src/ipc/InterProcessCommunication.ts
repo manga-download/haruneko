@@ -1,12 +1,3 @@
-type Message = {
-    parameters: JSONArray,
-}
-
-type Request = {
-    replyID: string,
-    parameters: JSONArray,
-}
-
 export namespace Channels {
 
     /**
@@ -31,8 +22,11 @@ type RequestCallback<TParameters extends JSONArray = JSONArray, TReturn extends 
 export class IPC {
 
     constructor() {
-        console.log('IPC::Constructor');
         setTimeout(() => nw.Window.get()?.window.console.log.call(nw.Window.get()?.window.console, 'APP::IPC::Constructor'), 500);
+    }
+
+    private get win(): Window & typeof globalThis {
+        return (nw.Window.get().window) as unknown as Window & typeof globalThis;
     }
 
     On(channel: never, callback: never): never;
@@ -42,7 +36,7 @@ export class IPC {
      * The sender does not receive a response (fire & forget).
      */
     public On<TParameters extends JSONArray>(channel: string, callback: MessageCallback<TParameters>): void {
-        nw.Window.get()?.window.addEventListener(channel, ({ detail }: CustomEvent<TParameters>) => callback(...detail));
+        this.win.addEventListener(channel, ({ detail }: CustomEvent<TParameters>) => callback(...detail));
     }
 
     Send(channel: Channels.RemoteProcedureCallContract.LoadMediaContainerFromURL, url: string): void;
@@ -52,7 +46,7 @@ export class IPC {
      * The sender does not receive a response (fire & forget).
      */
     public async Send<TParameters extends JSONArray>(channel: string, ...parameters: TParameters): Promise<void> {
-        nw.Window.get()?.window.dispatchEvent(new CustomEvent<TParameters>(channel, { detail: parameters }));
+        this.win.dispatchEvent(new CustomEvent<TParameters>(channel, { detail: parameters }));
     }
 
     Handle(channel: Channels.RemoteProcedureCallManager.Stop, callback: () => Promise<undefined>): void;
@@ -63,12 +57,12 @@ export class IPC {
      * The sender receives a response with the result from the {@link callback}.
      */
     public Handle<TParameters extends JSONArray, TReturn extends JSONElement>(channel: string, callback: RequestCallback<TParameters, TReturn | undefined>): void {
-        setTimeout(() => nw.Window.get()?.window.addEventListener(channel, async (evt: CustomEvent<unknown>) => {
+        setTimeout(() => (this.win.addEventListener(channel, async (evt: CustomEvent<unknown>) => {
             const { replyID, parameters } = evt.detail;
             const result = await callback(...parameters);
             // TODO: Consider dispatching error as well ...
-            nw.Window.get()?.window.console.log.call(nw.Window.get()?.window.console, 'APP::Handle::Result', result);
-            nw.Window.get()?.window.dispatchEvent(new CustomEvent<TReturn>(replyID, { detail: result }));
+            this.win.console.log.call(this.win.console, 'APP::Handle::Result', result);
+            this.win.dispatchEvent(new CustomEvent<TReturn>(replyID, { detail: result }));
         }), 500);
     }
 

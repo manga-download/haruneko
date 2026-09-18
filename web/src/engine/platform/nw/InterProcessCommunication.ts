@@ -11,8 +11,8 @@ type RequestCallback<TParameters extends JSONArray = JSONArray, TReturn extends 
 export class IPC {
 
     constructor() {
-        setTimeout(() => window.dispatchEvent(new CustomEvent('APP::MEOW', { detail: { web: true } })), 5000);
-        setTimeout(() => window.addEventListener('WEB::MEOW', evt => console.log('From App Context:', evt.detail)), 500);
+        //setTimeout(() => window.dispatchEvent(new CustomEvent('APP::MEOW', { detail: { web: true } })), 5000);
+        //setTimeout(() => window.addEventListener('WEB::MEOW', evt => console.log('From App Context:', evt.detail)), 500);
     }
 
     On(channel: Channels.RemoteProcedureCallContract.LoadMediaContainerFromURL, callback: (url: string) => Promise<void>): void;
