@@ -19,7 +19,10 @@ type APIChapter = {
     }[];
 };
 
-@Common.MangaCSS(/^{origin}\/series\/[^/]+$/, 'h1', (element, uri) => ({ id: uri.pathname.split('/').at(-1), title: element.textContent.trim() }))
+@Common.MangaCSS(/^{origin}\/series\/[^/]+$/, 'h1', (element, uri) => ({
+    id: uri.pathname.split('/').at(-1),
+    title: element.textContent.trim()
+}))
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
@@ -59,6 +62,8 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
         const { pages } = await FetchJSON<APIChapter>(new Request(new URL(`./series/${chapter.Parent.Identifier}/chapters/${chapter.Identifier}`, this.apiURL)));
-        return pages.sort((self, other) => self.index - other.index).map(({ imageUrl }) => new Page(this, chapter, new URL(imageUrl)));
+        return pages
+            .sort((self, other) => self.index - other.index)
+            .map(({ imageUrl }) => new Page(this, chapter, new URL(imageUrl)));
     }
 }
