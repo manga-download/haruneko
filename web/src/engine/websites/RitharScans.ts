@@ -11,8 +11,6 @@ import * as KeyoApp from './templates/KeyoApp';
 @Common.ImageAjax(true)
 export default class extends DecoratableMangaScraper {
 
-    private readonly mediaUrl = new URL('/storage/', this.URI);
-
     public constructor() {
         super('ritharscans', 'Rithar Scans', 'https://ritharscans.com', Tags.Media.Manga, Tags.Language.English, Tags.Source.Scanlator);
     }
