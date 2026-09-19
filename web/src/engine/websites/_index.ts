@@ -651,6 +651,7 @@ export { default as StarlightScan } from './StarlightScan';
 export { default as StellarSaber } from './StellarSaber';
 export { default as StoneScape } from './StoneScape';
 export { default as StrayFansub } from './StrayFansub';
+export { default as SubManhwa } from './SubManhwa';
 export { default as Summertoon } from './Summertoon';
 export { default as SundayWebry } from './SundayWebry';
 export { default as SushiScans } from './SushiScans';
