@@ -23,6 +23,7 @@ export const enum Key {
     ViewerMode = 'viewer-mode',
     ViewerMode_Paginated = 'paginated',
     ViewerMode_Longstrip = 'longstrip',
+    ViewerMode_Paged = 'paged',
     ViewerReverseDirection = 'viewer-reverse-direction',
     //
     ViewerDoublePage = 'viewer-double-page',
@@ -106,6 +107,7 @@ class UIClassicStore {
         Key.ViewerMode_Paginated,
         { key: Key.ViewerMode_Longstrip, label: R.Frontend_Classic_Settings_ViewerMode_Longstrip },
         { key: Key.ViewerMode_Paginated, label: R.Frontend_Classic_Settings_ViewerMode_Paginated },
+        { key: Key.ViewerMode_Paged, label: R.Frontend_Classic_Settings_ViewerMode_Paged },
     ));
 
     ViewerReverseDirection = new SettingStore<boolean, Check>( new Check(
