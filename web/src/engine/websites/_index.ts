@@ -480,6 +480,7 @@ export { default as MindaFanSub } from './MindaFanSub';
 export { default as MiniTwoScan } from './MiniTwoScan';
 export { default as MintManga } from './MintManga';
 export { default as MirrorKomik } from './MirrorKomik';
+export { default as MistScans } from './MistScans';
 export { default as mkzhan } from './mkzhan';
 export { default as Mojoin } from './Mojoin';
 export { default as MonochromeScans } from './MonochromeScans';
