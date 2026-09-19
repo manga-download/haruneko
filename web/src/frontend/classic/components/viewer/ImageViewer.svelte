@@ -44,28 +44,54 @@
     let viewer: HTMLElement;
     const isPaged = $derived(Settings.ViewerMode.Value === Key.ViewerMode_Paged);
     const isDoublePage = $derived(Settings.ViewerDoublePage.Value);
+    let visiblePages = $state([currentImageIndex]);
+    const isLandscapeSet = $state(new Set<number>());
 
     function viewerclose() {
         wide = false;
         onClose();
     }
 
+    function shouldShowDoublePage() {
+        if (!isDoublePage || currentImageIndex < 0) return false;
+        if (isLandscapeSet.has(currentImageIndex) || isLandscapeSet.has(currentImageIndex + 1)) {
+            return false;
+        }
+        else return true;
+    }
+
     function nextPage() {
-        if (currentImageIndex >= entries.length - 1) return;
-        if (!isDoublePage || currentImageIndex === entries.length - 2) currentImageIndex++;
-        else currentImageIndex += 2;
+        if (visiblePages.length == 2) {
+            if (currentImageIndex >= entries.length - 2) return;
+            currentImageIndex += 2;
+        } else {
+            if (currentImageIndex >= entries.length - 1) return;
+            currentImageIndex++;
+        }
+        if (shouldShowDoublePage()) visiblePages = [currentImageIndex, currentImageIndex + 1];
+        else visiblePages = [currentImageIndex];
     }
 
     // Advance by one page, allowing the user to shift the double-page spread
     function nextPageByOne() {
         if (currentImageIndex >= entries.length - 1) return;
-        else currentImageIndex++;
+        currentImageIndex++;
+        if (shouldShowDoublePage()) visiblePages = [currentImageIndex, currentImageIndex + 1];
+        else visiblePages = [currentImageIndex];
     }
 
     function previousPage() {
         if (currentImageIndex <= 0) return;
-        if (!isDoublePage || currentImageIndex === 1) currentImageIndex--;
-        else currentImageIndex -= 2;
+        if (isDoublePage) {
+            currentImageIndex -= 2;
+            if (shouldShowDoublePage()) visiblePages = [currentImageIndex, currentImageIndex + 1];
+            else {
+                visiblePages = [++currentImageIndex];
+            }
+        } else {
+            currentImageIndex--;
+            visiblePages = [currentImageIndex];
+        }
     }
 
     function onPageClick(event: MouseEvent) {
@@ -202,9 +228,14 @@
     $effect(() => {
         entries; // reset counter whenever the item changes
         loadedImageCount = 0;
+        if (isPaged) {
+            if (shouldShowDoublePage()) visiblePages = [currentImageIndex, currentImageIndex + 1];
+            else visiblePages = [currentImageIndex];
+        }
     });
 
-    function onImageLoaded() {
+    function onImageLoaded(index: number, isLandscape: boolean) {
+        if (isLandscape === true) isLandscapeSet.add(index);
         loadedImageCount++;
         if (entries.length > 0 && loadedImageCount === entries.length) {
             if (UI.selectedItemNext && Settings.ViewerPreloadNextItem.Value) preloadItem(UI.selectedItemNext);
@@ -303,8 +334,8 @@
 
     {#each entries as content, index (index)}
         <button
-            class:hidden={index !== currentImageIndex && (index !== currentImageIndex + 1 || !isDoublePage)}
-            class:double-page={isDoublePage}
+            class:hidden={!visiblePages.includes(index)}
+            class:double-page={visiblePages.length == 2}
             onclick={() => {
                 if (wide && isPaged) return;
                 event.stopPropagation();
@@ -318,7 +349,7 @@
                 {wide}
                 alt="content_{index}"
                 page={content}
-                onLoad={onImageLoaded}
+                onLoad={(isLandscape) => onImageLoaded(index, isLandscape)}
             />
         </button>
     {/each}
