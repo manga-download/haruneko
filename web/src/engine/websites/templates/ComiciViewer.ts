@@ -21,8 +21,8 @@ type APIChapters = {
         episodes: {
             id: string;
             title: string;
-        }[]
-    }
+        }[];
+    };
 };
 
 const CleanMangaPath = (path: string) => path.replace(/\/new$/, '');
@@ -32,7 +32,10 @@ function MangaExtractor(element: HTMLElement, uri: URL) {
 };
 
 @Common.MangaCSS(/^{origin}(\/[^/]+)?\/series\/[^/]+(\/new)?$/, 'h1.series-h-title', MangaExtractor)
-@Common.MangasMultiPageCSS<HTMLAnchorElement>('a.series-list-item-link', Common.PatternLinkGenerator('/series/list/up/{page}', 1), 0, anchor => ({ id: CleanMangaPath(anchor.pathname), title: anchor.querySelector('div.series-list-item-h span').textContent.trim() }))
+@Common.MangasMultiPageCSS<HTMLAnchorElement>('a.series-list-item-link', Common.PatternLinkGenerator('/series/list/up/{page}', 1), 0, anchor => ({
+    id: CleanMangaPath(anchor.pathname),
+    title: anchor.querySelector('div.series-list-item-h span').textContent.trim()
+}))
 export class ComiciViewer extends DecoratableMangaScraper {
 
     readonly #identityTileMap = new Array(16).fill(null).map((_, index) => ({ col: index / 4 >> 0, row: index % 4 >> 0 }));
