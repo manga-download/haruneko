@@ -73,7 +73,6 @@ import '../MangaWOW_e2e';
 import '../MangaZizi_e2e';
 import '../Mangazure_e2e';
 import '../ManhuaHot_e2e';
-import '../ManhuaNext_e2e';
 import '../ManhuaUs_e2e';
 import '../Manhwa68_e2e';
 import '../ManhwaClub_e2e';
