@@ -8,7 +8,7 @@ type APISerie = {
     produit: {
         ref: number;
         titre: string;
-    }
+    };
 };
 
 type APISeries = {
@@ -20,7 +20,11 @@ export default class extends MeianBase {
 
     public constructor() {
         super('hotmanga', 'Hot-Manga', 'https://www.hot-manga.fr', Tags.Media.Manga, Tags.Language.French, Tags.Source.Official, Tags.Rating.Pornographic);
-        this.WithApiURL('https://api.hot-manga.fr/v1/').WithTokenCookieName('token_hm').WithImageCDN('https://ebook.hot-manga.fr/');
+        this.SetParameters({
+            apiURL: 'https://api.hot-manga.fr/v1/',
+            imageCDN: 'https://ebook.hot-manga.fr/',
+            tokenCookieName: 'token_hm'
+        });
     }
 
     public override get Icon() {
