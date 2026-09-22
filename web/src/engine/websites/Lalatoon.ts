@@ -1,15 +1,12 @@
 import { Tags } from '../Tags';
 import icon from './Lalatoon.webp';
-import * as Common from './decorators/Common';
 import { FetchWindowScript } from '../platform/FetchProvider';
-import { ToomicsBase, WebsiteInfoExtractor } from './templates/ToomicsBase';
+import { ToomicsBase } from './templates/ToomicsBase';
 
-@Common.MangaCSS(/^{origin}\/[a-z]+\/webtoon\/episode\/toon\/\d+$/, 'h3[class*="episode-top__tit"]', WebsiteInfoExtractor())
 export default class extends ToomicsBase {
     public constructor() {
         super('lalatoon', 'Lalatoon', 'https://global.lalatoon.com', Tags.Language.Multilingual, Tags.Media.Manhwa, Tags.Source.Official);
-        this.languages = ['en', 'es', 'de', 'fr', 'it', 'jp', 'mx', 'por', 'sc', 'tc'];
-        this.queryMangas = 'a[href*="/webtoon/episode/toon/"]';
+        this.SetLanguages(['en', 'es', 'de', 'fr', 'it', 'jp', 'mx', 'por', 'sc', 'tc']);
     }
 
     public override get Icon() {

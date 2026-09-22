@@ -1,15 +1,13 @@
 import { Tags } from '../Tags';
 import icon from './Toomics.webp';
-import * as Common from './decorators/Common';
 import { FetchWindowScript } from '../platform/FetchProvider';
-import { ToomicsBase, WebsiteInfoExtractor } from './templates/ToomicsBase';
+import { ToomicsBase } from './templates/ToomicsBase';
 
-@Common.MangaCSS(/^{origin}\/[a-z]+\/webtoon\/episode\/toon\/\d+$/, 'section a[data-toon-name]', WebsiteInfoExtractor())
 export default class extends ToomicsBase {
 
     public constructor() {
         super('toomics', 'Toomics (Global)', 'https://global.toomics.com', Tags.Language.Multilingual, Tags.Media.Manhwa, Tags.Source.Official);
-        this.languages = ['en', 'es', 'de', 'fr', 'it', 'jp', 'mx', 'por', 'sc', 'tc'];
+        this.SetLanguages(['en', 'esp', 'de', 'fr', 'it', 'ja', 'por', 'sc', 'tc', 'th']);
     }
 
     public override get Icon() {

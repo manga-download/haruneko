@@ -3,7 +3,7 @@ import { TestFixture } from '../../../test/WebsitesFixture';
 new TestFixture({
     plugin: {
         id: 'lalatoonko',
-        title: 'Lalatoon (KO)'
+        title: 'Lalatoon (Korean)'
     },
     container: {
         url: 'https://www.lalatoon.com/kr/webtoon/episode/toon/8345',
