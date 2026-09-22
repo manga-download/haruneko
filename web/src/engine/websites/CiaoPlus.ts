@@ -182,7 +182,7 @@ export default class extends DecoratableMangaScraper {
             });
             chapters.push(...episode_list.map(({ episode_id: id, episode_name: name }) => new Chapter(this, manga, `${id}`, name.trim())));
         };
-        return chapters;
+        return chapters.reverse();
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page<PageParameters>[]> {

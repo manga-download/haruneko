@@ -20,11 +20,11 @@ type APIPages = {
 @Common.MangasMultiPageCSS<HTMLAnchorElement>('div#dataList div.item a', Common.PatternLinkGenerator('/cate/{page}'), 0,
     anchor => ({ id: anchor.pathname, title: anchor.querySelector<HTMLDivElement>('div.title').textContent.trim() }))
 @Common.ChaptersSinglePageCSS<HTMLAnchorElement>('#chapter-grid-container > a.chapter-item', undefined,
-    anchor => ({ id: anchor.pathname, title: anchor.dataset.title.trim() }))
+    anchor => ({ id: anchor.pathname, title: anchor.dataset.title.trim() }), true)
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('mwku', 'Mwku', 'https://manwari.cc', Tags.Language.Chinese, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Source.Aggregator, Tags.Accessibility.DomainRotation);
+        super('mwku', 'Mwku', 'https://manwaxu.cc', Tags.Language.Chinese, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Source.Aggregator, Tags.Accessibility.DomainRotation);
     }
 
     public override get Icon() {

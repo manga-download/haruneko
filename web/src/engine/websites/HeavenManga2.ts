@@ -4,25 +4,19 @@ import { Chapter, DecoratableMangaScraper, type Manga } from '../providers/Manga
 import * as Common from './decorators/Common';
 import { FetchJSON } from '../platform/FetchProvider';
 
-function MangaInfoExtractor(element: HTMLAnchorElement) {
-    return {
-        id: element.pathname,
-        title: element.querySelector('img').alt.trim()
-    };
-}
-
 type APIChapter = {
     data: {
-        slug: string
-        id: number
-    }[]
-}
-
-const scriptPages = `window.pUrl.map(page => page.imgURL);`;
+        slug: string;
+        id: number;
+    }[];
+};
 
 @Common.MangaCSS(/^{origin}\/manga\/[^/]+$/, 'div.site-content div.post-title h3')
-@Common.MangasMultiPageCSS('div.page-item-detail div.photo a.thumbnail', Common.PatternLinkGenerator('/top?page={page}'), 0, MangaInfoExtractor)
-@Common.PagesSinglePageJS(scriptPages, 500)
+@Common.MangasMultiPageCSS<HTMLAnchorElement>('div.page-item-detail div.photo a.thumbnail', Common.PatternLinkGenerator('/top?page={page}'), 0, anchor => ({
+    id: anchor.pathname,
+    title: anchor.querySelector('img').alt.trim()
+}))
+@Common.PagesSinglePageJS(`window.pUrl.map(page => page.imgURL);`, 500)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
@@ -35,12 +29,18 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const request = new Request(new URL(manga.Identifier, this.URI), {
+        // website chapter sorting is a mess, do it ourselves
+        const collator = new Intl.Collator(undefined, {
+            numeric: true,
+            sensitivity: 'base'
+        });
+        const { data } = await FetchJSON<APIChapter>(new Request(new URL(manga.Identifier, this.URI), {
             headers: {
                 'X-Requested-With': 'XMLHttpRequest'
             }
-        });
-        const { data } = await FetchJSON<APIChapter>(request);
-        return data.map(page => new Chapter(this, manga, `/manga/leer/${page.id}`, `Chapter ${page.slug}`));
+        }));
+        return data
+            .map(({ id, slug }) => new Chapter(this, manga, `/manga/leer/${id}`, `Chapter ${slug}`))
+            .sort((self, other) => collator.compare(other.Title, self.Title));
     }
 }
