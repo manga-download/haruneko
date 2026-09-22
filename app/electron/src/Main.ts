@@ -2,6 +2,7 @@ import path from 'path';
 import fs from 'fs/promises';
 import { app } from 'electron';
 import { Command } from 'commander';
+import { Logger } from './Logger';
 import { IPC } from './ipc/InterProcessCommunication';
 import { ApplicationWindow } from './ipc/ApplicationWindow';
 import { FetchProvider } from './ipc/FetchProvider';
@@ -108,6 +109,7 @@ async function OpenWindow(): Promise<void> {
         const uri = new URL(argv.origin ?? manifest.url ?? 'about:blank');
         UpdatePermissions(win.webContents.session, uri);
 
+        new Logger(win.webContents);
         const ipc = new IPC(win.webContents);
         const rpc = new RPCServer('/hakuneko', new RemoteProcedureCallContract(ipc, win.webContents));
         new RemoteProcedureCallManager(rpc, ipc);
@@ -115,7 +117,6 @@ async function OpenWindow(): Promise<void> {
         new RemoteBrowserWindowController(ipc);
         new BloatGuard(ipc, win.webContents);
         win.RegisterChannels(ipc);
-
         await win.loadURL(uri.href).catch(error => console.warn(error));
     } catch(error) {
         console.error(error);
