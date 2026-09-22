@@ -298,14 +298,23 @@ export abstract class FetchProvider {
                         default: {
                             ClearTimeout(await cancellation);
                             await Delay(delay);
+                            // NOTE: The timeout also applies to the script evaluation (excluding the delay), a script that never yields a result must not keep the request pending forever
+                            cancellation = SetTimeout(async () => {
+                                await destroy();
+                                reject(new Exception(R.FetchProvider_FetchWindow_TimeoutError));
+                            }, timeout);
                             const result = await win.ExecuteScript<T>(script);
+                            ClearTimeout(await cancellation);
                             await destroy();
                             resolve(result);
                             return;
                         }
                     }
-                } catch {
+                } catch (error) {
+                    // NOTE: The request can never be fulfilled anymore (e.g., the injected script threw an error), so it must be rejected instead of pending forever
+                    ClearTimeout(await cancellation);
                     await destroy();
+                    reject(error);
                 }
             });
 
