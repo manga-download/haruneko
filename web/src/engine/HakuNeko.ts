@@ -46,7 +46,7 @@ export class HakuNeko {
         // Preload bookmarks flags to show content to view
         const checkNewContent = this.SettingsManager.OpenScope().Get<Check>(GlobalKey.CheckNewContent).Value ;
         if (checkNewContent) this.BookmarkPlugin.RefreshAllFlags();
-
+        await this.#downloadManager.Restore(this.#pluginController.WebsitePlugins);
     }
 
     public get Tags() {

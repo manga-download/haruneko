@@ -14,7 +14,7 @@ function MockContainer(identifier: string, parent: MediaContainer<MediaChild> = 
 
 class TestFixture {
 
-    public readonly StorageControllerMock = {} as StorageController;
+    public readonly StorageControllerMock = { SavePersistent: vi.fn(async () => {}) } as unknown as StorageController;
     public readonly SettingsManagerMock = {} as SettingsManager;
 
     public CreateTestee() {
@@ -191,5 +191,27 @@ describe('DownloadManager', () => {
             expect(callback).toHaveBeenCalledTimes(1);
             expect(callback).toHaveBeenCalledWith(testee.Queue.Value, testee);
         });
+    });
+    describe('Restore', () => {
+
+        it('Should restore the pending tasks persisted before a restart', async () => {
+            let persisted: unknown;
+            const storage = {
+                SavePersistent: vi.fn(async (value: unknown) => { persisted = value; }),
+                LoadPersistent: vi.fn(async () => persisted),
+            } as unknown as StorageController;
+            const website = {
+                Identifier: 'website',
+                CreateEntry: (manga: string) => ({ CreateEntry: (chapter: string) => MockContainer(chapter, MockContainer(manga, website)) }),
+            } as unknown as MediaContainer<MediaContainer<MediaChild>>;
+            await new DownloadManager(storage).Enqueue(MockContainer('①', MockContainer('manga', website)), MockContainer('②', MockContainer('manga', website)));
+            await vi.waitFor(() => expect(storage.SavePersistent).toHaveBeenCalled(), { timeout: 5000 });
+
+            const testee = new DownloadManager(storage);
+            await testee.Restore([ website ]);
+
+            expect(testee.Queue.Value.map(task => task.Media.Identifier)).toStrictEqual([ '①', '②' ]);
+            expect(testee.Queue.Value.map(task => task.Media.Parent.Identifier)).toStrictEqual([ 'manga', 'manga' ]);
+        }, 10_000);
     });
 });
