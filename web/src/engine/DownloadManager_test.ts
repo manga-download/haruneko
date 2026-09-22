@@ -4,11 +4,12 @@ import { type MediaContainer, StoreableMediaContainer, type MediaChild, type Med
 import type { SettingsManager } from './SettingsManager';
 import type { StorageController } from './StorageController';
 
-function MockContainer(identifier: string, parent: MediaContainer<MediaChild> = undefined) {
+function MockContainer(identifier: string, parent: MediaContainer<MediaChild> = undefined, stored = false) {
     const mockMediaContainer = {};
     Object.defineProperty(mockMediaContainer, 'Parent', { get: () => parent });
     Object.defineProperty(mockMediaContainer, 'Identifier', { get: () => identifier });
     Object.defineProperty(mockMediaContainer, 'IsSameAs', { value: vi.fn(StoreableMediaContainer.prototype.IsSameAs.bind(mockMediaContainer)) });
+    Object.defineProperty(mockMediaContainer, 'RefreshStored', { value: vi.fn(async () => stored) });
     return mockMediaContainer as StoreableMediaContainer<MediaItem>;
 }
 
@@ -68,6 +69,17 @@ describe('DownloadManager', () => {
 
             const queued = testee.Queue.Value.map(task => task.Media);
             expect(queued).toStrictEqual(expected);
+        });
+
+        it('Should not add containers already stored in the download directory', async () => {
+            const fixture = new TestFixture();
+            const testee = fixture.CreateTestee();
+
+            const missing = MockContainer('②');
+            await testee.Enqueue(MockContainer('①', undefined, true), missing, MockContainer('③', undefined, true));
+
+            const queued = testee.Queue.Value.map(task => task.Media);
+            expect(queued).toStrictEqual([ missing ]);
         });
 
         it('Should only add first unique containers', async () => {

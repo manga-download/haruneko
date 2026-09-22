@@ -31,11 +31,13 @@ export class DownloadManager {
 
     /**
      * Add the given {@link containers} to the download queue.
-     * Only containers that are not present in the download queue will be added.
+     * Only containers that are neither present in the download queue nor already stored in the download directory will be added,
+     * so queuing all chapters of a manga again (e.g. after clearing the finished tasks) does not download the stored ones once more.
      */
     public async Enqueue(...containers: StoreableMediaContainer<MediaItem>[]): Promise<void> {
+        const stored = await Promise.all(containers.map(container => container.RefreshStored().catch(() => false)));
         await this.InvokeQueueTransaction(() => {
-            const tasks = containers.distinct()
+            const tasks = containers.filter((_, index) => !stored[index]).distinct()
                 .filter(container => this.queue.Value.none(task => task.Media.IsSameAs(container)))
                 .map(container => new DownloadTask(container, this.storageController));
             this.queue.Push(...tasks);
