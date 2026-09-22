@@ -53,7 +53,7 @@
         }
     }
 
-    HakuNeko.DownloadManager.Queue.Subscribe((tasks) => {
+    function trackQueue(tasks: DownloadTask[]) {
         const removed = previousTasks.filter((task) => !tasks.includes(task));
         const added = tasks.filter((task) => !previousTasks.includes(task));
         removed.forEach((job) => job.Status.Unsubscribe(refreshStatus));
@@ -61,7 +61,13 @@
         previousTasks = [...tasks];
         downloadTasks = tasks;
         refreshCounts();
-    });
+    }
+
+    HakuNeko.DownloadManager.Queue.Subscribe(trackQueue);
+    // The queue may already contain tasks when this component is created (e.g. a restored queue), and a subscription only reports
+    // later changes: the tasks already queued (possibly one of them already downloading) must be tracked right away.
+    trackQueue(HakuNeko.DownloadManager.Queue.Value);
+    refreshStatus();
 
     async function refreshStatus() {
         const nowDownloading = downloadTasks.filter((job) =>
@@ -73,6 +79,8 @@
             currentDownload = nowDownloading;
             currentDownload.Progress.Subscribe(refreshProgress);
             currentDownload.Status.Subscribe(refreshProgress);
+            // Show the state of the new download at once instead of waiting for its next change (e.g. none while its pages are collected).
+            refreshProgress();
         }
         refreshCounts();
     }
