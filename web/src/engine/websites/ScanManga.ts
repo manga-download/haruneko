@@ -10,7 +10,7 @@ import { Fetch } from '../platform/FetchProvider';
 const chapterScript = `
     new Promise( async (resolve, reject) => {
         try {
-            const response = await fetch('/api/chapter/' + n + '.json', {
+            const response = await fetch('https://bqj.scan-manga.com/chapter/' + n + '.json', {
                 method: 'GET',
                 credentials: 'omit',
                 headers: {
@@ -32,7 +32,7 @@ const chapterScript = `
 const pageScript = `
     new Promise( async (resolve, reject) => {
         try {
-            const response = await fetch('/api/lel/' + idc + '.json', {
+            const response = await fetch('https://bqj.scan-manga.com/lel/' + idc + '.json', {
                 method: 'POST',
                 credentials: 'omit',
                 headers: {
@@ -85,13 +85,12 @@ export default class extends DecoratableMangaScraper {
             const request = new Request(page.Link, {
                 credentials: 'omit',
                 signal: signal,
-                referrerPolicy: 'unsafe-url',
                 mode: 'cors',
                 headers: {
                     Referer: new URL(page.Parent.Identifier, this.URI).href,
                     Origin: this.URI.origin,
                     Accept: '*/*',
-                    'Sec-Fetch-Site': 'cross-site'
+                    'Sec-Fetch-Site': 'same-site'
                 }
             });
             const response = await Fetch(request);
