@@ -92,8 +92,11 @@
         downloadTask?.Status.Unsubscribe(refreshDownloadStatus);
         downloadTask = tasks.find((task) => task.Media.IsSameAs(item));
         downloadTask?.Status.Subscribe(refreshDownloadStatus);
+        downloadTaskStatus = downloadTask?.Status.Value;
     }
     HakuNeko.DownloadManager.Queue.Subscribe(taskQueueChanged);
+    // The queue may already hold a task for this item (e.g. when the chapter list is shown again), a subscription only reports later changes
+    taskQueueChanged(HakuNeko.DownloadManager.Queue.Value);
     async function refreshDownloadStatus(newstatus: Status, _task: DownloadTask) {
         downloadTaskStatus = newstatus;
     }
