@@ -103,9 +103,19 @@ async function OpenWindow(): Promise<void> {
         const argv = ParseCLI();
         const manifest = await LoadManifest();
         await SetupUserDataDirectory(manifest);
+        // A second instance would run its own download queue next to the first one (downloading the same chapters twice and writing the same files),
+        // so starting the application again only brings the running instance to the front (the lock is bound to the user data directory set above)
+        if (!app.requestSingleInstanceLock()) {
+            return app.quit();
+        }
         app.userAgentFallback = manifest['user-agent'] ?? app.userAgentFallback.split(/\s+/).filter(segment => !/(hakuneko|electron)/i.test(segment)).join(' ');
         await app.whenReady();
         const win = await CreateApplicationWindow();
+        app.on('second-instance', () => {
+            if (win.isMinimized()) win.restore();
+            win.show();
+            win.focus();
+        });
         const uri = new URL(argv.origin ?? manifest.url ?? 'about:blank');
         UpdatePermissions(win.webContents.session, uri);
 
