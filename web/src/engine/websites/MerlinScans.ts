@@ -7,8 +7,6 @@ import * as Common from './decorators/Common';
     id: anchor.pathname,
     title: anchor.querySelector('div.uk-flex-none').textContent.trim()
 }))
-@Common.PagesSinglePageJS(`[...document.querySelectorAll('#chapter-content img')].map(img=> img.dataset?.originalSrc ?? img.src);`, 1500)
-
 export default class extends InitManga {
 
     public constructor() {
