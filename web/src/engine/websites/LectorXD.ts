@@ -3,7 +3,7 @@ import icon from './LectorXD.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 
-@Common.MangaCSS<HTMLImageElement>(/^{origin}\/(manga|manhwa|manhua|novela)\/[^/]+/, 'section img.object-cover', (img, uri) => ({ id: uri.pathname, title: img.alt.trim() }))
+@Common.MangaCSS<HTMLImageElement>(/^{origin}\/(manga|manhwa|manhua|novela)\/[^/]+/, 'section img[src*="/covers/"]', (img, uri) => ({ id: uri.pathname, title: img.alt.trim() }))
 @Common.MangasMultiPageCSS<HTMLAnchorElement>('div.manga-grid > a', Common.PatternLinkGenerator('/catalogo?page={page}'), 0, anchor => ({
     id: anchor.pathname,
     title: anchor.querySelector('h4[title]').getAttribute('title').trim()

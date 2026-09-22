@@ -23,7 +23,7 @@ export default class extends DecoratableMangaScraper {
     private readonly apiURL = 'https://api2.empreguetes.wtf/';
 
     public constructor() {
-        super('maidscan', 'Maid Scan', 'https://empreguetes.wtf', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Portuguese, Tags.Source.Scanlator);
+        super('maidscan', 'Maid Scan', 'https://empreguetes.wtf', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Portuguese, Tags.Source.Scanlator, Tags.Accessibility.RegionLocked);
     }
 
     public override get Icon() {

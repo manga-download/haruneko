@@ -6,7 +6,7 @@ new TestFixture({
         title: 'SlashLib'
     },
     container: {
-        url: 'https://v2.slashlib.me/ru/manga/179586--akumade-chikarawaza-no-sister',
+        url: 'https://v2.shlib.life/ru/manga/179586--akumade-chikarawaza-no-sister',
         id: '179586--akumade-chikarawaza-no-sister',
         title: 'Сестра, обладающая силой'
     },
@@ -14,9 +14,10 @@ new TestFixture({
         id: './manga/179586--akumade-chikarawaza-no-sister/chapter?volume=1&number=72',
         title: '72'
     },
+    /* image type and size keep changing, perphaps because of mirrors
     entry: {
         index: 0,
-        size: 515_140,
-        type: 'image/webp'
-    }
+        size: 423_402,
+        type: 'image/jpeg'
+    }*/
 }).AssertWebsite();

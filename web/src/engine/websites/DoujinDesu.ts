@@ -26,6 +26,7 @@ type APIChapters = {
 export default class extends DecoratableMangaScraper {
 
     private readonly apiURL = 'https://doujin.desu.xxx/api/';
+    private deviceid = `dev_${Math.random().toString(36).substring(2, 15)}_ ${Date.now().toString(36)}`;
 
     public constructor() {
         super('doujindesu', 'DoujinDesu', 'https://doujin.desu.xxx', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Indonesian, Tags.Rating.Erotica);
@@ -112,7 +113,9 @@ export default class extends DecoratableMangaScraper {
     private async FetchAPI<T extends JSONElement>(endpoint: string): Promise<T> {
         const result = await FetchJSON<APIResult<T>>(new Request(new URL(endpoint, this.apiURL), {
             headers: {
-                'X-App-Secret': 'dfdf72051dbfdc7d76889ebd31324e74'
+                'X-App-Secret': 'dfdf72051dbfdc7d76889ebd31324e74',
+                'X-Device-Id': this.deviceid,
+                'X-Device-Name': 'Chrome on Windows'
             }
         }));
         return result._enc_resp_ ? this.Decrypt<T>(result._enc_resp_) : result as T;

@@ -1,7 +1,7 @@
 import { Tags } from '../Tags';
 import icon from './IkigaiMangas.webp';
-import { FetchWindowScript } from '../platform/FetchProvider';
-import { DecoratableMangaScraper } from '../providers/MangaPlugin';
+import { Fetch, FetchWindowScript } from '../platform/FetchProvider';
+import { type Chapter, DecoratableMangaScraper, Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 
 // TODO: Add Novel support
@@ -16,12 +16,11 @@ function CreateInfoExtractor(query: string) {
 @Common.MangaCSS<HTMLImageElement>(/^{origin}\/series\/[^/]+\/$/, 'article figure > img', (img, uri) => ({ id: uri.pathname, title: img.alt.trim() }))
 @Common.MangasMultiPageCSS('section ul.grid li > a', Common.PatternLinkGenerator('/series/?pagina={page}'), 0, CreateInfoExtractor('h3.font-semibold'))
 @Common.ChaptersMultiPageCSS('ul li.w-full a', Common.PatternLinkGenerator('{id}?pagina={page}'), 0, CreateInfoExtractor('h3.card-title'))
-@Common.PagesSinglePageCSS('section.container div.img img:not([src*="bannerikigai"])')
-@Common.ImageAjax()
+@Common.ImageElement(true)
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('ikigaimangas', 'Ikigai Mangas', 'https://visualikigai.treefy.online', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Spanish, Tags.Source.Aggregator, Tags.Accessibility.DomainRotation);
+        super('ikigaimangas', 'Ikigai Mangas', 'https://visorikigai.gettocaboca.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Spanish, Tags.Source.Aggregator, Tags.Accessibility.DomainRotation);
     }
 
     public override get Icon() {
@@ -37,5 +36,12 @@ export default class extends DecoratableMangaScraper {
         */
         this.URI.href = await FetchWindowScript(new Request('https://visualikigai.com'), `window.cookieStore.set('nsfw-mode', 'true'); window.location.origin;`, 0);
         console.log(`Assigned URL '${this.URI}' to ${this.Title}`);
+    }
+
+    public async FetchPages(chapter: Chapter): Promise<Page[]> {
+        const response = await Fetch(new Request(new URL(chapter.Identifier, this.URI)));
+        const doc = new DOMParser().parseFromString(await response.text(), 'text/html');
+        return [...doc.querySelectorAll<HTMLImageElement>(`div[${CSS.escape('q:key')}] img.w-full[onload][onerror]:not([src*="bannerikigai"])`)].map(({ src }) =>
+            new Page(this, chapter, new URL(src), { Referer: `${new URL(response.url).origin}/` }));
     }
 }

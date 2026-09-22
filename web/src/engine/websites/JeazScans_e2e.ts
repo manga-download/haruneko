@@ -7,19 +7,18 @@ new TestFixture({
         title: 'Jeaz Scans'
     },
     container: {
-        url: 'https://lectorhub.j5z.xyz/manga/-si-la-hada-es-cruel-entonces-que-se-convierta-en-mi-caldero-de-cultivo-',
-        id: '/manga/-si-la-hada-es-cruel-entonces-que-se-convierta-en-mi-caldero-de-cultivo-',
-        title: '¡Si la hada es cruel, entonces que se convierta en mi caldero de cultivo!',
+        url: 'https://lectorhub.j5z.xyz/manga/despues-de-dejar-de-actuar-como-un-perro-me-converti-en-un-magnate-celestial-urbano',
+        id: '/manga/despues-de-dejar-de-actuar-como-un-perro-me-converti-en-un-magnate-celestial-urbano',
+        title: 'Después de dejar de actuar como un perro, me convertí en un Magnate Celestial Urbano',
     },
     child: {
-        id: '/leer/-si-la-hada-es-cruel-entonces-que-se-convierta-en-mi-caldero-de-cultivo-/capitulo-1',
-        title: 'Capítulo 1',
-        timeout: 10_000
+        id: '/leer/despues-de-dejar-de-actuar-como-un-perro-me-converti-en-un-magnate-celestial-urbano/capitulo-10',
+        title: 'Capítulo 10',
     },
     entry: {
         index: 1,
-        size: 1_103_866,
-        type: 'image/webp'
+        size: 309_205,
+        type: 'image/jpeg'
     }
 }).AssertWebsite();
 
@@ -30,18 +29,17 @@ new TestFixture({
         title: 'Jeaz Scans',
     },
     container: {
-        url: 'https://lectorhub.j5z.xyz/manga.php?id=164',
-        id: '/manga.php?id=164',
-        title: '¡Si la hada es cruel, entonces que se convierta en mi caldero de cultivo!'
+        url: 'https://lectorhub.j5z.xyz/manga.php?id=284',
+        id: '/manga.php?id=284',
+        title: 'Después de dejar de actuar como un perro, me convertí en un Magnate Celestial Urbano',
     },
     child: {
-        id: '/leer/-si-la-hada-es-cruel-entonces-que-se-convierta-en-mi-caldero-de-cultivo-/capitulo-1',
-        title: 'Capítulo 1',
-        timeout: 10_000
+        id: '/leer/despues-de-dejar-de-actuar-como-un-perro-me-converti-en-un-magnate-celestial-urbano/capitulo-10',
+        title: 'Capítulo 10',
     },
     entry: {
         index: 1,
-        size: 1_103_866,
-        type: 'image/webp'
+        size: 309_205,
+        type: 'image/jpeg'
     }
 }).AssertWebsite();

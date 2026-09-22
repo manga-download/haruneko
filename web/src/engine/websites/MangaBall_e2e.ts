@@ -12,7 +12,7 @@ new TestFixture({
     },
     child: {
         id: '/chapter-detail/69ee2ccbc01e2cf095f74905/',
-        title: 'Chương 1181.5 [vi]'
+        title: 'Ch. 1181.5 Chương 1181.5 [vi]'
     },
     entry: {
         index: 1,

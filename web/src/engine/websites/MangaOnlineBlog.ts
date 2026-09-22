@@ -1,13 +1,12 @@
 ﻿import { Tags } from '../Tags';
 import icon from './MangaOnlineBlog.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
-import * as Madara from './decorators/WordPressMadara';
 import * as Common from './decorators/Common';
 
-@Madara.MangaCSS(/^{origin}\/manga\/[^/]+\/$/, 'ol.breadcrumb li:last-of-type')
-@Madara.MangasMultiPageAJAX()
-@Madara.ChaptersSinglePageAJAXv2()
-@Madara.PagesSinglePageCSS()
+@Common.MangaCSS(/^{origin}\/manga\/[^/]+\/$/, 'h1.manga-title')
+@Common.MangasMultiPageCSS('article.home-manga-card div.home-card-body a', Common.PatternLinkGenerator('/manga/page/{page}/'))
+@Common.ChaptersSinglePageCSS('div.chapters-grid a.chapter-grid-number')
+@Common.PagesSinglePageCSS('div.chapter-images img.chapter-image')
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
