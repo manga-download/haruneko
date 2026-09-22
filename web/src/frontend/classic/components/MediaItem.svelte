@@ -37,6 +37,7 @@
     } from '../../../engine/ItemflagManager';
     import { Store as UI } from '../stores/Stores.svelte';
     import { DownloadTask, Status } from '../../../engine/DownloadTask';
+    import { Chapter } from '../../../engine/providers/MangaPlugin';
     import { Key as GlobalKey } from '../../../engine/SettingsGlobal';
     import type { Directory } from '../../../engine/SettingsManager';
     import { GlobalSettings } from '../stores/Settings.svelte';
@@ -98,6 +99,28 @@
         downloadTaskStatus = newstatus;
     }
 
+    // Whether the chapter is present in the download directory: checked on the disk when shown, and again whenever the
+    // application regains the focus, so a chapter deleted in the file explorer is no longer shown as downloaded.
+    let isStored = $state(false);
+    function storedChanged(stored: boolean) {
+        isStored = stored;
+    }
+    function refreshStored() {
+        if (item instanceof Chapter) item.RefreshStored();
+    }
+    onMount(() => {
+        if (item instanceof Chapter) {
+            item.IsStored.Subscribe(storedChanged);
+            isStored = item.IsStored.Value;
+        }
+        refreshStored();
+        window.addEventListener('focus', refreshStored);
+    });
+    onDestroy(() => {
+        if (item instanceof Chapter) item.IsStored.Unsubscribe(storedChanged);
+        window.removeEventListener('focus', refreshStored);
+    });
+
     async function addDownload(item: StoreableMediaContainer<MediaItem>) {
         try {
             await HakuNeko.SettingsManager.OpenScope().Get<Directory>(GlobalKey.MediaDirectory).EnsureAccess();
@@ -129,18 +152,7 @@
     {onmouseenter}
     {oncontextmenu}
 >
-    {#if !downloadTaskStatus}
-        <Button
-            role="download"
-            size="small"
-            kind="ghost"
-            tooltipPosition="right"
-            tooltipAlignment="end"
-            icon={CloudDownload}
-            iconDescription="Download"
-            onclick={() => addDownload(item as StoreableMediaContainer<MediaItem>)}
-        />
-    {:else if downloadTaskStatus === Status.Queued}
+    {#if downloadTaskStatus === Status.Queued}
         <Button
             size="small"
             kind="ghost"
@@ -193,7 +205,7 @@
             iconDescription="Error: click to retry (detailed error in download tasks)"
             onclick={() => downloadTask.Run()}
         />
-    {:else if downloadTaskStatus === Status.Completed}
+    {:else if isStored || (downloadTaskStatus === Status.Completed && !(item instanceof Chapter))}
         <Button
             size="small"
             kind="ghost"
@@ -206,6 +218,7 @@
         </Button>
     {:else}
         <Button
+            role="download"
             size="small"
             kind="ghost"
             tooltipPosition="right"

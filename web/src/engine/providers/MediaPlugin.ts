@@ -104,6 +104,14 @@ export abstract class StoreableMediaContainer<T extends MediaItem> extends Media
 
     public abstract get IsStored(): IObservable<boolean, MediaContainer<T>>;
     public abstract Store(resources: Map<number, string>): Promise<void>;
+
+    /**
+     * Check whether this media (still) exists in the download directory.
+     * By default this is only what is already known, a media which can locate itself in the download directory shall check there.
+     */
+    public async RefreshStored(): Promise<boolean> {
+        return this.IsStored.Value;
+    }
 }
 
 export abstract class MediaScraper<T extends MediaContainer<MediaChild>> {

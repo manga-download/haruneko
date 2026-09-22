@@ -177,24 +177,64 @@ export class Chapter extends StoreableMediaContainer<Page> {
         return this.isStored;
     }
 
+    /**
+     * Get the directory in which the chapters of the manga are stored (below a directory per website when configured).
+     * @param create - Create the missing directories, otherwise a missing directory is an error
+     */
+    private async GetMangaDirectory(root: FileSystemDirectoryHandle, create: boolean): Promise<FileSystemDirectoryHandle> {
+        const settings = HakuNeko.SettingsManager.OpenScope(Scope);
+        let output = root;
+        if(settings.Get<Check>(Key.UseWebsiteSubDirectory).Value && this.Parent?.Parent) {
+            const website = SanitizeFileName(this.Parent?.Parent?.Title);
+            output = await output.getDirectoryHandle(website, { create });
+        }
+        if(this.Parent) {
+            const manga = SanitizeFileName(this.Parent?.Title);
+            output = await output.getDirectoryHandle(manga, { create });
+        }
+        return output;
+    }
+
     public async Store(resources: Map<number, string>): Promise<void> {
         // TODO: Inject settings manager and global scope identifier?
         const settings = HakuNeko.SettingsManager.OpenScope(Scope);
         const directory = settings.Get<Directory>(Key.MediaDirectory);
         await directory.EnsureAccess();
-        let output = directory.Value;
-        if(settings.Get<Check>(Key.UseWebsiteSubDirectory).Value && this.Parent?.Parent) {
-            const website = SanitizeFileName(this.Parent?.Parent?.Title);
-            output = await output.getDirectoryHandle(website, { create: true });
-        }
-        if(this.Parent) {
-            const manga = SanitizeFileName(this.Parent?.Title);
-            output = await output.getDirectoryHandle(manga, { create: true });
-        }
+        const output = await this.GetMangaDirectory(directory.Value, true);
 
         // TODO: Find more appropriate way to inject the storage dependency
         const registry = CreateChapterExportRegistry(this.Parent?.Parent['storageController']);
         await registry[settings.Get<Choice>(Key.MangaExportFormat).Value].Export(resources, output, this.Title, this.Parent?.Title);
+        this.isStored.Value = true;
+    }
+
+    /**
+     * Locate this chapter in the download directory, in whichever export format it was stored (a file per chapter, or a directory of images).
+     * The access to the download directory is only checked but never requested, so this never prompts the user.
+     * @returns The download directory and the entry of this chapter within it, or `undefined` when the chapter is not stored
+     */
+    public async GetStoredLocation(): Promise<{ directory: FileSystemDirectoryHandle, entry: FileSystemHandle } | undefined> {
+        try {
+            const root = HakuNeko.SettingsManager.OpenScope(Scope).Get<Directory>(Key.MediaDirectory).Value;
+            if(!root || await root.queryPermission({ mode: 'read' }) !== 'granted') {
+                return undefined;
+            }
+            const directory = await this.GetMangaDirectory(root, false);
+            const entry = await Promise.any<FileSystemHandle>([
+                ...[ '.cbz', '.epub', '.pdf' ].map(extension => directory.getFileHandle(SanitizeFileName(this.Title + extension))),
+                directory.getDirectoryHandle(SanitizeFileName(this.Title)),
+            ]);
+            return { directory: root, entry };
+        } catch {
+            return undefined;
+        }
+    }
+
+    /**
+     * Check whether this chapter (still) exists in the download directory, e.g. after a restart or after it was deleted outside of the application.
+     */
+    public override async RefreshStored(): Promise<boolean> {
+        return this.isStored.Value = await this.GetStoredLocation() !== undefined;
     }
 }
 
