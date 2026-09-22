@@ -9,5 +9,4 @@ export default class extends NiaddBase {
     public override get Icon() {
         return icon;
     }
-
 }
