@@ -13,11 +13,11 @@ new TestFixture({
     },
     child: {
         id: '/id-127778-read-mairimashita-iruma-kun-chapter-100.html',
-        title: '100. Bölüm'
-    }, // pages only loads for TR IP, use a VPN
+        title: '100.Bölüm'
+    }, // They are using cloudflare to block page downloading, pray that you are not flagged
     entry: {
         index: 2,
-        size: 1_042_525,
+        size: 1_062_301,
         type: 'image/png'
     }
 }).AssertWebsite();

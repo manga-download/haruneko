@@ -12,7 +12,8 @@ new TestFixture({
     },
     child: {
         id: '/chapter/62de13d4003-62df20bd8bf/',
-        title: 'Chapter 1'
+        title: 'Chapter 1',
+        timeout: 15_000
     },
     entry: {
         index: 0,
