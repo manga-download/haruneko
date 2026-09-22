@@ -283,12 +283,14 @@ export abstract class FetchProvider {
                     invocations.push({ name: 'performRedirectionOrFinalize()', info: `Mode: ${FetchRedirection[ redirect ]}` });
                     switch (redirect) {
                         case FetchRedirection.Interactive: {
-                            // NOTE: Allow the user to solve the captcha within 2.5 minutes before rejecting the request with an error
+                            // NOTE: Allow the user to solve the captcha within 5 minutes before rejecting the request with an error.
+                            //       It must cover more than a single attempt, a challenge may expire and present a new one (e.g., a puzzle
+                            //       which resets after 45 seconds and allows 3 attempts), and the user may need a moment to notice the window.
                             ClearTimeout(await cancellation);
                             cancellation = SetTimeout(() => {
                                 destroy();
                                 reject(new Exception(R.FetchProvider_FetchWindow_TimeoutError));
-                            }, 150_000);
+                            }, 300_000);
                             await win.Show();
                             return;
                         }
