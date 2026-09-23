@@ -7,7 +7,7 @@ new TestFixture({
     },
     container: {
         url: 'https://www.mugiwara-no-streaming.com/catalogue/one-piece',
-        id: 'One Piece',
+        id: 'one-piece',
         title: 'One Piece'
     },
     child: {
