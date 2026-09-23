@@ -6,12 +6,12 @@ new TestFixture({
         title: 'VerMangasPorno'
     },
     container: {
-        url: 'https://vermangasporno.com/doujin/kusui-aruta-hayaoki-wa-oo-no-toku/',
-        id: '/doujin/kusui-aruta-hayaoki-wa-oo-no-toku/',
+        url: 'https://vermangasporno.com/doujins/kusui-aruta-hayaoki-wa-oo-no-toku/',
+        id: '/doujins/kusui-aruta-hayaoki-wa-oo-no-toku/',
         title: '[Kusui Aruta] Hayaoki wa OO no Toku'
     },
     child: {
-        id: '/doujin/kusui-aruta-hayaoki-wa-oo-no-toku/',
+        id: '/doujins/kusui-aruta-hayaoki-wa-oo-no-toku/',
         title: '[Kusui Aruta] Hayaoki wa OO no Toku'
     },
     entry: {

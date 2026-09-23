@@ -36,7 +36,7 @@ export default class extends DecoratableMangaScraper {
     private readonly apiURL = 'https://cdncid.csmcscns.id/v1/';
 
     public constructor() {
-        super('cosmicscansid', 'Cosmic Scans Indonesia', 'https://03.cosmicscans.to', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Indonesian, Tags.Source.Scanlator);
+        super('cosmicscansid', 'Cosmic Scans Indonesia', 'https://04.cosmicscans.to', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Indonesian, Tags.Source.Scanlator);
     }
 
     public override get Icon() {
@@ -63,7 +63,7 @@ export default class extends DecoratableMangaScraper {
             let cursor: string;
             for (let run = true; run;) {
                 const { data, cursor: { nextCursor } } = await FetchJSON<APIMangas>(new Request(new URL(`./manga/allComics?limit=100&after=${cursor}`, this.apiURL)));
-                const mangas = data.map(({ slug, title }) => new Manga(this, provider, `/series/${slug}`, title));
+                const mangas = data.map(({ slug, title }) => new Manga(this, provider, `${slug}`, title));
                 nextCursor ? cursor = nextCursor : run = false;
                 yield* mangas;
             }

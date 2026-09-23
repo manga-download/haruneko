@@ -7,7 +7,7 @@ const config = {
     },
     container: {
         url: 'https://milftoon.xxx/comics/thankstaking/',
-        id: JSON.stringify({ post: '786', slug: '/comics/thankstaking/' }),
+        id: JSON.stringify({ slug: '/comics/thankstaking/' }),
         title: 'Thankstaking'
     },
     child: {

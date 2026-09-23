@@ -156,7 +156,7 @@ export default class extends DecoratableMangaScraper {
                 apply(target, thisArg, args) {
                     const result = Reflect.apply(target, thisArg, args);
                     try{
-                        if (result.pages){
+                        if (result.pages && Object.keys(result).length === 1){
                             setInterval(() => window.dispatchEvent(new CustomEvent('${eventName}', { detail: result })), 250);
                         }
                     } catch {}

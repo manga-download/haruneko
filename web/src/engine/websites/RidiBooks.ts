@@ -4,33 +4,33 @@ import { FetchJSON } from '../platform/FetchProvider';
 import { DecoratableMangaScraper, type MangaPlugin, Manga, type Chapter, Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 
-type APIMangas = {
-    data: {
-        items: {
-            book: {
-                bookId: string;
-                title: string;
-                serial: {
-                    title: string;
-                };
-            };
-        }[];
-        pagination: {
-            nextPage: string;
-        };
-    };
+type APIResult<T> = {
+    data: T;
 };
 
-type APIPages = {
-    data: {
-        pages: {
-            src: string;
-        }[];
+type APIMangas = APIResult<{
+    items: {
+        book: {
+            bookId: string;
+            title: string;
+            serial: {
+                title: string;
+            };
+        };
+    }[];
+    pagination: {
+        nextPage: string;
     };
-};
+}>;
+
+type APIPages = APIResult<{
+    pages: {
+        src: string;
+    }[];
+}>;
 
 @Common.MangaCSS(/^{origin}\/books\/\d+$/, '#ISLANDS__Header h1')
-@Common.ChaptersSinglePageJS(`seriesBookListJson.map(({ id, title }) => ({ id, title: title.replace(bookDetail.series_title, '').trim() || title }));`)
+@Common.ChaptersSinglePageJS(`seriesBookListJson.map(({ id, title }) => ({ id, title: title.replace(bookDetail.series_title, '').trim() || title })).reverse();`, 500)
 @Common.ImageAjax(true)
 export default class extends DecoratableMangaScraper {
 
@@ -46,14 +46,7 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
         type This = typeof this;
-        const uri = new URL('/v2/category/books', this.apiURL);
-        uri.search = new URLSearchParams({
-            'platform': 'web',
-            'tab': 'books',
-            'category_id': '1600',
-            'order_by': 'popular',
-            'limit': '200',
-        }).toString();
+        const uri = new URL('/v2/category/books?platform=web&tab=books&category_id=1600&order_by=popular&limit=200', this.apiURL);
         return Array.fromAsync(async function* (this: This) {
             for (let offset = 0, run = true; run; offset += 200) {
                 uri.searchParams.set('offset', `${offset}`);
@@ -65,11 +58,11 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const { data } = await FetchJSON<APIPages>(new Request(new URL('/api/web-viewer/generate', this.URI), {
+        const { data: { pages} } = await FetchJSON<APIPages>(new Request(new URL('/api/web-viewer/generate', this.URI), {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ book_id: chapter.Identifier }),
         }));
-        return data.pages.map(page => new Page(this, chapter, new URL(page.src, this.URI)));
+        return pages.map(({ src }) => new Page(this, chapter, new URL(src, this.URI)));
     }
 }

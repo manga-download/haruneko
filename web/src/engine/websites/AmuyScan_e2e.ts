@@ -6,12 +6,12 @@ new TestFixture({
         title: 'AmuyScan'
     },
     container: {
-        url: 'https://apenasmaisumyaoi.com/home/manga/200/',
-        id: JSON.stringify({ post: '200', slug: '/home/manga/200/' }),
+        url: 'https://www.apenasmaisumyaoi.com/manga/200/',
+        id: JSON.stringify({ post: '200', slug: '/manga/200/' }),
         title: 'Até Logo, Meu Rei'
     },
     child: {
-        id: '/home/manga/200/1a-temporada/capitulo-01/',
+        id: '/manga/200/1a-temporada/capitulo-01/',
         title: 'Capítulo 01'
     },
     entry: {

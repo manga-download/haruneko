@@ -46,13 +46,13 @@ export class NovelDexTheme extends DecoratableMangaScraper {
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         type This = typeof this;
-        return Array.fromAsync(async function* (this: This) {
+        return (await Array.fromAsync(async function* (this: This) {
             for (let page = 1, run = true; run; page++) {
                 const { chapters: chaptersData } = await FetchNextJS<HydratedChapters>(new Request(new URL(`${manga.Identifier}?page=${page} `, this.URI)), data => 'chapters' in data);
                 const chapters = chaptersData.map(({ number }) => new Chapter(this, manga, `${manga.Identifier}/chapter/${number}`, ['Chapter', number].joinTitleSegments()));
                 chapters.length > 0 ? yield* chapters : run = false;
             }
-        }.call(this));
+        }.call(this))).reverse();
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {

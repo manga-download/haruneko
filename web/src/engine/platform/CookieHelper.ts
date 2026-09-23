@@ -1,0 +1,23 @@
+export function ParseCookiesFromHeader(cookies: string): CookieList {
+    return cookies
+        .split(';')
+        .filter(cookie => cookie.includes('='))
+        .map(cookie => {
+            const index = cookie.indexOf('=');
+            return {
+                name: cookie.slice(0, index).trim(),
+                value: cookie.slice(index + 1).trim()
+            };
+        })
+        .filter(({ name, value }) => name && value);
+}
+
+export function MergeCookiesIntoHeader(...cookieSets: CookieList[]): string {
+    const result: Record<string, string> = {};
+    for (const cookieSet of cookieSets) {
+        for (const { name, value } of cookieSet) {
+            if(name && value) result[name] = value;
+        }
+    }
+    return Object.entries(result).map(([ name, value ]) => `${name}=${value}`).join('; '); // TODO: Maybe use `encodeURIComponent(cookie.value)`
+}

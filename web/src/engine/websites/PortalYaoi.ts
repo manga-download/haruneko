@@ -8,8 +8,8 @@ import { FetchHTML } from '../platform/FetchProvider';
 import { GetBytesFromBase64, GetBytesFromUTF8, GetUTF8FromBytes } from '../BufferEncoder';
 
 @Madara.MangaCSS(/^{origin}\/manga\/[^/]+\/$/, 'ol.breadcrumb li:last-of-type a')
-@Madara.MangasMultiPageAJAX()
-@Madara.ChaptersSinglePageAJAXv2()
+@Madara.MangasMultiPageCSS()
+@Madara.ChaptersSinglePageAJAXv2('li.wp-manga-chapter > a:not(.reward_ads)')
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 

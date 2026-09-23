@@ -6,8 +6,6 @@ import { FetchWindowScript } from '../platform/FetchProvider';
 
 // TODO : TEST/CODE LOGIN
 
-const clearMangaLimitScript = `localStorage.removeItem('freeComicCount');`;
-
 type APIComic = {
     id: number;
     idx: string;
@@ -21,7 +19,7 @@ type APIComic = {
 @Common.ChaptersSinglePageCSS('div.eplist ul a.episode-items', undefined, anchor => ({
     id: `/comic/ep_view/${anchor.dataset.comicId}/${anchor.dataset.episodeId}`,
     title: [anchor.querySelector('p.ep_title').textContent.trim(), anchor.querySelector('p.ep_stitle')?.textContent.trim() ?? ''].join(' - ').replace(/\s*-\s*$/, '')
-}))
+}), true)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
@@ -36,11 +34,11 @@ export default class extends DecoratableMangaScraper {
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
         //HashTag.list.comic got the filtered manga list. Dont directly fetch the json at HashTag.fileUrl, it has junk mangas
         const data = await FetchWindowScript<APIComic[]>(new Request(new URL('/hashtag', this.URI)), 'HashTag.list.comic', 500);
-        return data.map(entry => new Manga(this, provider, entry.meta.comicsListUrl, entry.meta.title.trim()));
+        return data.map(({ meta: { comicsListUrl, title } }) => new Manga(this, provider, comicsListUrl, title.trim()));
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        await FetchWindowScript(new Request(this.URI), clearMangaLimitScript); //clear free chapter limit
+        await FetchWindowScript(new Request(this.URI), `localStorage.removeItem('freeComicCount');`); //clear free chapter limit
         return Common.FetchPagesSinglePageCSS.call(this, chapter, 'div#viewerContentsWrap .document_img');
     }
 }

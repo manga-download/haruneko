@@ -6,17 +6,18 @@ new TestFixture({
         title: 'Manhwa List'
     },
     container: {
-        url: 'https://manhwalist02.asia/manga/lookism/',
+        url: 'https://manhwalist.asia/manga/lookism/',
         id: '/manga/lookism/',
         title: 'Lookism'
     },
     child: {
-        id: '/lookism-chapter-478-indonesia-terbaru/',
-        title: 'Chapter 478'
+        id: '/lookism-chapter-623/',
+        title: 'Chapter 623 Fix',
+        timeout: 15_000
     },
     entry: {
         index: 0,
-        size: 95_488,
+        size: 471_554,
         type: 'image/jpeg'
     }
 }).AssertWebsite();

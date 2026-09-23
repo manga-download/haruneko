@@ -15,22 +15,22 @@ export const documentation = readable<DocCategory[]>([], (set) => {
     // TODO Documentation should be cached using a service worker
     (async () => {
         const cacheKey = `cache:documentation`;
-        const cacheTimestamp = localStorage.getItem(`${cacheKey}:timestamp`);
+        const cacheTimestamp = window.localStorage.getItem(`${cacheKey}:timestamp`);
         if (cacheTimestamp) {
             const timestamp = parseInt(cacheTimestamp);
             const oneWeek = 7 * 24 * 60 * 60 * 1000; // 1 week in milliseconds
             const currentTime = Date.now();
             if (currentTime - timestamp > oneWeek) {
-                localStorage.removeItem(cacheKey);
-                localStorage.removeItem(`${cacheKey}:timestamp`);
+                window.localStorage.removeItem(cacheKey);
+                window.localStorage.removeItem(`${cacheKey}:timestamp`);
             }
         }
-        let content = localStorage.getItem(cacheKey);
+        let content = window.localStorage.getItem(cacheKey);
         if (!content?.length) {
             const response = await fetch(url);
             const text = await response.text();
-            localStorage.setItem(cacheKey, text);
-            localStorage.setItem(`${cacheKey}:timestamp`, Date.now().toString());
+            window.localStorage.setItem(cacheKey, text);
+            window.localStorage.setItem(`${cacheKey}:timestamp`, Date.now().toString());
             content = text;
         }
         const parser = new DOMParser();

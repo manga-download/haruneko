@@ -15,9 +15,9 @@ type APIMangas = {
         products?: [{
             id: number;
             title: string;
-        }]
-    }
-}
+        }];
+    };
+};
 
 type ImageLinks = {
     link: string;
@@ -94,7 +94,7 @@ export default class extends DecoratableMangaScraper {
 
     private async FetchEpisodes(manga: Manga): Promise<Chapter[]> {
         const data = await FetchCSS<HTMLAnchorElement>(new Request(new URL(`/web/product/${manga.Identifier}/episodes?etype=E`, this.URI)), 'ul.PCM-epList li a[data-episode_id]');
-        return data.map(element => new Chapter(this, manga, element.dataset.episode_id, element.querySelector('div.PCM-epList_title h2').textContent.trim()));
+        return data.map(element => new Chapter(this, manga, element.dataset.episode_id, element.querySelector('div.PCM-epList_title h2').textContent.trim())).reverse();
     }
 
     private async FetchVolumes(manga: Manga): Promise<Chapter[]> {
@@ -105,7 +105,7 @@ export default class extends DecoratableMangaScraper {
             return new Chapter(this, manga,
                 element.querySelector<HTMLAnchorElement>(buttonSelector).dataset.episode_id,
                 title.replace(manga.Title, '').trim() || title.trim());
-        });
+        }).reverse();
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page<PageData>[]> {

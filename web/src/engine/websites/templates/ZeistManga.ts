@@ -19,7 +19,7 @@ export type FeedResults = {
             content: {
                 $t: string;
             };
-        }[]
+        }[];
     };
 };
 
@@ -72,7 +72,8 @@ export class ZeistManga extends DecoratableMangaScraper {
                 .filter(({ category }) => {
                     const categories = category.map(({ term }) => term.toLowerCase());
                     return !categories.some(el => el === this.mangaEntriesSlug.toLowerCase());
-                });
+                })
+                .filter(({ pathname }) => pathname != manga.Identifier);
 
             const chapters = entries.map(({ pathname, title }) => {
                 const cleanedTitle = title.replace(manga.Title, '').replace(decodeURIComponent(mangaSlug), '').replace(/^\s*-\s*/, '').trim() || title.trim();

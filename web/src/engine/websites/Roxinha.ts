@@ -64,7 +64,12 @@ export default class extends DecoratableMangaScraper {
     }
 
     private async FetchAPI<T extends JSONElement>(endpoint: string, parameters: Record<string, string> = undefined): Promise<T> {
-        const request = new Request(new URL(endpoint, this.apiURL));
+        const request = new Request(new URL(endpoint, this.apiURL), {
+            headers: {
+                Origin: this.URI.origin,
+                Referer: this.URI.href
+            }
+        });
         if (parameters) Object.entries(parameters).forEach(([name, value]) => request.headers.set(name, value));
         if (this.token) request.headers.set('Authorization', `Bearer ${this.token}`);
         return FetchJSON<T>(request);

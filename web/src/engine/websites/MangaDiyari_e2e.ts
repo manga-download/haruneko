@@ -6,17 +6,17 @@ new TestFixture({
         title: 'MangaDiyari'
     },
     container: {
-        url: 'https://mangadiyari.com/manga/olumsuz-imparatorun-yeniden-dogusu/',
-        id: JSON.stringify({ post: '394', slug: '/manga/olumsuz-imparatorun-yeniden-dogusu/' }),
-        title: `Ölümsüz İmparator'un Yeniden Doğuşu`
+        url: 'https://mangadiyari.com/seri/dovus-sanatlarinin-zirvesi',
+        id: '44',
+        title: `Dövüş Sanatlarının Zirvesi`
     },
     child: {
-        id: '/manga/olumsuz-imparatorun-yeniden-dogusu/bolum-102/',
-        title: 'Bölüm 102'
+        id: '6417',
+        title: 'Bölüm 3851'
     },
     entry: {
-        index: 1,
-        size: 239_121,
-        type: 'image/jpeg'
+        index: 4,
+        size: 732_294,
+        type: 'image/webp'
     }
 }).AssertWebsite();

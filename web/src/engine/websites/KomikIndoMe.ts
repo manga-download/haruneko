@@ -12,12 +12,12 @@ function MangaInfoExtractor(anchor: HTMLAnchorElement) {
 @MangaStream.MangaCSS(/^{origin}\/manga\/[^/]+\/$/, 'h1.entry-title')
 @Common.MangasMultiPageCSS('div.bs div.bsx a', Common.PatternLinkGenerator('/project/page/{page}/'), 0, MangaInfoExtractor)
 @MangaStream.ChaptersSinglePageCSS()
-@MangaStream.PagesSinglePageCSS()
+@MangaStream.PagesSinglePageJS()
 @Common.ImageAjax(true)
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('komikindome', 'KomikIndoMe', 'https://komikindo.fit', Tags.Media.Manga, Tags.Language.Indonesian, Tags.Source.Aggregator, Tags.Accessibility.DomainRotation);
+        super('komikindome', 'KomikIndoMe', 'https://komikindo.rest', Tags.Media.Manga, Tags.Language.Indonesian, Tags.Source.Aggregator, Tags.Accessibility.DomainRotation);
     }
 
     public override get Icon() {
