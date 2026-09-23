@@ -11,7 +11,7 @@ new TestFixture({
         title: 'One Piece'
     },
     child: {
-        id: '1',
+        id: 'One Piece/1',
         title: 'Chapitre 1'
     },
     entry: {

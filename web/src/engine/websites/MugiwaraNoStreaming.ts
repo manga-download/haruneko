@@ -24,8 +24,9 @@ type ChapterSizes = Record<string, number>;
 /**
  * The website is an anime aggregator whose entries additionally provide manga scans.
  * Only the scans are supported here (they are plain images), because the app has no video download pipeline for the episodes.
- * A manga is identified by its slug (as provided by the catalogue), but the scans API and the scans host are keyed by the
- * human-readable name of the title (e.g. `One Piece`), which is therefore taken from the title of the manga.
+ * A manga is identified by its slug (as provided by the catalogue), but the scans API and the scans host are keyed by the name of
+ * a scans version of the title (e.g. `One Piece` and `One Piece Couleur`), which the page of the title declares in its `SCANS_OPTIONS`.
+ * A chapter is therefore identified by the name of its scans version and its number.
  */
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
@@ -63,24 +64,50 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const sizes = await this.FetchChapterSizes(manga.Title);
-        return Object.entries(sizes)
-            .filter(([ , pages ]) => pages > 0)
-            .sort(([ self ], [ other ]) => Number(other) - Number(self))
-            .map(([ chapter ]) => new Chapter(this, manga, chapter, `Chapitre ${chapter}`));
+        const chapters: Chapter[] = [];
+        for (const { scans, label } of await this.FetchScansVersions(manga)) {
+            const sizes = await this.FetchChapterSizes(scans);
+            chapters.push(... Object.entries(sizes)
+                .filter(([ , pages ]) => pages > 0)
+                .sort(([ self ], [ other ]) => Number(other) - Number(self))
+                .map(([ chapter ]) => new Chapter(this, manga, `${scans}/${chapter}`, `Chapitre ${chapter}${label ? ` (${label})` : ''}`)));
+        }
+        return chapters;
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const title = chapter.Parent.Title;
-        const pages = (await this.FetchChapterSizes(title))[chapter.Identifier] ?? 0;
+        const [ scans, number ] = this.SplitChapterIdentifier(chapter);
+        const pages = (await this.FetchChapterSizes(scans))[number] ?? 0;
         return Array.from({ length: pages }, (_, index) => {
-            const link = new URL(`${this.scansCDN}/${encodeURIComponent(title)}/${chapter.Identifier}/${index + 1}.jpg`);
+            const link = new URL(`${this.scansCDN}/${encodeURIComponent(scans)}/${number}/${index + 1}.jpg`);
             return new Page(this, chapter, link, { Referer: this.URI.href });
         });
     }
 
-    private async FetchChapterSizes(title: string): Promise<ChapterSizes> {
-        const data = await this.FetchAPI<ChapterSizes | { error: string }>(`/api/taille-proxy?slug=${encodeURIComponent(title)}`);
+    private SplitChapterIdentifier(chapter: Chapter): [ string, string ] {
+        const index = chapter.Identifier.lastIndexOf('/');
+        return [ chapter.Identifier.slice(0, index), chapter.Identifier.slice(index + 1) ];
+    }
+
+    /**
+     * The scans of a title may be published in different versions (e.g. black & white and colored), which the website declares in the
+     * `SCANS_OPTIONS` of the page of the title. Each version has its own name for the scans API and the scans host, neither the slug
+     * nor the displayed name of a version are accepted by them.
+     */
+    private async FetchScansVersions(manga: Manga): Promise<{ scans: string, label?: string }[]> {
+        const request = new Request(new URL(`/catalogue/${manga.Identifier}`, this.URI));
+        const content = (await (await Fetch(request)).text()).replaceAll('\\"', '"');
+        const options = content.slice(content.indexOf('"SCANS_OPTIONS"'), content.indexOf('"EPISODES_OPTIONS"'));
+        const versions = Array.from(options.matchAll(/"name":"([^"]+)","slug":"[^"]*","image":"[^"]*","IMAGE_URL":"([^"]+)"/g), match => ({
+            scans: match.at(2),
+            label: match.at(1).replace(manga.Title, '').trim() || match.at(1),
+        }));
+        const scans = options.match(/"versions":\[.*?\],"IMAGE_URL":"([^"]+)"/)?.at(1) ?? manga.Title;
+        return [ { scans }, ... versions ];
+    }
+
+    private async FetchChapterSizes(scans: string): Promise<ChapterSizes> {
+        const data = await this.FetchAPI<ChapterSizes | { error: string }>(`/api/taille-proxy?slug=${encodeURIComponent(scans)}`);
         // The catalogue advertises scans for many titles which are not in the scans store, those are answered with `{ error: ... }` => no chapters
         return 'error' in data ? {} : data;
     }
