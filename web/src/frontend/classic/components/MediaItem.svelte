@@ -94,8 +94,8 @@
         downloadTask?.Status.Subscribe(refreshDownloadStatus);
         refreshDownloadStatus(downloadTask?.Status.Value, downloadTask);
     }
-    taskQueueChanged(HakuNeko.DownloadManager.Queue.Value);
     HakuNeko.DownloadManager.Queue.Subscribe(taskQueueChanged);
+    taskQueueChanged(HakuNeko.DownloadManager.Queue.Value);
     async function refreshDownloadStatus(newstatus: Status, _task: DownloadTask) {
         downloadTaskStatus = newstatus;
     }
