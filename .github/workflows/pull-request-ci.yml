@@ -18,7 +18,6 @@ jobs:
       - name: Install NPM Packages
         id: packages
         run: |
-          npm approve-scripts --all --no-allow-scripts-pin
           npm run npm:clean-install
       - name: Code Inspection
         if: steps.packages.outcome == 'success' && (success() || failure())

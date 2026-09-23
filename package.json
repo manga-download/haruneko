@@ -31,5 +31,13 @@
         "test:websites": "npm run build --workspaces && vitest run --config=test/vitest.websites.js",
         "npm:clean-install": "npm update --package-lock-only && npm clean-install --quiet",
         "postinstall": "npm --workspace=app/electron exec electron -- --no-sandbox --version"
+    },
+    "allowScripts": {
+        "carbon-components-svelte": true,
+        "eslint": true,
+        "fsevents": true,
+        "nw": true,
+        "manga-download/pdfkit": true,
+        "manga-download/websocket-rpc": true
     }
 }

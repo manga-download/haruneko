@@ -23,7 +23,6 @@ jobs:
           node-version: 24.0.0
       - name: Install NPM Packages
         run: |
-          npm approve-scripts --all --no-allow-scripts-pin
           npm run npm:clean-install
       - name: Process Websites
         run: npx --yes vitest run --config=web/scripts/website-metrics.vitest.ts
