@@ -14,7 +14,7 @@
         "websocket-rpc": "github:manga-download/websocket-rpc#v1.2.7"
     },
     "devDependencies": {
-        "extract-zip": "2.0.1",
+        "adm-zip": "0.6.1",
         "electron": "44.4.3",
         "plist": "5.0.0"
     },
