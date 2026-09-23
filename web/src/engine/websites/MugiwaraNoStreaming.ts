@@ -65,8 +65,8 @@ export default class extends DecoratableMangaScraper {
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const sizes = await this.FetchChapterSizes(manga.Title);
         return Object.entries(sizes)
-            .filter(([ chapter, pages ]) => /^\d+(?:\.\d+)?$/.test(chapter) && Number.isInteger(pages) && pages > 0)
-            .sort(([ self ], [ other ]) => parseFloat(other) - parseFloat(self))
+            .filter(([ , pages ]) => pages > 0)
+            .sort(([ self ], [ other ]) => Number(other) - Number(self))
             .map(([ chapter ]) => new Chapter(this, manga, chapter, `Chapitre ${chapter}`));
     }
 
