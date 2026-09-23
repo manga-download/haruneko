@@ -238,7 +238,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page<PageData>[]> {
-        const { viewer: { pages, aesIv, aesKey } } = await this.FetchAPI(`./viewer?service_language=en&avif_enable=false&translated_chapter_id=${chapter.Identifier}&quality=high`);
+        const { viewer: { pages, aesIv, aesKey } } = await this.FetchAPI(`./viewer?service_language=en&avif_enable=false&translated_chapter_id=${chapter.Identifier}&quality=middle`);
         return pages.map(({ imageUrl }) => new Page(this, chapter, new URL(imageUrl), { aesIv, aesKey, Referer: this.URI.href }));
     }
 

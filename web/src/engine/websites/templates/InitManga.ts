@@ -16,6 +16,6 @@ export function ChapterExtractor(anchor: HTMLAnchorElement) {
 @Common.MangaCSS(/^{origin}\/(seri|manga)\/[^/]+\/$/, 'ul.uk-breadcrumb li:last-of-type')
 @Common.MangasMultiPageCSS(queryMangas, Common.PatternLinkGenerator('/seri/page/{page}/'))
 @Common.ChaptersMultiPageCSS<HTMLAnchorElement>(queryChapters, Common.PatternLinkGenerator('{id}bolum/page/{page}/'), 0, ChapterExtractor)
-@Common.PagesSinglePageJS(`[...document.querySelectorAll('div#chapter-content img')].map(img => img.dataset.originalSrc ?? img.src )`, 1500)
+@Common.PagesSinglePageJS(`[...document.querySelectorAll('#chapter-content img')].map(img => img.dataset.originalSrc ?? img.src )`, 1500)
 @Common.ImageAjax()
 export class InitManga extends DecoratableMangaScraper { }
