@@ -31,7 +31,6 @@ jobs:
           node-version: 24.0.0
       - name: Install NPM Packages
         run: |
-          npm approve-scripts --all --no-allow-scripts-pin
           npm run npm:clean-install
       - name: Code Inspection
         run: npm run check
