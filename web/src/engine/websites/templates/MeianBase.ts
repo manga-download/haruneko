@@ -15,8 +15,8 @@ type APISerie = {
             ref: number;
             titre: string;
             ebook_statut: boolean;
-        }[]
-    }
+        }[];
+    };
 };
 
 type APISeries = {
@@ -30,43 +30,45 @@ type APIImages = {
         w: number;
         h: number;
         param: string;
-    }[]
+    }[];
 };
 
 type PageInfo = {
     descrambleBlock: {
         width: number;
         height: number;
-    }
+    };
 };
 
 type APIEbook = {
     success: boolean;
     ebook: {
         max_page: number;
-    }
+    };
+};
+
+type WebsiteParameters = {
+    apiURL: string;
+    pagesAPIUrl: string;
+    tokenCookieName: string;
+    additionalHeaders?: Record<string, string>;
 };
 
 export class MeianBase extends DecoratableMangaScraper {
 
-    private tokenCookieName = 'token_meian_plus';
-    private apiURL = 'https://api.meian-plus.fr/v1/';
-    private imageCDN = 'https://ebook.meian-plus.fr/';
+    private apiURL: string;
+    private pagesAPIUrl: string;
+    private tokenCookieName: string;
+    private additionalHeaders?: Record<string, string>;
+
     #token: null | string = null;
     private readonly scramblingMatrix = new Array(100).fill(null).map((_, index) => [(index / 10 >> 0) + 1, (index % 10 >> 0) + 1]);
 
-    public WithTokenCookieName(name: string): MeianBase {
-        this.tokenCookieName = name;
-        return this;
-    }
-
-    public WithApiURL(url: string): MeianBase {
-        this.apiURL = url;
-        return this;
-    }
-
-    public WithImageCDN(url: string): MeianBase {
-        this.imageCDN = url;
+    public SetParameters(parameters: WebsiteParameters): MeianBase {
+        this.apiURL = parameters.apiURL;
+        this.pagesAPIUrl = parameters.pagesAPIUrl;
+        this.tokenCookieName = parameters.tokenCookieName;
+        this.additionalHeaders = parameters.additionalHeaders;
         return this;
     }
 
@@ -107,16 +109,13 @@ export class MeianBase extends DecoratableMangaScraper {
             throw new Exception(R.Plugin_Common_Chapter_UnavailableError);
         }
 
-        const { images } = await this.FetchAPI<APIImages>(`./v1/images/?p=1&q=1&w=1920&h=1080&webp=false&nb_pages=${max_page}&ref=${chapter.Identifier}&devicePixelRatio=2`, this.imageCDN);
+        const imageCDN = this.pagesAPIUrl.replace(/[^/]+\/$/, '');
+
+        const { images } = await this.FetchAPI<APIImages>(`./images/?p=1&q=1&w=1920&h=1080&webp=false&nb_pages=${max_page}&ref=${chapter.Identifier}&devicePixelRatio=2`, this.pagesAPIUrl);
         return images.map(({ key, param, w, h }) => new Page<PageInfo>(this, chapter, new URL('./hm-img?' + new URLSearchParams({
-            prio: 'h',
-            k: key,
-            p: param,
-        }), this.imageCDN), {
-            descrambleBlock: {
-                width: w,
-                height: h,
-            }
+            k: key, p: param
+        }), imageCDN), {
+            descrambleBlock: { width: w, height: h, }
         }));
     }
 
@@ -140,7 +139,10 @@ export class MeianBase extends DecoratableMangaScraper {
         const response = await Fetch(new Request(new URL(endpoint, base), {
             headers: {
                 Referer: this.URI.href,
-                ...this.#token && { Authorization: `Bearer ${this.#token}` }
+                Origin: this.URI.origin,
+                'Sec-Fetch-Site': 'same-site',
+                ...this.#token && { Authorization: `Bearer ${this.#token}` },
+                ...this.additionalHeaders
             }
         }));
         const text = await response.text();

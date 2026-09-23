@@ -2,7 +2,7 @@ import { Tags } from '../Tags';
 import icon from './FlameComics.webp';
 import { Chapter, DecoratableMangaScraper, Page, type MangaPlugin, Manga } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { FetchCSS, FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
+import { FetchCSS, FetchJSON, FetchNextProps } from '../platform/FetchProvider';
 
 type APIManga = {
     id: number;
@@ -10,14 +10,18 @@ type APIManga = {
 };
 
 type JSONManga = {
-    series_id: number;
-    title: string;
+    series: {
+        series_id: number;
+        title: string;
+    };
 };
 
-type JSONChapter = {
-    chapter: string;
-    title: string;
-    token: string;
+type JSONChapters = {
+    chapters: {
+        chapter: string;
+        title: string;
+        token: string;
+    }[];
 };
 
 // TODO: Check for possible revision
@@ -26,7 +30,7 @@ type JSONChapter = {
 export default class extends DecoratableMangaScraper {
 
     private readonly cdnURL = 'https://cdn.flamecomics.xyz';
-    private readonly apiUrl = 'https://flamecomics.xyz/api/';
+    private readonly apiURL = 'https://flamecomics.xyz/api/';
 
     public constructor() {
         super('flamecomics', 'Flame Comics', 'https://flamecomics.xyz', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.English, Tags.Source.Scanlator);
@@ -41,18 +45,18 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
-        const { series_id, title } = await FetchWindowScript<JSONManga>(new Request(new URL(url)), '__NEXT_DATA__.props.pageProps.series', 1500);
+        const { series: { series_id, title } } = await FetchNextProps<JSONManga>(new Request(new URL(url)));
         return new Manga(this, provider, `${series_id}`, title);
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        const mangas = await FetchJSON<APIManga[]>(new Request(new URL('./series', this.apiUrl)));
+        const mangas = await FetchJSON<APIManga[]>(new Request(new URL('./series', this.apiURL)));
         return mangas.map(({ label, id }) => new Manga(this, provider, `${id}`, label));
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const chapters = await FetchWindowScript<JSONChapter[]>(new Request(new URL(`/series/${manga.Identifier}`, this.URI)), '__NEXT_DATA__.props.pageProps.chapters', 1500);
-        return chapters.map(({ token, chapter, title }) => new Chapter(this, manga, token, ['Chapter', chapter, title].join(' ').trim()));
+        const { chapters } = await FetchNextProps<JSONChapters>(new Request(new URL(`/series/${manga.Identifier}`, this.URI)));
+        return chapters.map(({ token, chapter, title }) => new Chapter(this, manga, token, ['Chapter', chapter, title].joinTitleSegments()));
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {

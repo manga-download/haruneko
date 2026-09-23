@@ -1,17 +1,13 @@
 import { Tags } from '../Tags';
 import icon from './SoraRaw.webp';
-import { FetchCSS, FetchJSON } from '../platform/FetchProvider';
+import { FetchJSON, FetchNextProps } from '../platform/FetchProvider';
 import { type MangaPlugin, Manga, Chapter, Page, DecoratableMangaScraper } from '../providers/MangaPlugin';
 import { GetBytesFromBase64, GetBytesFromHex, GetBytesFromUTF8, GetUTF8FromBytes } from '../BufferEncoder';
 import { DecryptAES, DecryptXOR } from '../Crypto';
 import * as Grouple from './decorators/Grouple';
 
-type NEXTDATA<T> = {
-    props: {
-        pageProps: {
-            data: T;
-        };
-    };
+type JSONWrapper<T> = {
+    data: T;
 };
 
 type SiteSettings = {
@@ -28,9 +24,9 @@ type APIManga = {
     chapters: APIChapter[];
 };
 
-type APIMangaDetails = {
+type APIMangaDetails = JSONWrapper<{
     manga: APIManga;
-};
+}>;
 
 type APIChapter = {
     id: number;
@@ -45,9 +41,9 @@ type APIChapter = {
     uuid: string;
 };
 
-type APIChapterDetails = {
+type APIChapterDetails = JSONWrapper<{
     chapter: APIChapter;
-};
+}>;
 
 type CryptedPagesData = {
     d: string;
@@ -83,7 +79,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
-        const { manga: { slug, name } } = await this.GetEmbeddedJSON<APIMangaDetails>(url);
+        const { data: { manga: { slug, name } } } = await FetchNextProps<APIMangaDetails>(new Request(new URL(url)));
         return new Manga(this, provider, `/manga/${slug}`, name);
     }
 
@@ -103,12 +99,12 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const { manga: { chapters } } = await this.GetEmbeddedJSON<APIMangaDetails>(manga.Identifier);
+        const { data: { manga: { chapters } } } = await FetchNextProps<APIMangaDetails>(new Request(new URL(manga.Identifier, this.URI)));
         return chapters.map(({ name, title, path }) => new Chapter(this, manga, `/manga/${path.replace('-ch-', '/ch-')}`, `${name ?? title}`));
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const { chapter: { id, manga_id, uuid, _b, _d, _t, _p } } = await this.GetEmbeddedJSON<APIChapterDetails>(chapter.Identifier);
+        const { data: { chapter: { id, manga_id, uuid, _b, _d, _t, _p } } } = await FetchNextProps<APIChapterDetails>(new Request(new URL(chapter.Identifier, this.URI)));
         const { d } = await FetchJSON<CryptedPagesData>(new Request(new URL(`/${manga_id}/${id}.json`, this.apiURL)));
         const pagesData = <PagesData>JSON.parse(GetUTF8FromBytes(DecryptXOR(this.B64Decode(d), GetBytesFromUTF8('/fuCkYou!!!'))));
 
@@ -135,10 +131,5 @@ export default class extends DecoratableMangaScraper {
 
     private B64Decode(data: string): Uint8Array<ArrayBuffer> {
         return GetBytesFromBase64(data.replace(/-/g, '+').replace(/_/g, '/').trim().padEnd(data.length + (4 - data.length % 4) % 4, '='));
-    }
-
-    private async GetEmbeddedJSON<T>(endpoint: string): Promise<T> {
-        const [script] = await FetchCSS<HTMLScriptElement>(new Request(new URL(endpoint, this.URI)), 'script#__NEXT_DATA__');
-        return (<NEXTDATA<T>>JSON.parse(script.text)).props.pageProps.data;
     }
 }
