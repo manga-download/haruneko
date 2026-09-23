@@ -2,7 +2,7 @@ import { Tags } from '../Tags';
 import icon from './MugiwaraNoStreaming.webp';
 import { DecoratableMangaScraper, Manga, Chapter, Page, type MangaPlugin } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { FetchCSS, FetchJSON, FetchNextJS } from '../platform/FetchProvider';
+import { Fetch, FetchCSS, FetchJSON } from '../platform/FetchProvider';
 import { TaskPool, Priority } from '../taskpool/TaskPool';
 import { RateLimit } from '../taskpool/RateLimit';
 
@@ -14,16 +14,6 @@ type APICatalogue = {
     }[];
     pagination: {
         totalPages: number;
-    };
-};
-
-type APIScansOptions = {
-    SCANS_OPTIONS: {
-        IMAGE_URL: string;
-        versions?: {
-            name: string;
-            IMAGE_URL: string;
-        }[];
     };
 };
 
@@ -78,10 +68,14 @@ export default class extends DecoratableMangaScraper {
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         // The scans of a title may be published in several versions (e.g. black & white and colored), each with its own name for the scans
         // API and the scans host (neither the slug nor the displayed name of a version are accepted), which the page of the title provides.
-        const { SCANS_OPTIONS: options } = await FetchNextJS<APIScansOptions>(new Request(new URL(`/catalogue/${manga.Identifier}`, this.URI)), data => 'SCANS_OPTIONS' in data);
+        // NOTE: `FetchNextJS` cannot extract them, the whole flight data of the page is a single payload of multiple lines (see its own TODO)
+        const content = (await (await Fetch(new Request(new URL(`/catalogue/${manga.Identifier}`, this.URI)))).text()).replaceAll('\\"', '"');
         const versions = [
-            { scans: options.IMAGE_URL, label: '' },
-            ... (options.versions ?? []).map(({ name, IMAGE_URL: scans }) => ({ scans, label: name.replace(manga.Title, '').trim() || name })),
+            { scans: content.match(/"versions":\[.*?\],"IMAGE_URL":"([^"]+)"/)?.at(1) ?? manga.Title, label: '' },
+            ... Array.from(content.matchAll(/"name":"([^"]+)","slug":"[^"]*","image":"[^"]*","IMAGE_URL":"([^"]+)"/g), match => ({
+                scans: match.at(2),
+                label: match.at(1).replace(manga.Title, '').trim() || match.at(1),
+            })),
         ];
         const chapters: Chapter[] = [];
         for (const { scans, label } of versions) {
