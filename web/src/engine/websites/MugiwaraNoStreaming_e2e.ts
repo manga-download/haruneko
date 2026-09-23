@@ -11,7 +11,7 @@ new TestFixture({
         title: 'One Piece'
     },
     child: {
-        id: 'One Piece/1',
+        id: JSON.stringify({ scans: 'One Piece', number: '1' }),
         title: 'Chapitre 1'
     },
     entry: {
