@@ -5,7 +5,7 @@ import * as Common from './decorators/Common';
 
 @Common.MangaCSS(/^{origin}\/book\/\d+\/$/, 'div.content h1.title')
 @Common.MangasMultiPageCSS('ul#J_comicList li.acgn-item h3.acgn-title a', Common.PatternLinkGenerator('/lists/9/全部/3/{page}.html'), 0, Common.AnchorInfoExtractor(true))
-@Common.ChaptersSinglePageCSS('ol#j_chapter_list li a', undefined, Common.AnchorInfoExtractor(true))
+@Common.ChaptersSinglePageCSS('ol#j_chapter_list li a', undefined, Common.AnchorInfoExtractor(true), true)
 @Common.PagesSinglePageCSS('div#img-box img')
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
