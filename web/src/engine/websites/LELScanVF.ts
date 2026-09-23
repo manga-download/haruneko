@@ -5,7 +5,7 @@ import { FuzzyDoodle } from './templates/FuzzyDoodle';
 export default class extends FuzzyDoodle {
 
     public constructor() {
-        super('lelscanvf', `LELSCAN-VF`, 'https://lelscanfr.com', Tags.Language.French, Tags.Media.Manga, Tags.Source.Aggregator);
+        super('lelscanvf', `LELSCAN-VF`, 'https://www.lelscanfr.com', Tags.Language.French, Tags.Media.Manga, Tags.Source.Aggregator);
     }
 
     public override get Icon() {
