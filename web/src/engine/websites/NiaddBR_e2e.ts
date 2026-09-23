@@ -3,7 +3,7 @@ import { TestFixture } from '../../../test/WebsitesFixture';
 new TestFixture({
     plugin: {
         id: 'ninemanga-br',
-        title: 'NineMangaBR'
+        title: 'Niadd (Portuguese)'
     },
     container: {
         url: 'https://br.niadd.com/manga/Kingdom.html',
