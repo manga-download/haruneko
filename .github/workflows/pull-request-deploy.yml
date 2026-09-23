@@ -23,6 +23,9 @@ jobs:
         with:
           node-version: 24.0.0
       - name: Install NPM Packages
+        env:
+          NPM_CONFIG_ALLOW_GIT: "all"
+          NPM_CONFIG_ALLOW_SCRIPTS: "true"
         run: npm run npm:clean-install
       - name: Build Web-Application
         run: npm run build --workspace=web
