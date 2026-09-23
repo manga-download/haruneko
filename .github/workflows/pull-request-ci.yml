@@ -17,10 +17,9 @@ jobs:
           node-version: 24.0.0
       - name: Install NPM Packages
         id: packages
-        env:
-          NPM_CONFIG_ALLOW_GIT: "all"
-          NPM_CONFIG_ALLOW_SCRIPTS: "true"
-        run: npm run npm:clean-install
+        run: |
+          npm approve-scripts --all --no-allow-scripts-pin
+          npm run npm:clean-install
       - name: Code Inspection
         if: steps.packages.outcome == 'success' && (success() || failure())
         run: npm run check
