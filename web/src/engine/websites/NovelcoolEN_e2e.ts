@@ -10,7 +10,7 @@ new TestFixture({
         id: '/novel/ONE-PIECE.html',
         title: 'ONE PIECE',
     },
-    /* chapter urk is random
+    /* chapter url is random
     child: {
         id: '',
         title: 'Vol.TBE Ch.1192',
