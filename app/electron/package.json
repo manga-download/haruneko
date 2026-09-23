@@ -5,7 +5,6 @@
     "type": "module",
     "main": "main.js",
     "url": "https://app.hakuneko.download",
-    "engineStrict": true,
     "engines": {
         "node": ">=24.0.0",
         "npm": ">=11.3.0"
