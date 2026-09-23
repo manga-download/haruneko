@@ -6,7 +6,7 @@
       "npm": ">=11.3.0"
   },
   "devDependencies": {
-    "vitepress": "next"
+    "vitepress": "1.6.4"
   },
   "scripts": {
     "check": "",
