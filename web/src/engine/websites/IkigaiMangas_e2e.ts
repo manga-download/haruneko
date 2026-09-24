@@ -6,7 +6,7 @@ new TestFixture({
         title: 'Ikigai Mangas'
     },
     container: {
-        url: 'https://visorikigai.gettocaboca.com/series/jinx-manhwa/',
+        url: 'https://visualikigai.cmpunjabrashancard.pk/series/jinx-manhwa/',
         id: '/series/jinx-manhwa/',
         title: 'Jinx'
     },
