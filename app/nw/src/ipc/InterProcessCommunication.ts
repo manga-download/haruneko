@@ -21,12 +21,8 @@ type RequestCallback<TParameters extends JSONArray = JSONArray, TReturn extends 
 
 export class IPC {
 
-    constructor() {
-        setTimeout(() => nw.Window.get()?.window.console.log.call(nw.Window.get()?.window.console, 'APP::IPC::Constructor'), 500);
-    }
-
-    private get win(): Window & typeof globalThis {
-        return (nw.Window.get().window) as unknown as Window & typeof globalThis;
+    constructor(private readonly win: Window & typeof globalThis) {
+        const interval = this.win.setInterval(() => this.Send('APP::IPC::Ready', interval), 250);
     }
 
     On(channel: never, callback: never): never;
@@ -40,6 +36,7 @@ export class IPC {
     }
 
     Send(channel: Channels.RemoteProcedureCallContract.LoadMediaContainerFromURL, url: string): void;
+    Send(channel: 'APP::IPC::Ready', interval: number): void;
 
     /**
      * Send a message to the _Web_ context handled by `IPC.On(channel, callback)`.
@@ -63,7 +60,7 @@ export class IPC {
             // TODO: Consider dispatching error as well ...
             this.win.console.log.call(this.win.console, 'APP::Handle::Result', result);
             this.win.dispatchEvent(new CustomEvent<TReturn>(replyID, { detail: result }));
-        }), 500);
+        })), 500);
     }
 
     Invoke(channel: never, ...parameters: never): never;

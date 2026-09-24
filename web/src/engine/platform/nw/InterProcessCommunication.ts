@@ -10,7 +10,15 @@ type RequestCallback<TParameters extends JSONArray = JSONArray, TReturn extends 
 
 export class IPC {
 
+    private readonly ipcAppReady: Promise<void>;
+
     constructor() {
+        this.ipcAppReady = new Promise<void>(resolve => window.addEventListener('APP::IPC::Ready', (event: CustomEvent) => {
+            alert('Meow!');
+            console.log('Received:', 'APP::IPC::Ready', event.detail);
+            clearInterval(event.detail);
+            resolve();
+        }, { once: true }));
         //setTimeout(() => window.dispatchEvent(new CustomEvent('APP::MEOW', { detail: { web: true } })), 5000);
         //setTimeout(() => window.addEventListener('WEB::MEOW', evt => console.log('From App Context:', evt.detail)), 500);
     }
@@ -32,6 +40,7 @@ export class IPC {
      * The sender does not receive a response (fire & forget).
      */
     public async Send<TParameters extends JSONArray>(channel: string, ...parameters: TParameters): Promise<void> {
+        await this.ipcAppReady;
         window.dispatchEvent(new CustomEvent<TParameters>(channel, { detail: parameters }));
     }
 
@@ -54,6 +63,7 @@ export class IPC {
      * The sender receives a response with the result from the handler.
      */
     public async Invoke<TParameters extends JSONArray, TReturn extends JSONElement>(channel: string, ...parameters: TParameters): Promise<TReturn | undefined> {
+        await this.ipcAppReady;
         const dbg = await new Promise<TReturn | undefined>(resolve => {
             const replyID = `${channel}::${Date.now()}#${Math.random()}`;
             window.addEventListener(replyID, (evt: CustomEvent<TReturn | undefined>) => resolve(evt.detail), { once: true });

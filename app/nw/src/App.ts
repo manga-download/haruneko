@@ -31,24 +31,21 @@ function GetDefaultURL(): string | undefined {
 
 async function OpenWindow() {
     const argv = ParseCLI();
-    const ipc = new IPC();
-    const rpc = new RPCServer('/hakuneko', new RemoteProcedureCallContract(ipc));
-    new RemoteProcedureCallManager(rpc, ipc);
-
     const url = argv.origin ?? GetDefaultURL() ?? 'about:blank';
     const win = await new Promise<NWJS_Helpers.win>((resolve, reject) => nw.Window.open(url, {
         id: 'hakuneko',
-        show: url ? false : true,
-        frame: url ? false : true,
-        transparent: url ? true : false,
+        show: !url, // url ? false : true
+        frame: !url, // url ? false : true
+        transparent: !!url, // url ? true : false
         width: 1280,
         height: 720,
         position: 'center',
         //title: 'HakuNeko',
     }, win => win ? resolve(win) : reject()));
-    //console.log = win.window.console.log.bind(win.window.console);
-    //console.warn = win.window.console.warn.bind(win.window.console);
-    //console.error = win.window.console.error.bind(win.window.console);
+    const ipc = new IPC(win.window.window);
+    const rpc = new RPCServer('/hakuneko', new RemoteProcedureCallContract(ipc));
+    new RemoteProcedureCallManager(rpc, ipc);
+    // TODO: Signal window all IPC subscriptions created
 
     if(!url) {
         win.showDevTools();
