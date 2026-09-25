@@ -4,10 +4,10 @@ const mangaID = encodeURI('/manga/俺だけレベルアップな件-raw-free/');
 new TestFixture({
     plugin: {
         id: 'rawxz',
-        title: 'RawZO'
+        title: 'MiuRaw'
     },
     container: {
-        url: 'https://rawmiu.top/manga/俺だけレベルアップな件-raw-free/',
+        url: 'https://miuraw.com/manga/俺だけレベルアップな件-raw-free/',
         id: mangaID,
         title: '俺だけレベルアップな件',
     },
