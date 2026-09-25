@@ -19,7 +19,15 @@ const queryPageListLinks = [
     'div#readerarea img[src]:not([src=""])',
     'div.reader-area img[src]:not([src=""])',
 ].join(', ');
-const scriptPageListLinks = `ts_reader_control.getImages();`;
+const scriptPageListLinks = `
+    new Promise(resolve => {
+        const currentImages = ts_reader_control.getImages();
+        const images = currentImages && currentImages.length > 0
+            ? currentImages
+            : ts_reader.params.sources.at(0)?.images;
+        resolve(images);
+    });
+`;
 
 /***************************************************
  ******** Manga from URL Extraction Methods ********
