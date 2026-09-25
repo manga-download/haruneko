@@ -20,13 +20,10 @@ const queryPageListLinks = [
     'div.reader-area img[src]:not([src=""])',
 ].join(', ');
 const scriptPageListLinks = `
-    new Promise(resolve => {
-        const currentImages = ts_reader_control.getImages();
-        const images = currentImages && currentImages.length > 0
-            ? currentImages
-            : ts_reader.params.sources.at(0)?.images;
-        resolve(images);
-    });
+    (() => {
+        const images = ts_reader_control.getImages();
+        return images && images.length > 0 ? images : ts_reader.params.sources.at(0)?.images;
+    })();
 `;
 
 /***************************************************
