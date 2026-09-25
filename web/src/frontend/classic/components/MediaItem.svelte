@@ -92,8 +92,10 @@
         downloadTask?.Status.Unsubscribe(refreshDownloadStatus);
         downloadTask = tasks.find((task) => task.Media.IsSameAs(item));
         downloadTask?.Status.Subscribe(refreshDownloadStatus);
+        refreshDownloadStatus(downloadTask?.Status.Value, downloadTask);
     }
     HakuNeko.DownloadManager.Queue.Subscribe(taskQueueChanged);
+    taskQueueChanged(HakuNeko.DownloadManager.Queue.Value);
     async function refreshDownloadStatus(newstatus: Status, _task: DownloadTask) {
         downloadTaskStatus = newstatus;
     }
