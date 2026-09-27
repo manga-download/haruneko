@@ -61,17 +61,14 @@ apps:
     command: ${pkgConfig.name} --no-sandbox
     # TODO: Create desktop entry
     #desktop: snap/gui/${pkgConfig.name}.desktop
+    extensions: [gpu, gnome]
     plugs:
     - home
     - network
     - network-bind
     - browser-support
-    - desktop
-    - desktop-legacy
-    - x11
-    - opengl
-    - wayland
-    - gsettings
+    #- audio-playback
+    #- removable-media
     environment:
       # Correct the TMPDIR path for Chromium Framework/Electron to ensure
       # libappindicator has readable resources.
