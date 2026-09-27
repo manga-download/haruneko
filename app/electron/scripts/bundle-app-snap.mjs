@@ -32,7 +32,7 @@ async function createSnapImage(blinkApplicationResourcesDirectory, blinkDeployme
     const snapfile = path.basename(blinkDeploymentTemporaryDirectory).replace(/^electron/i, pkgConfig.name) + '.snap';
     const yaml = path.join(blinkDeploymentOutputDirectory, 'snapcraft.yaml');
     const desktop = path.join(blinkDeploymentOutputDirectory, 'snap', 'gui', `${pkgConfig.name}.desktop`);
-    const icon = path.join(blinkDeploymentOutputDirectory, 'snap', 'gui', `${pkgConfig.name}.png`);
+    const icon = path.join(blinkDeploymentOutputDirectory, 'snap', 'gui', 'icon.png');
     await Promise.allSettled([path.join(blinkDeploymentOutputDirectory, snapfile), yaml, desktop, icon].map(file => fs.unlink(file)));
     await createSnapcraftYaml(blinkDeploymentTemporaryDirectory, blinkDeploymentOutputDirectory);
     await createDesktopEntry(blinkApplicationResourcesDirectory, blinkDeploymentOutputDirectory);
@@ -55,11 +55,11 @@ Type=Application
 Name=${pkgConfig.title}
 GenericName=${pkgConfig.description}
 Exec=${pkgConfig.name}
-Icon=\${SNAP}/meta/gui/${pkgConfig.name}.png
+Icon=\${SNAP}/meta/gui/icon.png
 Categories=Network;FileTransfer;
 `);
-    // Snapcraft copies snap/gui into meta/gui of the snap
-    await fs.copyFile(path.join(blinkApplicationResourcesDirectory, process.platform, 'icon.png'), path.join(directory, `${pkgConfig.name}.png`));
+    // Snapcraft copies snap/gui into meta/gui of the snap and uses gui/icon.png as snap icon
+    await fs.copyFile(path.join(blinkApplicationResourcesDirectory, process.platform, 'icon.png'), path.join(directory, 'icon.png'));
 }
 
 async function createSnapcraftYaml(blinkDeploymentTemporaryDirectory, blinkDeploymentOutputDirectory) {
