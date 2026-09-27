@@ -38,7 +38,7 @@ async function createSnapImage(blinkDeploymentTemporaryDirectory, blinkDeploymen
     try {
         await run('sudo snapcraft pack --destructive-mode', blinkDeploymentOutputDirectory);
         await run(`sudo mv ${pkgConfig.name}*.snap ${snapfile}`, blinkDeploymentOutputDirectory);
-        await run('snapcraft upload *.snap --release=edge', blinkDeploymentOutputDirectory);
+        //await run('snapcraft upload *.snap --release=edge', blinkDeploymentOutputDirectory);
     } finally {
         fs.unlink(yaml);
     }
