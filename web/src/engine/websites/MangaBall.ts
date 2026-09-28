@@ -60,7 +60,7 @@ const chapterLanguageMap = new Map([
 export default class extends DecoratableMangaScraper {
 
     private readonly apiURL = 'https://mangaball.com/api/v1/';
-    private readonly interactionTaskPool = new TaskPool(2, RateLimit.PerMinute(60));
+    private readonly interactionTaskPool = new TaskPool(1, RateLimit.PerMinute(60));
 
     public constructor() {
         super('mangaball', 'MangaBall', 'https://mangaball.com', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Multilingual, Tags.Source.Aggregator);
