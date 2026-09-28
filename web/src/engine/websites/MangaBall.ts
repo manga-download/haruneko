@@ -3,6 +3,8 @@ import icon from './MangaBall.webp';
 import { FetchJSON } from '../platform/FetchProvider';
 import { type MangaPlugin, Manga, Chapter, DecoratableMangaScraper, Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
+import { Priority, TaskPool } from '../taskpool/TaskPool';
+import { RateLimit } from '../taskpool/RateLimit';
 
 type APIResult<T> = {
     data: T;
@@ -58,6 +60,7 @@ const chapterLanguageMap = new Map([
 export default class extends DecoratableMangaScraper {
 
     private readonly apiURL = 'https://mangaball.com/api/v1/';
+    private readonly interactionTaskPool = new TaskPool(2, RateLimit.PerMinute(60));
 
     public constructor() {
         super('mangaball', 'MangaBall', 'https://mangaball.com', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Multilingual, Tags.Source.Aggregator);
@@ -68,14 +71,13 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        type This = typeof this;
-        return Array.fromAsync(async function* (this: This) {
-            for (let page = 1, run = true; run; page++) {
-                const { data } = await FetchJSON<APIMangas>(new Request(new URL(`./title/search-advanced?adult_mode=all&page=${page}&limit=500`, this.apiURL)));
-                const mangas = data.map(({ _id, name, slug }) => new Manga(this, provider, `${slug}-${_id}`, name));
-                mangas.length > 0 ? yield* mangas : run = false;
-            }
-        }.call(this));
+        const mangaList: Manga[] = [];
+        for (let page = 1, run = true; run; page += 1) {
+            const { data } = await this.interactionTaskPool.Add(async () => FetchJSON<APIMangas>(new Request(new URL(`./title/search-advanced?adult_mode=all&page=${page}&limit=200`, this.apiURL))), Priority.Low);
+            const mangas = data.map(({ _id, name, slug }) => new Manga(this, provider, `${slug}-${_id}`, name));
+            mangas.length > 0 ? mangaList.push(...mangas) : run = false;
+        }
+        return mangaList;
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
