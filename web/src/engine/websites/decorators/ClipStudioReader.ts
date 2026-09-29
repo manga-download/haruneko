@@ -2,31 +2,43 @@
 // https://www.celsys.com/en/e-booksolution/lab/
 //Pages are scrambled, information is inside XMLs, and php scripts are named like diazepam_hybrid.php / lorazepam
 
-import { Fetch } from "../../platform/FetchProvider";
-import { Page, type Chapter, type MangaScraper } from "../../providers/MangaPlugin";
-import type { Priority } from "../../taskpool/DeferredTask";
-import DeScramble from "../../transformers/ImageDescrambler";
-import * as Common from "./Common";
+import { Fetch } from '../../platform/FetchProvider';
+import { Page, type Chapter, type MangaScraper } from '../../providers/MangaPlugin';
+import type { Priority } from '../../taskpool/DeferredTask';
+import DeScramble from '../../transformers/ImageDescrambler';
+import * as Common from './Common';
 
-type PageData = {
-    width: number;
-    height: number;
-    scramble: {
-        width: number;
-        height: number;
-    };
+type PagesInfos = {
+    //Width: number;
+    //Height: number;
+    ContentType: number;
+    /*BgColor: {
+        Red: number;
+        Green: number;
+        Blue: number;
+    };*/
+    TotalPage: number;
+    //Version: string;
+    //Guid: string;
+    NumColumns: number;
+    NumRows: number;
+    // OptionId: string;
+}
+
+type ImageInfos = {
+    PageIndex: number;
+    Parts: PartData[];
+    ScrambleArray: number[];
+    StepRect: {
+        Width: number;
+        Height: number;
+    }
 };
 
 type PartData = {
     number: number;
     scramble: boolean;
     type: PartType;
-};
-
-type ImagePart = {
-    binaryArray?: Uint8Array;
-    image?: ImageBitmap;
-    scrambled: boolean;
 };
 
 enum PartType {
@@ -49,6 +61,87 @@ enum Modes {
 enum RequestType {
     REQUEST_TYPE_FILE = '0',
 };
+
+class XMLDeserializer {
+    #xml: Promise<XMLDocument>;
+
+    constructor(xmlRequest: Request) {
+        this.#xml = Fetch(xmlRequest)
+            .then(response => response.text())
+            .then(text => new DOMParser().parseFromString(text, 'application/xml'));
+    }
+
+    async GetText(selector: string): Promise<string> {
+        const el = (await this.#xml).querySelector(selector);
+        return el ? el.textContent || '' : '';
+    };
+
+    async GetNumber(selector: string): Promise<number> {
+        const val = await this.GetText(selector);
+        return val !== '' ? Number(val) : 0;
+    };
+
+    public async GetScrambleInfos(): Promise<PagesInfos> {
+        return {
+            //Width: await this.GetNumber('ContentFrame > Width'),
+            //Height: await this.GetNumber('ContentFrame > Height'),
+            ContentType: await this.GetNumber('ContentType'),
+            // BgColor: {
+            //     Red: await this.GetNumber('BgColor > Red'),
+            //      Green: await this.GetNumber('BgColor > Green'),
+            //      Blue: await this.GetNumber('BgColor > Blue'),
+            //   },
+            TotalPage: await this.GetNumber('TotalPage'),
+            // Version: await this.GetText('Version'),
+            // Guid: await this.GetText('Guid'),
+            NumColumns: await this.GetNumber('Scramble > Width'),
+            NumRows: await this.GetNumber('Scramble > Height'),
+        };
+        // OptionId: await this.GetText('OptionId'),
+    };
+
+    public async GetImageInfos(): Promise<ImageInfos> {
+        const xmlDoc = await this.#xml;
+
+        const partElements = xmlDoc.querySelectorAll('Part');
+        const parts: PartData[] = Array.from(partElements).map(partEl => {
+            const kindEl = partEl.querySelector('Kind');
+            return {
+                type: kindEl?.textContent ? Number(kindEl.textContent.trim()) : PartType.DATA_TYPE_JPEG,
+                scramble: kindEl?.getAttribute('scramble') === '1',
+                number: Number(kindEl?.getAttribute('No') || 0),
+            };
+        });
+
+        const scrambleRaw = await this.GetText('Scramble');
+        const scrambleArray = scrambleRaw !== '' ? scrambleRaw.split(',').map(item => Number(item.trim())) : [];
+
+        return {
+            PageIndex: await this.GetNumber('PageNo'),
+            /*BgColor: {
+                Red: await this.GetNumber('BgColor > Red'),
+                Green: await this.GetNumber('BgColor > Green'),
+                Blue: await this.GetNumber('BgColor > Blue'),
+            },
+            Sheet: {
+                X: await this.GetNumber('Sheet > X'),
+                Y: await this.GetNumber('Sheet > Y'),
+            },
+            PartCount: await this.GetNumber('PartCount'),
+            TotalPartSize: await this.GetNumber('TotalPartSize'),*/
+            Parts: parts,
+            StepRect: {
+                //X: await this.GetNumber('StepRect > X'),
+                //Y: await this.GetNumber('StepRect > Y'),
+                Width: await this.GetNumber('StepRect > Width'),
+                Height: await this.GetNumber('StepRect > Height'),
+            },
+            //StepCount: await this.GetNumber('StepCount'),
+            ScrambleArray: scrambleArray,
+        };
+    }
+
+}
 
 /**********************************************
  ******** Page List Extraction Methods ********
@@ -73,7 +166,7 @@ export async function FetchPagesSinglePageAJAX(this: MangaScraper, chapter: Chap
     if (!authkey || !endpoint) {//otherwise get elements from body
         const dom = new DOMParser().parseFromString(await response.text(), 'text/html');
         const metadatas = new Map<string, string>();
-        dom.querySelectorAll<HTMLInputElement>('div#meta input').forEach(element => metadatas.set(element.name, element.value));
+        dom.querySelectorAll<HTMLInputElement>('div#meta input').forEach(({ name, value }) => metadatas.set(name, value));
         authkey = metadatas.get('param');
         endpoint = metadatas.get('cgi');
     }
@@ -85,19 +178,9 @@ export async function FetchPagesSinglePageAJAX(this: MangaScraper, chapter: Chap
     url.searchParams.set('file', 'face.xml');
     url.searchParams.set('param', authkey);
 
-    const XML = await FetchXML(new Request(url));
-    const totalpages = parseInt(XML.getElementsByTagName('TotalPage')[0].textContent);
+    const faceData = await new XMLDeserializer(new Request(url)).GetScrambleInfos();
 
-    const pagedata: PageData = {
-        width: parseInt(XML.getElementsByTagName('Width')[0].textContent),
-        height: parseInt(XML.getElementsByTagName('Height')[0].textContent),
-        scramble: {
-            width: parseInt(XML.getElementsByTagName('Scramble')[0].querySelector('Width').textContent),
-            height: parseInt(XML.getElementsByTagName('Scramble')[0].querySelector('Height').textContent)
-        },
-    };
-
-    for (let i = 0; i < totalpages; i++) {
+    for (let i = 0; i < faceData.TotalPage; i++) {
         const pagename = i.toString().padStart(4, '0') + '.xml';
         const url = new URL(endpoint, this.URI);
         url.searchParams.set('mode', Modes.MODE_DL_PAGE_XML);
@@ -105,7 +188,7 @@ export async function FetchPagesSinglePageAJAX(this: MangaScraper, chapter: Chap
         url.searchParams.set('vm', '4');
         url.searchParams.set('file', pagename);
         url.searchParams.set('param', authkey);
-        pages.push(new Page<PageData>(this, chapter, url, { ...pagedata }));
+        pages.push(new Page<PagesInfos>(this, chapter, url, { ...faceData }));
     }
 
     return pages;
@@ -136,29 +219,20 @@ export function PagesSinglePageAJAX() {
  * @param priority - The importance level for ordering the request for the image data within the internal task pool
  * @param signal - An abort signal that can be used to cancel the request for the image data
  */
-export async function FetchImageAjax(this: MangaScraper, page: Page<PageData>, priority: Priority, signal: AbortSignal): Promise<Blob> {
+export async function FetchImageAjax(this: MangaScraper, page: Page<PagesInfos>, priority: Priority, signal: AbortSignal): Promise<Blob> {
     return this.imageTaskPool.Add(async () => {
         try {
 
-            const { scramble, width, height } = page.Parameters;
+            const { NumColumns, NumRows } = page.Parameters;
 
-            //fetch Page XML
-            const XML = await FetchXML(new Request(page.Link));
-            const pageIndex = parseInt(XML.getElementsByTagName('PageNo')[0].textContent);
             const endpoint = page.Link.origin + page.Link.pathname;
             const authkey = page.Link.searchParams.get('param');
-            const scrambleArray = XML.getElementsByTagName('Scramble')[0].textContent.split(',').map(element => parseInt(element));
-            const parts: PartData[] = [...XML.getElementsByTagName('Kind')].map(element => {
-                return {
-                    number: parseInt(element.getAttribute('No')),
-                    scramble: element.getAttribute('scramble') === '1',
-                    type: parseInt(element.textContent)
-                };
-            });
 
-            return DeScramble(new ImageData(width, height), async (_, ctx) => {
+            const { PageIndex, Parts, ScrambleArray, StepRect: { Width, Height } } = await new XMLDeserializer(new Request(page.Link)).GetImageInfos();
 
-                for (const part of parts) {
+            return DeScramble(new ImageData(Width, Height), async (_, ctx) => {
+
+                for (const part of Parts) {
                     switch (part.type) {
                         case PartType.DATA_TYPE_JPEG:
                         case PartType.DATA_TYPE_GIF:
@@ -166,33 +240,32 @@ export async function FetchImageAjax(this: MangaScraper, page: Page<PageData>, p
                         case PartType.DATA_TYPE_LESIA:
                         case PartType.DATA_TYPE_LESIA_OLD: {
 
-                            const partFileName = [`${pageIndex}`.padStart(4, '0'), `${part.number}`.padStart(4, '0')].join('_') + '.bin';
+                            const partFileName = [`${PageIndex}`.padStart(4, '0'), `${part.number}`.padStart(4, '0')].join('_') + '.bin';
                             const imageUrl = new URL(endpoint);
-                            let type = part.type;
-                            type !== PartType.DATA_TYPE_LESIA && type !== PartType.DATA_TYPE_LESIA_OLD || (type = PartType.DATA_TYPE_JPEG);
+                            const type = part.type === PartType.DATA_TYPE_LESIA || part.type === PartType.DATA_TYPE_LESIA_OLD
+                                ? part.type
+                                : PartType.DATA_TYPE_JPEG;
                             imageUrl.searchParams.set('mode', `${type}`);
                             imageUrl.searchParams.set('file', partFileName);
                             imageUrl.searchParams.set('reqtype', RequestType.REQUEST_TYPE_FILE);
                             imageUrl.searchParams.set('param', authkey);
 
-                            const { image, scrambled } = await LoadPart(imageUrl, part);
+                            const image = await LoadImage(imageUrl, part);
 
                             if (image) {
 
-                                if (scrambled) {
+                                if (part.scramble) {
 
-                                    const numCols = scramble.width;
-                                    const numRow = scramble.height;
-                                    const pieceWidth = 8 * Math.floor(Math.floor(image.width / numCols) / 8);
-                                    const pieceHeight = 8 * Math.floor(Math.floor(image.height / numRow) / 8);
+                                    const pieceWidth = 8 * Math.floor(Math.floor(image.width / NumColumns) / 8);
+                                    const pieceHeight = 8 * Math.floor(Math.floor(image.height / NumRows) / 8);
 
-                                    if (!(scrambleArray.length < numCols * numRow || image.width < 8 * numCols || image.height < 8 * numRow)) {
-                                        for (let scrambleIndex = 0; scrambleIndex < scrambleArray.length; scrambleIndex++) {
-                                            const pieceX = scrambleIndex % numCols * pieceWidth;
-                                            const pieceY = Math.floor(scrambleIndex / numCols) * pieceHeight;
-                                            const p = scrambleArray[scrambleIndex];
-                                            const sourceX = p % numCols * pieceWidth;
-                                            const sourceY = Math.floor(p / numCols) * pieceHeight;
+                                    if (!(ScrambleArray.length < NumColumns * NumRows || image.width < 8 * NumColumns || image.height < 8 * NumRows)) {
+                                        for (let scrambleIndex = 0; scrambleIndex < ScrambleArray.length; scrambleIndex++) {
+                                            const pieceX = scrambleIndex % NumColumns * pieceWidth;
+                                            const pieceY = Math.floor(scrambleIndex / NumColumns) * pieceHeight;
+                                            const p = ScrambleArray[scrambleIndex];
+                                            const sourceX = p % NumColumns * pieceWidth;
+                                            const sourceY = Math.floor(p / NumColumns) * pieceHeight;
                                             ctx.clearRect(pieceX, pieceY, pieceWidth, pieceHeight);
                                             ctx.drawImage(image, sourceX, sourceY, pieceWidth, pieceHeight, pieceX, pieceY, pieceWidth, pieceHeight);
                                         }
@@ -220,27 +293,18 @@ export function ImageAjax() {
     return function DecorateClass<T extends Common.Constructor>(ctor: T, context?: ClassDecoratorContext): T {
         Common.ThrowOnUnsupportedDecoratorContext(context);
         return class extends ctor {
-            public async FetchImage(this: MangaScraper, page: Page<PageData>, priority: Priority, signal: AbortSignal): Promise<Blob> {
+            public async FetchImage(this: MangaScraper, page: Page<PagesInfos>, priority: Priority, signal: AbortSignal): Promise<Blob> {
                 return FetchImageAjax.call(this, page, priority, signal);
             }
         };
     };
 }
 
-async function FetchXML(request: Request): Promise<XMLDocument> {
-    const response = await Fetch(request);
-    return new DOMParser().parseFromString(await response.text(), 'text/xml');
-}
-
-async function LoadPart(imageUrl: URL, partData: PartData): Promise<ImagePart> {
+async function LoadImage(url: URL, partData: PartData): Promise<ImageBitmap> {
     if (partData.type === PartType.DATA_TYPE_LESIA || partData.type === PartType.DATA_TYPE_LESIA_OLD) {
         throw new Error('Binary part not supported');
-    } else {
-        return { image: await LoadImage(imageUrl), scrambled: partData.scramble };
     }
-}
 
-async function LoadImage(url: URL): Promise<ImageBitmap> {
     try {
         const response = await Fetch(new Request(url));
         const blob = await response.blob();
