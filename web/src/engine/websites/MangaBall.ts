@@ -1,27 +1,41 @@
 import { Tags } from '../Tags';
 import icon from './MangaBall.webp';
-import { FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
-import { type MangaPlugin, Manga, Chapter, DecoratableMangaScraper } from '../providers/MangaPlugin';
+import { FetchJSON } from '../platform/FetchProvider';
+import { type MangaPlugin, Manga, Chapter, DecoratableMangaScraper, Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
+import { Priority, TaskPool } from '../taskpool/TaskPool';
+import { RateLimit } from '../taskpool/RateLimit';
 
-type APIMangas = {
-    data: APIManga[];
+type APIResult<T> = {
+    data: T;
 };
+
+type APIMangas = APIResult<APIManga[]>;
 
 type APIManga = {
     _id: string;
     name: string;
+    slug: string;
 };
 
 type APIChapters = {
-    ALL_CHAPTERS: {
-        translations: {
-            name: string;
-            language: string;
-            url: string;
-        }[]
+    grouped_data: APIChapter[];
+};
+
+type APIChapter = {
+    chapter_number: number;
+    releases: {
+        id: string;
+        lang: string;
+        name: string;
+        group_name: string;
     }[];
-}
+    pages: string[];
+};
+
+type APIPages = APIResult<{
+    chapter: APIChapter;
+}>;
 
 const chapterLanguageMap = new Map([
     ['ar', Tags.Language.Arabic],
@@ -38,74 +52,51 @@ const chapterLanguageMap = new Map([
     ['vi', Tags.Language.Vietnamese]
 ]);
 
-@Common.MangaCSS(/^{origin}\/title-detail\/[^/]+\/$/, 'div#comicDetail div.comic-detail-card h6', (element, uri) => ({
-    id: uri.pathname.match(/-([^/-]+)\/$/).at(1),
+@Common.MangaCSS(/^{origin}\/title-detail\/[^/]+$/, 'p.text-main strong.text-main', (element, uri) => ({
+    id: uri.pathname.split('/').at(-1),
     title: element.textContent.trim()
 }))
-@Common.PagesSinglePageJS(`chapterImages`, 750)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
-    private readonly apiUrl = 'https://mangaball.net/api/v1/';
-    private token: string = '';
+
+    private readonly apiURL = 'https://mangaball.com/api/v1/';
+    private readonly interactionTaskPool = new TaskPool(1, RateLimit.PerMinute(60));
 
     public constructor() {
-        super('mangaball', 'MangaBall', 'https://mangaball.net', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Multilingual, Tags.Source.Aggregator);
+        super('mangaball', 'MangaBall', 'https://mangaball.com', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Multilingual, Tags.Source.Aggregator);
     }
 
     public override get Icon() {
         return icon;
     }
 
-    public override async Initialize(): Promise<void> {
-        this.token = await FetchWindowScript<string>(new Request(this.URI), `document.querySelector('meta[name="csrf-token"]').content.trim()`);
+    public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
+        const mangaList: Manga[] = [];
+        for (let page = 1, run = true; run; page += 1) {
+            const { data } = await this.interactionTaskPool.Add(async () => FetchJSON<APIMangas>(new Request(new URL(`./title/search-advanced?adult_mode=all&page=${page}&limit=200`, this.apiURL))), Priority.Low);
+            const mangas = data.map(({ _id, name, slug }) => new Manga(this, provider, `${slug}-${_id}`, name));
+            mangas.length > 0 ? mangaList.push(...mangas) : run = false;
+        }
+        return mangaList;
     }
 
-    public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
+    public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         type This = typeof this;
         return Array.fromAsync(async function* (this: This) {
             for (let page = 1, run = true; run; page++) {
-                const { data } = await this.FetchAPI<APIMangas>(`./title/search-advanced/`, new URLSearchParams({
-                    search_input: '',
-                    'filters[sort]': 'updated_chapters_desc',
-                    'filters[page]': `${page}`,
-                    'filters[tag_included_mode]': 'and',
-                    'filters[tag_excluded_mode]': 'and',
-                    'filters[contentRating]': 'any',
-                    'filters[demographic]': 'any',
-                    'filters[person]': 'any',
-                    'filters[originalLanguages]': 'any',
-                    'filters[publicationYear]': '',
-                    'filters[publicationStatus]': 'any',
-                    'filters[userSettingsEnabled]': 'false'
-                }));
-                const mangas = data.map(({ _id, name }) => new Manga(this, provider, _id, name));
-                mangas.length > 0 ? yield* mangas : run = false;
+                const { grouped_data } = await FetchJSON<APIChapters>(new Request(new URL(`./title/chapter-listing?title_id=${manga.Identifier}&page=${page}&sort_order=desc&group_by=chapter_number&limit=200`, this.apiURL)));
+                const chapters = grouped_data.reduce((accumulator: Chapter[], entry) => {
+                    const currentChapters = entry.releases.map(({ id, lang, group_name: group }) => new Chapter(this, manga, id, [`Chapter ${entry.chapter_number} [${group}]`, `[${lang}]`].joinTitleSegments(), ...[chapterLanguageMap.get(lang)].filter(Boolean)));
+                    accumulator.push(...currentChapters);
+                    return accumulator;
+                }, []);
+                chapters.length > 0 ? yield* chapters : run = false;
             }
         }.call(this));
     }
 
-    public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const { ALL_CHAPTERS } = await this.FetchAPI<APIChapters>('./chapter/chapter-listing-by-title-id/', new URLSearchParams({
-            title_id: manga.Identifier,
-            userSettingsEnabled: 'false'
-        }));
-
-        return ALL_CHAPTERS.reduce((accumulator: Chapter[], entry) => {
-            const chapters = entry.translations.map(({ name, language, url }) => new Chapter(this, manga, new URL(url).pathname, [name.trim(), `[${language}]`].join(' ').trim(), ...[chapterLanguageMap.get(language)].filter(Boolean)));
-            accumulator.push(...chapters);
-            return accumulator;
-        }, []);
+    public override async FetchPages(chapter: Chapter): Promise<Page[]> {
+        const { data: { chapter: { pages } } } = await FetchJSON<APIPages>(new Request(new URL(`./chapter-detail?chapter_id=${chapter.Identifier}`, this.apiURL)));
+        return pages.map(page => new Page(this, chapter, new URL(page), { Referer: this.URI.href }));
     }
-
-    private async FetchAPI<T extends JSONElement>(endpoint, body: URLSearchParams): Promise<T> {
-        return FetchJSON<T>(new Request(new URL(endpoint, this.apiUrl), {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
-                'X-CSRF-TOKEN': this.token
-            },
-            body
-        }));
-    }
-
 }

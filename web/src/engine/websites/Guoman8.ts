@@ -6,7 +6,7 @@ import * as SinMH from './decorators/SinMH';
 
 @Common.MangaCSS(/^{origin}\/\d+\/$/, SinMH.queryManga)
 @Common.MangasMultiPageCSS(SinMH.queryMangas, Common.PatternLinkGenerator('/list/p-{page}'))
-@SinMH.ChaptersSinglePageJS(SinMH.queryChaptersScript, 'div.chapter-list ul li a')
+@SinMH.ChaptersSinglePageJS()
 @Common.PagesSinglePageJS('cInfo.fs', 500)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {

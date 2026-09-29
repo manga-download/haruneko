@@ -6,17 +6,17 @@ new TestFixture({
         title: 'Manga Online Blog'
     },
     container: {
-        url: 'https://mangaonline.red/manga/solo-max-level-newbie/',
-        id: JSON.stringify({ post: '1895', slug: '/manga/solo-max-level-newbie/' }),
-        title: 'Solo Max-Level Newbie',
+        url: 'https://mangaonline.red/manga/eleceed/',
+        id: '/manga/eleceed/',
+        title: 'Eleceed',
     },
     child: {
-        id: '/manga/solo-max-level-newbie/capitulo-234-pt-br/',
-        title: 'capitulo 234 (PT-BR) -',
+        id: '/capitulo/eleceed-capitulo-416/',
+        title: 'Cap. 416',
     },
     entry: {
-        index: 0,
-        size: 395_538,
+        index: 1,
+        size: 582_502,
         type: 'image/webp'
     }
 }).AssertWebsite();

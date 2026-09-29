@@ -4,6 +4,9 @@ import { Tags } from '../Tags';
 import * as Common from './decorators/Common';
 import icon from './PoseidonScans.webp';
 
+// TODO: fix chapters scraping with a better FetchNextJS implementation
+// this one works : https://github.com/manga-download/haruneko/pull/1800
+
 type HydratedManga = {
     manga: {
         slug: string;

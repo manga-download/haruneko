@@ -68,7 +68,7 @@ export default class extends DecoratableMangaScraper {
         const keyData = await FetchWindowScript<string>(new Request(new URL(manga.Identifier, this.URI)), 'ccz', 500);
         const { results } = await FetchJSON<EncryptedChapters>(new Request(uri, { headers: { 'DNTS': '3' } }));
         const { groups: { default: { chapters } } } = await this.Decrypt<APIChapters>(results, keyData);
-        return chapters.map(({ id, name }) => new Chapter(this, manga, `${manga.Identifier}/chapter/${id}`, name.trim()));
+        return chapters.map(({ id, name }) => new Chapter(this, manga, `${manga.Identifier}/chapter/${id}`, name.trim())).reverse();
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {

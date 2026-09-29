@@ -117,7 +117,7 @@ export default class extends DecoratableMangaScraper {
             accumulator.push(...chapters);
             return accumulator;
         }, []);
-        return chaptersList;
+        return chaptersList.reverse();
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page<PageData>[]> {

@@ -5,7 +5,7 @@ import * as Common from './decorators/Common';
 
 @Common.MangaCSS(/^{origin}\/manhwa\/[^/]+\/$/, 'div.manga-titles h1')
 @Common.MangasMultiPageCSS('a.manga-item__link', Common.PatternLinkGenerator('/manhwa/page/{page}/'))
-@Common.ChaptersSinglePageCSS('div#chaptersList a.chapter-item', undefined, Common.AnchorInfoExtractor(false, 'span.chapter-item__date'))
+@Common.ChaptersSinglePageCSS('div#chaptersList a.chapter-item', undefined, Common.AnchorInfoExtractor(false, 'span.chapter-item__date'), true)
 @Common.PagesSinglePageJS(`reader.parseData(chapterData.data).map(image => new URL(reader.base + '/'+ image.src).href)`, 1500)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {

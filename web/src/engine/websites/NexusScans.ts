@@ -33,6 +33,7 @@ type APIPages = {
                 s: number;
                 c: number;
                 r: number;
+                v?: number;
             };
         }[];
     };
@@ -42,6 +43,7 @@ type PageParameters = {
     Seed?: number;
     Columns?: number;
     Rows?: number;
+    Version?: number;
 }
 
 class PRNG {
@@ -77,6 +79,18 @@ class PRNG {
         }
         return indices;
     }
+
+    /**
+    * Generate an Int32Array of random flip values (0 to 3) for tile descrambling.
+    */
+    public Flips(count: number): Int32Array {
+        const flips = new Int32Array(count);
+        for (let i = 0; i < count; i++) {
+            flips[i] = Math.floor(this.#Next() * 4);
+        }
+        return flips;
+    }
+
 }
 
 export default class extends DecoratableMangaScraper {
@@ -130,13 +144,13 @@ export default class extends DecoratableMangaScraper {
         return paginas.map(({ url, sc }) => {
             const uri = new URL(url);
             if (uri.hostname.endsWith('r2.cloudflarestorage.com')) uri.hostname = 'cdn.nexusscanlation.com';
-            return new Page<PageParameters>(this, chapter, uri, { Seed: sc?.s, Columns: sc?.c, Rows: sc?.r });
+            return new Page<PageParameters>(this, chapter, uri, { Seed: sc?.s, Columns: sc?.c, Rows: sc?.r, Version: sc?.v });
         });
     }
 
     public override async FetchImage(page: Page<PageParameters>, priority: Priority, signal: AbortSignal): Promise<Blob> {
         const blob = await FetchImageAjax.call(this, page, priority, signal);
-        const { Seed, Columns, Rows } = page.Parameters;
+        const { Seed, Columns, Rows, Version } = page.Parameters;
         return Columns && Rows && Seed ? DeScramble(blob, async (image, ctx) => {
 
             const tileWidth = Math.floor(image.width / Columns);
@@ -146,15 +160,34 @@ export default class extends DecoratableMangaScraper {
             ctx.canvas.width = tileWidth * Columns;
             ctx.canvas.height = tileHeight * Rows;
 
-            const shuffledPositions = new PRNG(Seed).Sequence(totalTiles);
+            const rng = new PRNG(Seed);
+            const shuffledPositions = rng.Sequence(totalTiles);
+            const flips: Int32Array | null = Version >= 2 ? rng.Flips(totalTiles) : null;
 
-            for (let tileIndex = 0; tileIndex < totalTiles; tileIndex++) {
-                const destinationIndex = shuffledPositions[tileIndex];
-                const sourceX = tileIndex % Columns * tileWidth;
-                const sourceY = Math.floor(tileIndex / Columns) * tileHeight;
-                const destX = destinationIndex % Columns * tileWidth;
-                const destY = Math.floor(destinationIndex / Columns) * tileHeight;
-                ctx.drawImage(image, sourceX, sourceY, tileWidth, tileHeight, destX, destY, tileWidth, tileHeight);
+            for (let srcIndex = 0; srcIndex < totalTiles; srcIndex++) {
+                const srcX = srcIndex % Columns * tileWidth;
+                const srcY = Math.floor(srcIndex / Columns) * tileHeight;
+                const dstIndex = shuffledPositions[srcIndex];
+                const dstX = dstIndex % Columns * tileWidth;
+                const dstY = Math.floor(dstIndex / Columns) * tileHeight;
+                const flip = flips ? flips[srcIndex] : 0;
+
+                ctx.save();
+                if (flip === 0) {
+                    ctx.drawImage(image, srcX, srcY, tileWidth, tileHeight, dstX, dstY, tileWidth, tileHeight);
+                } else {
+                    const flipH = (flip & 1) !== 0;
+                    const flipV = (flip & 2) !== 0;
+                    const transX = flipH ? dstX + tileWidth : dstX;
+                    const transY = flipV ? dstY + tileHeight : dstY;
+                    const scaleX = flipH ? -1 : 1;
+                    const scaleY = flipV ? -1 : 1;
+
+                    ctx.translate(transX, transY);
+                    ctx.scale(scaleX, scaleY);
+                    ctx.drawImage(image, srcX, srcY, tileWidth, tileHeight, 0, 0, tileWidth, tileHeight);
+                }
+                ctx.restore();
             }
         }) : blob;
     }

@@ -72,7 +72,7 @@ export default class extends DecoratableMangaScraper {
                 'Content-type': 'application/json'
             }
         }));
-        return episodes.map(({ episodeId, displayVolume, volume, mask }) => new Chapter(this, manga, JSON.stringify({ episodeId, mask }), displayVolume ?? `${volume}`));
+        return episodes.map(({ episodeId, displayVolume, volume, mask }) => new Chapter(this, manga, JSON.stringify({ episodeId, mask }), displayVolume ?? `${volume}`)).reverse();
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page<PageParam>[]> {

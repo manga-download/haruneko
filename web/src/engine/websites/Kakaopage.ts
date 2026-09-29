@@ -13,6 +13,7 @@ type APIManga = APIResult<{
         title: string;
     };
 }>;
+
 type APIChapters = APIResult<{
     has_next: boolean;
     list: {
@@ -54,17 +55,26 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
         const id = new URL(url).pathname.match(/content\/(\d+)/).at(1);
-        const { result: { content: { title } } } = await FetchJSON<APIManga>(new Request(new URL(`./v1/content/overview?series_id=${id}`, this.apiURL)));
+        const { result: { content: { title } } } = await this.FetchAPI<APIManga>(`./v1/content/overview?series_id=${id}`);
         return new Manga(this, provider, id, title);
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const { result: { list } } = await FetchJSON<APIChapters>(new Request(new URL(`./v2/content/product/list?series_id=${manga.Identifier}&cursor_index=0&window_size=9999`, this.apiURL)));
-        return list.map(({ item: { product_id: productId, title } }) => new Chapter(this, manga, `${productId}`, title.replace(manga.Title, '').trim() || title));
+        const { result: { list } } = await this.FetchAPI<APIChapters>(`./v2/content/product/list?series_id=${manga.Identifier}&cursor_index=0&window_size=9999`);
+        return list.map(({ item: { product_id: productId, title } }) => new Chapter(this, manga, `${productId}`, title.replace(manga.Title, '').trim() || title)).reverse();
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const { viewer_data: { imageDownloadData: { files } } } = await FetchJSON<APIPages>(new Request(new URL(`./v1/viewer/data?series_id=${chapter.Parent.Identifier}&product_id=${chapter.Identifier}`, this.apiURL)));
+        const { viewer_data: { imageDownloadData: { files } } } = await this.FetchAPI<APIPages>(`./v1/viewer/data?series_id=${chapter.Parent.Identifier}&product_id=${chapter.Identifier}`);
         return files.map(({ secureUrl }) => new Page(this, chapter, new URL(secureUrl)));
+    }
+
+    private async FetchAPI<T extends JSONElement>(endpoint: string): Promise<T> {
+        return FetchJSON<T>(new Request(new URL(endpoint, this.apiURL), {
+            headers: {
+                Referer: this.URI.href,
+                Origin: this.URI.origin
+            }
+        }));
     }
 }

@@ -33,7 +33,7 @@ export default class extends DecoratableMangaScraper {
     private readonly apiURL = `${this.URI.origin}/api/`;
 
     public constructor() {
-        super('stonescape', 'StoneScape', 'https://stonescape.xyz', Tags.Media.Manhwa, Tags.Media.Manga, Tags.Language.English, Tags.Source.Aggregator);
+        super('stonescape', 'StoneScape', 'https://stonescape.sayki.fr', Tags.Media.Manhwa, Tags.Media.Manga, Tags.Language.English, Tags.Source.Aggregator);
     }
 
     public override get Icon() {
@@ -56,7 +56,7 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const { chapters } = await this.FetchAPI<APIChapters>(`./series/by-slug/${manga.Identifier}/chapters`);
-        return chapters.map(({ chapterId, chapterNumber, title }) => new Chapter(this, manga, chapterId, ['Chapter', parseFloat(chapterNumber), title].joinTitleSegments()));
+        return chapters.map(({ chapterId, chapterNumber, title }) => new Chapter(this, manga, chapterId, ['Chapter', parseFloat(chapterNumber), title].joinTitleSegments())).reverse();
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {

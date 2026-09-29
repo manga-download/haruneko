@@ -1,24 +1,22 @@
 ﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'qimeitj',
         title: 'Qimeitj'
     },
     container: {
-        url: 'https://hxy4.com/book/2324',
-        id: '/book/2324',
-        title: '后宫太多，只好飞升了'
+        url: 'https://hxy4.com/manhua/126399',
+        id: '/manhua/126399',
+        title: '游戏人生 东部联合篇'
     },
     child: {
-        id: '/chapter/144045',
-        title: '035.5 洞天之内',
+        id: '/chapter/1670880',
+        title: '第1话',
     },
     entry: {
         index: 0,
-        size: 212_602,
+        size: 127_869,
         type: 'image/jpeg'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

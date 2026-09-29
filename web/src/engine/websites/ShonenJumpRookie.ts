@@ -8,7 +8,7 @@ import { Fetch, FetchHTML } from '../platform/FetchProvider';
 @Common.ChaptersSinglePageCSS<HTMLAnchorElement>('ul#episode-list li a.episode-content', undefined, anchor => ({
     id: anchor.pathname,
     title: anchor.querySelector('span.episode-title').textContent.trim()
-}))
+}), true)
 @Common.PagesSinglePageCSS('div.image-container p.page-area img.js-page-image')
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
