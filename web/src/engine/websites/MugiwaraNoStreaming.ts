@@ -2,7 +2,7 @@ import { Tags } from '../Tags';
 import icon from './MugiwaraNoStreaming.webp';
 import { DecoratableMangaScraper, Manga, Chapter, Page, type MangaPlugin } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { Fetch, FetchCSS, FetchJSON } from '../platform/FetchProvider';
+import { FetchJSON, FetchNextJS } from '../platform/FetchProvider';
 import { TaskPool, Priority } from '../taskpool/TaskPool';
 import { RateLimit } from '../taskpool/RateLimit';
 
@@ -10,11 +10,15 @@ type APICatalogue = {
     animes: {
         anime: string;
         slug: string;
-        disponibles: string[];
     }[];
-    pagination: {
-        totalPages: number;
-    };
+};
+
+type APIScansOptions = {
+    IMAGE_URL: string;
+    versions?: {
+        name: string;
+        IMAGE_URL: string;
+    }[];
 };
 
 type APIChapterSizes = Record<string, number> | { error: string };
@@ -24,15 +28,13 @@ type ChapterID = {
     number: string;
 };
 
-/**
- * The website is an anime aggregator whose entries additionally provide manga scans.
- * Only the scans are supported here (they are plain images), because the app has no video download pipeline for the episodes.
- */
+// TODO: Add anime support
+
+@Common.MangaCSS<HTMLMetaElement>(/^{origin}\/catalogue\/[^/]+$/, 'meta[property="og:title"]', (meta, uri) => ({ id: uri.pathname.split('/').filter(segment => segment).at(-1), title: meta.content }))
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
     private readonly scansCDN = 'https://scans.mugiwara-no-streaming.com';
-    // The API answers a plain-text "Trop de requêtes" (too many requests) for bursts, so the requests are serialized and paced.
     private readonly apiPool = new TaskPool(1, new RateLimit(3, 1));
 
     public constructor() {
@@ -43,39 +45,25 @@ export default class extends DecoratableMangaScraper {
         return icon;
     }
 
-    public override ValidateMangaURL(url: string): boolean {
-        const uri = URL.parse(url);
-        return uri?.origin === this.URI.origin && /^\/catalogue\/[^/]+\/?$/.test(uri.pathname);
-    }
-
-    public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
-        const slug = new URL(url).pathname.match(/\/catalogue\/([^/]+)/).at(1);
-        const [ title ] = await FetchCSS<HTMLTitleElement>(new Request(url), 'title');
-        return new Manga(this, provider, slug, title.text.split('|').at(0).trim());
-    }
-
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
         type This = typeof this;
         return Array.fromAsync(async function* (this: This) {
-            for (let page = 1, pages = 1; page <= pages; page++) {
-                const { animes, pagination } = await this.FetchAPI<APICatalogue>('/api/catalogue-filters', { page, itemsPerPage: 500 });
-                pages = pagination.totalPages;
-                yield* animes.filter(({ disponibles }) => disponibles.includes('Scans')).map(({ slug, anime }) => new Manga(this, provider, slug, anime));
+            for (let page = 1, run = true; run; page++) {
+                const { animes } = await this.FetchAPI<APICatalogue>('/api/catalogue-filters', { page, itemsPerPage: 500, filteredAvailability: [ 'Scans' ] });
+                const mangas = animes.map(({ slug, anime }) => new Manga(this, provider, slug, anime));
+                run = mangas.length > 0;
+                yield* mangas;
             }
         }.call(this));
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         // The scans of a title may be published in several versions (e.g. black & white and colored), each with its own name for the scans
-        // API and the scans host (neither the slug nor the displayed name of a version are accepted), which the page of the title provides.
-        // NOTE: `FetchNextJS` cannot extract them, the whole flight data of the page is a single payload of multiple lines (see its own TODO)
-        const content = (await (await Fetch(new Request(new URL(`/catalogue/${manga.Identifier}`, this.URI)))).text()).replaceAll('\\"', '"');
+        // API and the scans host, which the page of the title provides (neither the slug nor the displayed name of a version are accepted).
+        const options = await FetchNextJS<APIScansOptions>(new Request(new URL(`/catalogue/${manga.Identifier}`, this.URI)), data => 'IMAGE_URL' in data);
         const versions = [
-            { scans: content.match(/"versions":\[.*?\],"IMAGE_URL":"([^"]+)"/)?.at(1) ?? manga.Title, label: '' },
-            ... Array.from(content.matchAll(/"name":"([^"]+)","slug":"[^"]*","image":"[^"]*","IMAGE_URL":"([^"]+)"/g), match => ({
-                scans: match.at(2),
-                label: match.at(1).replace(manga.Title, '').trim() || match.at(1),
-            })),
+            { scans: options.IMAGE_URL, label: '' },
+            ... (options.versions ?? []).map(({ name, IMAGE_URL: scans }) => ({ scans, label: name.replace(manga.Title, '').trim() || name })),
         ];
         const chapters: Chapter[] = [];
         for (const { scans, label } of versions) {
