@@ -2,9 +2,11 @@ import { Tags } from '../Tags';
 import icon from './AsmHentai.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import * as MangaStream from './decorators/WordPressMangaStream';
 
-const script = `
+@Common.MangaCSS(/^{origin}\/g\/[^/]+\/$/, 'div.book_page div.info h1')
+@Common.MangasNotSupported()
+@Common.ChaptersUniqueFromManga()
+@Common.PagesSinglePageJS(`
     new Promise((resolve, reject) => {
         const pages = parseInt($('#t_pages').val());
         const dir = $('#load_dir').val();
@@ -15,12 +17,7 @@ const script = `
         });
         resolve(images);
     });
-`;
-
-@Common.MangaCSS(/^{origin}\/g\/[^/]+\/$/, 'div.book_page div.info h1')
-@Common.MangasNotSupported()
-@Common.ChaptersUniqueFromManga()
-@MangaStream.PagesSinglePageJS([], script)
+`, 500)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
