@@ -14,7 +14,7 @@ type PageData = {
     scramble: {
         width: number;
         height: number;
-    }
+    };
 };
 
 type PartData = {
@@ -229,8 +229,7 @@ export function ImageAjax() {
 
 async function FetchXML(request: Request): Promise<XMLDocument> {
     const response = await Fetch(request);
-    const data = await response.text();
-    return new DOMParser().parseFromString(data, 'text/xml');
+    return new DOMParser().parseFromString(await response.text(), 'text/xml');
 }
 
 async function LoadPart(imageUrl: URL, partData: PartData): Promise<ImagePart> {
@@ -244,9 +243,6 @@ async function LoadPart(imageUrl: URL, partData: PartData): Promise<ImagePart> {
 async function LoadImage(url: URL): Promise<ImageBitmap> {
     try {
         const response = await Fetch(new Request(url));
-        if (!response.ok) {
-            throw new Error(`Failed to load image: ${response.statusText}`);
-        }
         const blob = await response.blob();
         return await createImageBitmap(blob);
     } catch (error) {
