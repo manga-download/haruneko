@@ -31,7 +31,7 @@ type APIPages = {
             bloat = titleElement.querySelector('span');
         }
         return { id: anchor.pathname.split('/').at(-1), title: titleElement.textContent.trim()};
-    });
+    }).reverse();
 `, 1500)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {

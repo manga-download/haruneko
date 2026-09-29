@@ -6,7 +6,7 @@ import * as Common from './decorators/Common';
 
 @Common.MangaCSS(/https?:\/\/(w+\d*\.)?mangafreak.me\/Manga\/[^/]+$/, 'div.manga_series_data h1')
 @Common.MangasMultiPageCSS('div.list_item div.list_item_info h3 a', Common.PatternLinkGenerator('/Mangalist/All/{page}'))
-@Common.ChaptersSinglePageCSS('div.manga_series_list table tbody tr td:first-of-type a')
+@Common.ChaptersSinglePageCSS('div.manga_series_list table tbody tr td:first-of-type a', undefined, undefined, true)
 @Common.PagesSinglePageCSS('div.read_image div.mySlides img')
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {

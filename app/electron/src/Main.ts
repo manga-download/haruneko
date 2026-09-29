@@ -2,6 +2,7 @@ import path from 'path';
 import fs from 'fs/promises';
 import { app } from 'electron';
 import { Command } from 'commander';
+import { Logger } from './Logger';
 import { IPC } from './ipc/InterProcessCommunication';
 import { ApplicationWindow } from './ipc/ApplicationWindow';
 import { FetchProvider } from './ipc/FetchProvider';
@@ -105,10 +106,12 @@ async function OpenWindow(): Promise<void> {
         app.userAgentFallback = manifest['user-agent'] ?? app.userAgentFallback.split(/\s+/).filter(segment => !/(hakuneko|electron)/i.test(segment)).join(' ');
         await app.whenReady();
         const win = await CreateApplicationWindow();
-        const ipc = new IPC(win.webContents);
-        const rpc = new RPCServer('/hakuneko', new RemoteProcedureCallContract(ipc, win.webContents));
         const uri = new URL(argv.origin ?? manifest.url ?? 'about:blank');
         UpdatePermissions(win.webContents.session, uri);
+
+        new Logger(win.webContents);
+        const ipc = new IPC(win.webContents);
+        const rpc = new RPCServer('/hakuneko', new RemoteProcedureCallContract(ipc, win.webContents));
         new RemoteProcedureCallManager(rpc, ipc);
         new FetchProvider(ipc, win.webContents);
         new RemoteBrowserWindowController(ipc);

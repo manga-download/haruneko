@@ -3,6 +3,7 @@ import '../ChampionCross_e2e';
 import '../ComicGrowl_e2e';
 import '../ComicPash_e2e';
 import '../ComicRide_e2e';
+import '../ComicRyu_e2e';
 import '../GComi_e2e';
 import '../HanaYume_e2e';
 import '../HerosWebNew_e2e';

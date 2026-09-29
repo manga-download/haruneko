@@ -91,7 +91,7 @@ export class MangaHubBase extends DecoratableMangaScraper {
             let title = `Ch.${number}`;
             title += chaptertitle ? ` - ${chaptertitle}` : '';
             return new Chapter(this, manga, `${number}`, title.trim());
-        });
+        }).reverse();
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {

@@ -8,7 +8,6 @@
 ### Windows
 
 [![](https://img.shields.io/github/downloads/manga-download/haruneko/{TAG}/{WIN_X64_ZIP}.svg?label=Windows%2064-Bit%20x86%20%28zip%29&logo=7zip&logoColor=0078D4)](https://github.com/manga-download/haruneko/releases/download/{TAG}/{WIN_X64_ZIP})  
-[![](https://img.shields.io/github/downloads/manga-download/haruneko/{TAG}/{WIN_X32_ZIP}.svg?label=Windows%2032-Bit%20x86%20%28zip%29&logo=7zip&logoColor=0078D4)](https://github.com/manga-download/haruneko/releases/download/{TAG}/{WIN_X32_ZIP})
 
 ### MacOS
 

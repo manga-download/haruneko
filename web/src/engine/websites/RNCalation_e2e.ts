@@ -11,7 +11,7 @@ new TestFixture({
         title: 'Entrenador de Mascotas'
     },
     child: {
-        id: '/comics/entrenador-de-mascotas/cap/1',
+        id: '/leer/746f50e1fbd6cc9fbbb97',
         title: 'Capítulo 1',
     },
     entry: {

@@ -6,7 +6,7 @@ new TestFixture({
         title: 'LELSCAN-VF'
     },
     container: {
-        url: 'https://lelscanfr.com/manga/four-knights-of-the-apocalypse',
+        url: 'https://www.lelscanfr.com/manga/four-knights-of-the-apocalypse',
         id: '/manga/four-knights-of-the-apocalypse',
         title: 'Four Knights Of The Apocalypse',
         timeout: 15000

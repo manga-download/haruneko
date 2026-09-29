@@ -8,7 +8,7 @@ new TestFixture({
     container: {
         url: 'https://mangaruhu.com/manga/the-dignity-of-a-chaebol/',
         id: '/manga/the-dignity-of-a-chaebol/',
-        title: 'The Dignity of a Chaebol'
+        title: 'Bir Chaebol’ün Onuru'
     },
     child: {
         id: '/manga/the-dignity-of-a-chaebol/bolum-20/',

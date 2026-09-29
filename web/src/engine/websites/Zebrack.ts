@@ -202,7 +202,7 @@ export default class extends DecoratableMangaScraper {
                 // Grab volumes
                 const { volumeListView: { volumes } } = await FetchProto<ZebrackResponse>(new Request(new URL(`./browser/title_volume_list?os=browser&title_id=${mangaId}`, this.apiURL)), protoTypes, this.responseRootType);
                 const mangaVolumes = volumes.map(({ volumeId, volumeName }) => new Chapter(this, manga, `volume/${volumeId}`, this.ReplaceNotEmpty(volumeName, manga.Title)));
-                return [...chapters, ...mangaVolumes];
+                return [...chapters.reverse(), ...mangaVolumes.reverse()];
             }
 
             case 'magazine': {

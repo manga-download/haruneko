@@ -4,14 +4,13 @@ import { Runtime } from './PlatformInfo';
 import { PlatformInstanceActivator } from './PlatformInstanceActivator';
 import NodeWebkitFetchProvider from './nw/FetchProvider';
 import ElectronFetchProvider from './electron/FetchProvider';
-import GetIPC from './InterProcessCommunication';
 
 let instance: FetchProvider;
 
 export function SetupFetchProvider(featureFlags: FeatureFlags) {
     instance = new PlatformInstanceActivator<FetchProvider>()
         .Configure(Runtime.NodeWebkit, () => new NodeWebkitFetchProvider())
-        .Configure(Runtime.Electron, () => new ElectronFetchProvider(GetIPC()))
+        .Configure(Runtime.Electron, () => new ElectronFetchProvider())
         .Create();
     instance.Initialize(featureFlags);
 }
@@ -32,6 +31,8 @@ export const FetchProto: typeof instance.FetchProto = (request, schema, messageT
 export const FetchGraphQL: typeof instance.FetchGraphQL = (request, operationName, query, variables, extensions) => instance.FetchGraphQL(request, operationName, query, variables, extensions);
 /** {@inheritDoc FetchProvider.FetchNextJS} @see {@link FetchProvider.FetchNextJS} */
 export const FetchNextJS: typeof instance.FetchNextJS = (request, predicate) => instance.FetchNextJS(request, predicate);
+/** {@inheritDoc FetchProvider.FetchNextProps} @see {@link FetchProvider.FetchNextProps} */
+export const FetchNextProps: typeof instance.FetchNextProps = (request) => instance.FetchNextProps(request);
 /** {@inheritDoc FetchProvider.FetchWindowScript} @see {@link FetchProvider.FetchWindowScript} */
 export const FetchWindowScript: typeof instance.FetchWindowScript = (request, script, delay?, timeout?) => instance.FetchWindowScript(request, script, delay, timeout);
 /** {@inheritDoc FetchProvider.FetchWindowPreloadScript} @see {@link FetchProvider.FetchWindowPreloadScript} */

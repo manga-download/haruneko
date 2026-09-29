@@ -29,17 +29,17 @@ new TestFixture({
         title: 'Boylove.cc'
     },
     container: {
-        url: 'https://boylove.cc/home/book/index/id/31315',
-        id: '/home/book/index/id/31315',
-        title: '亲吻创伤'
+        url: 'https://boylove.cc/home/book/index/id/28671',
+        id: '/home/book/index/id/28671',
+        title: '不要招惹小狗'
     },
     child: {
-        id: '/home/book/capter/id/2641351',
+        id: '/home/book/capter/id/2185723',
         title: '第1话'
     },
     entry: {
         index: 0,
-        size: 611_826,
+        size: 1_290_399,
         type: 'image/png'
     }
 }).AssertWebsite();

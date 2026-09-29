@@ -175,7 +175,7 @@ export class DelitoonBase extends DecoratableMangaScraper {
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const { data: { episodes } } = await this.drm.FetchBalconyJSON<APIManga>(`./contents/${manga.Identifier}?isNotLoginAdult=true`);
-        return episodes.map(({ title, subTitle, alias }) => new Chapter(this, manga, alias, subTitle ? `${title} : ${subTitle}` : title));
+        return episodes.map(({ title, subTitle, alias }) => new Chapter(this, manga, alias, subTitle ? `${title} : ${subTitle}` : title)).reverse();
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page<ScrambleParams>[]> {

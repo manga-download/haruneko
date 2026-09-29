@@ -14,8 +14,10 @@ type PageResult = {
     [id: string]: string;
 };
 
-@Common.MangasSinglePageCSS<HTMLAnchorElement>('/ranking/', 'div.ranking a.parent',
-    anchor => ({ id: new URL(anchor.href).searchParams.get('work_code'), title: anchor.querySelector('div.work_name').textContent.trim() }))
+@Common.MangasSinglePageCSS<HTMLAnchorElement>('/ranking/', 'div.ranking a.parent', anchor => ({
+    id: new URL(anchor.href).searchParams.get('work_code'),
+    title: anchor.querySelector('div.work_name').textContent.trim()
+}))
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
@@ -55,7 +57,7 @@ export default class extends DecoratableMangaScraper {
         return nodes.map(node => {
             const chapterid = new URL(node.href, this.URI).searchParams.get('story_id') ?? node.href.match(/dialog\('(\d+)'\)/).at(1);
             return new Chapter(this, manga, chapterid, node.querySelector('div.episode_name').textContent.trim());
-        });
+        }).reverse();
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {

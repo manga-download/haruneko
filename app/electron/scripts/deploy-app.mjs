@@ -1,7 +1,7 @@
 import os from 'node:os';
 import path from 'node:path';
 import fs from 'node:fs/promises';
-import extract from 'extract-zip';
+import AdmZip from 'adm-zip';
 import { download } from '../../tools.mjs';
 
 const pkgFile = 'package.json';
@@ -33,7 +33,7 @@ async function redist(electronVersion, electronPlatform, electronArchitecture) {
     }
     console.log('Extracting:', '$TMP/' + path.basename(tmpFile), '=>', '$TMP/' + path.basename(electronDir));
     await fs.rm(electronDir, { force: true, recursive: true });
-    await extract(tmpFile, { dir: electronDir });
+    new AdmZip(tmpFile).extractAllTo(electronDir, true, true);
     return electronDir;
 }
 
@@ -51,10 +51,6 @@ if (process.platform === 'darwin') {
 if (process.platform === 'win32') {
     const portable = await import('./bundle-app-zip.mjs');
     //const setup = await import('./bundle-app-iss.mjs');
-    dirTemp = await redist(electronVersion, process.platform, 'ia32');
-    await portable.bundle(dirApp, dirRes, dirTemp, dirOut);
-    //dirTemp = await redist(electronVersion, process.platform, 'ia32');
-    //await setup.bundle(dirApp, dirTemp);
     dirTemp = await redist(electronVersion, process.platform, 'x64');
     await portable.bundle(dirApp, dirRes, dirTemp, dirOut);
     //dirTemp = await redist(electronVersion, process.platform, 'x64');

@@ -1,6 +1,6 @@
 ﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'hqnow',
         title: 'Hq Now'
@@ -12,13 +12,11 @@ const config = {
     },
     child: {
         id: '11572',
-        title: '1 : Prelúdio- Em Busca de Poder parte 1'
+        title: '1 - Prelúdio- Em Busca de Poder parte 1'
     },
     entry: {
         index: 0,
         size: 120_325,
         type: 'image/jpeg'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

@@ -6,17 +6,18 @@ new TestFixture({
         title: 'Nemesis Scans'
     },
     container: {
-        url: 'https://www.nemesisscans.com/manga/kusuriya-no-hitorigoto/',
-        id: JSON.stringify({ post: '185', slug: '/manga/kusuriya-no-hitorigoto/'}),
-        title: 'Kusuriya no Hitorigoto'
+        url: 'https://www.nemesisscans.com/series/53/the-apothecary-diaries',
+        id: '/series/53/the-apothecary-diaries',
+        title: 'The Apothecary Diaries',
+        timeout: 10_000
     },
     child: {
-        id: '/manga/kusuriya-no-hitorigoto/bolum-81-2/',
+        id: '/series/53/episode/81.2',
         title: 'Bölüm 81.2'
     },
     entry: {
         index: 0,
-        size: 374_708,
-        type: 'image/webp'
+        size: 362_694,
+        type: 'image/avif'
     }
 }).AssertWebsite();

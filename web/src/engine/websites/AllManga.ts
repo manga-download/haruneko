@@ -1,10 +1,10 @@
 import { Tags } from '../Tags';
 import icon from './AllManga.webp';
 import { Delay } from '../BackgroundTimers';
-import { FetchGraphQL, FetchWindowPreloadScript, FetchWindowScript } from '../platform/FetchProvider';
+import { FetchGraphQL, FetchWindowScript } from '../platform/FetchProvider';
 import { DecoratableMangaScraper, type MangaPlugin, Manga, Chapter, Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { RandomText } from '../Random';
+import { DRMProvider } from './AllManga.DRM';
 
 const primaryDomain = 'mkissa.to';
 const patternAliasDomains = [
@@ -39,20 +39,10 @@ type APIChapters = {
     }[];
 };
 
-type APIPages = {
-    chapterPages: {
-        edges: [{
-            pictureUrlHead: string;
-            pictureUrls: {
-                url: string;
-            }[];
-        }];
-    };
-};
-
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
+    readonly #drm = new DRMProvider();
     private readonly apiURL = 'https://api.mkissa.net/api';
 
     public constructor() {
@@ -84,22 +74,18 @@ export default class extends DecoratableMangaScraper {
         // TODO: Use Array.fromAsync
         const mangaList: Manga[] = [];
         for (let page = 1, run = true; run; page++) {
-            await Delay(500);
-            const mangas = await this.GetMangasFromPage(page, provider);
-            mangaList.isMissingLastItemFrom(mangas) ? mangaList.push(...mangas) : run = false;
-        }
-        return mangaList;
-    }
-
-    private async GetMangasFromPage(page: number, provider: MangaPlugin): Promise<Manga[]> {
-        const { mangas: { edges } } = await FetchGraphQL<APIMangas>(new Request(this.apiURL), '', `
+            await Delay(1000);
+            const { mangas: { edges } } = await FetchGraphQL<APIMangas>(new Request(this.apiURL), '', `
             query ($page: Int) {
                 mangas(page: $page, format: ALL, countryOrigin: ALL, search: { allowAdult: true }) {
                     edges { _id, name, englishName }
                 }
             }
         `, { page: page });
-        return edges.map(({ _id, englishName, name }) => new Manga(this, provider, _id, englishName ?? name));
+            const mangas = edges.map(({ _id, englishName, name }) => new Manga(this, provider, _id, englishName ?? name));
+            mangaList.isMissingLastItemFrom(mangas) ? mangaList.push(...mangas) : run = false;
+        }
+        return mangaList;
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
@@ -131,36 +117,7 @@ export default class extends DecoratableMangaScraper {
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
         const { chapterString, translationType } = <ChapterID>JSON.parse(chapter.Identifier);
         const chapterURL = new URL(`./manga/${chapter.Parent.Identifier}/chapter-${chapterString}-${translationType}`, this.URI);
-
-        const eventName = RandomText(Math.random() * 8 + 8);
-        const { chapterPages: { edges: [{ pictureUrlHead, pictureUrls }] } } = await FetchWindowPreloadScript<APIPages>(new Request(chapterURL), `
-                (function () {
-                    const originalJson = Response.prototype.json;
-                    Response.prototype.json = function() {
-                        return originalJson.call(this).then(data => {
-                            if (data && data.chapterPages) {
-                                setInterval(() => window.dispatchEvent(new CustomEvent('${eventName}', { detail: data })), 250);
-                            }
-                            return data;
-                        });
-                    };
-
-                    JSON.parse = new Proxy(JSON.parse, {
-                        apply(target, thisArg, args) {
-                            const result = Reflect.apply(target, thisArg, args);
-                            if (result && result.chapterPages) {
-                                setInterval(() => window.dispatchEvent(new CustomEvent('${eventName}', { detail: result })), 250);
-                            }
-                            return result;
-                        }
-                    });
-                })();
-            `, `
-            new Promise(resolve => {
-                window.addEventListener('${eventName}', event => resolve(event.detail), { once: true });
-            });
-        `);
-
+        const { chapterPages: { edges: [{ pictureUrlHead, pictureUrls }] } } = await this.#drm.CreatePageLinks(chapterURL);
         let origin = pictureUrlHead ?? this.URI.origin;
         origin = origin.startsWith('https://') ? origin : 'https://' + origin;
         return pictureUrls.map(({ url }) => new Page(this, chapter, new URL(url, origin), { Referer: this.URI.href }));

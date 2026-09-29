@@ -9,6 +9,7 @@ new TestFixture({
         url: 'https://www.mkzhan.com/214990/',
         id: '/214990/',
         title: '都市之逆天仙尊',
+        timeout: 10_000
     },
     child: {
         id: '855316',
@@ -16,7 +17,7 @@ new TestFixture({
     },
     entry: {
         index: 0,
-        size: 101_678,
+        size: 101_766,
         type: 'image/webp'
     }
 }).AssertWebsite();

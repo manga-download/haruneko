@@ -6,17 +6,17 @@ new TestFixture({
         title: 'ManhwaWeb'
     },
     container: {
-        url: 'https://manhwaweb.com/manga/renacimientodelemperador_1719816094257',
-        id: 'renacimientodelemperador_1719816094257',
-        title: 'Renacimiento Del Emperador'
+        url: 'https://manhwaweb.com/manhwa/pequea-acosadora_1761090368216',
+        id: 'pequea-acosadora_1761090368216',
+        title: 'Pequeña Acosadora'
     },
     child: {
-        id: 'renacimientodelemperador_1719816094257-1',
+        id: 'pequea-acosadora_1761090368216-1_01',
         title: '1'
     },
     entry: {
-        index: 0,
-        size: 832_901,
-        type: 'image/jpeg'
+        index: 2,
+        size: 450_536,
+        type: 'image/webp'
     }
 }).AssertWebsite();

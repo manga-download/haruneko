@@ -10,8 +10,8 @@ type APIChapters = {
         chapters: {
             chapter_name: string;
             chapter_slug: string;
-        }[]
-    }
+        }[];
+    };
 };
 
 @Madara.MangaCSS(/^{origin}\/manga\/[^/]+$/, 'div.post-title h1')

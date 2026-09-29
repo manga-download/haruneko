@@ -2,7 +2,6 @@ import { Runtime } from './PlatformInfo';
 import { PlatformInstanceActivator } from './PlatformInstanceActivator';
 import NodeWebkitBloatGuard from './nw/BloatGuard';
 import ElectronBloatGuard from './electron/BloatGuard';
-import GetIPC from './InterProcessCommunication';
 
 export interface IBloatGuard {
     Initialize(): Promise<void>;
@@ -11,7 +10,7 @@ export interface IBloatGuard {
 export function CreateBloatGuard(): IBloatGuard {
     return new PlatformInstanceActivator<IBloatGuard>()
         .Configure(Runtime.NodeWebkit, () => new NodeWebkitBloatGuard(patterns))
-        .Configure(Runtime.Electron, () => new ElectronBloatGuard(GetIPC(), patterns))
+        .Configure(Runtime.Electron, () => new ElectronBloatGuard(patterns))
         .Create();
 }
 
@@ -31,6 +30,7 @@ const patterns = [
     '*://*.gleavemeecher.com/*',
     '*://*.google-analytics.com/*',
     '*://*.googlesyndication.com/*',
+    '*://*.jads.co/*',
     '*://*.magsrv.com/*',
     '*://*.mgid.com/*',
     '*://*.nawpush.com/*',
@@ -45,10 +45,12 @@ const patterns = [
     '*://*.pubadx.one/*',
     '*://*.pubfuture-ad.com/*',
     '*://*.purpleads.io/*',
+    '*://*.realsrv.com/*',
     '*://*.sentry.io/*',
     '*://*.sharethis.com/*',
     '*://*.struvlichi.com/*',
     '*://*.tomefuldunch.cfd/*',
+    '*://*.traffichaus.com/*',
     '*://*.topcreativeformat.com/*',
     '*://*.twitch.tv/*',
     '*://*.yandex.ru/*.js',
@@ -60,6 +62,7 @@ const patterns = [
     '*://*/js/ads*',
     '*://ad-blocker.co/*',
     '*://ads-blocker.app/*',
+    '*://adexchangerapid.com/*',
     '*://breathinggeoff.com/*',
     '*://captivatepestilentstormy.com/*',
     '*://creepingbrings.com/*',
@@ -70,6 +73,7 @@ const patterns = [
     '*://fireworksane.com/*',
     '*://fleraprt.com/*',
     '*://goomaphy.com/*',
+    '*://havenclick.com/*',
     '*://highperformanceformat.com/*',
     '*://itchyshavecommand.com/*',
     '*://kettledroopingcontinuation.com/*',
@@ -88,6 +92,7 @@ const patterns = [
     '*://tqqbhtnshynrypl.xyz/*',
     '*://tuhtutxattu.in/*',
     '*://tumultmarten.com/*',
+    '*://usrpubtrk.com/*',
     '*://valuerabjure.com/*',
     '*://voltoishime.top/*',
     '*://wayfarerorthodox.com/*',

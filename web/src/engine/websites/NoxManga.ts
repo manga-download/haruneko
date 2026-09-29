@@ -43,7 +43,7 @@ export default class extends DecoratableMangaScraper {
     private cachedSignaturesMap = new Map<string, SignParams>();
 
     public constructor() {
-        super('noxmanga', 'NoxManga', 'https://noxtoons.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Portuguese, Tags.Source.Aggregator);
+        super('noxmanga', 'NoxManga', 'https://noxmangas.org', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Portuguese, Tags.Source.Aggregator, Tags.Accessibility.RegionLocked);
     }
 
     public override get Icon() {
