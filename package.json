@@ -17,19 +17,28 @@
         "@types/nw.js": "0.115.0",
         "eslint": "10.11.0",
         "eslint-plugin-tsdoc": "0.5.3",
-        "puppeteer-core": "25.11.0",
+        "puppeteer-core": "25.12.0",
         "tslib": "2.8.1",
         "typescript": "6.0.3",
         "typescript-eslint": "8.70.1",
-        "vite": "8.3.0",
-        "vitest": "5.0.1"
+        "vite": "8.3.1",
+        "vitest": "5.0.2"
     },
     "scripts": {
         "check": "npm run check --workspaces",
         "test": "npm run test --workspaces",
         "test:e2e": "npm run build --workspaces && vitest run --config=test/vitest.e2e.js",
         "test:websites": "npm run build --workspaces && vitest run --config=test/vitest.websites.js",
-        "npm:clean-install": "npm update --package-lock-only && npm clean-install --quiet --dangerously-allow-all-scripts",
+        "npm:clean-install": "npm update --package-lock-only && npm clean-install --quiet",
         "postinstall": "npm --workspace=app/electron exec electron -- --no-sandbox --version"
+    },
+    "allowScripts": {
+        "carbon-components-svelte": true,
+        "esbuild": true,
+        "eslint": true,
+        "fsevents": true,
+        "nw": true,
+        "manga-download/pdfkit": true,
+        "manga-download/websocket-rpc": true
     }
 }

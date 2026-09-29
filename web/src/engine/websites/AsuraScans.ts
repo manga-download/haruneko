@@ -13,17 +13,19 @@ const excludes = [
     /EndDesignPSD/i
 ];
 
-const pagesScript = `
-    new Promise(resolve => {
-        const element = document.querySelector('astro-island[component-url*="ChapterReader"]');
-        element.hydrator = () => (_, props) => {
-            resolve(props.pages.map(( { url }) => url)); 
-        };
-        element.hydrate();
-    });
-`;
+function CleanPathName(uri: URL | HTMLAnchorElement) {
+    return uri.pathname.replace(/-[a-f0-9]+$/, '');
+};
 
-const chapterScript = `
+@Common.MangaCSS(/^{origin}\/comics\/[^/]+$/, 'article h1', (element, uri) => ({
+    id: CleanPathName(uri),
+    title: element.textContent.trim()
+}))
+@Common.MangasMultiPageCSS<HTMLAnchorElement>('div#series-grid div.series-card div a', Common.PatternLinkGenerator('/browse?page={page}'), 0, anchor => ({
+    id: CleanPathName(anchor),
+    title: anchor.textContent.trim()
+}))
+@Common.ChaptersSinglePageJS(`
     new Promise( resolve => {
         const element = document.querySelector('astro-island[component-url*="ChapterListReact"]');
         resolve(JSON.parse(element.getAttribute('props')).chapters[1].map(chapter => {
@@ -33,16 +35,16 @@ const chapterScript = `
             };
         }));
     });
-`;
-
-function CleanPathName(uri: URL | HTMLAnchorElement) {
-    return uri.pathname.replace(/-[a-f0-9]+$/, '');
-};
-
-@Common.MangaCSS(/^{origin}\/comics\/[^/]+$/, 'article h1', (element, uri) => ({ id: CleanPathName(uri), title: element.textContent.trim() }))
-@Common.MangasMultiPageCSS<HTMLAnchorElement>('div#series-grid div.series-card div a', Common.PatternLinkGenerator('/browse?page={page}'), 0, anchor => ({ id: CleanPathName(anchor), title: anchor.textContent.trim() }))
-@Common.ChaptersSinglePageJS(chapterScript, 1000)
-@MangaStream.PagesSinglePageJS(excludes, pagesScript, 1000)
+`, 1000)
+@MangaStream.PagesSinglePageJS(excludes, `
+    new Promise(resolve => {
+        const element = document.querySelector('astro-island[component-url*="ChapterReader"]');
+        element.hydrator = () => (_, props) => {
+            resolve(props.pages.map(( { url }) => url));
+        };
+        element.hydrate();
+    });
+`, 1000)
 @Common.ImageAjax(true)
 export default class extends DecoratableMangaScraper {
 
