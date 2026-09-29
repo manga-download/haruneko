@@ -21,9 +21,7 @@ type RequestCallback<TParameters extends JSONArray = JSONArray, TReturn extends 
 
 export class IPC {
 
-    constructor(private readonly win: Window & typeof globalThis) {
-        const interval = this.win.setInterval(() => this.Send('APP::IPC::Ready', interval), 250);
-    }
+    constructor(private readonly win: Window & typeof globalThis) { }
 
     On(channel: never, callback: never): never;
 
