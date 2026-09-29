@@ -13,10 +13,14 @@
 2. Open a terminal and change into the cloned repository  
 `cd haruneko`
 3. Download and install all package dependencies  
-`npm install`
+`npm run npm:clean-install`
 
 ::: info NOTE
-Perform `npm install` regulary after pulling code from the remote repository as a contributor may have changed some package dependencies
+Some packages are referenced from GitHub and some packages may require to run post-scripts.
+It is up to the developer to decide locally/user-level which packages shall be approved and which shall be denied.
+e.g.,
+`npm config set allow-git=all --location=user`
+`npm approve-scripts --all --no-allow-scripts-pin`
 :::
 
 ## Project Structure

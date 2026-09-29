@@ -17,7 +17,8 @@ jobs:
           node-version: 24.0.0
       - name: Install NPM Packages
         id: packages
-        run: npm run npm:clean-install
+        run: |
+          npm run npm:clean-install
       - name: Code Inspection
         if: steps.packages.outcome == 'success' && (success() || failure())
         run: npm run check

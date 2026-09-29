@@ -12,7 +12,7 @@ import * as Common from './decorators/Common';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('violetscans', 'Violet Scans', 'https://violetscans.org', Tags.Media.Manhwa, Tags.Language.English, Tags.Source.Scanlator);
+        super('violetscans', 'Violet Scans', 'https://violetmanga.com', Tags.Media.Manhwa, Tags.Language.English, Tags.Source.Scanlator);
     }
 
     public override get Icon() {
