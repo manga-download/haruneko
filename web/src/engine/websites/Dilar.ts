@@ -4,7 +4,7 @@ import { Chapter, DecoratableMangaScraper, Page, Manga, type MangaPlugin } from 
 import { FetchJSON } from '../platform/FetchProvider';
 import * as Common from './decorators/Common';
 import { Delay } from '../BackgroundTimers';
-import { GetBytesFromURLBase64, GetBytesFromUTF8, GetURLBase64FromBytes, GetUTF8FromBytes } from '../BufferEncoder';
+import { GetBytesFromURLBase64, GetBytesFromUTF8, GetHexFromBytes, GetURLBase64FromBytes, GetUTF8FromBytes } from '../BufferEncoder';
 import type { Priority } from '../taskpool/DeferredTask';
 
 type APIMangas = {
@@ -39,6 +39,14 @@ type EncryptedResult = {
     ct: string; // ciphertext
     tag: string; // tag (for AES-GCM)
 };
+
+type EncryptionScheme = {
+    salt: Uint8Array<ArrayBuffer>;
+    infoString: string;
+    hash: string;
+    deriveNonce: Boolean;
+    aad?: Uint8Array<ArrayBuffer>;
+}
 
 type APIPages = {
     pages: APIPage[];
@@ -226,6 +234,70 @@ class DRMProvider {
         return GetURLBase64FromBytes(await this.clientPublicKeyBytes);
     }
 
+    private ToBigEndian16(n: number): Uint8Array {
+        return new Uint8Array([n >> 8 & 0xFF, n & 0xFF]);
+    }
+
+    private ToBigEndian32(n: number): Uint8Array {
+        return new Uint8Array([
+            n >>> 24 & 0xff,
+            n >>> 16 & 0xff,
+            n >>> 8 & 0xff,
+            n & 0xff
+        ]);
+    }
+
+    private async SHA(message: Uint8Array<ArrayBuffer>, algorithm: string = 'SHA-256'): Promise<Uint8Array<ArrayBuffer>> {
+        return new Uint8Array(await crypto.subtle.digest(algorithm, message));
+    }
+
+    private async HMAC(keyBytes: Uint8Array<ArrayBuffer>, dataBytes: Uint8Array<ArrayBuffer>, algorithm: string = 'SHA-256'): Promise<Uint8Array<ArrayBuffer>> {
+        const cryptoKey = await window.crypto.subtle.importKey('raw', keyBytes, { name: 'HMAC', hash: { name: algorithm } }, false, ['sign']);
+        const signature = await window.crypto.subtle.sign('HMAC', cryptoKey, dataBytes);
+        return new Uint8Array(signature);
+    }
+
+    private async HKDF(ikm: Uint8Array<ArrayBuffer>, salt: Uint8Array<ArrayBuffer>, info: Uint8Array<ArrayBuffer>, length: number, algorithm: string = 'SHA-256'): Promise<Uint8Array<ArrayBuffer>> {
+        const keyMaterial = await window.crypto.subtle.importKey('raw', ikm, { name: 'HKDF' }, false, ['deriveBits']);
+        const derivedBits = await window.crypto.subtle.deriveBits(
+            {
+                name: 'HKDF',
+                hash: algorithm,
+                salt: salt,
+                info: info,
+            } as HkdfParams,
+            keyMaterial,
+            length * 8
+        );
+
+        return new Uint8Array(derivedBits);
+    }
+
+    private async AAD(versionNumber: number, extraData: number, serverPubRaw: Uint8Array, iv: Uint8Array, ctSize: number): Promise<Uint8Array<ArrayBuffer>> {
+
+        const label = GetBytesFromUTF8("dilar.response.ecies.v12");
+        const version = GetBytesFromUTF8(String(versionNumber));
+        const e = GetBytesFromUTF8(String(extraData));
+        const size = this.ToBigEndian32(ctSize);
+
+        const combinedBytes = this.ConcatBuffers(
+            this.ToBigEndian16(label.length),
+            label,
+            this.ToBigEndian16(version.length),
+            version,
+            this.ToBigEndian16(e.length),
+            e,
+            this.ToBigEndian16(serverPubRaw.length),
+            serverPubRaw,
+            this.ToBigEndian16(iv.length),
+            iv,
+            this.ToBigEndian16(size.length),
+            size
+        );
+
+        return await this.SHA(combinedBytes);
+    }
+
     /**
      * Decrypts the incoming ECIES response payload.
      */
@@ -233,53 +305,175 @@ class DRMProvider {
 
         const { e: extraParameter, v: version, ct: cipherText, epk, iv, tag } = data;
         const { privateKey } = await this.ecKeyPair;
+
+        const clientPublicBytes = await this.clientPublicKeyBytes;
         const initializationVector = GetBytesFromURLBase64(iv);
         const ephemeralKeyBytes = GetBytesFromURLBase64(epk);
 
         const importedPeerKey = await crypto.subtle.importKey('raw', ephemeralKeyBytes, { name: 'ECDH', namedCurve: 'P-256' }, false, []);
         const sharedSecretBits = await crypto.subtle.deriveBits({ name: 'ECDH', public: importedPeerKey }, privateKey, 256);
 
-        let infoString = `dilar.response.ecies.v${version}|${extraParameter}`;
-        let salt: Uint8Array<ArrayBuffer> = undefined;
+        const scheme: EncryptionScheme = {
+            hash: 'HMAC-256',
+            deriveNonce: false,
+            salt: undefined,
+            infoString: `dilar.response.ecies.v${version}|${extraParameter}`
+        };
 
         switch (version) {
             case 1: {
-                salt = this.ConcatBuffers(await this.clientPublicKeyBytes, ephemeralKeyBytes);
+                scheme.salt = this.ConcatBuffers(clientPublicBytes, ephemeralKeyBytes);
                 break;
             }
             case 2: {
-                salt = this.ConcatBuffers(ephemeralKeyBytes, await this.clientPublicKeyBytes);
+                scheme.salt = this.ConcatBuffers(ephemeralKeyBytes, clientPublicBytes);
                 break;
             }
             case 3: {
-                salt = new Uint8Array(await crypto.subtle.digest('SHA-256', this.ConcatBuffers(ephemeralKeyBytes, await this.clientPublicKeyBytes)));
+                scheme.salt = await this.SHA(this.ConcatBuffers(ephemeralKeyBytes, clientPublicBytes));
                 break;
             }
             case 4: {
-                salt = new Uint8Array(await crypto.subtle.digest('SHA-256', this.ConcatBuffers(await this.clientPublicKeyBytes, ephemeralKeyBytes, initializationVector)));
-                infoString += `|${iv}`;
+                scheme.salt = await this.SHA(this.ConcatBuffers(clientPublicBytes, ephemeralKeyBytes, initializationVector));
+                scheme.infoString += `|${iv}`;
+                break;
+            }
+            case 5: {
+                scheme.salt = await this.HMAC(initializationVector, this.ConcatBuffers(ephemeralKeyBytes, clientPublicBytes));
+                break;
+            }
+            case 6: {
+                const hashClient = await this.SHA(clientPublicBytes);
+                const hashServer = await this.SHA(ephemeralKeyBytes);
+                scheme.salt = await this.SHA(this.ConcatBuffers(hashClient, hashServer, initializationVector));
+                scheme.infoString += `|${iv}`;
+                break;
+            }
+            case 7: {
+                scheme.salt = await this.HKDF(initializationVector, ephemeralKeyBytes, GetBytesFromUTF8(`${scheme.infoString}.salt`), 32);
+                break;
+            }
+            case 8: {
+                scheme.salt = await this.SHA(this.ConcatBuffers(
+                    this.ToBigEndian16(clientPublicBytes.length),
+                    clientPublicBytes,
+                    this.ToBigEndian16(ephemeralKeyBytes.length),
+                    ephemeralKeyBytes,
+                    this.ToBigEndian16(initializationVector.length),
+                    initializationVector
+                ));
+                scheme.infoString += `|${GetHexFromBytes(initializationVector)}`;
+                break;
+            }
+            case 9: {
+                scheme.salt = (await this.HMAC(initializationVector,
+                    this.ConcatBuffers(
+                        this.ToBigEndian16(ephemeralKeyBytes.length),
+                        ephemeralKeyBytes,
+                        this.ToBigEndian16(clientPublicBytes.length),
+                        clientPublicBytes
+                    ), 'SHA-512')).slice(0, 32);
+                scheme.infoString += `|${GetHexFromBytes(await this.SHA(initializationVector)).slice(0, 16)}`;
+                break;
+            }
+            case 10: {
+                scheme.salt = await this.SHA(this.ConcatBuffers(
+                    this.ToBigEndian16(clientPublicBytes.length),
+                    clientPublicBytes,
+                    this.ToBigEndian16(ephemeralKeyBytes.length),
+                    ephemeralKeyBytes,
+                    this.ToBigEndian16(initializationVector.length),
+                    initializationVector
+                ), 'SHA-512');
+                scheme.infoString += `|${GetHexFromBytes(await this.SHA(initializationVector, 'SHA-512')).slice(0, 24)}`;
+                break;
+            }
+            case 11: {
+                scheme.salt = await this.HMAC(ephemeralKeyBytes,
+                    this.ConcatBuffers(
+                        this.ToBigEndian16(initializationVector.length),
+                        initializationVector,
+                        this.ToBigEndian16(clientPublicBytes.length),
+                        clientPublicBytes,
+                    ), 'SHA-512');
+                scheme.infoString += `|${GetURLBase64FromBytes(await this.SHA(initializationVector, 'SHA-384'))}`;
+                scheme.hash = 'SHA-512';
+                scheme.deriveNonce = true;
+                break;
+            }
+            case 12: {
+                scheme.salt = (await this.HMAC(clientPublicBytes,
+                    this.ConcatBuffers(
+                        this.ToBigEndian16(ephemeralKeyBytes.length),
+                        ephemeralKeyBytes,
+                        this.ToBigEndian16(initializationVector.length),
+                        initializationVector
+                    ), 'SHA-512')).slice(0, 32);
+
+                const infoMessage = await this.SHA(this.ConcatBuffers(
+                    this.ToBigEndian16(initializationVector.length),
+                    initializationVector
+                ));
+
+                scheme.infoString += `|${GetURLBase64FromBytes(infoMessage).slice(0, 22)}`;
+                scheme.hash = 'SHA-384';
+                scheme.deriveNonce = true;
+                scheme.aad = await this.AAD(version, extraParameter, ephemeralKeyBytes, initializationVector, cipherText.length);
                 break;
             }
             default: {
-                throw new Error(`Unknown API decryption version : ${version} !`, );
+                throw new Error(`Unknown API decryption version : ${version} !`,);
             }
+        }
+
+        // 1. Import the shared secret as a base key for HKDF
+        const baseKey = await crypto.subtle.importKey("raw", sharedSecretBits, { name: "HKDF" }, false, ["deriveKey", "deriveBits"]);
+
+        // 2. Derive bits using HKDF (44 bytes if derivedNonce is true, otherwise 32 bytes)
+        const lengthBytes = scheme.deriveNonce ? 44 : 32;
+        const derivedBits = await crypto.subtle.deriveBits(
+            {
+                name: "HKDF",
+                hash: scheme.hash, // e.g., "SHA-256"
+                salt: scheme.salt,
+                info: GetBytesFromUTF8(scheme.infoString)
+            },
+            baseKey,
+            lengthBytes * 8 // length in bits
+        );
+
+        // 3. Extract key and nonce from the derived bits
+        const keyBytes = derivedBits.slice(0, 32);
+        const nonceBytes = scheme.deriveNonce
+            ? derivedBits.slice(32, 44)
+            : initializationVector;
+
+        // 4. Import the derived 32-byte key for AES-GCM
+        const cryptoKey = await crypto.subtle.importKey(
+            "raw",
+            keyBytes,
+            { name: "AES-GCM" },
+            false,
+            ["decrypt"]
+        );
+
+        // 5. Set up AES-GCM decryption parameters
+        const decryptParams: AesGcmParams = {
+            name: "AES-GCM",
+            iv: nonceBytes,
         };
 
-        const importedSecretKey = await crypto.subtle.importKey('raw', sharedSecretBits, 'HKDF', false, ['deriveKey']);
-        const decryptionKey = await crypto.subtle.deriveKey(
-            {
-                name: 'HKDF',
-                hash: 'SHA-256',
-                salt,
-                info: GetBytesFromUTF8(infoString)
-            },
-            importedSecretKey,
-            { name: 'AES-GCM', length: 256 }, false, ['decrypt']);
+        if (scheme.aad) {
+            decryptParams.additionalData = scheme.aad;
+        }
 
         const combinedCiphertextAndTag = this.ConcatBuffers(GetBytesFromURLBase64(cipherText), GetBytesFromURLBase64(tag));
-        const decryptedBuffer = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: initializationVector }, decryptionKey, combinedCiphertextAndTag);
+        const decryptedBuffer = await crypto.subtle.decrypt(
+            decryptParams,
+            cryptoKey,
+            combinedCiphertextAndTag
+        );
         return <T>JSON.parse(GetUTF8FromBytes(decryptedBuffer));
-
     }
 
     // --- Helper Utilities (No Node Buffer dependency) ---
@@ -359,10 +553,14 @@ export default class extends DecoratableMangaScraper {
     private async FetchAPI<T extends JSONElement>(endpoint: string, body: string = undefined, parameters: Record<string, string> = undefined): Promise<T> {
         const request = new Request(new URL(endpoint, this.apiURL), {
             method: body ? 'POST' : 'GET',
-            body
+            body,
+            headers: {
+                'X-Crypto-Caps': '1,2,3,4,5,6,7,8,9,10,11,12',
+                'X-DH-Pub': await this.#drm.GetClientPubB64()
+            }
         });
         if (parameters) Object.entries(parameters).forEach(([name, value]) => request.headers.set(name, value));
-        request.headers.set('X-DH-Pub', await this.#drm.GetClientPubB64());
+
         return FetchJSON<T>(request);
     }
 }
