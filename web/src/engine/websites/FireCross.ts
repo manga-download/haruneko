@@ -27,7 +27,7 @@ function ChapterExtractor(element: HTMLElement) {
 
 @Common.MangaCSS(/^{origin}\/ebook\/series\/\d+$/, 'div.ebook-series-grid-left h1.ebook-series-title')
 @Common.MangasMultiPageCSS('li.seriesList_item a.seriesList_itemTitle', Common.PatternLinkGenerator('/ebook/comics?page={page}'))
-@Common.ChaptersMultiPageCSS('div.ebookSeries_episodeList div.shop-item--episode:has(form)', Common.PatternLinkGenerator('{id}?page={page}'), 0, ChapterExtractor)
+@Common.ChaptersMultiPageCSS('div.ebookSeries_episodeList div.shop-item--episode:has(form)', Common.PatternLinkGenerator('{id}?page={page}'), 0, ChapterExtractor, true)
 @ClipStudioReader.ImageAjax()
 
 export default class extends DecoratableMangaScraper {

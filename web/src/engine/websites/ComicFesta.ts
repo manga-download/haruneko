@@ -41,6 +41,6 @@ export default class extends DecoratableMangaScraper {
         return packages
             .map(({ fairInfo: { trial }, id, number }) => {
                 return new Chapter(this, manga, `/volumes/${id}${trial ? '/trial_download' : '/free_download'}`, `${number}`);
-            });
+            }).reverse();
     }
 }
