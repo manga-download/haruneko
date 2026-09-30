@@ -45,7 +45,6 @@ async function OpenWindow() {
     const ipc = new IPC(win.window.window);
     const rpc = new RPCServer('/hakuneko', new RemoteProcedureCallContract(ipc));
     new RemoteProcedureCallManager(rpc, ipc);
-    // TODO: Signal window all IPC subscriptions created
 
     if(!url) {
         win.showDevTools();

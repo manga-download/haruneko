@@ -39,7 +39,6 @@ export class IPC {
     }
 
     Send(channel: Channels.RemoteProcedureCallContract.LoadMediaContainerFromURL, url: string): void;
-    Send(channel: 'APP::IPC::Ready', interval: number): void;
 
     /**
      * Send a message to the _Web_ context handled by `IPC.On(channel, callback)`.
@@ -57,13 +56,12 @@ export class IPC {
      * The sender receives a response with the result from the {@link callback}.
      */
     public Handle<TParameters extends JSONArray, TReturn extends JSONElement>(channel: string, callback: RequestCallback<TParameters, TReturn | undefined>): void {
-        setTimeout(() => (this.win.addEventListener(channel, async (evt: CustomEvent<unknown>) => {
+        this.win.addEventListener(channel, async (evt: CustomEvent<unknown>) => {
             const { replyID, parameters } = <EventRequest>evt.detail;
             const result = await callback(...parameters);
-            // TODO: Consider dispatching error as well ...
-            this.win.console.log.call(this.win.console, 'APP::Handle::Result', result);
+            // TODO: Consider dispatching errors as well ...
             this.win.dispatchEvent(new CustomEvent<TReturn>(replyID, { detail: result }));
-        })), 500);
+        });
     }
 
     Invoke(channel: never, ...parameters: never): never;
