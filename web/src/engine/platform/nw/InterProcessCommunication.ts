@@ -1,6 +1,6 @@
 import type { Channels } from '../../../../../app/nw/src/ipc/InterProcessCommunication';
 
-type Request = {
+type EventRequest = {
     replyID: string,
     parameters: JSONArray,
 }
@@ -36,7 +36,7 @@ export class IPC {
      * Register a {@link callback} to handle a request from the _App_ context via `IPC.Invoke(channel, ...parameters)`.
      * The sender receives a response with the result from the {@link callback}.
      */
-    public Handle<TParameters extends JSONArray, TReturn extends JSONElement>(channel: string, callback: RequestCallback<TParameters, TReturn | undefined>): void {
+    public Handle<TParameters extends JSONArray, TReturn extends JSONElement>(_channel: string, _callback: RequestCallback<TParameters, TReturn | undefined>): void {
         //this.requestHandlers.set(channel, <RequestCallback>callback);
     }
 
@@ -51,7 +51,7 @@ export class IPC {
         return new Promise<TReturn | Void>(resolve => {
             const replyID = `${channel}::${Date.now()}#${Math.random()}`;
             window.addEventListener(replyID, (evt: CustomEvent<TReturn | undefined>) => resolve(evt.detail), { once: true });
-            window.dispatchEvent(new CustomEvent<Request>(channel, { detail: { replyID, parameters } }));
+            window.dispatchEvent(new CustomEvent<EventRequest>(channel, { detail: { ReplyID: replyID, Parameters: parameters } }));
         });
     }
 }

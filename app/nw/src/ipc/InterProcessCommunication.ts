@@ -16,6 +16,11 @@ export namespace Channels {
     };
 }
 
+type EventRequest = {
+    replyID: string,
+    parameters: JSONArray,
+}
+
 type MessageCallback<TParameters extends JSONArray = JSONArray> = (...parameters: TParameters) => void | Promise<void>;
 type RequestCallback<TParameters extends JSONArray = JSONArray, TReturn extends JSONElement | undefined = JSONElement | undefined> = (...parameters: TParameters) => TReturn | Promise<TReturn>;
 
@@ -53,7 +58,7 @@ export class IPC {
      */
     public Handle<TParameters extends JSONArray, TReturn extends JSONElement>(channel: string, callback: RequestCallback<TParameters, TReturn | undefined>): void {
         setTimeout(() => (this.win.addEventListener(channel, async (evt: CustomEvent<unknown>) => {
-            const { replyID, parameters } = evt.detail;
+            const { replyID, parameters } = <EventRequest>evt.detail;
             const result = await callback(...parameters);
             // TODO: Consider dispatching error as well ...
             this.win.console.log.call(this.win.console, 'APP::Handle::Result', result);
