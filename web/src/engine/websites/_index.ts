@@ -699,6 +699,7 @@ export { default as TopManhua } from './TopManhua';
 export { default as TopManhuaNet } from './TopManhuaNet';
 export { default as TopToon } from './TopToon';
 export { default as TopToonGlobal } from './TopToonGlobal';
+export { default as TopToonJP } from './TopToonJP';
 export { default as TortugaCeviri } from './TortugaCeviri';
 export { default as Toti } from './Toti';
 export { default as TraduccionesMoonlight } from './TraduccionesMoonlight';
