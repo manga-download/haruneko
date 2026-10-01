@@ -23,7 +23,7 @@
         "@vitejs/plugin-react": "6.1.1",
         "@vitejs/plugin-vue": "6.0.9",
         "@vscode/codicons": "0.0.46-24",
-        "carbon-components-svelte": "0.112.0",
+        "carbon-components-svelte": "0.112.1",
         "carbon-icons-svelte": "13.16.0",
         "fuse.js": "7.5.0",
         "lit": "3.3.3",
