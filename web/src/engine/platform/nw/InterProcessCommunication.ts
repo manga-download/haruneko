@@ -49,9 +49,13 @@ export class IPC {
      */
     public async Invoke<TParameters extends JSONArray, TReturn extends JSONElement | Void>(channel: string, ...parameters: TParameters): Promise<TReturn | Void> {
         return new Promise<TReturn | Void>(resolve => {
-            const replyID = `${channel}::${Date.now()}#${Math.random()}`;
-            window.addEventListener(replyID, (evt: CustomEvent<TReturn | undefined>) => resolve(evt.detail), { once: true });
-            window.dispatchEvent(new CustomEvent<EventRequest>(channel, { detail: { ReplyID: replyID, Parameters: parameters } }));
+            const replyID = `${channel}#${Date.now()}${Math.random()}`;
+            //console.log('Web::IPC::Invoke', channel, '=>', replyID, parameters);
+            window.addEventListener(replyID, (evt: CustomEvent<TReturn | undefined>) => {
+                //console.log('OK', replyID, evt.detail);
+                resolve(evt.detail);
+            }, { once: true });
+            window.dispatchEvent(new CustomEvent<EventRequest>(channel, { detail: { replyID: replyID, parameters: parameters } }));
         });
     }
 }

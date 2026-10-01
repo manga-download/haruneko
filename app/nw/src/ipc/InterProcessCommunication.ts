@@ -55,12 +55,14 @@ export class IPC {
      * Register a {@link callback} to handle a request from the _Web_ context via `IPC.Invoke(channel, ...parameters)`.
      * The sender receives a response with the result from the {@link callback}.
      */
-    public Handle<TParameters extends JSONArray, TReturn extends JSONElement>(channel: string, callback: RequestCallback<TParameters, TReturn | undefined>): void {
+    public Handle<TParameters extends JSONArray, TReturn extends JSONElement>(channel: string, callback: RequestCallback<TParameters, TReturn | Void>): void {
+        //console.log('App::IPC::Handle', channel, callback);
         this.win.addEventListener(channel, async (evt: CustomEvent<unknown>) => {
             const { replyID, parameters } = <EventRequest>evt.detail;
             const result = await callback(...parameters);
+            //console.log('App::IPC::Handle', replyID, parameters, result);
             // TODO: Consider dispatching errors as well ...
-            this.win.dispatchEvent(new CustomEvent<TReturn>(replyID, { detail: result }));
+            this.win.dispatchEvent(new CustomEvent<TReturn | Error>(replyID, { detail: result }));
         });
     }
 
