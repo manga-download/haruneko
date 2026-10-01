@@ -60,10 +60,11 @@ export default class extends DecoratableMangaScraper {
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         // The scans of a title may be published in several versions (e.g. black & white and colored), each with its own name for the scans
         // API and the scans host, which the page of the title provides (neither the slug nor the displayed name of a version are accepted).
-        const options = await FetchNextJS<APIScansOptions>(new Request(new URL(`/catalogue/${manga.Identifier}`, this.URI)), data => 'IMAGE_URL' in data);
+        const { IMAGE_URL, versions: versionsData } = await FetchNextJS<APIScansOptions>(new Request(new URL(`/catalogue/${manga.Identifier}`, this.URI)), data => 'IMAGE_URL' in data);
+
         const versions = [
-            { scans: options.IMAGE_URL, label: '' },
-            ... (options.versions ?? []).map(({ name, IMAGE_URL: scans }) => ({ scans, label: name.replace(manga.Title, '').trim() || name })),
+            { scans: IMAGE_URL, label: '' },
+            ... (Array.isArray(versionsData) ? versionsData: []).map(({ name, IMAGE_URL: scans }) => ({ scans, label: name.replace(manga.Title, '').trim() || name })),
         ];
         const chapters: Chapter[] = [];
         for (const { scans, label } of versions) {
