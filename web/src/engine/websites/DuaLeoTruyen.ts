@@ -1,7 +1,7 @@
 import { Tags } from '../Tags';
 import icon from './DuaLeoTruyen.webp';
-import { FetchWindowScript } from '../platform/FetchProvider';
-import { DecoratableMangaScraper } from '../providers/MangaPlugin';
+import { FetchCSS, FetchWindowScript } from '../platform/FetchProvider';
+import { type Chapter, DecoratableMangaScraper, Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import { GetBytesFromURLBase64, GetBytesFromUTF8, GetUTF8FromBytes } from '../BufferEncoder';
 import { DecryptXOR } from '../Crypto';
@@ -27,12 +27,11 @@ function PageExtractor(img: HTMLImageElement): string {
     title: anchor.querySelector<HTMLDivElement>('div.name').textContent.trim()
 }))
 @Common.ChaptersSinglePageCSS('div.chapter-item a', undefined, Common.AnchorInfoExtractor(true))
-@Common.PagesSinglePageCSS('div.content_view_chap img', PageExtractor)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('dualeotruyen', 'DuaLeoTruyen', 'https://dualeotruyenbw.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Media.Manga, Tags.Language.Vietnamese, Tags.Source.Aggregator, Tags.Accessibility.DomainRotation);
+        super('dualeotruyen', 'DuaLeoTruyen', 'https://dualeotruyenpet.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Media.Manga, Tags.Language.Vietnamese, Tags.Source.Aggregator, Tags.Accessibility.DomainRotation);
     }
 
     public override get Icon() {
@@ -43,5 +42,20 @@ export default class extends DecoratableMangaScraper {
         // Latest Domain: https://www.facebook.com/dualeotruyen2/about
         this.URI.href = await FetchWindowScript(new Request(this.URI), `window.location.origin;`, 0);
         console.log(`Assigned URL '${this.URI}' to ${this.Title}`);
+    }
+
+    public override async FetchPages(chapter: Chapter): Promise<Page[]> {
+        const request = new Request(new URL(chapter.Identifier, this.URI), {
+            headers: {
+                'Sec-Fetch-Dest': 'document',
+                'Sec-Fetch-Mode': 'navigate',
+                'Sec-Fetch-Site': 'same-origin'
+            }
+        });
+        const imgs = await FetchCSS<HTMLImageElement>(request, 'div.content_view_chap img');
+        return imgs.map(element => {
+            const link = new URL(PageExtractor.call(this, element), request.url);
+            return new Page(this, chapter, link, { Referer: this.URI.href });
+        });
     }
 }
