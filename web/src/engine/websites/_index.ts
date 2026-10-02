@@ -355,6 +355,7 @@ export { default as MangaKawaii } from './MangaKawaii';
 export { default as MangaKimi } from './MangaKimi';
 export { default as MangaKio } from './MangaKio';
 export { default as MangaKiss } from './MangaKiss';
+export { default as MangaKoma } from './MangaKoma';
 export { default as MangaLC } from './MangaLC';
 export { default as Mangalek } from './Mangalek';
 export { default as MangaLib } from './MangaLib';
