@@ -25,9 +25,6 @@ const translations: VariantResource = { // NOTE: Use defaults for missing transl
   // [SECTION]: Frontend (Common/Shared)
   Frontend_Product_Title: "crwdns1187:0crwdne1187:0",
   Frontend_Product_Description: "crwdns1189:0crwdne1189:0",
-  Frontend_Product_Description_Short: "crwdns2201:0crwdne2201:0",
-  Frontend_Product_Description_Long1: "crwdns2203:0crwdne2203:0",
-  Frontend_Product_Description_Long2: "crwdns2205:0crwdne2205:0",
   Frontend_Setting: "crwdns1191:0crwdne1191:0",
   Frontend_Settings: "crwdns1193:0crwdne1193:0",
   Frontend_Help: "crwdns1195:0crwdne1195:0",
@@ -51,6 +48,9 @@ const translations: VariantResource = { // NOTE: Use defaults for missing transl
   // [SECTION]: Frontend Classic
   Frontend_Classic_Label: "crwdns1229:0crwdne1229:0",
   Frontend_Classic_Description: "crwdns1231:0crwdne1231:0",
+  Frontend_Classic_Product_Description_Short: "crwdns2259:0crwdne2259:0",
+  Frontend_Classic_Product_Description_Long1: "crwdns2261:0crwdne2261:0",
+  Frontend_Classic_Product_Description_Long2: "crwdns2263:0crwdne2263:0",
   Frontend_Classic_Settings_FuzzySearch: "crwdns1233:0crwdne1233:0",
   Frontend_Classic_Settings_FuzzySearchInfo: "crwdns1235:0crwdne1235:0",
   Frontend_Classic_Settings_Theme: "crwdns1237:0crwdne1237:0",
