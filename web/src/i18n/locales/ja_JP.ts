@@ -25,9 +25,6 @@ const translations: VariantResource = { // NOTE: Use defaults for missing transl
   // [SECTION]: Frontend (Common/Shared)
   Frontend_Product_Title: 'HakuNeko',
   Frontend_Product_Description: "マンガ、アニメ、ノベルダウンローダー",
-  Frontend_Product_Description_Short: 'is a cross-platform downloader for manga and anime from various websites.',
-  Frontend_Product_Description_Long1: 'It was made to help users who download media for circumstances that requires offline usage.',
-  Frontend_Product_Description_Long2: 'The philosophy is ad-hoc consumption, get it when you want to read/watch it. It is not meant to be a mass downloader to stock up thousands of chapters and will probably never be read.',
   Frontend_Setting: "設定",
   Frontend_Settings: "設定",
   Frontend_Help: "ヘルプ",
@@ -51,6 +48,9 @@ const translations: VariantResource = { // NOTE: Use defaults for missing transl
   // [SECTION]: Frontend Classic
   Frontend_Classic_Label: "クラシック",
   Frontend_Classic_Description: "標準フロントエンドは、主に前バージョンに基づいています",
+  Frontend_Classic_Product_Description_Short: 'is a cross-platform downloader for manga and anime from various websites.',
+  Frontend_Classic_Product_Description_Long1: 'It was made to help users who download media for circumstances that requires offline usage.',
+  Frontend_Classic_Product_Description_Long2: 'The philosophy is ad-hoc consumption, get it when you want to read/watch it. It is not meant to be a mass downloader to stock up thousands of chapters and will probably never be read.',
   Frontend_Classic_Settings_FuzzySearch: "あいまい検索",
   Frontend_Classic_Settings_FuzzySearchInfo: "フィルターであいまい検索を有効にする（近似一致）",
   Frontend_Classic_Settings_Theme: "テーマ",
