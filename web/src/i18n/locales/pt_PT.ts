@@ -1,4 +1,4 @@
-import type { VariantResource } from '../ILocale'; // HACK: Import a reference to the en-US tranlsation itself, so the auto-generated translation files are based on the en-US translation
+import type { VariantResource } from '../ILocale'; // HACK: Import a reference to the en-US translation itself, so the auto-generated translation files are based on the en-US translation
 
 import enUS from './en_US';
 /**
@@ -48,6 +48,9 @@ const translations: VariantResource = { // NOTE: Use defaults for missing transl
   // [SECTION]: Frontend Classic
   Frontend_Classic_Label: "Clássico",
   Frontend_Classic_Description: "A interface padrão baseada principalmente na versão anterior",
+  Frontend_Classic_Product_Description_Short: 'is a cross-platform downloader for manga and anime from various websites.',
+  Frontend_Classic_Product_Description_Long1: 'It was made to help users who download media for circumstances that requires offline usage.',
+  Frontend_Classic_Product_Description_Long2: 'The philosophy is ad-hoc consumption, get it when you want to read/watch it. It is not meant to be a mass downloader to stock up thousands of chapters and will probably never be read.',
   Frontend_Classic_Settings_FuzzySearch: "Pesquisa Difusa",
   Frontend_Classic_Settings_FuzzySearchInfo: "Ativar pesquisa difusa em filtros (correspondência aproximada)",
   Frontend_Classic_Settings_Theme: "Tema",
@@ -64,6 +67,16 @@ const translations: VariantResource = { // NOTE: Use defaults for missing transl
   Frontend_Classic_Settings_SidenavTrailInfo: "sidenav esquerdo só aparecerá no ícone superior esquerdo",
   Frontend_Classic_Settings_SidenavIconsOnTop: "Ícones do menu no topo",
   Frontend_Classic_Settings_SidenavIconsOnTopInfo: "Botões de origem e plugins aparecerão no topo ao invés do sidenav.",
+  Frontend_Classic_Settings_StartupGuideEnabled: 'Show the startup guide',
+  Frontend_Classic_Settings_StartupGuideEnabledInfo: 'Show the startup guide when opening the app',
+  Frontend_Classic_StartupGuide_Button_Close: 'Close',
+  Frontend_Classic_StartupGuide_Button_Next: 'Next',
+  Frontend_Classic_StartupGuide_Button_Restart: 'Restart',
+  Frontend_Classic_StartupGuide_Step_Welcome: 'Welcome',
+  Frontend_Classic_StartupGuide_Step_Download: 'Downloads',
+  Frontend_Classic_StartupGuide_Step_UI: 'UI',
+  Frontend_Classic_StartupGuide_Step_Viewer: 'Viewer',
+  Frontend_Classic_StartupGuide_Step_Tutorial: 'Tutorial',
   Frontend_Classic_Settings_ViewerMode: "Modo de Visualizador",
   Frontend_Classic_Settings_ViewerModeInfo: "Alterar como páginas/imagens serão mostradas no leitor",
   Frontend_Classic_Settings_ViewerMode_Paginated: "Paginado (Manga)",
@@ -72,10 +85,26 @@ const translations: VariantResource = { // NOTE: Use defaults for missing transl
   Frontend_Classic_Settings_ViewerReverseDirectionInfo: "Mostrar páginas/imagens em ordem inversa (como em Manga tradicional)",
   Frontend_Classic_Settings_ViewerDoublePage: "Exibir Páginas Duplas",
   Frontend_Classic_Settings_ViewerDoublePageInfo: "Mostrar duas páginas/imagens de uma vez (como no Manga tradicional)",
+  Frontend_Classic_Settings_ViewerPreloadNextItem: 'Preload Next Item',
+  Frontend_Classic_Settings_ViewerPreloadNextItemInfo: 'Start loading the next chapter/item once all images of the current one are loaded',
   Frontend_Classic_Sidenav_Home: "Início",
   Frontend_Classic_Sidenav_Settings_General: "Geral",
   Frontend_Classic_Sidenav_Settings_Interface: 'Interface',
   Frontend_Classic_Sidenav_Settings_Trackers: "Rastreadores",
+  Frontend_Classic_StartupGuide_Tutorial_Title: 'Tutorial',
+  Frontend_Classic_StartupGuide_Tutorial_Description: 'How to use.',
+  Frontend_Classic_StartupGuide_UI_Title: 'UI Settings',
+  Frontend_Classic_StartupGuide_UI_Description: 'Configure the user interface settings for HakuNeko.',
+  Frontend_Classic_StartupGuide_Viewer_Title: 'Viewer Settings',
+  Frontend_Classic_StartupGuide_Viewer_Description: 'Choose the layout that fits your reading style.',
+  Frontend_Classic_StartupGuide_Viewer_Vertical_Title: 'Vertical (top-down)',
+  Frontend_Classic_StartupGuide_Viewer_Vertical_Description: 'Manhwa (Webtoons)',
+  Frontend_Classic_StartupGuide_Viewer_Vertical_SubDescription: 'Manga, Comics',
+  Frontend_Classic_StartupGuide_Viewer_Horizontal_Title: 'Horizontal (left-right)',
+  Frontend_Classic_StartupGuide_Viewer_Horizontal_Description: 'Manga, Comics',
+  Frontend_Classic_StartupGuide_Viewer_Horizontal_SubDescription: ' ',
+  Frontend_Classic_StartupGuide_Download_Title: 'Download Settings',
+  Frontend_Classic_StartupGuide_Download_Description: 'Select the download location and file format',
   // [SECTION]: Frontend FluentCore
   Frontend_FluentCore_Label: 'Fluent Core',
   Frontend_FluentCore_Description: "Uma interface simples sem decorações inúteis, especialmente para que os programadores verifiquem rapidamente a funcionalidade essencial",
@@ -264,7 +293,7 @@ const translations: VariantResource = { // NOTE: Use defaults for missing transl
   Annotations_ViewProgress_NoneDescription: "Ainda não foi lido/visualizado",
   Annotations_ViewProgress_Viewed: 'x',
   Annotations_ViewProgress_ViewedDescription: "Já lido/visualizado",
-  Annotations_ViewProgress_Current: "uk",
+  Annotations_ViewProgress_Current: 'o',
   Annotations_ViewProgress_CurrentDescription: "Atualmente lendo/visualizando",
   // [SECTION]: Trackers
   Tracker_Kitsu_Settings_Username: "Nome de usuário",
