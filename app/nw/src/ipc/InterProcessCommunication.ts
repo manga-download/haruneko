@@ -56,13 +56,16 @@ export class IPC {
      * The sender receives a response with the result from the {@link callback}.
      */
     public Handle<TParameters extends JSONArray, TReturn extends JSONElement>(channel: string, callback: RequestCallback<TParameters, TReturn | Void>): void {
-        //console.log('App::IPC::Handle', channel, callback);
         this.win.addEventListener(channel, async (evt: CustomEvent<unknown>) => {
             const { replyID, parameters } = <EventRequest>evt.detail;
-            const result = await callback(...parameters);
-            //console.log('App::IPC::Handle', replyID, parameters, result);
-            // TODO: Consider dispatching errors as well ...
-            this.win.dispatchEvent(new CustomEvent<TReturn | Error>(replyID, { detail: result }));
+            try {
+                throw new Error('Meow!'/*, { cause: 'Something went wrong ...' }*/);
+                //const result = await callback(...parameters);
+                //this.win.dispatchEvent(new CustomEvent<TReturn>(replyID, { detail: result }));
+            } catch (error) {
+                // TODO: error containing cause will not work ...
+                this.win.dispatchEvent(new CustomEvent<Error>(replyID, { detail: error }));
+            }
         });
     }
 

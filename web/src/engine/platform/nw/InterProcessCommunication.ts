@@ -48,12 +48,16 @@ export class IPC {
      * The sender receives a response with the result from the handler.
      */
     public async Invoke<TParameters extends JSONArray, TReturn extends JSONElement | Void>(channel: string, ...parameters: TParameters): Promise<TReturn | Void> {
-        return new Promise<TReturn | Void>(resolve => {
+        return new Promise<TReturn | Void>((resolve, reject) => {
             const replyID = `${channel}#${Date.now()}${Math.random()}`;
-            //console.log('Web::IPC::Invoke', channel, '=>', replyID, parameters);
-            window.addEventListener(replyID, (evt: CustomEvent<TReturn | undefined>) => {
-                //console.log('OK', replyID, evt.detail);
-                resolve(evt.detail);
+            console.log('Web::IPC::Invoke', channel, '=>', replyID, parameters);
+            window.addEventListener(replyID, (evt: CustomEvent<TReturn | Void | Error>) => {
+                console.log('Result:', replyID, evt.detail);
+                if (evt.detail instanceof Error) {
+                    reject(evt.detail);
+                } else {
+                    resolve(evt.detail);
+                }
             }, { once: true });
             window.dispatchEvent(new CustomEvent<EventRequest>(channel, { detail: { replyID: replyID, parameters: parameters } }));
         });
