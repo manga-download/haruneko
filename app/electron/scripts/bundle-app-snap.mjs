@@ -44,16 +44,12 @@ async function createDesktopEntry(blinkDeploymentOutputDirectory) {
     const directory = path.join(blinkDeploymentOutputDirectory, 'snap', 'gui');
     await fs.mkdir(directory, { recursive: true });
     const file = path.join(directory, `${pkgConfig.name}.desktop`);
-    // A desktop entry is mandatory for xdg-desktop-portal to register the snap,
-    // otherwise all portal requests (e.g. the file chooser) are denied.
-    // Field semantics follow hakuneko/build-app.config (meta.type, meta.categories),
-    // except Icon which must be the absolute path of the icon installed by override-build.
     await fs.writeFile(file, `[Desktop Entry]
 Version=1.0
 Type=Application
 Name=${pkgConfig.title}
-Exec=${pkgConfig.name}
-Icon=\${SNAP}/icon.png
+Exec=snap run ${pkgConfig.name}
+Icon=hakuneko-desktop
 Categories=Network;FileTransfer;
 `);
 }
@@ -74,6 +70,7 @@ confinement: strict
 apps:
   ${pkgConfig.name}:
     command: ${pkgConfig.name} --no-sandbox
+    desktop: snap/gui/${pkgConfig.name}.desktop
     extensions: [gnome]
     plugs:
     - home
@@ -86,19 +83,23 @@ apps:
       TMPDIR: $XDG_RUNTIME_DIR
 
 parts:
-  ${pkgConfig.name}:
-    source: .
-    plugin: nil
+  app:
+    plugin: dump
+    source-type: local
+    source: ${blinkDeploymentTemporaryDirectory}/
+    prime:
+      - usr/bin/${pkgConfig.name}
+      - usr/lib/${pkgConfig.name}/*
+    organize:
+      '*': usr/lib/${pkgConfig.name}/
     override-build: |
-      cp -rv ${blinkDeploymentTemporaryDirectory}/* $SNAPCRAFT_PART_INSTALL/
-      cp -v ${icon} $SNAPCRAFT_PART_INSTALL/icon.png
-      chmod -R 755 $SNAPCRAFT_PART_INSTALL
-    build-snaps:
-    - node/22/stable
-    build-packages:
-    - unzip
-    stage-packages:
-    - libnss3
-    - libnspr4
+      craftctl default
+      mkdir -p $CRAFT_PART_INSTALL/usr/bin
+      ln -s /usr/lib/${pkgConfig.name}/${pkgConfig.name} $CRAFT_PART_INSTALL/usr/bin/${pkgConfig.name}
+  icons:
+    plugin: dump
+    source-type: local
+    source: ../../res/linux/icons/
+    prime: usr/share/icons/hicolor/*
 `);
 }
