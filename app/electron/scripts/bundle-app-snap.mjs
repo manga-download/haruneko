@@ -79,8 +79,7 @@ apps:
     - network-bind
     - browser-support
     environment:
-      # Correct the TMPDIR path for Chromium Framework/Electron to ensure
-      # libappindicator has readable resources.
+      # Correct the TMPDIR path for Chromium Framework/Electron to ensure libappindicator has readable resources.
       TMPDIR: $XDG_RUNTIME_DIR
 
 parts:
@@ -97,9 +96,9 @@ parts:
     source-type: local
     source: ${path.resolve(blinkApplicationResourcesDirectory, process.platform)}/
     prime:
-      - usr/share/applications/**
+      - meta/gui/**
       - usr/share/icons/hicolor/**
     organize:
-      'usr/share/applications/hakuneko-desktop.desktop': var/lib/snapd/desktop/applications/${pkgConfig.name}_${pkgConfig.name}.desktop
+      'usr/share/applications/hakuneko-desktop.desktop': meta/gui/${pkgConfig.name}.desktop
 `);
 }
