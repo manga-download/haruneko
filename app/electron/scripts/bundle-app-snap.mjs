@@ -99,6 +99,7 @@ parts:
     plugin: dump
     source-type: local
     source: ${path.resolve(blinkApplicationResourcesDirectory, process.platform)}/
-    prime: usr/share/icons/hicolor/*
+    prime:
+      - usr/share/icons/hicolor/*
 `);
 }
