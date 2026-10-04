@@ -87,14 +87,9 @@ parts:
     source-type: local
     source: ${blinkDeploymentTemporaryDirectory}/
     prime:
-      - usr/bin/${pkgConfig.name}
-      - usr/lib/${pkgConfig.name}/*
+      - usr/bin
     organize:
-      '*': usr/lib/${pkgConfig.name}/
-    override-prime: |
-      craftctl default
-      mkdir -p $CRAFT_PART_INSTALL/usr/bin
-      ln -s ../lib/${pkgConfig.name}/${pkgConfig.name} $CRAFT_PART_INSTALL/usr/bin/${pkgConfig.name}
+      '*': usr/lib/
   ${pkgConfig.name}-icons:
     plugin: dump
     source-type: local
