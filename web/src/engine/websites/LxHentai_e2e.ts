@@ -6,13 +6,14 @@ new TestFixture({
         title: 'LxHentai (Hentai LXX)',
     },
     container: {
-        url: 'https://lxmanga.my/truyen/nu-than-ke-ben',
+        url: 'https://lxmanga.space/truyen/nu-than-ke-ben',
         id: '/truyen/nu-than-ke-ben',
         title: 'Nữ thần kế bên',
     },
     child: {
         id: '/truyen/nu-than-ke-ben/chapter-65',
         title: 'Chapter 65',
+        timeout: 15_000 // possible Turnstile
     },
     entry: {
         index: 0,

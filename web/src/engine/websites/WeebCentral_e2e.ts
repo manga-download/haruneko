@@ -1,6 +1,6 @@
 ﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'weebcentral',
         title: 'WeebCentral'
@@ -11,14 +11,12 @@ const config = {
         title: 'Fairy Tail'
     },
     child: {
-        id: '/chapters/01J76XZ8VTT3V8J44VAX442FRN',
-        title: 'Chapter 545.5'
+        id: '/chapters/01J76XYY77SY7EJ5AJ2S52JS2C',
+        title: 'Chapter 545'
     },
     entry: {
         index: 0,
-        size: 258_254,
+        size: 309_144,
         type: 'image/png'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

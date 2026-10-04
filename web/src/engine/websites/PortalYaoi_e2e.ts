@@ -6,7 +6,7 @@ new TestFixture({
         title: 'Portal Yaoi'
     },
     container: {
-        url: 'https://lerboyslove.com/manga/love-shuttle/',
+        url: 'https://portalyaoi.com/manga/love-shuttle/',
         id: JSON.stringify({ slug: '/manga/love-shuttle/' }),
         title: 'Love Shuttle'
     },
@@ -15,8 +15,8 @@ new TestFixture({
         title: 'Side Story 06'
     },
     entry: {
-        index: 0,
-        size: 272_635,
+        index: 1,
+        size: 664_223,
         type: 'image/jpeg'
     }
 }).AssertWebsite();

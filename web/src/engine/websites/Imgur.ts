@@ -4,23 +4,9 @@ import { DecoratableMangaScraper, Manga, type MangaPlugin } from '../providers/M
 import * as Common from './decorators/Common';
 import { FetchWindowScript } from '../platform/FetchProvider';
 
-const pageScript = `
-    new Promise(resolve => {
-        const jsonData = JSON.parse(postDataJSON);
-        resolve( jsonData.media.map(image => image.url));
-    });
-`;
-
-function MangaScript(): Promise<string> {
-    return new Promise(resolve => {
-        const jsonData = JSON.parse(window['postDataJSON']);
-        resolve(jsonData.title);
-    });
-}
-
 @Common.MangasNotSupported()
 @Common.ChaptersUniqueFromManga()
-@Common.PagesSinglePageJS(pageScript, 1500)
+@Common.PagesSinglePageJS(`JSON.parse(postDataJSON).media.map(image => image.url);`, 1500)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
@@ -38,7 +24,7 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
         const id = new URL(url).pathname;
-        const title = await FetchWindowScript<string>(new Request(url), MangaScript);
+        const title = await FetchWindowScript<string>(new Request(url), `JSON.parse(window.postDataJSON).title;`);
         return new Manga(this, provider, id, title.trim());
     }
 }

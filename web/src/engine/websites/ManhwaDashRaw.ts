@@ -8,22 +8,8 @@ function CleanTitle(text: string): string {
     return text.replace(/–.*$/, '').trim();
 }
 
-function MangaLinkExtractor(span: HTMLSpanElement, uri: URL) {
-    return {
-        id: uri.pathname,
-        title: CleanTitle(span.innerText),
-    };
-}
-
-function MangaInfoExtractor(anchor: HTMLAnchorElement) {
-    return {
-        id: anchor.pathname,
-        title: CleanTitle(anchor.text)
-    };
-}
-
-@Common.MangaCSS(/^{origin}\/manga\/[^/]+\/$/, 'span.rate-title', MangaLinkExtractor)
-@Common.MangasMultiPageCSS('div.post-title h3 a', Common.PatternLinkGenerator('/page/{page}/'), 0, MangaInfoExtractor)
+@Common.MangaCSS(/^{origin}\/manga\/[^/]+\/$/, 'p.manga-adult-title', (element, uri) => ({ id: uri.pathname, title: CleanTitle(element.innerText) }))
+@Common.MangasMultiPageCSS<HTMLAnchorElement>('div.post-title h3 a', Common.PatternLinkGenerator('/page/{page}/'), 0, anchor => ({ id: anchor.pathname, title: CleanTitle(anchor.text) }))
 @Common.ChaptersSinglePageCSS('li.wp-manga-chapter a')
 @Madara.PagesSinglePageCSS()
 @Common.ImageAjax()

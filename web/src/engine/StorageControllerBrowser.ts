@@ -39,6 +39,10 @@ const Version = VersionUpgrades.length;
  */
 export class StorageControllerBrowser implements StorageController {
 
+    constructor() {
+        navigator.storage.persist().catch(console.warn);
+    }
+
     private async Connect(): Promise<IDBDatabase> {
         const connection = indexedDB.open(DataBase, Version);
         return new Promise<IDBDatabase>((resolve, reject) => {

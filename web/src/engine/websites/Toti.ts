@@ -3,28 +3,16 @@ import icon from './Toti.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 
-function MangaInfoExtractor(anchor: HTMLAnchorElement) {
-    return {
-        id: anchor.pathname,
-        title: anchor.querySelector('img').getAttribute('alt').trim()
-    };
-}
-
-function MangaLinkExtractor(img: HTMLImageElement, uri: URL) {
-    return {
-        id: uri.pathname,
-        title: img.getAttribute('alt').trim(),
-    };
-}
-
-function PageExtractor(element: HTMLSpanElement) {
-    return element.getAttribute('img-url').trim();
-}
-
-@Common.MangaCSS(/^{origin}\/product\/[^/]+$/, 'p.cover img', MangaLinkExtractor)
-@Common.MangasSinglePageCSS('/product', 'div.cards_wrap article a', MangaInfoExtractor)
+@Common.MangaCSS(/^{origin}\/product\/[^/]+$/, 'p.cover img', (img, uri) => ({
+    id: uri.pathname,
+    title: img.getAttribute('alt').trim(),
+}))
+@Common.MangasSinglePageCSS<HTMLAnchorElement>('/product', 'div.cards_wrap article a', anchor => ({
+    id: anchor.pathname,
+    title: anchor.querySelector('img').getAttribute('alt').trim()
+}))
 @Common.ChaptersSinglePageCSS('div.episode ul li a')
-@Common.PagesSinglePageCSS('#viewer.manga div.manga_page:not(.info_page) span.manga_page_image', PageExtractor)
+@Common.PagesSinglePageCSS('#viewer.manga div.manga_page:not(.info_page) span.manga_page_image', element => element.getAttribute('img-url').trim())
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 

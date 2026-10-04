@@ -8,7 +8,7 @@ new TestFixture({
     container: {
         url: 'https://comic-earthstar.com/episode/14079602755509015085',
         id: '/episode/14079602755509015085',
-        title: `貧乏貴族ノードの冒険譚 ～Nord's Adventure～`
+        title: `貧乏貴族ノードの冒険譚 Nord's Adventure`
     },
     child: {
         id: '/episode/14079602755509015085',
@@ -16,7 +16,7 @@ new TestFixture({
     },
     entry: {
         index: 9,
-        size: 1_152_453,
+        size: 1_224_557,
         type: 'image/png'
     }
 }).AssertWebsite();

@@ -8,7 +8,7 @@ new TestFixture({
     container: {
         url: 'https://grimscans.com/series/639aa326e55/',
         id: '/series/639aa326e55/',
-        title: 'Your Sponsorship Means A Lot'
+        title: 'I Need Sponsorship'
     },
     child: {
         id: '/chapter/639aa326e55-639ac49c48a/',

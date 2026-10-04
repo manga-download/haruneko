@@ -6,16 +6,15 @@ import { FetchHTML, FetchJSON } from '../platform/FetchProvider';
 
 type APIMangas = {
     items: {
-        comic_id: string,
-        name: string
+        comic_id: string;
+        name: string;
     }[]
-}
+};
 
 @Common.MangaCSS(/^{origin}\/comic\/[^/]+/, '.comics-detail__title')
 @Common.ChaptersSinglePageCSS<HTMLAnchorElement>('a.comics-chapters__item', undefined, anchor => ({ id: anchor.pathname + anchor.search, title: anchor.text.trim() }))
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
-
     private readonly apiUrl = 'https://www.baozimh.com/api/bzmhq/';
 
     public constructor() {
@@ -54,6 +53,6 @@ export default class extends DecoratableMangaScraper {
     }
 
     private ReplaceCDN(pageUrl: string): string {
-        return pageUrl.replace(/^https?:\/\/(?:[\ww-]+).baozicdn.com\/(.+)$/, 'https://static-tw.baozimh.com/$1');
+        return pageUrl.replace(/^https?:\/\/(?:[\w-]+)\.bzcdn\.net\/(.+)$/, 'https://static-tw.baozimh.com/$1');
     }
 }

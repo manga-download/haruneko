@@ -6,7 +6,7 @@ new TestFixture({
         title: 'مانجا ستارز (Mangastarz)'
     },
     container: {
-        url: 'https://manga-starz.net/manga/getter-robo-go/',
+        url: 'https://starzmanga.com/manga/getter-robo-go/',
         id: JSON.stringify({ post: '82737', slug: '/manga/getter-robo-go/' }),
         title: 'Getter Robo Go'
     },

@@ -6,7 +6,7 @@ new TestFixture({
         title: 'RavenSeries'
     },
     container: {
-        url: 'https://ravensword.lat/sr2/la-personaje-de-webtoon',
+        url: 'https://raventard.xyz/sr2/la-personaje-de-webtoon',
         id: '/sr2/la-personaje-de-webtoon',
         title: 'La personaje de webtoon',
     },

@@ -5,6 +5,7 @@ import type { Priority } from '../taskpool/DeferredTask';
 import { Fetch, FetchNextJS } from '../platform/FetchProvider';
 import { DecoratableMangaScraper, type MangaPlugin, Manga, Chapter, Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
+import { DecryptAES } from '../Crypto';
 
 type HydratedMangas = {
     weekdays: Record<string, HydratedManga[]>
@@ -81,9 +82,6 @@ export default class extends DecoratableMangaScraper {
     }
 
     private async DecryptImage(encrypted: ArrayBuffer, keyData: string, iv: string): Promise<Blob> {
-        const algorithm = { name: 'AES-CBC', iv: GetBytesFromHex(iv) };
-        const key = await crypto.subtle.importKey('raw', GetBytesFromHex(keyData), algorithm, false, [ 'decrypt' ]);
-        const decrypted = await crypto.subtle.decrypt(algorithm, key, encrypted);
-        return Common.GetTypedData(decrypted);
+        return Common.GetTypedData(await DecryptAES(encrypted, GetBytesFromHex(keyData), { name: 'AES-CBC', iv: GetBytesFromHex(iv) }));
     };
 }

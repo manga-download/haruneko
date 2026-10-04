@@ -6,17 +6,17 @@ new TestFixture({
         title: 'Kayn Scan'
     },
     container: {
-        url: 'https://kaynscan.com/series/640e17f407b/',
-        id: '/series/640e17f407b/',
+        url: 'https://kaynscans.com/series/comic/jackpot-after-divorce',
+        id: '/series/comic/jackpot-after-divorce',
         title: 'Jackpot After Divorce'
     },
     child: {
-        id: '/chapter/640e17f407b-640e2360323/',
+        id: '/series/comic/jackpot-after-divorce/chapter/1',
         title: 'Chapter 1'
     },
     entry: {
-        index: 1,
-        size: 443_404,
+        index: 0,
+        size: 566_008,
         type: 'image/jpeg'
     }
 }).AssertWebsite();

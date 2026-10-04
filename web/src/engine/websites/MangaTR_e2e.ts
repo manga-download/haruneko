@@ -8,15 +8,16 @@ new TestFixture({
     container: {
         url: 'https://manga-tr.com/manga-mairimashita-iruma-kun.html',
         id: '/manga-mairimashita-iruma-kun.html',
-        title: 'Mairimashita! Iruma-kun'
+        title: 'Mairimashita! Iruma-kun',
+        timeout: 10_000
     },
     child: {
         id: '/id-127778-read-mairimashita-iruma-kun-chapter-100.html',
-        title: '100. Bölüm'
-    },
+        title: '100.Bölüm'
+    }, // They are using cloudflare to block page downloading, pray that you are not flagged
     entry: {
         index: 2,
-        size: 265_812,
-        type: 'image/webp'
+        size: 1_062_301,
+        type: 'image/png'
     }
 }).AssertWebsite();

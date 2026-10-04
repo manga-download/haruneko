@@ -5,15 +5,15 @@ export default defineConfig({
     build: {
         ssr: true,
         emptyOutDir: false,
-        outDir: resolve(__dirname, 'build'),
+        outDir: resolve(import.meta.dirname, 'build'),
         lib: {
             entry: [
-                resolve(__dirname, 'src', 'Main.ts'),
-                resolve(__dirname, 'src', 'ipc', 'Preload.ts'),
+                resolve(import.meta.dirname, 'src', 'Main.ts'),
+                resolve(import.meta.dirname, 'src', 'ipc', 'Preload.ts'),
             ],
             formats: [ 'cjs' ]
         },
-        rollupOptions: {
+        rolldownOptions: {
             output: {
                 entryFileNames: ({ name }) => `${name}.js`.toLowerCase(),
                 chunkFileNames: ({ name }) => `${name}.js`.toLowerCase(),

@@ -1,4 +1,5 @@
 import { exec } from 'node:child_process';
+const remote = 'https://github.com/manga-download/haruneko.git';
 
 async function run(command) {
     return new Promise((resolve, reject) => exec(command, (error, stdout, _stderr) => error ? reject(error) : resolve(stdout)));
@@ -6,7 +7,7 @@ async function run(command) {
 
 await (async function check() {
     const tempLocalMasterBranch = 'master-local';
-    await run(`git fetch origin master:${tempLocalMasterBranch}`);
+    await run(`git fetch ${remote} master:${tempLocalMasterBranch}`);
     const stdout = await run(`git diff --name-only ${tempLocalMasterBranch}`);
     const restrictedSourceFilesWithChanges = (stdout.split('\n') ?? [])
         .filter(line => /locales\/[a-z]{2,3}_[A-Z]{2,3}\.ts/.test(line))

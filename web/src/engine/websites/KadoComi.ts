@@ -4,6 +4,8 @@ import { Chapter, DecoratableMangaScraper, Manga, type MangaPlugin, Page } from 
 import * as Common from './decorators/Common';
 import { FetchJSON } from '../platform/FetchProvider';
 import type { Priority } from '../taskpool/DeferredTask';
+import { GetBytesFromHex } from '../BufferEncoder';
+import { DecryptXOR } from '../Crypto';
 
 type APIResult<T> = {
     result: T[];
@@ -65,7 +67,7 @@ export default class extends DecoratableMangaScraper {
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
         type This = typeof this;
         return Array.fromAsync(async function* (this: This) {
-            for (let page = 0, run = true; run ; page++) {
+            for (let page = 0, run = true; run; page++) {
                 const { result } = await FetchJSON<APIManga>(new Request(new URL(`./search/keywords?keywords=&limit=100&offset=${page * 100}`, this.apiURL)));
                 const mangas = result.map(({ code, title }) => new Manga(this, provider, code, title));
                 mangas.length > 0 ? yield* mangas : run = false;
@@ -101,26 +103,9 @@ export default class extends DecoratableMangaScraper {
             case 'raw':
                 return data;
             case 'xor':
-                return this.DecryptXor(new Uint8Array(await data.arrayBuffer()), drmHash);
+                return Common.GetTypedData(DecryptXOR(new Uint8Array(await data.arrayBuffer()), GetBytesFromHex(drmHash.slice(0, 16))).buffer);
             default:
                 throw Error('Encryption not supported');
         }
-    }
-
-    private async DecryptXor(encrypted: Uint8Array, passphrase: string): Promise<Blob> {
-        return Common.GetTypedData(this.Xor(encrypted, this.GenerateKey(passphrase)));
-    }
-
-    private GenerateKey(t: string): Uint8Array {
-        const e = t.slice(0, 16).match(/[\da-f]{2}/gi);
-        if (null != e) return new Uint8Array(e.map(t => parseInt(t, 16)));
-        throw new Error("failed generate key.");
-    }
-
-    private Xor(sourceArray: Uint8Array, keyArray: Uint8Array) {
-        const result = new Uint8Array(sourceArray.length);
-        for (let index = 0; index < sourceArray.length; index++)
-            result[index] = sourceArray[index] ^ keyArray[index % keyArray.length];
-        return result.buffer;
     }
 }

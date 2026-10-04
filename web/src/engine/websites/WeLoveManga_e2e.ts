@@ -6,9 +6,9 @@ new TestFixture({
         title: 'WeloveManga'
     },
     container: {
-        url: 'https://love4u.net/1067/',
+        url: 'https://love4u.net/manga-1067/',
         id: '/1067/',
-        title: 'TONO KANRI O SHITE MIYOU - RAW',
+        title: 'TONO KANRI O SHITE MIYOU',
     },
     child: {
         id: '/wlmr-tono-kanri-o-shite-miyou-raw-chapter-65.2.html',

@@ -2,13 +2,15 @@
     import { onMount, onDestroy } from 'svelte';
     import { PasswordInput } from 'carbon-components-svelte';
     import type { Secret } from '../../../../engine/SettingsManager';
-    import { Locale } from '../../stores/Settings';
+    import { GlobalSettings } from '../../stores/Settings.svelte';
     import SettingItem from './SettingItem.svelte';
 
-    export let setting: Secret;
-    let value: string = setting.Value;
+    interface Props {
+        setting: Secret;
+    }
+    let { setting = $bindable() }: Props = $props();
 
-    $: setting.Value = value;
+    let value: string = $state(setting.Value);
 
     onMount(() => {
         setting.Subscribe(OnValueChanged);
@@ -16,15 +18,14 @@
     onDestroy(() => {
         setting.Unsubscribe(OnValueChanged);
     });
-
     function OnValueChanged(newValue: string) {
         value = newValue;
     }
 </script>
 
 <SettingItem
-    labelText={$Locale[setting.Label]()}
-    helperText={$Locale[setting.Description]()}
+    labelText={GlobalSettings.Locale[setting.Label]()}
+    helperText={GlobalSettings.Locale[setting.Description]()}
 >
-    <PasswordInput hideLabel bind:value />
+    <PasswordInput hideLabel bind:value on:change={(e) => setting.Value = (e.target as HTMLInputElement).value} />
 </SettingItem>

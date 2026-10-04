@@ -1,25 +1,22 @@
-import { TestFixture, type Config } from '../../../test/WebsitesFixture';
+import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config: Config = {
+new TestFixture( {
     plugin: {
         id: 'neumanga',
         title: 'NeuManga'
     },
-    /* CloudFlare
     container: {
-        url: 'https://neumanga.id/series/cultivation-return-on-campus/',
-        id: '/series/cultivation-return-on-campus/',
+        url: 'https://neumanga.id/manga/cultivation-return-on-campus',
+        id: '/manga/cultivation-return-on-campus',
         title: 'Cultivation Return on Campus'
     },
     child: {
-        id: '/cultivation-return-on-campus-chapter-439-bahasa-indonesia/',
-        title: 'Chapter 439'
+        id: '/manga/cultivation-return-on-campus/ch/439',
+        title: 'Ch 439'
     },
     entry: {
         index: 0,
-        size: 901_328,
+        size: 466_110,
         type: 'image/jpeg'
-    }*/
-};
-
-new TestFixture(config).AssertWebsite();
+    }
+}).AssertWebsite();

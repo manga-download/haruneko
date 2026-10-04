@@ -17,6 +17,11 @@ type ArrayExtensions<T> = {
     count(predicate: (this: T[], element: T, index: number, array: T[]) => unknown): number;
 
     /**
+     * Combine the given segments into a single title using a space as separator, excluding those segment which are `undefined`, `null` or empty.
+     */
+    joinTitleSegments(this: (string | number)[]): string;
+
+    /**
      * Returns the elements of an array where each element's `Identifier` property is unique.
      * When the array contains multiple elements with the same `Identifier`, the first element is choosen.
      */
@@ -49,6 +54,15 @@ if (!Array.prototype.count) {
     Object.defineProperty(Array.prototype, 'count', {
         value: function <T>(this: Array<T>, predicate: (element: T, index: number, array: T[]) => unknown): number {
             return this.filter(predicate).length;
+        },
+        enumerable: false,
+    });
+}
+
+if (!Array.prototype.joinTitleSegments) {
+    Object.defineProperty(Array.prototype, 'joinTitleSegments', {
+        value: function (this: Array<string | number>): string {
+            return this.filter(segment => `${segment ?? ''}`.trim()).join(' ').replace(/\s+/g, ' ').trim();
         },
         enumerable: false,
     });

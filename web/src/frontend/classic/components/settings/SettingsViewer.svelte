@@ -15,10 +15,14 @@
     import InputSecret from './InputSecret.svelte';
     import InputText from './InputText.svelte';
 
-    export let settings: ISetting[];
+    interface Props {
+        settings: ISetting[];
+    }
+
+    let { settings }: Props = $props();
 
 </script>
-<form>
+<form >
     {#each settings as setting (setting.ID)}
         {#if setting instanceof Choice}
             <InputChoice {setting} />
@@ -37,3 +41,10 @@
         {/if}
     {/each}
 </form>
+
+<style>
+    form {
+        margin-bottom: var(--margin-bottom, 0);
+    }
+
+</style>

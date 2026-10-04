@@ -1,15 +1,14 @@
-import { mock } from 'vitest-mock-extended';
-import { describe, it, expect } from 'vitest';
+import { vi, describe, it, expect } from 'vitest';
 import type { StorageController } from './StorageController';
 import { ItemflagManager } from './ItemflagManager';
 import type { MediaContainer, MediaChild } from './providers/MediaPlugin';
 
 class TestFixture {
 
-    public readonly MockStorageController = mock<StorageController>();
+    public readonly MockStorageController = { LoadPersistent: vi.fn() };
 
     public CreateTestee() {
-        return new ItemflagManager(this.MockStorageController);
+        return new ItemflagManager(this.MockStorageController as unknown as StorageController);
     }
 }
 
@@ -20,16 +19,16 @@ describe('ItemflagManager', () => {
         it('Should load on demand', async () => {
             const fixture = new TestFixture();
             const testee = fixture.CreateTestee();
-            testee.LoadContainerFlags(mock<MediaContainer<MediaChild>>({ Identifier: 'Title', Parent: { Identifier: 'Website' } }));
-            expect(fixture.MockStorageController.LoadPersistent).toBeCalledWith('Itemflags', 'Website :: Title');
+            testee.LoadContainerFlags({ Identifier: 'Title', Parent: { Identifier: 'Website' } } as MediaContainer<MediaChild>);
+            expect(fixture.MockStorageController.LoadPersistent).toHaveBeenCalledWith('Itemflags', 'Website :: Title');
             // TODO: complete assertions ...
         });
 
         it('Should skip bookmarked media for which the website was removed (no parent)', () => {
             const fixture = new TestFixture();
             const testee = fixture.CreateTestee();
-            testee.LoadContainerFlags(mock<MediaContainer<MediaChild>>({ Identifier: '-', Parent: undefined }));
-            expect(fixture.MockStorageController.LoadPersistent).toBeCalledTimes(0);
+            testee.LoadContainerFlags({ Identifier: '-', Parent: undefined } as MediaContainer<MediaChild>);
+            expect(fixture.MockStorageController.LoadPersistent).toHaveBeenCalledTimes(0);
         });
     });
 

@@ -1,58 +1,123 @@
 import { Tags } from '../Tags';
 import icon from './DoujinDesu.webp';
-import { Chapter, DecoratableMangaScraper, type Manga, Page } from '../providers/MangaPlugin';
-import * as Common from './decorators/Common';
 import { FetchJSON } from '../platform/FetchProvider';
-import { GetBytesFromBase64, GetBytesFromUTF8 } from '../BufferEncoder';
+import { GetBytesFromHex, GetBytesFromUTF8 } from '../BufferEncoder';
+import { DecodeEntities } from '../transformers/HtmlEntityTranscoder';
+import { Chapter, DecoratableMangaScraper, Manga, type MangaPlugin, Page } from '../providers/MangaPlugin';
+import * as Common from './decorators/Common';
 
-type APIChapters = {
-    items: {
-        slug: string;
-        title: string;
-    }[]
+type APIResult<T> = T & {
+    _enc_resp_: string;
 };
 
-@Common.MangaCSS(/^{origin}\/manga\/[^/]+$/, 'meta[property="og:title"]')
-@Common.MangasMultiPageCSS('a[href*="/manga/"]:not([data-state])', Common.PatternLinkGenerator('/manga?page={page}'))
+type APIManga = {
+    slug: string;
+    title: string;
+};
+
+type APIChapters = {
+    chapters: {
+        id: string;
+        title: string;
+    }[];
+};
+
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
-    private readonly apiUrl = 'https://cdn.doujindesu.dev/api/';
+
+    private readonly apiURL = 'https://doujin.desu.xxx/api/';
+    private deviceid = `dev_${Math.random().toString(36).substring(2, 15)}_ ${Date.now().toString(36)}`;
 
     public constructor() {
-        super('doujindesu', 'DoujinDesu', 'https://doujindesu.tv', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Indonesian, Tags.Rating.Erotica);
+        super('doujindesu', 'DoujinDesu', 'https://doujin.desu.xxx', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Indonesian, Tags.Rating.Erotica);
     }
 
     public override get Icon() {
         return icon;
     }
 
-    public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
+    public override ValidateMangaURL(url: string): boolean {
+        return new RegExpSafe(`^${this.URI.origin}/manga/[^/]+$`).test(url);
+    }
+
+    public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
+        const { slug, title } = await this.FetchAPI<APIManga>(`./manga/${url.split('/').at(-1)}`);
+        return new Manga(this, provider, slug, title);
+    }
+
+    public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
         type This = typeof this;
-        const mangaUrl = new URL(manga.Identifier, this.URI);
         return Array.fromAsync(async function* (this: This) {
-            for (let page = 1, run = true; run; page++) {
-                const { items } = await FetchJSON<APIChapters>(new Request(new URL(`./api/manga/${manga.Identifier.split('/').at(-1)}/chapters?page=${page}`, this.URI), { headers: { Referer: mangaUrl.href } }));
-                const chapters = !items ? [] : items.map(({ title, slug }) => new Chapter(this, manga, `${slug}`, title.replace(manga.Title, '').trim() || title.trim()));
-                chapters.length > 0 ? yield* chapters : run = false;
+            for (let offset = 0, run = true; run; offset += 500) {
+                const data = await this.FetchAPI<APIManga[]>(`./manga?limit=500&offset=${offset}`);
+                const mangas = data.map(({ slug, title }) => new Manga(this, provider, slug, title));
+                mangas.length > 0 ? yield* mangas : run = false;
             }
         }.call(this));
     }
 
-    public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const key = 'youdoZFFxQusvsva1iHsbccZbpUAjoqB6niUyntkn5mocg2DZ0fCw1Zoow';
-        const { images } = await FetchJSON<{ images: string[] }>(new Request(new URL(`./ch.php?slug=${chapter.Identifier}`, this.apiUrl), {
-            headers: {
-                Origin: this.URI.origin,
-                Referer: this.URI.href
-            }
-        }));
-        return images.map(image => new Page(this, chapter, new URL(this.DecryptPage(image, key))));
+    public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
+        const { chapters } = await this.FetchAPI<APIChapters>(`./manga/${manga.Identifier}`);
+        return chapters.map(({ id, title }) => new Chapter(this, manga, id, title.replace(manga.Title, '').trim() || title.trim()));
     }
 
-    private DecryptPage(cryptedImage: string, keyString: string): string {
-        const key: Uint8Array = GetBytesFromUTF8(keyString);
-        const padding = (4 - cryptedImage.length % 4) % 4;
-        const decoded: Uint8Array = GetBytesFromBase64((cryptedImage + '='.repeat(padding)).replace(/-/g, '+').replace(/_/g, '/'));
-        return new TextDecoder().decode(decoded.map((byte, index) => byte ^ key[index % key.length]));
+    public override async FetchPages(chapter: Chapter): Promise<Page[]> {
+        const { content_urls } = await this.FetchAPI<{ content_urls: string[] }>(`./chapters/${chapter.Identifier}`);
+        return content_urls.map(url => {
+            const uri = new URL(DecodeEntities(url), this.URI);
+            if (!uri.pathname.includes('/storage/upload')) uri.pathname = uri.pathname.replace('/upload', '/storage/upload');
+            return new Page(this, chapter, uri, { Referer: this.URI.href });
+        });
+    }
+
+    private GenerateAPIDecryptionKeys(): string[] {
+        const seed = Math.floor(Date.now() / 3_600_000);
+        const results: string[] = [];
+        for (const value of [seed, seed - 1, seed + 1]) {
+            let key = `doujindesu-scrapers-cannot-read-this-super-secret-salt-2026-v2_${value}`;
+            let state = 0;
+            for (let index = 0; index < key.length; index++) {
+                state = (state << 5) - state + key.charCodeAt(index);
+                state |= 0;
+            }
+            let result = '';
+            state = Math.abs(state) || 123456789;
+            for (let index = 0; index < 32; index++) {
+                state = (state * 1664525 + 1013904223) % 4294967296;
+                result += String.fromCharCode(33 + state % 93);
+            }
+            results.push(result);
+        }
+        return results;
+    }
+
+    private Decrypt<T extends JSONElement>(data: string): T {
+        const keys = this.GenerateAPIDecryptionKeys();
+        const buffer = GetBytesFromHex(data);
+        for (const keyData of keys) {
+            try {
+                const key = GetBytesFromUTF8(keyData);
+                const result: string[] = [];
+                let state = 42;
+                for (let index = 0; index < buffer.length; index++) {
+                    const encodedByte = buffer[index];
+                    const decoded = encodedByte ^ key[index % keyData.length] ^ index * 13 ^ state;
+                    result.push(String.fromCharCode(decoded & 255));
+                    state = (state + encodedByte) % 256;
+                }
+                return <T>JSON.parse(decodeURIComponent(result.join('')));
+            } catch { }
+        }
+    }
+
+    private async FetchAPI<T extends JSONElement>(endpoint: string): Promise<T> {
+        const result = await FetchJSON<APIResult<T>>(new Request(new URL(endpoint, this.apiURL), {
+            headers: {
+                'X-App-Secret': 'dfdf72051dbfdc7d76889ebd31324e74',
+                'X-Device-Id': this.deviceid,
+                'X-Device-Name': 'Chrome on Windows'
+            }
+        }));
+        return result._enc_resp_ ? this.Decrypt<T>(result._enc_resp_) : result as T;
     }
 }

@@ -4,22 +4,15 @@ import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as MangaStream from './decorators/WordPressMangaStream';
 import * as Common from './decorators/Common';
 
-export function MangaExtractor(anchor: HTMLAnchorElement) {
-    return {
-        id: anchor.pathname,
-        title: anchor.text.replace(/Bahasa Indonesia$/i, '')
-    };
-}
-
-@MangaStream.MangaCSS(/^{origin}\/Komik\/[^/]+\/$/)
-@Common.MangasSinglePageCSS('/Komik/list-mode/', 'div#content div.soralist ul li a.series', MangaExtractor)
+@MangaStream.MangaCSS(/^{origin}\/manga\/[^/]+\/$/)
+@MangaStream.MangasSinglePageCSS()
 @MangaStream.ChaptersSinglePageCSS()
 @MangaStream.PagesSinglePageJS()
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('noromax', 'Noromax', 'https://noromax01.my.id', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Turkish, Tags.Source.Aggregator, Tags.Accessibility.DomainRotation);
+        super('noromax', 'Noromax', 'https://noromax02.my.id', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Turkish, Tags.Source.Aggregator, Tags.Accessibility.DomainRotation);
     }
 
     public override get Icon() {

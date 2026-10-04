@@ -1,6 +1,5 @@
 import '../Bomtoon_e2e';
 import '../BomtoonCN_e2e';
-import '../Bontoon_e2e';
 import '../LezhinDE_e2e';
 import '../LezhinES_e2e';
 import '../LezhinFR_e2e';

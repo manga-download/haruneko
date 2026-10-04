@@ -6,17 +6,17 @@ new TestFixture({
         title: 'NabiManga'
     },
     container: {
-        url: 'https://nabimanga.com/manga/akademinin-onur-ogrencisi/',
-        id: '/manga/akademinin-onur-ogrencisi/',
-        title: 'Akademinin Onur Öğrencisi'
+        url: 'https://www.nabicix.com/manga/akademinin-tilki-gozlu-seytani/',
+        id: '/manga/akademinin-tilki-gozlu-seytani/',
+        title: 'Akademinin Tilki Gözlü Şeytanı'
     },
     child: {
-        id: '/akademinin-onur-ogrencisi-bolum-1/',
+        id: '/akademinin-tilki-gozlu-seytani-bolum-1/',
         title: 'Bölüm 1'
     },
     entry: {
-        index: 3,
-        size: 934_760,
+        index: 0,
+        size: 788_006,
         type: 'image/webp'
     }
 }).AssertWebsite();

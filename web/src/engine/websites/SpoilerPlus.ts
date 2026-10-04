@@ -1,21 +1,12 @@
 import { Tags } from '../Tags';
 import icon from './SpoilerPlus.webp';
-import { type Chapter, DecoratableMangaScraper, Page } from '../providers/MangaPlugin';
-import * as Common from './decorators/Common';
 import { FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
-import type { Priority } from '../taskpool/DeferredTask';
+import { type Chapter, DecoratableMangaScraper, Page } from '../providers/MangaPlugin';
 import DeScramble from '../transformers/ImageDescrambler';
-
-const pageScript = `
-    new Promise (resolve =>{
-        resolve ({ mangaId: window.MangaId, chapterId : window.CNumber});
-    });
-`;
-
-type ChapterData = {
-    mangaId: number;
-    chapterId: number;
-};
+import type { Priority } from '../taskpool/DeferredTask';
+import { GetBytesFromHex, GetBytesFromUTF8, GetUTF8FromBytes } from '../BufferEncoder';
+import { DecryptXOR } from '../Crypto';
+import * as Common from './decorators/Common';
 
 type ChapterCryptedData = {
     c: string; //SCRAMBLEDATA
@@ -24,23 +15,23 @@ type ChapterCryptedData = {
 };
 
 type PageData = {
-    scrambleArray: number[],
+    ScrambleArray: number[];
 };
 
 type TDimension = {
-    height: number,
+    height: number;
     width: number;
 };
 
 type TPiece = {
-    height: number,
-    left: number,
-    top: number,
+    height: number;
+    left: number;
+    top: number;
     width: number;
-};
+} | null;
 
 type TPuzzleData = {
-    from: TPiece,
+    from: TPiece;
     to: TPiece;
 };
 
@@ -51,7 +42,7 @@ function CleanupTitle(text: string): string {
 export function MangaLinkExtractor<T extends HTMLElement>(element: T, uri: URL) {
     return {
         id: uri.pathname,
-        title: CleanupTitle(element.innerText),
+        title: CleanupTitle(element.innerText)
     };
 }
 
@@ -67,10 +58,12 @@ export function MangaInfoExtractor(anchor: HTMLAnchorElement) {
 @Common.ChaptersSinglePageCSS('div.list-chapter ul li a')
 export default class extends DecoratableMangaScraper {
 
-    private readonly queryPages: string = '';
-
-    public constructor(id = 'spoilerplus', label = 'SpoilerPlus', url = 'https://spoilerplus.tv', tags = [Tags.Media.Manga, Tags.Language.Japanese, Tags.Source.Aggregator, Tags.Accessibility.RegionLocked]) {
-        super(id, label, url, ...tags);
+    public constructor(...args: [] | ConstructorParameters<typeof DecoratableMangaScraper>) {
+        if (args.length) {
+            super(...args as ConstructorParameters<typeof DecoratableMangaScraper>);
+        } else {
+            super('spoilerplus', 'SpoilerPlus', 'https://spoilerplus.tv', Tags.Media.Manga, Tags.Language.Japanese, Tags.Source.Aggregator, Tags.Accessibility.RegionLocked);
+        }
     }
 
     public override get Icon() {
@@ -78,58 +71,34 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page<PageData>[]> {
-        const { mangaId, chapterId } = await FetchWindowScript<ChapterData>(new Request(new URL(chapter.Identifier, this.URI)), pageScript, 500);
-        const { c, d, e } = await FetchJSON<ChapterCryptedData>(new Request(new URL('./api/v1/get/c', this.URI), {
+        const body = await FetchWindowScript(new Request(new URL(chapter.Identifier, this.URI)), `({ m: window.MangaId, n: window.CNumber });`, 500);
+        const { c: encryptedScrambleData, d: encryptedImageBaseURL, e: images } = await FetchJSON<ChapterCryptedData>(new Request(new URL('./api/v1/get/c', this.URI), {
             method: 'POST',
             headers: {
-                Accept: 'application/json, text/plain, */*',
-                'Content-Type': 'application/json'
+                'Accept': 'application/json, text/plain, */*',
+                'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ m: mangaId, n: chapterId })
+            body: JSON.stringify(body),
         }));
 
-        const CDN = this.XOR(this.URI.host, d);
-        const scrambleArray = c ? this.XOR(this.URI.host, c).split(',').map(Number) : undefined;
-        return e.map(image => new Page<PageData>(this, chapter, new URL(CDN + image), { Referer: this.URI.origin, scrambleArray }));
+        const decryptedScrambleData = encryptedScrambleData ? this.Decrypt(encryptedScrambleData).split(',').map(Number) : undefined;
+        return images.map(image => new Page<PageData>(this, chapter, new URL(this.Decrypt(encryptedImageBaseURL) + image), {
+            Referer: this.URI.origin,
+            ScrambleArray: decryptedScrambleData,
+        }));
     }
 
-    private XOR(key: string, value: string): string {
-        const toByteArray = a => {
-            return a.split('').map(letter => {
-                return letter.charCodeAt(0);
-            });
-        };
-        const xorIt = a => {
-            return toByteArray(key).reduce((a, b) => {
-                return a ^ b;
-            }, a);
-        };
-        return value.match(/.{1,2}/g).map(a => {
-            return parseInt(a, 16);
-        }).map(xorIt).map(a => {
-            return String.fromCharCode(a);
-        }).join('');
+    private Decrypt(encrypted: string, keyData: string = this.URI.host): string {
+        const key = Uint8Array.of(GetBytesFromUTF8(keyData).reduce((acc, b) => acc ^ b, 0));
+        return GetUTF8FromBytes(DecryptXOR(GetBytesFromHex(encrypted), key));
     }
 
     public override async FetchImage(page: Page<PageData>, priority: Priority, signal: AbortSignal): Promise<Blob> {
         const blob = await Common.FetchImageAjax.call(this, page, priority, signal);
-        const { scrambleArray } = page.Parameters;
-        return !scrambleArray ? blob: DeScramble(blob, async (image, ctx) => {
-            function COMPUTEPIECES(skey: number[], image: ImageBitmap): TPuzzleData[] {
-                const numColAndRow = 4;
-                const dimensions: TDimension = {
-                    width: image.width,
-                    height: image.height,
-                };
-                return skey.map((pieceindex, index) => {
-                    return {
-                        from: COMPUTEPIECE(dimensions, numColAndRow, index),
-                        to: COMPUTEPIECE(dimensions, numColAndRow, pieceindex),
-                    };
-                });
-            }
+        const { ScrambleArray } = page.Parameters;
+        return !ScrambleArray ? blob : DeScramble(blob, async (image, ctx) => {
 
-            const scrambleData = COMPUTEPIECES(scrambleArray, image);
+            const scrambleData = this.ComputePieces(ScrambleArray, image);
             scrambleData.forEach(piece => {
                 let source = piece.from,
                     dest = piece.to;
@@ -139,25 +108,60 @@ export default class extends DecoratableMangaScraper {
             });
         });
     }
-}
 
-function COMPUTEPIECE(dimensions: TDimension, numColAndRow: number, pieceindex: number): TPiece {
-    let c, d, e, f, g, h, i, k, l, m, n, o, p, q, r, s, t, numpieces;
-    numpieces = numColAndRow * numColAndRow;
-    return pieceindex < numpieces ? (o = numColAndRow, p = pieceindex, q = (n = dimensions).width, r = n.height, s = Math.floor(q / o), t = Math.floor(r / o), {
-        left: p % o * s,
-        top: Math.floor(p / o) * t,
-        width: s,
-        height: t,
-    }) : pieceindex === numpieces ? (i = numColAndRow, k = (h = dimensions).width, l = h.height, 0 == (m = k % i) ? null : {
-        left: k - m,
-        top: 0,
-        width: m,
-        height: l,
-    }) : (d = numColAndRow, e = (c = dimensions).width, 0 == (g = (f = c.height) % d) ? null : {
-        left: 0,
-        top: f - g,
-        width: e - e % d,
-        height: g,
-    });
+    private ComputePieces(skey: number[], image: ImageBitmap): TPuzzleData[] {
+        const numColAndRow = 4;
+        const dimensions: TDimension = {
+            width: image.width,
+            height: image.height,
+        };
+        return skey.map((pieceindex, index) => {
+            return {
+                from: this.ComputePiece(dimensions, numColAndRow, index),
+                to: this.ComputePiece(dimensions, numColAndRow, pieceindex),
+            };
+        });
+    }
+
+    private ComputePiece(dimensions: TDimension, numColAndRow: number, pieceIndex: number): TPiece {
+        const { width, height } = dimensions;
+        const totalGridPieces = numColAndRow * numColAndRow;
+        const pieceWidth = Math.floor(width / numColAndRow);
+        const pieceHeight = Math.floor(height / numColAndRow);
+
+        if (pieceIndex < totalGridPieces) {
+            const column = pieceIndex % numColAndRow;
+            const row = Math.floor(pieceIndex / numColAndRow);
+            return {
+                left: column * pieceWidth,
+                top: row * pieceHeight,
+                width: pieceWidth,
+                height: pieceHeight,
+            };
+        }
+
+        if (pieceIndex === totalGridPieces) {
+            const remainingWidth = width % numColAndRow;
+            if (remainingWidth === 0) {
+                return null;
+            }
+            return {
+                left: width - remainingWidth,
+                top: 0,
+                width: remainingWidth,
+                height,
+            };
+        }
+
+        const remainingHeight = height % numColAndRow;
+        if (remainingHeight === 0) {
+            return null;
+        }
+        return {
+            left: 0,
+            top: height - remainingHeight,
+            width: width - width % numColAndRow,
+            height: remainingHeight,
+        };
+    }
 }

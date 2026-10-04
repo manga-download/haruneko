@@ -6,7 +6,7 @@ new TestFixture({
         title: 'TruyenQQ'
     },
     container: {
-        url: 'https://truyenqqno.com/truyen-tranh/long-phi-bat-bai-322',
+        url: 'https://truyenqqko.com/truyen-tranh/long-phi-bat-bai-322',
         id: '/truyen-tranh/long-phi-bat-bai-322',
         title: 'Long Phi Bất Bại'
     },

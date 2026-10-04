@@ -5,6 +5,8 @@ import { type MangaPlugin, Manga, Chapter, type Page, DecoratableMangaScraper } 
 import * as Common from './decorators/Common';
 import type { Priority } from '../taskpool/DeferredTask';
 
+const websiteURL = 'https://new.astratoons.com';
+
 type APIManga = {
     id: number;
     title: string;
@@ -19,13 +21,13 @@ type APIMangas = {
     id: body.querySelector('main[x-data]').getAttribute('x-data').match(/\d+/).at(0),
     title: body.querySelector<HTMLImageElement>('img.object-cover').alt.trim()
 }))
-@Common.PagesSinglePageCSS('div#reader-container img')
+@Common.PagesSinglePageCSS('div#reader-container canvas[data-src]', canvas => new URL(canvas.dataset.src, websiteURL).href)
 export default class extends DecoratableMangaScraper {
 
-    private readonly apiUrl = 'https://new.astratoons.com/api/';
+    private readonly apiURL = 'https://new.astratoons.com/api/';
 
     public constructor() {
-        super('astratoons', 'AstraToons', 'https://new.astratoons.com', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Portuguese, Tags.Source.Scanlator);
+        super('astratoons', 'AstraToons', websiteURL, Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Portuguese, Tags.Source.Scanlator);
     }
 
     public override get Icon() {
@@ -36,7 +38,7 @@ export default class extends DecoratableMangaScraper {
         type This = typeof this;
         return Array.fromAsync(async function* (this: This) {
             for (let page = 0, run = true; run && page < 1000; page++) {
-                const { data } = await FetchJSON<APIMangas>(new Request(new URL(`./comics?page=${page}`, this.apiUrl)));
+                const { data } = await FetchJSON<APIMangas>(new Request(new URL(`./comics?page=${page}`, this.apiURL)));
                 const mangas = data.map(({ id, title }) => new Manga(this, provider, `${id}`, title));
                 mangas.length > 0 ? yield* mangas : run = false;
             }
@@ -47,10 +49,10 @@ export default class extends DecoratableMangaScraper {
         type This = typeof this;
         return Array.fromAsync(async function* (this: This) {
             for (let page = 0, run = true; run && page < 1000; page++) {
-                const { html } = await FetchJSON<{ html: string }>(new Request(new URL(`./comics/${manga.Identifier}/chapters?page=${page}`, this.apiUrl)));
+                const { html } = await FetchJSON<{ html: string }>(new Request(new URL(`./comics/${manga.Identifier}/chapters?page=${page}`, this.apiURL)));
                 const doc = new DOMParser().parseFromString(html, 'text/html');
                 const chapters = [...doc.querySelectorAll<HTMLAnchorElement>('a')].map(anchor => {
-                    return new Chapter(this, manga, anchor.pathname, anchor.querySelector<HTMLSpanElement>('span.text-white').textContent.trim());
+                    return new Chapter(this, manga, anchor.pathname, anchor.querySelector<HTMLSpanElement>('span.truncate').textContent.trim());
                 });
                 chapters.length > 0 ? yield* chapters : run = false;
             }

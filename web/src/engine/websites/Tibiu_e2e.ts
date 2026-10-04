@@ -6,17 +6,17 @@ new TestFixture({
         title: 'Tibiu',
     },
     container: {
-        url: 'https://comic.tibiu.net/comic/12674',
-        id: '/comic/12674',
-        title: '恋爱是件傻傻的事'
+        url: 'https://comic.tibiu.net/comic/54101',
+        id: '54101',
+        title: 'Daisy Jealousy〔爱著你的善妒〕'
     },
     child: {
-        id: '/chapter/12674/363100',
+        id: '576122',
         title: '第1话'
     },
     entry: {
         index: 0,
-        size: 211_586,
+        size: 252_736,
         type: 'image/webp'
     }
 }).AssertWebsite();

@@ -29,10 +29,10 @@ type APIPages = {
 
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
-    private readonly apiUrl = 'https://api.shngm.io/v1/';
+    private readonly apiURL = 'https://api.shngm.io/v1/';
 
     public constructor() {
-        super('shinigamiid', `Shinigami ID`, 'https://09.shinigami.asia', Tags.Language.Indonesian, Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Source.Scanlator, Tags.Accessibility.DomainRotation);
+        super('shinigamiid', 'Shinigami ID', 'https://11.shinigami.asia', Tags.Language.Indonesian, Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Source.Scanlator, Tags.Accessibility.DomainRotation);
     }
 
     public override get Icon() {
@@ -45,7 +45,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override ValidateMangaURL(url: string): boolean {
-        return new RegExpSafe(`^https?://\\d+.shinigami.asia/series/[^/]+$`).test(url);
+        return new RegExpSafe(`^https?://[^/.]+.shinigami.asia/series/[^/]+$`).test(url);
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
@@ -69,6 +69,6 @@ export default class extends DecoratableMangaScraper {
     }
 
     public async FetchAPI<T extends JSONElement>(endpoint: string): Promise<T> {
-        return (await FetchJSON<APIResult<T>>(new Request(new URL(endpoint, this.apiUrl)))).data as T;
+        return (await FetchJSON<APIResult<T>>(new Request(new URL(endpoint, this.apiURL)))).data;
     }
 }

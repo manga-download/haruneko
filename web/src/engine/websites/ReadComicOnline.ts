@@ -31,7 +31,7 @@ const pageScript = `
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('readcomiconline', `ReadComicOnline`, 'https://readcomiconline.li', Tags.Language.English, Tags.Media.Comic, Tags.Source.Aggregator);
+        super('readcomiconline', `ReadComicOnline`, 'https://rcostation.xyz', Tags.Language.English, Tags.Media.Comic, Tags.Source.Aggregator);
     }
 
     public override get Icon() {

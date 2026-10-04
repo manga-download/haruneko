@@ -3,7 +3,7 @@ import { TestFixture } from '../../../test/WebsitesFixture';
 new TestFixture({
     plugin: {
         id: 'flamecomics',
-        title: 'Flame Comics',
+        title: 'Flame Comics'
     },
     container: {
         url: 'https://flamecomics.xyz/series/44',

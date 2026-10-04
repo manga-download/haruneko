@@ -3,8 +3,10 @@ import icon from './MerlinScans.webp';
 import { InitManga } from './templates/InitManga';
 import * as Common from './decorators/Common';
 
-@Common.MangaCSS(/^{origin}\/seri\/[^/]+\/$/, 'ul.uk-breadcrumb li:last-of-type')
-@Common.MangasMultiPageCSS('div.manga-block h3 a.uk-link-heading', Common.PatternLinkGenerator('/seri/page/{page}/'))
+@Common.ChaptersMultiPageCSS<HTMLAnchorElement>('div.chapter-list a', Common.PatternLinkGenerator('{id}bolum/page/{page}/'), 0, anchor => ({
+    id: anchor.pathname,
+    title: anchor.querySelector('div.uk-flex-none').textContent.trim()
+}))
 export default class extends InitManga {
 
     public constructor() {

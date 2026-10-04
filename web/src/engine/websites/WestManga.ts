@@ -3,21 +3,22 @@ import icon from './WestManga.webp';
 import { Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import { GetBytesFromUTF8, GetHexFromBytes } from '../BufferEncoder';
-import { FetchJSON } from '../platform/FetchProvider';
+import { FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
 
 type APIResult<T> = {
     data: T | null;
 };
 
 type APIManga = {
-    slug: string,
-    title: string,
-    chapters: APIChapter[];
+    slug: string;
+    title: string;
 };
 
-type APIChapter = {
-    number: string,
-    slug: string;
+type APIChapters = {
+    chapters: {
+        number: string,
+        slug: string;
+    }[];
 };
 
 type APIPages = {
@@ -28,24 +29,28 @@ function CleanTitle(title: string): string {
     return title.replace(/bahasa indonesia/i, '').trim();
 }
 
-// TODO: Check for possible revision
-
 @Common.ImageAjax(true)
 export default class extends DecoratableMangaScraper {
 
+    #token: string = null;
     private readonly api = {
-        url: 'https://data.westmanga.me/api/',
+        url: 'https://data.mantweh.online/api/',
         nonce: 'wm-api-request',
         accessKey: 'WM_WEB_FRONT_END',
         secretKey: 'xxxoidj',
     };
 
-    public constructor () {
-        super('westmanga', 'WestManga', 'https://westmanga.me', Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Language.Indonesian, Tags.Source.Aggregator);
+    public constructor() {
+        super('westmanga', 'WestManga', 'https://v1.westmanga.my', Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Language.Indonesian, Tags.Source.Aggregator);
     }
 
     public override get Icon() {
         return icon;
+    }
+
+    public override async Initialize(): Promise<void> {
+        // TODO: Update the token whenever the user performs a login/logout through manual website interaction
+        this.#token = await FetchWindowScript<string>(new Request(this.URI), `localStorage.getItem('access_token') ?? null;`);
     }
 
     public override ValidateMangaURL(url: string): boolean {
@@ -53,14 +58,14 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
-        const { data: { slug, title} } = await this.FetchAPI<APIManga>(`./comic/${url.split('/').at(-1)}`);
+        const { data: { slug, title } } = await this.FetchAPI<APIManga>(`./comic/${url.split('/').at(-1)}`);
         return new Manga(this, provider, slug, CleanTitle(title));
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
         type This = typeof this;
         return Array.fromAsync(async function* (this: This) {
-            for (let page = 1, run = true; run ; page++) {
+            for (let page = 1, run = true; run; page++) {
                 const { data } = await this.FetchAPI<APIManga[]>(`./contents?page=${page}`);
                 const mangas = data ? data.map(({ slug, title }) => new Manga(this, provider, slug, CleanTitle(title))) : [];
                 mangas.length > 0 ? yield* mangas : run = false;
@@ -69,8 +74,8 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const { data: { chapters } } = await this.FetchAPI<APIManga>(`./comic/${manga.Identifier}`);
-        return chapters.map(({slug, number }) => new Chapter(this, manga, slug, number));
+        const { data: { chapters } } = await this.FetchAPI<APIChapters>(`./comic/${manga.Identifier}`);
+        return chapters.map(({ slug, number }) => new Chapter(this, manga, slug, number));
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
@@ -81,21 +86,17 @@ export default class extends DecoratableMangaScraper {
     private async FetchAPI<T extends JSONElement>(endpoint: string): Promise<APIResult<T>> {
         const url = new URL(endpoint, this.api.url);
         const timestamp = `${Date.now()}`.slice(0, -3);
-        const request = new Request(url, {
+        const keyData = GetBytesFromUTF8([timestamp, 'GET', url.pathname, this.api.accessKey, this.api.secretKey].join(''));
+        const key = await crypto.subtle.importKey('raw', keyData, { name: 'HMAC', hash: 'SHA-256' }, false, ['sign', 'verify']);
+        const signature = new Uint8Array(await crypto.subtle.sign('HMAC', key, GetBytesFromUTF8(this.api.nonce)));
+        return FetchJSON<APIResult<T>>(new Request(url, {
             headers: {
-                Referer: this.URI.href,
+                ...this.#token ? { Authorization: `Bearer ${this.#token}` } : {},
+                'Referer': this.URI.href,
                 'X-Wm-Request-Time': timestamp,
                 'X-Wm-Accses-Key': this.api.accessKey,
-                'X-Wm-Request-Signature': await this.HMAC256(this.api.nonce, timestamp, 'GET', url.pathname, this.api.accessKey, this.api.secretKey)
+                'X-Wm-Request-Signature': GetHexFromBytes(signature),
             }
-        });
-        return FetchJSON<APIResult<T>>(request);
-    }
-
-    private async HMAC256(data: string, ...keyData: string[]): Promise<string> {
-        const algorithm = { name: 'HMAC', hash: { name: 'SHA-256' } };
-        const key = await crypto.subtle.importKey('raw', GetBytesFromUTF8(keyData.join('')), algorithm, false, [ 'sign' ]);
-        const signature = await crypto.subtle.sign(algorithm, key, GetBytesFromUTF8(data));
-        return GetHexFromBytes(new Uint8Array(signature));
+        }));
     }
 }

@@ -8,7 +8,7 @@ import * as Common from './decorators/Common';
 @Common.MangaCSS(/^{origin}\/manga\/[^/]+$/, MojoPortalComic.queryManga)
 @Common.MangasMultiPageCSS(MojoPortalComic.queryMangas, Liliana.MangasLinkGenerator)
 @Common.ChaptersSinglePageCSS('ul li div.chapter a')
-@Liliana.PagesSinglePageJS(undefined, 'img', (element) => element.dataset.original)
+@Liliana.PagesSinglePageJS(undefined, 'img', element => element.dataset.original)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 

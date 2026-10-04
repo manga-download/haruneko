@@ -8,7 +8,7 @@ For this example the title [Berserk](https://mangadex.org/title/801513ba-a712-49
 <YouTube id="Gs0BEJ7x9vo" />
 
 1. First make sure to select a download directory in the settings where all downloaded titles shall be stored
-2. Find and selet the website _MangaDex_
+2. Find and select the website _MangaDex_
 3. If the list of titles has not yet been synchronized or the list may be outdated, update the list now (depending on the selected website this may take some time)
 4. Find and select the title _Berserk_
 5. Load the list of current media items (chapters) for the title _Berserk_ from the website
@@ -109,7 +109,7 @@ Therefore this workaround needs to be repeated in case the content of the websit
 12. Wait for the page to correctly being loaded
 13. Open the _HauNeko Assistant Extension_ and press the button to bypass CloudFlare
 14. Switch back to HakuNeko
-15. In case a restart confiirmation appears, close and re-open HakuNeko
+15. In case a restart confirmation appears, close and re-open HakuNeko
 16. HakuNeko should now be able to access the content of the website
 
 ### Open Manga/Anime URL from Browser

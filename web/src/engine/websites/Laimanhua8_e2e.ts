@@ -1,6 +1,6 @@
 ﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'laimanhua8',
         title: 'Laimanhua8'
@@ -19,6 +19,4 @@ const config = {
         size: 252_049, // Polished image size may vary => https://developers.cloudflare.com/images/polish/
         type: 'image/jpeg'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

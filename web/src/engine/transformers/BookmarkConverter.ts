@@ -11,19 +11,15 @@ export const legacyWebsiteIdentifierMap = new Map([
     [ 'azoramanga', 'azoraworld' ],
     [ 'apolltoons', 'mundomanhwa' ],
     [ 'bananascan', 'harmonyscan' ],
-    [ 'cocomanhua', 'colamanga' ],
     [ 'comicbushi', 'comicgrowl' ],
     [ 'comicwalker', 'kadocomi' ],
-    [ 'firescans', 'firecomics' ],
     [ 'firstkiss', 'likemanga' ],
     [ 'flamescans-org', 'flamecomics' ],
     [ 'galaxyaction', 'galaxymanga' ],
-    [ 'imperioscans', 'neroxus' ],
     [ 'instamanhwa', 'xmanhwa' ],
     [ 'kissaway', 'klmanga' ],
     [ 'kisscomic', 'readcomiconline' ],
     [ 'komikav', 'apkomik' ],
-    [ 'kumascans', 'retsu' ],
     [ 'lovehug', 'welovemanga' ],
     [ 'lyrascans', 'quantumscans' ],
     [ 'mangacross', 'championcross' ],
@@ -42,7 +38,6 @@ export const legacyWebsiteIdentifierMap = new Map([
     [ 'sushiscanfr', 'animesama' ],
     [ 'vermanhwas', 'vermanhwa' ],
     [ 'visualikigai', 'ikigaimangas' ],
-    [ 'webtoontrcom', 'webtoontrnet' ],
 ]);
 
 type BookmarkLegacy = {

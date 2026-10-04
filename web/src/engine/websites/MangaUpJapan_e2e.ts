@@ -8,7 +8,7 @@ new TestFixture({
     container: {
         url: 'https://www.manga-up.com/titles/214',
         id: '/titles/214',
-        title: '咲-阿知賀編-'
+        title: '咲-Saki-阿知賀編 episode of side-A'
     },
     child: {
         id: '/titles/214/chapters/175331',

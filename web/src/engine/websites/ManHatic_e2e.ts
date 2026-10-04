@@ -1,24 +1,22 @@
 ﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'manhatic',
-        title: 'ManHatic'
+        title: 'HentaiLek'
     },
     container: {
-        url: 'https://manhatic.com/manga/%d8%a7%d8%b3%d8%b1%d8%a7%d8%b1-%d8%a7%d9%84%d8%ac%d9%8a%d9%84-%d8%a7%d9%84%d8%ab%d8%a7%d9%84%d8%ab-%d9%85%d9%86-%d8%aa%d8%b4%d8%a7%d9%8a%d8%a8%d9%88%d9%84/',
-        id: JSON.stringify({post: '2224', slug: '/manga/%d8%a7%d8%b3%d8%b1%d8%a7%d8%b1-%d8%a7%d9%84%d8%ac%d9%8a%d9%84-%d8%a7%d9%84%d8%ab%d8%a7%d9%84%d8%ab-%d9%85%d9%86-%d8%aa%d8%b4%d8%a7%d9%8a%d8%a8%d9%88%d9%84/'}),
-        title: 'اسرار الجيل الثالث من تشايبول',
+        url: 'https://hentailek.com/manga/a-pervert-s-daily-life',
+        id: '/manga/a-pervert-s-daily-life',
+        title: `A Pervert's Daily Life`,
     },
     child: {
-        id: '/manga/%d8%a7%d8%b3%d8%b1%d8%a7%d8%b1-%d8%a7%d9%84%d8%ac%d9%8a%d9%84-%d8%a7%d9%84%d8%ab%d8%a7%d9%84%d8%ab-%d9%85%d9%86-%d8%aa%d8%b4%d8%a7%d9%8a%d8%a8%d9%88%d9%84/52-%d8%a7%d9%84%d9%81%d8%b5%d9%84/',
-        title: '52 الفصل'
+        id: '/manga/a-pervert-s-daily-life/chapter-145',
+        title: decodeURI('%D8%A7%D9%84%D9%81%D8%B5%D9%84%20145')
     },
     entry: {
-        index: 0,
-        size: 359_224,
-        type: 'image/jpeg'
+        index: 1,
+        size: 264_010,
+        type: 'image/webp'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

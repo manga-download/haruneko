@@ -24,8 +24,8 @@ type GQLPages = {
     };
 };
 
-@Common.MangasSinglePageCSS<HTMLAnchorElement>('/mangas', 'ul li a[href*="/mangas/"]', anchor => ({ id: anchor.pathname.split('/').at(-1), title: anchor.querySelector<HTMLParagraphElement>('p.chakra-text').textContent.trim() }))
-@Common.ImageAjax()
+@Common.MangasSinglePageCSS<HTMLAnchorElement>('/mangas', 'ul li a[href*="/mangas/"]', anchor => ({ id: anchor.pathname.split('/').at(-1), title: anchor.querySelector('h4').textContent.trim() }))
+@Common.ImageAjax(true)
 export default class extends DecoratableMangaScraper {
 
     private readonly CDNurl = new URL('https://api.punkrecordz.com/');

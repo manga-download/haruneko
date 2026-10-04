@@ -1,6 +1,6 @@
-import { TestFixture, type Config } from '../../../test/WebsitesFixture';
+import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config: Config = {
+new TestFixture({
     plugin: {
         id: 'stellarsaber',
         title: 'Stellar Saber'
@@ -11,14 +11,12 @@ const config: Config = {
         title: 'Jujutsu Kaisen'
     },
     child: {
-        id: '/jujutsu-kaisen-%d8%a7%d9%84%d9%81%d8%b5%d9%84-249/',
-        title: 'Chapter 249'
+        id: encodeURI('/chapter/jujutsu-kaisen-الفصل-249/').toLowerCase(),
+        title: 'الفصل 249'
     },
     entry: {
         index: 0,
-        size: 1_498_400,
-        type: 'image/jpeg'
+        size: 610_390,
+        type: 'image/webp'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

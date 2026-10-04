@@ -6,7 +6,7 @@ import { FetchRegex } from '../platform/FetchProvider';
 
 @Common.MangaCSS(/^{origin}\/works\/[^/]+\.html$/, 'p.f150.b')
 @Common.MangasMultiPageCSS('ul.tile li strong.f130 a', Common.PatternLinkGenerator('/search/?page_num={page}'))
-@Common.ChaptersSinglePageCSS('ul.ul01 li strong.f130 a')
+@Common.ChaptersSinglePageCSS('ul.ul01 li strong.f130 a', undefined, undefined, true)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
@@ -19,8 +19,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const request = new Request(new URL(chapter.Identifier, this.URI).href);
-        const data = await FetchRegex(request, /src="([^"]*)">'\);/g);
+        const data = await FetchRegex(new Request(new URL(chapter.Identifier, this.URI)), /src="([^"]*)">'\);/g);
         return data.map(image => new Page(this, chapter, new URL(image, this.URI)));
     }
 }

@@ -2,7 +2,6 @@ import { Runtime } from './PlatformInfo';
 import { PlatformInstanceActivator } from './PlatformInstanceActivator';
 import NodeWebkitBloatGuard from './nw/BloatGuard';
 import ElectronBloatGuard from './electron/BloatGuard';
-import GetIPC from './InterProcessCommunication';
 
 export interface IBloatGuard {
     Initialize(): Promise<void>;
@@ -11,7 +10,7 @@ export interface IBloatGuard {
 export function CreateBloatGuard(): IBloatGuard {
     return new PlatformInstanceActivator<IBloatGuard>()
         .Configure(Runtime.NodeWebkit, () => new NodeWebkitBloatGuard(patterns))
-        .Configure(Runtime.Electron, () => new ElectronBloatGuard(GetIPC(), patterns))
+        .Configure(Runtime.Electron, () => new ElectronBloatGuard(patterns))
         .Create();
 }
 
@@ -23,57 +22,84 @@ const patterns = [
     '*://*.adskeeper.co.uk/*',
     '*://*.adskeeper.com/*',
     '*://*.arc.io/*',
+    '*://*.bayokagrote.com/*',
     '*://*.bidgear.com/*',
     '*://*.chatango.com/*',
     '*://*.clokemidriff.com/*',
     '*://*.doubleclick.net/*',
+    '*://*.gleavemeecher.com/*',
     '*://*.google-analytics.com/*',
     '*://*.googlesyndication.com/*',
-    '*://itchyshavecommand.com/*',
+    '*://*.jads.co/*',
     '*://*.magsrv.com/*',
     '*://*.mgid.com/*',
+    '*://*.nawpush.com/*',
     '*://*.onesignal.com/*',
     '*://*.ospicalad.buzz/*',
     '*://*.outbrain.com/*',
     '*://*.outbrainimg.com/*',
     '*://*.papayads.net/*',
+    '*://*.profitablecpmratenetwork.com/*',
     '*://*.profitableratecpm.com/',
     '*://*.prplads.com/*',
     '*://*.pubadx.one/*',
     '*://*.pubfuture-ad.com/*',
     '*://*.purpleads.io/*',
+    '*://*.realsrv.com/*',
     '*://*.sentry.io/*',
     '*://*.sharethis.com/*',
+    '*://*.struvlichi.com/*',
+    '*://*.tomefuldunch.cfd/*',
+    '*://*.traffichaus.com/*',
     '*://*.topcreativeformat.com/*',
     '*://*.twitch.tv/*',
     '*://*.yandex.ru/*.js',
     '*://*/**/devtools-detect*',
     '*://*/**/devtools-detector*',
     '*://*/**/disable-devtool*',
+    '*://*/**/screenshot-guard*',
     '*://*/Ads/*',
     '*://*/js/ads*',
+    '*://ad-blocker.co/*',
+    '*://ads-blocker.app/*',
+    '*://adexchangerapid.com/*',
     '*://breathinggeoff.com/*',
     '*://captivatepestilentstormy.com/*',
     '*://creepingbrings.com/*',
     '*://crunchyscan.fr/arc-sw?*',
     '*://crunchyscan.fr/arc-widget',
     '*://crunchyscan.fr/blockexx.js',
+    '*://endlesshandbaglinked.com/*',
     '*://fireworksane.com/*',
     '*://fleraprt.com/*',
     '*://goomaphy.com/*',
+    '*://havenclick.com/*',
+    '*://highperformanceformat.com/*',
+    '*://itchyshavecommand.com/*',
     '*://kettledroopingcontinuation.com/*',
+    '*://maithigloab.net/*',
+    '*://nereserv.com/*',
     '*://obqj2.com/',
     '*://owewary.com/*',
     '*://pickupfaxmultitude.com/*',
     '*://pliantdummyexasperation.com/*',
     '*://preferencenail.com/*',
+    '*://realizationnewestfangs.com/*',
+    '*://sourshaped.com/*',
     '*://stoampaliy.net/*',
     '*://t7cp4fldl.com/*',
     '*://tattedly.com/*',
     '*://tqqbhtnshynrypl.xyz/*',
+    '*://tuhtutxattu.in/*',
     '*://tumultmarten.com/*',
+    '*://usrpubtrk.com/*',
     '*://valuerabjure.com/*',
     '*://voltoishime.top/*',
+    '*://wayfarerorthodox.com/*',
     '*://www.facebook.com/*/plugins/comments.php*',
-    '*://www.facebook.net/*/plugins/comments.php*'
+    '*://www.facebook.com/plugins/like.php*',
+    '*://www.facebook.net/*/plugins/comments.php*',
+    '*://www.facebook.net/plugins/like.php*',
+    '*://www.highperformanceformat.com/*',
+    '*://zipcrypticbroadsheet.com/*',
 ];

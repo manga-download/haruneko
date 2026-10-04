@@ -1,7 +1,9 @@
 import { Tags } from '../Tags';
 import icon from './NyxScans.webp';
 import { VTheme } from './templates/VTheme';
+import * as Common from './decorators/Common';
 
+@Common.PagesSinglePageCSS('section[itemprop="articleBody"] figure img:not([itemprop])')
 export default class extends VTheme {
 
     public constructor() {

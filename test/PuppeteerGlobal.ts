@@ -30,9 +30,13 @@ async function CloseSplashScreen(target: puppeteer.Target) {
         url = page?.url();
         // TODO: leave after timeout?
     }
-    if(url && /splash.html/i.test(url)) {
-        page?.removeAllListeners();
-        await page?.close();
+    if (url && /splash.html/i.test(url)) {
+        try {
+            page?.removeAllListeners();
+            await page?.close();
+        } catch (error) {
+            console.log(new Date().toISOString(), '➔', error);
+        }
     }
 }
 
@@ -43,7 +47,7 @@ async function LaunchServer(): Promise<ChildProcess> {
         shell: process.platform === 'win32',
     });
     await delay(1000); // TODO: Find better solution to wait until web-app is hosted ...
-    console.log(new Date().toISOString(), '=>', `Started Server (pid: ${vite.pid}):`, vite.exitCode === null);
+    console.log(new Date().toISOString(), '➔', `Started Server (pid: ${vite.pid}):`, vite.exitCode === null);
     return vite;
 }
 
@@ -64,7 +68,7 @@ async function DetectElectron(): Promise<string> {
     for(const electron of search) {
         try {
             if((await fs.stat(path.normalize(electron))).isFile()) {
-                console.log(new Date().toISOString(), '=>', 'Detected Electron:', electron);
+                console.log(new Date().toISOString(), '➔', 'Detected Electron:', electron);
                 return electron;
             }
         } catch {}
@@ -81,10 +85,21 @@ async function LaunchElectron(): Promise<puppeteer.Browser> {
         defaultViewport: null,
         ignoreDefaultArgs: true,
         executablePath: await DetectElectron(),
-        args: [ electronApp, '--remote-debugging-port=0', '--disable-blink-features=AutomationControlled', '--ignore-certificate-errors', '--no-sandbox', '--disable-gpu', '--trace-warnings', '--origin=' + AppURL ],
+        args: [
+            electronApp,
+            '--no-sandbox',
+            '--disable-gpu',
+            '--trace-warnings',
+            '--remote-debugging-port=0', // Use a random port to avoid anti-bot detection
+            '--disable-features=UseDBus', // Suppress warnings/errors when electron tries to connect to D-Bus session in CI/CD pipeline
+            '--ignore-certificate-errors',
+            '--disable-blink-features=AutomationControlled', // Suppress certain automation flags to avoid anti-bot detection
+            `--origin=${AppURL}`,
+        ],
         userDataDir: userDir,
         dumpio: true,
     });
+    console.log(new Date().toISOString(), '➔', 'Electron CLI:', browser.process().spawnfile, browser.process().spawnargs);
     browser.on('targetcreated', CloseSplashScreen);
     //SetupBlinkEvasions(browser, EvadeWebDriverDetection, EvadeChromeDevToolProtocolDetection);
 
@@ -93,7 +108,6 @@ async function LaunchElectron(): Promise<puppeteer.Browser> {
         const pages = await browser.pages();
         const page = pages.find(p => p.url() === AppURL);
         if(page) {
-            await page.reload({ timeout: 5000 });
             await page.waitForSelector(AppSelector, { timeout: 7500 });
             console.log(new Date().toISOString(), '➔', 'Using Page:', [ page.url() ]);
             console.log(new Date().toISOString(), '➔', 'Remote Debugger:', browser.wsEndpoint());
@@ -164,7 +178,7 @@ async function TryStopProcess(processInfo: ChildProcess | null, label: string): 
             default:
                 const signals: NodeJS.Signals[] = [ 'SIGINT', 'SIGTERM', 'SIGKILL' ];
                 for(let index = 0; isRunning() && index < signals.length; index++) {
-                    console.log(new Date().toISOString(), '=>', signals[index], processPath, processInfo.kill(signals[index]));
+                    console.log(new Date().toISOString(), '➔', signals[index], processPath, processInfo.kill(signals[index]));
                     await delay(1000);
                 }
                 break;
@@ -174,6 +188,6 @@ async function TryStopProcess(processInfo: ChildProcess | null, label: string): 
             throw new Error();
         }
     } catch(error) {
-        console.warn(new Date().toISOString(), '=>', `Failed to stop ${label} (pid: ${processInfo.pid}):`, processPath);
+        console.warn(new Date().toISOString(), '➔', `Failed to stop ${label} (pid: ${processInfo.pid}):`, processPath);
     }
 }

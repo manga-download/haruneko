@@ -46,6 +46,22 @@ describe('ArrayExtensions<T>', () => {
         });
     });
 
+    describe('joinTitleSegments', () => {
+
+        it.each([
+            [[], ''],
+            [['+'], '+'],
+            [[' +   + '], '+ +'],
+            [['+', '   ', '+'], '+ +'],
+            [['   ', '+', '   '], '+'],
+            [[' +   ', '   + '], '+ +'],
+            [[' # ', null, '', 0, undefined, ' ! '], '# 0 !'],
+        ])('Should concat filtered segments correctly', (segments, expected) => {
+            const actual = segments.joinTitleSegments();
+            expect(actual).toBe(expected);
+        });
+    });
+
     describe('distinct()', () => {
 
         it('Should remove duplicate entries', async () => {

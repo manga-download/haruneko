@@ -5,12 +5,12 @@ export default defineConfig({
     build: {
         ssr: true,
         emptyOutDir: false,
-        outDir: resolve(__dirname, 'build'),
+        outDir: resolve(import.meta.dirname, 'build'),
         lib: {
-            entry: resolve(__dirname, 'src', 'App.ts'),
+            entry: resolve(import.meta.dirname, 'src', 'App.ts'),
             formats: [ 'cjs' ]
         },
-        rollupOptions: {
+        rolldownOptions: {
             output: {
                 entryFileNames: ({ name }) => `${name}.js`.toLowerCase(),
                 chunkFileNames: ({ name }) => `${name}.js`.toLowerCase(),

@@ -1,13 +1,18 @@
 import { Tags } from '../Tags';
 import icon from './ReadComicsOnline.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
-import * as MangaReader from './templates/MangaReaderCMS';
 import * as Common from './decorators/Common';
 
-@Common.MangaCSS(/^{origin}\/comic\/[^/]+$/, 'h2.listmanga-header')
-@Common.MangasSinglePageCSS(MangaReader.patternMangas, MangaReader.queryMangas)
-@Common.ChaptersSinglePageCSS(MangaReader.queryChapters, undefined, MangaReader.ChapterInfoExtractor)
-@Common.PagesSinglePageCSS(MangaReader.queryPages)
+@Common.MangaCSS<HTMLImageElement>(/^{origin}\/comic\/[^/]+$/, 'main img.object-cover', (img, uri) => ({
+    id: uri.pathname,
+    title: img.alt.trim()
+}))
+@Common.MangasSinglePageCSS('/comic-list?view=text', 'div.comic-list-layout div.grid a')
+@Common.ChaptersSinglePageCSS<HTMLAnchorElement>('section a:has(span.text-brand-400)', undefined, anchor => ({
+    id: anchor.pathname,
+    title: anchor.querySelector('span.text-brand-400').textContent.trim()
+}))
+@Common.PagesSinglePageCSS('div#reader-all img')
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 

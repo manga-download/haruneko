@@ -1,6 +1,4 @@
-// @vitest-environment jsdom
-import { mock } from 'vitest-mock-extended';
-import { describe, it, expect } from 'vitest';
+import { vi, describe, it, expect } from 'vitest';
 import type { HakuNeko } from '../engine/HakuNeko';
 import { Exception, InternalError, NotImplementedError } from './Error';
 import type { Choice, ISettings, SettingsManager } from './SettingsManager';
@@ -9,15 +7,13 @@ import { Key } from './SettingsGlobal';
 
 // Mocking globals
 {
-    const mockChoice = mock<Choice>({ Value: LocaleID.Locale_enUS });
+    const mockChoice = { Value: LocaleID.Locale_enUS } as unknown as Choice;
+    const mockSettings = { Get: vi.fn(key => key === Key.Language ? mockChoice : undefined) } as unknown as ISettings;
+    const mockSettingsManager = { OpenScope: vi.fn(() => mockSettings) } as unknown as SettingsManager;
 
-    const mockSettigns = mock<ISettings>();
-    mockSettigns.Get.calledWith(Key.Language).mockReturnValue(mockChoice);
-
-    const mockSettingsManager = mock<SettingsManager>();
-    mockSettingsManager.OpenScope.mockReturnValue(mockSettigns);
-
-    window.HakuNeko = mock<HakuNeko>({ SettingsManager: mockSettingsManager });
+    globalThis.HakuNeko = Object.assign(globalThis.HakuNeko ?? {}, {
+        SettingsManager: mockSettingsManager
+    }) as unknown as HakuNeko;
 }
 
 describe('Error', () => {

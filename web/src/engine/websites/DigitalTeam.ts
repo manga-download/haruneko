@@ -2,7 +2,8 @@ import { Tags } from '../Tags';
 import icon from './DigitalTeam.webp';
 import { type Chapter, DecoratableMangaScraper, Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { Fetch, FetchJSON } from '../platform/FetchProvider';
+import * as Grouple from './decorators/Grouple';
+import { FetchJSON } from '../platform/FetchProvider';
 
 type APIResult = [
     [{ name: string, ex: string }],
@@ -13,7 +14,7 @@ type APIResult = [
 @Common.MangaCSS(/^{origin}\/[^/]+/, 'div#manga_right div.title')
 @Common.MangasSinglePageCSS('/reader/series', 'div#series_list ul li.manga_block ul li.manga_info div.manga_title a')
 @Common.ChaptersSinglePageCSS('div.chapter_list ul li div.ch_top a')
-@Common.ImageAjax()
+@Grouple.ImageWithMirrors()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
@@ -25,15 +26,11 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        //First : fetch page
-        let uri = new URL(chapter.Identifier, this.URI);
-        let request = new Request(uri.href);
-        const response = await Fetch(request);
-        const dat = await response.text();
-        const external = dat.includes('js/jq_rext.js');
+        //First : fetch page html
+        //const doc = await FetchHTML(new Request(new URL(chapter.Identifier, this.URI)));
+        //const external = doc.documentElement.innerHTML.includes('js/jq_rext.js');
 
-        uri = new URL('/reader/c_i', this.URI);
-        request = new Request(uri.href, {
+        let data = await FetchJSON<APIResult>(new Request(new URL('/reader/c_i', this.URI), {
             method: 'POST',
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
             body: new URLSearchParams({
@@ -42,15 +39,10 @@ export default class extends DecoratableMangaScraper {
                 'info[ch_sub]': '0',
                 'info[title]': 'Digital Team'
             })
-        });
-        let data = await FetchJSON<APIResult>(request);
+        }));
         data = typeof data === 'string' ? JSON.parse(data) : data;
-        return data[0].map((file, index) => {
-            if (external) {
-                return new Page(this, chapter, new URL(data[1][index] + file.name + file.ex, this.URI));
-            } else {
-                return new Page(this, chapter, new URL('/reader' + data[2] + file.name + data[1][index] + file.ex, this.URI));
-            }
-        });
+
+        const [images, paths, altpath] = data;
+        return images.map(({ name, ex }, index) => new Page(this, chapter, new URL(`${paths[index]}${name}${ex}`, this.URI), { mirrors: [new URL(`/reader${altpath}${name}${paths[index]}${ex}`, this.URI).href] }));
     }
 }

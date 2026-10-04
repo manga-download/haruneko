@@ -2,13 +2,15 @@
     import { onMount, onDestroy } from 'svelte';
     import { Toggle } from 'carbon-components-svelte';
     import type { Check } from '../../../../engine/SettingsManager';
-    import { Locale } from '../../stores/Settings';
+    import { GlobalSettings } from '../../stores/Settings.svelte';
     import SettingItem from './SettingItem.svelte';
 
-    export let setting: Check;
-    let value: boolean = setting.Value;
+    interface Props {
+        setting: Check;
+    }
+    let { setting = $bindable() }: Props = $props();
 
-    $: setting.Value = value;
+    let value: boolean = $state(setting.Value);
 
     onMount(() => {
         setting.Subscribe(OnValueChanged);
@@ -16,15 +18,14 @@
     onDestroy(() => {
         setting.Unsubscribe(OnValueChanged);
     });
-
     function OnValueChanged(newValue: boolean) {
         value = newValue;
     }
 </script>
 
 <SettingItem
-    labelText={$Locale[setting.Label]()}
-    helperText={$Locale[setting.Description]()}
+    labelText={GlobalSettings.Locale[setting.Label]()}
+    helperText={GlobalSettings.Locale[setting.Description]()}
 >
-    <Toggle bind:toggled={value} />
+    <Toggle bind:toggled={value} on:change={(e) => setting.Value = (e.target as HTMLInputElement).checked} />
 </SettingItem>

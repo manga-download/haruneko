@@ -1,11 +1,19 @@
 import { Tags } from '../Tags';
 import icon from './DoujinHentai.webp';
-import { Chapter, DecoratableMangaScraper, Manga, type MangaPlugin } from '../providers/MangaPlugin';
-import * as Madara from './decorators/WordPressMadara';
+import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
+import { FetchWindowScript } from '../platform/FetchProvider';
 
-@Madara.MangaCSS(/^{origin}\/manga-hentai\/[^/]+$/, 'div.post-content meta[itemprop="itemreviewed"]')
-@Madara.PagesSinglePageCSS('div#all img')
+@Common.MangaCSS(/^{origin}\/manga-hentai\/[^/]+$/, 'nav ol li:last-of-type')
+@Common.MangasMultiPageCSS<HTMLAnchorElement>('div#manga-list-container a.block', Common.PatternLinkGenerator('/lista-manga-hentai?page={page}'), 0, anchor => ({
+    id: anchor.pathname,
+    title: anchor.querySelector('img').alt.trim()
+}))
+@Common.ChaptersSinglePageCSS<HTMLAnchorElement>('section div.container div.grid a.text-lg.font-bold', undefined, anchor => ({
+    id: anchor.pathname,
+    title: anchor.textContent.replace(/^\s*[Ll]eer\s*([Cc]omic|[Dd]oujin|[Gg]aleria|[Mm]anga)?\s*/, '').trim()
+}))
+@Common.PagesSinglePageJS(`[...document.querySelectorAll('div#vertical-pages-container img')].map(img => img.src)`, 1500)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
@@ -17,19 +25,7 @@ export default class extends DecoratableMangaScraper {
         return icon;
     }
 
-    public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        const mangas = await Madara.FetchMangasMultiPageCSS.call(this, provider, 'div.page-content-listing > div > a.thumbnail', 0, '/lista-manga-hentai?page={page}');
-        return mangas.map(manga => {
-            const title = manga.Title.replace(/^\s*[Ll]eer/, '').replace(/[Oo]nline\s*$/, '').trim();
-            return new Manga(this, provider, manga.Identifier, title);
-        });
-    }
-
-    public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const chapters = await Madara.FetchChaptersSinglePageCSS.call(this, manga);
-        return chapters.map(chapter => {
-            const title = chapter.Title.replace(/^\s*[Ll]eer\s*([Cc]omic|[Dd]oujin|[Gg]aleria|[Mm]anga)\s*/, '').trim();
-            return new Chapter(this, manga, chapter.Identifier, title);
-        });
+    public override async Initialize(): Promise<void> {
+        return FetchWindowScript(new Request(this.URI), `localStorage.setItem('readerMode', 'vertical')`, 2500);
     }
 }

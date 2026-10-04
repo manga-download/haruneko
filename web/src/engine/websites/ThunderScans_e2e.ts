@@ -1,11 +1,10 @@
 ﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'thunderscans',
         title: 'ThunderScans'
     },
-    /* CloudFlare
     container: {
         url: 'https://en-thunderscans.com/comics/asura/',
         id: '/comics/asura/',
@@ -13,13 +12,11 @@ const config = {
     },
     child: {
         id: '/asura-chapter-11/',
-        title: 'Chaper 11'
+        title: 'Chatper 11'
     },
     entry: {
         index: 0,
-        size: 408_328,
-        type: 'image/jpeg'
-    }*/
-};
-
-new TestFixture(config).AssertWebsite();
+        size: 910_210,
+        type: 'image/webp'
+    }
+}).AssertWebsite();

@@ -6,17 +6,17 @@ new TestFixture({
         title: 'AstralManga'
     },
     container: {
-        url: 'https://astral-manga.fr/manga/01-wind-breaker/',
-        id: JSON.stringify({ post: '4138', slug: '/manga/01-wind-breaker/' }),
+        url: 'https://astral-manga.fr/manga/b5fcc9e1-e069-412a-9eb2-dea9b8d6f08f',
+        id: 'b5fcc9e1-e069-412a-9eb2-dea9b8d6f08f',
         title: 'Wind Breaker'
     },
     child: {
-        id: '/manga/01-wind-breaker/chapitre-66/',
-        title: 'Chapitre 66 - Épisode spécial'
+        id: 'd3d73cde-fd03-4e5a-adfc-19a06ad29d07',
+        title: 'Chapitre 66 Épisode spécial'
     },
     entry: {
-        index: 1,
-        size: 4_317_123,
+        index: 2,
+        size: 4_107_912,
         type: 'image/jpeg'
     }
 }).AssertWebsite();

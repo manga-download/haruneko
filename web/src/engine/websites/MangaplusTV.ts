@@ -39,11 +39,17 @@ export default class extends DecoratableMangaScraper {
 
     private async ExtractChapters(manga: Manga, endpoint: URL): Promise<Chapter[]> {
         const data = await FetchCSS<HTMLAnchorElement>(new Request(endpoint), 'div.works-chapter-item a');
-        return data.map(chapter => new Chapter(this, manga, chapter.pathname, chapter.textContent.trim(), ...this.ExtractLanguage(chapter.pathname)));
+        return data.map(({ pathname, textContent }) => {
+            const { tag, language } = this.ExtractLanguage(pathname);
+            return new Chapter(this, manga, pathname, [textContent.trim(), `[${language}]`].joinTitleSegments(), tag);
+        });
     }
 
-    private ExtractLanguage(slug: string): Tag[] {
+    private ExtractLanguage(slug: string): { tag: Tag, language: string } {
         const key = slug.replace(/\.html$/, '').split('-').at(-1).trim();
-        return chapterLanguageMap.has(key) ? [chapterLanguageMap.get(key)] : [];
+        return {
+            tag: chapterLanguageMap.has(key) ? chapterLanguageMap.get(key) : undefined,
+            language: key
+        };
     }
 }

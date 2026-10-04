@@ -1,12 +1,12 @@
-import { TestFixture, type Config } from '../../../test/WebsitesFixture';
+import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config: Config = {
+new TestFixture({
     plugin: {
         id: 'apkomik',
         title: 'APKomik'
-    }/* CloudFlare,
+    },
     container: {
-        url: 'https://apkomik.cc/manga/a-bad-person/',
+        url: 'https://01.apkomik.com/manga/a-bad-person/',
         id: '/manga/a-bad-person/',
         title: 'A Bad Person (Bad Guy)'
     },
@@ -18,7 +18,5 @@ const config: Config = {
         index: 1,
         size: 172_827,
         type: 'image/jpeg'
-    }*/
-};
-
-new TestFixture(config).AssertWebsite();
+    }
+}).AssertWebsite();

@@ -7,7 +7,6 @@ syntax = "proto3";
 
 message Response {
   optional SuccessResult success = 1;
-
 }
 
 message SuccessResult {

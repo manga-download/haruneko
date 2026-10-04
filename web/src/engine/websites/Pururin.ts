@@ -11,23 +11,15 @@ const pageScript = `
     })
 `;
 
-function MangaInfoExTractor(anchor: HTMLAnchorElement) {
-    return {
-        id: anchor.pathname,
-        title: anchor.querySelector<HTMLImageElement>('img.card-img-top').getAttribute('alt').trim()
-    };
-}
-
-function ChapterExtractor(element: HTMLDivElement) {
-    return {
-        id: element.querySelector<HTMLAnchorElement>('div.cover-wrapper a').pathname,
-        title: element.querySelector<HTMLSpanElement>('div.title h1 span').textContent.trim()
-    };
-}
-
 @Common.MangaCSS(/^{origin}\/gallery\/\d+\//, 'div.title h1 span')
-@Common.MangasMultiPageCSS('a.card.card-gallery', Common.PatternLinkGenerator('/?page={page}'), 0, MangaInfoExTractor)
-@Common.ChaptersSinglePageCSS('div.gallery-wrapper', undefined, ChapterExtractor)
+@Common.MangasMultiPageCSS<HTMLAnchorElement>('a.card.card-gallery', Common.PatternLinkGenerator('/?page={page}'), 0, anchor => ({
+    id: anchor.pathname,
+    title: anchor.querySelector<HTMLImageElement>('img.card-img-top').getAttribute('alt').trim()
+}))
+@Common.ChaptersSinglePageCSS('div.gallery-wrapper', undefined, element => ({
+    id: element.querySelector<HTMLAnchorElement>('div.cover-wrapper a').pathname,
+    title: element.querySelector<HTMLSpanElement>('div.title h1 span').textContent.trim()
+}))
 @Common.PagesSinglePageJS(pageScript, 1500)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {

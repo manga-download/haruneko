@@ -8,23 +8,21 @@
         Dropdown,
         InlineNotification,
         Loading,
+        MenuButton,
+        MenuItem,
         Search,
     } from 'carbon-components-svelte';
     import ChevronSort from 'carbon-icons-svelte/lib/ChevronSort.svelte';
     import EarthFilled from 'carbon-icons-svelte/lib/EarthFilled.svelte';
+    import CloudDownload from 'carbon-icons-svelte/lib/CloudDownload.svelte';
 
     import { fade } from 'svelte/transition';
 
     import MediaComponent from './MediaItem.svelte';
-    import {
-        selectedMedia,
-        selectedItem,
-        selectedItemPrevious,
-        selectedItemNext,
-    } from '../stores/Stores';
+    import { Store as UI } from '../stores/Stores.svelte';
     import { Tags, type Tag } from '../../../engine/Tags';
     const availableLanguageTags = Tags.Language.toArray();
-    import { Locale } from '../stores/Settings';
+    import { GlobalSettings } from '../stores/Settings.svelte';
 
     import type {
         StoreableMediaContainer,
@@ -43,30 +41,49 @@
     let reverseSortOrder: boolean = $state(false);
 
     let loadItem: Promise<MediaContainer<MediaChild>> = $state();
-    loadItem = updateMedia($selectedMedia);
-    selectedMedia.subscribe(() => loadItem = updateMedia($selectedMedia)) ;
 
-    async function updateMedia(
-        media: MediaContainer<MediaChild>,
-    ): Promise<MediaContainer<MediaChild>> {
-        items = [];
-        selectedItems = [];
-        if (media) {
-            await media?.Update();
-            items = media?.Entries.Value as MediaContainer<MediaItem>[];
-        }
-        return media;
-    }
-
-    selectedItem.subscribe((item: MediaContainer<MediaItem>) => {
-        const position = filteredItems.indexOf(item);
-        $selectedItemPrevious = filteredItems[position + 1];
-        $selectedItemNext = filteredItems[position - 1];
+    $effect(() => {
+        loadItem = updateMedia(UI.selectedMedia);
     });
 
-    const onItemView = (item: MediaContainer<MediaItem>) => (event) => {
-        if (item === $selectedItem || event.ctrlKey || event.shiftKey) return;
-        $selectedItem = item;
+    /**
+     * Updates the displayed items from the selected media container.
+     *
+     * @param media - The media container whose entries should be displayed.
+     * @returns A promise resolving to the provided media container.
+     */
+    async function updateMedia( media: MediaContainer<MediaChild> ): Promise<MediaContainer<MediaChild>> {
+        items = [];
+        selectedItems = [];
+        return new Promise(async (resolve, reject) => {
+            try {
+                if (media) {
+                    await media?.Update();
+                    items = media?.Entries.Value as MediaContainer<MediaItem>[];
+                }
+                resolve(media);
+            } catch (error) {
+                reject(error);
+            }
+        });
+    }
+
+    $effect(() => {
+        const position = filteredItems.indexOf(UI.selectedItem);
+        UI.selectedItemPrevious = filteredItems[position + 1];
+        UI.selectedItemNext = filteredItems[position - 1];
+    });
+
+    /**
+     * Creates a handler that selects an item when it is viewed directly.
+     *
+     * @param item - The item associated with the handler.
+     * @returns A mouse event handler for the item.
+     */
+    const onItemView = (item: MediaContainer<MediaItem>) => (event:MouseEvent) => {
+        event.stopPropagation();
+        if (item === UI.selectedItem || event.ctrlKey || event.shiftKey) return;
+        UI.selectedItem = item;
     };
 
     let itemNameFilter = $state('');
@@ -101,11 +118,11 @@
     let langComboboxItems =
         $derived(MediaLanguages.length > 0
             ? [
-                  { id: '*', text: '*' },
-                  ...MediaLanguages.map((lang) => {
-                      return { id: lang, text: $Locale[lang.Title]() };
-                  }),
-              ]
+                { id: '*', text: '*' },
+                ...MediaLanguages.map((lang) => {
+                    return { id: lang, text: GlobalSettings.Locale[lang.Title]() };
+                }),
+            ]
             : [{ id: '*', text: '*' }]);
 
     let langFilterID: '*' | Tag = $state('*');
@@ -129,12 +146,30 @@
     let multipleSelectionDragTo: number = -1;
     let selectedDragItems: MediaContainer<MediaItem>[] = [];
     let contextItem: MediaContainer<MediaItem> = $state();
-    let contextMenuOpen = $state(false);
-    $effect(() => {
-        if (!contextMenuOpen) contextItem = null;
-    });
+    
+    /** Clears the item associated with the context menu. */
+    function onContextMenuClose() {
+        contextItem = null;
+    }
 
-    const mouseHandler = (item: MediaContainer<MediaItem>) => (event: any) => {
+    /** Resets item selection, drag state, and context-menu state. */
+    function resetSelection() {
+        multipleSelectionFrom = -1;
+        multipleSelectionTo = -1;
+        multipleSelectionDragFrom = -1;
+        multipleSelectionDragTo = -1;
+        selectedDragItems = [];
+        selectedItems = [];
+        contextItem = null;
+    }
+    /**
+     * Creates a pointer handler for selecting an item or starting a drag selection.
+     *
+     * @param item - The item associated with the pointer event.
+     * @returns A pointer event handler for the item.
+     */
+    const mouseHandler = (item: MediaContainer<MediaItem>) => (event: PointerEvent) => {
+        event.stopPropagation();
         if (event.button === 2) {
             contextItem = item;
         }
@@ -156,8 +191,14 @@
             }
         }
 
+        /**
+         * Applies click, range, toggle, or drag selection to the current item.
+         *
+         * @param event - The pointer event that completed the selection.
+         * @param item - The item selected by the event.
+         */
         function onItemClick(
-            event: MouseEvent,
+            event: PointerEvent,
             item: MediaContainer<MediaItem>,
         ) {
             if (multipleSelectionDragFrom !== multipleSelectionDragTo) {
@@ -221,6 +262,11 @@
         }
     };
 
+    /**
+     * Enqueues the supplied media items for download after obtaining directory access.
+     *
+     * @param items - The media items to enqueue.
+     */
     async function downloadItems(items: MediaContainer<MediaItem>[]) {
         try {
             await HakuNeko.SettingsManager.OpenScope().Get<Directory>(GlobalKey.MediaDirectory).EnsureAccess();
@@ -231,14 +277,31 @@
         }
         items.forEach(item => window.HakuNeko.DownloadManager.Enqueue(item as StoreableMediaContainer<MediaItem>));
     }
+    /**
+     * Enqueues all items that have not been viewed or are not currently being viewed.
+     *
+     * @param items - The media items to filter and enqueue.
+     */
+    async function downloadUnviewedItems(items: MediaContainer<MediaItem>[]) {
+        const unvieweditems = await items.reduce(async (accumP, current) => {
+            const accum = await accumP;
+            const flag = await window.HakuNeko.ItemflagManager.GetItemFlagType(current);
+            if (flag !== FlagType.Viewed && flag !== FlagType.Current) {
+                accum.push(current);
+            }
+            return accum;
+        }, Promise.resolve([]));
+        return downloadItems(unvieweditems);
+    }
 
+    /** Toggles the order in which the filtered items are displayed. */
     function reverseSort() {
         reverseSortOrder = !reverseSortOrder;
     }
 </script>
 
 {#if filteredItems.length > 0}
-    <ContextMenu bind:open={contextMenuOpen} target={[itemsdiv]}>
+    <ContextMenu target={[itemsdiv]} onclose={onContextMenuClose}>
         {#if contextItem}
             <ContextMenuOption
                 labelText="Download - {contextItem?.Title}"
@@ -264,7 +327,7 @@
                 labelText="View"
                 shortcutText="⌘V"
                 onclick={() => {
-                    $selectedItem = contextItem;
+                    UI.selectedItem = contextItem;
                 }}
             />
             <ContextMenuOption labelText="Flag as">
@@ -335,7 +398,13 @@
     <div id="ItemFilter">
         <Search id="ItemFilterSearch" size="sm" bind:value={itemNameFilter} />
     </div>
-    <div id="ItemList" class="list" bind:this={itemsdiv}>
+    <!-- svelte-ignore a11y_no_static_element_interactions -->
+    <div 
+        id="ItemList" 
+        class="list" 
+        bind:this={itemsdiv} 
+        onmouseup={(event) => { if (event.target === event.currentTarget && event.button === 0) resetSelection(); }}
+    >
         {#await loadItem}
             <div class="loading center">
                 <div><Loading withOverlay={false} /></div>
@@ -348,22 +417,55 @@
                     multilang={!langFilter && MediaLanguages.length > 1}
                     selected={selectedItems.includes(item)}
                     hover={item === contextItem}
-                    onView={(event) => onItemView(item)(event.detail)}
+                    onView={(event) => onItemView(item)(event)}
                     onmousedown={mouseHandler(item)}
                     onmouseup={mouseHandler(item)}
                     onmouseenter={mouseHandler(item)}
+                    oncontextmenu={() => { contextItem = item }}
                 />
             {/each}
         {:catch error}
             <div class="error">
                 <InlineNotification
                     lowContrast
-                    title={error.name}
-                    subtitle={error.message}
-                />
+                    title={`Plugin failed to load items`}
+                >
+                    <svelte:fragment slot="subtitleChildren">
+                        {`${error.name} - ${error.message} `}
+                        <p class="error-source">
+                            Source: {UI.selectedMedia.Title} - {UI.selectedMedia?.Parent.Title}
+                        </p>
+                    </svelte:fragment>
+                </InlineNotification>
             </div>
         {/await}
     </div>
+    {#if items?.length > 0}
+        <div id="DownloadButtons">
+            {#if selectedItems.length > 0}
+                <MenuButton labelText="Download" size="sm" intrinsicAlign="end">
+                    {#if selectedItems.length === 1}
+                        <MenuItem on:click={() => downloadItems(selectedItems)}>Selected (1)</MenuItem>
+                    {:else }
+                        <MenuItem on:click={() => downloadItems(selectedItems.toReversed())}>Selecteds ({selectedItems.length})</MenuItem>
+                    {/if}
+                    <MenuItem
+                        on:click={() => downloadUnviewedItems(filteredItems.toReversed())}
+                    >All unviewed</MenuItem>
+                    <MenuItem on:click={() => downloadItems(filteredItems.toReversed())}>All</MenuItem>
+                </MenuButton>
+            {:else}
+                <Button
+                    size="small"
+                    icon={CloudDownload}
+                    iconDescription="Download all"
+                    onclick={() => downloadUnviewedItems(filteredItems.toReversed())}
+                >
+                    Download all unviewed
+                </Button>
+            {/if}
+        </div>
+    {/if}
     <div id="ItemBottom">
         Items: {filteredItems.length}/{items.length}
         <Button
@@ -389,13 +491,14 @@
         min-height: 0;
         height: 100%;
         grid-template-columns: 1fr 4px;
-        grid-template-rows: 2.2em 2.2em 2.2em 1fr 2em;
+        grid-template-rows: 2.2em 2.2em 2.2em 1fr fit-content(2em) 2em;
         gap: 0.3em 0.3em;
         grid-template-areas:
             'ItemTitle Nothing'
             'LanguageFilter Resize'
             'ItemFilter Resize'
             'ItemList Resize'
+            'DownloadButtons Resize'
             'ItemBottom Resize';
         grid-area: Item;
         min-width: 22em;
@@ -424,6 +527,13 @@
         grid-area: ItemBottom;
         margin: 0.25em;
     }
+    #DownloadButtons {
+        grid-area: DownloadButtons;
+        margin: 0.25em;
+    }
+    #DownloadButtons > :global(button) {
+        width: 100%;
+    }
     :global(#ItemList .list) {
         white-space: nowrap;
         list-style-type: none;
@@ -437,5 +547,13 @@
     }
     .resize:hover {
             background-color:var(--cds-ui-02); 
+    }
+    .error-source {
+        display: block;
+        margin: 0.25em 0 0 auto;
+        font-size: 0.7em;
+        font-style: italic;
+        color: var(--cds-text-03);
+        text-align: right;
     }
 </style>

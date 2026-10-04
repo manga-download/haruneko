@@ -6,17 +6,18 @@ new TestFixture({
         title: 'HolyScans'
     },
     container: {
-        url: 'https://holyscans.com.tr/manga/baska-bir-dunyada-bekar-baba/',
-        id: JSON.stringify({ post: '1924', slug: '/manga/baska-bir-dunyada-bekar-baba/' }),
-        title: 'Başka Bir Dünyada Bekâr Baba'
+        url: 'https://holyscans.com.tr/manga/kutsal-hac-yolculugu-coskusu/',
+        id: '/manga/kutsal-hac-yolculugu-coskusu/',
+        title: 'Kutsal Hac Yolculuğu Coşkusu'
     },
     child: {
-        id: '/manga/baska-bir-dunyada-bekar-baba/bolum-2/',
-        title: 'Bölüm 2'
+        id: '/manga/kutsal-hac-yolculugu-coskusu/bolum-1-1/',
+        title: 'bölüm 1.1',
+        timeout: 15_000
     },
     entry: {
-        index: 1,
-        size: 1_206_858,
+        index: 0,
+        size: 432_264,
         type: 'image/webp'
     }
 }).AssertWebsite();

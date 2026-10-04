@@ -1,6 +1,6 @@
 ﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'kuimh',
         title: '酷爱漫画 (Kuimh)'
@@ -15,10 +15,8 @@ const config = {
         title: '第01话',
     },
     entry: {
-        index: 0,
+        index: 1,
         size: 53_440,
         type: 'image/jpeg'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

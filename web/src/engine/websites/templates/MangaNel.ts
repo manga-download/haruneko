@@ -24,9 +24,14 @@ const pageScript = `
 `;
 
 @Common.MangaCSS(/^{origin}\/manga\/[^/]+$/, 'ul.manga-info-text li h1')
-@Common.MangasMultiPageCSS('div.list-comic-item-wrap a.list-story-item', Common.PatternLinkGenerator('/manga-list/latest-manga?page={page}'), 500, Common.AnchorInfoExtractor(true))
+@Common.MangasMultiPageCSS('div.list-comic-item-wrap a.list-story-item:not([target])', Common.PatternLinkGenerator('/manga-list/latest-manga?page={page}'), 500, Common.AnchorInfoExtractor(true))
 @Grouple.ImageWithMirrors()
 export class MangaNel extends DecoratableMangaScraper {
+
+    public override async Initialize(): Promise<void> {
+        //trigger Cloudflare at initialization
+        return await FetchWindowScript(new Request(new URL('/manga/manga-list/', this.URI)), '');
+    }
 
     public override async FetchPages(chapter: Chapter): Promise<Page<any>[]> {
         const data = await FetchWindowScript<{ url: string, mirrors: string[] }[]>(new Request(new URL(chapter.Identifier, this.URI)), pageScript, 1000);

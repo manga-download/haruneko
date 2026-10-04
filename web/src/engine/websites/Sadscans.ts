@@ -18,7 +18,7 @@ type APIChapters = {
     };
 }[];
 
-@Common.MangaCSS(/{origin}\/seriler\/[^/]+$/, 'div.container h1', (heading, uri) => ({ id: uri.pathname, title: heading.innerText.trim() }))
+@Common.MangaCSS(/^{origin}\/seriler\/[^/]+$/, 'div.container h1', (heading, uri) => ({ id: uri.pathname, title: heading.innerText.trim() }))
 @Common.MangasSinglePageCSS<HTMLAnchorElement>('/seriler', 'a.block.group', anchor => ({ id: anchor.pathname, title: anchor.querySelector('h3').innerText.trim() }))
 @Common.PagesSinglePageJS(`[...document.querySelectorAll('.reader-img')].map(image => image.src);`, 2000)
 @Common.ImageAjax()
