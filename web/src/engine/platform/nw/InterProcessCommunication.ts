@@ -1,10 +1,5 @@
 import type { Channels } from '../../../../../app/nw/src/ipc/InterProcessCommunication';
 
-type EventRequest = {
-    replyChannel: string,
-    parameters: JSONArray,
-}
-
 type MessageCallback<TParameters extends JSONArray = JSONArray> = (...parameters: TParameters) => void | Promise<void>;
 type RequestCallback<TParameters extends JSONArray = JSONArray, TReturn extends JSONElement | undefined = JSONElement | undefined> = (...parameters: TParameters) => TReturn | Promise<TReturn>;
 
@@ -59,7 +54,7 @@ export class IPC {
                     resolve(evt.detail);
                 }
             }, { once: true });
-            window.dispatchEvent(new CustomEvent<EventRequest>(channel, { detail: { replyChannel, parameters } }));
+            window.dispatchEvent(new CustomEvent(channel, { detail: { replyChannel, parameters } }));
         });
     }
 }

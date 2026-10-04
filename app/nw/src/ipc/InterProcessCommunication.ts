@@ -16,10 +16,10 @@ export namespace Channels {
     };
 }
 
-type EventRequest = {
-    replyChannel: string,
-    parameters: JSONArray,
-}
+type RequestEvent<T extends JSONArray> = CustomEvent<{
+    replyChannel: string;
+    parameters: T;
+}>;
 
 type MessageCallback<TParameters extends JSONArray = JSONArray> = (...parameters: TParameters) => void | Promise<void>;
 type RequestCallback<TParameters extends JSONArray = JSONArray, TReturn extends JSONElement | undefined = JSONElement | undefined> = (...parameters: TParameters) => TReturn | Promise<TReturn>;
@@ -56,10 +56,10 @@ export class IPC {
      * The sender receives a response with the result from the {@link callback}.
      */
     public Handle<TParameters extends JSONArray, TReturn extends JSONElement>(channel: string, callback: RequestCallback<TParameters, TReturn | Void>): void {
-        this.win.addEventListener(channel, async (evt: CustomEvent<unknown>) => {
-            const { replyChannel, parameters } = <EventRequest>evt.detail;
+        // FIXME: When window was reloaded, this listener needs to be re-added again ...
+        this.win.addEventListener(channel, async (evt: RequestEvent<TParameters>) => {
+            const { replyChannel, parameters } = evt.detail;
             try {
-                //throw new Error('Meow!', { cause: 'Something went wrong ...' });
                 const result = await callback(...parameters);
                 this.win.dispatchEvent(new CustomEvent<TReturn>(replyChannel, { detail: result }));
             } catch (error: unknown) {
