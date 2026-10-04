@@ -56,7 +56,6 @@ Categories=Network;FileTransfer;
 
 async function createSnapcraftYaml(blinkApplicationResourcesDirectory, blinkDeploymentTemporaryDirectory, blinkDeploymentOutputDirectory) {
     const file = path.join(blinkDeploymentOutputDirectory, 'snapcraft.yaml');
-    const icon = path.resolve(blinkApplicationResourcesDirectory, process.platform, 'icon.png');
     await fs.writeFile(file, `
 name: ${pkgConfig.name}
 version: ${pkgConfig.devDependencies.electron}
@@ -99,7 +98,7 @@ parts:
   icons:
     plugin: dump
     source-type: local
-    source: ../../res/linux/icons/
+    source: ${path.resolve(blinkApplicationResourcesDirectory, process.platform)}/
     prime: usr/share/icons/hicolor/*
 `);
 }
