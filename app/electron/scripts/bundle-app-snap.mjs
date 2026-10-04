@@ -91,10 +91,10 @@ parts:
       - usr/lib/${pkgConfig.name}/*
     organize:
       '*': usr/lib/${pkgConfig.name}/
-    override-build: |
+    override-prime: |
       craftctl default
       mkdir -p $CRAFT_PART_INSTALL/usr/bin
-      ln -s /usr/lib/${pkgConfig.name}/${pkgConfig.name} $CRAFT_PART_INSTALL/usr/bin/${pkgConfig.name}
+      ln -s ../lib/${pkgConfig.name}/${pkgConfig.name} $CRAFT_PART_INSTALL/usr/bin/${pkgConfig.name}
   ${pkgConfig.name}-icons:
     plugin: dump
     source-type: local
