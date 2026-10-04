@@ -1,0 +1,7 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=HakuNeko
+Exec=snap run hakuneko-electron
+Icon=hakuneko-desktop
+Categories=Network;FileTransfer;

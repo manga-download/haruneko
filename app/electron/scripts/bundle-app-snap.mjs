@@ -41,6 +41,7 @@ async function createSnapImage(blinkApplicationResourcesDirectory, blinkDeployme
 }
 
 async function createDesktopEntry(blinkDeploymentOutputDirectory) {
+/*
     const directory = path.join(blinkDeploymentOutputDirectory, 'snap', 'gui');
     await fs.mkdir(directory, { recursive: true });
     const file = path.join(directory, `${pkgConfig.name}.desktop`);
@@ -49,9 +50,10 @@ Version=1.0
 Type=Application
 Name=${pkgConfig.title}
 Exec=snap run ${pkgConfig.name}
-Icon=hakuneko-desktop
+#Icon=hakuneko-desktop
 Categories=Network;FileTransfer;
 `);
+*/
 }
 
 async function createSnapcraftYaml(blinkApplicationResourcesDirectory, blinkDeploymentTemporaryDirectory, blinkDeploymentOutputDirectory) {
@@ -68,8 +70,8 @@ confinement: strict
 
 apps:
   ${pkgConfig.name}:
-    command: ${pkgConfig.name} --no-sandbox
-    desktop: gui/${pkgConfig.name}.desktop
+    command: usr/lib/${pkgConfig.name}/${pkgConfig.name} --no-sandbox
+    #desktop: gui/${pkgConfig.name}.desktop
     extensions: [gnome]
     plugs:
     - home
@@ -87,14 +89,17 @@ parts:
     source-type: local
     source: ${blinkDeploymentTemporaryDirectory}/
     prime:
-      - usr/bin/**
+      - usr/lib/**
     organize:
-      '*': usr/bin/
-  ${pkgConfig.name}-icons:
+      '*': usr/lib/${pkgConfig.name}/
+  ${pkgConfig.name}-resources:
     plugin: dump
     source-type: local
     source: ${path.resolve(blinkApplicationResourcesDirectory, process.platform)}/
     prime:
+      - usr/share/applications/**
       - usr/share/icons/hicolor/**
+    organize:
+      'usr/share/applications/hakuneko-desktop.desktop': var/lib/snapd/desktop/applications/${pkgConfig.name}_${pkgConfig.name}.desktop
 `);
 }
