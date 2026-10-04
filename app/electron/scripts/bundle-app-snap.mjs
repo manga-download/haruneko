@@ -87,7 +87,7 @@ parts:
     source-type: local
     source: ${blinkDeploymentTemporaryDirectory}/
     prime:
-      - usr/bin
+      - usr/bin/**
     organize:
       '*': usr/bin/
   ${pkgConfig.name}-icons:
@@ -95,6 +95,6 @@ parts:
     source-type: local
     source: ${path.resolve(blinkApplicationResourcesDirectory, process.platform)}/
     prime:
-      - usr/share/icons/hicolor/*
+      - usr/share/icons/hicolor/**
 `);
 }
