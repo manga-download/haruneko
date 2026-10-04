@@ -89,7 +89,7 @@ parts:
     prime:
       - usr/bin
     organize:
-      '*': usr/lib/
+      '*': usr/bin/
   ${pkgConfig.name}-icons:
     plugin: dump
     source-type: local
