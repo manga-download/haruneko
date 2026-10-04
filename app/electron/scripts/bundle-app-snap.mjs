@@ -32,38 +32,35 @@ async function createSnapImage(blinkApplicationResourcesDirectory, blinkDeployme
     const snapfile = path.basename(blinkDeploymentTemporaryDirectory).replace(/^electron/i, pkgConfig.name) + '.snap';
     const yaml = path.join(blinkDeploymentOutputDirectory, 'snapcraft.yaml');
     const desktop = path.join(blinkDeploymentOutputDirectory, 'snap', 'gui', `${pkgConfig.name}.desktop`);
-    const icon = path.join(blinkDeploymentOutputDirectory, 'snap', 'gui', 'icon.png');
-    await Promise.allSettled([path.join(blinkDeploymentOutputDirectory, snapfile), yaml, desktop, icon].map(file => fs.unlink(file)));
-    await createSnapcraftYaml(blinkDeploymentTemporaryDirectory, blinkDeploymentOutputDirectory);
-    await createDesktopEntry(blinkApplicationResourcesDirectory, blinkDeploymentOutputDirectory);
+    await Promise.allSettled([path.join(blinkDeploymentOutputDirectory, snapfile), yaml, desktop].map(file => fs.unlink(file)));
+    await createSnapcraftYaml(blinkApplicationResourcesDirectory, blinkDeploymentTemporaryDirectory, blinkDeploymentOutputDirectory);
+    await createDesktopEntry(blinkDeploymentOutputDirectory);
     await run('sudo snapcraft pack --destructive-mode', blinkDeploymentOutputDirectory);
     await run(`sudo mv ${pkgConfig.name}*.snap ${snapfile}`, blinkDeploymentOutputDirectory);
     await run('snapcraft upload *.snap --release=edge', blinkDeploymentOutputDirectory);
 }
 
-async function createDesktopEntry(blinkApplicationResourcesDirectory, blinkDeploymentOutputDirectory) {
+async function createDesktopEntry(blinkDeploymentOutputDirectory) {
     const directory = path.join(blinkDeploymentOutputDirectory, 'snap', 'gui');
     await fs.mkdir(directory, { recursive: true });
     const file = path.join(directory, `${pkgConfig.name}.desktop`);
     // A desktop entry is mandatory for xdg-desktop-portal to register the snap,
     // otherwise all portal requests (e.g. the file chooser) are denied.
     // Field semantics follow hakuneko/build-app.config (meta.type, meta.categories),
-    // except Icon which must be the absolute path of the icon file shipped in meta/gui.
+    // except Icon which must be the absolute path of the icon installed by override-build.
     await fs.writeFile(file, `[Desktop Entry]
 Version=1.0
 Type=Application
 Name=${pkgConfig.title}
-GenericName=${pkgConfig.description}
 Exec=${pkgConfig.name}
-Icon=\${SNAP}/meta/gui/icon.png
+Icon=\${SNAP}/icon.png
 Categories=Network;FileTransfer;
 `);
-    // Snapcraft copies snap/gui into meta/gui of the snap and uses gui/icon.png as snap icon
-    await fs.copyFile(path.join(blinkApplicationResourcesDirectory, process.platform, 'icon.png'), path.join(directory, 'icon.png'));
 }
 
-async function createSnapcraftYaml(blinkDeploymentTemporaryDirectory, blinkDeploymentOutputDirectory) {
+async function createSnapcraftYaml(blinkApplicationResourcesDirectory, blinkDeploymentTemporaryDirectory, blinkDeploymentOutputDirectory) {
     const file = path.join(blinkDeploymentOutputDirectory, 'snapcraft.yaml');
+    const icon = path.resolve(blinkApplicationResourcesDirectory, process.platform, 'icon.png');
     await fs.writeFile(file, `
 name: ${pkgConfig.name}
 version: ${pkgConfig.devDependencies.electron}
@@ -94,6 +91,7 @@ parts:
     plugin: nil
     override-build: |
       cp -rv ${blinkDeploymentTemporaryDirectory}/* $SNAPCRAFT_PART_INSTALL/
+      cp -v ${icon} $SNAPCRAFT_PART_INSTALL/icon.png
       chmod -R 755 $SNAPCRAFT_PART_INSTALL
     build-snaps:
     - node/22/stable
