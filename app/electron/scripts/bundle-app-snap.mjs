@@ -15,7 +15,7 @@ export async function bundle(blinkApplicationSourceDirectory, blinkApplicationRe
     // TODO: include ffmpeg
     // TODO: include imagemagick
     // TODO: include kindlegen
-    await createSnapImage(blinkDeploymentTemporaryDirectory, blinkDeploymentOutputDirectory);
+    await createSnapImage(blinkApplicationResourcesDirectory, blinkDeploymentTemporaryDirectory, blinkDeploymentOutputDirectory);
 }
 
 async function bundleApp(blinkApplicationSourceDirectory, blinkDeploymentTemporaryDirectory) {
@@ -28,24 +28,39 @@ async function updateBinary(blinkApplicationResourcesDirectory, blinkDeploymentT
     await fs.rename(binary, binary.replace(/electron$/i, `${pkgConfig.name}`));
 }
 
-async function createSnapImage(blinkDeploymentTemporaryDirectory, blinkDeploymentOutputDirectory) {
+async function createSnapImage(blinkApplicationResourcesDirectory, blinkDeploymentTemporaryDirectory, blinkDeploymentOutputDirectory) {
     const snapfile = path.basename(blinkDeploymentTemporaryDirectory).replace(/^electron/i, pkgConfig.name) + '.snap';
-    try {
-        const artifact = path.join(blinkDeploymentOutputDirectory, snapfile);
-        await fs.unlink(artifact);
-    } catch { }
-    const yaml = await createSnapcraftYaml(blinkDeploymentTemporaryDirectory, blinkDeploymentOutputDirectory);
-    try {
-        await run('sudo snapcraft pack --destructive-mode', blinkDeploymentOutputDirectory);
-        await run(`sudo mv ${pkgConfig.name}*.snap ${snapfile}`, blinkDeploymentOutputDirectory);
-        await run('snapcraft upload *.snap --release=edge', blinkDeploymentOutputDirectory);
-    } finally {
-        fs.unlink(yaml);
-    }
+    const yaml = path.join(blinkDeploymentOutputDirectory, 'snapcraft.yaml');
+    const desktop = path.join(blinkDeploymentOutputDirectory, 'snap', 'gui', `${pkgConfig.name}.desktop`);
+    await Promise.allSettled([path.join(blinkDeploymentOutputDirectory, snapfile), yaml, desktop].map(file => fs.unlink(file)));
+    await createSnapcraftYaml(blinkApplicationResourcesDirectory, blinkDeploymentTemporaryDirectory, blinkDeploymentOutputDirectory);
+    await createDesktopEntry(blinkDeploymentOutputDirectory);
+    await run('sudo snapcraft pack --destructive-mode', blinkDeploymentOutputDirectory);
+    await run(`sudo mv ${pkgConfig.name}*.snap ${snapfile}`, blinkDeploymentOutputDirectory);
+    await run('snapcraft upload *.snap --release=edge', blinkDeploymentOutputDirectory);
 }
 
-async function createSnapcraftYaml(blinkDeploymentTemporaryDirectory, blinkDeploymentOutputDirectory) {
+async function createDesktopEntry(blinkDeploymentOutputDirectory) {
+    const directory = path.join(blinkDeploymentOutputDirectory, 'snap', 'gui');
+    await fs.mkdir(directory, { recursive: true });
+    const file = path.join(directory, `${pkgConfig.name}.desktop`);
+    // A desktop entry is mandatory for xdg-desktop-portal to register the snap,
+    // otherwise all portal requests (e.g. the file chooser) are denied.
+    // Field semantics follow hakuneko/build-app.config (meta.type, meta.categories),
+    // except Icon which must be the absolute path of the icon installed by override-build.
+    await fs.writeFile(file, `[Desktop Entry]
+Version=1.0
+Type=Application
+Name=${pkgConfig.title}
+Exec=${pkgConfig.name}
+Icon=\${SNAP}/icon.png
+Categories=Network;FileTransfer;
+`);
+}
+
+async function createSnapcraftYaml(blinkApplicationResourcesDirectory, blinkDeploymentTemporaryDirectory, blinkDeploymentOutputDirectory) {
     const file = path.join(blinkDeploymentOutputDirectory, 'snapcraft.yaml');
+    const icon = path.resolve(blinkApplicationResourcesDirectory, process.platform, 'icon.png');
     await fs.writeFile(file, `
 name: ${pkgConfig.name}
 version: ${pkgConfig.devDependencies.electron}
@@ -59,8 +74,6 @@ confinement: strict
 apps:
   ${pkgConfig.name}:
     command: ${pkgConfig.name} --no-sandbox
-    # TODO: Create desktop entry
-    #desktop: snap/gui/${pkgConfig.name}.desktop
     extensions: [gnome]
     plugs:
     - home
@@ -78,6 +91,7 @@ parts:
     plugin: nil
     override-build: |
       cp -rv ${blinkDeploymentTemporaryDirectory}/* $SNAPCRAFT_PART_INSTALL/
+      cp -v ${icon} $SNAPCRAFT_PART_INSTALL/icon.png
       chmod -R 755 $SNAPCRAFT_PART_INSTALL
     build-snaps:
     - node/22/stable
@@ -87,5 +101,4 @@ parts:
     - libnss3
     - libnspr4
 `);
-    return file;
 }
