@@ -532,6 +532,7 @@ export { default as NirvanaManga } from './NirvanaManga';
 export { default as NiveraFansub } from './NiveraFansub';
 export { default as NocturneSummer } from './NocturneSummer';
 export { default as NoIndexScan } from './NoIndexScan';
+export { default as NonaFansub } from './NonaFansub';
 export { default as NoraNoFansub } from './NoraNoFansub';
 export { default as Noromax } from './Noromax';
 export { default as NovelcoolBR } from './NovelcoolBR';
