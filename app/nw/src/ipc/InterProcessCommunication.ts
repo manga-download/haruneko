@@ -17,7 +17,7 @@ export namespace Channels {
 }
 
 type EventRequest = {
-    replyID: string,
+    replyChannel: string,
     parameters: JSONArray,
 }
 
@@ -57,14 +57,14 @@ export class IPC {
      */
     public Handle<TParameters extends JSONArray, TReturn extends JSONElement>(channel: string, callback: RequestCallback<TParameters, TReturn | Void>): void {
         this.win.addEventListener(channel, async (evt: CustomEvent<unknown>) => {
-            const { replyID, parameters } = <EventRequest>evt.detail;
+            const { replyChannel, parameters } = <EventRequest>evt.detail;
             try {
-                throw new Error('Meow!'/*, { cause: 'Something went wrong ...' }*/);
-                //const result = await callback(...parameters);
-                //this.win.dispatchEvent(new CustomEvent<TReturn>(replyID, { detail: result }));
-            } catch (error) {
-                // TODO: error containing cause will not work ...
-                this.win.dispatchEvent(new CustomEvent<Error>(replyID, { detail: error }));
+                //throw new Error('Meow!', { cause: 'Something went wrong ...' });
+                const result = await callback(...parameters);
+                this.win.dispatchEvent(new CustomEvent<TReturn>(replyChannel, { detail: result }));
+            } catch (error: unknown) {
+                if (error instanceof Error) delete error.cause;
+                this.win.dispatchEvent(new CustomEvent<unknown>(replyChannel, { detail: error }));
             }
         });
     }

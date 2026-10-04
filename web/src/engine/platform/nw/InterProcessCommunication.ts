@@ -1,7 +1,7 @@
 import type { Channels } from '../../../../../app/nw/src/ipc/InterProcessCommunication';
 
 type EventRequest = {
-    replyID: string,
+    replyChannel: string,
     parameters: JSONArray,
 }
 
@@ -49,17 +49,17 @@ export class IPC {
      */
     public async Invoke<TParameters extends JSONArray, TReturn extends JSONElement | Void>(channel: string, ...parameters: TParameters): Promise<TReturn | Void> {
         return new Promise<TReturn | Void>((resolve, reject) => {
-            const replyID = `${channel}#${Date.now()}${Math.random()}`;
-            console.log('Web::IPC::Invoke', channel, '=>', replyID, parameters);
-            window.addEventListener(replyID, (evt: CustomEvent<TReturn | Void | Error>) => {
-                console.log('Result:', replyID, evt.detail);
+            const replyChannel = `${channel}#${Date.now()}${Math.random()}`;
+            console.log('Web::IPC::Invoke', channel, '=>', replyChannel, parameters);
+            window.addEventListener(replyChannel, (evt: CustomEvent<TReturn | Void | Error>) => {
+                console.log('Result:', replyChannel, evt.detail);
                 if (evt.detail instanceof Error) {
                     reject(evt.detail);
                 } else {
                     resolve(evt.detail);
                 }
             }, { once: true });
-            window.dispatchEvent(new CustomEvent<EventRequest>(channel, { detail: { replyID: replyID, parameters: parameters } }));
+            window.dispatchEvent(new CustomEvent<EventRequest>(channel, { detail: { replyChannel, parameters } }));
         });
     }
 }
