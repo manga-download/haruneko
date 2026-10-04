@@ -82,7 +82,7 @@ apps:
       TMPDIR: $XDG_RUNTIME_DIR
 
 parts:
-  app:
+  ${pkgConfig.name}:
     plugin: dump
     source-type: local
     source: ${blinkDeploymentTemporaryDirectory}/
@@ -95,7 +95,7 @@ parts:
       craftctl default
       mkdir -p $CRAFT_PART_INSTALL/usr/bin
       ln -s /usr/lib/${pkgConfig.name}/${pkgConfig.name} $CRAFT_PART_INSTALL/usr/bin/${pkgConfig.name}
-  icons:
+  ${pkgConfig.name}-icons:
     plugin: dump
     source-type: local
     source: ${path.resolve(blinkApplicationResourcesDirectory, process.platform)}/
