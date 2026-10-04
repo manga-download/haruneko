@@ -7,6 +7,7 @@ import { Channels } from '../../../../../app/nw/src/ipc/InterProcessCommunicatio
 export default class RemoteProcedureCallManager implements IRemoteProcedureCallManager {
 
     private readonly ipc = GetIPC();
+    private readonly ipcAppReady: Promise<void>;
 
     private readonly rpcEnabled: Check;
     private readonly rpcPort: Numeric;
@@ -23,6 +24,8 @@ export default class RemoteProcedureCallManager implements IRemoteProcedureCallM
         this.rpcPort.Subscribe(callback);
         this.rpcSecret.Subscribe(callback);
 
+        // TODO: Find a better solution to determine that the corresponding IPC listeners in App context are subscribed
+        this.ipcAppReady = new Promise<void>(resolve => setTimeout(resolve, 1000));
         this.Update();
     }
 
@@ -31,10 +34,12 @@ export default class RemoteProcedureCallManager implements IRemoteProcedureCallM
     }
 
     public async Stop(): Promise<void> {
+        await this.ipcAppReady;
         return this.ipc.Invoke(Channels.RemoteProcedureCallManager.Stop);
     }
 
     public async Restart(port: number, secret: string): Promise<void> {
+        await this.ipcAppReady;
         return this.ipc.Invoke(Channels.RemoteProcedureCallManager.Restart, port, secret);
     }
 }

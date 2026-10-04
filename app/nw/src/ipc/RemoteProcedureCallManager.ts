@@ -11,13 +11,13 @@ export class RemoteProcedureCallManager {
         this.ipc.Handle(Channels.RemoteProcedureCallManager.Restart, this.Restart.bind(this));
     }
 
-    private async Stop(): Promise<undefined> {
+    private async Stop(): Promise<void> {
+        //console.log('App::RemoteProcedureCallManager::Stop()');
         this.rpc.Stop();
-        return undefined;
     }
 
-    private async Restart(port: number, secret: string): Promise<undefined> {
+    private async Restart(port: number, secret: string): Promise<void> {
+        //console.log('App::RemoteProcedureCallManager::Restart()', port, secret);
         await this.rpc.Listen(port, secret, [/^(chrome-)?extension:/i]);
-        return undefined;
     }
 }
