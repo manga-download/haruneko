@@ -13,10 +13,10 @@ new TestFixture({
     child: {
         id: '/manga/olsen-bile/bolum-1/',
         title: 'Bölüm 1'
-    }, /* need login to access the images 
+    }, /* need login to access the images
     entry: {
         index: 0,
-        size: 123-456,
+        size: 123_456,
         type: 'image/jpeg'
     }*/
 }).AssertWebsite();
