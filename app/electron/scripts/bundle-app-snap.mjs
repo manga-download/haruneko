@@ -72,6 +72,7 @@ apps:
   ${pkgConfig.name}:
     command: usr/lib/${pkgConfig.name}/${pkgConfig.name} --no-sandbox
     #desktop: gui/${pkgConfig.name}.desktop
+    desktop: usr/share/applications/${pkgConfig.name}.desktop
     extensions: [gnome]
     plugs:
     - home
@@ -96,9 +97,10 @@ parts:
     source-type: local
     source: ${path.resolve(blinkApplicationResourcesDirectory, process.platform)}/
     prime:
-      - meta/gui/**
+      - usr/share/applications/**
       - usr/share/icons/hicolor/**
+    # Icons from '/usr/share/icons/' are mapped to directory '/var/lib/snapd/desktop/icons/' which is appended to 'XDG_DATA_DIRS'
     organize:
-      'usr/share/applications/hakuneko-desktop.desktop': meta/gui/${pkgConfig.name}.desktop
+      'usr/share/applications/hakuneko-desktop.desktop': usr/share/applications/${pkgConfig.name}.desktop
 `);
 }
