@@ -30,7 +30,10 @@ type ChapterID = {
 
 // TODO: Add anime support
 
-@Common.MangaCSS<HTMLMetaElement>(/^{origin}\/catalogue\/[^/]+$/, 'meta[property="og:title"]', (meta, uri) => ({ id: uri.pathname.split('/').filter(segment => segment).at(-1), title: meta.content }))
+@Common.MangaCSS<HTMLMetaElement>(/^{origin}\/catalogue\/[^/]+$/, 'meta[property="og:title"]', (meta, uri) => ({
+    id: uri.pathname.split('/').filter(segment => segment).at(-1),
+    title: meta.content
+}))
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
