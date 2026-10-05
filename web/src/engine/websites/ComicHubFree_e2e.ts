@@ -3,20 +3,20 @@
 new TestFixture({
     plugin: {
         id: 'mycomiclist',
-        title: 'MyComicList'
+        title: 'ComicHub Free'
     },
     container: {
-        url: 'https://mycomiclist.org/comic/avengers-united-infinity-comic',
+        url: 'https://comichubfree.com/comic/avengers-united-infinity-comic',
         id: '/comic/avengers-united-infinity-comic',
         title: 'Avengers United Infinity Comic'
     },
     child: {
-        id: '/avengers-united-infinity-comic/issue-63/all',
-        title: '#63'
+        id: '/avengers-united-infinity-comic/issue-1/all',
+        title: 'Issue #1'
     },
     entry: {
         index: 0,
-        size: 384_838,
+        size: 12_485,
         type: 'image/jpeg'
     }
 }).AssertWebsite();
