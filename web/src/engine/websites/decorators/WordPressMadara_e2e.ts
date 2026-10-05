@@ -99,7 +99,6 @@ import '../NonaFansub_e2e';
 import '../Opiatoon_e2e';
 import '../PinkSeaUnicorn_e2e';
 import '../PortalYaoi_e2e';
-import '../RaijinScans_e2e';
 import '../RuyaMangaNet_e2e';
 import '../RuyaManga_e2e';
 import '../S2Manga_e2e';
