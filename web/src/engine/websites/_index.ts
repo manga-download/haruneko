@@ -56,6 +56,7 @@ export { default as BoyLoveCC } from './BoyLoveCC';
 export { default as BrainRotComics } from './BrainRotComics';
 export { default as CapibaraTraductor } from './CapibaraTraductor';
 export { default as CatharsisWorld } from './CatharsisWorld';
+export { default as CGBum } from './CGBum';
 export { default as ChampionCross } from './ChampionCross';
 export { default as Chochox } from './Chochox';
 export { default as CiaoPlus } from './CiaoPlus';
