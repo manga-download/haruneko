@@ -441,6 +441,7 @@ export { default as Mangaz } from './Mangaz';
 export { default as MangaZegra } from './MangaZegra';
 export { default as MangaZizi } from './MangaZizi';
 export { default as Mangazure } from './Mangazure';
+export { default as Mangitto } from './Mangitto';
 export { default as ManHastro } from './ManHastro';
 export { default as ManHatic } from './ManHatic';
 export { default as ManhuaBuddy } from './ManhuaBuddy';
