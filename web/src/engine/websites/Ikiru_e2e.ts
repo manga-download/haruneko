@@ -6,17 +6,17 @@ new TestFixture({
         title: 'Ikiru'
     },
     container: {
-        url: 'https://08.ikiru.wtf/manga/martial-peak/',
-        id: '/manga/martial-peak/',
+        url: 'https://09.ikiru.wtf/manga/martial-peak/',
+        id: 'martial-peak',
         title: 'Martial Peak'
     },
     child: {
-        id: '/manga/martial-peak/chapter-1.261519/',
+        id: '1',
         title: 'Chapter 1'
     },
     entry: {
         index: 0,
-        size: 124_648,
-        type: 'image/jpeg'
+        size: 131_040,
+        type: 'image/webp'
     }
 }).AssertWebsite();
