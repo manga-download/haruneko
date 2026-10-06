@@ -225,6 +225,7 @@ export { default as Ikiru } from './Ikiru';
 export { default as Imgur } from './Imgur';
 export { default as IMHentai } from './IMHentai';
 export { default as ImperioDaBritannia } from './ImperioDaBritannia';
+export { default as ImperioManhwa } from './ImperioManhwa';
 export { default as InfraFandub } from './InfraFandub';
 export { default as Inkapk } from './Inkapk';
 export { default as InManga } from './InManga';
