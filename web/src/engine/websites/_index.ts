@@ -549,6 +549,7 @@ export { default as OnePieceTube } from './OnePieceTube';
 export { default as Onisaga } from './Onisaga';
 export { default as OnMangaMe } from './OnMangaMe';
 export { default as Opiatoon } from './Opiatoon';
+export { default as OrckuMangas } from './OrckuMangas';
 export { default as Oremanga } from './Oremanga';
 export { default as OrigamiOrpheans } from './OrigamiOrpheans';
 export { default as Orimanga } from './Orimanga';
