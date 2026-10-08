@@ -6,12 +6,12 @@ new TestFixture({
         title: 'Mugiwara no Streaming'
     },
     container: {
-        url: 'https://www.mugiwara-no-streaming.com/catalogue/one-piece',
-        id: 'one-piece',
+        url: 'https://www.mugiwara-no-streaming.com/catalogue/one-piece/scans/original',
+        id: '/catalogue/one-piece/scans/original',
         title: 'One Piece'
     },
     child: {
-        id: JSON.stringify({ scans: 'One Piece', number: '1' }),
+        id: '/One Piece/1/57',
         title: 'Chapitre 1'
     },
     entry: {
