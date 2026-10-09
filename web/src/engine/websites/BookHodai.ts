@@ -4,7 +4,6 @@ import { Chapter, DecoratableMangaScraper, type Manga, type MangaPlugin } from '
 import * as Common from './decorators/Common';
 import * as SpeedBinb from './decorators/SpeedBinb';
 import { FetchHTML, FetchJSON } from '../platform/FetchProvider';
-import { SpeedBindVersion } from './decorators/SpeedBinb';
 
 type APIChapters = {
     backnumber: {
@@ -22,7 +21,7 @@ type APIChapters = {
     id: uri.pathname,
     title: element.textContent.split('＞')?.pop().trim() || element.textContent.trim()
 }))
-@SpeedBinb.PagesSinglePageAjax(SpeedBindVersion.v016130)
+@SpeedBinb.PagesSinglePageAjax()
 @SpeedBinb.ImageAjax()
 export default class extends DecoratableMangaScraper {
 

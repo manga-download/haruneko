@@ -3,7 +3,6 @@ import icon from './BookLive.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import * as SpeedBinb from './decorators/SpeedBinb';
-import { SpeedBindVersion } from './decorators/SpeedBinb';
 
 @Common.MangaCSS(/^{origin}\/product\/index\/title_id\/\d+\/vol_no\/\d+$/, 'li.contents span.book_title')
 @Common.MangasNotSupported()
@@ -11,7 +10,7 @@ import { SpeedBindVersion } from './decorators/SpeedBinb';
     id: `/bviewer/s/?cid=${anchor.dataset.title}_${anchor.dataset.vol}`,
     title: anchor.closest('.series_list_detail').querySelector<HTMLAnchorElement>('a[class*=sl-title]').text.trim()
 }), true)
-@SpeedBinb.PagesSinglePageAjax(SpeedBindVersion.v016130)
+@SpeedBinb.PagesSinglePageAjax()
 @SpeedBinb.ImageAjax()
 
 export default class extends DecoratableMangaScraper {

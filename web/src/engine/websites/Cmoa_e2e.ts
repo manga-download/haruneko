@@ -11,12 +11,12 @@ new TestFixture({
         title: '呪術廻戦'
     },
     child: {
-        id: '/bib/speedreader/?cid=0000151961_jp_0021&u0=1&u1=0',
+        id: '/bib/speedreader/?cid=0000151961_jp_0021&u0=1',
         title: '21'
     },
     entry: {
         index: 0,
-        size: 2_940_987,
+        size: 3_995_416,
         type: 'image/png'
     }
 }).AssertWebsite();

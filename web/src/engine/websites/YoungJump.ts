@@ -4,7 +4,6 @@ import { DecoratableMangaScraper, Manga, type MangaPlugin } from '../providers/M
 import * as Common from './decorators/Common';
 import * as SpeedBinb from './decorators/SpeedBinb';
 import { FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
-import { SpeedBindVersion } from './decorators/SpeedBinb';
 
 //BROKEN BECAUSE OF COOKIES
 
@@ -15,7 +14,7 @@ type APIMagazine = {
 };
 
 @Common.ChaptersUniqueFromManga()
-@SpeedBinb.PagesSinglePageAjax(SpeedBindVersion.v016201, true)
+@SpeedBinb.PagesSinglePageAjax()
 @SpeedBinb.ImageAjax()
 export default class extends DecoratableMangaScraper {
 

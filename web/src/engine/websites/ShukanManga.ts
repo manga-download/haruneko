@@ -3,7 +3,6 @@ import icon from './ShukanManga.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import * as SpeedBinb from './decorators/SpeedBinb';
-import { SpeedBindVersion } from './decorators/SpeedBinb';
 
 @Common.MangaCSS(/^{origin}\/work_list\/detail\/[^/]+\/$/, 'meta[property="og:title"]')
 @Common.MangasSinglePageCSS('/comics/', 'article a[data-props-mode="comic-detail"]:first-of-type', anchor => ({
@@ -14,7 +13,7 @@ import { SpeedBindVersion } from './decorators/SpeedBinb';
     id: anchor.href,
     title: anchor.text.trim()
 }))
-@SpeedBinb.PagesSinglePageAjax(SpeedBindVersion.v016130)
+@SpeedBinb.PagesSinglePageAjax()
 @SpeedBinb.ImageAjax()
 export default class extends DecoratableMangaScraper {
 

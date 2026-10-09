@@ -3,7 +3,6 @@ import icon from './Yanmaga.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import * as SpeedBinb from './decorators/SpeedBinb';
-import { SpeedBindVersion } from './decorators/SpeedBinb';
 
 //BROKEN BECAUSE OF COOKIES
 
@@ -30,7 +29,7 @@ import { SpeedBindVersion } from './decorators/SpeedBinb';
          }, 1000);
     });
 `, 200)
-@SpeedBinb.PagesSinglePageAjax(SpeedBindVersion.v016130, true)
+@SpeedBinb.PagesSinglePageAjax()
 @SpeedBinb.ImageAjax()
 export default class extends DecoratableMangaScraper {
 

@@ -3,7 +3,6 @@ import icon from './YoMonga.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import * as SpeedBinb from './decorators/SpeedBinb';
-import { SpeedBindVersion } from './decorators/SpeedBinb';
 
 //BROKEN BECAUSE OF COOKIES
 
@@ -16,7 +15,7 @@ import { SpeedBindVersion } from './decorators/SpeedBinb';
     id: anchor.pathname + anchor.search,
     title: anchor.parentNode.querySelector<HTMLSpanElement>('.episode-name').textContent.trim()
 }))
-@SpeedBinb.PagesSinglePageAjax(SpeedBindVersion.v016130, true)
+@SpeedBinb.PagesSinglePageAjax()
 @SpeedBinb.ImageAjax()
 export default class extends DecoratableMangaScraper {
     public constructor() {

@@ -4,7 +4,6 @@ import { Chapter, DecoratableMangaScraper, type Manga, type Page } from '../prov
 import * as Common from './decorators/Common';
 import * as SpeedBinb from './decorators/SpeedBinb';
 import { FetchCSS, FetchHTML } from '../platform/FetchProvider';
-import { SpeedBindVersion } from './decorators/SpeedBinb';
 
 @Common.MangaCSS(/^{origin}\/[^/]+\/$/, 'h2.contentTitle')
 @Common.MangasSinglePageCSS<HTMLAnchorElement>('/list/', 'div.bnrList ul li a', anchor => ({
@@ -36,6 +35,6 @@ export default class extends DecoratableMangaScraper {
         //find real reader url to send to SpeedBinb, since redirection is done by Javascript
         const doc = await FetchHTML(new Request(chapter.Identifier));
         const reallink = doc.documentElement.innerHTML.match(/location.href='(.*)'/).at(1);
-        return SpeedBinb.FetchPagesSinglePageAjax.call(this, new Chapter(this, chapter.Parent as Manga, reallink, chapter.Title), SpeedBindVersion.v016130);
+        return SpeedBinb.FetchPagesSinglePageAjax.call(this, new Chapter(this, chapter.Parent as Manga, reallink, chapter.Title));
     }
 }

@@ -80,7 +80,7 @@ interface Descrambler {
     GetDimensions(dimensions: Dimensions): Dimensions;
     GetCoords(dimensions: Dimensions): DrawImageCoords[];
 }
-
+/*
 const JsonFetchScript = `
     new Promise(async (resolve, reject) => {
         try {
@@ -91,9 +91,7 @@ const JsonFetchScript = `
             reject(error);
         }
     })
-`;
-
-export enum SpeedBindVersion { v016061, v016452, v016201, v016130 };
+`;*/
 
 function GetSanitizedURL(base: string, append: string): URL {
     const baseURI = new URL(append, base + '/');
@@ -110,10 +108,8 @@ function GetSanitizedURL(base: string, append: string): URL {
  * The pages are extracted from the composed url based on the `Identifier` of the {@link chapter} and the `URI` of the website.
  * @param this - A reference to the {@link MangaScraper} instance which will be used as context for this method
  * @param chapter - A reference to the {@link Chapter} which shall be assigned as parent for the extracted pages
- * @param version - SpeedBinb version used by the website
- * @param needCookies - Use browser window to perform first JSON request to get access cookies properly
  */
-export async function FetchPagesSinglePageAjax(this: MangaScraper, chapter: Chapter, version: SpeedBindVersion, needCookies = false): Promise<Page[]> {
+export async function FetchPagesSinglePageAjax(this: MangaScraper, chapter: Chapter): Promise<Page[]> {
 
     //1 Fetch "div#content.pages" and "real" chapter url (since a redirection is possible)
     let viewerUrl = new URL(chapter.Identifier, this.URI);
@@ -156,16 +152,24 @@ export async function FetchPagesSinglePageAjax(this: MangaScraper, chapter: Chap
     if (u0) uri.searchParams.set('u0', u0);
     if (u1) uri.searchParams.set('u1', u1);
 
-    const { items } = !needCookies ? await FetchJSON<JSONPageData>(new Request(uri, {
+    /*
+        const { items } = !needCookies ? await FetchJSON<JSONPageData>(new Request(uri, {
+            headers: {
+                Referer: viewerUrl.href
+            }
+        })) :
+            await FetchWindowScript<JSONPageData>(new Request(viewerUrl), JsonFetchScript.replace('{URI}', uri.href), 2500);
+    */
+
+    const { items } = await FetchJSON<JSONPageData>(new Request(uri, {
         headers: {
             Referer: viewerUrl.href
         }
-    })) :
-        await FetchWindowScript<JSONPageData>(new Request(viewerUrl), JsonFetchScript.replace('{URI}', uri.href), 2500);
+    }));
 
     //3 Fetch pages links using speedbinb informations
     const configuration = items.at(0);
-    cid = version === SpeedBindVersion.v016452 ? cid : configuration.ContentID;
+
     configuration.ctbl = ComputeTable(cid, sharingKey, configuration.ctbl as string);
     configuration.ptbl = ComputeTable(cid, sharingKey, configuration.ptbl as string);
     try {
@@ -184,12 +188,6 @@ export async function FetchPagesSinglePageAjax(this: MangaScraper, chapter: Chap
             uri.searchParams.set('cid', cid);
             uri.searchParams.set('p', configuration.p);
             uri.searchParams.set('vm', `${configuration.ViewMode}`);
-
-            if (version === SpeedBindVersion.v016452) {
-                uri.searchParams.set('q', '1');
-                if (u0) uri.searchParams.set('u0', u0);
-                if (u1) uri.searchParams.set('u1', u1);
-            }
             imageTemplate = 'sbcGetImg.php';
             break;
         }
@@ -202,8 +200,6 @@ export async function FetchPagesSinglePageAjax(this: MangaScraper, chapter: Chap
 
         case 2: { // v016130 MangaPlaza, Yanmaga, Yomonga
             uri = GetSanitizedURL(configuration.ContentsServer, 'content');
-            if (u0) uri.searchParams.set('u0', u0);
-            if (u1) uri.searchParams.set('u1', u1);
             imageTemplate = 'img/{src}';
             break;
         }
@@ -212,26 +208,24 @@ export async function FetchPagesSinglePageAjax(this: MangaScraper, chapter: Chap
             return;
     }
 
-    if (configuration.ContentDate) {
-        uri.searchParams.set('dmytime', configuration.ContentDate);
-    }
+    if (u0) uri.searchParams.set('u0', u0);
+    if (u1) uri.searchParams.set('u1', u1);
+    if (configuration.ContentDate) uri.searchParams.set('dmytime', configuration.ContentDate);
 
     return await ExtractPages.call(this, uri, imageTemplate, configuration, chapter);
 }
 
 /**
  * A class decorator that adds the ability to extract all pages for a given chapter from a website using SpeedBinb Viewer.
- * @param version - SpeedBinb version used by the website
- * @param needCookies - Use browser window to perform first JSON request to get access cookies properly
  */
 
-export function PagesSinglePageAjax(version: SpeedBindVersion = SpeedBindVersion.v016061, needCookies = false) {
+export function PagesSinglePageAjax() {
     return function DecorateClass<T extends Common.Constructor>(ctor: T, context?: ClassDecoratorContext): T {
         Common.ThrowOnUnsupportedDecoratorContext(context);
 
         return class extends ctor {
             public async FetchPages(this: MangaScraper, chapter: Chapter): Promise<Page[]> {
-                return FetchPagesSinglePageAjax.call(this, chapter, version, needCookies);
+                return FetchPagesSinglePageAjax.call(this, chapter);
             }
         };
     };
