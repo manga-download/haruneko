@@ -1,7 +1,7 @@
 import '../AsmodeusScans_e2e';
+import '../ErisScans_e2e';
 import '../GenzToon_e2e';
 import '../GrimScans_e2e';
-import '../MeiToon_e2e';
 import '../MistScans_e2e';
 import '../TimelessToons_e2e';
 import '../RitharScans_e2e';
