@@ -4,7 +4,7 @@ import type { Priority } from '../../taskpool/TaskPool';
 import * as Common from './Common';
 import DeScramble from '../../transformers/ImageDescrambler';
 import { GetTypedData } from './Common';
-import { GetBytesFromBase64 } from '../../BufferEncoder';
+import { GetBytesFromBase64, GetUTF8FromBytes } from '../../BufferEncoder';
 
 type JSONPageData = {
     items: ContentConfiguration[];
@@ -130,14 +130,13 @@ export async function FetchPagesSinglePageAjax(this: MangaScraper, chapter: Chap
         viewerUrl = new URL(response.url);
     }
 
-    //easy mode : pages are just an array of div
-    if (version == SpeedBindVersion.v016061) {
-        //Kirapo, ComicPorta, Kimicomi, MichiKusa, OneTwoThreeHon, TKSuperheroComics
-        const [...imageConfigurations] = SBHtmlElement.querySelectorAll<HTMLDivElement>('div[data-ptimg$="ptimg.json"]');
-        return imageConfigurations.map(({ dataset }) => new Page(this, chapter, new URL(dataset.ptimg, viewerUrl)));
-    }
+    //First try to get pages from ptimg.json (v016061) since it is the easiest way to get pages
+    //Kirapo, ComicPorta, Kimicomi, MichiKusa, OneTwoThreeHon, TKSuperheroComics
 
-    //2 Gather all informations using viewerUrl and SBHtmlElement (cid, sharingkey, dmytime, u0, u1, configuration)
+    const [...imageConfigurations] = SBHtmlElement.querySelectorAll<HTMLDivElement>('div[data-ptimg$="ptimg.json"]');
+    if (imageConfigurations.length > 0) return imageConfigurations.map(({ dataset }) => new Page(this, chapter, new URL(dataset.ptimg, viewerUrl)));
+
+    //2 Prepare request URL and fetch Configuration JSON
     let cid = viewerUrl.searchParams.get('cid') ?? SBHtmlElement.dataset.ptbinbCid;
 
     //in case cid is not in url and not in html, try to get it from page redirected by Javascript/ Meta
@@ -147,10 +146,9 @@ export async function FetchPagesSinglePageAjax(this: MangaScraper, chapter: Chap
     if (!cid) throw new Error('Unable to find CID (content ID) !');
 
     const sharingKey = ComputeSharingKey(cid);
-    const uri = GetSanitizedURL(viewerUrl.href, SBHtmlElement.dataset.ptbinb);
-    const dmytime = `${Date.now()}`;
+    let uri = GetSanitizedURL(viewerUrl.href, SBHtmlElement.dataset.ptbinb);
     uri.searchParams.set('cid', cid);
-    uri.searchParams.set('dmytime', dmytime);
+    uri.searchParams.set('dmytime', `${Date.now()}`);
     uri.searchParams.set('k', sharingKey);
 
     const u0 = viewerUrl.searchParams.get('u0');
@@ -163,7 +161,7 @@ export async function FetchPagesSinglePageAjax(this: MangaScraper, chapter: Chap
             Referer: viewerUrl.href
         }
     })) :
-        await FetchWindowScript<JSONPageData>(new Request(viewerUrl), JsonFetchScript.replace('{URI}', uri.href), 2000);
+        await FetchWindowScript<JSONPageData>(new Request(viewerUrl), JsonFetchScript.replace('{URI}', uri.href), 2500);
 
     //3 Fetch pages links using speedbinb informations
     const configuration = items.at(0);
@@ -174,38 +172,51 @@ export async function FetchPagesSinglePageAjax(this: MangaScraper, chapter: Chap
         configuration.ServerType = parseInt(configuration.ServerType as string);
     } catch { }
 
-    switch (configuration.ServerType as number) {
-        case 0: { //v016130 ShukanManga , v016452 CMOA
-            //Fix for ShukanManga that has only got a path in ContentsServer
-            if (!configuration.ContentsServer.startsWith('http')) configuration.ContentsServer = new URL(configuration.ContentsServer, viewerUrl).href;
+    let imageTemplate: string;
 
-            const uri = GetSanitizedURL(configuration.ContentsServer, 'sbcGetCntnt.php');
+    switch (configuration.ServerType as number) {
+        case 0: { // v016130 ShukanManga, v016452 CMOA
+            if (!configuration.ContentsServer.startsWith('http')) {
+                configuration.ContentsServer = new URL(configuration.ContentsServer, viewerUrl).href;
+            }
+
+            uri = GetSanitizedURL(configuration.ContentsServer, 'sbcGetCntnt.php');
             uri.searchParams.set('cid', cid);
-            uri.searchParams.set('dmytime', configuration.ContentDate);
             uri.searchParams.set('p', configuration.p);
             uri.searchParams.set('vm', `${configuration.ViewMode}`);
-            if (version === SpeedBindVersion.v016452) { //CMOA
+
+            if (version === SpeedBindVersion.v016452) {
                 uri.searchParams.set('q', '1');
-                uri.searchParams.set('u0', u0);
-                uri.searchParams.set('u1', u1);
+                if (u0) uri.searchParams.set('u0', u0);
+                if (u1) uri.searchParams.set('u1', u1);
             }
-            return await ExtractPages.call(this, uri, '/sbcGetCntnt.php', 'sbcGetImg.php', configuration, chapter);
+            imageTemplate = 'sbcGetImg.php';
+            break;
         }
 
-        case 1: {//v016130 Futabanet, BookHodai, Booklive, OhtaBooks, SManga
-            const uri = GetSanitizedURL(configuration.ContentsServer, 'content.js');
-            if (configuration.ContentDate) uri.searchParams.set('dmytime', configuration.ContentDate);
-            return await ExtractPages.call(this, uri, '/content.js', '{src}/M_H.jpg', configuration, chapter);
+        case 1: { // v016130 Futabanet, BookHodai, Booklive, OhtaBooks, SManga
+            uri = GetSanitizedURL(configuration.ContentsServer, 'content.js');
+            imageTemplate = '{src}/M_H.jpg';
+            break;
         }
-        case 2: {//v016130 MangaPlaza, Yanmaga, Yomonga
-            const uri = GetSanitizedURL(configuration.ContentsServer, 'content');
-            if (configuration.ContentDate) uri.searchParams.set('dmytime', configuration.ContentDate);
+
+        case 2: { // v016130 MangaPlaza, Yanmaga, Yomonga
+            uri = GetSanitizedURL(configuration.ContentsServer, 'content');
             if (u0) uri.searchParams.set('u0', u0);
             if (u1) uri.searchParams.set('u1', u1);
-            return await ExtractPages.call(this, uri, '/content', 'img/{src}', configuration, chapter);
+            imageTemplate = 'img/{src}';
+            break;
         }
+
+        default:
+            return;
     }
-    return Promise.reject(new Error('Content server type not supported!'));
+
+    if (configuration.ContentDate) {
+        uri.searchParams.set('dmytime', configuration.ContentDate);
+    }
+
+    return await ExtractPages.call(this, uri, imageTemplate, configuration, chapter);
 }
 
 /**
@@ -226,7 +237,7 @@ export function PagesSinglePageAjax(version: SpeedBindVersion = SpeedBindVersion
     };
 }
 
-async function ExtractPages(this: MangaScraper, uri: URL, replaceFrom: string, replaceto: string, configuration: ContentConfiguration, chapter: Chapter): Promise<Page[]> {
+async function ExtractPages(this: MangaScraper, uri: URL, replaceto: string, configuration: ContentConfiguration, chapter: Chapter): Promise<Page[]> {
     const response = await Fetch(new Request(uri, {
         // credentials: 'include',
         headers: {
@@ -294,7 +305,7 @@ export async function FetchImageAjax(this: MangaScraper, page: Page, priority: P
         case page.Link.href.includes('/img/'): { //descramble_v016130
 
             const blob: Blob = await Common.FetchImageAjax.call(this, page, priority, signal, detectMimeType);
-            const { s, u }: DescrambleKP = JSON.parse(new TextDecoder().decode(GetBytesFromBase64(page.Link.hash.slice(1))));
+            const { s, u }: DescrambleKP = JSON.parse(GetUTF8FromBytes(GetBytesFromBase64(page.Link.hash.slice(1))));
             return DeScramble(blob, async (image, ctx) => {
                 const view = GetImageDescrambleCoords(s, u, image.width, image.height);
                 for (const part of view.transfers[0].coords) {
