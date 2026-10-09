@@ -4,12 +4,10 @@ import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import * as SpeedBinb from './decorators/SpeedBinb';
 
-function ChapterExtractor(element: HTMLElement, uri: URL): { id: string; title: string; } {
-    const chapterUrl = new URL(element.querySelector<HTMLAnchorElement>('a[href^="/reader/"]').href, uri);
-    const id = chapterUrl.searchParams.get('content_id');
-    const u0 = chapterUrl.pathname.startsWith('/reader/sample') ? 1 : 0;
+function ChapterExtractor(element: HTMLElement) {
+    const chapterElement = element.querySelector<HTMLAnchorElement>('a[href^="/reader/"]');
     return {
-        id: `/bib/speedreader/?cid=${id.slice(1, 11)}_jp_${id.slice(11, 15)}&u0=${u0}`,
+        id: chapterElement.pathname + chapterElement.search,
         title: element.querySelector('.title_details_title_name_h2').textContent.trim()
     };
 }

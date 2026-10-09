@@ -12,8 +12,8 @@ type JSONPageData = {
 
 type ContentConfiguration = {
     ContentID: string;
-    ctbl: string | string[];
-    ptbl: string | string[];
+    ctbl: string;
+    ptbl: string;
     ServerType: number | string;
     ContentsServer: string;
     p: string;
@@ -80,6 +80,9 @@ interface Descrambler {
     GetDimensions(dimensions: Dimensions): Dimensions;
     GetCoords(dimensions: Dimensions): DrawImageCoords[];
 }
+
+enum ServerTypeEnum { SBC, Direct, Rest };
+
 /*
 const JsonFetchScript = `
     new Promise(async (resolve, reject) => {
@@ -112,45 +115,49 @@ function GetSanitizedURL(base: string, append: string): URL {
 export async function FetchPagesSinglePageAjax(this: MangaScraper, chapter: Chapter): Promise<Page[]> {
 
     //1 Fetch "div#content.pages" and "real" chapter url (since a redirection is possible)
+
     let viewerUrl = new URL(chapter.Identifier, this.URI);
     const response = await Fetch(new Request(viewerUrl, {
         headers: {
             Referer: this.URI.href
         }
     }));
-
     const dom = new DOMParser().parseFromString(await response.text(), 'text/html');
     const SBHtmlElement = dom.querySelector<HTMLElement>('div#content.pages');
-    //handle redirection. Sometimes chapter is redirected
     if (response.redirected) {
         viewerUrl = new URL(response.url);
     }
 
     //First try to get pages from ptimg.json (v016061) since it is the easiest way to get pages
     //Kirapo, ComicPorta, Kimicomi, MichiKusa, OneTwoThreeHon, TKSuperheroComics
-
     const [...imageConfigurations] = SBHtmlElement.querySelectorAll<HTMLDivElement>('div[data-ptimg$="ptimg.json"]');
     if (imageConfigurations.length > 0) return imageConfigurations.map(({ dataset }) => new Page(this, chapter, new URL(dataset.ptimg, viewerUrl)));
 
     //2 Prepare request URL and fetch Configuration JSON
-    let cid = viewerUrl.searchParams.get('cid') ?? SBHtmlElement.dataset.ptbinbCid;
 
-    //in case cid is not in url and not in html, try to get it from page redirected by Javascript/ Meta
+    let cid = viewerUrl.searchParams.get('cid') ?? SBHtmlElement.dataset.ptbinbCid;
     if (!cid) {
         cid = await FetchWindowScript<string>(new Request(viewerUrl), 'new URL(window.location).searchParams.get("cid");', 5000);
     }
     if (!cid) throw new Error('Unable to find CID (content ID) !');
 
     const sharingKey = ComputeSharingKey(cid);
-    let uri = GetSanitizedURL(viewerUrl.href, SBHtmlElement.dataset.ptbinb);
-    uri.searchParams.set('cid', cid);
-    uri.searchParams.set('dmytime', `${Date.now()}`);
-    uri.searchParams.set('k', sharingKey);
+    const configURL = GetSanitizedURL(viewerUrl.href, SBHtmlElement.dataset.ptbinb);
+    configURL.searchParams.set('cid', cid);
+    configURL.searchParams.set('dmytime', `${Date.now()}`);
+    configURL.searchParams.set('k', sharingKey);
 
-    const u0 = viewerUrl.searchParams.get('u0');
-    const u1 = viewerUrl.searchParams.get('u1');
-    if (u0) uri.searchParams.set('u0', u0);
-    if (u1) uri.searchParams.set('u1', u1);
+    //Keep u0, u1... for further use
+    const Uvalues = new Map<string, string>();
+    for (let Uindex = 0; Uindex <= 9; Uindex++) {
+        const key = `u${Uindex}`;
+        if (viewerUrl.searchParams.get(key)) {
+            Uvalues.set(key, viewerUrl.searchParams.get(key));
+        }
+    }
+
+    //Carry optional parameters u0, u1, etc... to configURL
+    Uvalues.forEach((value, key) => configURL.searchParams.set(key, value));
 
     /*
         const { items } = !needCookies ? await FetchJSON<JSONPageData>(new Request(uri, {
@@ -160,46 +167,49 @@ export async function FetchPagesSinglePageAjax(this: MangaScraper, chapter: Chap
         })) :
             await FetchWindowScript<JSONPageData>(new Request(viewerUrl), JsonFetchScript.replace('{URI}', uri.href), 2500);
     */
-
-    const { items } = await FetchJSON<JSONPageData>(new Request(uri, {
+    const { items } = await FetchJSON<JSONPageData>(new Request(configURL, {
         headers: {
             Referer: viewerUrl.href
         }
     }));
 
-    //3 Fetch pages links using speedbinb informations
-    const configuration = items.at(0);
+    //3 Compute pages links using speedbinb informations
+    let { ctbl, ptbl, ServerType, ContentsServer, p, ViewMode, ContentDate } = items.at(0);
 
-    configuration.ctbl = ComputeTable(cid, sharingKey, configuration.ctbl as string);
-    configuration.ptbl = ComputeTable(cid, sharingKey, configuration.ptbl as string);
     try {
-        configuration.ServerType = parseInt(configuration.ServerType as string);
+        ServerType = parseInt(ServerType as string);
     } catch { }
 
     let imageTemplate: string;
+    let SBCUri: URL;
 
-    switch (configuration.ServerType as number) {
-        case 0: { // v016130 ShukanManga, v016452 CMOA
-            if (!configuration.ContentsServer.startsWith('http')) {
-                configuration.ContentsServer = new URL(configuration.ContentsServer, viewerUrl).href;
+    switch (ServerType as ServerTypeEnum) {
+        case ServerTypeEnum.SBC: { // ShukanManga, CMOA
+            if (!ContentsServer.startsWith('http')) {
+                ContentsServer = new URL(ContentsServer, viewerUrl).href;
             }
 
-            uri = GetSanitizedURL(configuration.ContentsServer, 'sbcGetCntnt.php');
-            uri.searchParams.set('cid', cid);
-            uri.searchParams.set('p', configuration.p);
-            uri.searchParams.set('vm', `${configuration.ViewMode}`);
+            SBCUri = GetSanitizedURL(ContentsServer, 'sbcGetCntnt.php');
+            SBCUri.search = new URLSearchParams({
+                cid,
+                p: p,
+                vm: `${ViewMode}`,
+                dmytime: ContentDate ?? `${Date.now()}`
+            }).toString();
             imageTemplate = 'sbcGetImg.php';
             break;
         }
 
-        case 1: { // v016130 Futabanet, BookHodai, Booklive, OhtaBooks, SManga
-            uri = GetSanitizedURL(configuration.ContentsServer, 'content.js');
+        case ServerTypeEnum.Direct: { // Futabanet, BookHodai, Booklive, OhtaBooks, SManga
+            SBCUri = GetSanitizedURL(ContentsServer, 'content.js');
+            SBCUri.searchParams.set('dmytime', ContentDate ?? `${Date.now()}`);
             imageTemplate = '{src}/M_H.jpg';
             break;
         }
 
-        case 2: { // v016130 MangaPlaza, Yanmaga, Yomonga
-            uri = GetSanitizedURL(configuration.ContentsServer, 'content');
+        case ServerTypeEnum.Rest: { // MangaPlaza, Yanmaga, Yomonga
+            SBCUri = GetSanitizedURL(ContentsServer, 'content');
+            if (ContentDate) SBCUri.searchParams.set('dmytime', ContentDate);
             imageTemplate = 'img/{src}';
             break;
         }
@@ -208,11 +218,39 @@ export async function FetchPagesSinglePageAjax(this: MangaScraper, chapter: Chap
             return;
     }
 
-    if (u0) uri.searchParams.set('u0', u0);
-    if (u1) uri.searchParams.set('u1', u1);
-    if (configuration.ContentDate) uri.searchParams.set('dmytime', configuration.ContentDate);
+    //Carry optional parameters u0, u1, etc... to SBC URL
+    Uvalues.forEach((value, key) => SBCUri.searchParams.set(key, value));
 
-    return await ExtractPages.call(this, uri, imageTemplate, configuration, chapter);
+    const SBCresponse = await Fetch(new Request(SBCUri, {
+        headers: {
+            Referer: this.URI.href,
+        }
+    }));
+
+    // compute scrambling tables
+    const ctblMatrix = ComputeTable(cid, sharingKey, ctbl);
+    const ptblMatrix = ComputeTable(cid, sharingKey, ptbl);
+
+    const data = await SBCresponse.text();
+    const { ttx }: SBCDATA = data.startsWith('DataGet_Content(') ? JSON.parse(data.slice(16, -1)) : JSON.parse(data);
+    const SBCdom = new DOMParser().parseFromString(ttx, 'text/html');
+    const pages = [...SBCdom.querySelectorAll<HTMLImageElement>('t-case:first-of-type t-img')].map(img => {
+        let src = img.getAttribute('src');
+
+        const pageUri = new URL(SBCUri);
+        pageUri.hash = window.btoa(JSON.stringify(GetDescrambleKeyPair(src, ctblMatrix, ptblMatrix)));
+
+        //if page name is not included in template, set it as url parameter
+        if (!/{src}/.test(imageTemplate)) {
+            pageUri.searchParams.set('src', src);
+        }
+
+        //replace last part of the pathname with the imageTemplate
+        pageUri.pathname = pageUri.pathname.replace(/[^\/]+$/, imageTemplate.replace('{src}', src));
+        return new Page(this, chapter, pageUri);
+
+    });
+    return pages;
 }
 
 /**
@@ -231,32 +269,6 @@ export function PagesSinglePageAjax() {
     };
 }
 
-async function ExtractPages(this: MangaScraper, uri: URL, replaceto: string, configuration: ContentConfiguration, chapter: Chapter): Promise<Page[]> {
-    const response = await Fetch(new Request(uri, {
-        // credentials: 'include',
-        headers: {
-            Referer: this.URI.href,
-        }
-    }));
-    const data = await response.text();
-    const { ttx }: SBCDATA = data.startsWith('DataGet_Content(') ? JSON.parse(data.slice(16, -1)) : JSON.parse(data);
-    const dom = new DOMParser().parseFromString(ttx, 'text/html');
-    const pageLinks = [...dom.querySelectorAll<HTMLImageElement>('t-case:first-of-type t-img')].map(img => {
-        let src = img.getAttribute('src');
-
-        const pageUri = new URL(uri);
-        pageUri.hash = window.btoa(JSON.stringify(GetDescrambleKeyPair(src, configuration.ctbl as string[], configuration.ptbl as string[])));
-
-        if (!/{src}/.test(replaceto)) {
-            pageUri.searchParams.set('src', src);
-        }
-        pageUri.pathname = pageUri.pathname.replace(/[^\/]+$/, replaceto.replace('{src}', src));
-        return new Page(this, chapter, pageUri);
-
-    });
-    return pageLinks;
-}
-
 /***********************************************
  ******** Image Data Extraction Methods ********
  ***********************************************/
@@ -272,11 +284,9 @@ async function ExtractPages(this: MangaScraper, uri: URL, replaceto: string, con
 export async function FetchImageAjax(this: MangaScraper, page: Page, priority: Priority, signal: AbortSignal, detectMimeType = false): Promise<Blob> {
     switch (true) {
         case page.Link.href.endsWith('ptimg.json'): {
-            // descramble_v016061
+            // descramble_v016061 : get real image link and unscrable date from JSON
             return this.imageTaskPool.Add(async () => {
-                //Fetch JSON
                 const { resources: { i: { src } }, views } = await FetchJSON<JSONImageData>(new Request(page.Link));
-                //Fetch IMAGE
                 const response = await Fetch(new Request(new URL(src, page.Link.href), {
                     signal,
                     headers: {
@@ -293,13 +303,14 @@ export async function FetchImageAjax(this: MangaScraper, page: Page, priority: P
             }, priority, signal);
         }
 
+        //descramble_v016130: page.link linto to the image, #hash contains scramble data
         case page.Link.href.includes('sbcGetImg'):
         case page.Link.href.includes('M_L.jpg'):
         case page.Link.href.includes('M_H.jpg'):
-        case page.Link.href.includes('/img/'): { //descramble_v016130
+        case page.Link.href.includes('/img/'): {
 
-            const blob: Blob = await Common.FetchImageAjax.call(this, page, priority, signal, detectMimeType);
-            const { s, u }: DescrambleKP = JSON.parse(GetUTF8FromBytes(GetBytesFromBase64(page.Link.hash.slice(1))));
+            const blob = await Common.FetchImageAjax.call(this, page, priority, signal, detectMimeType);
+            const { s, u } = <DescrambleKP>JSON.parse(GetUTF8FromBytes(GetBytesFromBase64(page.Link.hash.slice(1))));
             return DeScramble(blob, async (image, ctx) => {
                 const view = GetImageDescrambleCoords(s, u, image.width, image.height);
                 for (const part of view.transfers[0].coords) {
