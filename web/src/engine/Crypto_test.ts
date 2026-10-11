@@ -1,7 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { GetHexFromBytes, GetBytesFromHex } from './BufferEncoder';
 import * as testee from './Crypto';
-import { MD5 } from './Crypto';
 
 // TODO: ⚠️ Use constant expected values instead of using business logic to calculate expected values
 
@@ -18,7 +17,7 @@ describe('Hashing', () => {
     });
 
     it('Should correctly compute MD5 hash of a Uint8Array', () => {
-        const hash = MD5(new Uint8Array([104, 101, 108, 108, 111]));
+        const hash = testee.MD5(new Uint8Array([104, 101, 108, 108, 111]));
         expect(GetHexFromBytes(hash)).toBe('5d41402abc4b2a76b9719d911017c592');
     });
 });
@@ -82,5 +81,19 @@ describe('AESEncrypt & AESDecrypt', () => {
             const decrypted = new Uint8Array(await testee.DecryptAES(ciphertext.buffer, key, { name: 'AES-GCM', iv, tagLength: 128 }));
             expect(decrypted).toEqual(new Uint8Array());
         });
+    });
+});
+
+describe('Crypto Helpers', () => {
+    describe('Concat buffers', () => {
+        it('should properly concatenate Uint8Array buffers'), () => {
+            const arrays = [
+                new Uint8Array([1, 2, 3, 4]),
+                new Uint8Array([5]),
+                new Uint8Array([6, 7, 8])
+            ];
+            const expected = new Uint8Array([1, 2, 3, 4, 5, 6, 7, 8]);
+            expect(testee.ConcatBuffers(...arrays)).toEqual(expected);
+        };
     });
 });

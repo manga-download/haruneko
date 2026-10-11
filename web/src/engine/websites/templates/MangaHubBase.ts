@@ -7,6 +7,7 @@ import { Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from 
 import * as Common from '../decorators/Common';
 import { Delay } from '../../BackgroundTimers';
 import { GetBytesFromURLBase64, GetUTF8FromBytes } from '../../BufferEncoder';
+import { ConcatBuffers } from '../../Crypto';
 
 type GQLMangas = {
     search: {
@@ -127,7 +128,7 @@ export class MangaHubBase extends DecoratableMangaScraper {
                 name: 'AES-GCM',
                 iv: GetBytesFromURLBase64(iv),
                 tagLength: 128
-            }, key, this.ConcatBuffers(GetBytesFromURLBase64(ciphertext), GetBytesFromURLBase64(authTag)));
+            }, key, ConcatBuffers(GetBytesFromURLBase64(ciphertext), GetBytesFromURLBase64(authTag)));
             jsonPages = <JSONPages>JSON.parse(GetUTF8FromBytes(decrypted));
         } else {
             jsonPages = <JSONPages>JSON.parse(pages);
@@ -137,17 +138,6 @@ export class MangaHubBase extends DecoratableMangaScraper {
             jsonPages['i'].map(pageNumber => new Page(this, chapter, new URL(`${jsonPages['p']}${pageNumber}`, this.cdnURL)))
             :
             Object.values(jsonPages as string[]).map(page => new Page(this, chapter, new URL(page, this.cdnURL)));
-    }
-
-    private ConcatBuffers(...arrays: Uint8Array[]): Uint8Array<ArrayBuffer> {
-        const totalLength = arrays.reduce((sum, arr) => sum + arr.length, 0);
-        const result = new Uint8Array(totalLength);
-        let offset = 0;
-        for (const arr of arrays) {
-            result.set(arr, offset);
-            offset += arr.length;
-        }
-        return result;
     }
 
     private async FetchGQL<T extends JSONElement>(query: string, variables: JSONObject, remainingRetryAttempts = 3): Promise<T> {
