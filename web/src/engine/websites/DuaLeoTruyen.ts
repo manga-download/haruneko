@@ -4,7 +4,7 @@ import { FetchCSS, FetchWindowScript } from '../platform/FetchProvider';
 import { type Chapter, DecoratableMangaScraper, Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import { GetBytesFromBase64, GetBytesFromURLBase64, GetBytesFromUTF8, GetHexFromBytes, GetUTF8FromBytes } from '../BufferEncoder';
-import { ConcatBuffers, DecryptXOR } from '../Crypto';
+import { DecryptXOR } from '../Crypto';
 
 @Common.MangaCSS(/^{origin}\/truyen-tranh\/[^/]+$/, 'ol.breadcrumb li:last-of-type')
 @Common.MangasMultiPageCSS<HTMLAnchorElement>('div.li_truyen > a:has(img)', Common.PatternLinkGenerator('/truyen-hoan-thanh?page={page}'), 0, anchor => ({
@@ -59,22 +59,20 @@ export default class extends DecoratableMangaScraper {
             const payload = GetUTF8FromBytes(GetBytesFromURLBase64(basename));
 
             const [version, checksum, nonce, salt, rawB64] = payload.split('|');
-            if (version != 'V4' || !checksum || !nonce || !salt || !rawB64) return uri.href;
+            if (version !== 'V4' || !checksum || !nonce || !salt || !rawB64) return uri.href;
 
-            const k1 = new Uint8Array(await crypto.subtle.digest('SHA-256', GetBytesFromUTF8(`${secret}|A|${nonce}|${salt}`)));
-            const k1hex = GetHexFromBytes(k1);
-            const k2 = new Uint8Array(await crypto.subtle.digest('SHA-256', GetBytesFromUTF8(`${secret}|B|${salt}|${nonce}|${k1hex}`)));
+            const keyHead = new Uint8Array(await crypto.subtle.digest('SHA-256', GetBytesFromUTF8(`${secret}|A|${nonce}|${salt}`)));
+            const k1hex = GetHexFromBytes(keyHead);
+            const keyTail = new Uint8Array(await crypto.subtle.digest('SHA-256', GetBytesFromUTF8(`${secret}|B|${salt}|${nonce}|${k1hex}`)));
 
-            const name = GetUTF8FromBytes(DecryptXOR(GetBytesFromBase64(rawB64).reverse(), ConcatBuffers(k1, k2)));
+            const name = GetUTF8FromBytes(DecryptXOR(GetBytesFromBase64(rawB64).reverse(), new Uint8Array([...keyHead, ...keyTail])));
 
-            // verification
             const computedChecksum = GetHexFromBytes(new Uint8Array(await crypto.subtle.digest('SHA-256', GetBytesFromUTF8(`V4|${secret}|${nonce}|${salt}|${name}`)))).slice(0, 16);
             if (computedChecksum === checksum) {
                 uri.pathname = uri.pathname.split('/').toSpliced(-1, 1, `${name}.${extension}`).join('/');
             }
+        } catch { }
 
-        } finally {
-            return uri.href;
-        }
+        return uri.href;
     }
 }

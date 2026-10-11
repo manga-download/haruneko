@@ -83,17 +83,3 @@ describe('AESEncrypt & AESDecrypt', () => {
         });
     });
 });
-
-describe('Crypto Helpers', () => {
-    describe('Concat buffers', () => {
-        it('should properly concatenate Uint8Array buffers'), () => {
-            const arrays = [
-                new Uint8Array([1, 2, 3, 4]),
-                new Uint8Array([5]),
-                new Uint8Array([6, 7, 8])
-            ];
-            const expected = new Uint8Array([1, 2, 3, 4, 5, 6, 7, 8]);
-            expect(testee.ConcatBuffers(...arrays)).toEqual(expected);
-        };
-    });
-});
