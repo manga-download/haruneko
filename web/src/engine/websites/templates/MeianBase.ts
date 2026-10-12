@@ -49,7 +49,7 @@ type APIEbook = {
 
 type WebsiteParameters = {
     apiURL: string;
-    imageCDN: string;
+    pagesAPIUrl: string;
     tokenCookieName: string;
     additionalHeaders?: Record<string, string>;
 };
@@ -57,7 +57,7 @@ type WebsiteParameters = {
 export class MeianBase extends DecoratableMangaScraper {
 
     private apiURL: string;
-    private imageCDN: string;
+    private pagesAPIUrl: string;
     private tokenCookieName: string;
     private additionalHeaders?: Record<string, string>;
 
@@ -66,7 +66,7 @@ export class MeianBase extends DecoratableMangaScraper {
 
     public SetParameters(parameters: WebsiteParameters): MeianBase {
         this.apiURL = parameters.apiURL;
-        this.imageCDN = parameters.imageCDN;
+        this.pagesAPIUrl = parameters.pagesAPIUrl;
         this.tokenCookieName = parameters.tokenCookieName;
         this.additionalHeaders = parameters.additionalHeaders;
         return this;
@@ -109,10 +109,12 @@ export class MeianBase extends DecoratableMangaScraper {
             throw new Exception(R.Plugin_Common_Chapter_UnavailableError);
         }
 
-        const { images } = await this.FetchAPI<APIImages>(`./v1/images/?p=1&q=1&w=1920&h=1080&webp=false&nb_pages=${max_page}&ref=${chapter.Identifier}&devicePixelRatio=2`, this.imageCDN);
+        const imageCDN = this.pagesAPIUrl.replace(/[^/]+\/$/, '');
+
+        const { images } = await this.FetchAPI<APIImages>(`./images/?p=1&q=1&w=1920&h=1080&webp=false&nb_pages=${max_page}&ref=${chapter.Identifier}&devicePixelRatio=2`, this.pagesAPIUrl);
         return images.map(({ key, param, w, h }) => new Page<PageInfo>(this, chapter, new URL('./hm-img?' + new URLSearchParams({
-            prio: 'h', k: key, p: param
-        }), this.imageCDN), {
+            k: key, p: param
+        }), imageCDN), {
             descrambleBlock: { width: w, height: h, }
         }));
     }
@@ -138,7 +140,7 @@ export class MeianBase extends DecoratableMangaScraper {
             headers: {
                 Referer: this.URI.href,
                 Origin: this.URI.origin,
-                'Sec-Fetch-Site':	'same-site',
+                'Sec-Fetch-Site': 'same-site',
                 ...this.#token && { Authorization: `Bearer ${this.#token}` },
                 ...this.additionalHeaders
             }

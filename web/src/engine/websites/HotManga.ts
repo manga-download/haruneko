@@ -22,7 +22,7 @@ export default class extends MeianBase {
         super('hotmanga', 'Hot-Manga', 'https://www.hot-manga.fr', Tags.Media.Manga, Tags.Language.French, Tags.Source.Official, Tags.Rating.Pornographic);
         this.SetParameters({
             apiURL: 'https://api.hot-manga.fr/v1/',
-            imageCDN: 'https://ebook.hot-manga.fr/',
+            pagesAPIUrl: 'https://ebook.hot-manga.fr/v1/',
             tokenCookieName: 'token_hm'
         });
     }

@@ -1,7 +1,7 @@
 import { Tags } from '../Tags';
 import icon from './PixivComics.webp';
 import { Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from '../providers/MangaPlugin';
-import { Fetch, FetchCSS, FetchJSON } from '../platform/FetchProvider';
+import { Fetch, FetchJSON, FetchNextProps } from '../platform/FetchProvider';
 import type { Priority } from '../taskpool/TaskPool';
 import DeScramble from '../transformers/ImageDescrambler';
 import { GetHexFromBytes } from '../BufferEncoder';
@@ -41,11 +41,7 @@ type APIChapters = {
 };
 
 type ChapterSalt = {
-    props: {
-        pageProps: {
-            salt: string;
-        };
-    };
+    salt: string;
 };
 
 type APIPages = {
@@ -111,8 +107,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const [{ text }] = await FetchCSS<HTMLScriptElement>(new Request(new URL(`/viewer/stories/${chapter.Identifier}`, this.URI)), 'script#__NEXT_DATA__');
-        const { props: { pageProps: { salt } } } = <ChapterSalt>JSON.parse(text);
+        const { salt } = await FetchNextProps<ChapterSalt>(new Request(new URL(`/viewer/stories/${chapter.Identifier}`, this.URI)));
         const { reading_episode: { pages } } = await this.FetchAPI<APIPages>(`./episodes/${chapter.Identifier}/read_v4`, salt);
         return pages.map(image => new Page<APIPage>(this, chapter, new URL(image.url), { ...image }));
     }

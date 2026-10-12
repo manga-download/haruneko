@@ -6,7 +6,7 @@ new TestFixture({
         title: 'Violet Scans',
     },
     container: {
-        url: 'https://violetscans.org/comics/101st-confession/',
+        url: 'https://violetmanga.com/comics/101st-confession/',
         id: '/comics/101st-confession/',
         title: '101st Confession',
     },

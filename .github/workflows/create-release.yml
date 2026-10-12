@@ -30,7 +30,8 @@ jobs:
         with:
           node-version: 24.0.0
       - name: Install NPM Packages
-        run: npm run npm:clean-install
+        run: |
+          npm run npm:clean-install
       - name: Build Application
         run: npm run bundle --workspace app/nw --workspace app/electron
       - name: Upload NW Builds

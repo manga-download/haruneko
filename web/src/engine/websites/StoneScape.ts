@@ -33,7 +33,7 @@ export default class extends DecoratableMangaScraper {
     private readonly apiURL = `${this.URI.origin}/api/`;
 
     public constructor() {
-        super('stonescape', 'StoneScape', 'https://stonescape.xyz', Tags.Media.Manhwa, Tags.Media.Manga, Tags.Language.English, Tags.Source.Aggregator);
+        super('stonescape', 'StoneScape', 'https://stonescape.sayki.fr', Tags.Media.Manhwa, Tags.Media.Manga, Tags.Language.English, Tags.Source.Aggregator);
     }
 
     public override get Icon() {

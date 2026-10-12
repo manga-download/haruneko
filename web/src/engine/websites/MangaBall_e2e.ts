@@ -6,13 +6,14 @@ new TestFixture({
         title: 'MangaBall'
     },
     container: {
-        url: 'https://mangaball.net/title-detail/one-piece-68515540702284f8341784c8/',
-        id: '68515540702284f8341784c8',
-        title: 'One Piece'
+        url: 'https://mangaball.com/title-detail/one-piece-68515540702284f8341784c8',
+        id: 'one-piece-68515540702284f8341784c8',
+        title: 'One Piece',
+        timeout: 20_000
     },
     child: {
-        id: '/chapter-detail/69ee2ccbc01e2cf095f74905/',
-        title: 'Ch. 1181.5 Chương 1181.5 [vi]'
+        id: '69ee2ccbc01e2cf095f74905',
+        title: 'Chapter 1181.5 [Rayquaza] [vi]'
     },
     entry: {
         index: 1,

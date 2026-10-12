@@ -2,7 +2,7 @@ import { Tags } from '../Tags';
 import icon from './Tapas.webp';
 import { Chapter, DecoratableMangaScraper, Manga, type MangaPlugin } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { FetchCSS, FetchJSON } from '../platform/FetchProvider';
+import { FetchCSS, FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
 
 type APIMangas = {
     data: {
@@ -45,6 +45,10 @@ export default class extends DecoratableMangaScraper {
         return icon;
     }
 
+    public override async Initialize(): Promise<void> {
+        return FetchWindowScript(new Request(this.URI), `cookieStore.set('birthDate', '2000-01-01');cookieStore.set('adjustedBirthDate', '2000-01-01');`);
+    }
+
     public override ValidateMangaURL(url: string): boolean {
         return new RegExpSafe(`^${this.URI.origin}/series/[^/]+$`).test(url);
     }
@@ -63,10 +67,12 @@ export default class extends DecoratableMangaScraper {
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
         type This = typeof this;
         return Array.fromAsync(async function* (this: This) {
-            for (let page = 0, run = true; run; page++) {
-                const { data: { items } } = await FetchJSON<APIMangas>(new Request(new URL(`./genre?category_type=COMIC&size=200&page=${page}`, this.apiURL)));
-                const mangas = items.map(({ seriesId, title }) => new Manga(this, provider, `${seriesId}`, title));
-                mangas.length > 0 ? yield* mangas : run = false;
+            for (const genre of ['COMIC', 'MATURE_COMIC']) {
+                for (let page = 0, run = true; run; page++) {
+                    const { data: { items } } = await FetchJSON<APIMangas>(new Request(new URL(`./genre?category_type=${genre}&size=200&page=${page}`, this.apiURL)));
+                    const mangas = items.map(({ seriesId, title }) => new Manga(this, provider, `${seriesId}`, title));
+                    mangas.length > 0 ? yield* mangas : run = false;
+                }
             }
         }.call(this));
     }

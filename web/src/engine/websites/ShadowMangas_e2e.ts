@@ -6,12 +6,12 @@ new TestFixture({
         title: 'ShadowMangas'
     },
     container: {
-        url: 'https://shademanga.com/serie/local/38721/',
-        id: '38721',
+        url: 'https://shademanga.com/serie/Hm3h5j',
+        id: 'Hm3h5j',
         title: 'Realmente No Soy El Vasallo Del Dios Demonio'
     },
     child: {
-        id: '894436',
+        id: 'ZFPgTd',
         title: 'Cap. 184'
     },
     entry: {

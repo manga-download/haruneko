@@ -6,21 +6,20 @@ import * as Common from './decorators/Common';
 
 // TODO: Add Novel support
 
-function CreateInfoExtractor(query: string) {
-    return (anchor: HTMLAnchorElement) => ({
-        id: anchor.pathname,
-        title: anchor.querySelector<HTMLHeadingElement>(query).innerText.trim(),
-    });
-}
-
 @Common.MangaCSS<HTMLImageElement>(/^{origin}\/series\/[^/]+\/$/, 'article figure > img', (img, uri) => ({ id: uri.pathname, title: img.alt.trim() }))
-@Common.MangasMultiPageCSS('section ul.grid li > a', Common.PatternLinkGenerator('/series/?pagina={page}'), 0, CreateInfoExtractor('h3.font-semibold'))
-@Common.ChaptersMultiPageCSS('ul li.w-full a', Common.PatternLinkGenerator('{id}?pagina={page}'), 0, CreateInfoExtractor('h3.card-title'))
+@Common.MangasMultiPageCSS<HTMLAnchorElement>('section ul.grid li > a', Common.PatternLinkGenerator('/series/?pagina={page}'), 0, anchor => ({
+    id: anchor.pathname,
+    title: anchor.querySelector<HTMLHeadingElement>('h3.font-semibold').innerText.trim()
+}))
+@Common.ChaptersMultiPageCSS<HTMLAnchorElement>('ul li.w-full a', Common.PatternLinkGenerator('{id}?pagina={page}'), 0, anchor => ({
+    id: anchor.pathname,
+    title: anchor.querySelector<HTMLHeadingElement>('h3.card-title').innerText.trim()
+}))
 @Common.ImageElement(true)
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('ikigaimangas', 'Ikigai Mangas', 'https://visorikigai.gettocaboca.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Spanish, Tags.Source.Aggregator, Tags.Accessibility.DomainRotation);
+        super('ikigaimangas', 'Ikigai Mangas', 'https://visualikigai.cmpunjabrashancard.pk', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Spanish, Tags.Source.Aggregator, Tags.Accessibility.DomainRotation);
     }
 
     public override get Icon() {

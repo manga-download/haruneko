@@ -73,6 +73,7 @@
             currentDownload = nowDownloading;
             currentDownload.Progress.Subscribe(refreshProgress);
             currentDownload.Status.Subscribe(refreshProgress);
+            refreshProgress();
         }
         refreshCounts();
     }

@@ -6,7 +6,7 @@ new TestFixture({
         title: 'StoneScape'
     },
     container: {
-        url: 'https://stonescape.xyz/series/gals-cant-be-kind-to-otaku',
+        url: 'https://stonescape.sayki.fr/series/gals-cant-be-kind-to-otaku',
         id: 'gals-cant-be-kind-to-otaku',
         title: `Gals Can't Be Kind to Otaku!?`
     },

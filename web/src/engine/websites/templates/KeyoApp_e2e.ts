@@ -1,4 +1,5 @@
 import '../AsmodeusScans_e2e';
+import '../ErisScans_e2e';
 import '../GenzToon_e2e';
 import '../GrimScans_e2e';
 import '../MeiToon_e2e';
