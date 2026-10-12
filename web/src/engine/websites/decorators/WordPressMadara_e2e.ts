@@ -3,7 +3,6 @@ import '../AmuyScan_e2e';
 import '../Anikiga_e2e';
 import '../ApollComics_e2e';
 import '../AquaManga_e2e';
-import '../ArabToons_e2e';
 import '../ArthurScan_e2e';
 import '../AverisFansub_e2e';
 import '../BakaMH_e2e';

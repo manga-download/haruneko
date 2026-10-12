@@ -28,7 +28,6 @@ const legacyWebsiteIdentifierMapTestCases = [
     { sourceID: 'mangaproz', targetID: 'mangapro' },
     { sourceID: 'mangaraw', targetID: 'mangageko' },
     { sourceID: 'mangatale', targetID: 'ikiru' },
-    { sourceID: 'manhuascan', targetID: 'kaliscan' },
     { sourceID: 'neteasecomic', targetID: 'bilibilimanhua' },
     { sourceID: 'reaperscansid', targetID: 'shinigamiid' },
     { sourceID: 'scanhentaimenu', targetID: 'xmanga' },
