@@ -26,7 +26,7 @@ type RequestCallback<TParameters extends JSONArray = JSONArray, TReturn extends 
 
 export class IPC {
 
-    constructor(private readonly win: NWJS_Helpers.win) { }
+    constructor(private readonly win: NWJS_Helpers.win, private readonly vindow: Window & typeof globalThis) { }
 
     private get window(): Window & typeof globalThis {
         return this.win.window.window;
@@ -62,6 +62,8 @@ export class IPC {
      */
     public Handle<TParameters extends JSONArray, TReturn extends JSONElement | Void>(channel: string, callback: RequestCallback<TParameters, TReturn>): void {
         const listener = <EventListener>(({ detail: { replyChannel, parameters } }: RequestEvent<TParameters>) => {
+            debugger;
+            alert('Meow!');
             Promise.resolve(callback(...parameters))
                 .then(result => {
                     this.window.dispatchEvent(new CustomEvent<TReturn>(replyChannel, { detail: result }));
@@ -72,8 +74,9 @@ export class IPC {
                     this.window.dispatchEvent(new CustomEvent<unknown>(replyChannel, { detail: new Error(`${error}`) }));
                 });
         });
-        this.win.on('document-start', () => this.window.addEventListener(channel, listener));
-        this.window.addEventListener(channel, listener);
+        //this.win.on('document-start', () => this.window.addEventListener(channel, listener));
+        //this.window.addEventListener(channel, listener);
+        this.vindow.addEventListener(channel, listener);
     }
 
     Invoke(channel: never, ...parameters: never): never;
