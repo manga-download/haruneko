@@ -5,7 +5,7 @@ import * as Common from './decorators/Common';
 import * as SpeedBinb from './decorators/SpeedBinb';
 import { FetchWindowScript } from '../platform/FetchProvider';
 
-function ChapterExtractor(this: DecoratableMangaScraper, element: HTMLElement) {
+function ChapterExtractor(element: HTMLElement) {
     const chapterElement = element.querySelector<HTMLAnchorElement>('a[href^="/reader/"]');
     const titleElement = element.querySelector<HTMLElement>('.title_details_title_name_h2');
     return Common.WebsiteInfoExtractor({ queryBloat: 'span', includeSearch: true }).call(this, titleElement, new URL(chapterElement.href));
@@ -27,5 +27,4 @@ export default class extends DecoratableMangaScraper {
     public override async Initialize(): Promise<void> {
         return FetchWindowScript(new Request(this.URI), `cookieStore.set('R18user', '1')`);
     }
-
 }
