@@ -26,7 +26,11 @@ type RequestCallback<TParameters extends JSONArray = JSONArray, TReturn extends 
 
 export class IPC {
 
-    constructor(private readonly win: Window & typeof globalThis) { }
+    constructor(private readonly win: NWJS_Helpers.win) { }
+
+    private get window(): Window & typeof globalThis {
+        return this.win.window.window;
+    }
 
     On(channel: never, callback: never): never;
 
@@ -35,7 +39,8 @@ export class IPC {
      * The sender does not receive a response (fire & forget).
      */
     public On<TParameters extends JSONArray>(channel: string, callback: MessageCallback<TParameters>): void {
-        this.win.addEventListener(channel, ({ detail }: CustomEvent<TParameters>) => callback(...detail));
+        const listener = <EventListener>(({ detail }: CustomEvent<TParameters>) => callback(...detail));
+        this.window.addEventListener(channel, listener);
     }
 
     Send(channel: Channels.RemoteProcedureCallContract.LoadMediaContainerFromURL, url: string): void;
@@ -45,7 +50,7 @@ export class IPC {
      * The sender does not receive a response (fire & forget).
      */
     public async Send<TParameters extends JSONArray>(channel: string, ...parameters: TParameters): Promise<void> {
-        this.win.dispatchEvent(new CustomEvent<TParameters>(channel, { detail: parameters }));
+        this.window.dispatchEvent(new CustomEvent<TParameters>(channel, { detail: parameters }));
     }
 
     Handle(channel: Channels.RemoteProcedureCallManager.Stop, callback: () => Promise<Void>): void;
@@ -56,17 +61,19 @@ export class IPC {
      * The sender receives a response with the result from the {@link callback}.
      */
     public Handle<TParameters extends JSONArray, TReturn extends JSONElement | Void>(channel: string, callback: RequestCallback<TParameters, TReturn>): void {
-        // FIXME: When window was reloaded, this listener needs to be re-added again ...
-        this.win.addEventListener(channel, async (evt: RequestEvent<TParameters>) => {
-            const { replyChannel, parameters } = evt.detail;
-            try {
-                const result = await callback(...parameters);
-                this.win.dispatchEvent(new CustomEvent<TReturn>(replyChannel, { detail: result }));
-            } catch (error: unknown) {
-                if (error instanceof Error) delete error.cause;
-                this.win.dispatchEvent(new CustomEvent<unknown>(replyChannel, { detail: error }));
-            }
+        const listener = <EventListener>(({ detail: { replyChannel, parameters } }: RequestEvent<TParameters>) => {
+            Promise.resolve(callback(...parameters))
+                .then(result => {
+                    this.window.dispatchEvent(new CustomEvent<TReturn>(replyChannel, { detail: result }));
+                }).catch((error: unknown) => {
+                    if (error instanceof Error) delete error.cause;
+                    this.window.dispatchEvent(new CustomEvent<unknown>(replyChannel, { detail: error }));
+                }).catch((error: unknown) => {
+                    this.window.dispatchEvent(new CustomEvent<unknown>(replyChannel, { detail: new Error(`${error}`) }));
+                });
         });
+        this.win.on('document-start', () => this.window.addEventListener(channel, listener));
+        this.window.addEventListener(channel, listener);
     }
 
     Invoke(channel: never, ...parameters: never): never;
