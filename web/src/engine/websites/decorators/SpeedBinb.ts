@@ -58,7 +58,7 @@ type SBCDATA = {
     ttx: string;
 };
 
-type DescrambleKP = {
+type DescrambleKeyPair = {
     s: string;
     u: string;
 };
@@ -83,7 +83,7 @@ interface Descrambler {
 
 enum ServerTypeEnum { SBC, Direct, Rest };
 
-/*
+/* COOKIES HACK
 const JsonFetchScript = `
     new Promise(async (resolve, reject) => {
         try {
@@ -135,14 +135,15 @@ export async function FetchPagesSinglePageAjax(this: MangaScraper, chapter: Chap
 
     //2 Prepare request URL and fetch Configuration JSON
 
-    let cid = viewerUrl.searchParams.get('cid') ?? SBHtmlElement.dataset.ptbinbCid;
-    if (!cid) {
-        cid = await FetchWindowScript<string>(new Request(viewerUrl), 'new URL(window.location).searchParams.get("cid");', 5000);
-    }
+    const cid = viewerUrl.searchParams.get('cid')
+        ?? SBHtmlElement.dataset.ptbinbCid
+        ?? await FetchWindowScript<string>(new Request(viewerUrl), 'new URL(window.location).searchParams.get("cid");', 5000);
     if (!cid) throw new Error('Unable to find CID (content ID) !');
 
     const sharingKey = ComputeSharingKey(cid);
     const configURL = GetSanitizedURL(viewerUrl.href, SBHtmlElement.dataset.ptbinb);
+
+    //ptbinb can carry more GET parameters, so we manually set the others
     configURL.searchParams.set('cid', cid);
     configURL.searchParams.set('dmytime', `${Date.now()}`);
     configURL.searchParams.set('k', sharingKey);
@@ -159,14 +160,11 @@ export async function FetchPagesSinglePageAjax(this: MangaScraper, chapter: Chap
     //Carry optional parameters u0, u1, etc... to configURL
     Uvalues.forEach((value, key) => configURL.searchParams.set(key, value));
 
-    /*
-        const { items } = !needCookies ? await FetchJSON<JSONPageData>(new Request(uri, {
-            headers: {
-                Referer: viewerUrl.href
-            }
-        })) :
+    /* COOKIES HACK
+        const { items } = !needCookies ? await FetchJSON<JSONPageData>(new Request(uri, {headers: { Referer: viewerUrl.href}})) :
             await FetchWindowScript<JSONPageData>(new Request(viewerUrl), JsonFetchScript.replace('{URI}', uri.href), 2500);
     */
+
     const { items } = await FetchJSON<JSONPageData>(new Request(configURL, {
         headers: {
             Referer: viewerUrl.href
@@ -232,10 +230,10 @@ export async function FetchPagesSinglePageAjax(this: MangaScraper, chapter: Chap
     const ptblMatrix = ComputeTable(cid, sharingKey, ptbl);
 
     const data = await SBCresponse.text();
-    const { ttx }: SBCDATA = data.startsWith('DataGet_Content(') ? JSON.parse(data.slice(16, -1)) : JSON.parse(data);
+    const { ttx } = <SBCDATA>JSON.parse(data.startsWith('DataGet_Content(') ? data.slice(16, -1): data);
     const SBCdom = new DOMParser().parseFromString(ttx, 'text/html');
     const pages = [...SBCdom.querySelectorAll<HTMLImageElement>('t-case:first-of-type t-img')].map(img => {
-        let src = img.getAttribute('src');
+        const src = img.getAttribute('src');
 
         const pageUri = new URL(SBCUri);
         pageUri.hash = window.btoa(JSON.stringify(GetDescrambleKeyPair(src, ctblMatrix, ptblMatrix)));
@@ -245,7 +243,7 @@ export async function FetchPagesSinglePageAjax(this: MangaScraper, chapter: Chap
             pageUri.searchParams.set('src', src);
         }
 
-        //replace last part of the pathname with the imageTemplate
+        //replace last part of the pathname with the *fixed* imageTemplate
         pageUri.pathname = pageUri.pathname.replace(/[^\/]+$/, imageTemplate.replace('{src}', src));
         return new Page(this, chapter, pageUri);
 
@@ -256,7 +254,6 @@ export async function FetchPagesSinglePageAjax(this: MangaScraper, chapter: Chap
 /**
  * A class decorator that adds the ability to extract all pages for a given chapter from a website using SpeedBinb Viewer.
  */
-
 export function PagesSinglePageAjax() {
     return function DecorateClass<T extends Common.Constructor>(ctor: T, context?: ClassDecoratorContext): T {
         Common.ThrowOnUnsupportedDecoratorContext(context);
@@ -284,7 +281,7 @@ export function PagesSinglePageAjax() {
 export async function FetchImageAjax(this: MangaScraper, page: Page, priority: Priority, signal: AbortSignal, detectMimeType = false): Promise<Blob> {
     switch (true) {
         case page.Link.href.endsWith('ptimg.json'): {
-            // descramble_v016061 : get real image link and unscrable date from JSON
+            // descramble_v016061 : get real image link and unscramble data from JSON
             return this.imageTaskPool.Add(async () => {
                 const { resources: { i: { src } }, views } = await FetchJSON<JSONImageData>(new Request(page.Link));
                 const response = await Fetch(new Request(new URL(src, page.Link.href), {
@@ -303,14 +300,14 @@ export async function FetchImageAjax(this: MangaScraper, page: Page, priority: P
             }, priority, signal);
         }
 
-        //descramble_v016130: page.link linto to the image, #hash contains scramble data
+        //descramble_v016130: page.link is image link, #hash contains scramble data
         case page.Link.href.includes('sbcGetImg'):
         case page.Link.href.includes('M_L.jpg'):
         case page.Link.href.includes('M_H.jpg'):
         case page.Link.href.includes('/img/'): {
 
             const blob = await Common.FetchImageAjax.call(this, page, priority, signal, detectMimeType);
-            const { s, u } = <DescrambleKP>JSON.parse(GetUTF8FromBytes(GetBytesFromBase64(page.Link.hash.slice(1))));
+            const { s, u } = <DescrambleKeyPair>JSON.parse(GetUTF8FromBytes(GetBytesFromBase64(page.Link.hash.slice(1))));
             return DeScramble(blob, async (image, ctx) => {
                 const view = GetImageDescrambleCoords(s, u, image.width, image.height);
                 for (const part of view.transfers[0].coords) {
@@ -347,7 +344,6 @@ export function ImageAjax(detectMimeType = false) {
 function ComputeSharingKey(cid: string): string {
     const timestampHex = Date.now().toString(16).padStart(16, 'x');
 
-    // Repeat the cid enough times to fill a 16-character length
     const repeatedCid = cid.repeat(Math.ceil(16 / cid.length) + 1);
     const prefixCid = repeatedCid.substring(0, 16);
     const suffixCid = repeatedCid.substring(repeatedCid.length - 16);
@@ -373,12 +369,10 @@ function ComputeTable(keyPart1: string, keyPart2: string, payload: string): stri
     const combinedKey = `${keyPart1}:${keyPart2}`;
     let seed = 0;
 
-    // Generate a numeric seed from the combined key
     for (let i = 0; i < combinedKey.length; i++) {
         seed += combinedKey.charCodeAt(i) << i % 16;
     }
 
-    // Apply a 31-bit bitwise mask and handle zero edge-cases
     seed &= 2147483647;
     if (seed === 0) {
         seed = 305419896;
@@ -387,7 +381,6 @@ function ComputeTable(keyPart1: string, keyPart2: string, payload: string): stri
     let decodedString = '';
     let currentHash = seed;
 
-    // Transform each character of the payload using a pseudo-random shift
     for (let i = 0; i < payload.length; i++) {
         currentHash = currentHash >>> 1 ^ 1210056708 & -(currentHash & 1);
         const charCode = (payload.charCodeAt(i) - 32 + currentHash) % 94 + 32;
@@ -406,7 +399,7 @@ function ComputeTable(keyPart1: string, keyPart2: string, payload: string): stri
  * depending on the given image name  'pages/cu77gvXE.jpg'
  * old function name : lt_001
  */
-function GetDescrambleKeyPair(imageName: string, ctbl: string[], ptbl: string[]): DescrambleKP {
+function GetDescrambleKeyPair(imageName: string, ctbl: string[], ptbl: string[]): DescrambleKeyPair {
     if (!imageName) {
         return { s: ptbl[0], u: ctbl[0] };
     }
