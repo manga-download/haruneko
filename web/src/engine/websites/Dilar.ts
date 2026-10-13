@@ -6,6 +6,7 @@ import * as Common from './decorators/Common';
 import { Delay } from '../BackgroundTimers';
 import { GetBytesFromURLBase64, GetBytesFromUTF8, GetHexFromBytes, GetURLBase64FromBytes, GetUTF8FromBytes } from '../BufferEncoder';
 import type { Priority } from '../taskpool/DeferredTask';
+import { chacha20Poly1305Decrypt } from '../Crypto';
 
 type APIMangas = {
     series: APIManga[];
@@ -46,6 +47,10 @@ type EncryptionScheme = {
     hash: string;
     deriveNonce: Boolean;
     aad?: Uint8Array<ArrayBuffer>;
+    chacha: Boolean;
+    gcmsiv: Boolean;
+    aessiv: Boolean;
+    keyBytes: number;
 }
 
 type APIPages = {
@@ -238,6 +243,10 @@ class DRMProvider {
         return new Uint8Array([n >> 8 & 0xFF, n & 0xFF]);
     }
 
+    private LengthPrefixed(bytes: Uint8Array<ArrayBuffer>): Uint8Array<ArrayBuffer> {
+        return this.ConcatBuffers(this.ToBigEndian16(bytes.length), bytes);
+    }
+
     private ToBigEndian32(n: number): Uint8Array {
         return new Uint8Array([
             n >>> 24 & 0xff,
@@ -273,16 +282,18 @@ class DRMProvider {
         return new Uint8Array(derivedBits);
     }
 
-    private async AAD(versionNumber: number, extraData: number, serverPubRaw: Uint8Array, iv: Uint8Array, ctSize: number): Promise<Uint8Array<ArrayBuffer>> {
+    // BufferSourceFromUint8 omitted to preserve original typings and avoid SharedArrayBuffer issues.
 
-        const label = GetBytesFromUTF8("dilar.response.ecies.v12");
+    private async AAD(label: string, versionNumber: number, extraData: number, serverPubRaw: Uint8Array<ArrayBuffer>, iv: Uint8Array<ArrayBuffer>, ctSize: number): Promise<Uint8Array<ArrayBuffer>> {
+
+        const labelBytes = GetBytesFromUTF8(label);
         const version = GetBytesFromUTF8(String(versionNumber));
         const e = GetBytesFromUTF8(String(extraData));
         const size = this.ToBigEndian32(ctSize);
 
         const combinedBytes = this.ConcatBuffers(
-            this.ToBigEndian16(label.length),
-            label,
+            this.ToBigEndian16(labelBytes.length),
+            labelBytes,
             this.ToBigEndian16(version.length),
             version,
             this.ToBigEndian16(e.length),
@@ -296,6 +307,35 @@ class DRMProvider {
         );
 
         return await this.SHA(combinedBytes);
+    }
+
+    private async ClientKeyedSalt(serverPubRaw: Uint8Array<ArrayBuffer>, iv: Uint8Array<ArrayBuffer>): Promise<Uint8Array<ArrayBuffer>> {
+        return await this.HMAC(await this.clientPublicKeyBytes, this.ConcatBuffers(
+            this.ToBigEndian16(serverPubRaw.length),
+            serverPubRaw,
+            this.ToBigEndian16(iv.length),
+            iv
+        ), 'SHA-512');
+    }
+
+    private async ServerKeyedSalt(serverPubRaw: Uint8Array<ArrayBuffer>, iv: Uint8Array<ArrayBuffer>): Promise<Uint8Array<ArrayBuffer>> {
+        const clientPub = await this.clientPublicKeyBytes;
+        return await this.HMAC(serverPubRaw, this.ConcatBuffers(
+            this.ToBigEndian16(clientPub.length),
+            clientPub,
+            this.ToBigEndian16(iv.length),
+            iv
+        ), 'SHA-512');
+    }
+
+    private async IvKeyedSalt(serverPubRaw: Uint8Array<ArrayBuffer>, iv: Uint8Array<ArrayBuffer>): Promise<Uint8Array<ArrayBuffer>> {
+        const clientPub = await this.clientPublicKeyBytes;
+        return await this.HMAC(iv, this.ConcatBuffers(
+            this.ToBigEndian16(clientPub.length),
+            clientPub,
+            this.ToBigEndian16(serverPubRaw.length),
+            serverPubRaw
+        ), 'SHA-512');
     }
 
     /**
@@ -314,10 +354,14 @@ class DRMProvider {
         const sharedSecretBits = await crypto.subtle.deriveBits({ name: 'ECDH', public: importedPeerKey }, privateKey, 256);
 
         const scheme: EncryptionScheme = {
-            hash: 'HMAC-256',
+            hash: 'SHA-256',
             deriveNonce: false,
             salt: undefined,
-            infoString: `dilar.response.ecies.v${version}|${extraParameter}`
+            infoString: `dilar.response.ecies.v${version}|${extraParameter}`,
+            chacha: false,
+            gcmsiv: false,
+            aessiv: false,
+            keyBytes: 32
         };
 
         switch (version) {
@@ -355,12 +399,9 @@ class DRMProvider {
             }
             case 8: {
                 scheme.salt = await this.SHA(this.ConcatBuffers(
-                    this.ToBigEndian16(clientPublicBytes.length),
-                    clientPublicBytes,
-                    this.ToBigEndian16(ephemeralKeyBytes.length),
-                    ephemeralKeyBytes,
-                    this.ToBigEndian16(initializationVector.length),
-                    initializationVector
+                    this.LengthPrefixed(clientPublicBytes),
+                    this.LengthPrefixed(ephemeralKeyBytes),
+                    this.LengthPrefixed(initializationVector),
                 ));
                 scheme.infoString += `|${GetHexFromBytes(initializationVector)}`;
                 break;
@@ -368,57 +409,72 @@ class DRMProvider {
             case 9: {
                 scheme.salt = (await this.HMAC(initializationVector,
                     this.ConcatBuffers(
-                        this.ToBigEndian16(ephemeralKeyBytes.length),
-                        ephemeralKeyBytes,
-                        this.ToBigEndian16(clientPublicBytes.length),
-                        clientPublicBytes
+                        this.LengthPrefixed(ephemeralKeyBytes),
+                        this.LengthPrefixed(clientPublicBytes),
                     ), 'SHA-512')).slice(0, 32);
                 scheme.infoString += `|${GetHexFromBytes(await this.SHA(initializationVector)).slice(0, 16)}`;
                 break;
             }
             case 10: {
                 scheme.salt = await this.SHA(this.ConcatBuffers(
-                    this.ToBigEndian16(clientPublicBytes.length),
-                    clientPublicBytes,
-                    this.ToBigEndian16(ephemeralKeyBytes.length),
-                    ephemeralKeyBytes,
-                    this.ToBigEndian16(initializationVector.length),
-                    initializationVector
+                    this.LengthPrefixed(clientPublicBytes),
+                    this.LengthPrefixed(ephemeralKeyBytes),
+                    this.LengthPrefixed(initializationVector),
                 ), 'SHA-512');
                 scheme.infoString += `|${GetHexFromBytes(await this.SHA(initializationVector, 'SHA-512')).slice(0, 24)}`;
+                scheme.hash = 'SHA-512';
                 break;
             }
             case 11: {
                 scheme.salt = await this.HMAC(ephemeralKeyBytes,
                     this.ConcatBuffers(
-                        this.ToBigEndian16(initializationVector.length),
-                        initializationVector,
-                        this.ToBigEndian16(clientPublicBytes.length),
-                        clientPublicBytes,
+                        this.LengthPrefixed(initializationVector),
+                        this.LengthPrefixed(clientPublicBytes),
                     ), 'SHA-512');
-                scheme.infoString += `|${GetURLBase64FromBytes(await this.SHA(initializationVector, 'SHA-384'))}`;
+                scheme.infoString += `|${GetURLBase64FromBytes(await this.SHA(initializationVector, 'SHA-384')).slice(0, 22)}`;
                 scheme.hash = 'SHA-512';
                 scheme.deriveNonce = true;
                 break;
             }
             case 12: {
-                scheme.salt = (await this.HMAC(clientPublicBytes,
-                    this.ConcatBuffers(
-                        this.ToBigEndian16(ephemeralKeyBytes.length),
-                        ephemeralKeyBytes,
-                        this.ToBigEndian16(initializationVector.length),
-                        initializationVector
-                    ), 'SHA-512')).slice(0, 32);
 
+                scheme.salt = (await this.ClientKeyedSalt(ephemeralKeyBytes, initializationVector)).slice(0, 32);
                 const infoMessage = await this.SHA(this.ConcatBuffers(
-                    this.ToBigEndian16(initializationVector.length),
-                    initializationVector
+                    this.LengthPrefixed(initializationVector),
                 ));
 
                 scheme.infoString += `|${GetURLBase64FromBytes(infoMessage).slice(0, 22)}`;
                 scheme.hash = 'SHA-384';
                 scheme.deriveNonce = true;
-                scheme.aad = await this.AAD(version, extraParameter, ephemeralKeyBytes, initializationVector, cipherText.length);
+                scheme.aad = await this.AAD('dilar.response.ecies.v12', version, extraParameter, ephemeralKeyBytes, initializationVector, GetBytesFromURLBase64(cipherText).length);
+                break;
+            }
+            case 13: {
+                scheme.salt = await this.ClientKeyedSalt(ephemeralKeyBytes, initializationVector);
+                scheme.infoString += `|${GetURLBase64FromBytes(await this.SHA(this.ConcatBuffers(this.ToBigEndian16(initializationVector.length), initializationVector), 'SHA-512')).slice(0, 22)}`;
+                scheme.hash = 'SHA-512';
+                scheme.deriveNonce = true;
+                scheme.aad = await this.AAD('dilar.response.ecies.v13', version, extraParameter, ephemeralKeyBytes, initializationVector, GetBytesFromURLBase64(cipherText).length);
+                scheme.chacha = true;
+                break;
+            }
+            case 14: {
+                scheme.salt = await this.ServerKeyedSalt(ephemeralKeyBytes, initializationVector);
+                scheme.infoString += `|${GetURLBase64FromBytes(await this.SHA(this.ConcatBuffers(this.ToBigEndian16(initializationVector.length), initializationVector), 'SHA-512')).slice(0, 22)}`;
+                scheme.hash = 'SHA-512';
+                scheme.deriveNonce = true;
+                scheme.aad = await this.AAD('dilar.response.ecies.v14', version, extraParameter, ephemeralKeyBytes, initializationVector, GetBytesFromURLBase64(cipherText).length);
+                scheme.gcmsiv = true;
+                break;
+            }
+            case 15: {
+                scheme.salt = await this.IvKeyedSalt(ephemeralKeyBytes, initializationVector);
+                scheme.infoString += `|${GetURLBase64FromBytes(await this.SHA(this.ConcatBuffers(this.ToBigEndian16(initializationVector.length), initializationVector, this.ToBigEndian16(ephemeralKeyBytes.length), ephemeralKeyBytes), 'SHA-512')).slice(0, 22)}`;
+                scheme.hash = 'SHA-512';
+                scheme.deriveNonce = true;
+                scheme.aad = await this.AAD('dilar.response.ecies.v15', version, extraParameter, ephemeralKeyBytes, initializationVector, GetBytesFromURLBase64(cipherText).length);
+                scheme.aessiv = true;
+                scheme.keyBytes = 64;
                 break;
             }
             default: {
@@ -429,8 +485,9 @@ class DRMProvider {
         // 1. Import the shared secret as a base key for HKDF
         const baseKey = await crypto.subtle.importKey("raw", sharedSecretBits, { name: "HKDF" }, false, ["deriveKey", "deriveBits"]);
 
-        // 2. Derive bits using HKDF (44 bytes if derivedNonce is true, otherwise 32 bytes)
-        const lengthBytes = scheme.deriveNonce ? 44 : 32;
+        // 2. Derive bits using HKDF
+        const keyLength = scheme.keyBytes ?? 32;
+        const lengthBytes = scheme.deriveNonce ? keyLength + 12 : 32;
         const derivedBits = await crypto.subtle.deriveBits(
             {
                 name: "HKDF",
@@ -443,12 +500,38 @@ class DRMProvider {
         );
 
         // 3. Extract key and nonce from the derived bits
-        const keyBytes = derivedBits.slice(0, 32);
+        const keyBytes = derivedBits.slice(0, keyLength);
         const nonceBytes = scheme.deriveNonce
-            ? derivedBits.slice(32, 44)
+            ? derivedBits.slice(keyLength, keyLength + 12)
             : initializationVector;
 
-        // 4. Import the derived 32-byte key for AES-GCM
+        // NOTE: The following AEAD modes are used by protocol versions 13..15
+        // but are NOT provided by the WebCrypto (SubtleCrypto) standard API.
+        // They must be implemented via external libraries (WASM or JS) or
+        // by using Node native crypto when running in Node environment.
+        //
+        // - ChaCha20-Poly1305 (v13): recommended libsodium-wrappers (WASM) or
+        //   tweetnacl / libsodium for accurate, high-performance implementations.
+        // - AES-GCM-SIV (v14): misuse-resistant AES-GCM variant; consider
+        //   "miscreant" (WASM/JS) or a dedicated AES-GCM-SIV implementation.
+        // - AES-SIV (v15): requires an AES-SIV implementation (e.g. miscreant AesSiv).
+        //
+        // TODO: integrate chosen libraries and call their decrypt functions here.
+        // For now we throw explicit errors to indicate unsupported cipher types.
+        if (scheme.chacha) {
+            const data = chacha20Poly1305Decrypt(new Uint8Array(keyBytes), new Uint8Array(nonceBytes), GetBytesFromURLBase64(cipherText), GetBytesFromURLBase64(tag), scheme.aad);
+            return <T>JSON.parse(GetUTF8FromBytes(data));
+        }
+
+        if (scheme.gcmsiv) {
+            throw new Error('AES-GCM-SIV decryption not implemented in this environment');
+        }
+
+        if (scheme.aessiv) {
+            throw new Error('AES-SIV decryption not implemented in this environment');
+        }
+
+        // 4. Import the derived key for AES-GCM (expects 32 bytes)
         const cryptoKey = await crypto.subtle.importKey(
             "raw",
             keyBytes,
@@ -555,7 +638,7 @@ export default class extends DecoratableMangaScraper {
             method: body ? 'POST' : 'GET',
             body,
             headers: {
-                'X-Crypto-Caps': '1,2,3,4,5,6,7,8,9,10,11,12',
+                'X-Crypto-Caps': '1,2,3,4,5,6,7,8,9,10,11,12,13,14,15',
                 'X-DH-Pub': await this.#drm.GetClientPubB64()
             }
         });

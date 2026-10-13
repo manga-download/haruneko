@@ -29,6 +29,174 @@ export async function DecryptAES(encrypted: BufferSource, keyData: BufferSource,
     return crypto.subtle.decrypt(algorithm, key, encrypted);
 }
 
+// Pure JS ChaCha20-Poly1305 AEAD decrypt (IETF variant).
+// Inputs and outputs use Uint8Array<ArrayBuffer> to match project types.
+export function chacha20Poly1305Decrypt(key: Uint8Array<ArrayBuffer>, nonce: Uint8Array<ArrayBuffer>, ciphertext: Uint8Array<ArrayBuffer>, tag: Uint8Array<ArrayBuffer>, aad: Uint8Array<ArrayBuffer> = new Uint8Array(0)): Uint8Array<ArrayBuffer> {
+    if (key.length !== 32) throw new TypeError('Invalid key length for ChaCha20');
+    if (nonce.length !== 12) throw new TypeError('Invalid nonce length for ChaCha20-Poly1305');
+    // --- ChaCha20 core ---
+    const ROTL = (v: number, c: number) => (v << c) | (v >>> (32 - c));
+
+    function U8TO32_LE(src: Uint8Array<ArrayBuffer>, i: number) {
+        return (src[i] | (src[i + 1] << 8) | (src[i + 2] << 16) | (src[i + 3] << 24)) >>> 0;
+    }
+
+    function U32TO8_LE(dst: Uint8Array<ArrayBuffer>, i: number, v: number) {
+        dst[i] = v & 0xff;
+        dst[i + 1] = (v >>> 8) & 0xff;
+        dst[i + 2] = (v >>> 16) & 0xff;
+        dst[i + 3] = (v >>> 24) & 0xff;
+    }
+
+    function chacha20Block(key32: Uint8Array<ArrayBuffer>, counter: number, nonce12: Uint8Array<ArrayBuffer>): Uint8Array<ArrayBuffer> {
+        const out = new Uint8Array(64);
+        const state = new Uint32Array(16);
+        // constants
+        state[0] = 0x61707865; state[1] = 0x3320646e; state[2] = 0x79622d32; state[3] = 0x6b206574;
+        // key
+        for (let i = 0; i < 8; i++) state[4 + i] = U8TO32_LE(key32, i * 4);
+        state[12] = counter >>> 0;
+        state[13] = U8TO32_LE(nonce12, 0);
+        state[14] = U8TO32_LE(nonce12, 4);
+        state[15] = U8TO32_LE(nonce12, 8);
+
+        const working = new Uint32Array(state);
+
+        for (let i = 0; i < 10; i++) {
+            // column rounds
+            // quarter round on (0,4,8,12)
+            let a = 0, b = 4, c = 8, d = 12;
+            working[a] = (working[a] + working[b]) >>> 0; working[d] ^= working[a]; working[d] = ROTL(working[d], 16) >>> 0;
+            working[c] = (working[c] + working[d]) >>> 0; working[b] ^= working[c]; working[b] = ROTL(working[b], 12) >>> 0;
+            working[a] = (working[a] + working[b]) >>> 0; working[d] ^= working[a]; working[d] = ROTL(working[d], 8) >>> 0;
+            working[c] = (working[c] + working[d]) >>> 0; working[b] ^= working[c]; working[b] = ROTL(working[b], 7) >>> 0;
+            // (1,5,9,13)
+            a = 1; b = 5; c = 9; d = 13;
+            working[a] = (working[a] + working[b]) >>> 0; working[d] ^= working[a]; working[d] = ROTL(working[d], 16) >>> 0;
+            working[c] = (working[c] + working[d]) >>> 0; working[b] ^= working[c]; working[b] = ROTL(working[b], 12) >>> 0;
+            working[a] = (working[a] + working[b]) >>> 0; working[d] ^= working[a]; working[d] = ROTL(working[d], 8) >>> 0;
+            working[c] = (working[c] + working[d]) >>> 0; working[b] ^= working[c]; working[b] = ROTL(working[b], 7) >>> 0;
+            // (2,6,10,14)
+            a = 2; b = 6; c = 10; d = 14;
+            working[a] = (working[a] + working[b]) >>> 0; working[d] ^= working[a]; working[d] = ROTL(working[d], 16) >>> 0;
+            working[c] = (working[c] + working[d]) >>> 0; working[b] ^= working[c]; working[b] = ROTL(working[b], 12) >>> 0;
+            working[a] = (working[a] + working[b]) >>> 0; working[d] ^= working[a]; working[d] = ROTL(working[d], 8) >>> 0;
+            working[c] = (working[c] + working[d]) >>> 0; working[b] ^= working[c]; working[b] = ROTL(working[b], 7) >>> 0;
+            // (3,7,11,15)
+            a = 3; b = 7; c = 11; d = 15;
+            working[a] = (working[a] + working[b]) >>> 0; working[d] ^= working[a]; working[d] = ROTL(working[d], 16) >>> 0;
+            working[c] = (working[c] + working[d]) >>> 0; working[b] ^= working[c]; working[b] = ROTL(working[b], 12) >>> 0;
+            working[a] = (working[a] + working[b]) >>> 0; working[d] ^= working[a]; working[d] = ROTL(working[d], 8) >>> 0;
+            working[c] = (working[c] + working[d]) >>> 0; working[b] ^= working[c]; working[b] = ROTL(working[b], 7) >>> 0;
+            // diagonal rounds
+            // (0,5,10,15)
+            a = 0; b = 5; c = 10; d = 15;
+            working[a] = (working[a] + working[b]) >>> 0; working[d] ^= working[a]; working[d] = ROTL(working[d], 16) >>> 0;
+            working[c] = (working[c] + working[d]) >>> 0; working[b] ^= working[c]; working[b] = ROTL(working[b], 12) >>> 0;
+            working[a] = (working[a] + working[b]) >>> 0; working[d] ^= working[a]; working[d] = ROTL(working[d], 8) >>> 0;
+            working[c] = (working[c] + working[d]) >>> 0; working[b] ^= working[c]; working[b] = ROTL(working[b], 7) >>> 0;
+            // (1,6,11,12)
+            a = 1; b = 6; c = 11; d = 12;
+            working[a] = (working[a] + working[b]) >>> 0; working[d] ^= working[a]; working[d] = ROTL(working[d], 16) >>> 0;
+            working[c] = (working[c] + working[d]) >>> 0; working[b] ^= working[c]; working[b] = ROTL(working[b], 12) >>> 0;
+            working[a] = (working[a] + working[b]) >>> 0; working[d] ^= working[a]; working[d] = ROTL(working[d], 8) >>> 0;
+            working[c] = (working[c] + working[d]) >>> 0; working[b] ^= working[c]; working[b] = ROTL(working[b], 7) >>> 0;
+            // (2,7,8,13)
+            a = 2; b = 7; c = 8; d = 13;
+            working[a] = (working[a] + working[b]) >>> 0; working[d] ^= working[a]; working[d] = ROTL(working[d], 16) >>> 0;
+            working[c] = (working[c] + working[d]) >>> 0; working[b] ^= working[c]; working[b] = ROTL(working[b], 12) >>> 0;
+            working[a] = (working[a] + working[b]) >>> 0; working[d] ^= working[a]; working[d] = ROTL(working[d], 8) >>> 0;
+            working[c] = (working[c] + working[d]) >>> 0; working[b] ^= working[c]; working[b] = ROTL(working[b], 7) >>> 0;
+            // (3,4,9,14)
+            a = 3; b = 4; c = 9; d = 14;
+            working[a] = (working[a] + working[b]) >>> 0; working[d] ^= working[a]; working[d] = ROTL(working[d], 16) >>> 0;
+            working[c] = (working[c] + working[d]) >>> 0; working[b] ^= working[c]; working[b] = ROTL(working[b], 12) >>> 0;
+            working[a] = (working[a] + working[b]) >>> 0; working[d] ^= working[a]; working[d] = ROTL(working[d], 8) >>> 0;
+            working[c] = (working[c] + working[d]) >>> 0; working[b] ^= working[c]; working[b] = ROTL(working[b], 7) >>> 0;
+        }
+
+        for (let i = 0; i < 16; i++) {
+            const v = (working[i] + state[i]) >>> 0;
+            U32TO8_LE(out, i * 4, v);
+        }
+        return out;
+    }
+
+    // Produce Poly1305 one-time key by running ChaCha20 with counter=0
+    const otk = chacha20Block(key, 0, nonce).slice(0, 32);
+
+    // Poly1305 implementation (BigInt-based)
+    const P = (1n << 130n) - 5n;
+
+    function leBytesToBigInt(b: Uint8Array<ArrayBuffer>, off: number, len: number) {
+        let v = 0n;
+        for (let i = 0; i < len; i++) {
+            v |= BigInt(b[off + i]) << BigInt(8 * i);
+        }
+        return v;
+    }
+
+    // clamp r
+    const rbytes = otk.slice(0, 16);
+    rbytes[3] &= 15; rbytes[7] &= 15; rbytes[11] &= 15; rbytes[15] &= 15;
+    rbytes[4] &= 252; rbytes[8] &= 252; rbytes[12] &= 252;
+    const r = leBytesToBigInt(rbytes, 0, 16);
+    const s = leBytesToBigInt(otk, 16, 16);
+
+    // Build mac data: aad || pad || ct || pad || le64(aadLen) || le64(ctLen)
+    function pad16(len: number) { return (16 - (len % 16)) % 16; }
+    const aadLen = aad ? aad.length : 0;
+    const ctLen = ciphertext.length;
+    const macLen = aadLen + pad16(aadLen) + ctLen + pad16(ctLen) + 16; // last 16 for lengths
+    const macData = new Uint8Array(macLen);
+    let off = 0;
+    if (aadLen > 0) { macData.set(aad as Uint8Array<ArrayBuffer>, off); off += aadLen; }
+    off += pad16(aadLen);
+    macData.set(ciphertext as Uint8Array<ArrayBuffer>, off); off += ctLen;
+    off += pad16(ctLen);
+    // le64(aadLen)
+    for (let i = 0; i < 8; i++) macData[off + i] = (aadLen >>> (8 * i)) & 0xff;
+    // le64(ctLen)
+    for (let i = 0; i < 8; i++) macData[off + 8 + i] = (ctLen >>> (8 * i)) & 0xff;
+
+    // compute Poly1305 tag
+    let acc = 0n;
+    let idx = 0;
+    while (idx < macData.length - 16) {
+        const blockLen = Math.min(16, macData.length - 16 - idx);
+        const n = leBytesToBigInt(macData, idx, blockLen) + (1n << BigInt(8 * blockLen));
+        acc = ((acc + n) * r) % P;
+        idx += blockLen;
+    }
+    // add s and reduce to 128-bit
+    const tagNum = (acc + s) & ((1n << 128n) - 1n);
+    const computedTag = new Uint8Array(16);
+    let tmp = tagNum;
+    for (let i = 0; i < 16; i++) {
+        computedTag[i] = Number(tmp & 0xffn);
+        tmp >>= 8n;
+    }
+
+    // constant-time compare
+    if (computedTag.length !== tag.length) throw new Error('Authentication failed');
+    let diff = 0;
+    for (let i = 0; i < 16; i++) diff |= computedTag[i] ^ tag[i];
+    if (diff !== 0) throw new Error('ChaCha20-Poly1305 authentication failed');
+
+    // decrypt: keystream with counter starting at 1
+    const out = new Uint8Array(ctLen);
+    let counter = 1;
+    let pos = 0;
+    while (pos < ctLen) {
+        const block = chacha20Block(key, counter, nonce);
+        const chunk = Math.min(64, ctLen - pos);
+        for (let i = 0; i < chunk; i++) out[pos + i] = ciphertext[pos + i] ^ block[i];
+        pos += chunk; counter++;
+    }
+
+    return out as Uint8Array<ArrayBuffer>;
+}
+
 /**
  * Generates an MD5 hash of the provided data.
  *
