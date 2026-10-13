@@ -6,19 +6,17 @@ import DeScramble from '../../transformers/ImageDescrambler';
 import { GetTypedData } from './Common';
 import { GetBytesFromBase64, GetUTF8FromBytes } from '../../BufferEncoder';
 
-type JSONPageData = {
-    items: ContentConfiguration[];
-};
-
-type ContentConfiguration = {
-    ContentID: string;
-    ctbl: string;
-    ptbl: string;
-    ServerType: number | string;
-    ContentsServer: string;
-    p: string;
-    ViewMode: number;
-    ContentDate: string;
+type Configurations = {
+    items: {
+        ContentID: string;
+        ctbl: string;
+        ptbl: string;
+        ServerType: number | string;
+        ContentsServer: string;
+        p: string;
+        ViewMode: number;
+        ContentDate: string;
+    }[];
 };
 
 type JSONImageData = {
@@ -27,13 +25,11 @@ type JSONImageData = {
             src: string;
         };
     };
-    views: View[];
-};
-
-type View = {
-    coords: string[];
-    width: number;
-    height: number;
+    views: {
+        coords: string[];
+        width: number;
+        height: number;
+    }[];
 };
 
 type PageViewv016130 = {
@@ -165,7 +161,7 @@ export async function FetchPagesSinglePageAjax(this: MangaScraper, chapter: Chap
             await FetchWindowScript<JSONPageData>(new Request(viewerUrl), JsonFetchScript.replace('{URI}', uri.href), 2500);
     */
 
-    const { items } = await FetchJSON<JSONPageData>(new Request(configURL, {
+    const { items } = await FetchJSON<Configurations>(new Request(configURL, {
         headers: {
             Referer: viewerUrl.href
         }
