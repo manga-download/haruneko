@@ -650,6 +650,7 @@ export { default as Shqqaa } from './Shqqaa';
 export { default as ShueishaMangaPlus } from './ShueishaMangaPlus';
 export { default as SiiManga } from './SiiManga';
 export { default as SlashLib } from './SlashLib';
+export { default as SleptManga } from './SleptManga';
 export { default as SoftKomik } from './SoftKomik';
 export { default as SoraRaw } from './SoraRaw';
 export { default as SoulScans } from './SoulScans';
