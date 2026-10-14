@@ -532,6 +532,7 @@ export { default as NoIndexScan } from './NoIndexScan';
 export { default as NonaFansub } from './NonaFansub';
 export { default as NoraNoFansub } from './NoraNoFansub';
 export { default as Noromax } from './Noromax';
+export { default as NovaFansub } from './NovaFansub';
 export { default as NovelcoolBR } from './NovelcoolBR';
 export { default as NovelcoolDE } from './NovelcoolDE';
 export { default as NovelcoolEN } from './NovelcoolEN';
