@@ -2,7 +2,7 @@ import icon from './CatharsisWorld.webp';
 import { Tags } from '../Tags';
 import { Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { Fetch, FetchJSON } from '../platform/FetchProvider';
+import { Fetch, FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
 import { Exception } from '../Error';
 import { WebsiteResourceKey as R } from '../../i18n/ILocale';
 import type { Priority } from '../taskpool/DeferredTask';
@@ -46,7 +46,7 @@ type TicketResponse = {
     xorByte: number;
 };
 
-type ImageSlice ={
+type ImageSlice = {
     sx: number;
     sy: number;
     sw: number;
@@ -56,17 +56,6 @@ type ImageSlice ={
     dw: number;
     dh: number;
 }
-
-/*
-type GridPartitionResult = {
-    cols: number;
-    rows: number;
-    X: number[];
-    Y: number[];
-    colPerm: number[];
-    rowPerm: number[];
-    slices: ImageSlice[];
-}*/
 
 export class PRNG {
     private state: number;
@@ -211,6 +200,7 @@ export class PRNG {
 export default class extends DecoratableMangaScraper {
 
     private readonly apiURL = `${this.URI.origin}/api/`;
+    private token: string = undefined;
 
     public constructor() {
         super('catharsisworld', 'Catharsis World', 'https://newcatharsis.dig-it.info', Tags.Media.Manhwa, Tags.Media.Manga, Tags.Language.Spanish, Tags.Source.Aggregator, Tags.Accessibility.DomainRotation);
@@ -220,8 +210,18 @@ export default class extends DecoratableMangaScraper {
         return icon;
     }
 
+    public override async Initialize(): Promise<void> {
+        this.token = await FetchWindowScript(new Request(this.URI), `
+            new Promise ( resolve => {
+                cookieStore.set('catharsis_nsfw_agreed', 'true');
+                const auth = localStorage.getItem('auth-storage');
+                resolve ( auth ? JSON.parse(auth).state.token : undefined);
+            });
+        `, 500);
+    }
+
     public override ValidateMangaURL(url: string): boolean {
-        return new RegExpSafe(`^${this.URI.origin}/manga/[^/]+$`).test(url);
+        return new RegExpSafe(`^${this.URI.origin}/manga/\\d+$`).test(url);
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
@@ -254,6 +254,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchImage(page: Page<PageData>, priority: Priority, signal: AbortSignal): Promise<Blob> {
+
         //get page ticket https://newcatharsis.dig-it.info/api/mangas/chapters/chapterID/page-ticket
         const { scrambleKey, signedToken, xorByte } = await this.FetchAPI<TicketResponse>(`./mangas/chapters/${page.Parent.Identifier}/page-ticket`, {
             pageIndex: page.Parameters.index,
@@ -303,6 +304,7 @@ export default class extends DecoratableMangaScraper {
         const request = new Request(new URL(endpoint, this.apiURL), {
             method,
             headers: {
+                ...this.token && { 'Authorization': `Bearer ${this.token}` },
                 Referer: this.URI.href,
                 Origin: this.URI.origin,
                 'Content-Type': 'application/json',
