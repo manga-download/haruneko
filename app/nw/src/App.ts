@@ -42,7 +42,7 @@ async function OpenWindow() {
         position: 'center',
         //title: 'HakuNeko',
     }, win => win ? resolve(win) : reject()));
-    const ipc = new IPC(win, win.window.window);
+    const ipc = new IPC(win);
     const rpc = new RPCServer('/hakuneko', new RemoteProcedureCallContract(ipc));
     new RemoteProcedureCallManager(rpc, ipc);
 
