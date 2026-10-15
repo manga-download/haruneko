@@ -25,7 +25,7 @@ export default class RemoteProcedureCallManager implements IRemoteProcedureCallM
         this.rpcSecret.Subscribe(callback);
 
         // TODO: Find a better solution to determine that the corresponding IPC listeners in App context are subscribed
-        this.ipcAppReady = new Promise<void>(resolve => setTimeout(resolve, 1000));
+        this.ipcAppReady = new Promise<void>(resolve => setTimeout(resolve, 2500));
         this.Update();
     }
 
