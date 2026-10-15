@@ -9,12 +9,16 @@ type CachedMangas = {
     title: string;
 }[];
 
-type APIChapters = {
-    series_books: {
-        book_id: string;
-        chapter_no: string;
-        title: string;
-    }[];
+type PackedChapters<T = string | number | boolean | number[]> = {
+    fields: string[];
+    books: T[][];
+};
+
+type APIChapter = {
+    book_id: string;
+    title: string;
+    chapter_no: number;
+    sort_no: number;
 };
 
 type APIPages = {
@@ -28,14 +32,17 @@ type APIPages = {
     };
 };
 
-@Common.MangaCSS<HTMLMetaElement>(/^{origin}\/series\/[-a-z0-9A]+(#[^/]+)?$/, 'meta[property="og:title"]', (meta, uri) => ({ id: uri.pathname.split('/').at(-1), title: meta.content.trim() }))
+@Common.MangaCSS<HTMLMetaElement>(/^{origin}\/series\/([-a-z0-9]+)?[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}(#[^/]+)?$/, 'meta[property="og:title"]', (meta, uri) => ({
+    id: uri.pathname.match(/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/i).at(0),
+    title: meta.content.trim()
+}))
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
     readonly #apiURL = `${this.URI.origin}/api/v2/`;
 
     public constructor() {
-        super('kagane', 'Kagane', 'https://kagane.to', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.English, Tags.Source.Aggregator, ...Tags.Rating.toArray());
+        super('kagane', 'Kagane', 'https://kagane.org', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.English, Tags.Source.Aggregator, ...Tags.Rating.toArray());
     }
 
     public override get Icon() {
@@ -48,9 +55,12 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const uri = new URL(`./series/${manga.Identifier}`, this.#apiURL);
-        const { series_books: chapters } = await FetchJSON<APIChapters>(new Request(uri));
-        return chapters.map(({ book_id: id, title, chapter_no: number }) => new Chapter(this, manga, id, title || `Ch. ${number}` )).reverse();
+        const data = await FetchJSON<PackedChapters>(new Request(new URL(`./series/${manga.Identifier}/books/index?fields=List`, this.#apiURL)));
+        const chapters = this.UnpackChapters(data);
+        //some mangas miss number in title (i.e Martial Peak), its better to always include it
+        return chapters
+            .sort((self, other) => other.sort_no - self.sort_no)
+            .map(({ book_id: id, title, chapter_no: number }) => new Chapter(this, manga, id, [`Ch. ${number}`, title].joinTitleSegments()));
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
@@ -72,4 +82,19 @@ export default class extends DecoratableMangaScraper {
             return new Page(this, chapter, uri);
         });
     }
+
+    private UnpackChapters(packedChapters: PackedChapters): APIChapter[] {
+        const chaptersObjects: APIChapter[] = [];
+        const { fields, books } = packedChapters;
+
+        for (const book of books) {
+            const chapter = {};
+            for (let index = 0; index <= book.length; index++) {
+                chapter[fields[index]] = book[index];
+            }
+            chaptersObjects.push(chapter as APIChapter);
+        }
+        return chaptersObjects;
+    }
+
 }
