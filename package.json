@@ -24,6 +24,11 @@
         "vite": "8.3.4",
         "vitest": "5.0.4"
     },
+    "overrides": {
+        "@vitest/browser-*": "-",
+        "@vitest/coverage-*": "-",
+        "@vitest/ui": "-"
+    },
     "scripts": {
         "check": "npm run check --workspaces",
         "test": "npm run test --workspaces",
