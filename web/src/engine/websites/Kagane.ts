@@ -9,16 +9,9 @@ type CachedMangas = {
     title: string;
 }[];
 
-type PackedChapters<T = string | number | boolean | number[]> = {
-    fields: string[];
-    books: T[][];
-};
-
-type APIChapter = {
-    book_id: string;
-    title: string;
-    chapter_no: number;
-    sort_no: number;
+type PackedChapters = {
+	fields: string[];
+	books: (string | number)[][];
 };
 
 type APIPages = {
@@ -32,9 +25,9 @@ type APIPages = {
     };
 };
 
-@Common.MangaCSS<HTMLMetaElement>(/^{origin}\/series\/([-a-z0-9]+)?[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}(#[^/]+)?$/, 'meta[property="og:title"]', (meta, uri) => ({
-    id: uri.pathname.match(/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/i).at(0),
-    title: meta.content.trim()
+@Common.MangaCSS<HTMLMetaElement>(/^{origin}\/series\/[^/]+(-[a-fA-F0-9]{4,12}){5}([#?]|$)/, 'meta[property="og:title"]', (meta, uri) => ({
+    id: uri.pathname.split('-').slice(-5).join('-'),
+    title: meta.content.trim(),
 }))
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
@@ -55,12 +48,13 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const data = await FetchJSON<PackedChapters>(new Request(new URL(`./series/${manga.Identifier}/books/index?fields=List`, this.#apiURL)));
-        const chapters = this.UnpackChapters(data);
-        //some mangas miss number in title (i.e Martial Peak), its better to always include it
-        return chapters
-            .sort((self, other) => other.sort_no - self.sort_no)
-            .map(({ book_id: id, title, chapter_no: number }) => new Chapter(this, manga, id, [`Ch. ${number}`, title].joinTitleSegments()));
+        const { fields, books } = await FetchJSON<PackedChapters>(new Request(new URL(`./series/${manga.Identifier}/books/index?fields=List`, this.#apiURL)));
+        return books
+            .map(book => {
+                const title = [`Ch. ${book[fields.indexOf('chapter_no')]}`, book[fields.indexOf('title')]].joinTitleSegments();
+                return new Chapter(this, manga, book[fields.indexOf('book_id')].toString(), title);
+            })
+            .sort((self, other) => other.Title.localeCompare(self.Title, undefined, { numeric: true }));
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
@@ -82,19 +76,4 @@ export default class extends DecoratableMangaScraper {
             return new Page(this, chapter, uri);
         });
     }
-
-    private UnpackChapters(packedChapters: PackedChapters): APIChapter[] {
-        const chaptersObjects: APIChapter[] = [];
-        const { fields, books } = packedChapters;
-
-        for (const book of books) {
-            const chapter = {};
-            for (let index = 0; index <= book.length; index++) {
-                chapter[fields[index]] = book[index];
-            }
-            chaptersObjects.push(chapter as APIChapter);
-        }
-        return chaptersObjects;
-    }
-
 }
