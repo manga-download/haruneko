@@ -152,7 +152,6 @@ export { default as FMTeam } from './FMTeam';
 export { default as FoxTruyen } from './FoxTruyen';
 export { default as FuryoSociety } from './FuryoSociety';
 export { default as GaiaToon } from './GaiaToon';
-export { default as GalaxyManga } from './GalaxyManga';
 export { default as GanGanOnline } from './GanGanOnline';
 export { default as Ganma } from './Ganma';
 export { default as GComi } from './GComi';
