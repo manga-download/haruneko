@@ -19,6 +19,9 @@ jobs:
         id: packages
         run: |
           npm run npm:clean-install
+      - name: Show NPM Log Files
+        if: failure()
+        run: cat /home/runner/.npm/_logs/*.log
       - name: Code Inspection
         if: steps.packages.outcome == 'success' && (success() || failure())
         run: npm run check

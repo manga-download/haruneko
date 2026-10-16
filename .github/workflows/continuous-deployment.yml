@@ -32,6 +32,9 @@ jobs:
       - name: Install NPM Packages
         run: |
           npm run npm:clean-install
+      - name: Show NPM Log Files
+        if: failure()
+        run: cat /home/runner/.npm/_logs/*.log
       - name: Code Inspection
         run: npm run check
       - name: Unit & Component Tests

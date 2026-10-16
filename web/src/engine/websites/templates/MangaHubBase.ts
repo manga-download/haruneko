@@ -117,43 +117,31 @@ export class MangaHubBase extends DecoratableMangaScraper {
             chapter: parseFloat(chapter.Identifier),
         });
 
-        let jsonPages: JSONPages = undefined;
+        let jsonPages: JSONPages;
 
         if (pages.startsWith('enc:v1')) {
             const [, , keyId, iv, authTag, ciphertext] = pages.split(':');
-            const keydata = cryptoParams.keys && cryptoParams.keys[keyId] ? cryptoParams.keys[keyId] : cryptoParams.key;
+            const keydata = cryptoParams.keys && keyId in cryptoParams.keys ? cryptoParams.keys[keyId] : cryptoParams.key;
             const key = await crypto.subtle.importKey('raw', GetBytesFromURLBase64(keydata), { name: 'AES-GCM' }, !1, ['decrypt']);
             const decrypted = await crypto.subtle.decrypt({
                 name: 'AES-GCM',
                 iv: GetBytesFromURLBase64(iv),
                 tagLength: 128
-            }, key, this.ConcatBuffers(GetBytesFromURLBase64(ciphertext), GetBytesFromURLBase64(authTag)));
+            }, key, new Uint8Array([...GetBytesFromURLBase64(ciphertext), ...GetBytesFromURLBase64(authTag)]));
             jsonPages = <JSONPages>JSON.parse(GetUTF8FromBytes(decrypted));
         } else {
             jsonPages = <JSONPages>JSON.parse(pages);
         }
 
-        return jsonPages['i'] ?
-            jsonPages['i'].map(pageNumber => new Page(this, chapter, new URL(`${jsonPages['p']}${pageNumber}`, this.cdnURL)))
-            :
-            Object.values(jsonPages as string[]).map(page => new Page(this, chapter, new URL(page, this.cdnURL)));
-    }
-
-    private ConcatBuffers(...arrays: Uint8Array[]): Uint8Array<ArrayBuffer> {
-        const totalLength = arrays.reduce((sum, arr) => sum + arr.length, 0);
-        const result = new Uint8Array(totalLength);
-        let offset = 0;
-        for (const arr of arrays) {
-            result.set(arr, offset);
-            offset += arr.length;
-        }
-        return result;
+        return 'i' in jsonPages
+            ? jsonPages.i.map(pageNumber => new Page(this, chapter, new URL(`${jsonPages.p}${pageNumber}`, this.cdnURL)))
+            : Object.values(jsonPages as string[]).map(page => new Page(this, chapter, new URL(page, this.cdnURL)));
     }
 
     private async FetchGQL<T extends JSONElement>(query: string, variables: JSONObject, remainingRetryAttempts = 3): Promise<T> {
         const request = new Request(new URL(this.apiURL), {
             headers: {
-                'Origin': this.URI.origin,
+                //'Origin': this.URI.origin,
                 'Referer': this.URI.href,
                 'X-MHub-Access': this.token,
             }

@@ -7,12 +7,12 @@ new TestFixture({
     },
     container: {
         url: 'https://eternalmangas.org/series/winterfield',
-        id: '3229',
+        id: '/series/winterfield',
         title: 'Winterfield'
     },
     child: {
         id: '/series/winterfield/chapter-8',
-        title: 'Chapter 8'
+        title: 'Capítulo 8'
     },
     entry: {
         index: 4,
