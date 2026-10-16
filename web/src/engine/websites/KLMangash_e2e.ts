@@ -6,7 +6,7 @@ new TestFixture({
         title: 'KLManga(.sh)'
     },
     container: {
-        url: 'https://klmanga.toys/manga-raw/ボールパークでつかまえて！-raw-free/',
+        url: 'https://klmanga.chat/manga-raw/ボールパークでつかまえて！-raw-free/',
         id: encodeURI('/manga-raw/ボールパークでつかまえて！-raw-free/'),
         title: 'ボールパークでつかまえて！'
     },
