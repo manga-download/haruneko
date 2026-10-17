@@ -4,7 +4,12 @@ import { type IPC, Channels } from './InterProcessCommunication';
 
 export class RemoteProcedureCallContract implements Contract {
 
-    constructor (private readonly ipc: IPC) { }
+    private readonly ipcWebReady: Promise<void>;
+
+    constructor(private readonly ipc: IPC) {
+        // TODO: Find a better solution to determine that the corresponding IPC listeners in Web context are subscribed
+        this.ipcWebReady = new Promise<void>(resolve => setTimeout(resolve, 2500));
+    }
 
     public async SetCloudFlareBypass(userAgent: string, cookies: chrome.cookies.Cookie[]): Promise<void> {
         for(const cookie of cookies) {
@@ -38,6 +43,7 @@ export class RemoteProcedureCallContract implements Contract {
     }
 
     public async LoadMediaContainerFromURL(url: string): Promise<void> {
+        await this.ipcWebReady;
         return this.ipc.Send(Channels.RemoteProcedureCallContract.LoadMediaContainerFromURL, url);
     }
 }
