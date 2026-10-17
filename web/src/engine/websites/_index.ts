@@ -334,6 +334,7 @@ export { default as MangaDistrict } from './MangaDistrict';
 export { default as MangaDiyari } from './MangaDiyari';
 export { default as MangaDNA } from './MangaDNA';
 export { default as MangaDotNet } from './MangaDotNet';
+export { default as MangaDusleri } from './MangaDusleri';
 export { default as MangaEclipse } from './MangaEclipse';
 export { default as MangaEighteenClub } from './MangaEighteenClub';
 export { default as MangaFire } from './MangaFire';
