@@ -2,23 +2,21 @@ import { TestFixture } from '../../../test/WebsitesFixture';
 
 new TestFixture({
     plugin: {
-        id: 'allhentai',
-        title: 'AllHentai'
+        id: 'xcomic',
+        title: 'XComic'
     },
     container: {
-        url: 'https://20.allhen.online/nochiu_ona_nimfomanka',
-        id: '/nochiu_ona_nimfomanka',
-        title: 'Ночью она нимфоманка'
+        url: 'https://xcomic.me/title/8mzgq',
+        id: '8mzgq',
+        title: 'My Husband Is an Antisocial Count!'
     },
-/*   Need to be logged, and chapter link change with user id anyway
-
     child: {
-        id: '/nochiu_ona_nimfomanka/vol1/4?mtr=1',
-        title: '1 - 1',
+        id: 'e2mzray',
+        title: 'Chapter 52 [END] [🇬🇧]',
     },
     entry: {
         index: 0,
-        size: 155_934,
-        type: 'image/png'
-    }*/
+        size: 110_582,
+        type: 'image/webp'
+    }
 }).AssertWebsite();
