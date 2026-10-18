@@ -177,20 +177,20 @@ export default class extends DecoratableMangaScraper {
             for (const source of sources) {
                 for (let page = 1, run = true; run; page++) {
                     const { get_comic_chapterList_fullList: { items, paging: { next } } } = await FetchGraphQL<APIChapterList>(new Request(this.apiURL), 'get_comic_chapterList_fullList', `
-                     query get_comic_chapterList_fullList($select: Select_Comic_ChapterList) {
-                         get_comic_chapterList_fullList(select: $select) {
-                             paging {
-                                 next
-                             }
-                             items {
-                                 data {
-                                     id
-                                     dname
-                                     chaNum
-                                 }
-                             }
-                         }
-                     }
+                        query get_comic_chapterList_fullList($select: Select_Comic_ChapterList) {
+                            get_comic_chapterList_fullList(select: $select) {
+                                paging {
+                                    next
+                                }
+                                items {
+                                    data {
+                                        id
+                                        dname
+                                        chaNum
+                                    }
+                                }
+                            }
+                        }
                     `, { select: { comic_id: source.id, page, size: 1000, sortby: 'chapter_desc' } }
                     );
 
