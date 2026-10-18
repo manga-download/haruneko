@@ -1,14 +1,12 @@
 import { Tags } from '../Tags';
-import icon from './MangaDex.webp';
+import icon from './XComic.webp';
 import { FetchGraphQL } from '../platform/FetchProvider';
 import { type MangaPlugin, Manga, Chapter, Page, DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import { RateLimit } from '../taskpool/RateLimit';
 import { Priority, TaskPool } from '../taskpool/TaskPool';
 
-//TODO: Map languages on chapters
 //TODO: Chapters Optimizations
-//TODO: ICON
 
 type APIMangas = {
     get_title_browse_items: {
@@ -33,6 +31,7 @@ type APIComicProbe = {
     get_comicNode: {
         id: string;
         data: {
+            name: string;
             subName: string;
             dbStatus: string;
             isPublic: boolean;
@@ -45,12 +44,16 @@ type APIComicProbe = {
 type ChapterSource = {
     id: string;
     name: string;
+    subName: string;
     translatedLanguage: string;
     chapterCount: number;
 };
 
 type APIChapterList = {
     get_comic_chapterList_fullList: {
+        paging: {
+            next: number;
+        };
         items: {
             data: {
                 id: string;
@@ -66,7 +69,8 @@ type ChapterData = {
     dname: string;
     chaNum: number;
     language: string;
-    source: string;
+    name: string;
+    subName: string;
 };
 
 type APIPages = {
@@ -77,11 +81,32 @@ type APIPages = {
     };
 };
 
+const chapterLanguageMap = new Map([
+    ['ar', Tags.Language.Arabic],
+    ['de', Tags.Language.German],
+    ['en', Tags.Language.English],
+    ['es', Tags.Language.Spanish],
+    ['es-419', Tags.Language.Spanish],
+    ['fr', Tags.Language.French],
+    ['id', Tags.Language.Indonesian],
+    ['it', Tags.Language.Italian],
+    ['ko', Tags.Language.Korean],
+    ['pl', Tags.Language.Polish],
+    ['pt', Tags.Language.Portuguese],
+    ['pt_BR', Tags.Language.Portuguese],
+    ['ru', Tags.Language.Russian],
+    ['th', Tags.Language.Thai],
+    ['tr', Tags.Language.Turkish],
+    ['vi', Tags.Language.Vietnamese],
+    ['zh', Tags.Language.Chinese],
+    ['zh_hk', Tags.Language.Chinese]
+]);
+
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
     private readonly apiURL = `${this.URI.origin}/query/`;
-    private readonly chaptersTaskPool = new TaskPool(1, new RateLimit(4, 1));
+    private readonly chaptersTaskPool = new TaskPool(1, new RateLimit(60, 1));
 
     public constructor() {
         super('xcomic', 'XComic', 'https://xcomic.net', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Multilingual, Tags.Source.Aggregator);
@@ -92,7 +117,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override ValidateMangaURL(url: string): boolean {
-        return new RegExpSafe(`^${this.URI.origin}/title/[^/]+$`).test(url);
+        return new RegExpSafe(`^https://xcomic.(net|me)/title/[^/]+$`).test(url);
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
@@ -105,7 +130,7 @@ export default class extends DecoratableMangaScraper {
                     }
                 }
             }
-        `, { id: url.split('/').at(-1)});
+        `, { id: url.split('/').at(-1) });
         return new Manga(this, provider, id, title);
     }
 
@@ -141,9 +166,12 @@ export default class extends DecoratableMangaScraper {
 
         for (const source of sources) {
             for (let page = 1, run = true; run; page++) {
-                const { get_comic_chapterList_fullList: { items } } = await FetchGraphQL<APIChapterList>(new Request(this.apiURL), 'get_comic_chapterList_fullList', `
+                const { get_comic_chapterList_fullList: { items, paging: { next } } } = await FetchGraphQL<APIChapterList>(new Request(this.apiURL), 'get_comic_chapterList_fullList', `
                      query get_comic_chapterList_fullList($select: Select_Comic_ChapterList) {
                          get_comic_chapterList_fullList(select: $select) {
+                             paging {
+                                 next
+                             }
                              items {
                                  data {
                                      id
@@ -162,15 +190,17 @@ export default class extends DecoratableMangaScraper {
                     }
                 });
 
-                const chaptersData = items.map(({ data: { id, dname, chaNum } }) => ({ id, dname, chaNum, language: source.translatedLanguage, source: source.name }));
+                const chaptersData = items.map(({ data: { id, dname, chaNum } }) => ({ id, dname, chaNum, language: source.translatedLanguage, name: source.name, subName: source.subName }));
                 chapters.push(...chaptersData);
-                run = items.length > 0;
+                run = page < next;
             }
         }
 
         return chapters
             .sort((self, other) => other.chaNum - self.chaNum)
-            .map(({ id, dname, source, language }) => new Chapter(this, manga, id, [dname, source, language].joinTitleSegments()));
+            .map(({ id, dname, name, subName, language }) =>
+                new Chapter(this, manga, id, [dname, `[${subName ?? name}]`, `[${language}]`].joinTitleSegments().replace(manga.Title, ''),
+                ...[chapterLanguageMap.get(language)].filter(Boolean)));
     }
 
     private async GetChapterSources(mangaId: string): Promise<ChapterSource[]> {
@@ -190,11 +220,12 @@ export default class extends DecoratableMangaScraper {
 
         // 2) Fetch all ChapterSource infos
         const promises = comic_ids.map(sourceId => this.chaptersTaskPool.Add(async () => {
-            const { get_comicNode: { id, data: { subName, translatedLanguage, dbStatus, chaps_normal, isPublic } } } = await FetchGraphQL<APIComicProbe>(new Request(this.apiURL), 'get_comicNode', `
+            const { get_comicNode: { id, data: { name, subName, translatedLanguage, dbStatus, chaps_normal, isPublic } } } = await FetchGraphQL<APIComicProbe>(new Request(this.apiURL), 'get_comicNode', `
                 query get_comicNode($id: ID!) {
                     get_comicNode(id: $id) {
                         id
                         data {
+                            name
                             subName
                             dbStatus
                             isPublic
@@ -206,7 +237,8 @@ export default class extends DecoratableMangaScraper {
             `, { id: sourceId });
             return {
                 id,
-                name: subName,
+                name,
+                subName,
                 translatedLanguage,
                 dbStatus,
                 isPublic,
@@ -216,7 +248,7 @@ export default class extends DecoratableMangaScraper {
         }, Priority.Normal));
 
         const sources = (await Promise.all(promises))
-            .filter(({ isPublic, dbStatus }) => isPublic != false && (dbStatus === null || dbStatus === "normal"));
+            .filter(({ isPublic, dbStatus, chapterCount }) => isPublic != false && (dbStatus === null || dbStatus === "normal") && chapterCount > 0 );
         return sources;
     }
 
