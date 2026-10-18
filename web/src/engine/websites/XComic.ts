@@ -7,6 +7,7 @@ import { RateLimit } from '../taskpool/RateLimit';
 import { Priority, TaskPool } from '../taskpool/TaskPool';
 
 //TODO: Chapters Optimizations
+//TODO: Use a prefered language setting to reduce requests ?
 
 type APIMangas = {
     get_title_browse_items: {
@@ -64,15 +65,6 @@ type APIChapterList = {
     };
 };
 
-type ChapterData = {
-    id: string;
-    dname: string;
-    chaNum: number;
-    language: string;
-    name: string;
-    subName: string;
-};
-
 type APIPages = {
     get_chapterNode: {
         data: {
@@ -106,7 +98,7 @@ const chapterLanguageMap = new Map([
 export default class extends DecoratableMangaScraper {
 
     private readonly apiURL = `${this.URI.origin}/query/`;
-    private readonly chaptersTaskPool = new TaskPool(1, new RateLimit(60, 1));
+    private readonly chaptersTaskPool = new TaskPool(1, new RateLimit(4, 1));
 
     public constructor() {
         super('xcomic', 'XComic', 'https://xcomic.net', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Multilingual, Tags.Source.Aggregator);
@@ -135,7 +127,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        const perPage = 100;
+        const perPage = 120;
         type This = typeof this;
         return Array.fromAsync(async function* (this: This) {
             for (let page = 1, run = true; run; page++) {
@@ -162,11 +154,11 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const sources = await this.GetChapterSources(manga.Identifier);
-        const chapters: ChapterData[] = [];
-
-        for (const source of sources) {
-            for (let page = 1, run = true; run; page++) {
-                const { get_comic_chapterList_fullList: { items, paging: { next } } } = await FetchGraphQL<APIChapterList>(new Request(this.apiURL), 'get_comic_chapterList_fullList', `
+        type This = typeof this;
+        const chapters = await Array.fromAsync(async function* (this: This) {
+            for (const source of sources) {
+                for (let page = 1, run = true; run; page++) {
+                    const { get_comic_chapterList_fullList: { items, paging: { next } } } = await FetchGraphQL<APIChapterList>(new Request(this.apiURL), 'get_comic_chapterList_fullList', `
                      query get_comic_chapterList_fullList($select: Select_Comic_ChapterList) {
                          get_comic_chapterList_fullList(select: $select) {
                              paging {
@@ -182,25 +174,26 @@ export default class extends DecoratableMangaScraper {
                          }
                      }
                  `, {
-                    select: {
-                        comic_id: source.id,
-                        page,
-                        size: 1000,
-                        sortby: 'chapter_desc',
-                    }
-                });
+                        select: {
+                            comic_id: source.id,
+                            page,
+                            size: 1000,
+                            sortby: 'chapter_desc',
+                        }
+                    });
 
-                const chaptersData = items.map(({ data: { id, dname, chaNum } }) => ({ id, dname, chaNum, language: source.translatedLanguage, name: source.name, subName: source.subName }));
-                chapters.push(...chaptersData);
-                run = page < next;
+                    const chaptersData = items.map(({ data: { id, dname, chaNum } }) => ({ id, name: dname, chaNum, language: source.translatedLanguage, sourceName: source.name, sourceSubname: source.subName }));
+                    yield* chaptersData;
+                    run = page < next;
+                }
             }
-        }
+        }.call(this));
 
         return chapters
             .sort((self, other) => other.chaNum - self.chaNum)
-            .map(({ id, dname, name, subName, language }) =>
-                new Chapter(this, manga, id, [dname, `[${subName ?? name}]`, `[${language}]`].joinTitleSegments().replace(manga.Title, ''),
-                ...[chapterLanguageMap.get(language)].filter(Boolean)));
+            .map(({ id, name, sourceName, sourceSubname, language }) =>
+                new Chapter(this, manga, id, [name, `[${sourceSubname ?? sourceName}]`, `[${language}]`].joinTitleSegments().replace(manga.Title, ''),
+                    ...[chapterLanguageMap.get(language)].filter(Boolean)));
     }
 
     private async GetChapterSources(mangaId: string): Promise<ChapterSource[]> {
@@ -248,7 +241,7 @@ export default class extends DecoratableMangaScraper {
         }, Priority.Normal));
 
         const sources = (await Promise.all(promises))
-            .filter(({ isPublic, dbStatus, chapterCount }) => isPublic != false && (dbStatus === null || dbStatus === "normal") && chapterCount > 0 );
+            .filter(({ isPublic, dbStatus, chapterCount }) => isPublic != false && (dbStatus === null || dbStatus === 'normal') && chapterCount > 0);
         return sources;
     }
 
