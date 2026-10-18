@@ -7,11 +7,11 @@ new TestFixture({
     },
     container: {
         url: 'https://olympusxyz.com/series/comic-el-mago-20-225-devorador-de-talentos13424',
-        id: JSON.stringify({ slug: 'el-mago-20-225-devorador-de-talentos13424', type: 'comic' }),
+        id: 'el-mago-20-225-devorador-de-talentos13424',
         title: 'El Mago Devorador de Talentos'
     },
     child: {
-        id: '92283',
+        id: '71',
         title: '71'
     },
     entry: {
