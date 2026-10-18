@@ -1,7 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { GetHexFromBytes, GetBytesFromHex } from './BufferEncoder';
 import * as testee from './Crypto';
-import { MD5 } from './Crypto';
 
 // TODO: ⚠️ Use constant expected values instead of using business logic to calculate expected values
 
@@ -18,7 +17,7 @@ describe('Hashing', () => {
     });
 
     it('Should correctly compute MD5 hash of a Uint8Array', () => {
-        const hash = MD5(new Uint8Array([104, 101, 108, 108, 111]));
+        const hash = testee.MD5(new Uint8Array([104, 101, 108, 108, 111]));
         expect(GetHexFromBytes(hash)).toBe('5d41402abc4b2a76b9719d911017c592');
     });
 });
