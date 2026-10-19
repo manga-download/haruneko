@@ -16,7 +16,7 @@ import { DecryptXOR } from '../Crypto';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('dualeotruyen', 'DuaLeoTruyen', 'https://dualeotruyenvie.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Media.Manga, Tags.Language.Vietnamese, Tags.Source.Aggregator, Tags.Accessibility.DomainRotation, Tags.Rating.Pornographic);
+        super('dualeotruyen', 'DuaLeoTruyen', 'https://dualeotruyenbet.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Media.Manga, Tags.Language.Vietnamese, Tags.Source.Aggregator, Tags.Accessibility.DomainRotation, Tags.Rating.Pornographic);
     }
 
     public override get Icon() {
@@ -37,7 +37,7 @@ export default class extends DecoratableMangaScraper {
                 'Sec-Fetch-Mode': 'navigate',
                 'Sec-Fetch-Site': 'same-origin'
             }
-        }), 'div.content_view_chap img');
+        }), 'div.content_view_chap :is(img, canvas)');
         return Promise.all(
             imgs.map(async (element) => {
                 const link = new URL(await this.PageExtractor(element), chapterURL);
@@ -46,31 +46,41 @@ export default class extends DecoratableMangaScraper {
         );
     }
 
-    private async PageExtractor(img: HTMLImageElement): Promise<string> {
-        const secret = 'dualeo_url_v4_9Qx7_2026_R8mK';
+    private async PageExtractor(img: HTMLImageElement | HTMLCanvasElement): Promise<string> {
+        const secret = 'dualeo_url_v5_M4nP_2026_Z7cL';
 
-        if (!img.dataset.img) return img.src;
-        const uri = new URL(img.dataset.img);
+        if (img instanceof HTMLImageElement && !img.dataset.img) return img.src;
+
+        const uri = new URL(img.dataset.img ?? img.dataset.canvasImg);
         let [, basename, extension] = uri.pathname.match(/\/([^./]+)\.(.*)$/);
-        if (!basename.startsWith('q4_')) return uri.href;
+        if (!basename.startsWith('q5_')) return uri.href;
 
         try {
             basename = basename.slice(3);
             const payload = GetUTF8FromBytes(GetBytesFromURLBase64(basename));
 
-            const [version, checksum, nonce, salt, rawB64] = payload.split('|');
-            if (version !== 'V4' || !checksum || !nonce || !salt || !rawB64) return uri.href;
+            // V5|nonce|salt|mac|base64(cipher)
+            const [version, nonce, salt, mac, rawB64] = payload.split('|');
 
-            const keyHead = new Uint8Array(await crypto.subtle.digest('SHA-256', GetBytesFromUTF8(`${secret}|A|${nonce}|${salt}`)));
-            const k1hex = GetHexFromBytes(keyHead);
-            const keyTail = new Uint8Array(await crypto.subtle.digest('SHA-256', GetBytesFromUTF8(`${secret}|B|${salt}|${nonce}|${k1hex}`)));
+            if (version !== 'V5' || !mac || !nonce || !salt || !rawB64) return uri.href;
 
-            const name = GetUTF8FromBytes(DecryptXOR(GetBytesFromBase64(rawB64).reverse(), new Uint8Array([...keyHead, ...keyTail])));
+            const cipher = GetBytesFromBase64(rawB64);
 
-            const computedChecksum = GetHexFromBytes(new Uint8Array(await crypto.subtle.digest('SHA-256', GetBytesFromUTF8(`V4|${secret}|${nonce}|${salt}|${name}`)))).slice(0, 16);
-            if (computedChecksum === checksum) {
-                uri.pathname = uri.pathname.split('/').toSpliced(-1, 1, `${name}.${extension}`).join('/');
+            let stream: number[] = [];
+            for (let counter = 0; stream.length < cipher.length; counter++) {
+                const block = new Uint8Array(await crypto.subtle.digest('SHA-256', GetBytesFromUTF8(`${secret}|STREAM|${nonce}|${salt}|${counter}`)));
+                stream = [...stream, ...block];
             }
+
+            const name = GetUTF8FromBytes(DecryptXOR(cipher, new Uint8Array(stream)));
+
+            //HMAC
+            const key = await crypto.subtle.importKey('raw', GetBytesFromUTF8(secret), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']);
+            const signature = GetHexFromBytes(new Uint8Array( await crypto.subtle.sign('HMAC', key, GetBytesFromUTF8(`V5|${nonce}|${salt}|${name}`))));
+
+            if (mac == signature)
+                uri.pathname = uri.pathname.split('/').toSpliced(-1, 1, `${name}.${extension}`).join('/');
+
         } catch { }
 
         return uri.href;
