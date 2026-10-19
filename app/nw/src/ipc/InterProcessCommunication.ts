@@ -40,7 +40,14 @@ export class IPC {
      */
     public On<TParameters extends JSONArray>(channel: string, callback: MessageCallback<TParameters>): void {
         const listener = <EventListener>(({ detail }: CustomEvent<TParameters>) => callback(...detail));
-        this.window.addEventListener(channel, listener);
+        // TODO: Prevent multiple registrations
+        if (this.window.document.readyState === 'complete') {
+            this.window.addEventListener(channel, listener);
+        }
+        this.win.on('loaded', () => {
+            this.window.removeEventListener(channel, listener);
+            this.window.addEventListener(channel, listener);
+        });
     }
 
     Send(channel: Channels.RemoteProcedureCallContract.LoadMediaContainerFromURL, url: string): void;
@@ -72,18 +79,14 @@ export class IPC {
                     this.window.dispatchEvent(new CustomEvent<unknown>(replyChannel, { detail: new Error(`${error}`) }));
                 });
         });
-        // TODO: Prevent duplicate subscription
-        this.win.on('loaded', () => {
-            console.log('++++', 'EVENT:', 'loaded');
+        // TODO: Prevent multiple registrations
+        if (this.window.document.readyState === 'complete') {
             this.window.addEventListener(channel, listener);
-        });/*
-        this.win.on('close', () => {
-            console.log('++++', 'EVENT:', 'close');
+        }
+        this.win.on('loaded', () => {
             this.window.removeEventListener(channel, listener);
-        });*/
-        // TODO: Only fires when webapp hosting is also restarted ...
-        console.log('++++', 'Registered:', 'Handle()', channel);
-        this.window.addEventListener(channel, listener);
+            this.window.addEventListener(channel, listener);
+        });
     }
 
     Invoke(channel: never, ...parameters: never): never;
