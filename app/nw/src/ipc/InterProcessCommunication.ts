@@ -73,16 +73,16 @@ export class IPC {
                 });
         });
         // TODO: Prevent duplicate subscription
-        this.win.on('document-start', () => {
-            console.log('EVENT:', 'document-start');
+        this.win.on('loaded', () => {
+            console.log('++++', 'EVENT:', 'loaded');
             this.window.addEventListener(channel, listener);
         });/*
         this.win.on('close', () => {
-            console.log('EVENT:', 'close');
+            console.log('++++', 'EVENT:', 'close');
             this.window.removeEventListener(channel, listener);
         });*/
         // TODO: Only fires when webapp hosting is also restarted ...
-        console.log('Handle():', channel);
+        console.log('++++', 'Registered:', 'Handle()', channel);
         this.window.addEventListener(channel, listener);
     }
 

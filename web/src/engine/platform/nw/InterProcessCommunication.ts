@@ -1,3 +1,4 @@
+import { SetTimeout, ClearTimeout } from '../../BackgroundTimers';
 import type { Channels } from '../../../../../app/nw/src/ipc/InterProcessCommunication';
 
 type MessageCallback<TParameters extends JSONArray = JSONArray> = (...parameters: TParameters) => void | Promise<void>;
@@ -46,8 +47,10 @@ export class IPC {
         return new Promise<TReturn | Void>((resolve, reject) => {
             const replyChannel = `${channel}#${Date.now()}${Math.random()}`;
             console.log('Web::IPC::Invoke', channel, '=>', replyChannel, parameters);
+            const timeout = SetTimeout(() => reject(new Error(`No response recevied for IPC request '${channel}' within the given timeout`)), 5_000);
             window.addEventListener(replyChannel, (evt: CustomEvent<TReturn | Void | Error>) => {
                 console.log('Result:', replyChannel, evt.detail);
+                timeout.then(ClearTimeout);
                 if (evt.detail instanceof Error) {
                     reject(evt.detail);
                 } else {
