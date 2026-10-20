@@ -6,6 +6,16 @@ type RequestCallback<TParameters extends JSONArray = JSONArray, TReturn extends 
 
 export class IPC {
 
+    static readonly #handlers: string[] = [];
+
+    #RegisterCallback(channel: string) {
+        if (IPC.#handlers.includes(channel)) {
+            throw new Error(`A callback for '${channel}' was already registered!`);
+        } else {
+            IPC.#handlers.push(channel);
+        }
+    }
+
     On(channel: Channels.RemoteProcedureCallContract.LoadMediaContainerFromURL, callback: (url: string) => Promise<void>): void;
 
     /**
@@ -13,6 +23,7 @@ export class IPC {
      * The sender does not receive a response (fire & forget).
      */
     public On<TParameters extends JSONArray>(channel: string, callback: MessageCallback<TParameters>): void {
+        this.#RegisterCallback(channel);
         window.addEventListener(channel, ({ detail }: CustomEvent<TParameters>) => callback(...detail));
     }
 
@@ -32,7 +43,8 @@ export class IPC {
      * Register a {@link callback} to handle a request from the _App_ context via `IPC.Invoke(channel, ...parameters)`.
      * The sender receives a response with the result from the {@link callback}.
      */
-    public Handle<TParameters extends JSONArray, TReturn extends JSONElement | Void>(_channel: string, _callback: RequestCallback<TParameters, TReturn>): void {
+    public Handle<TParameters extends JSONArray, TReturn extends JSONElement | Void>(channel: string, _callback: RequestCallback<TParameters, TReturn>): void {
+        this.#RegisterCallback(channel);
         //this.requestHandlers.set(channel, <RequestCallback>callback);
     }
 
@@ -46,10 +58,8 @@ export class IPC {
     public async Invoke<TParameters extends JSONArray, TReturn extends JSONElement | Void>(channel: string, ...parameters: TParameters): Promise<TReturn> {
         return new Promise<TReturn | Void>((resolve, reject) => {
             const replyChannel = `${channel}#${Date.now()}${Math.random()}`;
-            console.log('Web::IPC::Invoke', channel, '=>', replyChannel, parameters);
             const timeout = SetTimeout(() => reject(new Error(`No response recevied for IPC request '${channel}' within the given timeout`)), 5_000);
             window.addEventListener(replyChannel, (evt: CustomEvent<TReturn | Void | Error>) => {
-                console.log('Result:', replyChannel, evt.detail);
                 timeout.then(ClearTimeout);
                 if (evt.detail instanceof Error) {
                     reject(evt.detail);

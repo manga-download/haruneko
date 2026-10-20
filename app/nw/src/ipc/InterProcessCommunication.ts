@@ -26,10 +26,20 @@ type RequestCallback<TParameters extends JSONArray = JSONArray, TReturn extends 
 
 export class IPC {
 
+    static readonly #handlers: string[] = [];
+
     constructor(private readonly win: NWJS_Helpers.win) { }
 
     private get window(): Window & typeof globalThis {
         return this.win.window as Window & typeof globalThis;
+    }
+
+    #RegisterCallback(channel: string) {
+        if (IPC.#handlers.includes(channel)) {
+            throw new Error(`A callback for '${channel}' was already registered!`);
+        } else {
+            IPC.#handlers.push(channel);
+        }
     }
 
     On(channel: never, callback: never): never;
@@ -39,8 +49,8 @@ export class IPC {
      * The sender does not receive a response (fire & forget).
      */
     public On<TParameters extends JSONArray>(channel: string, callback: MessageCallback<TParameters>): void {
+        this.#RegisterCallback(channel);
         const listener = <EventListener>(({ detail }: CustomEvent<TParameters>) => callback(...detail));
-        // TODO: Prevent multiple registrations
         if (this.window.document.readyState === 'complete') {
             this.window.addEventListener(channel, listener);
         }
@@ -68,6 +78,7 @@ export class IPC {
      * The sender receives a response with the result from the {@link callback}.
      */
     public Handle<TParameters extends JSONArray, TReturn extends JSONElement | Void>(channel: string, callback: RequestCallback<TParameters, TReturn>): void {
+        this.#RegisterCallback(channel);
         const listener = <EventListener>(({ detail: { replyChannel, parameters } }: RequestEvent<TParameters>) => {
             Promise.resolve(callback(...parameters))
                 .then(result => {
@@ -79,7 +90,6 @@ export class IPC {
                     this.window.dispatchEvent(new CustomEvent<unknown>(replyChannel, { detail: new Error(`${error}`) }));
                 });
         });
-        // TODO: Prevent multiple registrations
         if (this.window.document.readyState === 'complete') {
             this.window.addEventListener(channel, listener);
         }
