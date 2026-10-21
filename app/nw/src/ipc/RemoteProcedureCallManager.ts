@@ -12,12 +12,10 @@ export class RemoteProcedureCallManager {
     }
 
     private async Stop(): Promise<Void> {
-        //console.log('App::RemoteProcedureCallManager::Stop()');
         this.rpc.Stop();
     }
 
     private async Restart(port: number, secret: string): Promise<Void> {
-        //console.log('App::RemoteProcedureCallManager::Restart()', port, secret);
         await this.rpc.Listen(port, secret, [/^(chrome-)?extension:/i]);
     }
 }
