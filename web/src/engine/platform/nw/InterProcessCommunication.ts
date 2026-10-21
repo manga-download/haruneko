@@ -1,3 +1,4 @@
+import { NotImplementedError } from '../../Error';
 import { SetTimeout, ClearTimeout } from '../../BackgroundTimers';
 import type { Channels } from '../../../../../app/nw/src/ipc/InterProcessCommunication';
 
@@ -43,9 +44,8 @@ export class IPC {
      * Register a {@link callback} to handle a request from the _App_ context via `IPC.Invoke(channel, ...parameters)`.
      * The sender receives a response with the result from the {@link callback}.
      */
-    public Handle<TParameters extends JSONArray, TReturn extends JSONElement | Void>(channel: string, _callback: RequestCallback<TParameters, TReturn>): void {
-        this.#RegisterCallback(channel);
-        //this.requestHandlers.set(channel, <RequestCallback>callback);
+    public Handle<TParameters extends JSONArray, TReturn extends JSONElement | Void>(_channel: string, _callback: RequestCallback<TParameters, TReturn>): void {
+        throw new NotImplementedError();
     }
 
     Invoke(channel: Channels.RemoteProcedureCallManager.Stop): Promise<Void>;

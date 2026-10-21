@@ -106,5 +106,6 @@ export class IPC {
      * The sender receives a response with the result from the handler.
      */
     public async Invoke<TParameters extends JSONArray, TReturn extends JSONElement | Void>(_channel: string, ..._parameters: TParameters): Promise<TReturn> {
+        throw new Error('Not Implemented!');
     }
 }
