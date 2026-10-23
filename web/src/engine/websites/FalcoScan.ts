@@ -6,6 +6,11 @@ import { Fetch, FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
 import type { Priority } from '../taskpool/DeferredTask';
 import DeScramble from '../transformers/ImageDescrambler';
 
+type ChapterData = {
+    token: string;
+    images: PageData[];
+};
+
 type PageData = {
     url: string;
     baseDir?: string;
@@ -13,17 +18,19 @@ type PageData = {
 
 type PageInfo = {
     baseDir?: string;
+    token: string;
 };
 
 type ImageManifest = {
-    width: number;
-    height: number;
-    pieceWidth: number;
-    pieceHeight: number;
-    pieces: {
-        file: string;
-        row: number;
-        col: number;
+    w: number;
+    h: number;
+    pw: number;
+    ph: number;
+    p: {
+        c: number;
+        r: number;
+        t: number;
+        id: string;
     }[];
 };
 
@@ -47,42 +54,87 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page<PageInfo>[]> {
-        const pages = await FetchWindowScript<PageData[]>(new Request(new URL(chapter.Identifier, this.URI)), `
+        const { images, token } = await FetchWindowScript<ChapterData>(new Request(new URL(chapter.Identifier, this.URI)), `
             new Promise(resolve => {
-                const elements = [...document.querySelectorAll('div#canvas-reader div.cap-canvas')];
+                const reader = document.querySelector('div#canvas-reader');
+                const token = reader.dataset.token;
+                const baseDir = reader.dataset.fragmentBase;
+                const elements = [...reader.querySelectorAll('div.cap-canvas')];
                 const images = elements.map(image => {
                     if (image.dataset.scrambled === '1') {
                         return {
-                            url: new URL(atob(image.dataset.manifestSrc.match(/\\/img-manifest\\/([^/]+)/).at(-1)), window.location.origin).href,
-                            baseDir : 'projects/' + image.getAttribute('data-fragment-dir')
+                            url: new URL(image.dataset.src, window.location.origin).href,
+                            baseDir
                         };
                     } else {
-                        return { url: new URL(atob(image.dataset.src.match(/\\/img-serve\\/([^/]+)/).at(-1)), window.location.origin).href };
+                        return { url: new URL(image.dataset.src, window.location.origin).href };
                     }
                 });
-                resolve(images);
+                resolve({images, token});
             });
         `, 1500);
-        return pages.map(({ url, baseDir }) => new Page(this, chapter, new URL(url), { baseDir }));
+        return images.map(({ url, baseDir }) => new Page(this, chapter, new URL(url), { baseDir, token }));
+    }
+
+    private CreateRequest(url: URL, token: string): Request {
+        return new Request(url, {
+            headers: {
+                'X-Falco-Token': token,
+                'X-Requested-With': 'XMLHttpRequest',
+                Referer: this.URI.href
+            }
+        });
     }
 
     public override async FetchImage(page: Page<PageInfo>, priority: Priority, signal: AbortSignal): Promise<Blob> {
-        if (!page.Parameters.baseDir) return Common.FetchImageAjax.call(this, page, priority, signal);
-
-        const { width, height, pieceHeight, pieceWidth, pieces } = await FetchJSON<ImageManifest>(new Request(new URL(page.Link)));
-
-        const bitmaps = await Promise.all(pieces.map(async ({ file }) => {
+        const { baseDir, token } = page.Parameters;
+        if (!baseDir) {
             return await this.imageTaskPool.Add(async () => {
-                const response = await Fetch(new Request(new URL(`${page.Parameters.baseDir}${file}`, this.URI)));
+                const response = await Fetch(this.CreateRequest(new URL(page.Link), token));
+                return Common.GetTypedData(await response.arrayBuffer());
+            }, priority, signal);
+        }
+
+        const { w, h, ph, pw, p } = await FetchJSON<ImageManifest>(this.CreateRequest(page.Link, token));
+
+        const bitmaps = await Promise.all(p.map(async ({ id }) => {
+            return await this.imageTaskPool.Add(async () => {
+                const response = await Fetch(this.CreateRequest(new URL(`${baseDir}${id}`, this.URI), token));
                 const data = await response.arrayBuffer();
                 return createImageBitmap(await Common.GetTypedData(data));
             }, priority, signal);
         }));
 
-        return DeScramble(new ImageData(width, height), async (_, ctx) => {
-            for (let pieceIndex = 0; pieceIndex < pieces.length; pieceIndex++) {
-                const { col, row } = pieces[pieceIndex];
-                ctx.drawImage(bitmaps[pieceIndex], col * pieceWidth, row * pieceHeight);
+        return DeScramble(new ImageData(w, h), async (_, ctx) => {
+
+            for (let pieceIndex = 0; pieceIndex < p.length; pieceIndex++) {
+                ctx.save();
+                const { c, r, t } = p[pieceIndex];
+
+                const pieceWidth = Math.min(pw, w - c * pw);
+                const pieceHeight = Math.min(ph, h - r * ph);
+
+                const dx = c * pieceWidth;
+                const dy = r * pieceHeight;
+
+                const sx = t & 1 ? -1 : 1;
+                const sy = t & 2 ? -1 : 1;
+
+                //invert piece color BEFORE drawing if needed
+                if (t & 4) {
+                    ctx.filter = 'invert(1)';
+                }
+
+                //transformations if needed
+                if (sx < 0 || sy < 0) {
+                    ctx.translate(dx + (sx < 0 ? pieceWidth : 0), dy + (sy < 0 ? pieceHeight : 0));
+                    ctx.scale(sx, sy);
+                    ctx.drawImage(bitmaps[pieceIndex], 0, 0, pieceWidth, pieceHeight, 0, 0, pieceWidth, pieceHeight);
+                } else {
+                    ctx.drawImage(bitmaps[pieceIndex], 0, 0, pieceWidth, pieceHeight, dx, dy, pieceWidth, pieceHeight);
+                }
+
+                ctx.restore();
                 bitmaps[pieceIndex].close();
             }
         });
