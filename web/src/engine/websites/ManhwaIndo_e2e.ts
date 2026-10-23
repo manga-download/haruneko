@@ -11,8 +11,8 @@ new TestFixture({
         title: '9th Class Sword Master'
     },
     child: {
-        id: '/9th-class-sword-master-chapter-01/',
-        title: 'Chapter 01'
+        id: '/9th-class-sword-master-chapter-1/',
+        title: 'Chapter 1'
     },
     entry: {
         index: 0,
