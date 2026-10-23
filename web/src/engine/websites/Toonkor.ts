@@ -8,7 +8,7 @@ import { FetchWindowScript } from '../platform/FetchProvider';
 @Common.MangasMultiPageCSS('div.section-item-title a#title', Common.StaticLinkGenerator('/웹툰/연재?fil=제목', '/웹툰/완결?fil=제목'))
 @Common.ChaptersSinglePageCSS('td.content__title', undefined, element => ({
     id: element.dataset.role,
-    title: element.textContent.trim()
+    title: element.querySelector('span.ep-n').textContent.trim()
 }))
 @Common.PagesSinglePageJS(`
     new Promise (resolve => {
@@ -20,7 +20,7 @@ import { FetchWindowScript } from '../platform/FetchProvider';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('toonkor', 'Toonkor', 'https://toonkor4.org', Tags.Media.Manhwa, Tags.Language.Korean, Tags.Source.Aggregator, Tags.Accessibility.DomainRotation);
+        super('toonkor', 'Toonkor', 'https://toonkor6.org', Tags.Media.Manhwa, Tags.Language.Korean, Tags.Source.Aggregator, Tags.Accessibility.DomainRotation);
     }
 
     public override get Icon() {
