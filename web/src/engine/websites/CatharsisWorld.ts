@@ -2,11 +2,10 @@ import icon from './CatharsisWorld.webp';
 import { Tags } from '../Tags';
 import { Chapter, DecoratableMangaScraper, Manga, Page, type MangaPlugin } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { Fetch, FetchJSON } from '../platform/FetchProvider';
+import { Fetch, FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
 import { Exception } from '../Error';
 import { WebsiteResourceKey as R } from '../../i18n/ILocale';
 import type { Priority } from '../taskpool/DeferredTask';
-import { GetBytesFromUTF8, GetHexFromBytes } from '../BufferEncoder';
 import { DecryptXOR } from '../Crypto';
 import DeScramble from '../transformers/ImageDescrambler';
 
@@ -16,6 +15,7 @@ type APIMangas = {
 
 type APIManga = {
     id: number;
+    slug: string;
     nombre: string;
     capitulos: APIChapter[];
 };
@@ -23,6 +23,7 @@ type APIManga = {
 type APIChapter = {
     id: number;
     titulo: string;
+    numero: number;
     paginas: {
         index: number;
     }[];
@@ -34,10 +35,9 @@ type PageData = {
     chapterSessionToken: string;
 };
 
-type SignedHeaders = {
-    timestamp: string;
-    nonce: string;
-    sig: string;
+type ReaderToken = {
+    pass: string;
+    expiresAt: number;
 };
 
 type TicketResponse = {
@@ -46,7 +46,7 @@ type TicketResponse = {
     xorByte: number;
 };
 
-type ImageSlice ={
+type ImageSlice = {
     sx: number;
     sy: number;
     sw: number;
@@ -55,18 +55,7 @@ type ImageSlice ={
     dy: number;
     dw: number;
     dh: number;
-}
-
-/*
-type GridPartitionResult = {
-    cols: number;
-    rows: number;
-    X: number[];
-    Y: number[];
-    colPerm: number[];
-    rowPerm: number[];
-    slices: ImageSlice[];
-}*/
+};
 
 export class PRNG {
     private state: number;
@@ -211,6 +200,8 @@ export class PRNG {
 export default class extends DecoratableMangaScraper {
 
     private readonly apiURL = `${this.URI.origin}/api/`;
+    #authToken: string = undefined;
+    #readerToken: ReaderToken = undefined;
 
     public constructor() {
         super('catharsisworld', 'Catharsis World', 'https://newcatharsis.dig-it.info', Tags.Media.Manhwa, Tags.Media.Manga, Tags.Language.Spanish, Tags.Source.Aggregator, Tags.Accessibility.DomainRotation);
@@ -220,13 +211,23 @@ export default class extends DecoratableMangaScraper {
         return icon;
     }
 
+    public override async Initialize(): Promise<void> {
+        this.#authToken = await FetchWindowScript(new Request(this.URI), `
+            new Promise ( resolve => {
+                cookieStore.set('catharsis_nsfw_agreed', 'true');
+                const auth = localStorage.getItem('auth-storage');
+                resolve ( auth ? JSON.parse(auth).state.token : undefined);
+            });
+        `, 500);
+    }
+
     public override ValidateMangaURL(url: string): boolean {
-        return new RegExpSafe(`^${this.URI.origin}/manga/[^/]+$`).test(url);
+        return new RegExpSafe(`^${this.URI.origin}/manga/\\d+$`).test(url);
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
-        const { id, nombre } = await this.FetchAPI<APIManga>(`./mangas/${url.split('/').at(-1)}`);
-        return new Manga(this, provider, `${id}`, nombre);
+        const { id, nombre, slug } = await this.FetchAPI<APIManga>(`./mangas/${url.split('/').at(-1)}`);
+        return new Manga(this, provider, `${id}/${slug}`, nombre);
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
@@ -234,19 +235,74 @@ export default class extends DecoratableMangaScraper {
         return Array.fromAsync(async function* (this: This) {
             for (let page = 1, run = true; run; page++) {
                 const { data } = await this.FetchAPI<APIMangas>(`./mangas?limit=500&page=${page}`);
-                const mangas = data.map(({ id, nombre }) => new Manga(this, provider, `${id}`, nombre));
+                const mangas = data.map(({ id, nombre, slug }) => new Manga(this, provider, `${id}/${slug}`, nombre));
                 mangas.length > 0 ? yield* mangas : run = false;
             }
         }.call(this));
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const { capitulos } = await this.FetchAPI<APIManga>(`./mangas/${manga.Identifier}`);
-        return capitulos.map(({ id, titulo }) => new Chapter(this, manga, `${id}`, titulo));
+        const [mangaID] = manga.Identifier.split('/');
+        const { capitulos } = await this.FetchAPI<APIManga>(`./mangas/${mangaID}`);
+        return capitulos.map(({ id, numero, titulo }) => new Chapter(this, manga, `${id}/${numero}`, titulo));
+    }
+
+    private async RenewReaderToken(chapter: Chapter): Promise<void> {
+        const [, mangaSlug] = chapter.Parent.Identifier.split('/');
+        const [, chapterNumber] = chapter.Identifier.split('/');
+
+        if (!this.#readerToken || this.#readerToken.expiresAt > Date.now()) {
+            this.#readerToken = await FetchWindowScript<ReaderToken>(new Request(new URL(`/manga/${mangaSlug}/chapter/${chapterNumber}`, this.URI)), `
+            new Promise((resolve, reject) => {
+                let interval;
+                let captchaCreated = false;
+                let captcha = undefined;
+                try {
+                    const checkSessionStorage = () => {
+                        const element = sessionStorage.getItem('catharsis_reader_pass');
+                        if (element) {
+                            return (JSON.parse(element));
+                        } else {
+                            return null;
+                        }
+                    };
+
+                    const endTime = Date.now() + 15000;
+
+                    interval = setInterval(() => {
+                        if (Date.now() > endTime) {
+                            clearInterval(interval);
+                            reject(new Error("Unable to get reader token after 15 seconds."));
+                            return;
+                        }
+
+                        const result = checkSessionStorage();
+                        if (result) {
+                            clearInterval(interval);
+                            resolve(result);
+                        } else if (!captchaCreated && document.querySelector('cap-widget')) {
+                            captchaCreated = true;
+                            document.querySelector('cap-widget').solve();
+                        }
+                    }, 150);
+
+                } catch (error) {
+                    if (interval) clearInterval(interval);
+                    reject(error);
+                }
+            });
+        `, 2500);
+        }
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page<PageData>[]> {
-        const { paginas, chapterSessionToken } = await this.FetchAPI<APIChapter>(`./mangas/${chapter.Parent.Identifier}/${chapter.Identifier}`);
+        await this.RenewReaderToken(chapter);
+        const [mangaID] = chapter.Parent.Identifier.split('/');
+        const [chapterId] = chapter.Identifier.split('/');
+
+        const { paginas, chapterSessionToken } = await this.FetchAPI<APIChapter>(`./mangas/${mangaID}/${chapterId}`, undefined, {
+            'X-Catharsis-Reader-Pass': this.#readerToken.pass
+        });
         if (!paginas) {
             throw new Exception(R.Plugin_Common_Chapter_UnavailableError);
         }
@@ -254,25 +310,21 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchImage(page: Page<PageData>, priority: Priority, signal: AbortSignal): Promise<Blob> {
+        const [chapterId] = page.Parent.Identifier.split('/');
+
         //get page ticket https://newcatharsis.dig-it.info/api/mangas/chapters/chapterID/page-ticket
-        const { scrambleKey, signedToken, xorByte } = await this.FetchAPI<TicketResponse>(`./mangas/chapters/${page.Parent.Identifier}/page-ticket`, {
+        const { scrambleKey, signedToken, xorByte } = await this.FetchAPI<TicketResponse>(`./mangas/chapters/${chapterId}/page-ticket`, {
             pageIndex: page.Parameters.index,
             sessionToken: page.Parameters.chapterSessionToken
         });
 
         //fetch actual page
-        const { nonce, sig, timestamp } = await this.GenerateSignatureHeaders();
-
         const buffer = await this.imageTaskPool.Add(async () => {
             return (await Fetch(new Request(new URL(`./mangas/pages/${signedToken}`, this.apiURL), {
                 headers: {
                     Referer: page.Parameters.Referer,
                     'Sec-Fetch-Site': 'same-origin',
                     'X-Catharsis-Reader': '1',
-                    'x-catharsis-nonce': nonce,
-                    'x-catharsis-sig': sig,
-                    'x-catharsis-time': timestamp,
-                    'X-Fk-Sistema': '3'
                 },
             }))).arrayBuffer();
         }, priority, signal);
@@ -299,39 +351,18 @@ export default class extends DecoratableMangaScraper {
 
     private async FetchAPI<T extends JSONElement>(endpoint: string, body: JSONElement = undefined, headers: Record<string, string> = undefined): Promise<T> {
         const method = body ? 'POST' : 'GET';
-        const { nonce, sig, timestamp } = await this.GenerateSignatureHeaders(method);
         const request = new Request(new URL(endpoint, this.apiURL), {
             method,
             headers: {
+                ...this.#authToken && { 'Authorization': `Bearer ${this.#authToken}` },
                 Referer: this.URI.href,
                 Origin: this.URI.origin,
                 'Content-Type': 'application/json',
                 'System': 'catharsis',
-                'x-catharsis-nonce': nonce,
-                'x-catharsis-sig': sig,
-                'x-catharsis-time': timestamp,
                 'X-Fk-Sistema': '3'
             }, body: JSON.stringify(body),
         });
         if (headers) Object.entries(headers).forEach(([name, value]) => request.headers.set(name, value));
         return FetchJSON<T>(request);
-    }
-
-    private async GenerateSignatureHeaders(method: string = 'GET'): Promise<SignedHeaders> {
-        const magic = '4$^£]C8j%La3';
-        const timestamp = `${Date.now()}`;
-        const nonce = Math.random().toString(36).substring(2, 10);
-        const sig = await this.HMAC256(GetBytesFromUTF8(magic), GetBytesFromUTF8(`${timestamp}:${nonce}:${method}`));
-        return {
-            timestamp,
-            nonce,
-            sig: GetHexFromBytes(sig),
-        };
-    }
-
-    private async HMAC256(keyData: Uint8Array<ArrayBuffer>, messageData: Uint8Array<ArrayBuffer>): Promise<Uint8Array<ArrayBuffer>> {
-        const key = await crypto.subtle.importKey('raw', keyData, { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']);
-        const signature = await crypto.subtle.sign('HMAC', key, messageData);
-        return new Uint8Array(signature);
     }
 }

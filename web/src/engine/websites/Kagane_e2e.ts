@@ -6,13 +6,13 @@ new TestFixture({
         title: 'Kagane'
     },
     container: {
-        url: 'https://kagane.to/series/019c2b1c-cc9b-745f-afed-09c230759162',
+        url: 'https://kagane.si/series/dungeon-porter-019c2b1c-cc9b-745f-afed-09c230759162',
         id: '019c2b1c-cc9b-745f-afed-09c230759162',
         title: 'Dungeon Porter',
     },
     child: {
         id: '019c2bda-f619-716e-b0f5-043564eecffe',
-        title: 'Ep. 40 - Mimic Market'
+        title: 'Ch. 40 Ep. 40 - Mimic Market'
     },
     entry: {
         index: 21,

@@ -71,6 +71,7 @@ const patterns = [
     '*://crunchyscan.fr/blockexx.js',
     '*://endlesshandbaglinked.com/*',
     '*://fireworksane.com/*',
+    '*://flarby.com/*',
     '*://fleraprt.com/*',
     '*://goomaphy.com/*',
     '*://havenclick.com/*',

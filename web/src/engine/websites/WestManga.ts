@@ -25,6 +25,11 @@ type APIPages = {
     images: string[];
 };
 
+type VisitToken = {
+    token: string;
+    expires_at: number;
+};
+
 function CleanTitle(title: string): string {
     return title.replace(/bahasa indonesia/i, '').trim();
 }
@@ -33,8 +38,9 @@ function CleanTitle(title: string): string {
 export default class extends DecoratableMangaScraper {
 
     #token: string = null;
+    #visitToken: VisitToken = undefined;
     private readonly api = {
-        url: 'https://data.mantweh.online/api/',
+        url: `${this.URI.origin}/api/`,
         nonce: 'wm-api-request',
         accessKey: 'WM_WEB_FRONT_END',
         secretKey: 'xxxoidj',
@@ -50,7 +56,7 @@ export default class extends DecoratableMangaScraper {
 
     public override async Initialize(): Promise<void> {
         // TODO: Update the token whenever the user performs a login/logout through manual website interaction
-        this.#token = await FetchWindowScript<string>(new Request(this.URI), `localStorage.getItem('access_token') ?? null;`);
+        this.#token = await FetchWindowScript<string>(new Request(this.URI), `localStorage.getItem('access_token') ?? 'Bearer HAHAHA Jones';`);
     }
 
     public override ValidateMangaURL(url: string): boolean {
@@ -80,22 +86,28 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
         const { data: { images } } = await this.FetchAPI<APIPages>(`./v/${chapter.Identifier}`);
-        return images.map(image => new Page(this, chapter, new URL(image)));
+        return images.map(image => new Page(this, chapter, new URL(image, this.URI)));
     }
 
     private async FetchAPI<T extends JSONElement>(endpoint: string): Promise<APIResult<T>> {
+        if (!this.#visitToken || this.#visitToken?.expires_at > Date.now()) {
+            this.#visitToken = await FetchJSON<VisitToken>(new Request(new URL('./visit-token', this.api.url)));
+        }
+
         const url = new URL(endpoint, this.api.url);
-        const timestamp = `${Date.now()}`.slice(0, -3);
+        const timestamp = `${Math.floor(Date.now() / 1000)}`;
         const keyData = GetBytesFromUTF8([timestamp, 'GET', url.pathname, this.api.accessKey, this.api.secretKey].join(''));
         const key = await crypto.subtle.importKey('raw', keyData, { name: 'HMAC', hash: 'SHA-256' }, false, ['sign', 'verify']);
+
         const signature = new Uint8Array(await crypto.subtle.sign('HMAC', key, GetBytesFromUTF8(this.api.nonce)));
         return FetchJSON<APIResult<T>>(new Request(url, {
             headers: {
-                ...this.#token ? { Authorization: `Bearer ${this.#token}` } : {},
+                Authorization: `Bearer ${this.#token}`,
                 'Referer': this.URI.href,
                 'X-Wm-Request-Time': timestamp,
                 'X-Wm-Accses-Key': this.api.accessKey,
                 'X-Wm-Request-Signature': GetHexFromBytes(signature),
+                'X-WM-Visit': this.#visitToken.token
             }
         }));
     }
