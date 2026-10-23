@@ -13,7 +13,8 @@ type APIChapters = {
 };
 
 @Common.MangaCSS(/^{origin}\/manga\/[^/]+$/, 'ul.manga-info-text li h1')
-@Common.MangasMultiPageCSS('div.list-comic-item-wrap a.list-story-item:not([target])', Common.PatternLinkGenerator('/manga-list/latest-manga?page={page}'), 500, Common.AnchorInfoExtractor(true))
+@Common.MangasMultiPageCSS('div.list-comic-item-wrap a.list-story-item:not([target])',
+    Common.PatternLinkGenerator('/manga-list/latest-manga?page={page}', undefined, undefined, true), 500, Common.AnchorInfoExtractor(true))
 @Grouple.ImageWithMirrors()
 export class MangaNel extends DecoratableMangaScraper {
 
