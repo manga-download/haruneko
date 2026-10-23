@@ -6,7 +6,7 @@ new TestFixture({
         title: 'NewXToon'
     },
     container: {
-        url: 'https://newxtoon2.com/comics/12954',
+        url: 'https://newxtoon3.com/comics/12954',
         id: '/comics/12954',
         title: '흉가에 들어가면 안되는 이유'
     },
