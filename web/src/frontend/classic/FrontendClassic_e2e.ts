@@ -5,12 +5,16 @@ describe('Front-End (Classic)', { concurrent: false, timeout: 60_000 }, () => {
 
     const fixture = new TestFixture();
 
-    beforeEach(() => fixture.Reset('classic'));
+    beforeEach(async () => {
+        await fixture.Reset('classic');
+        await fixture.WaitForSelectors(10_000, 'div#app > main#hakunekoapp');
+        await fixture.CloseStartupGuide();
+    });
 
     describe('SmokeTests', async () => {
 
-        it('Should render basic layout', async () => {
-            await fixture.WaitForSelectors(5000,
+        it('Should show app', async () => {
+            await fixture.WaitForSelectors(0,
                 'div#app > header > a.bx--header__name',
                 'div#app > nav.bx--side-nav__navigation',
                 'div#app > main#hakunekoapp > div#Media > div#MediaList',
@@ -18,7 +22,6 @@ describe('Front-End (Classic)', { concurrent: false, timeout: 60_000 }, () => {
                 'div#app > main#hakunekoapp > div#Content > main > div#Home',
                 'div#app > main#hakunekoapp > div#Bottom div.downloads',
             );
-            await fixture.CloseStartupGuide();
         });
     });
 

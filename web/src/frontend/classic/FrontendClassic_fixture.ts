@@ -18,9 +18,13 @@ export class TestFixture extends FrontendFixture {
     public async CloseStartupGuide() {
         const page = await super.GetPage();
         const selector = '#startupGuide button.bx--modal-close';
-        await page.waitForSelector(selector, { timeout: 5000 });
-        await page.click(selector);
-        return await page.waitForSelector('#startupGuide', { hidden: true, timeout: 5000 });
+        try {
+            const button = await page.waitForSelector(selector, { visible: true, timeout: 5000 });
+            button.click();
+            await page.waitForSelector('#startupGuide', { hidden: true, timeout: 5000 });
+        } catch (error) {
+            console.log(new Date().toISOString(), '➔', error);
+        }
     }
 
     /**

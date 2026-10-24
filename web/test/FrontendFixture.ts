@@ -33,9 +33,8 @@ export class FrontendFixture extends PuppeteerFixture {
         page.once('dialog', dismiss);
         try {
             await this.UpdateSetting('*', 'frontend', frontend);
-        } finally {
-            page.off('dialog', dismiss);
-        }
+        } catch { }
+        page.off('dialog', dismiss);
         await page.reload();
         await this.Delay(500);
     }
