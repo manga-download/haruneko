@@ -35,13 +35,6 @@ type LinkGeneratorFlags = {
      * The consumer should not abort consumption until the generator stopped.
      */
     isExhaustive?: boolean;
-
-    /**
-     * Instruct the consumer of the corresponding generator to continue processing even in case of dupe.
-     * The consumer will abort consumption in case fetched media list is empty.
-     * Its mutually exclusive with {@link isExhaustive}. Don't set both to true !
-     */
-    stopWhenEmpty?: boolean
 };
 type LinkGenerator<T extends MediaContainer<MediaChild> = MediaContainer<MediaChild>> = ((this: MangaScraper, media?: T) => Generator<URL>) & LinkGeneratorFlags
 
@@ -60,14 +53,28 @@ export function StaticLinkGenerator(...endpoints: string[]): LinkGenerator {
  * @param endpoint - A relative path for the website's base URL or an absolute URL containing the optional placeholders `{id}` which is replaced by the media containers identifier and `{page}` which is replaced by an incrementing number
  * @param start - The start for the sequence of incremental numbers which are applied to the {@link endpoint} pattern
  * @param increment - The amount by which the sequence shall be incremented for each iteration
- * @param stopWhenEmpty - stop the loop when there is no more content
  */
-export function PatternLinkGenerator<T extends MediaContainer<MediaChild>>(endpoint: string, start = 1, increment = 1, stopWhenEmpty = false): LinkGenerator<T> {
-    return Object.assign<LinkGenerator, LinkGeneratorFlags>(function* (this: MangaScraper, media: T): Generator<URL> {
+export function PatternLinkGenerator<T extends MediaContainer<MediaChild>>(endpoint: string, start = 1, increment = 1): LinkGenerator<T> {
+    return function* (this: MangaScraper, media: T): Generator<URL> {
         for (let page = start; true; page += increment) {
             yield new URL(endpoint.replace('{id}', media.Identifier).replace('{page}', `${page}`), this.URI);
         }
-    }, { stopWhenEmpty });
+    };
+}
+
+/**
+ * Creates an finite link generator that will compose URLs based on a sequence of numbers, until max is reached.
+ * @param endpoint - A relative path for the website's base URL or an absolute URL containing the optional placeholders `{id}` which is replaced by the media containers identifier and `{page}` which is replaced by an incrementing number
+ * @param start - The start for the sequence of incremental numbers which are applied to the {@link endpoint} pattern
+ * @param increment - The amount by which the sequence shall be incremented for each iteration
+ * @param max - the max number of link to generate
+ */
+export function RangedLinkGenerator<T extends MediaContainer<MediaChild>>(endpoint: string, start = 1, increment = 1, max: number): LinkGenerator<T> {
+    return Object.assign<LinkGenerator, LinkGeneratorFlags>(function* (this: MangaScraper, media: T): Generator<URL> {
+        for (let page = start; page <= max; page += increment) {
+            yield new URL(endpoint.replace('{id}', media.Identifier).replace('{page}', `${page}`), this.URI);
+        }
+    }, { isExhaustive: true });
 }
 
 /*********************************
@@ -306,14 +313,11 @@ export function MangasSinglePageCSS<E extends HTMLElement>(resource: string, que
 export async function FetchMangasMultiPageCSS<E extends HTMLElement>(this: MangaScraper, provider: MangaPlugin, query: string, generate: LinkGenerator<MangaPlugin>, throttle = 0, extract: InfoExtractor<E> = DefaultElementInfoExtractor): Promise<Manga[]> {
     const mangaList: Manga[] = [];
     let reducer = Promise.resolve();
-    const { isExhaustive, stopWhenEmpty } = generate;
-
     for (const uri of generate.call(this, provider)) {
         await reducer;
         reducer = throttle > 0 ? Delay(throttle) : Promise.resolve();
         const mangas = await FetchMangasSinglePageCSS.call(this, provider, uri.href, query, extract);
-
-        if (isExhaustive || stopWhenEmpty && mangas.length > 0 || !stopWhenEmpty && mangaList.isMissingLastItemFrom(mangas)) {
+        if (generate.isExhaustive || mangaList.isMissingLastItemFrom(mangas)) {
             mangaList.push(...mangas); // TODO: Broadcast event that mangalist for provider has been updated?
         } else {
             break;
