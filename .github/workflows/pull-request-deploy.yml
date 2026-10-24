@@ -21,7 +21,8 @@ jobs:
       - name: Install NodeJS
         uses: actions/setup-node@v7
         with:
-          node-version: 24.x
+          node-version: '>=24.22.1'
+          check-latest: true
       - name: Install NPM Packages
         run: |
           npm run npm:clean-install
