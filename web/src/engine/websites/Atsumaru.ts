@@ -10,16 +10,28 @@ import { Delay } from '../BackgroundTimers';
 type APIManga = {
     id: string;
     title: string;
-    chapters?: {
+    scanlators: {
         id: string;
-        title: string;
-        index: number;
+        name: string;
     }[];
+};
+
+type APIMangaDetails = {
+    mangaPage: APIManga;
 };
 
 type APIMangas = {
     hits: {
         document: APIManga;
+    }[];
+};
+
+type APIChapters = {
+    chapters: {
+        id: string;
+        title: string;
+        scanlationMangaId: string;
+        number: number;
     }[];
 };
 
@@ -31,7 +43,10 @@ type APIPages = {
     };
 };
 
-@Common.MangaCSS<HTMLMetaElement>(/^{origin}\/manga\/[^/]+$/, 'meta[property="og:title"]', (element, uri) => ({ id: uri.pathname.split('/').at(-1), title: element.content.trim() }))
+@Common.MangaCSS<HTMLMetaElement>(/^{origin}\/manga\/[^/]+$/, 'meta[property="og:title"]', (element, uri) => ({
+    id: uri.pathname.split('/').at(-1),
+    title: element.content.trim()
+}))
 @Grouple.ImageWithMirrors()
 
 export default class extends DecoratableMangaScraper {
@@ -60,10 +75,12 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const { chapters } = await FetchJSON<APIManga>(new Request(new URL(`./manga/info?mangaId=${manga.Identifier}`, this.apiURL)));
+        const { mangaPage: { scanlators } } = await FetchJSON<APIMangaDetails>(new Request(new URL(`./manga/page?id=${manga.Identifier}`, this.apiURL)));
+
+        const { chapters } = await FetchJSON<APIChapters>(new Request(new URL(`./manga/allChapters?mangaId=${manga.Identifier}`, this.apiURL)));
         return chapters
-            .sort((self, other) => other.index - self.index)
-            .map(({ id, title }) => new Chapter(this, manga, id, title));
+            .sort((self, other) => other.number - self.number)
+            .map(({ id, title, scanlationMangaId }) => new Chapter(this, manga, id, [title, scanlators.length > 1 ? `[${scanlators.find(({ id }) => id === scanlationMangaId).name}]` : undefined].joinTitleSegments()));
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
