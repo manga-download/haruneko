@@ -6,7 +6,7 @@
     "main": "main.js",
     "url": "https://app.hakuneko.download",
     "engines": {
-        "node": ">=24.0.0",
+        "node": ">=24.22.1",
         "npm": ">=11.3.0"
     },
     "dependencies": {
