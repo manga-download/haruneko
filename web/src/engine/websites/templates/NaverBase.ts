@@ -53,7 +53,7 @@ export class NaverBase extends DecoratableMangaScraper {
         const chapterList = [];
         for (let page = 1, run = true; run; page++) {
             const chapters = await this.GetChaptersFromPage(manga, page);
-            chapterList.isMissingLastItemFrom(chapters) ? chapterList.push(...chapters) : run = false;
+            chapterList.isLastItemDifferentFromNonEmpty(chapters) ? chapterList.push(...chapters) : run = false;
         }
         return chapterList.distinct().reverse();
     }

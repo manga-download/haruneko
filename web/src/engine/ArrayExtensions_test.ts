@@ -81,30 +81,30 @@ describe('ArrayExtensions<T>', () => {
         });
     });
 
-    describe('isMissingLastItemFrom()', () => {
+    describe('isLastItemDifferentFromNonEmpty()', () => {
 
         it('Should be false when source array and batch array are empty', async () => {
-            const actual = [].isMissingLastItemFrom([]);
+            const actual = [].isLastItemDifferentFromNonEmpty([]);
             expect(actual).toBe(false);
         });
 
         it('Should be true when source array is empty and batch erray is not empty', async () => {
-            const actual = [].isMissingLastItemFrom([ new MediaContainerMock('001', 'A') ]);
+            const actual = [].isLastItemDifferentFromNonEmpty([ new MediaContainerMock('001', 'A') ]);
             expect(actual).toBe(true);
         });
 
         it('Should be false when source array is not empty and batch erray is empty', async () => {
-            const actual = [ new MediaContainerMock('001', 'A') ].isMissingLastItemFrom([]);
+            const actual = [ new MediaContainerMock('001', 'A') ].isLastItemDifferentFromNonEmpty([]);
             expect(actual).toBe(false);
         });
 
         it('Should be true when last item in source array differs from last item in batch array', async () => {
-            const actual = [ null, new MediaContainerMock('001', 'A') ].isMissingLastItemFrom([ null, new MediaContainerMock('999', 'X') ]);
+            const actual = [ null, new MediaContainerMock('001', 'A') ].isLastItemDifferentFromNonEmpty([ null, new MediaContainerMock('999', 'X') ]);
             expect(actual).toBe(true);
         });
 
         it('Should be false when last item in source array is equivalent to last item in batch array', async () => {
-            const actual = [ null, new MediaContainerMock('001', 'A') ].isMissingLastItemFrom([ null, new MediaContainerMock('001', 'A') ]);
+            const actual = [ null, new MediaContainerMock('001', 'A') ].isLastItemDifferentFromNonEmpty([ null, new MediaContainerMock('001', 'A') ]);
             expect(actual).toBe(false);
         });
     });

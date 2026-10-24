@@ -60,7 +60,7 @@ export class FlatManga extends DecoratableMangaScraper {
             init.body = `page=${page}`;
             const links = await FetchCSS<HTMLAnchorElement>(new Request(uri, init), queryChapters);
             const chapters = links.map(link => new Chapter(this, manga, link.pathname, (link.title.trim() || link.text.trim()).replace(manga.Title, '').trim()));
-            chapterList.isMissingLastItemFrom(chapters) ? chapterList.push(...chapters) : run = false;
+            chapterList.isLastItemDifferentFromNonEmpty(chapters) ? chapterList.push(...chapters) : run = false;
         }
         return chapterList;
     }
