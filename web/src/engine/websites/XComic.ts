@@ -3,12 +3,9 @@ import icon from './XComic.webp';
 import { FetchCSS, FetchGraphQL } from '../platform/FetchProvider';
 import { type MangaPlugin, Manga, Chapter, Page, DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-//import { RateLimit } from '../taskpool/RateLimit';
-//import { TaskPool } from '../taskpool/TaskPool';
-
-//TODO: Chapters Optimizations
-//TODO: Use a prefered language setting to reduce requests ?
-//TODO: Clean code
+import { Priority } from '../taskpool/DeferredTask';
+import { RateLimit } from '../taskpool/RateLimit';
+import { TaskPool } from '../taskpool/TaskPool';
 
 type APIMangas = {
     get_title_browse_items: {
@@ -29,27 +26,10 @@ type APIManga = {
     comic_ids: string[];
 };
 
-/*
-type APIChapterSource = {
-    get_comicNode: {
-        id: string;
-        data: {
-            name: string;
-            subName: string;
-            dbStatus: string;
-            isPublic: boolean;
-            translatedLanguage: string;
-            chaps_normal: number;
-        };
-    };
-};
-*/
-
 type ChapterSource = {
     id: string;
     subName: string;
     translatedLanguage: string;
-    //chapterCount: number;
 };
 
 type APIChapterList = {
@@ -74,28 +54,6 @@ type APIPages = {
         };
     };
 };
-
-/*
-const chapterLanguageMap = new Map([
-    ['ar', Tags.Language.Arabic],
-    ['de', Tags.Language.German],
-    ['en', Tags.Language.English],
-    ['es', Tags.Language.Spanish],
-    ['es-419', Tags.Language.Spanish],
-    ['fr', Tags.Language.French],
-    ['id', Tags.Language.Indonesian],
-    ['it', Tags.Language.Italian],
-    ['ko', Tags.Language.Korean],
-    ['pl', Tags.Language.Polish],
-    ['pt', Tags.Language.Portuguese],
-    ['pt_BR', Tags.Language.Portuguese],
-    ['ru', Tags.Language.Russian],
-    ['th', Tags.Language.Thai],
-    ['tr', Tags.Language.Turkish],
-    ['vi', Tags.Language.Vietnamese],
-    ['zh', Tags.Language.Chinese],
-    ['zh_hk', Tags.Language.Chinese]
-]);*/
 
 const chapterLanguageMap = new Map([
     ['🇸🇦', Tags.Language.Arabic],
@@ -126,7 +84,7 @@ const chapterLanguageMap = new Map([
 export default class extends DecoratableMangaScraper {
 
     private readonly apiURL = `${this.URI.origin}/query/`;
-    //private readonly chaptersTaskPool = new TaskPool(1, new RateLimit(4, 1));
+    private readonly chaptersTaskPool = new TaskPool(1, new RateLimit(4, 1));
 
     public constructor() {
         super('xcomic', 'XComic', 'https://xcomic.net', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Multilingual, Tags.Source.Aggregator);
@@ -172,40 +130,56 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const sources = await this.GetChapterSources(manga.Identifier);
-        type This = typeof this;
-        const chaptersData = await Array.fromAsync(async function* (this: This) {
-            for (const source of sources) {
-                for (let page = 1, run = true; run; page++) {
-                    const { get_comic_chapterList_fullList: { items, paging: { next } } } = await FetchGraphQL<APIChapterList>(new Request(this.apiURL), 'get_comic_chapterList_fullList', `
-                        query get_comic_chapterList_fullList($select: Select_Comic_ChapterList) {
-                            get_comic_chapterList_fullList(select: $select) {
-                                paging {
-                                    next
-                                }
-                                items {
-                                    data {
-                                        id
-                                        dname
-                                        chaNum
+
+        const chaptersData = (
+            await Promise.all(
+                sources.map(source =>
+                    this.chaptersTaskPool.Add(async () => {
+                        const collected: Array<{
+                            id: string;
+                            name: string;
+                            chaNum: number;
+                            language: string;
+                            sourceSubname: string;
+                        }> = [];
+
+                        for (let page = 1, run = true; run; page++) {
+                            const { get_comic_chapterList_fullList: { items, paging: { next } } } = await FetchGraphQL<APIChapterList>(new Request(this.apiURL), 'get_comic_chapterList_fullList', `
+                                query get_comic_chapterList_fullList($select: Select_Comic_ChapterList) {
+                                    get_comic_chapterList_fullList(select: $select) {
+                                        paging {
+                                            next
+                                        }
+                                        items {
+                                            data {
+                                                id
+                                                dname
+                                                chaNum
+                                            }
+                                        }
                                     }
                                 }
-                            }
+                            `,
+                            { select: { comic_id: source.id, page, size: 1000, sortby: 'chapter_desc' } });
+
+                            collected.push(...items.map(({ data: { id, dname, chaNum } }) => ({
+                                id, name: dname,
+                                chaNum, language: source.translatedLanguage, sourceSubname: source.subName
+                            })));
+                            run = page <= next;
                         }
-                    `, { select: { comic_id: source.id, page, size: 1000, sortby: 'chapter_desc' } }
-                    );
 
-                    const chaptersData = items.map(({ data: { id, dname, chaNum } }) => ({ id, name: dname, chaNum, language: source.translatedLanguage, sourceSubname: source.subName }));
-                    yield* chaptersData;
-                    run = page < next;
-                }
-            }
-        }.call(this));
+                        return collected;
+                    }, Priority.Normal)
+                )
+            )
+        ).flat();
 
-        // DUPLICATE CHAPTERS TITLE HANDLING: append source ID to duplicated chapters names
+        //HANDLE DUPLICATED TITLES : append source ID if needed
         const preprocessed = chaptersData
             .sort((self, other) => other.chaNum - self.chaNum)
             .map((item) => {
-                const { name, sourceSubname, language } = item; // Removed 'id' here
+                const { name, sourceSubname, language } = item;
                 const subtitle = `${(sourceSubname ?? '').replace(manga.Title, '').trim()}`;
                 const baseTitle = [name, subtitle ? `[${subtitle}]` : undefined, `[${language}]`].joinTitleSegments();
                 return { item, baseTitle };
@@ -218,62 +192,12 @@ export default class extends DecoratableMangaScraper {
 
         return preprocessed.map(({ item, baseTitle }) => {
             const { id, language } = item;
-            const finalTitle = titleCounts.get(baseTitle) > 1 ? `${baseTitle} [${id}]` : baseTitle;
+            const finalTitle = titleCounts.get(baseTitle)! > 1 ? `${baseTitle} [${id}]` : baseTitle;
             return new Chapter(this, manga, id, finalTitle, ...[chapterLanguageMap.get(language)].filter(Boolean));
         });
     }
 
     private async GetChapterSources(mangaId: string): Promise<ChapterSource[]> {
-
-        /*
-        // 1) gather all chapter sources ID
-        const { get_title_titleNode: { data: { comic_ids } } } = await FetchGraphQL<APITitleNode>(new Request(this.apiURL), 'get_title_titleNode', `
-            query get_title_titleNode($id: ID!) {
-                get_title_titleNode(id: $id) {
-                    id
-                    data {
-                        id
-                        title
-                        comic_ids
-                    }
-                }
-            }
-        `, { id: mangaId });
-
-        // 2) Fetch all ChapterSource infos
-        const promises = comic_ids.map(sourceId => this.chaptersTaskPool.Add(async () => {
-            const { get_comicNode: { id, data: { name, subName, translatedLanguage, dbStatus, chaps_normal, isPublic } } } = await FetchGraphQL<APIChapterSource>(new Request(this.apiURL), 'get_comicNode', `
-                query get_comicNode($id: ID!) {
-                    get_comicNode(id: $id) {
-                        id
-                        data {
-                            name
-                            subName
-                            dbStatus
-                            isPublic
-                            translatedLanguage
-                            chaps_normal
-                        }
-                    }
-                }
-            `, { id: sourceId });
-            return {
-                id,
-                name,
-                subName,
-                translatedLanguage,
-                dbStatus,
-                isPublic,
-                chapterCount: chaps_normal
-            };
-
-        }, Priority.Normal));
-
-        const sources = (await Promise.all(promises))
-            .filter(({ isPublic, dbStatus, chapterCount }) => isPublic != false && (dbStatus === null || dbStatus === 'normal') && chapterCount > 0);
-        return sources;
-        */
-
         //Alternative: get sources by fetching HTML
         const elements = await FetchCSS(new Request(new URL(`/title/${mangaId}`, this.URI)), 'div.grid div.border');
         return elements.map(element => {
