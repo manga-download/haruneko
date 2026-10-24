@@ -2,7 +2,7 @@ import { Tags } from '../Tags';
 import icon from './NewXToon.webp';
 import { Chapter, DecoratableMangaScraper, type Manga } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { FetchJSON } from '../platform/FetchProvider';
+import { FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
 
 type APIChapters = {
     chapters: {
@@ -11,7 +11,7 @@ type APIChapters = {
     }[];
 };
 
-@Common.MangaCSS(/^{origin}\/comics\/\d+$/, '#comic-title')
+@Common.MangaCSS(/^https:\/\/newxtoon\d+\.com\/comics\/\d+$/, '#comic-title')
 @Common.MangasMultiPageCSS<HTMLAnchorElement>('div#comic-list a.comic-link:not([href*="/ads/"])', Common.PatternLinkGenerator('/comics?page={page}'), 0, anchor => ({
     id: anchor.pathname,
     title: anchor.querySelector('h3[title]').getAttribute('title').trim()
@@ -22,11 +22,16 @@ type APIChapters = {
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('newxtoon', 'NewXToon', 'https://newxtoon1.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Korean, Tags.Source.Aggregator);
+        super('newxtoon', 'NewXToon', 'https://newxtoon3.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Korean, Tags.Source.Aggregator, Tags.Accessibility.DomainRotation);
     }
 
     public override get Icon() {
         return icon;
+    }
+
+    public override async Initialize(): Promise<void> {
+        this.URI.href = await FetchWindowScript(new Request(this.URI), 'window.location.origin');
+        console.log(`Assigned URL '${this.URI}' to ${this.Title}`);
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {

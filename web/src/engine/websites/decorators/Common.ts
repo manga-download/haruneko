@@ -29,23 +29,28 @@ function DefaultMediaLinkResolver(this: MangaScraper, media: MediaContainer<Medi
     return new URL(media.Identifier, this.URI);
 };
 
-type LinkGeneratorFlags = {
+type LinkGenerator<T extends MediaContainer<MediaChild> = MediaContainer<MediaChild>> = ((this: MangaScraper, media?: T) => Generator<URL>) & {
     /**
-     * Instruct the consumer of the corresponding generator to process all links in the sequence.
-     * The consumer should not abort consumption until the generator stopped.
+     * Indicates wether an iterator can be manually stopped via the `stop` function or not.
      */
-    isExhaustive?: boolean;
-};
-type LinkGenerator<T extends MediaContainer<MediaChild> = MediaContainer<MediaChild>> = ((this: MangaScraper, media?: T) => Generator<URL>) & LinkGeneratorFlags
+    isStoppable: boolean;
+    /**
+     * Instructs a `stoppable` iterator function to end its iteration and no longer provide any more URLs.
+     */
+    stop: () => void;
+}
 
 /**
  * Creates a finite link generator that will compose URLs based on a provided sequence of {@link endpoints}.
  * @param endpoints - A list of relative paths for the website's base URL or absolute URLs
  */
 export function StaticLinkGenerator(...endpoints: string[]): LinkGenerator {
-    return Object.assign<LinkGenerator, LinkGeneratorFlags>(function* (this: MangaScraper): Generator<URL> {
+    return Object.assign(function* (this: MangaScraper): Generator<URL> {
         yield* endpoints.map(endpoint => new URL(endpoint, this.URI));
-    }, { isExhaustive: true });
+    }, {
+        isStoppable: false,
+        stop: () => undefined,
+    });
 }
 
 /**
@@ -55,11 +60,15 @@ export function StaticLinkGenerator(...endpoints: string[]): LinkGenerator {
  * @param increment - The amount by which the sequence shall be incremented for each iteration
  */
 export function PatternLinkGenerator<T extends MediaContainer<MediaChild>>(endpoint: string, start = 1, increment = 1): LinkGenerator<T> {
-    return function* (this: MangaScraper, media: T): Generator<URL> {
-        for (let page = start; true; page += increment) {
+    const cancellation = new AbortController();
+    return Object.assign(function* (this: MangaScraper, media: T): Generator<URL> {
+        for (let page = start; !cancellation.signal.aborted; page += increment) {
             yield new URL(endpoint.replace('{id}', media.Identifier).replace('{page}', `${page}`), this.URI);
         }
-    };
+    }, {
+        isStoppable: !cancellation.signal.aborted,
+        stop: () => cancellation.abort(),
+    });
 }
 
 /*********************************
@@ -302,10 +311,10 @@ export async function FetchMangasMultiPageCSS<E extends HTMLElement>(this: Manga
         await reducer;
         reducer = throttle > 0 ? Delay(throttle) : Promise.resolve();
         const mangas = await FetchMangasSinglePageCSS.call(this, provider, uri.href, query, extract);
-        if (generate.isExhaustive || mangaList.isMissingLastItemFrom(mangas)) {
+        if (mangaList.isLastItemDifferentFromNonEmpty(mangas)) {
             mangaList.push(...mangas); // TODO: Broadcast event that mangalist for provider has been updated?
-        } else {
-            break;
+        } else if (generate.isStoppable) {
+            generate.stop();
         }
     }
     return mangaList.distinct();
@@ -401,10 +410,10 @@ export async function FetchChaptersMultiPageCSS<E extends HTMLElement>(this: Man
         await reducer;
         reducer = throttle > 0 ? Delay(throttle) : Promise.resolve();
         const chapters = await FetchChaptersSinglePageCSS.call(this, manga, query, () => uri, extract as InfoExtractor<HTMLElement>);
-        if (generate.isExhaustive || chapterList.isMissingLastItemFrom(chapters)) {
+        if (chapterList.isLastItemDifferentFromNonEmpty(chapters)) {
             chapterList.push(...chapters); // TODO: Broadcast event that chapterlist for manga has been updated?
-        } else {
-            break;
+        } else if (generate.isStoppable) {
+            generate.stop();
         }
     }
     if (reverseOrder) chapterList.reverse();
