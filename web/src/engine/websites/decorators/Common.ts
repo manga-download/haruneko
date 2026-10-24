@@ -62,21 +62,6 @@ export function PatternLinkGenerator<T extends MediaContainer<MediaChild>>(endpo
     };
 }
 
-/**
- * Creates an finite link generator that will compose URLs based on a sequence of numbers, until max is reached.
- * @param endpoint - A relative path for the website's base URL or an absolute URL containing the optional placeholders `{id}` which is replaced by the media containers identifier and `{page}` which is replaced by an incrementing number
- * @param start - The start for the sequence of incremental numbers which are applied to the {@link endpoint} pattern
- * @param increment - The amount by which the sequence shall be incremented for each iteration
- * @param max - the max number of link to generate
- */
-export function RangedLinkGenerator<T extends MediaContainer<MediaChild>>(endpoint: string, start = 1, increment = 1, max: number): LinkGenerator<T> {
-    return Object.assign<LinkGenerator, LinkGeneratorFlags>(function* (this: MangaScraper, media: T): Generator<URL> {
-        for (let page = start; page <= max; page += increment) {
-            yield new URL(endpoint.replace('{id}', media.Identifier).replace('{page}', `${page}`), this.URI);
-        }
-    }, { isExhaustive: true });
-}
-
 /*********************************
  ******** Info Extractors ********
  *********************************/
@@ -386,7 +371,7 @@ export async function FetchChaptersSinglePageCSS<E extends HTMLElement>(this: Ma
  * @param extract - A function to extract the chapter identifier and title from a single element (found with {@link query})
  * @param reverseOrder - Set to true if website chapter list use ascending order, as engine must produce descending order.
  */
-export function ChaptersSinglePageCSS<E extends HTMLElement>(query: string, resource: string | LinkResolver<Manga> = DefaultMediaLinkResolver, extract = DefaultElementInfoExtractor as InfoExtractor<E>, reverseOrder: boolean = false): ClassDecorator {
+export function ChaptersSinglePageCSS<E extends HTMLElement>(query: string, resource: string | LinkResolver<Manga> = DefaultMediaLinkResolver, extract = DefaultElementInfoExtractor as InfoExtractor<E>, reverseOrder : boolean = false): ClassDecorator {
     return function DecorateClass<T extends Constructor>(ctor: T, context?: ClassDecoratorContext): T {
         ThrowOnUnsupportedDecoratorContext(context);
         return class extends ctor {
