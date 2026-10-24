@@ -1,5 +1,5 @@
-import { FetchJSON, FetchWindowScript } from '../../platform/FetchProvider';
-import { Chapter, DecoratableMangaScraper, Page, type Manga } from "../../providers/MangaPlugin";
+import { FetchCSS, FetchJSON, FetchWindowScript } from '../../platform/FetchProvider';
+import { Chapter, DecoratableMangaScraper, type MangaPlugin, Page, type Manga } from "../../providers/MangaPlugin";
 import * as Common from '../decorators/Common';
 import * as Grouple from '../decorators/Grouple';
 
@@ -13,13 +13,20 @@ type APIChapters = {
 };
 
 @Common.MangaCSS(/^{origin}\/manga\/[^/]+$/, 'ul.manga-info-text li h1')
-@Common.MangasMultiPageCSS('div.list-comic-item-wrap a.list-story-item:not([target])', Common.PatternLinkGenerator('/manga-list/latest-manga?page={page}'), 500, Common.AnchorInfoExtractor(true))
 @Grouple.ImageWithMirrors()
 export class MangaNel extends DecoratableMangaScraper {
 
     public override async Initialize(): Promise<void> {
         //trigger Cloudflare at initialization
         return await FetchWindowScript(new Request(new URL('/manga/manga-list/', this.URI)), '');
+    }
+
+    public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
+        const [element] = await FetchCSS<HTMLAnchorElement>(new Request(new URL('/manga-list/latest-manga?page=1', this.URI)), 'div.group_page a.page_last');
+        const maxPages = parseInt(new URL(element.href).searchParams.get('page'));
+        return Common.FetchMangasMultiPageCSS.call(this, provider, 'div.list-comic-item-wrap a.list-story-item:not([target])',
+            Common.StaticLinkGenerator.call(this, ...Array.from({ length: maxPages }, (_, index) => `/manga-list/latest-manga?page=${index + 1}`)),
+            750, Common.AnchorInfoExtractor(true));
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page<any>[]> {
