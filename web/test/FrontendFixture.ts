@@ -8,19 +8,11 @@ import type { IValue } from '../src/engine/SettingsManager';
 export class FrontendFixture extends PuppeteerFixture {
 
     /**
-     * Helper function to wait for a given {@link timespan} (in _milliseconds_).
-     * Can be useful e.g., when it takes some time for updating dynamic elements in the frontend.
-     */
-    public async Delay(timespan: number): Promise<void> {
-        return new Promise(resolve => setTimeout(resolve, timespan));
-    }
-
-    /**
      * Clear all stored data (incl. settings, bookmarks, cache) and reload the app
      */
     public async Reset(frontend: string = 'classic'): Promise<void> {
-        this.Log('<INVOKE>', 'FrontendFixture.Reset():', frontend);
-        const page = await this.GetPage();
+        const page = await super.GetPage();
+        super.Screenshot('START - FrontendFixture.Reset()');
         await page.evaluate(() => new Promise((resolve, reject) => {
             try {
                 const operation = indexedDB.deleteDatabase('HakuNeko');
@@ -34,31 +26,31 @@ export class FrontendFixture extends PuppeteerFixture {
             () => this.UpdateSetting('*', 'frontend', frontend),
         );
         await page.reload();
-        await this.Delay(500);
-        this.Log('</INVOKE>', 'FrontendFixture.Reset()');
+        await super.Delay(500);
+        super.Screenshot('END - FrontendFixture.Reset()');
     }
 
     async #RunWithDismissDialog(maxDialogTimeoutDelay: number, ...actions: (() => Promise<void>)[]) {
-        const page = await this.GetPage();
+        const page = await super.GetPage();
         let dismiss: (dialog: Dialog) => Promise<void>;
         const dismissed = new Promise<void>(resolve => {
             dismiss = async (dialog: Dialog) => {
                 await dialog.dismiss();
-                this.Log('Dialog Dismissed:', dialog.type(), dialog.message());
+                super.Log('Dialog Dismissed:', dialog.type(), dialog.message());
                 resolve();
             };
         });
         try {
             page.on('dialog', dismiss);
             await Promise.all(actions.map(action => action()));
-            await Promise.race([dismissed, this.Delay(maxDialogTimeoutDelay)]);
+            await Promise.race([dismissed, super.Delay(maxDialogTimeoutDelay)]);
         } finally {
             page.off('dialog', dismiss);
         }
     }
 
     public async WaitForSelectors(timeout: number, ... selectors: string[]) {
-        const page = await this.GetPage();
+        const page = await super.GetPage();
         return Promise.all(selectors.map(selector => page.waitForSelector(selector, { timeout })));
     }
 
@@ -66,12 +58,12 @@ export class FrontendFixture extends PuppeteerFixture {
      * Directly change a setting in the HakuNeko app via its settings manager.
      */
     public async UpdateSetting(scope: string, key: string, value: IValue): Promise<void> {
-        this.Log('<INVOKE>', 'FrontendFixture.UpdateSetting():', scope, key, value);
         const page = await super.GetPage();
+        super.Screenshot('START - FrontendFixture.UpdateSetting()');
         await page.evaluate((scope, key, value) => {
             HakuNeko.SettingsManager.OpenScope(scope).Get(key).Value = value;
         }, scope, key, value);
-        this.Log('</INVOKE>', 'FrontendFixture.UpdateSetting()');
+        super.Screenshot('END - FrontendFixture.UpdateSetting()');
     }
 
     /**

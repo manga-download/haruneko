@@ -14,20 +14,29 @@ export class PuppeteerFixture {
         console.log(new Date().toISOString(), '➔', ...data);
     }
 
+    /**
+     * Helper function to wait for a given {@link timespan} (in _milliseconds_).
+     * Can be useful e.g., when it takes some time for updating dynamic elements in the frontend.
+     */
+    public async Delay(timespan: number): Promise<void> {
+        return new Promise(resolve => setTimeout(resolve, timespan));
+    }
+
     public async GetPage() {
         const page = await PuppeteerFixture.#page;
         await page.bringToFront();
         return page;
     }
 
-    public async Screenshot(page: puppeteer.Page) {
-        await page.screenshot({
+    public async Screenshot(label?: string) {
+        const page = await this.GetPage();
+        page.screenshot({
             type: 'png',
             fullPage: true,
             captureBeyondViewport: true,
-            path: `./screenshot_${Date.now().toString(36)}.png`,
+            path: `./${new Date().toISOString().replaceAll(':', '-')} - ${label || 'Screenshot'}.png`,
         });
     }
 
-    protected EvaluateHandle: typeof puppeteer.Page.prototype.evaluateHandle = async (pageFunction, ...args) => (await PuppeteerFixture.#page)!.evaluateHandle(pageFunction, ...args);
+    protected EvaluateHandle: typeof puppeteer.Page.prototype.evaluateHandle = async (pageFunction, ...args) => (await PuppeteerFixture.#page).evaluateHandle(pageFunction, ...args);
 }
