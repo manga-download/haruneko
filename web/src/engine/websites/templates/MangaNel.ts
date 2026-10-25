@@ -1,7 +1,7 @@
 import { FetchCSS, FetchJSON, FetchWindowScript } from '../../platform/FetchProvider';
-import { Chapter, DecoratableMangaScraper, type MangaPlugin, Page, type Manga } from "../../providers/MangaPlugin";
-import * as Common from '../decorators/Common';
+import { Chapter, DecoratableMangaScraper, type MangaPlugin, Page, type Manga } from '../../providers/MangaPlugin';
 import * as Grouple from '../decorators/Grouple';
+import * as Common from '../decorators/Common';
 
 type APIChapters = {
     data: {
@@ -17,19 +17,23 @@ type APIChapters = {
 export class MangaNel extends DecoratableMangaScraper {
 
     public override async Initialize(): Promise<void> {
-        //trigger Cloudflare at initialization
         return await FetchWindowScript(new Request(new URL('/manga/manga-list/', this.URI)), '');
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        const [element] = await FetchCSS<HTMLAnchorElement>(new Request(new URL('/manga-list/latest-manga?page=1', this.URI)), 'div.group_page a.page_last');
-        const maxPages = parseInt(new URL(element.href).searchParams.get('page'));
-        return Common.FetchMangasMultiPageCSS.call(this, provider, 'div.list-comic-item-wrap a.list-story-item:not([target])',
-            Common.StaticLinkGenerator.call(this, ...Array.from({ length: maxPages }, (_, index) => `/manga-list/latest-manga?page=${index + 1}`)),
-            750, Common.AnchorInfoExtractor(true));
+        const [anchor] = await FetchCSS<HTMLAnchorElement>(new Request(new URL('/manga-list/latest-manga?page=1', this.URI)), 'div.group_page a.page_last');
+        const generate = Common.StaticLinkGenerator(...Array.from({
+            length: parseInt(new URL(anchor.href).searchParams.get('page'), 10),
+        }, (_, index) => `/manga-list/latest-manga?page=${index + 1}`));
+        return Common.FetchMangasMultiPageCSS.call(this, provider, 'div.list-comic-item-wrap a.list-story-item:not([target])', generate, 750, Common.AnchorInfoExtractor(true));
     }
 
-    public override async FetchPages(chapter: Chapter): Promise<Page<any>[]> {
+    public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
+        const { data: { chapters } } = await FetchJSON<APIChapters>(new Request(new URL(`./api/manga/${manga.Identifier.split('/').at(-1)}/chapters?limit=-1`, this.URI)));
+        return chapters.map(({ chapter_slug: slug, chapter_name: name }) => new Chapter(this, manga, `${manga.Identifier}/${slug}`, name));
+    }
+
+    public override async FetchPages(chapter: Chapter): Promise<Page[]> {
         const data = await FetchWindowScript<{ url: string, mirrors: string[] }[]>(new Request(new URL(chapter.Identifier, this.URI)), `
             new Promise(resolve => {
                 const mainserver = cdns.at(0);
@@ -41,10 +45,5 @@ export class MangaNel extends DecoratableMangaScraper {
             });
         `, 1000);
         return data.map(({ url, mirrors }) => new Page(this, chapter, new URL(url), { Referer: this.URI.href, mirrors }));
-    }
-
-    public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const { data: { chapters } } = await FetchJSON<APIChapters>(new Request(new URL(`./api/manga/${manga.Identifier.split('/').at(-1)}/chapters?limit=-1`, this.URI)));
-        return chapters.map(({ chapter_slug: slug, chapter_name: name }) => new Chapter(this, manga, `${manga.Identifier}/${slug}`, name));
     }
 }
