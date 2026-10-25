@@ -13,7 +13,9 @@ describe('Front-End (Fluent-Core)', { concurrent: false, timeout: 60_000 }, () =
     describe('SmokeTests', async () => {
 
         it('Should show basic layout', async () => {
-            const elements = await fixture.WaitForSelectors(0, 'div#app > fluent-app');
+            const elements = await fixture.WaitForSelectors(0,
+                'div#app > fluent-app',
+            );
             for (const element of elements) {
                 expect(await element.isVisible()).toBe(true);
             }
