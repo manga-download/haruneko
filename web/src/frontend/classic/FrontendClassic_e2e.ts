@@ -10,6 +10,7 @@ describe('Front-End (Classic)', { concurrent: false, timeout: 60_000 }, () => {
         await fixture.Reset('classic');
         await fixture.WaitForSelectors(10_000, 'div#app > main#hakunekoapp');
         await fixture.EnsureNoStartupGuide();
+        await fixture.Screenshot(ctx.task.name);
     });
 
     describe('SmokeTests', async () => {
