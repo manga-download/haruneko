@@ -42,6 +42,7 @@ export { default as AverisFansub } from './AverisFansub';
 export { default as Aymry } from './Aymry';
 export { default as AzoraWorld } from './AzoraWorld';
 export { default as BacaKomik } from './BacaKomik';
+export { default as Bacami } from './Bacami';
 export { default as BakaMH } from './BakaMH';
 export { default as Baozimh } from './Baozimh';
 export { default as BarManga } from './BarManga';
