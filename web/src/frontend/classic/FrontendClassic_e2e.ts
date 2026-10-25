@@ -33,7 +33,7 @@ describe('Front-End (Classic)', { concurrent: false, timeout: 60_000 }, () => {
         it('Should bookmark a manga that is not yet bookmarked', async () => {
             await fixture.SetWebsiteFilter('Dex');
             await fixture.SelectWebsite('mangadex');
-            await fixture.UpdateWebsiteMangaList(7500);
+            await fixture.UpdateWebsiteMangaList(10_000);
             await fixture.SetMangaFilter('Apple');
             await fixture.BookmarkManga('Apple Collection');
             await fixture.SetWebsiteFilter('Bookmarks');
