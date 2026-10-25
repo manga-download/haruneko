@@ -777,6 +777,7 @@ export { default as YoungChampion } from './YoungChampion';
 export { default as Yukomik } from './Yukomik';
 export { default as YupManga } from './YupManga';
 export { default as YuriGarden } from './YuriGarden';
+export { default as YuriOnline } from './YuriOnline';
 export { default as YuriVerso } from './YuriVerso';
 export { default as Zebrack } from './Zebrack';
 export { default as ZenithScans } from './ZenithScans';

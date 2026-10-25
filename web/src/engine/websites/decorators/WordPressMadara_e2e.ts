@@ -129,6 +129,7 @@ import '../XXXYaoi_e2e';
 import '../YakshaComics_e2e';
 import '../YaoiMangaOku_e2e';
 import '../YaoiScan_e2e';
+import '../YuriOnline_e2e';
 import '../YuriVerso_e2e';
 import '../ZinMangaNet_e2e';
 import '../ZinManga_e2e';
