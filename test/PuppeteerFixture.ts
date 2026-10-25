@@ -10,6 +10,10 @@ export class PuppeteerFixture {
         return page;
     });
 
+    public Log(...data: unknown[]) {
+        console.log(new Date().toISOString(), '➔', ...data);
+    }
+
     public async GetPage() {
         const page = await PuppeteerFixture.#page;
         await page.bringToFront();

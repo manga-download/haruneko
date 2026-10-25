@@ -5,7 +5,8 @@ describe('Front-End (Fluent-Core)', { concurrent: false, timeout: 60_000 }, () =
 
     const fixture = new TestFixture();
 
-    beforeEach(async () => {
+    beforeEach(async ctx => {
+        ctx.onTestFailed(() => fixture.GetPage().then(fixture.Screenshot));
         await fixture.Reset('fluent-core');
         await fixture.WaitForSelectors(10_000, 'div#app > fluent-app');
     });
