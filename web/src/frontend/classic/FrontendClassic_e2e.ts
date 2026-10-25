@@ -14,7 +14,7 @@ describe('Front-End (Classic)', { concurrent: false, timeout: 60_000 }, () => {
     describe('SmokeTests', async () => {
 
         it('Should show app', async () => {
-            await fixture.WaitForSelectors(0,
+            const elements = await fixture.WaitForSelectors(0,
                 'div#app > header > a.bx--header__name',
                 'div#app > nav.bx--side-nav__navigation',
                 'div#app > main#hakunekoapp > div#Media > div#MediaList',
@@ -22,6 +22,9 @@ describe('Front-End (Classic)', { concurrent: false, timeout: 60_000 }, () => {
                 'div#app > main#hakunekoapp > div#Content > main > div#Home',
                 'div#app > main#hakunekoapp > div#Bottom div.downloads',
             );
+            for (const element of elements) {
+                expect(await element.isVisible()).toBe(true);
+            }
         });
     });
 
