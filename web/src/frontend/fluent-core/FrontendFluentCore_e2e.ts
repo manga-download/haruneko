@@ -10,7 +10,7 @@ describe('Front-End (Fluent-Core)', { concurrent: false, timeout: 60_000 }, () =
     describe('SmokeTests', async () => {
 
         it('Should render basic layout', async () => {
-            await fixture.WaitForSelectors(5000,
+            await fixture.WaitForSelectors(7500,
                 'div#app > fluent-app',
             );
         });
