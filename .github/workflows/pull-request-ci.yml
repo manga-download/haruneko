@@ -74,4 +74,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: Test Results (${{ matrix.os }})
-          path: ./**/screenshot_*.png
+          path: ./**/screenshots/*.png

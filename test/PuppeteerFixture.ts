@@ -34,7 +34,7 @@ export class PuppeteerFixture {
             type: 'png',
             fullPage: true,
             captureBeyondViewport: true,
-            path: `./${new Date().toISOString().replaceAll(':', '-')} - ${label || 'Screenshot'}.png`,
+            path: `./test/screenshots/${new Date().toISOString().replaceAll(':', '-')} - ${label || 'Screenshot'}.png`,
         });
     }
 
