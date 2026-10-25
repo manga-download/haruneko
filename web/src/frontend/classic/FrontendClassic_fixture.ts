@@ -16,15 +16,15 @@ export class TestFixture extends FrontendFixture {
      * Close the startup guide if it is open.
      */
     public async EnsureNoStartupGuide() {
+        await super.Screenshot('START - FrontendClassicFixture.EnsureNoStartupGuide()');
         const page = await super.GetPage();
-        super.Screenshot('START - FrontendClassicFixture.EnsureNoStartupGuide()');
         try {
             await (await page.waitForSelector('#startupGuide button.bx--modal-close', { visible: true, timeout: 5000 })).click();
             await page.waitForSelector('#startupGuide', { hidden: true, timeout: 5000 });
         } catch (error) {
             super.Log(error);
         }
-        super.Screenshot('END - FrontendClassicFixture.EnsureNoStartupGuide()');
+        await super.Screenshot('END - FrontendClassicFixture.EnsureNoStartupGuide()');
     }
 
     /**
@@ -56,12 +56,12 @@ export class TestFixture extends FrontendFixture {
      * Click the button to update the manga list for the currently selected website.
      */
     public async UpdateWebsiteMangaList(timeout = 5000) {
+        await super.Screenshot('START - FrontendClassicFixture.UpdateWebsiteMangaList()');
         const page = await super.GetPage();
-        super.Screenshot('START - FrontendClassicFixture.UpdateWebsiteMangaList()');
         await page.click('#Plugin button#MediaUpdateButton');
         await super.Delay(timeout - timeout + 250);
         // TODO: Wait for spinner to dissapear in list?
-        super.Screenshot('END - FrontendClassicFixture.UpdateWebsiteMangaList()');
+        await super.Screenshot('END - FrontendClassicFixture.UpdateWebsiteMangaList()');
     }
 
     /**

@@ -11,8 +11,8 @@ export class FrontendFixture extends PuppeteerFixture {
      * Clear all stored data (incl. settings, bookmarks, cache) and reload the app
      */
     public async Reset(frontend: string = 'classic'): Promise<void> {
+        await super.Screenshot('START - FrontendFixture.Reset()');
         const page = await super.GetPage();
-        super.Screenshot('START - FrontendFixture.Reset()');
         await page.evaluate(() => new Promise((resolve, reject) => {
             try {
                 const operation = indexedDB.deleteDatabase('HakuNeko');
@@ -27,7 +27,7 @@ export class FrontendFixture extends PuppeteerFixture {
         );
         await page.reload();
         await super.Delay(500);
-        super.Screenshot('END - FrontendFixture.Reset()');
+        await super.Screenshot('END - FrontendFixture.Reset()');
     }
 
     async #RunWithDismissDialog(maxDialogTimeoutDelay: number, ...actions: (() => Promise<void>)[]) {
@@ -58,12 +58,12 @@ export class FrontendFixture extends PuppeteerFixture {
      * Directly change a setting in the HakuNeko app via its settings manager.
      */
     public async UpdateSetting(scope: string, key: string, value: IValue): Promise<void> {
+        await super.Screenshot('START - FrontendFixture.UpdateSetting()');
         const page = await super.GetPage();
-        super.Screenshot('START - FrontendFixture.UpdateSetting()');
         await page.evaluate((scope, key, value) => {
             HakuNeko.SettingsManager.OpenScope(scope).Get(key).Value = value;
         }, scope, key, value);
-        super.Screenshot('END - FrontendFixture.UpdateSetting()');
+        await super.Screenshot('END - FrontendFixture.UpdateSetting()');
     }
 
     /**
