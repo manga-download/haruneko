@@ -15,12 +15,10 @@ export class TestFixture extends FrontendFixture {
     /**
      * Close the startup guide if it is open.
      */
-    public async CloseStartupGuide() {
+    public async EnsureNoStartupGuide() {
         const page = await super.GetPage();
-        const selector = '#startupGuide button.bx--modal-close';
         try {
-            const button = await page.waitForSelector(selector, { visible: true, timeout: 5000 });
-            button.click();
+            await (await page.waitForSelector('#startupGuide button.bx--modal-close', { visible: true, timeout: 5000 })).click();
             await page.waitForSelector('#startupGuide', { hidden: true, timeout: 5000 });
         } catch (error) {
             console.log(new Date().toISOString(), '➔', error);
