@@ -1,5 +1,6 @@
 import { Tags } from '../Tags';
 import icon from './XComic.webp';
+import { SetTimeout } from '../BackgroundTimers';
 import { FetchCSS, FetchGraphQL } from '../platform/FetchProvider';
 import { type MangaPlugin, Manga, Chapter, Page, DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
@@ -105,7 +106,7 @@ export default class extends DecoratableMangaScraper {
         const chapters = await Array.fromAsync(async function* (this: This) {
             for (const source of await this.#GetChapterSources(manga.Identifier)) {
                 for (let page = 1, run = true; run; page++) {
-                    const delay = new Promise<void>(resolve => setTimeout(resolve, 250));
+                    const delay = new Promise<void>(resolve => SetTimeout(resolve, 250));
                     const { get_comic_chapterList_fullList: { items, paging: { next } } } = await FetchGraphQL<APIChapters>(new Request(this.#apiURL), 'get_comic_chapterList_fullList', `
                         query get_comic_chapterList_fullList($select: Select_Comic_ChapterList) {
                             get_comic_chapterList_fullList(select: $select) {
