@@ -7,6 +7,10 @@ import type { IValue } from '../src/engine/SettingsManager';
  */
 export class FrontendFixture extends PuppeteerFixture {
 
+    public Log(...data: unknown[]) {
+        console.log(new Date().toISOString(), '➔', ...data);
+    }
+
     /**
      * Helper function to wait for a given {@link timespan} (in _milliseconds_).
      * Can be useful e.g., when it takes some time for updating dynamic elements in the frontend.

@@ -21,7 +21,7 @@ export class TestFixture extends FrontendFixture {
             await (await page.waitForSelector('#startupGuide button.bx--modal-close', { visible: true, timeout: 5000 })).click();
             await page.waitForSelector('#startupGuide', { hidden: true, timeout: 5000 });
         } catch (error) {
-            console.log(new Date().toISOString(), '➔', error);
+            this.Log(error);
         }
     }
 
