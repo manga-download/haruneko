@@ -23,6 +23,7 @@ export class FrontendFixture extends PuppeteerFixture {
      * Clear all stored data (incl. settings, bookmarks, cache) and reload the app
      */
     public async Reset(frontend: string = 'classic'): Promise<void> {
+        this.Log('<INVOKE>', 'FrontendFixture.Reset():', frontend);
         const page = await this.GetPage();
         await page.evaluate(() => new Promise((resolve, reject) => {
             try {
@@ -33,14 +34,31 @@ export class FrontendFixture extends PuppeteerFixture {
                 reject(error);
             }
         }));
-        const dismiss = async (dialog: Dialog) => dialog.dismiss();
-        page.once('dialog', dismiss);
-        try {
-            await this.UpdateSetting('*', 'frontend', frontend);
-        } catch { }
-        page.off('dialog', dismiss);
+        await this.#RunWithDismissDialog(1000,
+            () => this.UpdateSetting('*', 'frontend', frontend),
+        );
         await page.reload();
         await this.Delay(500);
+        this.Log('</INVOKE>', 'FrontendFixture.Reset()');
+    }
+
+    async #RunWithDismissDialog(maxDialogTimeoutDelay: number, ...actions: (() => Promise<void>)[]) {
+        const page = await this.GetPage();
+        let dismiss: (dialog: Dialog) => Promise<void>;
+        const dismissed = new Promise<void>(resolve => {
+            dismiss = async (dialog: Dialog) => {
+                await dialog.dismiss();
+                this.Log('Dialog Dismissed:', dialog.type(), dialog.message());
+                resolve();
+            };
+        });
+        try {
+            page.on('dialog', dismiss);
+            await Promise.all(actions.map(action => action()));
+            await Promise.race([dismissed, this.Delay(maxDialogTimeoutDelay)]);
+        } finally {
+            page.off('dialog', dismiss);
+        }
     }
 
     public async WaitForSelectors(timeout: number, ... selectors: string[]) {
@@ -52,10 +70,12 @@ export class FrontendFixture extends PuppeteerFixture {
      * Directly change a setting in the HakuNeko app via its settings manager.
      */
     public async UpdateSetting(scope: string, key: string, value: IValue): Promise<void> {
+        this.Log('<INVOKE>', 'FrontendFixture.UpdateSetting():', scope, key, value);
         const page = await super.GetPage();
         await page.evaluate((scope, key, value) => {
             HakuNeko.SettingsManager.OpenScope(scope).Get(key).Value = value;
         }, scope, key, value);
+        this.Log('</INVOKE>', 'FrontendFixture.UpdateSetting()');
     }
 
     /**
