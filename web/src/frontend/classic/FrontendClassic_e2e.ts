@@ -13,7 +13,7 @@ describe('Front-End (Classic)', { concurrent: false, timeout: 60_000 }, () => {
 
     describe('SmokeTests', async () => {
 
-        it('Should show app', async () => {
+        it('Should show basic layout', async () => {
             const elements = await fixture.WaitForSelectors(0,
                 'div#app > header > a.bx--header__name',
                 'div#app > nav.bx--side-nav__navigation',
