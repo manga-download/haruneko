@@ -606,6 +606,7 @@ export { default as RimuScans } from './RimuScans';
 export { default as RinkoComics } from './RinkoComics';
 export { default as RisenToons } from './RisenToons';
 export { default as RitharScans } from './RitharScans';
+export { default as Ritto } from './Ritto';
 export { default as RizzComics } from './RizzComics';
 export { default as RNCalation } from './RNCalation';
 export { default as RokariComics } from './RokariComics';
