@@ -13,10 +13,10 @@ export class FrontendFixture extends PuppeteerFixture {
     public async Reset(frontend: string = 'classic'): Promise<void> {
         await super.Screenshot('START - FrontendFixture.Reset()');
         const page = await super.GetPage();
-        await page.evaluate(() => new Promise((resolve, reject) => {
+        await page.evaluate(() => new Promise<void>((resolve, reject) => {
             try {
                 const operation = indexedDB.deleteDatabase('HakuNeko');
-                operation.addEventListener('success', resolve);
+                operation.addEventListener('success', () => resolve());
                 operation.addEventListener('error', reject);
             } catch (error) {
                 reject(error);
