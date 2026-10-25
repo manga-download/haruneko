@@ -12,7 +12,7 @@ new TestFixture({
     },
     child: {
         id: 'e2mzray',
-        title: 'Chapter 52 [END] [🇬🇧]',
+        title: 'Chapter 52 [END] (en) [E5Y6VK]',
     },
     entry: {
         index: 0,
