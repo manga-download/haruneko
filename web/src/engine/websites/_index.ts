@@ -102,6 +102,7 @@ export { default as Daysneo } from './Daysneo';
 export { default as DeathTollScans } from './DeathTollScans';
 export { default as DecadenceScans } from './DecadenceScans';
 export { default as DennoMavo } from './DennoMavo';
+export { default as DesireScans } from './DesireScans';
 export { default as Desu } from './Desu';
 export { default as DiamondFansub } from './DiamondFansub';
 export { default as Digimon } from './Digimon';
