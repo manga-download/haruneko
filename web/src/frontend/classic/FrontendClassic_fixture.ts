@@ -1,4 +1,4 @@
-import { ElementHandle, Page, TimeoutError } from 'puppeteer-core';
+import { type ElementHandle, TimeoutError } from 'puppeteer-core';
 import { FrontendFixture } from '../../../test/FrontendFixture';
 
 /**
