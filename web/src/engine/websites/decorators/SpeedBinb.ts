@@ -277,7 +277,7 @@ export function PagesSinglePageAjax() {
 export async function FetchImageAjax(this: MangaScraper, page: Page, priority: Priority, signal: AbortSignal, detectMimeType = false): Promise<Blob> {
     switch (true) {
         case page.Link.href.endsWith('ptimg.json'): {
-            // descramble_v016061 : get real image link and unscramble data from JSON
+            // descramble_v016061 : page.Link is a json file, with image path & descrambling infos
             return this.imageTaskPool.Add(async () => {
                 const { resources: { i: { src } }, views } = await FetchJSON<PageDataV1>(new Request(page.Link));
                 const response = await Fetch(new Request(new URL(src, page.Link.href), {
@@ -288,7 +288,10 @@ export async function FetchImageAjax(this: MangaScraper, page: Page, priority: P
                 }));
                 const blob = detectMimeType ? await GetTypedData(await response.arrayBuffer()) : await response.blob();
                 return DeScramble(blob, async (image, ctx) => {
-                    for (const part of views.at(0).coords) {
+                    const { coords, width, height } = views.at(0);
+                    ctx.canvas.width = width;
+                    ctx.canvas.height = height;
+                    for (const part of coords) {
                         const [, sourceX, sourceY, partWidth, partHeight, targetX, targetY] = part.split(/[:,+>]/).map(num => parseInt(num));
                         ctx.drawImage(image, sourceX, sourceY, partWidth, partHeight, targetX, targetY, partWidth, partHeight);
                     }
@@ -305,8 +308,10 @@ export async function FetchImageAjax(this: MangaScraper, page: Page, priority: P
             const blob = await Common.FetchImageAjax.call(this, page, priority, signal, detectMimeType);
             const { s, u } = <DescrambleKeyPair>JSON.parse(GetUTF8FromBytes(GetBytesFromBase64(page.Link.hash.slice(1))));
             return DeScramble(blob, async (image, ctx) => {
-                const view = GetImageDescrambleCoords(s, u, image.width, image.height);
-                for (const part of view.transfers[0].coords) {
+                const { width, height, transfers } = GetImageDescrambleCoords(s, u, image.width, image.height);
+                ctx.canvas.width = width;
+                ctx.canvas.height = height;
+                for (const part of transfers[0].coords) {
                     ctx.drawImage(image, part.xsrc, part.ysrc, part.width, part.height, part.xdest, part.ydest, part.width, part.height);
                 }
             });
@@ -425,8 +430,7 @@ function GetDescrambleKeyPair(imageName: string, ctbl: string[], ptbl: string[])
 }
 
 /**
- * /**
- * Copied from official SpeedBinb library
+ * Get final image dimensions & pieces informations
  * t  imagecontext containing src property ('pages/cu77gvXE.jpg')
  * @param sKey - first descrambling key (s)
  * @param uKey - second descrambing key (u)
@@ -806,21 +810,21 @@ class SpeedbinbH implements Descrambler {
     public IsValid(): boolean {
         return true;
     }
-
+    /*
     #ValidateDimensions(): boolean {
         return false;
+    }*/
+
+    public GetDimensions(dimensions: Dimensions): Dimensions {
+        return dimensions;
     }
 
-    public GetDimensions(t: Dimensions): Dimensions {
-        return t;
-    }
-
-    public GetCoords(t: Dimensions): DrawImageCoords[] {
+    public GetCoords(dimensions: Dimensions): DrawImageCoords[] {
         return [{
             xsrc: 0,
             ysrc: 0,
-            width: t.width,
-            height: t.height,
+            width: dimensions.width,
+            height: dimensions.height,
             xdest: 0,
             ydest: 0
         }];
