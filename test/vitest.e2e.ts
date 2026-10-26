@@ -8,12 +8,7 @@ export default defineConfig({
         dir: './web/src',
         include: [ '**/*[_.]e2e.[jt]s' ],
         exclude: [ '**/engine/websites/**' ],
-        reporters: process.env.GITHUB_ACTIONS ? [ 'github-actions'] : [ 'default', 'hanging-process' ],
-    },
-    ssr: {
-        external: ['puppeteer', 'puppeteer-core'],
-    },
-    optimizeDeps: {
-        exclude: ['puppeteer', 'puppeteer-core'],
-    },
+        //reporters: process.env.GITHUB_ACTIONS ? [ 'github-actions'] : [ 'default', 'hanging-process' ],
+        reporters: [ 'default', 'hanging-process' ],
+    }
 });
