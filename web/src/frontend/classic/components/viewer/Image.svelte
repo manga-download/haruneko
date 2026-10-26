@@ -10,7 +10,7 @@
         page: MediaItem;
         alt: string;
         wide: boolean;
-        onLoad?: () => void;
+        onLoad?: (isLandscape: boolean) => void;
     }
 
     let { page, alt, wide, onLoad }: Props = $props();
@@ -26,6 +26,11 @@
             URL.revokeObjectURL(image?.src);
         });
     });
+
+    function handleImgLoad(e: Event) {
+        const img = e.currentTarget as HTMLImageElement;
+        onLoad?.(img.naturalWidth > img.naturalHeight);
+    }
 
     function downloadImage(data: Blob) {
         const extension = data.type.split('/')[1]?.split('+')[0] || 'image';
@@ -67,6 +72,7 @@
             class:wide={wide}
             draggable="false"
             bind:this={image}
+            onload={handleImgLoad}
         />
         <ContextMenu target={[image]}>
             <ContextMenuOption icon={Save} labelText="Save image" onclick={() => downloadImage(data)} />
