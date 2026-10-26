@@ -30,7 +30,7 @@ export class PuppeteerFixture {
 
     public async Screenshot(label?: string) {
         const page = await this.GetPage();
-        page.screenshot({
+        await page.screenshot({
             type: 'png',
             fullPage: true,
             captureBeyondViewport: true,
