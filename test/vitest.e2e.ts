@@ -10,4 +10,10 @@ export default defineConfig({
         exclude: [ '**/engine/websites/**' ],
         reporters: process.env.GITHUB_ACTIONS ? [ 'github-actions'] : [ 'default', 'hanging-process' ],
     },
+    ssr: {
+        external: ['puppeteer', 'puppeteer-core'],
+    },
+    optimizeDeps: {
+        exclude: ['puppeteer', 'puppeteer-core'],
+    },
 });
