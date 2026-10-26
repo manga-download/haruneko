@@ -254,6 +254,7 @@ export { default as KLMangash } from './KLMangash';
 export { default as Kmansin09 } from './Kmansin09';
 export { default as KolNovel } from './KolNovel';
 export { default as KomBatch } from './KomBatch';
+export { default as KomikIndoId } from './KomikIndoId';
 export { default as KomikIndoMe } from './KomikIndoMe';
 export { default as Komiko } from './Komiko';
 export { default as KomikRealm } from './KomikRealm';
