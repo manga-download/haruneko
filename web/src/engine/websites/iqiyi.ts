@@ -1,10 +1,10 @@
 import { Tags } from '../Tags';
 import icon from './iqiyi.webp';
+import { HashUTF8 } from '../Crypto';
+import { GetHexFromBytes } from '../BufferEncoder';
+import { FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
 import { Chapter, DecoratableMangaScraper, Manga, type MangaPlugin, Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
-import { MD5 } from '../Crypto';
-import { GetBytesFromUTF8, GetHexFromBytes } from '../BufferEncoder';
 
 type AuthData = {
     qiyiID: string;
@@ -126,7 +126,7 @@ export default class extends DecoratableMangaScraper {
             headers: {
                 Origin: this.URI.origin,
                 Referer: this.URI.href,
-                MD5: GetHexFromBytes(MD5(GetBytesFromUTF8(cipher)))
+                MD5: GetHexFromBytes(await HashUTF8('MD5', cipher))
             }
         }))).data;
     }
