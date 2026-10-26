@@ -25,7 +25,7 @@ type APIPages = {
     };
 };
 
-@Common.MangaCSS<HTMLMetaElement>(/^https:\/\/kagane\.(si|cx|moe|net)\/series\/[^/]+(-[a-fA-F0-9]{4,12}){5}([#?]|$)/, 'meta[property="og:title"]', (meta, uri) => ({
+@Common.MangaCSS<HTMLMetaElement>(/^https:\/\/kagane\.(cx|moe|net)\/series\/[^/]+(-[a-fA-F0-9]{4,12}){5}([#?]|$)/, 'meta[property="og:title"]', (meta, uri) => ({
     id: uri.pathname.split('-').slice(-5).join('-'),
     title: meta.content.trim(),
 }))
@@ -35,7 +35,7 @@ export default class extends DecoratableMangaScraper {
     readonly #apiURL = `${this.URI.origin}/api/v2/`;
 
     public constructor() {
-        super('kagane', 'Kagane', 'https://kagane.si', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.English, Tags.Source.Aggregator, ...Tags.Rating.toArray());
+        super('kagane', 'Kagane', 'https://kagane.net', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.English, Tags.Source.Aggregator, ...Tags.Rating.toArray());
     }
 
     public override get Icon() {

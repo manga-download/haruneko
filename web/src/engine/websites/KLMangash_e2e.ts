@@ -6,7 +6,7 @@ new TestFixture({
         title: 'KLManga(.sh)'
     },
     container: {
-        url: 'https://klmanga.pink/manga-raw/ボールパークでつかまえて！-raw-free/',
+        url: 'https://klmanga.works/manga-raw/ボールパークでつかまえて！-raw-free/',
         id: encodeURI('/manga-raw/ボールパークでつかまえて！-raw-free/'),
         title: 'ボールパークでつかまえて！'
     },
@@ -15,8 +15,8 @@ new TestFixture({
         title: '【第224話】'
     },
     entry: {
-        index: 4,
-        size: 261_340,
+        index: 0,
+        size: 225_414,
         type: 'image/webp'
     }
 }).AssertWebsite();

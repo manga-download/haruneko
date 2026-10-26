@@ -6,7 +6,7 @@ new TestFixture({
         title: 'Syosetu'
     },
     container: {
-        url: 'https://syosetu.help/manga/どれが恋かがわからない-raw-free/',
+        url: 'https://syosetu.cam/manga/どれが恋かがわからない-raw-free/',
         id: encodeURI('/manga/どれが恋かがわからない-raw-free/'),
         title: 'どれが恋かがわからない'
     },
@@ -15,8 +15,8 @@ new TestFixture({
         title: '【第16話】'
     },
     entry: {
-        index: 2,
-        size: 167_229,
+        index: 0,
+        size: 174_197,
         type: 'image/jpeg'
     }
 }).AssertWebsite();

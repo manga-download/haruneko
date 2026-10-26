@@ -68,7 +68,7 @@ export default class extends DecoratableMangaScraper {
     #drm: DRMProvider = new DRMProvider(this.URI, new URL('https://v2.softdevices.my.id/'));
 
     public constructor() {
-        super('softkomik', 'Softkomik', 'https://softkomik.co', Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Language.Indonesian, Tags.Source.Aggregator, Tags.Accessibility.RegionLocked);
+        super('softkomik', 'Softkomik', 'https://softkomik.app', Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Language.Indonesian, Tags.Source.Aggregator, Tags.Accessibility.RegionLocked);
     }
 
     public override get Icon() {
