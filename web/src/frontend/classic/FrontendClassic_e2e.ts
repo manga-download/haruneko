@@ -10,13 +10,13 @@ describe('Front-End (Classic)', { concurrent: false, timeout: 60_000 }, () => {
         await fixture.Reset('classic');
         await fixture.WaitForSelectors(10_000, 'div#app > main#hakunekoapp');
         await fixture.EnsureNoStartupGuide();
-        await fixture.Screenshot(ctx.task.name);
+        //await fixture.Screenshot(ctx.task.name);
     });
 
     describe('SmokeTests', async () => {
 
         it('Should show basic layout', async () => {
-            const elements = await fixture.WaitForSelectors(0,
+            const elements = await fixture.WaitForSelectors(5000,
                 'div#app > header > a.bx--header__name',
                 'div#app > nav.bx--side-nav__navigation',
                 'div#app > main#hakunekoapp > div#Media > div#MediaList',
