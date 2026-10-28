@@ -9,6 +9,8 @@ import {
     EvadeChromeDevToolProtocolDetection
 } from './AutomationEvasions';
 
+process.env.DBUS_SESSION_BUS_ADDRESS = '/dev/null';
+
 export const AppURL = 'https://localhost:5000/';
 export const AppSelector = 'body #app main#hakunekoapp';
 const viteExe = path.normalize(path.resolve('node_modules', '.bin', process.platform === 'win32' ? 'vite.cmd' : 'vite'));
@@ -23,16 +25,17 @@ async function delay(milliseconds: number) {
 }
 
 async function CloseSplashScreen(target: puppeteer.Target) {
-    const page = await target.page();
-    let url = page?.url();
-    while(!url?.startsWith('http')) {
-        await delay(250);
-        url = page?.url();
-        // TODO: leave after timeout?
-    }
-    if (url && /splash.html/i.test(url)) {
+    for (let attempts = 0; attempts < 10; attempts++) {
         try {
-            await page?.removeAllListeners()?.close();
+            await delay(250);
+            const page = await target.page();
+            const url = page?.url();
+            if (url?.startsWith('http')) {
+                if (/splash.html/i.test(url)) {
+                    await page?.removeAllListeners()?.close();
+                }
+                return;
+            }
         } catch (error) {
             console.log(new Date().toISOString(), '➔', error);
         }
@@ -90,7 +93,7 @@ async function LaunchElectron(): Promise<puppeteer.Browser> {
             '--disable-gpu',
             '--trace-warnings',
             '--remote-debugging-port=0', // Use a random port to avoid anti-bot detection
-            '--disable-features=UseDBus', // Suppress warnings/errors when electron tries to connect to D-Bus session in CI/CD pipeline
+            '--disable-dbus', // Suppress warnings/errors when electron tries to connect to D-Bus session in CI/CD pipeline
             '--ignore-certificate-errors',
             '--disable-blink-features=AutomationControlled', // Suppress certain automation flags to avoid anti-bot detection
             `--origin=${AppURL}`,
@@ -168,6 +171,8 @@ async function TryStopProcess(processInfo: ChildProcess | null, label: string): 
     const isRunning = () => processInfo.exitCode === null && processInfo.signalCode === null;
     const processPath = path.relative(process.cwd(), processInfo.spawnfile);
     try {
+        //if (process.platform === 'win32' && isRunning()) {
+        //}
         switch (process.platform) {
             case 'win32':
                 if(isRunning()) {
