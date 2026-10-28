@@ -9,8 +9,6 @@ import {
     EvadeChromeDevToolProtocolDetection
 } from './AutomationEvasions';
 
-process.env.DBUS_SESSION_BUS_ADDRESS = '/dev/null';
-
 export const AppURL = 'https://localhost:5000/';
 export const AppSelector = 'body #app main#hakunekoapp';
 const viteExe = path.normalize(path.resolve('node_modules', '.bin', process.platform === 'win32' ? 'vite.cmd' : 'vite'));
