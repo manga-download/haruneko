@@ -68,7 +68,7 @@ jobs:
         env:
           DISPLAY: ':99'
           DBUS_SESSION_BUS_ADDRESS: '/dev/null'
-        run: dbus-run-session npm run test:websites -- MangaDex
+        run: npm run test:websites -- MangaDex
       - name: Upload Test Results
         if: failure()
         uses: actions/upload-artifact@v4
