@@ -2,6 +2,12 @@ import { Tags } from '../Tags';
 import icon from './KoreliManga.webp';
 import { InitManga, queryChapters, ChapterExtractor } from './templates/InitManga';
 import * as Common from './decorators/Common';
+import { AddAntiScrapingDetection, FetchRedirection } from '../platform/AntiScrapingDetection';
+
+AddAntiScrapingDetection(async (invoke) => {
+    const result = await invoke<boolean>(`document.querySelector('div#human-check') && true || false;`);
+    return result ? FetchRedirection.Interactive : undefined;
+}, /https:\/\/korelimanga\.com/);
 
 @Common.MangasMultiPageCSS('h2.manga-card-title a', Common.PatternLinkGenerator('/manga/page/{page}/'))
 @Common.ChaptersMultiPageCSS<HTMLAnchorElement>(queryChapters, Common.PatternLinkGenerator('{id}chapter/page/{page}/'), 0, ChapterExtractor)
