@@ -624,7 +624,6 @@ export { default as Sadscans } from './Sadscans';
 export { default as SafiCizgi } from './SafiCizgi';
 export { default as SafireScan } from './SafireScan';
 export { default as SakuraManga } from './SakuraManga';
-export { default as SamuraiScan } from './SamuraiScan';
 export { default as Sany } from './Sany';
 export { default as ScanManga } from './ScanManga';
 export { default as ScansGG } from './ScansGG';

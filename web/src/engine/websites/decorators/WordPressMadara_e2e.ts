@@ -100,7 +100,6 @@ import '../RuyaMangaNet_e2e';
 import '../RuyaManga_e2e';
 import '../S2Manga_e2e';
 import '../Sacguzellik_e2e';
-import '../SamuraiScan_e2e';
 import '../ShinobiScans_e2e';
 import '../SiiManga_e2e';
 import '../Summertoon_e2e';
