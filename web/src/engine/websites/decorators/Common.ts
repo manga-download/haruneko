@@ -60,8 +60,9 @@ export function StaticLinkGenerator(...endpoints: string[]): LinkGenerator {
  * @param increment - The amount by which the sequence shall be incremented for each iteration
  */
 export function PatternLinkGenerator<T extends MediaContainer<MediaChild>>(endpoint: string, start = 1, increment = 1): LinkGenerator<T> {
-    const cancellation = new AbortController();
+    let cancellation = new AbortController();
     return Object.assign(function* (this: MangaScraper, media: T): Generator<URL> {
+        cancellation = new AbortController();
         for (let page = start; !cancellation.signal.aborted; page += increment) {
             yield new URL(endpoint.replace('{id}', media.Identifier).replace('{page}', `${page}`), this.URI);
         }
