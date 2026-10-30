@@ -16,7 +16,7 @@ import { DecryptXOR } from '../Crypto';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('dualeotruyen', 'DuaLeoTruyen', 'https://dualeotruyenday.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Media.Manga, Tags.Language.Vietnamese, Tags.Source.Aggregator, Tags.Accessibility.DomainRotation, Tags.Rating.Pornographic);
+        super('dualeotruyen', 'DuaLeoTruyen', 'https://dualeotruyenqo.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Media.Manga, Tags.Language.Vietnamese, Tags.Source.Aggregator, Tags.Accessibility.DomainRotation, Tags.Rating.Pornographic);
     }
 
     public override get Icon() {
@@ -37,7 +37,7 @@ export default class extends DecoratableMangaScraper {
                 'Sec-Fetch-Mode': 'navigate',
                 'Sec-Fetch-Site': 'same-origin'
             }
-        }), 'div.content_view_chap :is(img, canvas)');
+        }), 'div.content_view_chap > :is(img, svg)');
         return Promise.all(
             imgs.map(async (element) => {
                 const link = new URL(await this.PageExtractor(element), chapterURL);
@@ -51,7 +51,10 @@ export default class extends DecoratableMangaScraper {
 
         if (img instanceof HTMLImageElement && !img.dataset.img) return img.src;
 
-        const uri = new URL(img.dataset.img ?? img.dataset.canvasImg);
+        const subImage = img.querySelector('image');
+        if (subImage) return subImage.href.toString();
+
+        const uri = new URL(img.dataset.svgImg ?? img.dataset.img);
         let [, basename, extension] = uri.pathname.match(/\/([^./]+)\.(.*)$/);
         if (!basename.startsWith('q5_')) return uri.href;
 

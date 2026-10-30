@@ -6,7 +6,7 @@ new TestFixture({
         title: 'Toonkor'
     },
     container: {
-        url: 'https://toonkor7.org/허니-트러블',
+        url: 'https://001.toonkor.net/허니-트러블',
         id: encodeURI('/허니-트러블'),
         title: '허니 트러블'
     },

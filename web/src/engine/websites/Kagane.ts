@@ -1,8 +1,9 @@
 import { Tags } from '../Tags';
 import icon from './Kagane.webp';
-import { FetchJSON } from '../platform/FetchProvider';
+import { Fetch, FetchJSON } from '../platform/FetchProvider';
 import { DecoratableMangaScraper, type MangaPlugin, Manga, Chapter, Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
+import type { Priority } from '../taskpool/DeferredTask';
 
 type CachedMangas = {
     id: string;
@@ -25,17 +26,16 @@ type APIPages = {
     };
 };
 
-@Common.MangaCSS<HTMLMetaElement>(/^https:\/\/kagane\.(cx|moe|net)\/series\/[^/]+(-[a-fA-F0-9]{4,12}){5}([#?]|$)/, 'meta[property="og:title"]', (meta, uri) => ({
+@Common.MangaCSS<HTMLMetaElement>(/^{origin}\/series\/[^/]+(-[a-fA-F0-9]{4,12}){5}([#?]|$)/, 'meta[property="og:title"]', (meta, uri) => ({
     id: uri.pathname.split('-').slice(-5).join('-'),
     title: meta.content.trim(),
 }))
-@Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
     readonly #apiURL = `${this.URI.origin}/api/v2/`;
 
     public constructor() {
-        super('kagane', 'Kagane', 'https://kagane.net', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.English, Tags.Source.Aggregator, ...Tags.Rating.toArray());
+        super('kagane', 'Kagane', 'https://kagane.moe', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.English, Tags.Source.Aggregator, ...Tags.Rating.toArray());
     }
 
     public override get Icon() {
@@ -76,4 +76,16 @@ export default class extends DecoratableMangaScraper {
             return new Page(this, chapter, uri);
         });
     }
+
+    public override async FetchImage(page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
+        return this.imageTaskPool.Add(async () => {
+            return (await Fetch(new Request(page.Link, {
+                headers: {
+                    Referer: this.URI.href,
+                    Origin: this.URI.origin,
+                },
+            }))).blob();
+        }, priority, signal);
+    }
+
 }
