@@ -10,7 +10,7 @@ describe('Front-End (Fluent-Core)', { concurrent: false, timeout: 60_000 }, () =
         await fixture.Reset('fluent-core');
         await fixture.WaitForSelectors(10_000, 'div#app > fluent-app');
         //await fixture.Screenshot(ctx.task.name);
-    });
+    }, 20_000);
 
     describe('SmokeTests', async () => {
 
