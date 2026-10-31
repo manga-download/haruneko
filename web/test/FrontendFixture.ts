@@ -11,7 +11,7 @@ export class FrontendFixture extends PuppeteerFixture {
      * Clear all stored data (incl. settings, bookmarks, cache) and reload the app
      */
     public async Reset(frontend: string = 'classic', selector: string, timeout = 10_000): Promise<void> {
-        //await super.Screenshot('START - FrontendFixture.Reset()');
+        await super.Screenshot('FrontendFixture.Reset(): START');
         try {
             const page = await super.GetPage();
             await page.evaluate(() => new Promise<void>((resolve, reject) => {
@@ -26,10 +26,12 @@ export class FrontendFixture extends PuppeteerFixture {
             await this.#RunWithDismissDialog(1000,
                 () => this.UpdateSetting('*', 'frontend', frontend),
             );
+            await super.Screenshot('FrontendFixture.Reset(): Before Reload');
             await page.reload({ ignoreCache: true, timeout });
+            await super.Screenshot('FrontendFixture.Reset(): After Reload');
             await page.waitForSelector(selector, { visible: true, timeout });
         } finally {
-            //await super.Screenshot('END - FrontendFixture.Reset()');
+            await super.Screenshot('FrontendFixture.Reset(): END');
         }
     }
 
