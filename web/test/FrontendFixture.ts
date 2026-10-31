@@ -10,24 +10,27 @@ export class FrontendFixture extends PuppeteerFixture {
     /**
      * Clear all stored data (incl. settings, bookmarks, cache) and reload the app
      */
-    public async Reset(frontend: string = 'classic'): Promise<void> {
+    public async Reset(frontend: string = 'classic', selector: string, timeout = 10_000): Promise<void> {
         //await super.Screenshot('START - FrontendFixture.Reset()');
-        const page = await super.GetPage();
-        await page.evaluate(() => new Promise<void>((resolve, reject) => {
-            try {
-                const operation = indexedDB.deleteDatabase('HakuNeko');
-                operation.addEventListener('success', () => resolve());
-                operation.addEventListener('error', reject);
-            } catch (error) {
-                reject(error);
-            }
-        }));
-        await this.#RunWithDismissDialog(1000,
-            () => this.UpdateSetting('*', 'frontend', frontend),
-        );
-        await page.reload();
-        await super.Delay(500);
-        //await super.Screenshot('END - FrontendFixture.Reset()');
+        try {
+            const page = await super.GetPage();
+            await page.evaluate(() => new Promise<void>((resolve, reject) => {
+                try {
+                    const operation = indexedDB.deleteDatabase('HakuNeko');
+                    operation.addEventListener('success', () => resolve());
+                    operation.addEventListener('error', reject);
+                } catch (error) {
+                    reject(error);
+                }
+            }));
+            await this.#RunWithDismissDialog(1000,
+                () => this.UpdateSetting('*', 'frontend', frontend),
+            );
+            await page.reload({ ignoreCache: true, timeout });
+            await page.waitForSelector(selector, { visible: true, timeout });
+        } finally {
+            //await super.Screenshot('END - FrontendFixture.Reset()');
+        }
     }
 
     async #RunWithDismissDialog(maxDialogTimeoutDelay: number, ...actions: (() => Promise<void>)[]) {
@@ -59,11 +62,14 @@ export class FrontendFixture extends PuppeteerFixture {
      */
     public async UpdateSetting(scope: string, key: string, value: IValue): Promise<void> {
         //await super.Screenshot('START - FrontendFixture.UpdateSetting()');
-        const page = await super.GetPage();
-        await page.evaluate((scope, key, value) => {
-            HakuNeko.SettingsManager.OpenScope(scope).Get(key).Value = value;
-        }, scope, key, value);
-        //await super.Screenshot('END - FrontendFixture.UpdateSetting()');
+        try {
+            const page = await super.GetPage();
+            await page.evaluate((scope, key, value) => {
+                HakuNeko.SettingsManager.OpenScope(scope).Get(key).Value = value;
+            }, scope, key, value);
+        } finally {
+            //await super.Screenshot('END - FrontendFixture.UpdateSetting()');
+        }
     }
 
     /**

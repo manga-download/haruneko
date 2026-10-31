@@ -7,8 +7,7 @@ describe('Front-End (Fluent-Core)', { concurrent: false, timeout: 60_000 }, () =
 
     beforeEach(async context => {
         context.onTestFailed(ctx => fixture.Screenshot(`⛔️ ${ctx.task.name}`));
-        await fixture.Reset('fluent-core');
-        await fixture.WaitForSelectors(10_000, 'div#app > fluent-app');
+        await fixture.Reset('fluent-core', 'div#app > fluent-app', 10_000);
         //await fixture.Screenshot(context.task.name);
     }, 20_000);
 

@@ -7,8 +7,7 @@ describe('Front-End (Classic)', { concurrent: false, timeout: 60_000 }, () => {
 
     beforeEach(async context => {
         context.onTestFailed(ctx => fixture.Screenshot(`⛔️ ${ctx.task.name}`));
-        await fixture.Reset('classic');
-        await fixture.WaitForSelectors(10_000, 'div#app > main#hakunekoapp');
+        await fixture.Reset('classic', 'div#app > main#hakunekoapp', 10_000);
         await fixture.EnsureNoStartupGuide();
         //await fixture.Screenshot(context.task.name);
     }, 20_000);
