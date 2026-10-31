@@ -30,6 +30,8 @@ export class FrontendFixture extends PuppeteerFixture {
             await page.reload({ ignoreCache: true, timeout });
             await super.Screenshot('FrontendFixture.Reset() - After Reload');
             await page.waitForSelector(selector, { visible: true, timeout });
+        } catch(error) {
+            console.warn(new Date().toISOString(), '➔', '<Reset>', error);
         } finally {
             await super.Screenshot('FrontendFixture.Reset() - END');
         }
