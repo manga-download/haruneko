@@ -61,8 +61,8 @@ export class TestFixture extends FrontendFixture {
         const page = await super.GetPage();
         // await page.waitForSelector('#MediaList > div.loading', { visible: false, timeout });
         await Promise.race([
-            page.waitForSelector('#MediaList > div.error', { visible: true, timeout }),
             page.waitForSelector('#MediaList div.media a.title', { visible: true, timeout }),
+            page.waitForSelector('#MediaList > div.error', { visible: true, timeout }),
         ]);
         await super.Screenshot('END - FrontendClassicFixture.UpdateWebsiteMangaList()');
     }
@@ -100,14 +100,20 @@ export class TestFixture extends FrontendFixture {
     /**
      * Search for a manga with the matching {@link title} in the current manga list and click on it.
      */
-    public async SelectManga(title: string, timeout = 1000) {
-        return this.#GetMangaElement(title, timeout).then(div => div.click());
+    public async SelectManga(title: string, timeout = 10_000) {
+        const page = await super.GetPage();
+        await this.#GetMangaElement(title, timeout).then(div => div.click());
+        // await page.waitForSelector('#ItemList > div.loading', { visible: false, timeout });
+        await Promise.race([
+            page.waitForSelector('#ItemList div.listitem', { visible: true, timeout }),
+            page.waitForSelector('#ItemList > div.error', { visible: true, timeout }),
+        ]);
     }
 
     /**
      * Search for a manga with the matching {@link title} in the current manga list and click on its bookmark button.
      */
-    public async BookmarkManga(title: string, timeout = 5000) {
+    public async BookmarkManga(title: string, timeout = 1000) {
         return this.#GetMangaElement(title, timeout)
             .then(div => div.waitForSelector('button[role="bookmark"]:not(.bookmarked)', { visible: true, timeout }))
             .then(button => button.click());
@@ -116,10 +122,15 @@ export class TestFixture extends FrontendFixture {
     /**
      * Paste the given manga {@link url} into the application using the paste link button.
      */
-    public async PasteMangaFromClipboard(url: string, timeout = 5000) {
+    public async PasteMangaFromClipboard(url: string, timeout = 10_000) {
         const page = await super.GetPage();
         await page.evaluate(link => navigator.clipboard.writeText(link), url);
-        await super.Click('#Media #MediaTitle button[role="paste"]', timeout);
+        await super.Click('#Media #MediaTitle button[role="paste"]');
+        // await page.waitForSelector('#ItemList > div.loading', { visible: false, timeout });
+        await Promise.race([
+            page.waitForSelector('#ItemList div.listitem', { visible: true, timeout }),
+            page.waitForSelector('#ItemList > div.error', { visible: true, timeout }),
+        ]);
     }
 
     /**
