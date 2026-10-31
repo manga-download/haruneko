@@ -16,7 +16,7 @@ export class TestFixture extends FrontendFixture {
      * Close the startup guide if it is open.
      */
     public async EnsureNoStartupGuide() {
-        await super.Screenshot('START - FrontendClassicFixture.EnsureNoStartupGuide()');
+        //await super.Screenshot('START - FrontendClassicFixture.EnsureNoStartupGuide()');
         const page = await super.GetPage();
         let button: ElementHandle<HTMLButtonElement>;
         try {
@@ -26,7 +26,7 @@ export class TestFixture extends FrontendFixture {
             await button?.click();
             await page.waitForSelector('#startupGuide', { hidden: true, timeout: 5000 });
         } finally {
-            await super.Screenshot('END - FrontendClassicFixture.EnsureNoStartupGuide()');
+            //await super.Screenshot('END - FrontendClassicFixture.EnsureNoStartupGuide()');
         }
     }
 
@@ -48,22 +48,22 @@ export class TestFixture extends FrontendFixture {
      * Click the option in the website selection list that corresponds to the given website plugin {@link id}.
      */
     public async SelectWebsite(id: string, timeout = 1000) {
-        const selector = `#Plugin #combo-PluginSelect #PluginSelect-${id}[role="option"] .title`;
-        const page = await super.GetPage();
-        await page.click(this.#selector.WebsiteFilter); // Required to open the drop-down
-        await page.waitForSelector(selector, { timeout });
-        await page.click(selector);
+        await super.Click(this.#selector.WebsiteFilter, timeout); // Required to open the drop-down
+        await super.Click(`#Plugin #combo-PluginSelect #PluginSelect-${id}[role="option"] .title`, timeout);
     }
 
     /**
      * Click the button to update the manga list for the currently selected website.
      */
-    public async UpdateWebsiteMangaList(timeout = 5000) {
+    public async UpdateWebsiteMangaList(timeout = 10_000) {
         await super.Screenshot('START - FrontendClassicFixture.UpdateWebsiteMangaList()');
+        await super.Click('#Plugin button#MediaUpdateButton');
         const page = await super.GetPage();
-        await page.click('#Plugin button#MediaUpdateButton');
-        await super.Delay(timeout - timeout + 250);
-        // TODO: Wait for spinner to dissapear in list?
+        // await page.waitForSelector('#MediaList > div.loading', { visible: false, timeout });
+        await Promise.race([
+            page.waitForSelector('#MediaList > div.error', { visible: true, timeout }),
+            page.waitForSelector('#MediaList div.media a.title', { visible: true, timeout }),
+        ]);
         await super.Screenshot('END - FrontendClassicFixture.UpdateWebsiteMangaList()');
     }
 
@@ -81,24 +81,26 @@ export class TestFixture extends FrontendFixture {
         await super.SetText(this.#selector.MangaFilter, needle);
     }
 
-    async #GetMangaElement(title: string, timeout = 5000) {
+    async #GetMangaElement(title: string, timeout = 1000) {
         const selector = '#MediaList div.media > div.media';
         const selectorBookmarkText = 'a.title';
         const page = await super.GetPage();
-        await page.waitForSelector(selector, { timeout });
+        await page.waitForSelector(selector, { visible: true, timeout });
         const elements = await page.$$(selector);
         for (const element of elements) {
-            const anchor = await element.$(selectorBookmarkText);
-            if (await anchor.evaluate(anchor => anchor.innerText) === title) {
+            const handle = await element.$(selectorBookmarkText);
+            // biome-ignore lint/performance/useDomNodeTextContent: Layout awareness is required to strip whitespaces
+            if (await handle.evaluate(anchor => anchor.innerText) === title) {
                 return element;
             }
         }
+        throw new Error(`Failed to find element(s) matching '${selector}' with text '${title}'`);
     }
 
     /**
      * Search for a manga with the matching {@link title} in the current manga list and click on it.
      */
-    public async SelectManga(title: string, timeout = 5000) {
+    public async SelectManga(title: string, timeout = 1000) {
         return this.#GetMangaElement(title, timeout).then(div => div.click());
     }
 
@@ -107,7 +109,7 @@ export class TestFixture extends FrontendFixture {
      */
     public async BookmarkManga(title: string, timeout = 5000) {
         return this.#GetMangaElement(title, timeout)
-            .then(div => div.$('button[role="bookmark"]'))
+            .then(div => div.waitForSelector('button[role="bookmark"]:not(.bookmarked)', { visible: true, timeout }))
             .then(button => button.click());
     }
 
@@ -117,7 +119,7 @@ export class TestFixture extends FrontendFixture {
     public async PasteMangaFromClipboard(url: string, timeout = 5000) {
         const page = await super.GetPage();
         await page.evaluate(link => navigator.clipboard.writeText(link), url);
-        return page.waitForSelector('#Media #MediaTitle button[role="paste"]', { timeout }).then(button => button.click());
+        await super.Click('#Media #MediaTitle button[role="paste"]', timeout);
     }
 
     /**
@@ -134,12 +136,14 @@ export class TestFixture extends FrontendFixture {
         await super.SetText(this.#selector.ChapterFilter, needle);
     }
 
-    async #ClickChapterElement(title: string, selector: string, timeout = 5000) {
+    async #ClickChapterButton(title: string, selector: string, timeout = 1000) {
         const selectorMediaItemLabels = '#ItemList div.listitem';
         const page = await super.GetPage();
-        await page.waitForSelector(selectorMediaItemLabels, { timeout });
+        await page.waitForSelector(selectorMediaItemLabels, { visible: true, timeout });
         for (const element of await page.$$(selectorMediaItemLabels)) {
-            if (await element.$('a.title').then(handle => handle.evaluate(anchor => anchor.innerText)) === title) {
+            const handle = await element.$('a.title');
+            // biome-ignore lint/performance/useDomNodeTextContent: Layout awareness is required to strip whitespaces
+            if (await handle.evaluate(anchor => anchor.innerText) === title) {
                 return element.$(selector).then(element => element.click());
             }
         }
@@ -149,15 +153,15 @@ export class TestFixture extends FrontendFixture {
     /**
      * Search for a chapter with the matching {@link title} in the current chapter list and click on its preview button.
      */
-    public async ClickChapterPreview(title: string, timeout = 5000) {
-        return this.#ClickChapterElement(title, 'button[role="preview"]', timeout);
+    public async ClickChapterPreview(title: string, timeout = 1000) {
+        return this.#ClickChapterButton(title, 'button[role="preview"]', timeout);
     }
 
     /**
      * Search for a chapter with the matching {@link title} in the current chapter list and click on its download button.
      */
-    public async ClickChapterDownload(title: string, timeout = 5000) {
-        return this.#ClickChapterElement(title, 'button[role="download"]', timeout);
+    public async ClickChapterDownload(title: string, timeout = 1000) {
+        return this.#ClickChapterButton(title, 'button[role="download"]', timeout);
     }
 
     /**
@@ -166,15 +170,19 @@ export class TestFixture extends FrontendFixture {
     public async GetPreviewImageLinks(count: number, timeout = 5000) {
         const selector = '#ImageViewer img.imgpreview';
         const page = await super.GetPage();
-        await page.waitForSelector(selector, { timeout });
+        await page.waitForSelector(selector, { visible: true, timeout });
         return new Promise<string[]>((resolve, reject) => {
-            setTimeout(() => reject(new TimeoutError(`Failed to find ${count} element(s) matching '${selector}'`)), timeout);
-            setInterval(async () => {
+            const timer = setInterval(async () => {
                 const elements = await page.$$(selector);
                 if (elements.length === count) {
                     resolve(Promise.all(elements.map(element => element.evaluate(img => img.src))));
+                    clearInterval(timer);
                 }
             }, 250);
+            setTimeout(() => {
+                clearInterval(timer);
+                reject(new TimeoutError(`Failed to find ${count} element(s) matching '${selector}'`));
+            }, timeout);
         });
     }
 }

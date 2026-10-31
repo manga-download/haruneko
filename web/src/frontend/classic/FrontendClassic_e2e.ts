@@ -5,12 +5,12 @@ describe('Front-End (Classic)', { concurrent: false, timeout: 60_000 }, () => {
 
     const fixture = new TestFixture();
 
-    beforeEach(async ctx => {
-        ctx.onTestFailed(() => fixture.Screenshot('Test Failed'));
+    beforeEach(async context => {
+        context.onTestFailed(ctx => fixture.Screenshot(`⛔️ ${ctx.task.name}`));
         await fixture.Reset('classic');
         await fixture.WaitForSelectors(10_000, 'div#app > main#hakunekoapp');
         await fixture.EnsureNoStartupGuide();
-        //await fixture.Screenshot(ctx.task.name);
+        //await fixture.Screenshot(context.task.name);
     }, 20_000);
 
     describe('SmokeTests', async () => {
@@ -35,7 +35,7 @@ describe('Front-End (Classic)', { concurrent: false, timeout: 60_000 }, () => {
         it('Should bookmark a manga that is not yet bookmarked', async () => {
             await fixture.SetWebsiteFilter('Dex');
             await fixture.SelectWebsite('mangadex');
-            await fixture.UpdateWebsiteMangaList(10_000);
+            await fixture.UpdateWebsiteMangaList();
             await fixture.SetMangaFilter('Apple');
             await fixture.BookmarkManga('Apple Collection');
             await fixture.SetWebsiteFilter('Bookmarks');

@@ -11,7 +11,7 @@ export class FrontendFixture extends PuppeteerFixture {
      * Clear all stored data (incl. settings, bookmarks, cache) and reload the app
      */
     public async Reset(frontend: string = 'classic'): Promise<void> {
-        await super.Screenshot('START - FrontendFixture.Reset()');
+        //await super.Screenshot('START - FrontendFixture.Reset()');
         const page = await super.GetPage();
         await page.evaluate(() => new Promise<void>((resolve, reject) => {
             try {
@@ -27,7 +27,7 @@ export class FrontendFixture extends PuppeteerFixture {
         );
         await page.reload();
         await super.Delay(500);
-        await super.Screenshot('END - FrontendFixture.Reset()');
+        //await super.Screenshot('END - FrontendFixture.Reset()');
     }
 
     async #RunWithDismissDialog(maxDialogTimeoutDelay: number, ...actions: (() => Promise<void>)[]) {
@@ -51,27 +51,27 @@ export class FrontendFixture extends PuppeteerFixture {
 
     public async WaitForSelectors(timeout: number, ... selectors: string[]) {
         const page = await super.GetPage();
-        return Promise.all(selectors.map(selector => page.waitForSelector(selector, { timeout })));
+        return Promise.all(selectors.map(selector => page.waitForSelector(selector, { visible: true, timeout })));
     }
 
     /**
      * Directly change a setting in the HakuNeko app via its settings manager.
      */
     public async UpdateSetting(scope: string, key: string, value: IValue): Promise<void> {
-        await super.Screenshot('START - FrontendFixture.UpdateSetting()');
+        //await super.Screenshot('START - FrontendFixture.UpdateSetting()');
         const page = await super.GetPage();
         await page.evaluate((scope, key, value) => {
             HakuNeko.SettingsManager.OpenScope(scope).Get(key).Value = value;
         }, scope, key, value);
-        await super.Screenshot('END - FrontendFixture.UpdateSetting()');
+        //await super.Screenshot('END - FrontendFixture.UpdateSetting()');
     }
 
     /**
      * Get the current text for the first input element that matches {@link selectorInputElement}.
      */
-    protected async GetText(selectorInputElement: string) {
+    protected async GetText(selectorInputElement: string, timeout = 1000) {
         const page = await super.GetPage();
-        await page.waitForSelector(selectorInputElement, { timeout: 1000 });
+        await page.waitForSelector(selectorInputElement, { visible: true, timeout });
         return page.$eval(selectorInputElement, (input: HTMLInputElement) => input.value);
     }
 
@@ -79,14 +79,20 @@ export class FrontendFixture extends PuppeteerFixture {
      * Use the keyboard to type the given {@link text} into the first input element that matches {@link selectorInputElement}.
      * The current text will be cleared before the {@link text} is typed.
      */
-    protected async SetText(selectorInputElement: string, text: string) {
+    protected async SetText(selectorInputElement: string, text: string, timeout = 1000) {
         const page = await super.GetPage();
-        await page.waitForSelector(selectorInputElement, { timeout: 1000 });
+        await page.waitForSelector(selectorInputElement, { visible: true, timeout });
         await page.focus(selectorInputElement);
         while(await this.GetText(selectorInputElement)) {
-            await page.keyboard.press('Delete');
-            await page.keyboard.press('Backspace');
+            await page.keyboard.press('Delete', { delay: 25 });
+            await page.keyboard.press('Backspace', { delay: 25 });
         }
-        await page.keyboard.type(text);
+        await page.keyboard.type(text, { delay: 25 });
+    }
+
+    protected async Click(selector: string, timeout = 1000) {
+        const page = await super.GetPage();
+        return page.waitForSelector(selector, { visible: true, timeout })
+            .then(element => element.click());
     }
 }
