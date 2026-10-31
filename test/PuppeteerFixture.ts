@@ -6,7 +6,7 @@ export class PuppeteerFixture {
     static #browser = puppeteer.connect({ browserWSEndpoint: process.env.browserWS, defaultViewport: null });
     static #page = this.#browser.then(browser => browser.pages()).then(async pages => {
         const page = pages.find(page => page.url() === AppURL);
-        await page!.setCacheEnabled(false);
+        await page?.setCacheEnabled(false);
         return page;
     });
 

@@ -31,11 +31,12 @@ async function CloseSplashScreen(target: puppeteer.Target) {
             if (url?.startsWith('http')) {
                 if (/splash.html/i.test(url)) {
                     await page?.removeAllListeners()?.close();
+                    console.warn(new Date().toISOString(), '➔', '<CloseSplashScreen>', 'Closed:', url);
                 }
                 return;
             }
         } catch (error) {
-            console.log(new Date().toISOString(), '➔', error);
+            console.warn(new Date().toISOString(), '➔', '<CloseSplashScreen>', error);
         }
     }
 }
@@ -128,12 +129,7 @@ export async function setup() {
     await fs.mkdir(tempDir, { recursive: true });
     await fs.mkdir(userDir, { recursive: true });
 
-    try {
-        server = await LaunchServer();
-    } catch(error) {
-        throw error;
-    }
-
+    server = await LaunchServer();
     try {
         browser = await LaunchElectron();
         process.env.browserWS = browser.wsEndpoint();
@@ -169,27 +165,22 @@ async function TryStopProcess(processInfo: ChildProcess | null, label: string): 
     const isRunning = () => processInfo.exitCode === null && processInfo.signalCode === null;
     const processPath = path.relative(process.cwd(), processInfo.spawnfile);
     try {
-        //if (process.platform === 'win32' && isRunning()) {
-        //}
-        switch (process.platform) {
-            case 'win32':
-                if(isRunning()) {
-                    await new Promise(resolve => exec(`taskkill /pid ${processInfo.pid} /T /F`, resolve));
-                    break;
-                }
-            default:
-                const signals: NodeJS.Signals[] = [ 'SIGINT', 'SIGTERM', 'SIGKILL' ];
-                for(let index = 0; isRunning() && index < signals.length; index++) {
-                    console.log(new Date().toISOString(), '➔', signals[index], processPath, processInfo.kill(signals[index]));
-                    await delay(1000);
-                }
-                break;
+        if (process.platform === 'win32' && isRunning()) {
+            await new Promise(resolve => exec(`taskkill /pid ${processInfo.pid} /T /F`, resolve));
+            await delay(1000);
         }
+
+        const signals: NodeJS.Signals[] = [ 'SIGINT', 'SIGTERM', 'SIGKILL' ];
+        for(let index = 0; isRunning() && index < signals.length; index++) {
+            console.log(new Date().toISOString(), '➔', signals[index], processPath, processInfo.kill(signals[index]));
+            await delay(1000);
+        }
+
         await delay(1000);
         if(isRunning()) {
             throw new Error();
         }
-    } catch(error) {
+    } catch {
         console.warn(new Date().toISOString(), '➔', `Failed to stop ${label} (pid: ${processInfo.pid}):`, processPath);
     }
 }
