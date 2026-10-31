@@ -34,7 +34,13 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ windows-latest, ubuntu-latest, macos-latest ]
+        include:
+          - os: ubuntu-latest
+            npm: 'dbus-run-session npm'
+          - os: macos-latest
+            npm: 'npm'
+          - os: windows-latest
+            npm: 'npm'
     name: System Tests - ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     steps:
@@ -62,16 +68,16 @@ jobs:
         env:
           DISPLAY: ':99'
           DBUS_SESSION_BUS_ADDRESS: '/dev/null'
-        run: npm run test:e2e
+        run: ${{ matrix.npm }} run test:e2e
       - name: Website Tests (Selection)
         if: steps.packages.outcome == 'success' && (success() || failure())
         env:
           DISPLAY: ':99'
           DBUS_SESSION_BUS_ADDRESS: '/dev/null'
-        run: npm run test:websites -- MangaDex
+        run: ${{ matrix.npm }} run test:websites -- MangaDex
       - name: Upload Test Results
         if: failure()
         uses: actions/upload-artifact@v4
         with:
           name: Test Results (${{ matrix.os }})
-          path: ./**/screenshot_*.png
+          path: ./**/screenshots/*.png

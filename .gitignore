@@ -9,4 +9,5 @@ dist
 node_modules
 package-lock.json
 junit.xml
+**/screenshots/*.png
 web/vite.config.ts.timestamp*
