@@ -622,7 +622,7 @@ export abstract class FetchProvider {
                     const element = document.querySelector(${JSON.stringify(selector)});
                     let token = element?.value || element?.querySelector('input[name="cf-turnstile-response"]')?.value;
                     try {
-                        token = token || window.turnstile?.getResponse();
+                        token = token || (element ? window.turnstile?.getResponse(element) : undefined);
                     } catch {
                         // widget not ready yet
                     }
@@ -669,6 +669,9 @@ export abstract class FetchProvider {
                 }
             });
 
-            win.Open(request, true, preload);
+            win.Open(request, true, preload).catch(async error => {
+                await destroy();
+                reject(error);
+            });
         });
     }}
