@@ -604,4 +604,71 @@ export abstract class FetchProvider {
             win.Open(request, this.featureFlags.VerboseFetchWindow.Value, preload);
         });
     }
-}
+
+    /**
+     * Open the given {@link request} in a new visible browser window and wait until a Cloudflare Turnstile token is available.
+     * The window is closed when the token was received, the script was rejected, or the timeout expired.
+     * @param request - The page hosting the Turnstile widget
+     * @param selector - The CSS selector of the Turnstile widget (or of its response input) within the page
+     * @param preload - The JavaScript or function that will be evaluated within the browser window before page is loaded
+     * @param delay - The time [ms] to wait after the window was fully loaded and before the token is polled
+     * @param timeout - The maximum time [ms] to wait for the token before a timeout error is thrown (excluding the {@link delay})
+     */
+    public async FetchWindowTurnstileToken(request: Request, selector: string, preload = '', delay = 0, timeout = 60_000): Promise<string> {
+
+        const script = `
+            new Promise((resolve) => {
+                const timer = setInterval(() => {
+                    const element = document.querySelector(${JSON.stringify(selector)});
+                    let token = element?.value || element?.querySelector('input[name="cf-turnstile-response"]')?.value;
+                    try {
+                        token = token || window.turnstile?.getResponse();
+                    } catch {
+                        // widget not ready yet
+                    }
+                    if(token) {
+                        clearInterval(timer);
+                        resolve(token);
+                    }
+                }, 250);
+            });
+        `;
+
+        const win = CreateRemoteBrowserWindow();
+        let cancellation: ReturnType<typeof SetTimeout>;
+
+        const destroy = async () => {
+            try {
+                ClearTimeout(await cancellation);
+                await win.Close();
+            } catch (error) {
+                console.warn(error);
+            }
+        };
+
+        return new Promise<string>((resolve, reject) => {
+            let started = false;
+            cancellation = SetTimeout(async () => {
+                await destroy();
+                reject(new Exception(R.FetchProvider_FetchWindow_TimeoutError));
+            }, timeout + delay);
+
+            win.DOMReady.Subscribe(async () => {
+                if (started) {
+                    return;
+                }
+                started = true;
+                try {
+                    await Delay(delay);
+                    const token = await win.ExecuteScript<string>(script);
+                    await destroy();
+                    resolve(token);
+                } catch (error) {
+                    await destroy();
+                    reject(error);
+                }
+            });
+
+            win.Open(request, true, preload);
+        });
+    }}
