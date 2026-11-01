@@ -13,7 +13,6 @@ export const legacyWebsiteIdentifierMap = new Map([
     [ 'bananascan', 'harmonyscan' ],
     [ 'comicbushi', 'comicgrowl' ],
     [ 'comicwalker', 'kadocomi' ],
-    [ 'firstkiss', 'likemanga' ],
     [ 'flamescans-org', 'flamecomics' ],
     [ 'instamanhwa', 'xmanhwa' ],
     [ 'kissaway', 'klmanga' ],
