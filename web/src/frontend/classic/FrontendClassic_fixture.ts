@@ -56,15 +56,17 @@ export class TestFixture extends FrontendFixture {
      * Click the button to update the manga list for the currently selected website.
      */
     public async UpdateWebsiteMangaList(timeout = 10_000) {
-        await super.Screenshot('START - FrontendClassicFixture.UpdateWebsiteMangaList()');
+        //await super.Screenshot('FrontendClassicFixture.UpdateWebsiteMangaList() - START');
         await super.Click('#Plugin button#MediaUpdateButton');
         const page = await super.GetPage();
-        // await page.waitForSelector('#MediaList > div.loading', { visible: false, timeout });
-        await Promise.race([
-            page.waitForSelector('#MediaList div.media a.title', { visible: true, timeout }),
-            page.waitForSelector('#MediaList > div.error', { visible: true, timeout }),
-        ]);
-        await super.Screenshot('END - FrontendClassicFixture.UpdateWebsiteMangaList()');
+        try {
+            // await page.waitForSelector('#MediaList > div.loading', { visible: false, timeout });
+            const handle = await page.waitForSelector('#MediaList div.media a.title, #MediaList > div.error', { visible: true, timeout });
+            const errorMessage = await handle.evaluate(element => element.classList.contains('error') ? element.textContent : null);
+            if (errorMessage) throw new Error(errorMessage);
+        } finally {
+            //await super.Screenshot('FrontendClassicFixture.UpdateWebsiteMangaList() - END');
+        }
     }
 
     /**
@@ -101,13 +103,16 @@ export class TestFixture extends FrontendFixture {
      * Search for a manga with the matching {@link title} in the current manga list and click on it.
      */
     public async SelectManga(title: string, timeout = 10_000) {
-        const page = await super.GetPage();
         await this.#GetMangaElement(title, timeout).then(div => div.click());
-        // await page.waitForSelector('#ItemList > div.loading', { visible: false, timeout });
-        await Promise.race([
-            page.waitForSelector('#ItemList div.listitem', { visible: true, timeout }),
-            page.waitForSelector('#ItemList > div.error', { visible: true, timeout }),
-        ]);
+        const page = await super.GetPage();
+        try {
+            // await page.waitForSelector('#ItemList > div.loading', { visible: false, timeout });
+            const handle = await page.waitForSelector('#ItemList div.listitem, #ItemList > div.error', { visible: true, timeout });
+            const errorMessage = await handle.evaluate(element => element.classList.contains('error') ? element.textContent : null);
+            if (errorMessage) throw new Error(errorMessage);
+        } finally {
+            //await super.Screenshot('FrontendClassicFixture.UpdateWebsiteMangaList() - END');
+        }
     }
 
     /**

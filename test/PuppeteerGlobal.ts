@@ -23,20 +23,21 @@ async function delay(milliseconds: number) {
 }
 
 async function CloseSplashScreen(target: puppeteer.Target) {
-    for (let attempts = 0; attempts < 10; attempts++) {
+    if (target.type() !== puppeteer.TargetType.PAGE || !target.url()?.startsWith('http') || !target.url()?.includes('/splash.html')) {
+        return;
+    }
+    //console.log(new Date().toISOString(), '➔', '<CloseSplashScreen>', 'Detected:', target.url());
+    for (let attempts = 1; attempts < 9; attempts++) {
         try {
-            await delay(250);
+            await delay(500);
+            if (!target.browser().connected) return;
             const page = await target.page();
-            const url = page?.url();
-            if (url?.startsWith('http')) {
-                if (/splash.html/i.test(url)) {
-                    await page?.removeAllListeners()?.close();
-                    console.warn(new Date().toISOString(), '➔', '<CloseSplashScreen>', 'Closed:', url);
-                }
-                return;
-            }
+            if (!page || page.isClosed()) return;
+            await page?.removeAllListeners()?.close();
+            //console.log(new Date().toISOString(), '➔', '<CloseSplashScreen>', 'Closed:', target.url());
+            return;
         } catch (error) {
-            console.warn(new Date().toISOString(), '➔', '<CloseSplashScreen>', error);
+            console.warn(new Date().toISOString(), '➔', '<CloseSplashScreen>', 'Failed', `(Attempt: ${attempts})`, error);
         }
     }
 }
@@ -141,13 +142,10 @@ export async function setup() {
 
 export async function teardown() {
     const pages = await browser?.pages() ?? [];
-    for(const page of pages) {
-        try {
-            page.removeAllListeners();
-            await page.close();
-            await delay(1000);
-        } catch {}
-    }
+    await Promise.all(pages.map(async page => {
+        await page.removeAllListeners()?.close();
+        await delay(1000);
+    }));
     try {
         await browser?.removeAllListeners()?.close();
         await delay(1000);

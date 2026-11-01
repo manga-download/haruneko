@@ -26,9 +26,9 @@ export class FrontendFixture extends PuppeteerFixture {
             await this.#RunWithDismissDialog(1000,
                 () => this.UpdateSetting('*', 'frontend', frontend),
             );
-            await super.Screenshot('FrontendFixture.Reset() - Before Reload');
+            //await super.Screenshot('FrontendFixture.Reset() - Before Reload');
             await page.reload({ ignoreCache: true, timeout });
-            await super.Screenshot('FrontendFixture.Reset() - After Reload');
+            //await super.Screenshot('FrontendFixture.Reset() - After Reload');
             await page.waitForSelector(selector, { visible: true, timeout });
         } catch(error) {
             console.warn(new Date().toISOString(), '➔', '<Reset>', error);
