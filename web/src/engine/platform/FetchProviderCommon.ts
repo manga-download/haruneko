@@ -669,9 +669,6 @@ export abstract class FetchProvider {
                 }
             });
 
-            win.Open(request, true, preload).catch(async error => {
-                await destroy();
-                reject(error);
-            });
+            win.Open(request, true, preload);
         });
     }}
