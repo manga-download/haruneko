@@ -2,6 +2,7 @@ import { Tags } from '../Tags';
 import icon from './MangaDex.webp';
 import { FetchJSON } from '../platform/FetchProvider';
 import { MangaScraper, type MangaPlugin, Manga, Chapter, Page } from '../providers/MangaPlugin';
+import { AddAntiScrapingDetection, FetchRedirection } from '../platform/AntiScrapingDetection';
 import { TaskPool, Priority } from '../taskpool/TaskPool';
 import { RateLimit } from '../taskpool/RateLimit';
 import * as Common from './decorators/Common';
@@ -93,6 +94,12 @@ const chapterLanguageMap = new Map([
     ['vi', [Tags.Language.Vietnamese]],
     ['zh', [Tags.Language.Chinese]],
 ]);
+
+// https://github.com/8Protons/POWBlock
+AddAntiScrapingDetection(async (invoke) => {
+    const result = await invoke<boolean>(`document.querySelector('div#results-inprogress')`);
+    return result ? FetchRedirection.Automatic : undefined;
+}, /https:\/\/mangadex\.org/);
 
 export default class extends MangaScraper {
 
