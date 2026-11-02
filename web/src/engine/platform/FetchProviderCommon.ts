@@ -15,6 +15,11 @@ type NextData<T> = {
     };
 };
 
+type TInvocation = {
+    name: string;
+    info: string;
+};
+
 export abstract class FetchProvider {
 
     private featureFlags: FeatureFlags;
@@ -537,11 +542,7 @@ export abstract class FetchProvider {
      */
     public async FetchWindowPreloadScript<T extends void | JSONElement>(request: Request, preload: string, script: string, delay = 0, timeout = 60_000): Promise<T> {
 
-        const invocations: {
-            name: string;
-            info: string;
-        }[] = [];
-
+        const invocations: TInvocation[] = [];
         const win = CreateRemoteBrowserWindow();
 
         win.BeforeWindowNavigate.Subscribe(async uri => {
@@ -606,40 +607,53 @@ export abstract class FetchProvider {
     }
 
     /**
-     * Open the given {@link request} in a new visible browser window and wait until a Cloudflare Turnstile token is available.
+     * Open the given {@link request} in a new visible browser window, replace the page content with a minimal Cloudflare Turnstile widget and wait for its token.
      * The window is closed when the token was received, the script was rejected, or the timeout expired.
-     * @param request - The page hosting the Turnstile widget
-     * @param selector - The CSS selector of the Turnstile widget (or of its response input) within the page
+     * @param request - The page whose origin is allowed for the {@link sitekey}
+     * @param sitekey - The Turnstile sitekey that will be used to render the widget
      * @param preload - The JavaScript or function that will be evaluated within the browser window before page is loaded
      * @param delay - The time [ms] to wait after the window was fully loaded and before the token is polled
      * @param timeout - The maximum time [ms] to wait for the token before a timeout error is thrown (excluding the {@link delay})
      */
-    public async FetchWindowTurnstileToken(request: Request, selector: string, preload = '', delay = 0, timeout = 60_000): Promise<string> {
+    public async FetchWindowTurnstileToken(request: Request, sitekey: string, preload = '', delay = 0, timeout = 60_000): Promise<string> {
 
         const script = `
-            new Promise((resolve) => {
-                const timer = setInterval(() => {
-                    const element = document.querySelector(${JSON.stringify(selector)});
-                    let token = element?.value || element?.querySelector('input[name="cf-turnstile-response"]')?.value;
-                    try {
-                        token = token || (element ? window.turnstile?.getResponse(element) : undefined);
-                    } catch {
-                        // widget not ready yet
-                    }
-                    if(token) {
-                        clearInterval(timer);
-                        resolve(token);
-                    }
-                }, 250);
-            });
-        `;
+                new Promise((resolve, reject) => {
+                    document.documentElement.innerHTML = '<head><meta charset="utf-8"></head><body style="margin:0;display:flex;align-items:center;justify-content:center;height:100vh;"><div id="turnstile-container"></div></body>';
+                    const api = document.createElement('script');
+                    api.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
+                    api.onerror = () => reject(new Error('Failed to load the Turnstile script!'));
+                    api.onload = () => {
+                        try {
+                            window.turnstile.render('#turnstile-container', {
+                                sitekey: ${JSON.stringify(sitekey)},
+                                callback: token => resolve(token),
+                                'error-callback': code => reject(new Error('Turnstile error: ' + code)),
+                            });
+                        } catch(error) {
+                            reject(error);
+                        }
+                    };
+                    document.head.appendChild(api);
+                });
+            `;
+
+        const invocations: TInvocation[] = [];
 
         const win = CreateRemoteBrowserWindow();
+
+        win.BeforeWindowNavigate.Subscribe(async uri => {
+            invocations.push({ name: 'BeforeNavigate', info: `URL: ${uri.href}` });
+            return null;
+        });
+
         let cancellation: ReturnType<typeof SetTimeout>;
 
         const destroy = async () => {
             try {
                 ClearTimeout(await cancellation);
+                if (this.featureFlags.VerboseFetchWindow.Value)
+                    console.log('FetchWindow()::invocations', invocations);
                 await win.Close();
             } catch (error) {
                 console.warn(error);
@@ -647,17 +661,15 @@ export abstract class FetchProvider {
         };
 
         return new Promise<string>((resolve, reject) => {
-            let started = false;
             cancellation = SetTimeout(async () => {
+                win.DOMReady.Unsubscribe(onDOMReady);
                 await destroy();
                 reject(new Exception(R.FetchProvider_FetchWindow_TimeoutError));
             }, timeout + delay);
 
-            win.DOMReady.Subscribe(async () => {
-                if (started) {
-                    return;
-                }
-                started = true;
+            const onDOMReady = async () => {
+                invocations.push({ name: 'DOMReady', info: `Window: ${win}` });
+                win.DOMReady.Unsubscribe(onDOMReady);
                 try {
                     await Delay(delay);
                     const token = await win.ExecuteScript<string>(script);
@@ -667,8 +679,11 @@ export abstract class FetchProvider {
                     await destroy();
                     reject(error);
                 }
-            });
+            };
 
+            win.DOMReady.Subscribe(onDOMReady);
+            invocations.push({ name: 'Open', info: `Request URL: ${request.url}` });
             win.Open(request, true, preload);
         });
-    }}
+    }
+}

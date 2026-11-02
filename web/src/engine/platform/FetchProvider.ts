@@ -38,4 +38,4 @@ export const FetchWindowScript: typeof instance.FetchWindowScript = (request, sc
 /** {@inheritDoc FetchProvider.FetchWindowPreloadScript} @see {@link FetchProvider.FetchWindowPreloadScript} */
 export const FetchWindowPreloadScript: typeof instance.FetchWindowPreloadScript = (request, preload, script, delay = 0, timeout = 60_000) => instance.FetchWindowPreloadScript(request, preload, script, delay, timeout);
 /** {@inheritDoc FetchProvider.FetchWindowTurnstileToken} @see {@link FetchProvider.FetchWindowTurnstileToken} */
-export const FetchWindowTurnstileToken: typeof instance.FetchWindowTurnstileToken = (request, selector, preload = '', delay = 0, timeout = 60_000) => instance.FetchWindowTurnstileToken(request, selector, preload, delay, timeout);
+export const FetchWindowTurnstileToken: typeof instance.FetchWindowTurnstileToken = (request, sitekey, preload = '', delay = 0, timeout = 60_000) => instance.FetchWindowTurnstileToken(request, sitekey, preload, delay, timeout);

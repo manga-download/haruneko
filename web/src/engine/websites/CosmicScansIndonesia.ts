@@ -182,8 +182,7 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
         const chapterUrl = new URL(`/chapter/${chapter.Identifier}`, this.URI);
-        // perhaps we should cleanup ads
-        const token = await FetchWindowTurnstileToken(new Request(chapterUrl), '#cosmic-turnstile-widget');
+        const token = await FetchWindowTurnstileToken(new Request(chapterUrl), '0x4AAAAAAFrnsF7VWVgNrK9k');
 
         const { data: { sessionId, axisKeys } } = await FetchJSON<APISession>(new Request(new URL(`./manga/img/session`, this.apiURL), {
             method: 'POST',
