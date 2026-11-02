@@ -15,7 +15,7 @@
     },
     "devDependencies": {
         "adm-zip": "0.6.1",
-        "electron": "45.0.0",
+        "electron": "45.2.1",
         "plist": "5.0.0"
     },
     "scripts": {
