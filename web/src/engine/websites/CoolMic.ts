@@ -7,6 +7,8 @@ import { FetchCSS, FetchJSON, FetchWindowScript } from '../platform/FetchProvide
 import type { Priority } from '../taskpool/DeferredTask';
 import { GetBytesFromBase64, GetBytesFromUTF8 } from '../BufferEncoder';
 import { GetTypedData } from './decorators/Common';
+import { Exception } from '../Error';
+import { WebsiteResourceKey as R } from '../../i18n/ILocale';
 
 type APIMangas = {
     hits: {
@@ -99,18 +101,20 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const [jsonNode] = await FetchCSS(new Request(new URL(manga.Identifier, this.URI)), '[\\:page-objects]');
-        const { episodes } = JSON.parse(jsonNode.getAttribute(':page-objects')) as JSONChapters;
+        const { episodes } = <JSONChapters>JSON.parse(jsonNode.getAttribute(':page-objects'));
         return episodes.map(({ id, number }) => new Chapter(this, manga, `${id}`, number.trim())).reverse();
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
         const { image_data } = await this.FetchAPI<APIPages>(`./viewer/comic/secure_episodes/${chapter.Identifier}`);
+        if (!image_data) {
+            throw new Exception(R.Plugin_Common_Chapter_UnavailableError);
+        }
         return image_data.map(({ path }) => new Page(this, chapter, new URL(path)));
     }
 
     public override async FetchImage(page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
         return this.imageTaskPool.Add(async () => {
-
             //fetch page JSON data
             const pageData = await FetchJSON<PageData>(new Request(page.Link, {
                 headers: {
