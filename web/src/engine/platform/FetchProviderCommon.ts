@@ -639,7 +639,6 @@ export abstract class FetchProvider {
             `;
 
         const invocations: TInvocation[] = [];
-
         const win = CreateRemoteBrowserWindow();
 
         win.BeforeWindowNavigate.Subscribe(async uri => {
