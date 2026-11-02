@@ -22,7 +22,7 @@ type APIChapters = {
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('newxtoon', 'NewXToon', 'https://newxtoon3.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Korean, Tags.Source.Aggregator, Tags.Accessibility.DomainRotation);
+        super('newxtoon', 'NewXToon', 'https://newxtoon4.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Korean, Tags.Source.Aggregator, Tags.Accessibility.DomainRotation);
     }
 
     public override get Icon() {
