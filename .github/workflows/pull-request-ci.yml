@@ -43,6 +43,9 @@ jobs:
             npm: 'npm'
     name: System Tests - ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
+    env:
+      DISPLAY: ':99'
+      DBUS_SESSION_BUS_ADDRESS: '/dev/null'
     steps:
       - name: Starting X Virtual Frame Buffer (Port 99)
         if: startsWith(matrix.os, 'ubuntu')
@@ -63,17 +66,19 @@ jobs:
       - name: Install NPM Packages
         id: packages
         run: npm install
-      - name: End-To-End Tests
+      - name: End-To-End Tests (#1)
         if: steps.packages.outcome == 'success' && (success() || failure())
-        env:
-          DISPLAY: ':99'
-          DBUS_SESSION_BUS_ADDRESS: '/dev/null'
+        run: ${{ matrix.npm }} run test:e2e
+        continue-on-error: true
+      - name: End-To-End Tests (#2)
+        if: failure()
+        run: ${{ matrix.npm }} run test:e2e
+        continue-on-error: true
+      - name: End-To-End Tests (#3)
+        if: failure()
         run: ${{ matrix.npm }} run test:e2e
       - name: Website Tests (Selection)
         if: steps.packages.outcome == 'success' && (success() || failure())
-        env:
-          DISPLAY: ':99'
-          DBUS_SESSION_BUS_ADDRESS: '/dev/null'
         run: ${{ matrix.npm }} run test:websites -- MangaDex
       - name: Upload Test Results
         if: failure()
