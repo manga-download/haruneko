@@ -20,7 +20,7 @@
         "@types/react": "19.3.0",
         "@types/react-dom": "19.3.0",
         "@types/wicg-file-system-access": "2023.10.7",
-        "@vitejs/plugin-react": "6.1.2",
+        "@vitejs/plugin-react": "6.2.1",
         "@vitejs/plugin-vue": "6.0.10",
         "@vscode/codicons": "0.0.46-24",
         "carbon-components-svelte": "0.113.1",
