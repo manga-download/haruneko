@@ -1,3 +1,4 @@
+import '../DesireScans_e2e';
 import '../DivaScans_e2e';
 import '../DrakeScans_e2e';
 import '../KaynScan_e2e';

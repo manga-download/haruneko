@@ -29,28 +29,23 @@ function DefaultMediaLinkResolver(this: MangaScraper, media: MediaContainer<Medi
     return new URL(media.Identifier, this.URI);
 };
 
-type LinkGenerator<T extends MediaContainer<MediaChild> = MediaContainer<MediaChild>> = ((this: MangaScraper, media?: T) => Generator<URL>) & {
+type LinkGeneratorFlags = {
     /**
-     * Indicates wether an iterator can be manually stopped via the `stop` function or not.
+     * Instruct the consumer of the corresponding generator to process all links in the sequence.
+     * The consumer should not abort consumption until the generator stopped.
      */
-    isStoppable: boolean;
-    /**
-     * Instructs a `stoppable` iterator function to end its iteration and no longer provide any more URLs.
-     */
-    stop: () => void;
-}
+    isExhaustive?: boolean;
+};
+type LinkGenerator<T extends MediaContainer<MediaChild> = MediaContainer<MediaChild>> = ((this: MangaScraper, media?: T) => Generator<URL>) & LinkGeneratorFlags
 
 /**
  * Creates a finite link generator that will compose URLs based on a provided sequence of {@link endpoints}.
  * @param endpoints - A list of relative paths for the website's base URL or absolute URLs
  */
 export function StaticLinkGenerator(...endpoints: string[]): LinkGenerator {
-    return Object.assign(function* (this: MangaScraper): Generator<URL> {
+    return Object.assign<LinkGenerator, LinkGeneratorFlags>(function* (this: MangaScraper): Generator<URL> {
         yield* endpoints.map(endpoint => new URL(endpoint, this.URI));
-    }, {
-        isStoppable: false,
-        stop: () => undefined,
-    });
+    }, { isExhaustive: true });
 }
 
 /**
@@ -60,15 +55,11 @@ export function StaticLinkGenerator(...endpoints: string[]): LinkGenerator {
  * @param increment - The amount by which the sequence shall be incremented for each iteration
  */
 export function PatternLinkGenerator<T extends MediaContainer<MediaChild>>(endpoint: string, start = 1, increment = 1): LinkGenerator<T> {
-    const cancellation = new AbortController();
-    return Object.assign(function* (this: MangaScraper, media: T): Generator<URL> {
-        for (let page = start; !cancellation.signal.aborted; page += increment) {
+    return function* (this: MangaScraper, media: T): Generator<URL> {
+        for (let page = start; true; page += increment) {
             yield new URL(endpoint.replace('{id}', media.Identifier).replace('{page}', `${page}`), this.URI);
         }
-    }, {
-        isStoppable: !cancellation.signal.aborted,
-        stop: () => cancellation.abort(),
-    });
+    };
 }
 
 /*********************************
@@ -311,10 +302,10 @@ export async function FetchMangasMultiPageCSS<E extends HTMLElement>(this: Manga
         await reducer;
         reducer = throttle > 0 ? Delay(throttle) : Promise.resolve();
         const mangas = await FetchMangasSinglePageCSS.call(this, provider, uri.href, query, extract);
-        if (mangaList.isLastItemDifferentFromNonEmpty(mangas)) {
+        if (generate.isExhaustive || mangaList.isLastItemDifferentFromNonEmpty(mangas)) {
             mangaList.push(...mangas); // TODO: Broadcast event that mangalist for provider has been updated?
-        } else if (generate.isStoppable) {
-            generate.stop();
+        } else {
+            break;
         }
     }
     return mangaList.distinct();
@@ -380,7 +371,7 @@ export async function FetchChaptersSinglePageCSS<E extends HTMLElement>(this: Ma
  * @param extract - A function to extract the chapter identifier and title from a single element (found with {@link query})
  * @param reverseOrder - Set to true if website chapter list use ascending order, as engine must produce descending order.
  */
-export function ChaptersSinglePageCSS<E extends HTMLElement>(query: string, resource: string | LinkResolver<Manga> = DefaultMediaLinkResolver, extract = DefaultElementInfoExtractor as InfoExtractor<E>, reverseOrder : boolean = false): ClassDecorator {
+export function ChaptersSinglePageCSS<E extends HTMLElement>(query: string, resource: string | LinkResolver<Manga> = DefaultMediaLinkResolver, extract = DefaultElementInfoExtractor as InfoExtractor<E>, reverseOrder: boolean = false): ClassDecorator {
     return function DecorateClass<T extends Constructor>(ctor: T, context?: ClassDecoratorContext): T {
         ThrowOnUnsupportedDecoratorContext(context);
         return class extends ctor {
@@ -410,10 +401,10 @@ export async function FetchChaptersMultiPageCSS<E extends HTMLElement>(this: Man
         await reducer;
         reducer = throttle > 0 ? Delay(throttle) : Promise.resolve();
         const chapters = await FetchChaptersSinglePageCSS.call(this, manga, query, () => uri, extract as InfoExtractor<HTMLElement>);
-        if (chapterList.isLastItemDifferentFromNonEmpty(chapters)) {
+        if (generate.isExhaustive || chapterList.isLastItemDifferentFromNonEmpty(chapters)) {
             chapterList.push(...chapters); // TODO: Broadcast event that chapterlist for manga has been updated?
-        } else if (generate.isStoppable) {
-            generate.stop();
+        } else {
+            break;
         }
     }
     if (reverseOrder) chapterList.reverse();

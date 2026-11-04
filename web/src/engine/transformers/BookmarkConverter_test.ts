@@ -13,7 +13,6 @@ const legacyWebsiteIdentifierMapTestCases = [
     { sourceID: 'bananascan', targetID: 'harmonyscan' },
     { sourceID: 'comicbushi', targetID: 'comicgrowl' },
     { sourceID: 'comicwalker', targetID: 'kadocomi' },
-    { sourceID: 'firstkiss', targetID: 'likemanga' },
     { sourceID: 'flamescans-org', targetID: 'flamecomics' },
     { sourceID: 'instamanhwa', targetID: 'xmanhwa' },
     { sourceID: 'kissaway', targetID: 'klmanga' },
