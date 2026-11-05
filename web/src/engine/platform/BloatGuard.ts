@@ -63,6 +63,7 @@ const patterns = [
     '*://ad-blocker.co/*',
     '*://ads-blocker.app/*',
     '*://adexchangerapid.com/*',
+    '*://bauval.org/*',
     '*://breathinggeoff.com/*',
     '*://captivatepestilentstormy.com/*',
     '*://creepingbrings.com/*',

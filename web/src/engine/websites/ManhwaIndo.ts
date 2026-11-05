@@ -1,13 +1,20 @@
 import { Tags } from '../Tags';
 import icon from './ManhwaIndo.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
-import * as MangaStream from './decorators/WordPressMangaStream';
 import * as Common from './decorators/Common';
 
-@MangaStream.MangaCSS(/^{origin}\/series\/[^/]+\/$/)
-@MangaStream.MangasSinglePageCSS(undefined, '/series/list-mode/')
-@MangaStream.ChaptersSinglePageCSS()
-@Common.PagesSinglePageJS('ts_reader.params.sources[0].images;', 500)
+@Common.MangaCSS<HTMLImageElement>(/^{origin}\/series\/[^/]+\/$/, 'main img[alt].rounded-lg', (img, uri) => ({
+    id: uri.pathname,
+    title: img.alt.trim()
+}))
+@Common.MangasMultiPageCSS('a.series', Common.PatternLinkGenerator('/explore/page/{page}/'), 0, Common.AnchorInfoExtractor(true))
+@Common.ChaptersSinglePageJS(`
+    new Promise( resolve => {
+	    const chapters = JSON.parse(JSON.stringify(Alpine.$data(document.querySelector('[x-data*="chapterListData"]')).chapters));
+	    resolve (chapters.map(({ url, chapter}) => ({ id: new URL(url).pathname, title: 'Chapter ' +chapter})) );
+    })
+`, 1500)
+@Common.PagesSinglePageCSS('div.reader-area p img')
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 

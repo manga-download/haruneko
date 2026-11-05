@@ -16,8 +16,8 @@ describe('Hashing', () => {
         expect(GetHexFromBytes(hash)).toBe('ddaf35a193617abacc417349ae204131' + '12e6fa4e89a97ea20a9eeee64b55d39a' + '2192992a274fc1a836ba3c23a3feebbd' + '454d4423643ce80e2a9ac94fa54ca49f');
     });
 
-    it('Should correctly compute MD5 hash of a Uint8Array', () => {
-        const hash = testee.MD5(new Uint8Array([104, 101, 108, 108, 111]));
+    it('Should properly hash a string using MD5', async () => {
+        const hash = await testee.HashUTF8('MD5', 'hello');
         expect(GetHexFromBytes(hash)).toBe('5d41402abc4b2a76b9719d911017c592');
     });
 });
