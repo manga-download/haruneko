@@ -4,7 +4,7 @@ import { Chapter, DecoratableMangaScraper, Manga, type MangaPlugin, Page } from 
 import { FetchJSON, Fetch, FetchNextProps } from '../platform/FetchProvider';
 import type { Priority } from '../taskpool/DeferredTask';
 import DeScramble from '../transformers/ImageDescrambler';
-import { DecryptXOR } from '../Crypto';
+import { XOR } from '../Crypto';
 import { GetBytesFromBase64, GetBytesFromUTF8, GetUTF8FromBytes } from '../BufferEncoder';
 
 type APIManga = {
@@ -71,7 +71,7 @@ export default class extends DecoratableMangaScraper {
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
         const { initialChapter: { _enc, pages, page_image_paths } } = await FetchNextProps<JSONPages>(new Request(new URL(chapter.Identifier, this.URI)));
         return (()=>{
-            if (_enc) return <string[]>JSON.parse(GetUTF8FromBytes(DecryptXOR(GetBytesFromBase64(_enc), this.#key)));
+            if (_enc) return <string[]>JSON.parse(GetUTF8FromBytes(XOR(GetBytesFromBase64(_enc), this.#key)));
             if (pages?.length) return pages;
             if (page_image_paths?.length) return page_image_paths;
         })().map(page => new Page(this, chapter, this.GetPageURL(page), { Referer: this.URI.href }));

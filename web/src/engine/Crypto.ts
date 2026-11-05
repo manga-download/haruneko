@@ -18,7 +18,7 @@ export async function HashUTF8(algorithm: 'MD5' | 'SHA-256' | 'SHA-512', text: s
  * Perform a byte-wise XOR operation for the given {@link bytes} with the provided {@link key}.
  * When the size of the {@link bytes} exceeds the size of the {@link key}, the {@link key} is repeated.
  */
-export function DecryptXOR(bytes: Uint8Array, key: Uint8Array): Uint8Array<ArrayBuffer> {
+export function XOR(bytes: Uint8Array, key: Uint8Array): Uint8Array<ArrayBuffer> {
     return bytes.map((byte, index) => byte ^ key[index % key.length]);
 }
 

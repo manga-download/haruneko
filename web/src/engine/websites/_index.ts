@@ -600,6 +600,7 @@ export { default as ReadKomik } from './ReadKomik';
 export { default as ReadManga } from './ReadManga';
 export { default as ReadToon } from './ReadToon';
 export { default as Remanga } from './Remanga';
+export { default as RenaScans } from './RenaScans';
 export { default as Reyume } from './Reyume';
 export { default as RfDragonScan } from './RfDragonScan';
 export { default as RidiBooks } from './RidiBooks';

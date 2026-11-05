@@ -1,15 +1,14 @@
 import { Tags } from '../Tags';
 import icon from './MangaDex.webp';
 import { FetchJSON } from '../platform/FetchProvider';
-import { MangaScraper, type MangaPlugin, Manga, Chapter, Page } from '../providers/MangaPlugin';
-import { AddAntiScrapingDetection, FetchRedirection } from '../platform/AntiScrapingDetection';
+import { type MangaPlugin, Manga, Chapter, Page, DecoratableMangaScraper } from '../providers/MangaPlugin';
 import { TaskPool, Priority } from '../taskpool/TaskPool';
 import { RateLimit } from '../taskpool/RateLimit';
-import * as Common from './decorators/Common';
+import * as Grouple from './decorators/Grouple';
 
 type APIContainer<T> = {
-    data: T
-}
+    data: T;
+};
 
 type APIManga = APIContainer<{
     id: string;
@@ -50,8 +49,8 @@ type APIMedia = {
 };
 
 type PageParameters = {
-    Mirror: string;
-}
+    mirrors: string[];
+};
 
 const chapterLanguageMap = new Map([
     ['ar', [Tags.Language.Arabic]],
@@ -95,15 +94,10 @@ const chapterLanguageMap = new Map([
     ['zh', [Tags.Language.Chinese]],
 ]);
 
-// https://github.com/8Protons/POWBlock
-AddAntiScrapingDetection(async (invoke) => {
-    const result = await invoke<boolean>(`document.querySelector('div#results-inprogress')`);
-    return result ? FetchRedirection.Automatic : undefined;
-}, /https:\/\/mangadex\.org/);
+@Grouple.ImageWithMirrors()
+export default class extends DecoratableMangaScraper {
 
-export default class extends MangaScraper {
-
-    private readonly api = 'https://api.mangadex.org';
+    private readonly apiURL = 'https://api.mangadex.org/';
     private readonly chaptersTaskPool = new TaskPool(1, new RateLimit(4, 1));
 
     public constructor() {
@@ -122,8 +116,7 @@ export default class extends MangaScraper {
         const uri = new URL(url);
         const regexGUID = /[a-fA-F0-9]{8}-([a-fA-F0-9]{4}-){3}[a-fA-F0-9]{12}/;
         const id = (uri.pathname.match(regexGUID) || uri.hash.match(regexGUID))[0].toLowerCase();
-        const request = new Request(`${this.api}/manga/${id}`, { headers: { Referer: this.URI.href }});
-        const { data: { attributes: { title: titles } } } = await FetchJSON<APIManga>(request);
+        const { data: { attributes: { title: titles } } } = await this.FetchAPI<APIManga>(`./manga/${ id }`);
         const title = titles.en || Object.values(titles).at(0);
         return new Manga(this, provider, id, title);
     }
@@ -154,50 +147,44 @@ export default class extends MangaScraper {
             }).join('-');
         }
 
-        const uri = new URL('/chapter', this.api);
-        uri.searchParams.set('limit', '100');
-        uri.searchParams.set('offset', `${100 * page}`);
-        uri.searchParams.set('manga', manga.Identifier);
-        uri.searchParams.append('includes[]', 'scanlation_group');
+        const uri = new URL(`./chapter?limit=100&offset=${100 * page}&manga=${manga.Identifier}&includes[]=scanlation_group`, this.apiURL);
         uri.searchParams.append('contentRating[]', 'safe');
         uri.searchParams.append('contentRating[]', 'suggestive');
         uri.searchParams.append('contentRating[]', 'erotica');
         uri.searchParams.append('contentRating[]', 'pornographic');
 
-        const request = new Request(uri.href, { headers: { Referer: this.URI.href }});
-        const { data } = await FetchJSON<APIChapters>(request);
+        const { data } = await this.FetchAPI<APIChapters>(uri.href);
 
         return !data ? [] : data
-            .filter(entry => entry.attributes.pages && !entry.attributes.isUnavailable)
-            .map(entry => {
-                const groups = entry.relationships.filter(relation => relation.type === 'scanlation_group' && relation.attributes?.name);
+            .filter(({ attributes: { pages, isUnavailable } }) => pages && !isUnavailable)
+            .map(({ id, attributes, relationships }) => {
+                const groups = relationships.filter(relation => relation.type === 'scanlation_group' && relation.attributes?.name);
                 const title = [
-                    entry.attributes.volume && `Vol.${pad(entry.attributes.volume, 2)}`,
-                    entry.attributes.chapter && `Ch.${pad(entry.attributes.chapter, 4)}`,
-                    entry.attributes.title && `- ${entry.attributes.title}`,
-                    entry.attributes.translatedLanguage && `(${entry.attributes.translatedLanguage})`,
-                    groups.length > 0 ? `[${groups.map(group => group.attributes.name).join(', ')}]`: null,
+                    attributes.volume && `Vol.${pad(attributes.volume, 2)}`,
+                    attributes.chapter && `Ch.${pad(attributes.chapter, 4)}`,
+                    attributes.title && `- ${attributes.title}`,
+                    attributes.translatedLanguage && `(${attributes.translatedLanguage})`,
+                    groups.length > 0 ? `[${groups.map(group => group.attributes.name).join(', ')}]` : null,
                 ].joinTitleSegments();
-                const languageCode = entry.attributes.translatedLanguage?.split('-')?.shift();
-                return new Chapter(this, manga, entry.id, title.trim(), ...chapterLanguageMap.get(languageCode) ?? []);
+                const languageCode = attributes.translatedLanguage?.split('-')?.shift();
+                return new Chapter(this, manga, id, title.trim(), ...chapterLanguageMap.get(languageCode) ?? []);
             });
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page<PageParameters>[]> {
-        const request = new Request(`${this.api}/at-home/server/${chapter.Identifier}`, { headers: { Referer: this.URI.href }});
-        const { baseUrl, chapter: { hash, data: files } } = await FetchJSON<APIMedia>(request);
+        const { baseUrl, chapter: { hash, data: files } } = await this.FetchAPI<APIMedia>(`./at-home/server/${chapter.Identifier}`);
         return files.map(file => {
-            const slug = [ '/data', hash, file ].join('/');
-            return new Page(this, chapter, new URL(`https://uploads.mangadex.org${slug}`), { Referer: this.URI.href, Mirror: baseUrl + slug });
+            const slug = ['/data', hash, file].join('/');
+            return new Page(this, chapter, new URL(`https://uploads.mangadex.org${slug}`), { Referer: this.URI.href, mirrors: [baseUrl + slug] });
         });
     }
 
-    public override async FetchImage(page: Page<PageParameters>, priority: Priority, signal: AbortSignal): Promise<Blob> {
-        try {
-            return await Common.FetchImageAjax.call(this, page, priority, signal, false);
-        } catch {
-            const source = new Page(this, page.Parent as Chapter, new URL(page.Parameters.Mirror), page.Parameters);
-            return Common.FetchImageAjax.call(this, source, priority, signal, false);
-        }
+    public async FetchAPI<T extends JSONElement>(endpoint: string): Promise<T> {
+        return FetchJSON<T>(new Request(new URL(endpoint, this.apiURL), {
+            headers: {
+                'User-Agent': 'Hakuneko 10.0',
+                Referer: this.URI.href
+            }
+        }));
     }
 }
