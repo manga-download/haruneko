@@ -3,7 +3,7 @@ import icon from './OriManga.webp';
 import { InitManga, queryMangas } from './templates/InitManga';
 import * as Common from './decorators/Common';
 
-@Common.MangasMultiPageCSS(queryMangas, Common.PatternLinkGenerator('/manga/page/{page}/'))
+@Common.MangasSinglePageCSS('/manga/', queryMangas)
 export default class extends InitManga {
 
     public constructor() {

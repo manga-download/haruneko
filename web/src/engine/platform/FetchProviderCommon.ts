@@ -9,11 +9,6 @@ import { ConcealedCookieHeaderName, type FetchConcealedRequest } from './FetchCo
 import { MergeCookiesIntoHeader, ParseCookiesFromHeader } from './CookieHelper';
 import { GetBytesFromBase64, GetUTF8FromBytes } from '../BufferEncoder';
 
-const INLINE_FLIGHT_PAYLOAD_BOOTSTRAP = 0;
-const INLINE_FLIGHT_PAYLOAD_DATA = 1;
-// const INLINE_FLIGHT_PAYLOAD_FORM_STATE = 2;
-const INLINE_FLIGHT_PAYLOAD_BINARY = 3;
-
 type NextData<T> = {
     props: {
         pageProps: T;
@@ -186,14 +181,6 @@ export abstract class FetchProvider {
         return prototype.decode(serialized).toJSON() as T;
     }
 
-    /*
-    public async FetchXPATH(request: Request, xpath: string): Promise<Node[]> {
-        const dom = await this.FetchHTML(request);
-        const result = document.evaluate(xpath, dom, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
-        return new Array(result.snapshotLength).fill(null).map((_, index) => result.snapshotItem(index) as Node);
-    }
-    */
-
     /**
      * Extract all NextJS hydrated flight data payloads from the HTML script tags of the provided {@link request}
      * and returns the first nested data element that fulfills the given {@link predicate} or `undefined` if non was found.
@@ -201,13 +188,12 @@ export abstract class FetchProvider {
      */
     public async FetchNextJS<T extends JSONElement>(request: Request, predicate: (data: JSONArray<JSONElement> | JSONObject<JSONElement>) => unknown): Promise<T | undefined> {
 
-        // 1: Gather raw flight data
         const scripts = await this.FetchCSS<HTMLScriptElement>(request, 'script:not([src])');
         const flightData = [];
 
         for (const script of scripts) {
             const content = script.textContent || '';
-            const args = this.NextJSParsePushCalls(content);
+            const args = this.#NextJSParsePushCalls(content);
 
             for (const arg of args) {
                 try {
@@ -215,7 +201,7 @@ export abstract class FetchProvider {
                     flightData.push(parsed);
                 } catch {
                     try {
-                        const parsed = new Function('return ' + arg)();
+                        const parsed = new Function(`return ${arg}`)();
                         if (Array.isArray(parsed)) {
                             flightData.push(parsed);
                         }
@@ -226,10 +212,8 @@ export abstract class FetchProvider {
             }
         }
 
-        // 2: Decode flight Data
-        const payload = this.NextJSDecodeData(flightData);
+        const payload = this.#NextJSDecodeData(flightData);
 
-        // 3: look for requested value
         return this.#ExtractValueNextJS<T>(payload, predicate);
     }
 
@@ -250,7 +234,13 @@ export abstract class FetchProvider {
         return undefined;
     }
 
-    private NextJSDecodeData(appRawData: any): JSONArray<JSONElement> | JSONObject<JSONElement> | null {
+    #NextJSDecodeData(appRawData: unknown[]): JSONArray<JSONElement> | JSONObject<JSONElement> | null {
+
+        const INLINE_FLIGHT_PAYLOAD_BOOTSTRAP = 0;
+        const INLINE_FLIGHT_PAYLOAD_DATA = 1;
+        // const INLINE_FLIGHT_PAYLOAD_FORM_STATE = 2;
+        const INLINE_FLIGHT_PAYLOAD_BINARY = 3;
+
         if (appRawData) {
             const flightRawData: string[] = [];
 
@@ -295,12 +285,12 @@ export abstract class FetchProvider {
             // Join without adding extra newlines - the data already contains proper line breaks
             const flightString = flightRawData.join('');
 
-            return this.NextJSParseFlightPushData(flightString);
+            return this.#NextJSParseFlightPushData(flightString);
         }
         return null;
     }
 
-    private NextJSParsePushCalls(content: string): string[] {
+    #NextJSParsePushCalls(content: string): string[] {
         const args: string[] = [];
         const prefix = 'self.__next_f.push(';
         let searchStart = 0;
@@ -313,19 +303,18 @@ export abstract class FetchProvider {
             let depth = 0;
             let inString = false;
             let stringChar: string | null = null;
-            let escape = false;
-            let i = openParen;
+            let cancellation = false;
+            let index = openParen;
+            for (; index < content.length; index++) {
+                const ch = content[index];
 
-            for (; i < content.length; i++) {
-                const ch = content[i];
-
-                if (escape) {
-                    escape = false;
+                if (cancellation) {
+                    cancellation = false;
                     continue;
                 }
 
                 if (ch === '\\') {
-                    escape = true;
+                    cancellation = true;
                     continue;
                 }
 
@@ -348,192 +337,171 @@ export abstract class FetchProvider {
                 }
             }
 
-            args.push(content.slice(openParen, i));
-            searchStart = i + 1;
+            args.push(content.slice(openParen, index));
+            searchStart = index + 1;
         }
         return args;
     }
 
-    private NextJSParseFlightPushData(flightChunk: string): any[] | undefined {
+    #NextJSParseFlightPushData(flightChunk: string): JSONArray | undefined {
         if (typeof flightChunk !== 'string') {
-            return;
+            return undefined;
         }
 
-        const parsed: any[] = [];
-        let pos = 0;
-        const len = flightChunk.length;
+        const parsed: JSONArray = [];
 
         const readUntilNewline = (start: number): { line: string; nextPos: number } => {
             const end = flightChunk.indexOf('\n', start);
             return {
-                line: flightChunk.slice(start, end === -1 ? len : end),
-                nextPos: end === -1 ? len : end + 1,
+                line: flightChunk.slice(start, end === -1 ? flightChunk.length : end),
+                nextPos: end === -1 ? flightChunk.length : end + 1,
             };
         };
 
-        while (pos < len) {
-            // Skip empty/whitespace-only lines
+        for (let pos = 0; pos < flightChunk.length;) {
+
             if (flightChunk[pos] === '\n') {
                 pos++;
                 continue;
             }
 
             const colonIndex = flightChunk.indexOf(':', pos);
-            if (colonIndex === -1) {
-                break;
-            }
+            if (colonIndex === -1) break;
 
             const key = flightChunk.slice(pos, colonIndex);
             if (!/^\w+$/.test(key)) {
-                // Malformed key; skip to the next newline and try again
                 const nextNewline = flightChunk.indexOf('\n', pos);
-                pos = nextNewline === -1 ? len : nextNewline + 1;
+                pos = nextNewline === -1 ? flightChunk.length : nextNewline + 1;
                 continue;
             }
 
             const afterColon = colonIndex + 1;
-            if (afterColon >= len) {
-                break;
-            }
+            if (afterColon >= flightChunk.length) break;
 
-            const typeChar = flightChunk[afterColon];
-
-            // Symbol reference (e.g., "$Sreact.fragment", "$SR19")
-            if (typeChar === '"') {
-                const { line, nextPos } = readUntilNewline(afterColon);
-                const value = line.slice(1, -1);
-                const type = line.startsWith('"$S') ? 'Symbol' : 'Data';
-                if (type === 'Symbol') {
-                    parsed.push({ type, key, value });
-                } else {
+            switch (flightChunk[afterColon]) {
+                case '"': {
+                    const { line, nextPos } = readUntilNewline(afterColon);
+                    const value = line.slice(1, -1);
+                    const type = line.startsWith('"$S') ? 'Symbol' : 'Data';
+                    if (type === 'Symbol') {
+                        parsed.push({ type, key, value });
+                    } else {
+                        try {
+                            parsed.push({ type: 'Data', key, content: JSON.parse(line) });
+                        } catch {
+                            parsed.push({ type: 'Unknown', key, value: line });
+                        }
+                    }
+                    pos = nextPos;
+                    break;
+                }
+                case 'T': {
+                    if (flightChunk[afterColon + 1] === '"') {
+                        const { line, nextPos } = readUntilNewline(afterColon);
+                        parsed.push({ type: 'Text', key, value: line.slice(2, -1) });
+                        pos = nextPos;
+                    } else {
+                        const commaIndex = flightChunk.indexOf(',', afterColon);
+                        if (commaIndex === -1) {
+                            const { line, nextPos } = readUntilNewline(afterColon);
+                            parsed.push({ type: 'Text', key, value: line.slice(1) });
+                            pos = nextPos;
+                            continue;
+                        }
+                        const hexLen = flightChunk.slice(afterColon + 1, commaIndex);
+                        const length = parseInt(hexLen, 16);
+                        const textStart = commaIndex + 1;
+                        const remainingChars = flightChunk.length - textStart;
+                        const maxChars = Math.min(remainingChars, length);
+                        const windowStr = flightChunk.slice(textStart, textStart + maxChars);
+                        const windowBytes = new TextEncoder().encode(windowStr);
+                        let text: string;
+                        if (windowBytes.length < length) {
+                            text = flightChunk.slice(textStart);
+                            pos = flightChunk.length;
+                        } else {
+                            const textBytes = windowBytes.slice(0, length);
+                            text = new TextDecoder().decode(textBytes);
+                            pos = textStart + text.length;
+                        }
+                        parsed.push({ type: 'Text', key, length, value: text });
+                        if (pos < flightChunk.length && flightChunk[pos] === '\n') {
+                            pos++;
+                        }
+                    }
+                    break;
+                }
+                case 'I': {
+                    const { line, nextPos } = readUntilNewline(afterColon);
                     try {
-                        parsed.push({ type: 'Data', key, content: JSON.parse(line) });
+                        const content = JSON.parse(line.slice(1));
+                        parsed.push({ type: 'Instance', key, content });
+                    } catch {
+                        parsed.push({ type: 'Instance', key, raw: line });
+                    }
+                    pos = nextPos;
+                    break;
+                }
+                case 'L': {
+                    const { line, nextPos } = readUntilNewline(afterColon);
+                    try {
+                        const list = JSON.parse(line.slice(1));
+                        parsed.push({ type: 'List', key, content: list });
+                    } catch {
+                        parsed.push({ type: 'List', key, raw: line });
+                    }
+                    pos = nextPos;
+                    break;
+                }
+                case 'O': {
+                    const { line, nextPos } = readUntilNewline(afterColon);
+                    try {
+                        const obj = JSON.parse(line.slice(1));
+                        parsed.push({ type: 'Object', key, content: obj });
+                    } catch {
+                        parsed.push({ type: 'Object', key, raw: line });
+                    }
+                    pos = nextPos;
+                    break;
+                }
+                case 'H': {
+                    const { line, nextPos } = readUntilNewline(afterColon);
+                    try {
+                        const hints = JSON.parse(line.slice(1));
+                        parsed.push({ type: 'Hints', key, content: hints });
+                    } catch {
+                        parsed.push({ type: 'Hints', key, raw: line });
+                    }
+                    pos = nextPos;
+                    break;
+                }
+                case 'B': {
+                    const { line, nextPos } = readUntilNewline(afterColon);
+                    parsed.push({ type: 'Binary', key, raw: line });
+                    pos = nextPos;
+                    break;
+                }
+                case 'M': {
+                    const { line, nextPos } = readUntilNewline(afterColon);
+                    try {
+                        const module = JSON.parse(line.slice(1));
+                        parsed.push({ type: 'Module', key, content: module });
+                    } catch {
+                        parsed.push({ type: 'Module', key, raw: line });
+                    }
+                    pos = nextPos;
+                    break;
+                }
+                default: {
+                    const { line, nextPos } = readUntilNewline(afterColon);
+                    try {
+                        const data = JSON.parse(line);
+                        parsed.push({ type: 'Data', key, content: data });
                     } catch {
                         parsed.push({ type: 'Unknown', key, value: line });
                     }
-                }
-                pos = nextPos;
-            }
-            // Text content
-            else if (typeChar === 'T') {
-                if (flightChunk[afterColon + 1] === '"') {
-                    // Legacy quoted format: T"text"
-                    const { line, nextPos } = readUntilNewline(afterColon);
-                    parsed.push({ type: 'Text', key, value: line.slice(2, -1) });
                     pos = nextPos;
-                } else {
-                    // Length-prefixed format: T<hex_len>,<text>
-                    const commaIndex = flightChunk.indexOf(',', afterColon);
-                    if (commaIndex === -1) {
-                        // Malformed; fall back to consuming the rest of the line
-                        const { line, nextPos } = readUntilNewline(afterColon);
-                        parsed.push({ type: 'Text', key, value: line.slice(1) });
-                        pos = nextPos;
-                        continue;
-                    }
-
-                    const hexLen = flightChunk.slice(afterColon + 1, commaIndex);
-                    const length = parseInt(hexLen, 16);
-                    const textStart = commaIndex + 1;
-
-                    // Extract exactly `length` UTF-8 bytes from the remaining string.
-                    // Each JS character needs at most 4 UTF-8 bytes, so a window of
-                    // `length` characters is guaranteed to cover `length` bytes.
-                    const remainingChars = len - textStart;
-                    const maxChars = Math.min(remainingChars, length);
-                    const windowStr = flightChunk.slice(textStart, textStart + maxChars);
-                    const windowBytes = new TextEncoder().encode(windowStr);
-
-                    let text: string;
-                    if (windowBytes.length < length) {
-                        // Not enough bytes left; take everything we have
-                        text = flightChunk.slice(textStart);
-                        pos = len;
-                    } else {
-                        const textBytes = windowBytes.slice(0, length);
-                        text = new TextDecoder().decode(textBytes);
-                        pos = textStart + text.length;
-                    }
-
-                    parsed.push({ type: 'Text', key, length, value: text });
-
-                    // Text rows may optionally be followed by a newline
-                    if (pos < len && flightChunk[pos] === '\n') {
-                        pos++;
-                    }
                 }
-            }
-            // Instance/Import reference
-            else if (typeChar === 'I') {
-                const { line, nextPos } = readUntilNewline(afterColon);
-                try {
-                    const content = JSON.parse(line.slice(1));
-                    parsed.push({ type: 'Instance', key, content });
-                } catch {
-                    parsed.push({ type: 'Instance', key, raw: line });
-                }
-                pos = nextPos;
-            }
-            // List/Array
-            else if (typeChar === 'L') {
-                const { line, nextPos } = readUntilNewline(afterColon);
-                try {
-                    const list = JSON.parse(line.slice(1));
-                    parsed.push({ type: 'List', key, content: list });
-                } catch {
-                    parsed.push({ type: 'List', key, raw: line });
-                }
-                pos = nextPos;
-            }
-            // Object
-            else if (typeChar === 'O') {
-                const { line, nextPos } = readUntilNewline(afterColon);
-                try {
-                    const obj = JSON.parse(line.slice(1));
-                    parsed.push({ type: 'Object', key, content: obj });
-                } catch {
-                    parsed.push({ type: 'Object', key, raw: line });
-                }
-                pos = nextPos;
-            }
-            // Hints (Next.js 16+ for preloading resources)
-            else if (typeChar === 'H') {
-                const { line, nextPos } = readUntilNewline(afterColon);
-                try {
-                    const hints = JSON.parse(line.slice(1));
-                    parsed.push({ type: 'Hints', key, content: hints });
-                } catch {
-                    parsed.push({ type: 'Hints', key, raw: line });
-                }
-                pos = nextPos;
-            }
-            // Binary/Blob reference (Next.js 16+)
-            else if (typeChar === 'B') {
-                const { line, nextPos } = readUntilNewline(afterColon);
-                parsed.push({ type: 'Binary', key, raw: line });
-                pos = nextPos;
-            }
-            // Module reference (for lazy loading)
-            else if (typeChar === 'M') {
-                const { line, nextPos } = readUntilNewline(afterColon);
-                try {
-                    const module = JSON.parse(line.slice(1));
-                    parsed.push({ type: 'Module', key, content: module });
-                } catch {
-                    parsed.push({ type: 'Module', key, raw: line });
-                }
-                pos = nextPos;
-            }
-            // Default: try to parse as JSON
-            else {
-                const { line, nextPos } = readUntilNewline(afterColon);
-                try {
-                    const data = JSON.parse(line);
-                    parsed.push({ type: 'Data', key, content: data });
-                } catch {
-                    parsed.push({ type: 'Unknown', key, value: line });
-                }
-                pos = nextPos;
             }
         }
         return parsed;

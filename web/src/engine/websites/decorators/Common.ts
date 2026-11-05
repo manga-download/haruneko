@@ -302,7 +302,7 @@ export async function FetchMangasMultiPageCSS<E extends HTMLElement>(this: Manga
         await reducer;
         reducer = throttle > 0 ? Delay(throttle) : Promise.resolve();
         const mangas = await FetchMangasSinglePageCSS.call(this, provider, uri.href, query, extract);
-        if (generate.isExhaustive || mangaList.isMissingLastItemFrom(mangas)) {
+        if (generate.isExhaustive || mangaList.isLastItemDifferentFromNonEmpty(mangas)) {
             mangaList.push(...mangas); // TODO: Broadcast event that mangalist for provider has been updated?
         } else {
             break;
@@ -371,7 +371,7 @@ export async function FetchChaptersSinglePageCSS<E extends HTMLElement>(this: Ma
  * @param extract - A function to extract the chapter identifier and title from a single element (found with {@link query})
  * @param reverseOrder - Set to true if website chapter list use ascending order, as engine must produce descending order.
  */
-export function ChaptersSinglePageCSS<E extends HTMLElement>(query: string, resource: string | LinkResolver<Manga> = DefaultMediaLinkResolver, extract = DefaultElementInfoExtractor as InfoExtractor<E>, reverseOrder : boolean = false): ClassDecorator {
+export function ChaptersSinglePageCSS<E extends HTMLElement>(query: string, resource: string | LinkResolver<Manga> = DefaultMediaLinkResolver, extract = DefaultElementInfoExtractor as InfoExtractor<E>, reverseOrder: boolean = false): ClassDecorator {
     return function DecorateClass<T extends Constructor>(ctor: T, context?: ClassDecoratorContext): T {
         ThrowOnUnsupportedDecoratorContext(context);
         return class extends ctor {
@@ -401,7 +401,7 @@ export async function FetchChaptersMultiPageCSS<E extends HTMLElement>(this: Man
         await reducer;
         reducer = throttle > 0 ? Delay(throttle) : Promise.resolve();
         const chapters = await FetchChaptersSinglePageCSS.call(this, manga, query, () => uri, extract as InfoExtractor<HTMLElement>);
-        if (generate.isExhaustive || chapterList.isMissingLastItemFrom(chapters)) {
+        if (generate.isExhaustive || chapterList.isLastItemDifferentFromNonEmpty(chapters)) {
             chapterList.push(...chapters); // TODO: Broadcast event that chapterlist for manga has been updated?
         } else {
             break;

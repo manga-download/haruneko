@@ -1,5 +1,7 @@
 import { TestFixture } from '../../../test/WebsitesFixture';
 
+// Region locked: Spain
+
 new TestFixture({
     plugin: {
         id: 'lectorxd',

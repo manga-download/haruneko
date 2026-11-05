@@ -1,12 +1,12 @@
 ﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture( {
     plugin: {
         id: 'fbsquads',
         title: 'Fleur Blanche Squads'
     },
     container: {
-        url: 'https://fbsquadx.com/manga/polar-attraction/',
+        url: 'https://fbsscan.com/manga/polar-attraction/',
         id: JSON.stringify({ slug: '/manga/polar-attraction/' }),
         title: 'Polar Attraction',
     },
@@ -19,6 +19,4 @@ const config = {
         size: 417_842,
         type: 'image/jpeg'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

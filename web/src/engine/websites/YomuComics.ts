@@ -1,11 +1,11 @@
 import { Tags } from '../Tags';
 import icon from './YomuComics.webp';
+import { RandomText } from '../Random';
+import { HashUTF8 } from '../Crypto';
+import { GetBytesFromBase64, GetBytesFromUTF8, GetUTF8FromBytes } from '../BufferEncoder';
+import { FetchJSON, FetchWindowPreloadScript } from '../platform/FetchProvider';
 import { Chapter, DecoratableMangaScraper, Manga, type MangaPlugin, Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { FetchJSON, FetchWindowPreloadScript } from '../platform/FetchProvider';
-import { RandomText } from '../Random';
-import { GetBytesFromBase64, GetBytesFromUTF8, GetUTF8FromBytes } from '../BufferEncoder';
-import { MD5 } from '../Crypto';
 
 type APIMangas = {
     garimpo?: string;
@@ -75,7 +75,6 @@ export default class extends DecoratableMangaScraper {
         return content.map(image => new Page(this, chapter, new URL(image, this.URI)));
     }
 
-    //Mimic CryptoJS OpenSSLDecrypt implementation. Its using MD5 (legacy) hashing.
     private async OpenSSLDecrypt(cipherText: string, password: string): Promise<string> {
         const ctBytes = GetBytesFromBase64(cipherText);
 
@@ -84,7 +83,7 @@ export default class extends DecoratableMangaScraper {
         const cipherTextBytes = ctBytes.slice(16);
 
         const passwordBytes = GetBytesFromUTF8(password);
-        const { key, iv } = this.GenerateKeyAndIV(32, 16, saltBytes, passwordBytes);
+        const { key, iv } = await this.GenerateKeyAndIV(32, 16, saltBytes, passwordBytes);
 
         // Import key for subtle.crypto AES-CBC
         const cryptoKey = await crypto.subtle.importKey('raw', key, { name: 'AES-CBC' }, false, ['decrypt']);
@@ -96,7 +95,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     // CryptoJS OpenSSL EVP_BytesToKey derivation (using MD5)
-    private GenerateKeyAndIV(keyLen: number, ivLen: number, salt: Uint8Array, passwordBytes: Uint8Array): { key: Uint8Array<ArrayBuffer>, iv: Uint8Array<ArrayBuffer> } {
+    private async GenerateKeyAndIV(keyLen: number, ivLen: number, salt: Uint8Array, passwordBytes: Uint8Array): Promise<{ key: Uint8Array<ArrayBuffer>, iv: Uint8Array<ArrayBuffer> }> {
         let d = new Uint8Array(0);
         let aki: Uint8Array[] = [];
         let iCurrentLength = 0;
@@ -107,7 +106,7 @@ export default class extends DecoratableMangaScraper {
             conc.set(passwordBytes, d.length);
             conc.set(salt, d.length + passwordBytes.length);
 
-            d = MD5(conc);
+            d = await HashUTF8('MD5', GetUTF8FromBytes(conc));
             aki.push(d);
             iCurrentLength += d.length;
         }
