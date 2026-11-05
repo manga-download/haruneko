@@ -5,15 +5,20 @@ type AesParams = AesCtrParams | AesCbcParams | AesGcmParams;
 /**
  * Decode the bytes from the given {@link text} (UTF8-based) and calculate its checksum for the provided {@link algorithm}.
  */
-export async function HashUTF8(algorithm: 'SHA-256' | 'SHA-512', text: string): Promise<Uint8Array<ArrayBuffer>> {
-    return new Uint8Array(await crypto.subtle.digest(algorithm, GetBytesFromUTF8(text)));
+export async function HashUTF8(algorithm: 'MD5' | 'SHA-256' | 'SHA-512', text: string): Promise<Uint8Array<ArrayBuffer>> {
+    const bytes = GetBytesFromUTF8(text);
+    if (algorithm === 'MD5') {
+        return MD5(bytes);
+    } else {
+        return new Uint8Array(await crypto.subtle.digest(algorithm, bytes));
+    }
 }
 
 /**
  * Perform a byte-wise XOR operation for the given {@link bytes} with the provided {@link key}.
  * When the size of the {@link bytes} exceeds the size of the {@link key}, the {@link key} is repeated.
  */
-export function DecryptXOR(bytes: Uint8Array, key: Uint8Array): Uint8Array<ArrayBuffer> {
+export function XOR(bytes: Uint8Array, key: Uint8Array): Uint8Array<ArrayBuffer> {
     return bytes.map((byte, index) => byte ^ key[index % key.length]);
 }
 
@@ -199,11 +204,11 @@ export function chacha20Poly1305Decrypt(key: Uint8Array<ArrayBuffer>, nonce: Uin
 
 /**
  * Generates an MD5 hash of the provided data.
- *
+ * TODO: Use library instead of re-implementing MD5 algorithm
  * @param data - The input byte array to hash.
  * @returns A `Uint8Array` containing the 16-byte MD5 hash.
  */
-export function MD5(data: Uint8Array): Uint8Array<ArrayBuffer> {
+function MD5(data: Uint8Array): Uint8Array<ArrayBuffer> {
     // Standard MD5 block constants and transformation logic
     function safeAdd(x: number, y: number): number {
         const lsw = (x & 0xffff) + (y & 0xffff);
