@@ -9,7 +9,7 @@ export const queryChapters = 'div.chapter-item a';
 export function ChapterExtractor(anchor: HTMLAnchorElement) {
     return {
         id: anchor.pathname,
-        title: anchor.querySelector<HTMLHeadingElement>('h3.uk-link-heading').innerText.trim().replace(/^.*\s*–\s*Bölüm/, 'Bölüm').trim()
+        title: anchor.querySelector<HTMLHeadingElement>('h3.uk-link-heading').innerText.split(/–|\[…\]/).at(-1).trim()
     };
 }
 
