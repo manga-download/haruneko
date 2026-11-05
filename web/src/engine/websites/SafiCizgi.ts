@@ -8,7 +8,7 @@ import { GetTypedData } from './decorators/Common';
 import DeScramble from '../transformers/ImageDescrambler';
 import { RateLimit } from '../taskpool/RateLimit';
 import { RandomInt } from '../Random';
-import { DecryptXOR, HashUTF8 } from '../Crypto';
+import { XOR, HashUTF8 } from '../Crypto';
 import { AddAntiScrapingDetection, FetchRedirection } from '../platform/AntiScrapingDetection';
 
 // TODO : fix hydraded chapter coming empty for some series
@@ -294,6 +294,6 @@ export default class extends DecoratableMangaScraper {
             return result;
         };
         const keyBytes: Uint8Array = key instanceof Uint8Array ? key : computeKey(key as string);
-        return DecryptXOR(data, keyBytes);
+        return XOR(data, keyBytes);
     }
 }
