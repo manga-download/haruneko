@@ -6,12 +6,12 @@ new TestFixture({
         title: 'Toondex'
     },
     container: {
-        url: 'https://toondex.co/comics/the-bosss-daughter/',
-        id: '/comics/the-bosss-daughter/',
+        url: 'https://toondex.xyz/comics/the-bosss-daughter-sldwya/',
+        id: '/comics/the-bosss-daughter-sldwya/',
         title: 'The Boss’s Daughter'
     },
     child: {
-        id: '/comics/the-bosss-daughter/chapter-1/',
+        id: '/comics/the-bosss-daughter-sldwya/chapter-1/',
         title: 'Chapter 1'
     },
     entry: {

@@ -1,7 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { GetHexFromBytes, GetBytesFromHex } from './BufferEncoder';
 import * as testee from './Crypto';
-import { MD5 } from './Crypto';
 
 // TODO: ⚠️ Use constant expected values instead of using business logic to calculate expected values
 
@@ -17,8 +16,8 @@ describe('Hashing', () => {
         expect(GetHexFromBytes(hash)).toBe('ddaf35a193617abacc417349ae204131' + '12e6fa4e89a97ea20a9eeee64b55d39a' + '2192992a274fc1a836ba3c23a3feebbd' + '454d4423643ce80e2a9ac94fa54ca49f');
     });
 
-    it('Should correctly compute MD5 hash of a Uint8Array', () => {
-        const hash = MD5(new Uint8Array([104, 101, 108, 108, 111]));
+    it('Should properly hash a string using MD5', async () => {
+        const hash = await testee.HashUTF8('MD5', 'hello');
         expect(GetHexFromBytes(hash)).toBe('5d41402abc4b2a76b9719d911017c592');
     });
 });
@@ -26,12 +25,12 @@ describe('Hashing', () => {
 describe('Xor', () => {
 
     it('should XOR source with key', () => {
-        const result = testee.DecryptXOR(new Uint8Array([0xff, 0x00, 0xaa, 0x55]), new Uint8Array([0x0f, 0xf0]));
+        const result = testee.XOR(new Uint8Array([0xff, 0x00, 0xaa, 0x55]), new Uint8Array([0x0f, 0xf0]));
         expect(Array.from(result)).toEqual([0xf0, 0xf0, 0xa5, 0xa5]);
     });
 
     it('should XOR source with repeated key', () => {
-        const result = testee.DecryptXOR(new Uint8Array([1, 2, 3, 4, 5]), new Uint8Array([1]));
+        const result = testee.XOR(new Uint8Array([1, 2, 3, 4, 5]), new Uint8Array([1]));
         expect(Array.from(result)).toEqual([0, 3, 2, 5, 4]);
     });
 });

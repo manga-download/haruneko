@@ -5,7 +5,8 @@ import { MangaHubBase } from './templates/MangaHubBase';
 export default class extends MangaHubBase {
 
     public constructor() {
-        super('mangareadersite', 'MangaReaderSite', 'https://mangareader.site', 'mr01', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Media.Manga, Tags.Language.English, Tags.Source.Aggregator);
+        super('mangareadersite', 'MangaReaderSite', 'https://mangareader.site', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Media.Manga, Tags.Language.English, Tags.Source.Aggregator);
+        this.WithScope('mr01');
     }
 
     public override get Icon() {

@@ -5,7 +5,7 @@ import * as Common from './decorators/Common';
 import { FetchJSON, FetchNextJS, FetchWindowScript } from '../platform/FetchProvider';
 import type { Priority } from '../taskpool/DeferredTask';
 import { GetBytesFromBase64, GetBytesFromURLBase64, GetUTF8FromBytes } from '../BufferEncoder';
-import { DecryptXOR } from '../Crypto';
+import { XOR } from '../Crypto';
 
 type HydratedMangas = {
     series: {
@@ -97,7 +97,7 @@ export default class extends DecoratableMangaScraper {
             const xoredData = decoded.subarray(13);
 
             const xorKey = await this.ComputeKey(keyData, seed, xoredData.length);
-            page.Link.href = GetUTF8FromBytes(DecryptXOR(xoredData, xorKey));
+            page.Link.href = GetUTF8FromBytes(XOR(xoredData, xorKey));
         }
         return Common.FetchImageAjax.call(this, page, priority, signal, true);
     }

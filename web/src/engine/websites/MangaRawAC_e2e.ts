@@ -7,7 +7,7 @@ new TestFixture({
         title: 'MangaRawAC'
     },
     container: {
-        url: 'https://mangaraw.ac' + mangaID,
+        url: 'https://mangaraw.lc' + mangaID,
         id: mangaID,
         title: '呪術廻戦'
     },

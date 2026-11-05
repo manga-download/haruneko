@@ -5,7 +5,7 @@ import { MangaNel } from './templates/MangaNel';
 export default class extends MangaNel {
 
     public constructor() {
-        super('mangakakalot', 'MangaKakalot', 'https://www.mangakakalot.gg', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.English, Tags.Source.Aggregator);
+        super('mangakakalot', 'MangaKakalot', 'https://www.kakamanga.com', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.English, Tags.Source.Aggregator);
     }
 
     public override get Icon() {
