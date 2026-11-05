@@ -83,7 +83,7 @@ export default class extends DecoratableMangaScraper {
             }
         `, { page: page });
             const mangas = edges.map(({ _id, englishName, name }) => new Manga(this, provider, _id, englishName ?? name));
-            mangaList.isMissingLastItemFrom(mangas) ? mangaList.push(...mangas) : run = false;
+            mangaList.isLastItemDifferentFromNonEmpty(mangas) ? mangaList.push(...mangas) : run = false;
         }
         return mangaList;
     }

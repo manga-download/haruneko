@@ -6,5 +6,4 @@ import '../MangaOrigin_e2e';
 import '../Mikoroku_e2e';
 import '../Reyume_e2e';
 import '../SafireScan_e2e';
-import '../SapphireScan_e2e';
 import '../UlasComic_e2e';

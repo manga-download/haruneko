@@ -5,7 +5,7 @@ import * as Common from './decorators/Common';
 import { FetchJSON } from '../platform/FetchProvider';
 import type { Priority } from '../taskpool/DeferredTask';
 import { GetBytesFromBase64 } from '../BufferEncoder';
-import { DecryptXOR } from '../Crypto';
+import { XOR } from '../Crypto';
 
 type APIPages = {
     data: {
@@ -50,7 +50,7 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchImage(page: Page<PageParameters>, priority: Priority, signal: AbortSignal): Promise<Blob> {
         const blob = await Common.FetchImageAjax.call(this, page, priority, signal);
-        const decrypted = DecryptXOR(new Uint8Array(await blob.arrayBuffer()), GetBytesFromBase64(page.Parameters.key));
+        const decrypted = XOR(new Uint8Array(await blob.arrayBuffer()), GetBytesFromBase64(page.Parameters.key));
         return Common.GetTypedData(decrypted.buffer);
     }
 }

@@ -6,14 +6,13 @@ new TestFixture({
         title: 'Asmodeus Scans'
     },
     container: {
-        url: 'https://asmotoon.com/series/62de13d4003/',
-        id: '/series/62de13d4003/',
+        url: 'https://asmotoon.com/killing-field',
+        id: '/killing-field',
         title: 'Killing Field'
     },
     child: {
-        id: '/chapter/62de13d4003-62df20bd8bf/',
+        id: '/killing-field-chapter-1',
         title: 'Chapter 1',
-        timeout: 15_000
     },
     entry: {
         index: 0,
