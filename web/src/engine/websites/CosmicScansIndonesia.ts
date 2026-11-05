@@ -4,7 +4,7 @@ import { FetchJSON, FetchWindowScript, FetchWindowTurnstileToken } from '../plat
 import { Chapter, DecoratableMangaScraper, Manga, type MangaPlugin, Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import { GetBytesFromHex, GetBytesFromUTF8, GetURLBase64FromBytes } from '../BufferEncoder';
-import { DecryptXOR } from '../Crypto';
+import { XOR } from '../Crypto';
 
 type APIResult<T> = {
     data: T;
@@ -84,7 +84,7 @@ class SealedStore {
             const key = GetBytesFromHex(hexKey);
             const mask = this.GenerateMask(slot);
 
-            this.sealedKeys.set(slot, DecryptXOR(key, mask));
+            this.sealedKeys.set(slot, XOR(key, mask));
         });
     }
 
@@ -96,7 +96,7 @@ class SealedStore {
             throw new Error(`sealedStore: slot ${slot} not sealed`);
         }
 
-        return DecryptXOR(sealedKey, this.GenerateMask(slot));
+        return XOR(sealedKey, this.GenerateMask(slot));
     }
 
     // Check initialization state
@@ -113,7 +113,7 @@ class SealedStore {
         const signingKey = this.Open(0);
         const encryptionKey = this.Open(1);
 
-        const message = DecryptXOR(GetBytesFromUTF8(`${chapterSlug}:${pageIndex}:${Date.now()}`), encryptionKey);
+        const message = XOR(GetBytesFromUTF8(`${chapterSlug}:${pageIndex}:${Date.now()}`), encryptionKey);
         const cryptoKey = await crypto.subtle.importKey(
             "raw",
             signingKey,
