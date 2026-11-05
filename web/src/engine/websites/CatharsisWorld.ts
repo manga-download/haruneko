@@ -6,7 +6,7 @@ import { Fetch, FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
 import { Exception } from '../Error';
 import { WebsiteResourceKey as R } from '../../i18n/ILocale';
 import type { Priority } from '../taskpool/DeferredTask';
-import { DecryptXOR } from '../Crypto';
+import { XOR } from '../Crypto';
 import DeScramble from '../transformers/ImageDescrambler';
 
 type APIMangas = {
@@ -329,7 +329,7 @@ export default class extends DecoratableMangaScraper {
             }))).arrayBuffer();
         }, priority, signal);
 
-        const blob = await Common.GetTypedData(DecryptXOR(new Uint8Array(buffer), new Uint8Array([xorByte])).buffer);
+        const blob = await Common.GetTypedData(XOR(new Uint8Array(buffer), new Uint8Array([xorByte])).buffer);
 
         return DeScramble(blob, async (image, ctx) => {
             if (image.width >= 200 && image.height >= 200) {
