@@ -1,18 +1,27 @@
-import { describe, beforeEach, it/*, expect*/ } from 'vitest';
+import { describe, beforeEach, it, expect } from 'vitest';
 import { TestFixture } from './FrontendFluentCore_fixture';
 
 describe('Front-End (Fluent-Core)', { concurrent: false, timeout: 60_000 }, () => {
 
     const fixture = new TestFixture();
 
-    beforeEach(() => fixture.Reset('fluent-core'));
+    beforeEach(async context => {
+        context.onTestFailed(ctx => fixture.Screenshot(`⛔️ ${ctx.task.name}`));
+        await fixture.Reset('fluent-core', 'div#app > fluent-app', 10_000);
+        //await fixture.Screenshot(context.task.name);
+    }, 20_000);
 
     describe('SmokeTests', async () => {
 
-        it('Should render basic layout', async () => {
-            await fixture.WaitForSelectors(5000,
+        it('Should show basic layout', async () => {
+            const elements = await fixture.WaitForSelectors(5000,
                 'div#app > fluent-app',
+                'fluent-app >>> #widgets > #sidepanel',
+                'fluent-app >>> #widgets > #mainpanel',
             );
+            for (const element of elements) {
+                expect(await element.isVisible()).toBe(true);
+            }
         });
     });
 });

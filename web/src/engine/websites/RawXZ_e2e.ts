@@ -7,7 +7,7 @@ new TestFixture({
         title: 'MiuRaw'
     },
     container: {
-        url: 'https://miuraw.com/manga/俺だけレベルアップな件-raw-free/',
+        url: 'https://miuraw.net/manga/俺だけレベルアップな件-raw-free/',
         id: mangaID,
         title: '俺だけレベルアップな件',
     },

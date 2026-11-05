@@ -2,21 +2,21 @@ import { TestFixture } from '../../../test/WebsitesFixture';
 
 new TestFixture({
     plugin: {
-        id: 'likemanga',
-        title: 'LikeManga'
+        id: 'mgread',
+        title: 'Mgread'
     },
     container: {
-        url: 'https://likemanga.ink/my-eternal-reign-4250/',
-        id: '/my-eternal-reign-4250/',
+        url: 'https://mgread.io/manga/my-eternal-reign/',
+        id: '/manga/my-eternal-reign/',
         title: 'My Eternal Reign'
     },
     child: {
-        id: '/my-eternal-reign-4250/chapter-9-314555/',
+        id: '/manga/my-eternal-reign/chapter-9/',
         title: 'Chapter 9'
     },
     entry: {
-        index: 0,
-        size: 1_260_603,
+        index: 1,
+        size: 415_807,
         type: 'image/jpeg'
     }
 }).AssertWebsite();
