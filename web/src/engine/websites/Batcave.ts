@@ -5,12 +5,14 @@ import * as Common from './decorators/Common';
 import { FetchWindowScript } from '../platform/FetchProvider';
 import { AddAntiScrapingDetection, FetchRedirection } from '../platform/AntiScrapingDetection';
 
+// TODO: Bypass login by forcing mobile UA everywhere.
+
 AddAntiScrapingDetection(async (invoke) => {
     const result = await invoke<boolean>(`document.documentElement.innerHTML.indexOf('runModern()') > -1`);
     return result ? FetchRedirection.Automatic : undefined;
 }, /https:\/\/batcave\.biz/);
 
-@Common.MangaCSS(/^{origin}\/\d+-[^/]+\.html$/, 'div.page__title-row h1')
+@Common.MangaCSS(/^{origin}\/\d+-(.+)\.html$/, 'div.page__title-row h1')
 @Common.MangasMultiPageCSS('h2.readed__title a', Common.PatternLinkGenerator('/comix/page/{page}/'))
 @Common.ChaptersSinglePageJS(`__DATA__.chapters.map(({ id, title}) =>  ({ id:'/reader/'+ __DATA__.news_id+ '/'+ id, title: title.replace(__DATA__.title, '').trim()}));`, 500)
 @Common.PagesSinglePageJS('__DATA__.images', 500)

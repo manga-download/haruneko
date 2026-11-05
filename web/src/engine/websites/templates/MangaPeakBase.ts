@@ -18,7 +18,10 @@ type APIChapters = {
     }[]
 };
 
-@Common.MangaCSS<HTMLButtonElement>(/^{origin}\/manga\/[^/]+(\/)?$/, 'button[data-manga-title]', (button, uri) => ({ id: uri.pathname, title: button.dataset.mangaTitle.trim() }))
+@Common.MangaCSS<HTMLButtonElement>(/^{origin}\/manga\/[^/]+(\/)?$/, 'button[data-manga-title]', (button, uri) => ({
+    id: uri.pathname,
+    title: button.dataset.mangaTitle.trim()
+}))
 @Common.PagesSinglePageJS(`[...document.querySelectorAll('img.comic-image')].map(el => el.dataset.src ?? el.src)`, 1500)
 @Common.ImageAjax()
 export class MangaPeakBase extends DecoratableMangaScraper {
@@ -42,18 +45,32 @@ export class MangaPeakBase extends DecoratableMangaScraper {
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const { mangaId, timestamp, token } = await FetchWindowScript<ChaptersData>(new Request(new URL(manga.Identifier, this.URI)), `
             new Promise ( resolve => {
-                const { token, timestamp } = generateToken();
+                let token = null;
+                let timestamp = null;
+
+                if (typeof generateToken === 'function') {
+                    const result = generateToken();
+                    token = result?.token;
+                    timestamp = result?.timestamp;
+                }
+
                 resolve ({
                     mangaId : document.querySelector('[data-manga-id]').dataset.mangaId.trim(),
                     token, timestamp
                 });
             });
-        `);
+        `, 1500);
 
         type This = typeof this;
         return Array.fromAsync(async function* (this: This) {
-            for (let offset = 0, run = true; run ; offset+=500) {
-                const { chapters: chaptersData } = await FetchJSON<APIChapters>(new Request(new URL(`./auth/manga-chapters?manga_id=${mangaId}&offset=${offset}&limit=500&order=DESC&_t=${token}&_ts=${timestamp}`, this.URI)));
+            for (let offset = 0, run = true; run; offset += 500) {
+                const url = new URL(`./auth/manga-chapters?manga_id=${mangaId}&offset=${offset}&limit=500&order=DESC}`, this.URI);
+                if (token) {
+                    url.searchParams.set('_t', token);
+                    url.searchParams.set('_ts', `${timestamp}`);
+                }
+
+                const { chapters: chaptersData } = await FetchJSON<APIChapters>(new Request(url));
                 const chapters = chaptersData.map(({ chapter, title, url }) => new Chapter(this, manga, new URL(url).pathname, ['Ch.', chapter, title].joinTitleSegments()));
                 chapters.length > 0 ? yield* chapters : run = false;
             }
