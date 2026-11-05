@@ -1,7 +1,7 @@
 ﻿import { Tags } from '../Tags';
 import icon from './CapibaraTraductor.webp';
 import { FetchJSON } from '../platform/FetchProvider';
-import { type MangaPlugin, Manga, DecoratableMangaScraper, Page, type Chapter } from '../providers/MangaPlugin';
+import { type MangaPlugin, Manga, DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 
 type APIResult<T> = {
@@ -20,11 +20,10 @@ type APIMangas = APIResult<{
     }[];
 }>;
 
-type APIPages = APIResult<{
-    imageUrl: string;
-}[]>
-
-@Common.MangaCSS<HTMLImageElement>(/^{origin}\/[^/]+\/manga\/[^/]+$/, 'div.grid div.relative img.object-cover', (img, url) => ({ id: url.pathname, title: img.alt.trim() }))
+@Common.MangaCSS(/^{origin}\/[^/]+\/manga\/[^/]+$/, 'title', (element, url) => ({
+    id: url.pathname,
+    title: element.textContent.split('|')[0].trim()
+}))
 @Common.ChaptersSinglePageJS(`
     new Promise(resolve => {
         const element = document.querySelector('astro-island[component-url*="MangaDetailPageContainer"]');
@@ -38,6 +37,41 @@ type APIPages = APIResult<{
         element.hydrate();
     });
 `, 1500)
+
+@Common.PagesSinglePageJS(`
+    (function() {
+        function isPages(list) {
+            return Array.isArray(list) && list.length > 0 && list.every(function(page) {
+                return page && typeof page.imageUrl === 'string' && /^https?:/.test(page.imageUrl) && typeof page.number === 'number' && typeof page.chapterId === 'number';
+            });
+        }
+        var pages = null;
+
+        function walk(fiber) {
+            for (; fiber; fiber = fiber.sibling) {
+                for (var hook = fiber.memoizedState; hook && typeof hook === 'object' && 'next' in hook && 'queue' in hook; hook = hook.next) {
+                    if (isPages(hook.memoizedState) && (!pages || hook.memoizedState.length > pages.length)) pages = hook.memoizedState;
+                }
+                if (fiber.child) walk(fiber.child);
+            }
+        }
+        document.querySelectorAll('*').forEach(function(element) {
+            Object.keys(element).forEach(function(key) {
+                if (key.indexOf('__reactContainer$') === 0) {
+                    var fiber = element[key];
+                    walk(fiber.stateNode && fiber.stateNode.current || fiber);
+                }
+            });
+        });
+        if (!pages) return null;
+        // The reader leaves one placeholder on every page when its own decode fails
+        var urls = pages.map(function(page) {
+            return page.imageUrl;
+        });
+        return urls.length > 1 && new Set(urls).size === 1 ? null : urls;
+    })();
+`, 1500)
+
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
@@ -54,17 +88,5 @@ export default class extends DecoratableMangaScraper {
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
         const { data: { items } } = await FetchJSON<APIMangas>(new Request(new URL('./api/manga-custom?page=1&limit=9999', this.URI)));
         return items.map(({ manga: { slug, title }, organization: { slug: orgaSlug } }) => new Manga(this, provider, `/${orgaSlug}/manga/${slug}`, title));
-    }
-
-    public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const [, team, , mangaSlug, , chapterNumber] = chapter.Identifier.split('/');
-        const prefix = team === 'joint' ? 'joint' : 'manga-custom';
-
-        const { data } = await FetchJSON<APIPages>(new Request(new URL(`./${prefix}/${mangaSlug}/chapter/${chapterNumber}/pages`, this.apiURL), {
-            headers: {
-                'X-Organization': team != 'joint' ? team : undefined
-            }
-        }));
-        return data.map(({ imageUrl }) => new Page(this, chapter, new URL(imageUrl)));
     }
 }

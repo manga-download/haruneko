@@ -1,18 +1,18 @@
 import { Tags } from '../Tags';
-import icon from './SamuraiScan.webp';
+import icon from './YuriOnline.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Madara from './decorators/WordPressMadara';
 import * as Common from './decorators/Common';
 
-@Madara.MangaCSS(/^{origin}\/son\/[^/]+\/$/, 'div.post-title h1')
+@Madara.MangaCSS(/^{origin}\/manga\/[^/]+\/$/, 'div.post-title h1')
 @Madara.MangasMultiPageAJAX()
 @Madara.ChaptersSinglePageAJAXv2()
 @Madara.PagesSinglePageCSS()
-@Common.ImageAjax()
+@Common.ImageAjax(true)
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('samuraiscan', 'Samurai Scan', 'https://samurai.j5z.xyz', Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Language.Spanish, Tags.Source.Scanlator, Tags.Accessibility.DomainRotation);
+        super('yurionline', 'Yuri Online', 'https://yuri-online.com', Tags.Media.Manga, Tags.Media.Manhua, Tags.Source.Aggregator, Tags.Language.English, Tags.Rating.Pornographic);
     }
 
     public override get Icon() {

@@ -4,7 +4,7 @@ import { FetchCSS, FetchWindowScript } from '../platform/FetchProvider';
 import { type Chapter, DecoratableMangaScraper, Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import { GetBytesFromBase64, GetBytesFromURLBase64, GetBytesFromUTF8, GetHexFromBytes, GetUTF8FromBytes } from '../BufferEncoder';
-import { DecryptXOR } from '../Crypto';
+import { XOR } from '../Crypto';
 
 @Common.MangaCSS(/^{origin}\/truyen-tranh\/[^/]+$/, 'ol.breadcrumb li:last-of-type')
 @Common.MangasMultiPageCSS<HTMLAnchorElement>('div.li_truyen > a:has(img)', Common.PatternLinkGenerator('/truyen-hoan-thanh?page={page}'), 0, anchor => ({
@@ -16,7 +16,7 @@ import { DecryptXOR } from '../Crypto';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('dualeotruyen', 'DuaLeoTruyen', 'https://dualeotruyenbet.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Media.Manga, Tags.Language.Vietnamese, Tags.Source.Aggregator, Tags.Accessibility.DomainRotation, Tags.Rating.Pornographic);
+        super('dualeotruyen', 'DuaLeoTruyen', 'https://dualeotruyenqo.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Media.Manga, Tags.Language.Vietnamese, Tags.Source.Aggregator, Tags.Accessibility.DomainRotation, Tags.Rating.Pornographic);
     }
 
     public override get Icon() {
@@ -37,7 +37,7 @@ export default class extends DecoratableMangaScraper {
                 'Sec-Fetch-Mode': 'navigate',
                 'Sec-Fetch-Site': 'same-origin'
             }
-        }), 'div.content_view_chap :is(img, canvas)');
+        }), 'div.content_view_chap > :is(img, svg)');
         return Promise.all(
             imgs.map(async (element) => {
                 const link = new URL(await this.PageExtractor(element), chapterURL);
@@ -51,7 +51,10 @@ export default class extends DecoratableMangaScraper {
 
         if (img instanceof HTMLImageElement && !img.dataset.img) return img.src;
 
-        const uri = new URL(img.dataset.img ?? img.dataset.canvasImg);
+        const subImage = img.querySelector('image');
+        if (subImage) return subImage.href.toString();
+
+        const uri = new URL(img.dataset.svgImg ?? img.dataset.img);
         let [, basename, extension] = uri.pathname.match(/\/([^./]+)\.(.*)$/);
         if (!basename.startsWith('q5_')) return uri.href;
 
@@ -72,7 +75,7 @@ export default class extends DecoratableMangaScraper {
                 stream = [...stream, ...block];
             }
 
-            const name = GetUTF8FromBytes(DecryptXOR(cipher, new Uint8Array(stream)));
+            const name = GetUTF8FromBytes(XOR(cipher, new Uint8Array(stream)));
 
             //HMAC
             const key = await crypto.subtle.importKey('raw', GetBytesFromUTF8(secret), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']);

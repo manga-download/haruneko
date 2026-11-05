@@ -1,13 +1,13 @@
 import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'topmanhua',
         title: 'Top Manhua'
     },
     container: {
         url: 'https://manhuatop.org/manhua/the-heroine-had-an-affair-with-my-fiance/',
-        id: JSON.stringify({ post: '89119', slug: '/manhua/the-heroine-had-an-affair-with-my-fiance/' }),
+        id: '/manhua/the-heroine-had-an-affair-with-my-fiance/',
         title: 'The Heroine Had an Affair with My Fiance'
     },
     child: {
@@ -19,6 +19,4 @@ const config = {
         size: 527_616,
         type: 'image/jpeg'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();
