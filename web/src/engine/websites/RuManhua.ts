@@ -5,6 +5,7 @@ import * as Common from './decorators/Common';
 import { FetchWindowScript } from '../platform/FetchProvider';
 import type { Priority } from '../taskpool/DeferredTask';
 import { GetBytesFromUTF8 } from '../BufferEncoder';
+import { DecryptAES } from '../Crypto';
 
 type ImagesData = {
     source_id: string;
@@ -17,7 +18,7 @@ type PageParameters = {
 
 @Common.MangaCSS(/^{origin}\/news\/\d+$/, 'div.comicInfo p.title', Common.WebsiteInfoExtractor({ queryBloat: 'span' }))
 @Common.MangasMultiPageCSS('div.ib.info p.title a', Common.PatternLinkGenerator('/category/page/{page}'))
-@Common.ChaptersSinglePageCSS('div#chapterlistload a.ib')
+@Common.ChaptersSinglePageCSS('div#chapterlistload a.ib', undefined, undefined, true)
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
@@ -44,9 +45,6 @@ export default class extends DecoratableMangaScraper {
 
     private async DecryptImage(encrypted: ArrayBuffer): Promise<Blob> {
         const ivAndKey = GetBytesFromUTF8('my2ecret782ecret');
-        const algorithm = { name: 'AES-CBC', iv: ivAndKey };
-        const key = await crypto.subtle.importKey('raw', ivAndKey, algorithm, false, ['decrypt']);
-        const decrypted = await crypto.subtle.decrypt(algorithm, key, encrypted);
-        return Common.GetTypedData(decrypted);
+        return Common.GetTypedData(await DecryptAES(encrypted, ivAndKey, { name: 'AES-CBC', iv: ivAndKey }));
     }
 }

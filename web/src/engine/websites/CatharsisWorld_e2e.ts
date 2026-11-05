@@ -6,17 +6,17 @@ new TestFixture({
         title: 'Catharsis World'
     },
     container: {
-        url: 'https://catharsisworld.dig-it.info/serie/mision-romance-sincero/',
-        id: '/serie/mision-romance-sincero/',
-        title: 'Misión: Romance Sincero'
+        url: 'https://newcatharsis.dig-it.info/manga/2236',
+        id: '2236/mi-estrella-toma-el-ultimo-tren',
+        title: 'Mi estrella toma el último tren'
     },
     child: {
-        id: '/serie/mision-romance-sincero/capitulo-1/',
-        title: 'Capitulo 1'
+        id: '105830/15',
+        title: 'Capítulo 15',
     },
     entry: {
-        index: 0,
-        size: 524_514,
-        type: 'image/webp'
+        index: 13,
+        size: 2_172_498,
+        type: 'image/png'
     }
 }).AssertWebsite();

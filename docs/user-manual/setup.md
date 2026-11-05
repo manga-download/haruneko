@@ -13,7 +13,7 @@ TBD
 3. Open the extracted directory and start the _hakuneko-app.exe_ binary
 
 ::: warning IMPORTANT
-In case the binary file is missing, ensure that it was not removed by your anti-virus programm such as Windows Defender.
+In case the binary file is missing, ensure that it was not removed by your anti-virus program such as Windows Defender.
 :::
 
 ## MacOS

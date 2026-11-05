@@ -12,7 +12,7 @@ new TestFixture({
     },
     child: {
         id: '/reader/pick-me-up/165',
-        title: 'الفصل 165'
+        title: 'Chapter 165'
     },
     entry: {
         index: 0,

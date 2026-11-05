@@ -16,7 +16,7 @@ new TestFixture({
     },
     entry: { //make sure we gather all pages
         index: 51,
-        size: 441_229,
+        size: 837_868,
         type: 'image/png'
     }
 }).AssertWebsite();

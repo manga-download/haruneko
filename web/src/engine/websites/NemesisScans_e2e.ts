@@ -6,17 +6,18 @@ new TestFixture({
         title: 'Nemesis Scans'
     },
     container: {
-        url: 'https://nemesisscans.com/manga/acimasiz-egitmen/',
-        id: '/manga/acimasiz-egitmen/',
-        title: 'Acımasız Eğitmen'
+        url: 'https://www.nemesisscans.com/series/53/the-apothecary-diaries',
+        id: '/series/53/the-apothecary-diaries',
+        title: 'The Apothecary Diaries',
+        timeout: 10_000
     },
     child: {
-        id: '/acimasiz-egitmen-bolum-125/',
-        title: 'Bölüm 125'
+        id: '/series/53/episode/81.2',
+        title: 'Bölüm 81.2'
     },
     entry: {
         index: 0,
-        size: 1_272_733,
-        type: 'image/jpeg'
+        size: 362_694,
+        type: 'image/avif'
     }
 }).AssertWebsite();

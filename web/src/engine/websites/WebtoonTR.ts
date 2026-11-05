@@ -3,16 +3,12 @@ import icon from './WebtoonTR.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 
-function ChapterExtractor(anchor: HTMLAnchorElement) {
-    return {
-        id: anchor.pathname,
-        title: anchor.querySelector('b').textContent.split(' - ')[1].trim()
-    };
-}
-
 @Common.MangaCSS(/^{origin}\/_\/[^/]+$/, 'div.tanitim li.list-group-item blockquote.h3')
 @Common.MangasSinglePageCSS('/webtoon-listesi', 'ul.list-inline li a')
-@Common.ChaptersSinglePageCSS('table.table tbody tr td a', undefined, ChapterExtractor)
+@Common.ChaptersSinglePageCSS<HTMLAnchorElement>('table.table tbody tr td a', undefined, anchor => ({
+    id: anchor.pathname,
+    title: anchor.querySelector('b').textContent.split(' - ').at(1).trim()
+}))
 @Common.PagesSinglePageCSS('img.cImg')
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {

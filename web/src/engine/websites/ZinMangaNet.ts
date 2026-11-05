@@ -10,8 +10,8 @@ type APIChapters = {
         chapters: {
             chapter_name: string;
             chapter_slug: string;
-        }[]
-    }
+        }[];
+    };
 };
 
 @Madara.MangaCSS(/^{origin}\/manga\/[^/]+$/, 'div.post-title h1')
@@ -32,7 +32,7 @@ export default class extends DecoratableMangaScraper {
         const chapterslist: Array<Chapter> = [];
         for (let page = 1, run = true; run; page++) {
             const chapters = await this.GetChaptersFromPage(page, manga);
-            chapterslist.isMissingLastItemFrom(chapters) ? chapterslist.push(...chapters) : run = false;
+            chapterslist.isLastItemDifferentFromNonEmpty(chapters) ? chapterslist.push(...chapters) : run = false;
         }
         return chapterslist;
     }

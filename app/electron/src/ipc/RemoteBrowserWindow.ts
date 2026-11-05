@@ -3,20 +3,20 @@ import path from 'node:path';
 import fs from 'node:fs/promises';
 import { BrowserWindow, type BrowserWindowConstructorOptions } from 'electron';
 import type { IPC } from './InterProcessCommunication';
-import { RemoteBrowserWindowController as Channels } from '../../../src/ipc/Channels';
+import { Channels } from './InterProcessCommunicationChannels';
 
 export class RemoteBrowserWindowController {
 
-    constructor (private readonly ipc: IPC<Channels.Web, Channels.App>) {
-        this.ipc.Listen(Channels.App.OpenWindow, this.OpenWindow.bind(this));
-        this.ipc.Listen(Channels.App.CloseWindow, this.CloseWindow.bind(this));
-        this.ipc.Listen(Channels.App.SetVisibility, this.SetVisibility.bind(this));
-        this.ipc.Listen(Channels.App.ExecuteScript, this.ExecuteScript.bind(this));
-        this.ipc.Listen(Channels.App.SendDebugCommand, this.SendDebugCommand.bind(this));
-        this.ipc.Listen(Channels.App.LoadURL, this.LoadURL.bind(this));
+    constructor (private readonly ipc: IPC) {
+        this.ipc.Handle(Channels.RemoteBrowserWindowController.OpenWindow, this.OpenWindow.bind(this));
+        this.ipc.Handle(Channels.RemoteBrowserWindowController.CloseWindow, this.CloseWindow.bind(this));
+        this.ipc.Handle(Channels.RemoteBrowserWindowController.SetVisibility, this.SetVisibility.bind(this));
+        this.ipc.Handle(Channels.RemoteBrowserWindowController.ExecuteScript, this.ExecuteScript.bind(this));
+        this.ipc.Handle(Channels.RemoteBrowserWindowController.SendDebugCommand, this.SendDebugCommand.bind(this));
+        this.ipc.Handle(Channels.RemoteBrowserWindowController.LoadURL, this.LoadURL.bind(this));
     }
 
-    private Throw<T>(message: string): T {
+    private Throw(message: string): never {
         throw new Error(message);
     }
 
@@ -34,21 +34,28 @@ export class RemoteBrowserWindowController {
         const windowOptions: BrowserWindowConstructorOptions = JSON.parse(options);
         if (windowOptions.webPreferences?.preload) {
             windowOptions.webPreferences.preload = await this.CreatePreloadScriptFile(windowOptions.webPreferences.preload);
+        } else {
+            delete windowOptions.webPreferences?.preload;
         }
         const win = new BrowserWindow(windowOptions);
         win.autoHideMenuBar = true;
         win.setMenuBarVisibility(false);
         win.webContents.debugger.attach('1.3');
         win.webContents.setWindowOpenHandler(() => { return { action: 'deny' }; });
-        win.webContents.on('dom-ready', () => this.ipc.Send(Channels.Web.OnDomReady, win.id));
-        win.webContents.on('did-start-navigation', event => this.ipc.Send(Channels.Web.OnBeforeNavigate, win.id, event.url, event.isMainFrame, event.isSameDocument));
-        win.once('closed', () => fs.rm(windowOptions.webPreferences?.preload).catch(err => console.warn(err)));
+        win.webContents.on('dom-ready', () => this.ipc.Send(Channels.RemoteBrowserWindowController.OnDomReady, win.id));
+        win.webContents.on('did-start-navigation', event => this.ipc.Send(Channels.RemoteBrowserWindowController.OnBeforeNavigate, win.id, event.url, event.isMainFrame, event.isSameDocument));
+        win.once('closed', () => windowOptions.webPreferences?.preload && fs.rm(windowOptions.webPreferences?.preload).catch(console.warn));
+        win.once('close', () => this.Close(win).catch(console.warn));
         return win.id;
     }
 
-    private async CloseWindow(windowID: number): Promise<void> {
-        const win = this.FindWindow(windowID);
+    private CloseWindow(windowID: number): Promise<void> {
+        return this.Close(this.FindWindow(windowID));
+    }
+
+    private async Close(win: BrowserWindow) {
         win.webContents.debugger.detach();
+        win.removeAllListeners();
         win.destroy();
     }
 

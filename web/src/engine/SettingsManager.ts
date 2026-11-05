@@ -194,7 +194,7 @@ class Settings implements Iterable<ISetting> {
         const data = await this.storage.LoadPersistent<Record<string, IValue>>(Store.Settings, this.scope);
         for(const setting of settings) {
             if(!this.settings[setting.ID]) {
-                if(data && data[setting.ID]) {
+                if(data !== undefined && data[setting.ID] !== undefined) {
                     setting.Deserialize(data[setting.ID]);
                 }
                 setting.Subscribe(this.SaveAllSettings.bind(this));

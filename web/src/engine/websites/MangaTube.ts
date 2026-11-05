@@ -42,7 +42,7 @@ const chapterScript = 'window.laravel.route.data.manga';
 AddAntiScrapingDetection(async (invoke) => {
     const result = await invoke<boolean>(`window.__challange ? true : false;`);
     return result ? FetchRedirection.Automatic : undefined;
-});
+}, /-^https:\/\/manga-tube\.me/);
 
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {

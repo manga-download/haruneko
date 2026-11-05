@@ -30,6 +30,7 @@ type APIChapters = {
     page: {
         series: {
             workId: string;
+            order: number;
         }[];
     };
 };
@@ -80,9 +81,9 @@ export default class extends DecoratableMangaScraper {
             return Array.fromAsync(async function* (this: This) {
                 for (let page = 1, run = true; run ; page++) {
                     const { body: { thumbnails: { illust }, page: { series } } } = await FetchJSON<APIResult<APIChapters>>(new Request(new URL(`./series/${manga.Identifier}?p=${page}&lang=en`, this.apiURL)));
-                    const chapters = series.map(({workId }) => {
+                    const chapters = series.map(({ workId, order }) => {
                         const chapterContents = illust.find(c => c.id === workId);
-                        if (chapterContents) return new Chapter(this, manga, chapterContents.id, chapterContents.title);
+                        if (chapterContents) return new Chapter(this, manga, chapterContents.id, `#${order} ${chapterContents.title}`);
                     });
                     chapters.length > 0 ? yield* chapters : run = false;
                 }

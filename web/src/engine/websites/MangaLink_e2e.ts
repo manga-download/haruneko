@@ -6,13 +6,13 @@ new TestFixture({
         title: 'MangaLink'
     },
     container: {
-        url: 'https://link-manga.net/readcomics/i-was-the-final-boss/',
-        id: JSON.stringify({ post: '86560', slug: '/readcomics/i-was-the-final-boss/' }),
+        url: 'https://link-manga.net/manga/i-was-the-final-boss/',
+        id: JSON.stringify({ post: '86560', slug: '/manga/i-was-the-final-boss/' }),
         title: 'I Was the Final Boss'
     },
     /* Recaptcha on chapter page
     child: {
-        id: '/readcomics/i-was-the-final-boss/14/',
+        id: '/manga/i-was-the-final-boss/14/',
         title: '14'
     },
     entry: {

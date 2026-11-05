@@ -1,232 +1,278 @@
 <script lang="ts">
-    import ChevronLeft from 'carbon-icons-svelte/lib/ChevronLeft.svelte';
-    import ChevronRight from 'carbon-icons-svelte/lib/ChevronRight.svelte';
-    import Misuse from 'carbon-icons-svelte/lib/Misuse.svelte';
-    import IntentRequestScaleIn from 'carbon-icons-svelte/lib/IntentRequestScaleIn.svelte';
-    import IntentRequestScaleOut from 'carbon-icons-svelte/lib/IntentRequestScaleOut.svelte';
-    import CloudServiceManagement from 'carbon-icons-svelte/lib/CloudServiceManagement.svelte';
-    import ScreenMap from 'carbon-icons-svelte/lib/ScreenMap.svelte';
-    import ZoomIn from 'carbon-icons-svelte/lib/ZoomIn.svelte';
-    import ZoomOut from 'carbon-icons-svelte/lib/ZoomOut.svelte';
+    import ArrangeHorizontal from "carbon-icons-svelte/lib/ArrangeHorizontal.svelte";
+    import ArrowLeft from "carbon-icons-svelte/lib/ArrowLeft.svelte";
+    import ArrowRight from "carbon-icons-svelte/lib/ArrowRight.svelte";
+    import CarouselVertical from "carbon-icons-svelte/lib/CarouselVertical.svelte";
+    import CarouselHorizontal from "carbon-icons-svelte/lib/CarouselHorizontal.svelte";
+    import ChevronLeft from "carbon-icons-svelte/lib/ChevronLeft.svelte";
+    import ChevronRight from "carbon-icons-svelte/lib/ChevronRight.svelte";
+    import DocumentBlank from "carbon-icons-svelte/lib/DocumentBlank.svelte";
+    import Misuse from "carbon-icons-svelte/lib/Misuse.svelte";
+    import IntentRequestScaleIn from "carbon-icons-svelte/lib/IntentRequestScaleIn.svelte";
+    import IntentRequestScaleOut from "carbon-icons-svelte/lib/IntentRequestScaleOut.svelte";
+    import CloudServiceManagement from "carbon-icons-svelte/lib/CloudServiceManagement.svelte";
+    import ScreenMap from "carbon-icons-svelte/lib/ScreenMap.svelte";
+    import ZoomIn from "carbon-icons-svelte/lib/ZoomIn.svelte";
+    import ZoomOut from "carbon-icons-svelte/lib/ZoomOut.svelte";
     import {
         ContentSwitcher,
         Switch,
         Button,
-        HeaderAction,
-        HeaderGlobalAction,
-        HeaderPanelDivider,
         Tooltip,
-    } from 'carbon-components-svelte';
+        Stack,
+        Toggle,
+    } from "carbon-components-svelte";
     import {
         Key,
-        Locale,
-        ViewerDoublePage,
-        ViewerMode,
-        ViewerReverseDirection,
-    } from '../../stores/Settings';
-    import { ViewerPadding, ViewerZoom } from '../../stores/Settings';
+        GlobalSettings,
+        Settings,
+    } from "../../stores/Settings.svelte";
     import type {
         MediaContainer,
         MediaItem,
-    } from '../../../../engine/providers/MediaPlugin';
-
+    } from "../../../../engine/providers/MediaPlugin";
     interface Props {
         item: MediaContainer<MediaItem>;
         onNextItem: () => void;
         onPreviousItem: () => void;
         onClose: () => void;
-    };
-    let { item, onNextItem, onPreviousItem, onClose }: Props  = $props();
-
+    }
+    let { item, onNextItem, onPreviousItem, onClose }: Props = $props();
+    let settingsOpen = $state(false);
+    let hideTooltip = $state(true);
+    function onmouseenter() {
+        hideTooltip = false;
+    }
+    function onmouseleave() {
+        hideTooltip = true;
+    }
 </script>
 
-<div id="vieweractions">
-    <HeaderGlobalAction
-        class="previousitem"
-        icon={ChevronLeft}
-        iconDescription="Previous Item"
-        on:click={onPreviousItem}
-    />
-    <HeaderGlobalAction
-        class="nextitem"
-        icon={ChevronRight}
-        iconDescription="Next Item"
-        on:click={onNextItem}
-    />
-    <HeaderAction
-        icon={CloudServiceManagement}
-        closeIcon={ScreenMap}
-        class="opensettings"
-    >
-        <HeaderPanelDivider>{item?.Parent.Title}</HeaderPanelDivider>
-        <div>{item?.Title}</div>
-        <HeaderPanelDivider>Controls</HeaderPanelDivider>
-        <div>
-            <Button
-                icon={ChevronLeft}
-                kind="ghost"
-                size="small"
-                iconDescription="Previous item (ArrowLeft)"
-                on:click={onPreviousItem}
-            />
-            <Button
-                icon={ChevronRight}
-                kind="ghost"
-                size="small"
-                iconDescription="Next item (ArrowRight)"
-                on:click={onNextItem}
-            />
-            <Button
-                icon={ZoomIn}
-                kind="ghost"
-                size="small"
-                iconDescription="Zoom In (➕)"
-                on:click={ViewerZoom.increment}
-            />
-            <Button
-                icon={ZoomOut}
-                kind="ghost"
-                size="small"
-                iconDescription="Zoom Out (➖)"
-                on:click={ViewerZoom.decrement}
-            />
+<div id="vieweractions" role="presentation" class:open={settingsOpen} {onmouseenter} {onmouseleave}>
+    <div class="quickactions">
+        <Button
+            icon={ChevronLeft}
+            iconDescription="Previous Item"
+            kind="ghost"
+            size="small"
+            onclick={onPreviousItem}
+            {hideTooltip}
+        />
+        <Button
+            icon={ChevronRight}
+            iconDescription="Next Item"
+            kind="ghost"
+            size="small"
+            onclick={onNextItem}
+            {hideTooltip}
+        />
+        <Button
+            icon={ZoomIn}
+            iconDescription="Zoom In (➕)"
+            kind="ghost"
+            size="small"
+            onclick={() => Settings.ViewerZoom.Increment()}
+            {hideTooltip}
+        />
+        <Button
+            icon={ZoomOut}
+            iconDescription="Zoom Out (➖)"
+            kind="ghost"
+            size="small"
+            onclick={() => Settings.ViewerZoom.Decrement()}
+            {hideTooltip}
+        />
+        <Button
+            icon={IntentRequestScaleIn}
+            kind="ghost"
+            size="small"
+            iconDescription="Decrease spacing between images (CTRL ➖)"
+            onclick={() => Settings.ViewerPadding.Decrement()}
+            {hideTooltip}
+        />
+        <Button
+            icon={IntentRequestScaleOut}
+            kind="ghost"
+            size="small"
+            iconDescription="Increase spacing between images (CTRL ➕)"
+            onclick={() => Settings.ViewerPadding.Increment()}
+            {hideTooltip}
+        />
+        <Button
+            icon={settingsOpen ? ScreenMap : CloudServiceManagement}
+            iconDescription="Toggle viewer settings"
+            kind="ghost"
+            size="small"
+            class="opensettings"
+            onclick={() => (settingsOpen = !settingsOpen)}
+            {hideTooltip}
+        />
+        <Button
+            icon={Misuse}
+            iconDescription="Close"
+            kind="ghost"
+            size="small"
+            onclick={onClose}
+            {hideTooltip}
+        />
+    </div>
+    <div class="settings-panel">
+        <div class="section">
+            <span class="mediatitle" title={item?.Parent.Title}>{item?.Parent.Title}</span>
+            <hr />
+            <span class="mediatitle" title={item?.Title}>{item?.Title}</span>
         </div>
-        <div>
-            <Button
-                icon={IntentRequestScaleIn}
-                kind="ghost"
-                size="small"
-                iconDescription="Decrease spacing between images (CTRL ➖)"
-                on:click={ViewerPadding.decrement}
-            />
-            <Button
-                icon={IntentRequestScaleOut}
-                kind="ghost"
-                size="small"
-                iconDescription="Increase spacing between images (CTRL ➕)"
-                on:click={ViewerPadding.increment}
-            />
-        </div>
-        <HeaderPanelDivider>Reader</HeaderPanelDivider>
-        <div class="setting block">
-            <Tooltip
-                triggerText={$Locale[ViewerMode.setting.Label]()}
-                align="start"
-                class="tooltip"
-            >
-                <p>{$Locale[ViewerMode.setting.Description]()}</p>
-            </Tooltip>
-            <ContentSwitcher size="sm">
-                {#each ViewerMode.setting.Options as option}
-                    <Switch
-                        selected={$ViewerMode === option.key}
-                        text={$Locale[option.label]()}
-                        on:click={() => ($ViewerMode = option.key)}
-                    />
-                {/each}
-            </ContentSwitcher>
-        </div>
-        {#if $ViewerMode === Key.ViewerMode_Paginated}
+
+        <div class="section">
+            Reader
+            <hr />
             <div class="setting block">
                 <Tooltip
-                    triggerText={$Locale[
-                        ViewerReverseDirection.setting.Label
+                    triggerText={GlobalSettings.Locale[
+                        Settings.ViewerMode.Setting.Label
                     ]()}
-                    align="start"
+                    portalTooltip
                     class="tooltip"
                 >
-                    <p>
-                        {$Locale[ViewerReverseDirection.setting.Description]()}
-                    </p>
+                        {GlobalSettings.Locale[
+                            Settings.ViewerMode.Setting.Description
+                        ]()}
                 </Tooltip>
                 <ContentSwitcher size="sm">
-                    <Switch
-                        selected={!$ViewerReverseDirection}
-                        on:click={() => ($ViewerReverseDirection = false)}
-                    >
-                        LeftToRight
-                    </Switch>
-                    <Switch
-                        selected={$ViewerReverseDirection}
-                        on:click={() => ($ViewerReverseDirection = true)}
-                        >RightToLeft
-                    </Switch>
+                        <Switch
+                            selected={Settings.ViewerMode.Value === Settings.ViewerMode.Setting.Options[0].key}
+                            onclick={() =>
+                                (Settings.ViewerMode.Value = Settings.ViewerMode.Setting.Options[0].key)}
+                        >
+                            <Stack orientation="horizontal" gap={3}><CarouselVertical />{GlobalSettings.Locale[Settings.ViewerMode.Setting.Options[0].label]()}</Stack>
+                        </Switch>
+                        <Switch
+                            selected={Settings.ViewerMode.Value === Settings.ViewerMode.Setting.Options[1].key}
+                            onclick={() =>
+                                (Settings.ViewerMode.Value = Settings.ViewerMode.Setting.Options[1].key)}
+                        >
+                            <Stack orientation="horizontal" gap={3}><CarouselHorizontal />{GlobalSettings.Locale[Settings.ViewerMode.Setting.Options[1].label]()}</Stack>
+                        </Switch>
                 </ContentSwitcher>
             </div>
-            <div class="setting block">
-                <Tooltip
-                    triggerText={$Locale[ViewerDoublePage.setting.Label]()}
-                    align="start"
-                    class="tooltip"
-                >
-                    <p>{$Locale[ViewerDoublePage.setting.Description]()}</p>
-                </Tooltip>
-                <ContentSwitcher size="sm">
-                    <Switch
-                        selected={!$ViewerDoublePage}
-                        on:click={() => ($ViewerDoublePage = false)}
+            {#if Settings.ViewerMode.Value === Key.ViewerMode_Paginated}
+                <div class="setting block">
+                    <Tooltip
+                        triggerText={GlobalSettings.Locale[
+                            Settings.ViewerReverseDirection.Setting.Label
+                        ]()}
+                        portalTooltip
+                        class="tooltip"
                     >
-                        Single
-                    </Switch>
-                    <Switch
-                        selected={$ViewerDoublePage}
-                        on:click={() => ($ViewerDoublePage = true)}
+                            {GlobalSettings.Locale[
+                                Settings.ViewerReverseDirection.Setting.Description
+                            ]()}
+                    </Tooltip>
+                    <ContentSwitcher size="sm">
+                        <Switch
+                            selected={!Settings.ViewerReverseDirection.Value}
+                            onclick={() =>
+                                (Settings.ViewerReverseDirection.Value = false)}
+                            > 
+                            <Stack orientation="horizontal" gap={3}><ArrowRight /> Left to Right</Stack>
+                        </Switch>
+                        <Switch
+                            selected={Settings.ViewerReverseDirection.Value}
+                            onclick={() =>
+                                (Settings.ViewerReverseDirection.Value = true)}
+                            >
+                            <Stack orientation="horizontal" gap={3}><ArrowLeft /> Right to Left</Stack>
+                        </Switch>
+                    </ContentSwitcher>
+                </div>
+                <div class="setting block">
+                    <Tooltip
+                        triggerText={GlobalSettings.Locale[
+                            Settings.ViewerDoublePage.Setting.Label
+                        ]()}
+                        portalTooltip
+                        class="tooltip"
                     >
-                        Double
-                    </Switch>
-                </ContentSwitcher>
-            </div>
-        {/if}
-    </HeaderAction>
-    <HeaderGlobalAction
-        class="close"
-        icon={Misuse}
-        iconDescription="Close"
-        onclick={onClose}
-    />
+                            {GlobalSettings.Locale[
+                                Settings.ViewerDoublePage.Setting.Description
+                            ]()}
+                    </Tooltip>
+                    <ContentSwitcher size="sm">
+                        <Switch
+                            selected={!Settings.ViewerDoublePage.Value}
+                            onclick={() =>
+                                (Settings.ViewerDoublePage.Value = false)}
+                        >
+                            <Stack orientation="horizontal" gap={3}><DocumentBlank />Single</Stack>
+                        </Switch>
+                        <Switch
+                            selected={Settings.ViewerDoublePage.Value}
+                            onclick={() =>
+                                (Settings.ViewerDoublePage.Value = true)}
+                        >
+                            <Stack orientation="horizontal" gap={3}><ArrangeHorizontal />Double</Stack>
+                        </Switch>
+                    </ContentSwitcher>
+                </div>
+            {/if}
+            <Toggle class="setting block" bind:toggled={Settings.ViewerPreloadNextItem.Value} >
+                <svelte:fragment slot="labelChildren">
+                    <Tooltip
+                        triggerText={GlobalSettings.Locale[Settings.ViewerPreloadNextItem.Setting.Label]()}
+                        portalTooltip
+                        class="tooltip"
+                    >
+                            {GlobalSettings.Locale[
+                                Settings.ViewerPreloadNextItem.Setting.Description
+                            ]()}
+                    </Tooltip>
+                </svelte:fragment>
+            </Toggle>
+        </div>
+    </div>
 </div>
 
 <style>
     #vieweractions {
-        opacity: 5%;
-        z-index: 8100;
-    }
-    #vieweractions:hover {
-        opacity: 100%;
-    }
-    #vieweractions :global(.bx--header__action) {
-        position: absolute;
-        z-index: 8100;
-    }
-    #vieweractions :global(.close) {
-        top: 0;
-        right: 1.5em;
-    }
-    #vieweractions :global(.opensettings) {
-        top: 0;
-        right: 5em;
-    }
-    #vieweractions :global(.nextitem) {
-        top: 0;
-        right: 8.5em;
-    }
-    #vieweractions :global(.previousitem) {
-        top: 0;
-        right: 12em;
-    }
-    #vieweractions :global(div.bx--header-panel) {
-        position: absolute;
+        position: fixed;
         top: 0;
         right: 0;
-        padding: 3em 0 0 0;
+        opacity: 5%;
+        padding: 0 1.5em 0 1.5em;
+        background-color: var(--cds-background-active);
+        transition: opacity 0.5s ease;
     }
-    #vieweractions :global(div.bx--header-panel > li) {
-        margin: 1em 1em 0;
+    #vieweractions:hover,#vieweractions.open  {
+        opacity: 100%;
     }
-    .setting.block {
-        margin-top: 0.4em;
+
+    #vieweractions .settings-panel {
+        display: none;
     }
-    .setting.block :global(.tooltip) {
-        margin-bottom: 0.2em;
+    #vieweractions.open .settings-panel {
+        height:100vh;
+        display:block;
+    }
+    #vieweractions .quickactions {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        gap: 0.25rem;
+    }
+    #vieweractions .section {
+        margin-bottom:2em;
+    }
+    #vieweractions .mediatitle {
+        display: block;
+        max-width: 25em;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+    #vieweractions .setting.block {
+        margin-bottom: 1em;
+    }
+    #vieweractions :global(.tooltip) {
+        margin-bottom:0.25em;
     }
 </style>

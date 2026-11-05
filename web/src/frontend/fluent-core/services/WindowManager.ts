@@ -4,7 +4,9 @@ import type { IAppWindow } from '../../../engine/platform/AppWindow';
 
 export class WindowManager {
 
-    constructor (private readonly windowController: IAppWindow) { }
+    constructor(private readonly windowController: IAppWindow) {
+        this.windowController.Maximized.Subscribe(value => this.IsMaximized = value);
+    }
 
     @observable IsMaximized = false;
 
@@ -13,12 +15,10 @@ export class WindowManager {
     }
 
     public Maximize(): void {
-        this.IsMaximized = true; // TODO: Implement correct solution instead of quick and dirty hack to determine current state
         this.windowController.Maximize();
     }
 
     public Restore(): void {
-        this.IsMaximized = false; // TODO: Implement correct solution instead of quick and dirty hack to determine current state
         this.windowController.Restore();
     }
 

@@ -6,13 +6,13 @@ new TestFixture({
         title: 'Lovers Toon',
     },
     container: {
-        url: 'https://loverstoon.com/manga/a-vida-de-um-passarinho/',
-        id: JSON.stringify({ post: '98', slug: '/manga/a-vida-de-um-passarinho/'}),
+        url: 'https://loverstoon.net/#/comic/a-vida-de-um-passarinho',
+        id: 'a-vida-de-um-passarinho',
         title: 'A Vida de Um Passarinho',
     },
     child: {
-        id: '/manga/a-vida-de-um-passarinho/cap-01/',
-        title: 'Cap. 01',
+        id: '1775415666027656',
+        title: 'Capítulo 1',
     },
     entry: {
         index: 0,

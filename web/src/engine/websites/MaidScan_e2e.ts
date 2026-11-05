@@ -6,13 +6,13 @@ new TestFixture({
         title: 'Maid Scan'
     },
     container: {
-        url: 'https://empreguetes.xyz/obra/deus-tigre-de-jangsan-1',
+        url: 'https://empreguetes.wtf/obras/deus-tigre-de-jangsan-1',
         id: 'deus-tigre-de-jangsan-1',
         title: 'Deus tigre de Jangsan'
     },
     child: {
         id: '/capitulo/239389',
-        title: 'Capítulo 37'
+        title: 'Capítulo 37',
     },
     entry: {
         index: 4,

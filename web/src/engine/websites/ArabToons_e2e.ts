@@ -1,24 +1,22 @@
 ﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'arabtoons',
         title: 'ArabToons'
     },
     container: {
-        url: 'https://arabtoons.net/manga/elf-who-likes-to-be-humiliated/',
-        id: JSON.stringify({ post: '6109', slug: '/manga/elf-who-likes-to-be-humiliated/' }),
+        url: 'https://arabtoons.net/manga/elf-who-likes-to-be-humiliated',
+        id: '208/elf-who-likes-to-be-humiliated',
         title: 'Elf Who Likes To Be Humiliated'
     },
     child: {
-        id: '/manga/elf-who-likes-to-be-humiliated/%d8%a7%d9%84%d9%81%d8%b5%d9%84-71/',
-        title: 'الفصل 71'
+        id: 'الفصل-71',
+        title: '71'
     },
     entry: {
         index: 0,
-        size: 552_313,
-        type: 'image/jpeg'
+        size: 445_752,
+        type: 'image/webp'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

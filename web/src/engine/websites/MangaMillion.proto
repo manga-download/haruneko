@@ -1,0 +1,72 @@
+// Type definitions from MangaMillion for protocol buffer
+// Based on: https://mangamillion.shueisha.co.jp/_next/static/chunks/2499-8b4ac58e6ccdb5d2.js
+
+package MangaMillion;
+syntax = "proto3";
+
+
+message Response {
+  optional MangaListViewResponse mangaList = 22;
+  optional TitleDetailViewResponse titleDetail = 50;
+  optional TitleLanguageSelectViewResponse titleLanguageSelect = 52;
+  optional ChapterListViewResponse chapterList = 60;
+  optional ViewerViewResponse viewer = 70;
+}
+
+//MANGA LIST
+message MangaListViewResponse {
+  repeated MangaListItem items = 1;
+}
+
+message MangaListItem {
+  optional OriginalTitleSummary originalTitle = 1;
+  repeated string availableLanguageCodes = 2;
+}
+
+message OriginalTitleSummary {
+  optional uint32 originalTitleId = 1;
+  optional string serviceTitleName = 3;
+}
+
+//MANGA DETAILS
+message TitleDetailViewResponse {
+  optional ServiceTitle serviceTitle = 1;
+}
+
+message ServiceTitle {
+  optional string serviceTitleName = 2;
+}
+
+message TitleLanguageSelectViewResponse {
+  repeated Language languages = 1;
+}
+
+message Language {
+  optional string localName = 2;
+  optional string code = 3;
+}
+
+//CHAPTERS
+message ChapterListViewResponse {
+  repeated ChapterGroup chapterGroups = 2;
+}
+
+message ChapterGroup {
+  repeated ChapterInfo chapters = 2;
+}
+
+message ChapterInfo {
+  optional string number = 1;
+  optional string name = 2;
+  optional uint32 translatedChapterId = 3;
+}
+
+// PAGES
+message ViewerViewResponse {
+  repeated ViewerPage pages = 1;
+  optional string aesKey = 7;
+  optional string aesIv = 8;
+}
+message ViewerPage {
+  optional string imageUrl = 1;
+}

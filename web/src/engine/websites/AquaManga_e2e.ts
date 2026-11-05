@@ -6,8 +6,8 @@ new TestFixture({
         title: 'AquaManga'
     },
     container: {
-        url: 'https://aquareader.net/manga/only-for-love/',
-        id: JSON.stringify({ post: '3016', slug: '/manga/only-for-love/' }),
+        url: 'https://aquareader.org/manga/only-for-love/',
+        id: JSON.stringify({ slug: '/manga/only-for-love/' }),
         title: 'Only for Love'
     },
     child: {

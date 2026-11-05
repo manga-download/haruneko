@@ -1,111 +1,204 @@
+import { type ElementHandle, TimeoutError } from 'puppeteer-core';
 import { FrontendFixture } from '../../../test/FrontendFixture';
-
-const selectorWebsiteFilter = `#Plugin input#PluginSelect`;
-const selectorMediaTitleFilter = `#MediaFilter input#MediaFilterSearch`;
-const selectorMediaItemFilter = `#ItemFilter input#ItemFilterSearch`;
-const selectorMediaUpdateButton = `#Plugin button#MediaUpdateButton`;
-const selectorMediaTitleLabels = `#MediaList .media`;
 
 /**
  * A fixture providing specific functionality for testing the Classic front-end.
  */
 export class TestFixture extends FrontendFixture {
 
+    readonly #selector = {
+        WebsiteFilter: '#Plugin input#PluginSelect',
+        MangaFilter: '#MediaFilter input#MediaFilterSearch',
+        ChapterFilter: '#ItemFilter input#ItemFilterSearch',
+    };
+
+    /**
+     * Close the startup guide if it is open.
+     */
+    public async EnsureNoStartupGuide() {
+        //await super.Screenshot('START - FrontendClassicFixture.EnsureNoStartupGuide()');
+        const page = await super.GetPage();
+        let button: ElementHandle<HTMLButtonElement>;
+        try {
+            button = await page.waitForSelector('#startupGuide button.bx--modal-close', { visible: true, timeout: 5000 });
+        } catch { }
+        try {
+            await button?.click();
+            await page.waitForSelector('#startupGuide', { hidden: true, timeout: 5000 });
+        } finally {
+            //await super.Screenshot('END - FrontendClassicFixture.EnsureNoStartupGuide()');
+        }
+    }
+
     /**
      * Get the current text in the website search box.
      */
     public async GetWebsiteFilter() {
-        return super.GetText(selectorWebsiteFilter);
+        return super.GetText(this.#selector.WebsiteFilter);
     }
 
     /**
      * Set the current text in the website search box to {@link search}.
      */
     public async SetWebsiteFilter(search: string) {
-        await super.SetText(selectorWebsiteFilter, search);
+        await super.SetText(this.#selector.WebsiteFilter, search);
     }
 
     /**
      * Click the option in the website selection list that corresponds to the given website plugin {@link id}.
      */
     public async SelectWebsite(id: string, timeout = 1000) {
-        const selector = `#Plugin [role="listbox"] #${id}[role="option"] .title`;
+        await super.Click(this.#selector.WebsiteFilter, timeout); // Required to open the drop-down
+        await super.Click(`#Plugin #combo-PluginSelect #PluginSelect-${id}[role="option"] .title`, timeout);
+    }
+
+    /**
+     * Click the button to update the manga list for the currently selected website.
+     */
+    public async UpdateWebsiteMangaList(timeout = 10_000) {
+        //await super.Screenshot('FrontendClassicFixture.UpdateWebsiteMangaList() - START');
+        await super.Click('#Plugin button#MediaUpdateButton');
         const page = await super.GetPage();
-        await page.click(selectorWebsiteFilter); // Requiured to open the drop-down
-        await page.waitForSelector(selector, { timeout });
-        await page.click(selector);
+        try {
+            // await page.waitForSelector('#MediaList > div.loading', { visible: false, timeout });
+            const handle = await page.waitForSelector('#MediaList div.media a.title, #MediaList > div.error', { visible: true, timeout });
+            const errorMessage = await handle.evaluate(element => element.classList.contains('error') ? element.textContent : null);
+            if (errorMessage) throw new Error(errorMessage);
+        } finally {
+            //await super.Screenshot('FrontendClassicFixture.UpdateWebsiteMangaList() - END');
+        }
     }
 
     /**
-     * Click the button to update the media titles from the currently selected website.
+     * Get the current text in the manga search box.
      */
-    public async UpdateWebsiteMediaTitles(timeout = 5000) {
+    public async GetMangaFilter() {
+        return super.GetText(this.#selector.MangaFilter);
+    }
+
+    /**
+     * Set the current text in the manga search box to {@link needle}.
+     */
+    public async SetMangaFilter(needle: string) {
+        await super.SetText(this.#selector.MangaFilter, needle);
+    }
+
+    async #GetMangaElement(title: string, timeout = 1000) {
+        const selector = '#MediaList div.media > div.media';
+        const selectorBookmarkText = 'a.title';
         const page = await super.GetPage();
-        await page.click(selectorMediaUpdateButton);
-        await page.waitForSelector(selectorMediaTitleLabels, { timeout });
-    }
-
-    /**
-     * Get the current text in the media title search box.
-     */
-    public async GetMediaTitleFilter() {
-        return super.GetText(selectorMediaTitleFilter);
-    }
-
-    /**
-     * Set the current text in the media title search box to {@link search}.
-     */
-    public async SetMediaTitleFilter(search: string) {
-        await super.SetText(selectorMediaTitleFilter, search);
-    }
-
-    /**
-     * Search for a media title with the matching {@link text} in the current list and click on its bookmark button.
-     */
-    public async BookmarkMediaTitle(text: string) {
-        const selectorMediaText = 'a.title';
-        const selectorBookmarkButton = 'button:first-child';
-        const page = await super.GetPage();
-        const elements = await page.$$(selectorMediaTitleLabels);
+        await page.waitForSelector(selector, { visible: true, timeout });
+        const elements = await page.$$(selector);
         for (const element of elements) {
-            if (await element.$eval(selectorMediaText, (a: HTMLAnchorElement) => a.innerText) === text) {
-                const button = await element.$(selectorBookmarkButton);
-                return button.click();
+            const handle = await element.$(selectorBookmarkText);
+            // biome-ignore lint/performance/useDomNodeTextContent: Layout awareness is required to strip whitespaces
+            if (await handle.evaluate(anchor => anchor.innerText) === title) {
+                return element;
             }
         }
-        throw new Error(`failed to find element matching selector '${selectorMediaTitleLabels} ${selectorMediaText}' with text '${text}'`);
+        throw new Error(`Failed to find element(s) matching '${selector}' with text '${title}'`);
     }
 
     /**
-     * Search for a media title with the matching {@link text} in the current list and click on its text.
+     * Search for a manga with the matching {@link title} in the current manga list and click on it.
      */
-    public async SelectMediaTitle(text: string) {
-        const selectorMediaText = 'a.title';
+    public async SelectManga(title: string, timeout = 10_000) {
+        await this.#GetMangaElement(title, timeout).then(div => div.click());
         const page = await super.GetPage();
-        const elements = await page.$$(`${selectorMediaTitleLabels} ${selectorMediaText}`);
-        for (const element of elements) {
-            if (await element.evaluate((anchor: HTMLAnchorElement) => anchor.innerText) === text) {
-                return element.click();
+        try {
+            // await page.waitForSelector('#ItemList > div.loading', { visible: false, timeout });
+            const handle = await page.waitForSelector('#ItemList div.listitem, #ItemList > div.error', { visible: true, timeout });
+            const errorMessage = await handle.evaluate(element => element.classList.contains('error') ? element.textContent : null);
+            if (errorMessage) throw new Error(errorMessage);
+        } finally {
+            //await super.Screenshot('FrontendClassicFixture.UpdateWebsiteMangaList() - END');
+        }
+    }
+
+    /**
+     * Search for a manga with the matching {@link title} in the current manga list and click on its bookmark button.
+     */
+    public async BookmarkManga(title: string, timeout = 1000) {
+        return this.#GetMangaElement(title, timeout)
+            .then(div => div.waitForSelector('button[role="bookmark"]:not(.bookmarked)', { visible: true, timeout }))
+            .then(button => button.click());
+    }
+
+    /**
+     * Paste the given manga {@link url} into the application using the paste link button.
+     */
+    public async PasteMangaFromClipboard(url: string, timeout = 10_000) {
+        const page = await super.GetPage();
+        await page.evaluate(link => navigator.clipboard.writeText(link), url);
+        await super.Click('#Media #MediaTitle button[role="paste"]');
+        // await page.waitForSelector('#ItemList > div.loading', { visible: false, timeout });
+        await Promise.race([
+            page.waitForSelector('#ItemList div.listitem', { visible: true, timeout }),
+            page.waitForSelector('#ItemList > div.error', { visible: true, timeout }),
+        ]);
+    }
+
+    /**
+     * Get the current text in the chapter search box.
+     */
+    public async GetChapterFilter(needle: string) {
+        await super.SetText(this.#selector.ChapterFilter, needle);
+    }
+
+    /**
+     * Set the current text in the chapter search box to {@link needle}.
+     */
+    public async SetChapterFilter(needle: string) {
+        await super.SetText(this.#selector.ChapterFilter, needle);
+    }
+
+    async #ClickChapterButton(title: string, selector: string, timeout = 1000) {
+        const selectorMediaItemLabels = '#ItemList div.listitem';
+        const page = await super.GetPage();
+        await page.waitForSelector(selectorMediaItemLabels, { visible: true, timeout });
+        for (const element of await page.$$(selectorMediaItemLabels)) {
+            const handle = await element.$('a.title');
+            // biome-ignore lint/performance/useDomNodeTextContent: Layout awareness is required to strip whitespaces
+            if (await handle.evaluate(anchor => anchor.innerText) === title) {
+                return element.$(selector).then(element => element.click());
             }
         }
-        throw new Error(`failed to find element matching selector '${selectorMediaTitleLabels} ${selectorMediaText}' with text '${text}'`);
+        throw new Error(`Failed to find element(s) matching '${selectorMediaItemLabels}' with text '${title}'`);
     }
 
     /**
-     * Get the current text in the media item search box.
+     * Search for a chapter with the matching {@link title} in the current chapter list and click on its preview button.
      */
-    public async GetMediaItemFilter(search: string) {
-        await super.SetText(selectorMediaItemFilter, search);
+    public async ClickChapterPreview(title: string, timeout = 1000) {
+        return this.#ClickChapterButton(title, 'button[role="preview"]', timeout);
     }
 
     /**
-     * Set the current text in the media item search box to {@link search}.
+     * Search for a chapter with the matching {@link title} in the current chapter list and click on its download button.
      */
-    public async SetMediaItemFilter(search: string) {
-        await super.SetText(selectorMediaItemFilter, search);
+    public async ClickChapterDownload(title: string, timeout = 1000) {
+        return this.#ClickChapterButton(title, 'button[role="download"]', timeout);
     }
 
-    public async SelectMediaItem(_id: string) {
-        throw new Error('Not Implemented!');
+    /**
+     * Get the preview image links.
+     */
+    public async GetPreviewImageLinks(count: number, timeout = 5000) {
+        const selector = '#ImageViewer img.imgpreview';
+        const page = await super.GetPage();
+        await page.waitForSelector(selector, { visible: true, timeout });
+        return new Promise<string[]>((resolve, reject) => {
+            const timer = setInterval(async () => {
+                const elements = await page.$$(selector);
+                if (elements.length === count) {
+                    resolve(Promise.all(elements.map(element => element.evaluate(img => img.src))));
+                    clearInterval(timer);
+                }
+            }, 250);
+            setTimeout(() => {
+                clearInterval(timer);
+                reject(new TimeoutError(`Failed to find ${count} element(s) matching '${selector}'`));
+            }, timeout);
+        });
     }
 }

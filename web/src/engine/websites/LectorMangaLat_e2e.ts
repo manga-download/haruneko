@@ -6,17 +6,17 @@ new TestFixture({
         title: 'LectorManga (.Lat)'
     },
     container: {
-        url: 'https://lectormangaa.com/biblioteca/lily-of-the-valley/',
-        id: JSON.stringify({ post: '18933', slug: '/biblioteca/lily-of-the-valley/' }),
-        title: 'Lily of the valley'
+        url: 'https://lector-mangas.lat/comics/linea-de-corte',
+        id: '/comics/linea-de-corte',
+        title: 'Linea De Corte'
     },
     child: {
-        id: '/biblioteca/lily-of-the-valley/capitulo-10/',
-        title: 'Capítulo 10'
+        id: '/comics/linea-de-corte/capitulo-107',
+        title: 'Capítulo 107'
     },
     entry: {
-        index: 0,
-        size: 610_831,
-        type: 'image/jpeg'
+        index: 1,
+        size: 67_474,
+        type: 'image/webp'
     }
 }).AssertWebsite();

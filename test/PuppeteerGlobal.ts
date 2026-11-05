@@ -23,16 +23,22 @@ async function delay(milliseconds: number) {
 }
 
 async function CloseSplashScreen(target: puppeteer.Target) {
-    const page = await target.page();
-    let url = page?.url();
-    while(!url?.startsWith('http')) {
-        await delay(250);
-        url = page?.url();
-        // TODO: leave after timeout?
+    if (target.type() !== puppeteer.TargetType.PAGE || !target.url()?.startsWith('http') || !target.url()?.includes('/splash.html')) {
+        return;
     }
-    if(url && /splash.html/i.test(url)) {
-        page?.removeAllListeners();
-        await page?.close();
+    //console.log(new Date().toISOString(), '➔', '<CloseSplashScreen>', 'Detected:', target.url());
+    for (let attempts = 1; attempts < 9; attempts++) {
+        try {
+            await delay(500);
+            if (!target.browser().connected) return;
+            const page = await target.page();
+            if (!page || page.isClosed()) return;
+            await page?.removeAllListeners()?.close();
+            //console.log(new Date().toISOString(), '➔', '<CloseSplashScreen>', 'Closed:', target.url());
+            return;
+        } catch (error) {
+            console.warn(new Date().toISOString(), '➔', '<CloseSplashScreen>', 'Failed', `(Attempt: ${attempts})`, error);
+        }
     }
 }
 
@@ -43,7 +49,7 @@ async function LaunchServer(): Promise<ChildProcess> {
         shell: process.platform === 'win32',
     });
     await delay(1000); // TODO: Find better solution to wait until web-app is hosted ...
-    console.log(new Date().toISOString(), '=>', `Started Server (pid: ${vite.pid}):`, vite.exitCode === null);
+    console.log(new Date().toISOString(), '➔', `Started Server (pid: ${vite.pid}):`, vite.exitCode === null);
     return vite;
 }
 
@@ -64,7 +70,7 @@ async function DetectElectron(): Promise<string> {
     for(const electron of search) {
         try {
             if((await fs.stat(path.normalize(electron))).isFile()) {
-                console.log(new Date().toISOString(), '=>', 'Detected Electron:', electron);
+                console.log(new Date().toISOString(), '➔', 'Detected Electron:', electron);
                 return electron;
             }
         } catch {}
@@ -81,10 +87,21 @@ async function LaunchElectron(): Promise<puppeteer.Browser> {
         defaultViewport: null,
         ignoreDefaultArgs: true,
         executablePath: await DetectElectron(),
-        args: [ electronApp, '--remote-debugging-port=0', '--disable-blink-features=AutomationControlled', '--ignore-certificate-errors', '--no-sandbox', '--disable-gpu', '--trace-warnings', '--origin=' + AppURL ],
+        args: [
+            electronApp,
+            '--no-sandbox',
+            '--disable-gpu',
+            '--trace-warnings',
+            '--remote-debugging-port=0', // Use a random port to avoid anti-bot detection
+            '--disable-dbus', // Suppress warnings/errors when electron tries to connect to D-Bus session in CI/CD pipeline
+            '--ignore-certificate-errors',
+            '--disable-blink-features=AutomationControlled', // Suppress certain automation flags to avoid anti-bot detection
+            `--origin=${AppURL}`,
+        ],
         userDataDir: userDir,
         dumpio: true,
     });
+    console.log(new Date().toISOString(), '➔', 'Electron CLI:', browser.process().spawnfile, browser.process().spawnargs);
     browser.on('targetcreated', CloseSplashScreen);
     //SetupBlinkEvasions(browser, EvadeWebDriverDetection, EvadeChromeDevToolProtocolDetection);
 
@@ -93,7 +110,6 @@ async function LaunchElectron(): Promise<puppeteer.Browser> {
         const pages = await browser.pages();
         const page = pages.find(p => p.url() === AppURL);
         if(page) {
-            await page.reload({ timeout: 5000 });
             await page.waitForSelector(AppSelector, { timeout: 7500 });
             console.log(new Date().toISOString(), '➔', 'Using Page:', [ page.url() ]);
             console.log(new Date().toISOString(), '➔', 'Remote Debugger:', browser.wsEndpoint());
@@ -114,12 +130,7 @@ export async function setup() {
     await fs.mkdir(tempDir, { recursive: true });
     await fs.mkdir(userDir, { recursive: true });
 
-    try {
-        server = await LaunchServer();
-    } catch(error) {
-        throw error;
-    }
-
+    server = await LaunchServer();
     try {
         browser = await LaunchElectron();
         process.env.browserWS = browser.wsEndpoint();
@@ -131,13 +142,10 @@ export async function setup() {
 
 export async function teardown() {
     const pages = await browser?.pages() ?? [];
-    for(const page of pages) {
-        try {
-            page.removeAllListeners();
-            await page.close();
-            await delay(1000);
-        } catch {}
-    }
+    await Promise.all(pages.map(async page => {
+        await page.removeAllListeners()?.close();
+        await delay(1000);
+    }));
     try {
         await browser?.removeAllListeners()?.close();
         await delay(1000);
@@ -155,25 +163,22 @@ async function TryStopProcess(processInfo: ChildProcess | null, label: string): 
     const isRunning = () => processInfo.exitCode === null && processInfo.signalCode === null;
     const processPath = path.relative(process.cwd(), processInfo.spawnfile);
     try {
-        switch (process.platform) {
-            case 'win32':
-                if(isRunning()) {
-                    await new Promise(resolve => exec(`taskkill /pid ${processInfo.pid} /T /F`, resolve));
-                    break;
-                }
-            default:
-                const signals: NodeJS.Signals[] = [ 'SIGINT', 'SIGTERM', 'SIGKILL' ];
-                for(let index = 0; isRunning() && index < signals.length; index++) {
-                    console.log(new Date().toISOString(), '=>', signals[index], processPath, processInfo.kill(signals[index]));
-                    await delay(1000);
-                }
-                break;
+        if (process.platform === 'win32' && isRunning()) {
+            await new Promise(resolve => exec(`taskkill /pid ${processInfo.pid} /T /F`, resolve));
+            await delay(1000);
         }
+
+        const signals: NodeJS.Signals[] = [ 'SIGINT', 'SIGTERM', 'SIGKILL' ];
+        for(let index = 0; isRunning() && index < signals.length; index++) {
+            console.log(new Date().toISOString(), '➔', signals[index], processPath, processInfo.kill(signals[index]));
+            await delay(1000);
+        }
+
         await delay(1000);
         if(isRunning()) {
             throw new Error();
         }
-    } catch(error) {
-        console.warn(new Date().toISOString(), '=>', `Failed to stop ${label} (pid: ${processInfo.pid}):`, processPath);
+    } catch {
+        console.warn(new Date().toISOString(), '➔', `Failed to stop ${label} (pid: ${processInfo.pid}):`, processPath);
     }
 }
