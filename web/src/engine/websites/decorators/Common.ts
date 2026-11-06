@@ -6,6 +6,33 @@ import type { MediaChild, MediaContainer } from '../../providers/MediaPlugin';
 import type { Priority } from '../../taskpool/TaskPool';
 import DeProxify from '../../transformers/ImageLinkDeProxifier';
 import { Delay } from '../../BackgroundTimers';
+import { FetchRedirection } from '../../platform/AntiScrapingDetection';
+
+export function TurnStileTokenScript(sitekey: string): string {
+    return `
+    new Promise((resolve, reject) => {
+        if(window.location.hash) {
+            document.head.innerHTML = '';
+            document.body.innerHTML = window.location.hash;
+            return resolve(${FetchRedirection.None});
+        }
+        document.documentElement.innerHTML = '<head><meta charset="utf-8"></head><body style="margin:0;display:flex;align-items:center;justify-content:center;height:100vh;"><div id="cf-turnstile"></div></body>';
+        const script = document.createElement('script');
+        script.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
+        script.onerror = reject;
+        script.onload = () => window.turnstile.render('#cf-turnstile', {
+            'sitekey': ${JSON.stringify(sitekey)},
+            'callback': token => {
+                window.location.hash = token;
+                resolve(${FetchRedirection.Automatic});
+                setTimeout(() => window.location.reload(), 500);
+            },
+            'before-interactive-callback': () => resolve(${FetchRedirection.Interactive}),
+        });
+        document.head.appendChild(script);
+    });
+    `;
+}
 
 export function ThrowOnUnsupportedDecoratorContext(context: ClassDecoratorContext) {
     if (context && context.kind !== 'class') {

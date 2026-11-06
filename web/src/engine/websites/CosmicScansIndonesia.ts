@@ -1,10 +1,11 @@
 import { Tags } from '../Tags';
 import icon from './CosmicScansIndonesia.webp';
-import { FetchJSON, FetchWindowScript, FetchWindowTurnstileToken } from '../platform/FetchProvider';
+import { FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
 import { Chapter, DecoratableMangaScraper, Manga, type MangaPlugin, Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import { GetBytesFromHex, GetBytesFromUTF8, GetURLBase64FromBytes } from '../BufferEncoder';
 import { XOR } from '../Crypto';
+import { AddAntiScrapingDetection } from '../platform/AntiScrapingDetection';
 
 type APIResult<T> = {
     data: T;
@@ -36,6 +37,10 @@ type APISession = APIResult<{
     sessionId: string;
     axisKeys: string[];
 }>;
+
+AddAntiScrapingDetection(async invoke => invoke(`
+    ${Common.TurnStileTokenScript('0x4AAAAAAFrnsF7VWVgNrK9k')}
+`), /^https:\/\/\d+\.cosmicscans\.to\/chapter\//);
 
 class SealedStore {
     private seed: Uint8Array<ArrayBuffer> | null = null;
@@ -182,7 +187,7 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
         const chapterUrl = new URL(`/chapter/${chapter.Identifier}`, this.URI);
-        const token = await FetchWindowTurnstileToken(new Request(chapterUrl), '0x4AAAAAAFrnsF7VWVgNrK9k');
+        const token = await FetchWindowScript(new Request(chapterUrl), 'window.location.hash.slice(1)');
 
         const { data: { sessionId, axisKeys } } = await FetchJSON<APISession>(new Request(new URL(`./manga/img/session`, this.apiURL), {
             method: 'POST',

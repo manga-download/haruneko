@@ -37,5 +37,3 @@ export const FetchNextProps: typeof instance.FetchNextProps = (request) => insta
 export const FetchWindowScript: typeof instance.FetchWindowScript = (request, script, delay?, timeout?) => instance.FetchWindowScript(request, script, delay, timeout);
 /** {@inheritDoc FetchProvider.FetchWindowPreloadScript} @see {@link FetchProvider.FetchWindowPreloadScript} */
 export const FetchWindowPreloadScript: typeof instance.FetchWindowPreloadScript = (request, preload, script, delay = 0, timeout = 60_000) => instance.FetchWindowPreloadScript(request, preload, script, delay, timeout);
-/** {@inheritDoc FetchProvider.FetchWindowTurnstileToken} @see {@link FetchProvider.FetchWindowTurnstileToken} */
-export const FetchWindowTurnstileToken: typeof instance.FetchWindowTurnstileToken = (request, sitekey, preload = '', delay = 0, timeout = 60_000) => instance.FetchWindowTurnstileToken(request, sitekey, preload, delay, timeout);
