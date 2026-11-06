@@ -36,7 +36,7 @@ export function TurnStileTokenScript(sitekey: string): string {
 
 export function ThrowOnUnsupportedDecoratorContext(context: ClassDecoratorContext) {
     if (context && context.kind !== 'class') {
-        throw new InternalError(`Inalid decorator context: ${context.name}`);
+        throw new InternalError(`Invalid decorator context: ${context.name}`);
     }
 }
 
