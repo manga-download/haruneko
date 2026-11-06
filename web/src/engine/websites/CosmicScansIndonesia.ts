@@ -114,10 +114,8 @@ class SealedStore {
         if (!this.IsReady()) {
             throw new Error('mintImageToken: sealed store not initialized');
         }
-        const signingKey = this.Open(0);
-        const encryptionKey = this.Open(1);
-        const message = XOR(GetBytesFromUTF8(`${chapterSlug}:${pageIndex}:${Date.now()}`), encryptionKey);
-        const cryptoKey = await crypto.subtle.importKey('raw', signingKey, { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']);
+        const message = XOR(GetBytesFromUTF8(`${chapterSlug}:${pageIndex}:${Date.now()}`), this.Open(1));
+        const cryptoKey = await crypto.subtle.importKey('raw', this.Open(0), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']);
         const signature = new Uint8Array(await crypto.subtle.sign('HMAC', cryptoKey, message));
         return [sessionId, GetURLBase64FromBytes(signature), GetURLBase64FromBytes(message)].join('.');
     }
