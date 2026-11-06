@@ -62,7 +62,7 @@ class SealedStore {
     // Generate a 32-byte XOR mask for a slot
     private GenerateMask(slot: number): Uint8Array<ArrayBuffer> {
         if (!this.seed) {
-            throw new Error("sealedStore: not initialized");
+            throw new Error('sealedStore: not initialized');
         }
 
         const seed = (
@@ -112,31 +112,14 @@ class SealedStore {
     // Generate a signed page URL segment
     async ComputePageUrlSegment(sessionId: string, chapterSlug: string, pageIndex: number): Promise<string> {
         if (!this.IsReady()) {
-            throw new Error("mintImageToken: sealed store not initialized");
+            throw new Error('mintImageToken: sealed store not initialized');
         }
-
         const signingKey = this.Open(0);
         const encryptionKey = this.Open(1);
-
         const message = XOR(GetBytesFromUTF8(`${chapterSlug}:${pageIndex}:${Date.now()}`), encryptionKey);
-        const cryptoKey = await crypto.subtle.importKey(
-            "raw",
-            signingKey,
-            {
-                name: "HMAC",
-                hash: "SHA-256"
-            },
-            false,
-            ["sign"]
-        );
-
-        const signature = new Uint8Array(await crypto.subtle.sign("HMAC", cryptoKey, message));
-
-        return [
-            sessionId,
-            GetURLBase64FromBytes(signature),
-            GetURLBase64FromBytes(message)
-        ].join(".");
+        const cryptoKey = await crypto.subtle.importKey('raw', signingKey, { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']);
+        const signature = new Uint8Array(await crypto.subtle.sign('HMAC', cryptoKey, message));
+        return [sessionId, GetURLBase64FromBytes(signature), GetURLBase64FromBytes(message)].join('.');
     }
 }
 
@@ -205,7 +188,7 @@ export default class extends DecoratableMangaScraper {
         const { data: { pageCount } } = await FetchJSON<APIPages>(new Request(new URL(`./manga/readingPage/${chapter.Identifier}`, this.apiURL)));
 
         return await Promise.all(Array.from({ length: pageCount }, async (_, pageIndex) => {
-            return new Page(this, chapter, new URL(`${this.apiURL}manga/img/r/${await store.ComputePageUrlSegment(sessionId, chapter.Identifier, pageIndex)}`), { Referer: this.URI.href});
+            return new Page(this, chapter, new URL(`${this.apiURL}manga/img/r/${await store.ComputePageUrlSegment(sessionId, chapter.Identifier, pageIndex)}`), { Referer: this.URI.href });
         }));
 
     }
