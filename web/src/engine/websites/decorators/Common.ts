@@ -16,7 +16,7 @@ export function TurnStileTokenScript(sitekey: string): string {
             document.body.innerHTML = window.location.hash;
             return resolve(${FetchRedirection.None});
         }
-        document.documentElement.innerHTML = '<head><meta charset="utf-8"></head><body style="margin:0;display:flex;align-items:center;justify-content:center;height:100vh;"><div id="cf-turnstile"></div></body>';
+        document.documentElement.innerHTML = '<head><meta charset="utf-8"><style>body { background-color: #ffffff; margin: 0; display: flex; align-items: center; justify-content: center; height: 100vh; } @media (prefers-color-scheme: dark) { body { background-color: #121212; } }</style></head><body><div id="cf-turnstile"></div></body>';
         const script = document.createElement('script');
         script.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
         script.onerror = reject;
