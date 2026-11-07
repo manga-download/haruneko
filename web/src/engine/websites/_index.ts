@@ -767,6 +767,7 @@ export { default as YakshaComics } from './YakshaComics';
 export { default as YaoiChan } from './YaoiChan';
 export { default as YaoiHavenReborn } from './YaoiHavenReborn';
 export { default as YaoiMangaOku } from './YaoiMangaOku';
+export { default as YaoiMe } from './YaoiMe';
 export { default as YaoiScan } from './YaoiScan';
 export { default as YawarakaSpirits } from './YawarakaSpirits';
 export { default as Ynjn } from './Ynjn';
