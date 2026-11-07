@@ -1,11 +1,11 @@
 import { Tags } from '../Tags';
 import icon from './CosmicScansIndonesia.webp';
+import { XOR } from '../Crypto';
+import { GetBytesFromHex, GetBytesFromUTF8, GetURLBase64FromBytes } from '../BufferEncoder';
+import { AddAntiScrapingDetection, FetchRedirection } from '../platform/AntiScrapingDetection';
 import { FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
 import { Chapter, DecoratableMangaScraper, Manga, type MangaPlugin, Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { GetBytesFromHex, GetBytesFromUTF8, GetURLBase64FromBytes } from '../BufferEncoder';
-import { XOR } from '../Crypto';
-import { AddAntiScrapingDetection, FetchRedirection } from '../platform/AntiScrapingDetection';
 
 type APIResult<T> = {
     data: T;
@@ -40,12 +40,12 @@ type APISession = APIResult<{
 
 AddAntiScrapingDetection(async invoke => invoke(`
     new Promise((resolve, reject) => {
+        document.head.replaceChildren();
         if(window.location.hash) {
-            document.head.innerHTML = '';
             document.body.innerHTML = window.location.hash;
             return resolve(${FetchRedirection.None});
         }
-        document.documentElement.innerHTML = '<head><meta charset="utf-8"><style>body { background-color: #ffffff; margin: 0; display: flex; align-items: center; justify-content: center; height: 100vh; } @media (prefers-color-scheme: dark) { body { background-color: #121212; } }</style></head><body><div id="cf-turnstile"></div></body>';
+        document.body.innerHTML = '<div id="cf-turnstile" style="display: grid; height: 100vh; place-items: center;"></div>';
         const script = document.createElement('script');
         script.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
         script.onerror = reject;
@@ -114,24 +114,27 @@ export default class extends DecoratableMangaScraper {
 
         const { data: { sessionId, axisKeys } } = await FetchJSON<APISession>(new Request(new URL(`./manga/img/session`, this.apiURL), {
             method: 'POST',
-            body: JSON.stringify({ turnstile_token: token, chapter_slug: chapter.Identifier }),
             headers: {
+                'Referer': this.URI.href,
                 'Content-Type': 'application/json',
-                Referer: this.URI.href,
-            }
+            },
+            body: JSON.stringify({ turnstile_token: token, chapter_slug: chapter.Identifier }),
         }));
 
+        const [signatureKeyData, contentKey] = axisKeys.map(GetBytesFromHex);
         const { data: { pageCount } } = await FetchJSON<APIPages>(new Request(new URL(`./manga/readingPage/${chapter.Identifier}`, this.apiURL)));
 
         return await Promise.all(Array.from({ length: pageCount }, async (_, pageIndex) => {
-            return new Page(this, chapter, new URL(`${this.apiURL}manga/img/r/${sessionId}.${await this.ComputePageUrlSegment(chapter.Identifier, pageIndex, axisKeys)}`), { Referer: this.URI.href });
+            const pageID = `${chapter.Identifier}:${pageIndex}:${Date.now()}`;
+            const securePageID = await this.#EncryptAndSign(pageID, contentKey, signatureKeyData);
+            return new Page(this, chapter, new URL(`./manga/img/r/${sessionId}.${securePageID}`, this.apiURL), { Referer: this.URI.href });
         }));
     }
 
-    private async ComputePageUrlSegment(chapterSlug: string, pageIndex: number, keys: string[]): Promise<string> {
-        const message = XOR(GetBytesFromUTF8(`${chapterSlug}:${pageIndex}:${Date.now() }`), GetBytesFromHex(keys[1]));
-        const cryptoKey = await crypto.subtle.importKey('raw', GetBytesFromHex(keys[0]), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']);
-        const signature = new Uint8Array(await crypto.subtle.sign('HMAC', cryptoKey, message));
-        return [GetURLBase64FromBytes(signature), GetURLBase64FromBytes(message)].join('.');
+    async #EncryptAndSign(content: string, contentKey: Uint8Array, signatureKeyData: BufferSource): Promise<string> {
+        const data = XOR(GetBytesFromUTF8(content), contentKey);
+        const key = await crypto.subtle.importKey('raw', signatureKeyData, { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']);
+        const signature = new Uint8Array(await crypto.subtle.sign('HMAC', key, data));
+        return `${GetURLBase64FromBytes(signature)}.${GetURLBase64FromBytes(data)}`;
     }
 }
