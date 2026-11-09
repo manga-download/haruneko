@@ -6,7 +6,7 @@ new TestFixture({
         title: 'NetTruyen GG',
     },
     container: {
-        url: 'https://nettruyen.gg/truyen-tranh/ta-co-90-ty-tien-liem-cau',
+        url: 'https://hinettruyen.com/truyen-tranh/ta-co-90-ty-tien-liem-cau',
         id: '/truyen-tranh/ta-co-90-ty-tien-liem-cau',
         title: 'Ta Có 90 Tỷ Tiền Liếm Cẩu!',
     },
