@@ -616,7 +616,6 @@ export { default as RoliaScan } from './RoliaScan';
 export { default as Roxinha } from './Roxinha';
 export { default as RuManhua } from './RuManhua';
 export { default as RuyaManga } from './RuyaManga';
-export { default as RuyaMangaNet } from './RuyaMangaNet';
 export { default as S2Manga } from './S2Manga';
 export { default as Sacguzellik } from './Sacguzellik';
 export { default as Sadscans } from './Sadscans';
