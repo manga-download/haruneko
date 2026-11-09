@@ -6,7 +6,7 @@ new TestFixture({
         title: 'Ikiru'
     },
     container: {
-        url: 'https://09.ikiru.wtf/manga/martial-peak/',
+        url: 'https://10.ikiru.wtf/manga/martial-peak/',
         id: 'martial-peak',
         title: 'Martial Peak'
     },
