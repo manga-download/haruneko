@@ -4,11 +4,11 @@ import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import { FetchWindowScript } from '../platform/FetchProvider';
 
-@Common.MangaCSS(/https:\/\/(toonkor|tkor)\d+\.(com|org)\/[^/]+$/, 'table.bt_view1 td.bt_title')
+@Common.MangaCSS(/https:\/\/\d+\.(toonkor|tkor).(net|com|org)\/[^/]+$/, 'table.bt_view1 td.bt_title')
 @Common.MangasMultiPageCSS('div.section-item-title a#title', Common.StaticLinkGenerator('/웹툰/연재?fil=제목', '/웹툰/완결?fil=제목'))
 @Common.ChaptersSinglePageCSS('td.content__title', undefined, element => ({
     id: element.dataset.role,
-    title: element.textContent.trim()
+    title: element.querySelector('span.ep-n').textContent.trim()
 }))
 @Common.PagesSinglePageJS(`
     new Promise (resolve => {
@@ -20,7 +20,7 @@ import { FetchWindowScript } from '../platform/FetchProvider';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('toonkor', 'Toonkor', 'https://toonkor0.org', Tags.Media.Manhwa, Tags.Language.Korean, Tags.Source.Aggregator, Tags.Accessibility.DomainRotation);
+        super('toonkor', 'Toonkor', 'https://003.toonkor.net', Tags.Media.Manhwa, Tags.Language.Korean, Tags.Source.Aggregator, Tags.Accessibility.DomainRotation);
     }
 
     public override get Icon() {
@@ -28,12 +28,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async Initialize(): Promise<void> {
-        this.URI.href = await FetchWindowScript<string>(new Request(new URL('https://t.me/s/tkor_com')), `
-            document.querySelector([
-                'div.tgme_widget_message_wrap:last-of-type a[href^="https://toonkor"]',
-                'div.tgme_widget_message_wrap:last-of-type a[href^="https://tkor"]',
-            ].join(', '))?.href;
-        `, 500) ?? this.URI.href;
+        this.URI.href = await FetchWindowScript<string>(new Request(new URL('https://toonkor.site')), `location.href`, 500) ?? this.URI.href;
         console.log(`Assigned URL '${this.URI}' to ${this.Title}`);
     }
 }

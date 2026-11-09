@@ -6,7 +6,7 @@ new TestFixture({
         title: 'Temple Scan (ESP)'
     },
     container: {
-        url: 'https://aedexnox.akan01.com/serie/esponjoso/',
+        url: 'https://aedexnox.syakaihoken-web.com/serie/esponjoso/',
         id: '/serie/esponjoso/',
         title: 'Esponjoso'
     },

@@ -5,7 +5,7 @@ import { type Chapter, DecoratableMangaScraper, Page } from '../providers/MangaP
 import DeScramble from '../transformers/ImageDescrambler';
 import type { Priority } from '../taskpool/DeferredTask';
 import { GetBytesFromHex, GetBytesFromUTF8, GetUTF8FromBytes } from '../BufferEncoder';
-import { DecryptXOR } from '../Crypto';
+import { XOR } from '../Crypto';
 import * as Common from './decorators/Common';
 
 type ChapterCryptedData = {
@@ -90,7 +90,7 @@ export default class extends DecoratableMangaScraper {
 
     private Decrypt(encrypted: string, keyData: string = this.URI.host): string {
         const key = Uint8Array.of(GetBytesFromUTF8(keyData).reduce((acc, b) => acc ^ b, 0));
-        return GetUTF8FromBytes(DecryptXOR(GetBytesFromHex(encrypted), key));
+        return GetUTF8FromBytes(XOR(GetBytesFromHex(encrypted), key));
     }
 
     public override async FetchImage(page: Page<PageData>, priority: Priority, signal: AbortSignal): Promise<Blob> {
