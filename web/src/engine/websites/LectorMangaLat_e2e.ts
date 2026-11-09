@@ -1,24 +1,22 @@
-import { TestFixture, type Config } from '../../../test/WebsitesFixture';
+import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config: Config = {
+new TestFixture({
     plugin: {
         id: 'lectormangalat',
         title: 'LectorManga (.Lat)'
-    }, /* CloudFlare
+    },
     container: {
-        url: 'https://lectormanga.lat/biblioteca/lily-of-the-valley/',
-        id: JSON.stringify({ post: '18933', slug: '/biblioteca/lily-of-the-valley/'}),
-        title: 'Lily of the valley'
+        url: 'https://lector-mangas.lat/comics/linea-de-corte',
+        id: '/comics/linea-de-corte',
+        title: 'Linea De Corte'
     },
     child: {
-        id: '/biblioteca/lily-of-the-valley/capitulo-10/',
-        title: 'Capítulo 10'
+        id: '/comics/linea-de-corte/capitulo-107',
+        title: 'Capítulo 107'
     },
     entry: {
-        index: 0,
-        size: 610831,
-        type: 'image/jpeg'
-    }*/
-};
-
-new TestFixture(config).AssertWebsite();
+        index: 1,
+        size: 67_474,
+        type: 'image/webp'
+    }
+}).AssertWebsite();

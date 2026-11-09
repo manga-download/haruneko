@@ -1,6 +1,4 @@
-// @vitest-environment jsdom
-import { mock } from 'vitest-mock-extended';
-import { describe, it, expect } from 'vitest';
+import { vi, describe, it, expect } from 'vitest';
 import type { HakuNeko } from '../engine/HakuNeko';
 import { Key } from '../engine/SettingsGlobal';
 import type { Choice, ISettings, SettingsManager } from '../engine/SettingsManager';
@@ -10,21 +8,15 @@ import type { FeatureFlags } from '../engine/FeatureFlags';
 
 // Mocking globals
 {
-    const mockFeatureFlags = mock<FeatureFlags>();
-    //mockFeatureFlags.CrowdinTranslationMode = ...
+    const mockFeatureFlags = {} as FeatureFlags;
+    const mockChoice = { Value: LocaleID.Locale_arSA } as unknown as Choice;
+    const mockSettings = { Get: vi.fn(key => key === Key.Language ? mockChoice : undefined) } as unknown as ISettings;
+    const mockSettingsManager = { OpenScope: vi.fn(() => mockSettings) } as unknown as SettingsManager;
 
-    const mockChoice = mock<Choice>({ Value: LocaleID.Locale_arSA });
-
-    const mockSettigns = mock<ISettings>();
-    mockSettigns.Get.calledWith(Key.Language).mockReturnValue(mockChoice);
-
-    const mockSettingsManager = mock<SettingsManager>();
-    mockSettingsManager.OpenScope.mockReturnValue(mockSettigns);
-
-    window.HakuNeko = mock<HakuNeko>({
+    globalThis.HakuNeko = Object.assign(globalThis.HakuNeko ?? {}, {
         SettingsManager: mockSettingsManager,
         FeatureFlags: mockFeatureFlags,
-    });
+    }) as unknown as HakuNeko;
 }
 
 describe('Localization', () => {

@@ -3,20 +3,20 @@
 new TestFixture({
     plugin: {
         id: 'lectorjpg',
-        title: 'LectorJPG'
+        title: 'VisorJPG'
     },
     container: {
-        url: 'https://lectorjpg.com/ver/una-bestia-al-anochecer',
-        id: '/ver/una-bestia-al-anochecer',
-        title: 'Una bestia al anochecer'
+        url: 'https://visorjpg.lat/series/killer-beat',
+        id: 'killer-beat',
+        title: 'Killer Beat'
     },
     child: {
-        id: '/ver/una-bestia-al-anochecer/captulo-35',
-        title: 'Capítulo 35'
+        id: '12039',
+        title: 'Capitulo 1'
     },
     entry: {
         index: 0,
-        size: 611_994,
+        size: 931_556,
         type: 'image/webp'
     }
 }).AssertWebsite();

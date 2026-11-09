@@ -1,25 +1,22 @@
-﻿import { TestFixture, type Config } from '../../../test/WebsitesFixture';
+﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config: Config = {
+new TestFixture({
     plugin: {
         id: 'comicryu',
         title: 'COMICリュウ'
     },
     container: {
-        url: 'https://www.comic-ryu.jp/series/zingnize/',
-        id: '/series/zingnize/',
+        url: 'https://comic-ryu.jp/series/6d078029740cd',
+        id: '/series/6d078029740cd',
         title: 'ZINGNIZE'
     },
     child: {
-        id: '/2167/',
-        title: '第一話「高坂甚内①」'
+        id: '/episodes/db4fd6cf96e40',
+        title: '第一話「高坂陣内(1)」'
     },
     entry: {
-        index: 0,
-        size: 3_619_874,
-        type: 'image/jpeg',
-        timeout: 25000
+        index: 5,
+        size: 1_368_994,
+        type: 'image/png',
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

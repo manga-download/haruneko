@@ -1,8 +1,7 @@
 import path from 'node:path';
 import fs from 'node:fs/promises';
-import { mock } from 'vitest-mock-extended';
-import { describe, test, expect, afterAll } from 'vitest';
-import type { ISettings, SettingsManager } from '../src/engine/SettingsManager';
+import { vi, describe, test, expect, afterAll } from 'vitest';
+import type { SettingsManager } from '../src/engine/SettingsManager';
 import type { StorageController } from '../src/engine/StorageController';
 import { PluginController } from '../src/engine/PluginController';
 
@@ -15,9 +14,9 @@ enum StatusCode {
 }
 
 const emojis = new Map([
-    [ StatusCode.OK, '✅' ],
-    [ StatusCode.WARNING, '⚠️' ],
-    [ StatusCode.ERROR, '❌' ],
+    [StatusCode.OK, '✅'],
+    [StatusCode.WARNING, '⚠️'],
+    [StatusCode.ERROR, '❌'],
 ]);
 
 type SimilarWebData = {
@@ -25,7 +24,7 @@ type SimilarWebData = {
         Rank?: number;
     };
     EstimatedMonthlyVisits: Record<string, number>;
-}
+};
 
 type Result = {
     id: string;
@@ -37,62 +36,34 @@ type Result = {
     };
     visitors: number;
     rank: number;
-}
+};
 
 const expectedRedirectPatterns = new Map([
-    [ 'https://erosxcomic.xyz/', [ // REASON: The website uses redirects to rotating (top-level) domains (probably to avoid scraping or DMCA)
-        /^https:\/\/(erosxcomic|erosmanga|doomcomic)\.xyz\/$/,
-    ] ],
-    [ 'https://holymanga.net/', [ // REASON: The website uses redirects to rotating (sub-)domains (probably to avoid scraping or DMCA)
-        /^https:\/\/w+\d*\.holymanga\.net\/$/,
-    ] ],/*
-    [ 'https://manatoki.net/', [ // REASON: The website uses redirects to rotating (sub-)domains (probably to avoid scraping or DMCA)
-        /^https:\/\/manatoki\d*\.net\/$/,
-    ] ],*/
-    [ 'https://mangafreak.me/', [ // REASON: The website uses redirects to rotating (sub-)domains (probably to avoid scraping or DMCA)
+    ['https://mangafreak.me/', [ // REASON: The website uses redirects to rotating (sub-)domains (probably to avoid scraping or DMCA)
         /^https:\/\/w+\d*\.mangafreak\.me\/$/,
-    ] ],
-    [ 'https://mintmanga.live/', [ // REASON: The website uses redirects to rotating (sub-)domains (probably to avoid scraping or DMCA)
+    ]],
+    ['https://mintmanga.live/', [ // REASON: The website uses redirects to rotating (sub-)domains (probably to avoid scraping or DMCA)
         /^https:\/\/\d+\.mintmanga\.one\/$/,
-    ] ],/*
-    [ 'https://newtoki0.com/', [ // REASON: The website uses redirects to rotating (sub-)domains (probably to avoid scraping or DMCA)
-        /^https:\/\/newtoki\d+\.com\/$/,
-    ] ],*/
-    [ 'https://pijamalikoi.com/', [ // REASON: The website redirects to a sub-domain when requesting the root path only (the top-level domain is still valid for non-empty paths)
-        /^https:\/\/www\.pijamalikoi\.com\/$/,
-    ] ],
-    [ 'https://eros-fabltoon.xyz/', [ // REASON: The website uses redirects to rotating (top-level) domains (probably to avoid scraping or DMCA)
-        /^https:\/\/(tecno|tenco|terco|eros)-?[a-z]+\.xyz\/$/,
-    ] ],
-    [ 'https://www.toomics.com/', [ // REASON: The website requires a cookie which is set in the Initialize() method to prevent redirection
+    ]],
+    ['https://www.toomics.com/', [ // REASON: The website requires a cookie which is set in the Initialize() method to prevent redirection
         /^https:\/\/global\.toomics\.com\/en$/,
-    ] ],/*
-    [ 'https://toonkor0.com/', [ // REASON: The website uses redirects to rotating (sub-)domains (probably to avoid scraping or DMCA)
-        /^https:\/\/toonkor\d+\.com\/$/,
-    ] ],*/
-    [ 'https://web.6parkbbs.com/', [ // REASON: This is a valid sub-domain to categorize content from its top-level website
-        /^https:\/\/club\.6parkbbs\.com\/index.php$/,
-    ] ],/*
-    [ 'https://comicvn0.net/', [ // REASON: The website uses redirects to rotating (sub-)domains (probably to avoid scraping or DMCA)
-        /^https:\/\/comicvn\d+\.net\/$/,
-    ] ],*/
+    ]],
+    ['https://yomumangas.com/', [ // REASON: The website redirect to another (sub-)domain if not from contacted from a PT-BR IP (Geoblocking)
+        /^https:\/\/global\.yomumangas\.com\/$/,
+    ]],
 ]);
 
 class TestFixture {
 
-    public readonly MockStorageController = mock<StorageController>();
-    public readonly MockSettingsManager = mock<SettingsManager>();
-
-    constructor() {
-        this.MockSettingsManager.OpenScope.mockReturnValue(mock<ISettings>());
-    }
+    private readonly MockStorageController = { LoadPersistent: vi.fn() } as unknown as StorageController;
+    private readonly MockSettingsManager = { OpenScope: vi.fn(() => ({ Initialize: vi.fn() })) } as unknown as SettingsManager;
 
     public CreateTestee() {
         return new PluginController(this.MockStorageController, this.MockSettingsManager);
     }
 
     private static IsUnexpectedRedirect(request: Request, response: Response): boolean {
-        if(response.redirected) {
+        if (response.redirected) {
             const patterns = expectedRedirectPatterns.get(request.url) ?? [];
             const isExpectedRedirectURL = patterns.some(pattern => pattern.test(response.url));
             const isCrossOriginRedirect = new URL(request.url).origin !== new URL(response.url).origin;
@@ -107,19 +78,18 @@ class TestFixture {
         try {
             const request = new Request(uri, { signal: AbortSignal.timeout(30_000) });
             const response = await fetch(request);
-            if(this.IsUnexpectedRedirect(request, response)) {
+            if (this.IsUnexpectedRedirect(request, response)) {
                 result.code = StatusCode.WARNING;
                 result.info = 'Redirected: ' + response.url;
             } else {
                 result.code = StatusCode.OK;
                 result.info = '';
             }
-        } catch(error) {
+        } catch (error: any) {
             result.code = StatusCode.ERROR;
-            result.info = `${error.cause ?? error.message ?? error}`;
-        } finally {
-            return result;
+            result.info = `${error?.cause ?? error?.message ?? error}`.trim();
         }
+        return result;
     }
 
     public static async GetSimilarWeb(uri: URL) {
@@ -151,7 +121,7 @@ class TestFixture {
         await fs.writeFile(file, [
             '| Status | Website | URL | Info |',
             '| :---: | :---- | :---- | :---- |',
-            ... results
+            ...results
                 .filter(result => result.status.code !== StatusCode.OK)
                 .map(result => `| ${emojis.get(result.status.code)} | **${result.title}** | ${result.url} | ${result.status.info} |`)
         ].join('\n'));
@@ -164,11 +134,11 @@ class TestFixture {
 
         function sort(self: Result, other: Result) {
             // First Priority
-            if(self.status.code !== other.status.code) {
+            if (self.status.code !== other.status.code) {
                 return self.status.code - other.status.code;
             }
             // Second Priority
-            if(self.visitors !== other.visitors) {
+            if (self.visitors !== other.visitors) {
                 return other.visitors - self.visitors;
             }
             // Last Priority
@@ -211,7 +181,7 @@ describe('Website Status/Metrics', { concurrent: true }, async () => {
     });
 
     test.each(new TestFixture().CreateTestee().WebsitePlugins)('$Title ➔ $URI.href', { timeout: 60_000 }, async (plugin) => {
-        const [ { code, info }, { rank, visitors } ] = await Promise.all([
+        const [{ code, info }, { rank, visitors }] = await Promise.all([
             TestFixture.GetStatus(plugin.URI),
             TestFixture.GetSimilarWeb(plugin.URI),
         ]);

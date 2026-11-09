@@ -2,47 +2,35 @@ import { Tags } from '../Tags';
 import icon from './FlameComics.webp';
 import { Chapter, DecoratableMangaScraper, Page, type MangaPlugin, Manga } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
+import { FetchCSS, FetchJSON, FetchNextProps } from '../platform/FetchProvider';
 
-type JSONMangas = {
-    pageProps: {
-        series : JSONManga[]
-    }
-}
-
-type JSONMangaDetails = {
-    pageProps: {
-        series: JSONManga,
-        chapters: JSONChapter[]
-    }
-}
-
-type JSONChapterDetails = {
-    pageProps: {
-        chapter: JSONChapter
-    }
-}
+type APIManga = {
+    id: number;
+    label: string;
+};
 
 type JSONManga = {
-    series_id: number,
-    title: string,
-}
+    series: {
+        series_id: number;
+        title: string;
+    };
+};
 
-type JSONChapter = {
-    token: string
-    chapter: string,
-    title: string,
-    images: Record<string, JSONImage>
-}
+type JSONChapters = {
+    chapters: {
+        chapter: string;
+        title: string;
+        token: string;
+    }[];
+};
 
-type JSONImage = {
-    name : string
-}
+// TODO: Check for possible revision
 
 @Common.ImageAjax(true)
 export default class extends DecoratableMangaScraper {
-    private nextBuild = 'J5IvkmIUIIRR6fxzIaczb';
+
     private readonly cdnURL = 'https://cdn.flamecomics.xyz';
+    private readonly apiURL = 'https://flamecomics.xyz/api/';
 
     public constructor() {
         super('flamecomics', 'Flame Comics', 'https://flamecomics.xyz', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.English, Tags.Source.Scanlator);
@@ -52,35 +40,31 @@ export default class extends DecoratableMangaScraper {
         return icon;
     }
 
-    public override async Initialize(): Promise<void> {
-        this.nextBuild = await FetchWindowScript(new Request(new URL(this.URI)), `__NEXT_DATA__.buildId`, 2500) ?? this.nextBuild;
-    }
-
     public override ValidateMangaURL(url: string): boolean {
         return new RegExpSafe(`^${this.URI.origin}/series/\\d+$`).test(url);
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
-        const mangaId = url.split('/').at(-1);
-        const { pageProps: { series } } = await FetchJSON<JSONMangaDetails>(new Request(new URL(`/_next/data/${this.nextBuild}/series/${mangaId}.json`, this.URI)));
-        return new Manga(this, provider, series.series_id.toString(), series.title);
+        const { series: { series_id, title } } = await FetchNextProps<JSONManga>(new Request(new URL(url)));
+        return new Manga(this, provider, `${series_id}`, title);
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        const { pageProps: { series } } = await FetchJSON<JSONMangas>(new Request(new URL(`/_next/data/${this.nextBuild}/browse.json`, this.URI)));
-        return series.map(serie => new Manga(this, provider, serie.series_id.toString(), serie.title));
+        const mangas = await FetchJSON<APIManga[]>(new Request(new URL('./series', this.apiURL)));
+        return mangas.map(({ label, id }) => new Manga(this, provider, `${id}`, label));
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const { pageProps: { chapters } } = await FetchJSON<JSONMangaDetails>(new Request(new URL(`/_next/data/${this.nextBuild}/series/${manga.Identifier}.json`, this.URI)));
-        return chapters.map(episode => new Chapter(this, manga, episode.token, ['Chapter', episode.chapter, episode.title].join(' ').trim()));
+        const { chapters } = await FetchNextProps<JSONChapters>(new Request(new URL(`/series/${manga.Identifier}`, this.URI)));
+        return chapters.map(({ token, chapter, title }) => new Chapter(this, manga, token, ['Chapter', chapter, title].joinTitleSegments()));
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const exclude = [/readonflame[^.]+\.(gif|jpeg|jpg|png|avif)$/, /chevron\.png/];
-        const { pageProps: { chapter: { images } } } = await FetchJSON<JSONChapterDetails>(new Request(new URL(`/_next/data/${this.nextBuild}/series/${chapter.Parent.Identifier}/${chapter.Identifier}.json`, this.URI)));
-        return Object.values(images)
-            .filter(image => exclude.none(pattern => pattern.test(image.name)))
-            .map(image => new Page(this, chapter, new URL(`/series/${chapter.Parent.Identifier}/${chapter.Identifier}/${image.name}`, this.cdnURL)));
+        //we could have used MangaStream.FetchCSS but not without breaking compatibility with old chapters id
+        const exclude = [/read[\s_.-]*on[\s_.-]*flame/i, /chevron\.png/];
+        const elements = await FetchCSS<HTMLImageElement>(new Request(new URL(`/series/${chapter.Parent.Identifier}/${chapter.Identifier}`, this.URI)), 'img[my]');
+        return elements
+            .filter(({ src }) => exclude.none(pattern => pattern.test(src)))
+            .map(({ src }) => new Page(this, chapter, new URL(src, this.cdnURL)));
     }
 }

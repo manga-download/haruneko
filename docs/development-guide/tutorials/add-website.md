@@ -28,7 +28,7 @@ Use the following boiler plate, but customize the constructor with appropriate a
 - `url` the origin of the website
 - `...tags` one or more comma seperated tags used to describe/categorize the content of the website
 
-Afterwards, run `node ./scripts/website-index.js` to automatically update the import in _/src/engine/websites/_index.ts_ (otherwise the website will not be available in HakuNeko).
+Afterwards, run `npm run update-website-index --workspace web` to automatically update the import in _/src/engine/websites/_index.ts_ (otherwise the website will not be available in HakuNeko).
 
 <details>
 <summary>MySampleMangas.ts</summary>

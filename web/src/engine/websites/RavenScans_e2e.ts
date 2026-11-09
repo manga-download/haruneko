@@ -1,24 +1,22 @@
-﻿import { TestFixture } from '../../../test/WebsitesFixture';
+import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'ravenscans',
         title: 'Raven Scans'
     },
     container: {
-        url: 'https://ravenscans.com/manga/am-i-invincible/',
-        id: '/manga/am-i-invincible/',
-        title: 'Am I Invincible'
+        url: 'https://ravenscans.org/manga/seitokai-ni-mo-ana-wa-aru/',
+        id: '/manga/seitokai-ni-mo-ana-wa-aru/',
+        title: 'Seitokai ni mo Ana wa Aru!',
     },
     child: {
-        id: '/am-i-invincible-chapter-chapter-176/',
-        title: 'Chapter 176'
+        id: '/seitokai-ni-mo-ana-wa-aru-chapter-1/',
+        title: 'Chapter 1',
     },
     entry: {
-        index: 1,
-        size: 408_841,
+        index: 4,
+        size: 410_624,
         type: 'image/jpeg'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

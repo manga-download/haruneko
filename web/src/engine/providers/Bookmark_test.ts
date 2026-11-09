@@ -1,5 +1,4 @@
-import { mock } from 'vitest-mock-extended';
-import { describe, it, expect } from 'vitest';
+import { vi, describe, it, expect } from 'vitest';
 import type { MediaContainer, MediaChild } from './MediaPlugin';
 import type { MediaInfoTracker } from '../trackers/IMediaInfoTracker';
 import { Bookmark } from './Bookmark';
@@ -10,17 +9,17 @@ class TestFixture {
     public readonly ModificationTime = 654321;
     public readonly OriginIdentifier = 'sheepyneko';
     public readonly OriginTitle = 'Sheepy Neko';
-    public readonly MockParent = mock<MediaContainer<MediaContainer<MediaChild>>>();
+    public readonly MockParent = { CreateEntry: vi.fn(), Entries: { Value: [] } };
     public readonly MockOrigin: MediaContainer<MediaChild>;
-    public readonly MockInfoTracker = mock<MediaInfoTracker>();
+    public readonly MockInfoTracker = {} as MediaInfoTracker;
     public readonly InfoIdentifier = 'sheepyneko@info-tracker';
 
     public CreateSparseTestee() {
-        return new Bookmark(new Date(this.CreationTime), new Date(this.ModificationTime), this.MockParent, this.OriginIdentifier, this.OriginTitle);
+        return new Bookmark(new Date(this.CreationTime), new Date(this.ModificationTime), this.MockParent as unknown as MediaContainer<MediaContainer<MediaChild>>, this.OriginIdentifier, this.OriginTitle);
     }
 
     public CreateTestee() {
-        return new Bookmark(new Date(this.CreationTime), new Date(this.ModificationTime), this.MockParent, this.OriginIdentifier, this.OriginTitle, this.MockInfoTracker, this.InfoIdentifier);
+        return new Bookmark(new Date(this.CreationTime), new Date(this.ModificationTime), this.MockParent as unknown as MediaContainer<MediaContainer<MediaChild>>, this.OriginIdentifier, this.OriginTitle, this.MockInfoTracker, this.InfoIdentifier);
     }
 }
 
@@ -61,13 +60,13 @@ describe('Bookmark', () => {
             const fixture = new TestFixture();
             const testee = fixture.CreateSparseTestee();
 
-            const entries = mock<MediaContainer<MediaChild>[]>();
-            const origin = mock<MediaContainer<MediaChild>>();
+            const entries = [ '-' as unknown as MediaContainer<MediaChild> ];
+            const origin = {} as MediaContainer<MediaChild>;
             Object.defineProperty(origin, 'Identifier', { get: () => testee.Identifier });
-            Object.defineProperty(origin, 'Entries', { get: () => { return { Value: entries }; } });
+            Object.defineProperty(origin, 'Entries', { get: () => ({ Value: entries }) });
 
             const children = [ origin ];
-            Object.defineProperty(fixture.MockParent, 'Entries', { get: () => { return { Value: children }; } });
+            Object.defineProperty(fixture.MockParent, 'Entries', { get: () => ({ Value: children }) });
 
             const actual = testee.Entries.Value;
 
@@ -81,14 +80,14 @@ describe('Bookmark', () => {
             const fixture = new TestFixture();
             const testee = fixture.CreateSparseTestee();
 
-            const entries = mock<MediaContainer<MediaChild>[]>();
-            const origin = mock<MediaContainer<MediaChild>>();
+            const entries = [ '-' as unknown as MediaContainer<MediaChild> ];
+            const origin = {} as MediaContainer<MediaChild>;
             Object.defineProperty(origin, 'Identifier', { get: () => testee.Identifier });
-            Object.defineProperty(origin, 'Entries', { get: () => { return { Value: entries }; } });
+            Object.defineProperty(origin, 'Entries', { get: () => ({ Value: entries }) });
 
             const children = [];
-            fixture.MockParent.CreateEntry.calledWith(testee.Identifier, testee.Title).mockReturnValue(origin);
-            Object.defineProperty(fixture.MockParent, 'Entries', { get: () => { return { Value: children }; } });
+            fixture.MockParent.CreateEntry.mockReturnValue(origin);
+            Object.defineProperty(fixture.MockParent, 'Entries', { get: () => ({ Value: children }) });
 
             // Multiple calls to internal `Origin` getter to verify that `CreateEntry` is only called once
             const actual = testee.Entries.Value && testee.Entries.Value && testee.Entries.Value;

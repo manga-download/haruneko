@@ -1,24 +1,22 @@
 import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'mangaruhu',
         title: 'MangaRuhu'
     },
     container: {
-        url: 'https://mangaruhu.com/manga/hunter-academys-strongest-battle-god/',
-        id: JSON.stringify({ post: '81', slug: '/manga/hunter-academys-strongest-battle-god/' }),
-        title: `Avcı Akademisi'nin En Güçlü Savaş Tanrısı`
+        url: 'https://mangaruhu.com/manga/the-dignity-of-a-chaebol/',
+        id: '/manga/the-dignity-of-a-chaebol/',
+        title: 'Bir Chaebol’ün Onuru'
     },
     child: {
-        id: '/manga/hunter-academys-strongest-battle-god/bolum-7/',
-        title: 'Bölüm 7'
+        id: '/manga/the-dignity-of-a-chaebol/bolum-20/',
+        title: 'Bölüm 20',
     },
     entry: {
-        index: 0,
-        size: 822_846,
+        index: 2,
+        size: 1_274_976,
         type: 'image/jpeg'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

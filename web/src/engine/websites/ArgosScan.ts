@@ -1,33 +1,19 @@
-import { Tags } from '../Tags';
+﻿import { Tags } from '../Tags';
 import icon from './ArgosScan.webp';
-import { DecoratableMangaScraper } from '../providers/MangaPlugin';
-import * as Common from './decorators/Common';
-import * as Madara from './decorators/WordPressMadara';
-
-const chapterScript = `
-    new Promise ( resolve => {
-        resolve( [...document.querySelectorAll('li.wp-manga-chapter a')].map(chapter => {
-            return {
-                id: chapter.pathname,
-                title : chapter.textContent.trim()
-            }
-        }));
-    });
-`;
-
-@Common.MangaCSS(/^{origin}\/manga\/[^/]+\/$/, 'div.post-title h1')
-@Common.MangasMultiPageCSS('/page/{page}/', 'div.post-title h3 a, div.post-title h5 a')
-@Common.ChaptersSinglePageJS(chapterScript, 5000)
-@Madara.PagesSinglePageCSS()
-@Common.ImageAjax(true)
-export default class extends DecoratableMangaScraper {
+import { YomuVerseBase } from './templates/YomuVerseBase';
+export default class extends YomuVerseBase {
 
     public constructor() {
-        super('argosscan', `Argos Scan`, 'https://argoscomic.com', Tags.Language.Portuguese, Tags.Source.Scanlator, Tags.Media.Manhwa, Tags.Media.Manga);
+        super('argosscan', 'Argos Scan', 'https://aniargos.com', Tags.Language.Portuguese, Tags.Source.Scanlator, Tags.Media.Manhwa, Tags.Media.Manga);
+        this.WithNextActions({
+            PaginatedMangas: '40aee2def6fc69aa3edd831aada51ae82c1ef92111',
+            MangaInfos: '6049f7ef4cc65e69a30bca6b521456bde5c66ba6b3',
+            Chapters: '6035b8dcaff3a77f48df5dccb3aef5bb48ab88294a',
+            Pages: '70b8adde8f206f1a334946aa392d8bc2d141484a70'
+        });
     }
 
     public override get Icon() {
         return icon;
     }
-
 }

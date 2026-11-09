@@ -17,6 +17,11 @@ type ArrayExtensions<T> = {
     count(predicate: (this: T[], element: T, index: number, array: T[]) => unknown): number;
 
     /**
+     * Combine the given segments into a single title using a space as separator, excluding those segment which are `undefined`, `null` or empty.
+     */
+    joinTitleSegments(this: (string | number)[]): string;
+
+    /**
      * Returns the elements of an array where each element's `Identifier` property is unique.
      * When the array contains multiple elements with the same `Identifier`, the first element is choosen.
      */
@@ -25,7 +30,7 @@ type ArrayExtensions<T> = {
     /**
      * Check wether the {@link items} array has at least one media item and that media item is different from the last media item in the array.
      */
-    isMissingLastItemFrom<T extends MediaContainer<MediaChild>>(this: T[], items: T[]): boolean;
+    isLastItemDifferentFromNonEmpty<T extends MediaContainer<MediaChild>>(this: T[], items: T[]): boolean;
 
     /**
      * Very specialized extraction for elements in an array matching a very low-performing {@link predicate}.
@@ -54,6 +59,15 @@ if (!Array.prototype.count) {
     });
 }
 
+if (!Array.prototype.joinTitleSegments) {
+    Object.defineProperty(Array.prototype, 'joinTitleSegments', {
+        value: function (this: Array<string | number>): string {
+            return this.filter(segment => `${segment ?? ''}`.trim()).join(' ').replace(/\s+/g, ' ').trim();
+        },
+        enumerable: false,
+    });
+}
+
 if (!Array.prototype.distinct) {
     Object.defineProperty(Array.prototype, 'distinct', {
         value: function <T extends MediaContainer<MediaChild>>(this: Array<T>): Array<T> {
@@ -66,8 +80,8 @@ if (!Array.prototype.distinct) {
     });
 }
 
-if (!Array.prototype.isMissingLastItemFrom) {
-    Object.defineProperty(Array.prototype, 'isMissingLastItemFrom', {
+if (!Array.prototype.isLastItemDifferentFromNonEmpty) {
+    Object.defineProperty(Array.prototype, 'isLastItemDifferentFromNonEmpty', {
         value: function <T extends MediaContainer<MediaChild>>(this: Array<T>, items: Array<T>): boolean {
             return items.length > 0 && !items.at(-1).IsSameAs(this.at(-1));
         },

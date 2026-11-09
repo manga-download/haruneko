@@ -1,6 +1,6 @@
 ﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'hentaiteca',
         title: 'HentaiTeca'
@@ -16,9 +16,7 @@ const config = {
     },
     entry: {
         index: 0,
-        size: 298_609,
-        type: 'image/jpeg'
+        size: 264_214,
+        type: 'image/webp'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

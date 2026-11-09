@@ -1,24 +1,22 @@
-import { TestFixture, type Config } from '../../../test/WebsitesFixture';
+import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config: Config = {
+new TestFixture({
     plugin: {
         id: 'dragontranslation',
         title: 'DragonTranslation'
     },
     container: {
-        url: 'https://dragontranslation.net/manga/tissue-thief',
-        id: '/manga/tissue-thief',
-        title: 'Tissue Thief'
+        url: 'https://dragontranslation.org/manga/sakamto-d4ys/',
+        id: '/manga/sakamto-d4ys/',
+        title: 'Sakamoto Days'
     },
     child: {
-        id: '/leer/tissue-thief-1.00',
-        title: 'Capitulo 1.00'
+        id: '/manga/sakamto-d4ys/capitulo-1-el-legendario-sicario/',
+        title: 'Capitulo 1: El legendario sicario'
     },
     entry: {
         index: 1,
-        size: 82_768,
+        size: 289_730,
         type: 'image/jpeg'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

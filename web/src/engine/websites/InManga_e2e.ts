@@ -1,17 +1,17 @@
-import { TestFixture, type Config } from '../../../test/WebsitesFixture';
+import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config: Config = {
+new TestFixture({
     plugin: {
         id: 'inmanga',
         title: 'InManga'
     },
     container: {
         url: 'https://inmanga.com/ver/manga/One-Piece/dfc7ecb5-e9b3-4aa5-a61b-a498993cd935',
-        id: 'dfc7ecb5-e9b3-4aa5-a61b-a498993cd935',
+        id: '/ver/manga/One-Piece/dfc7ecb5-e9b3-4aa5-a61b-a498993cd935',
         title: 'One Piece'
     },
     child: {
-        id: '11bba49c-1512-4a47-839f-b4d6be007b1e',
+        id: '/ver/manga/One-Piece/1074/11BBA49C-1512-4A47-839F-B4D6BE007B1E',
         title: '1,074'
     },
     entry: {
@@ -19,6 +19,4 @@ const config: Config = {
         size: 360_478,
         type: 'image/jpeg'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

@@ -1,18 +1,26 @@
-import { Tags } from '../Tags';
+﻿import { Tags } from '../Tags';
 import icon from './HwagoID.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
-import * as Madara from './decorators/WordPressMadara';
 import * as Common from './decorators/Common';
 
-@Madara.MangaCSS(/^{origin}\/komik\/[^/]+\/$/, 'meta[property="og:title"]:not([content*="Hwago"])')
-@Madara.MangasMultiPageAJAX()
-@Madara.ChaptersSinglePageAJAXv2('div.chapter-link > a')
-@Madara.PagesSinglePageCSS()
+@Common.MangaCSS<HTMLMetaElement>(/^{origin}\/comic\/[^/]+$/, 'meta[property="og:title"]', (meta, uri) => ({
+    id: uri.pathname,
+    title: meta.content.split('|').at(0).trim()
+}))
+@Common.MangasMultiPageCSS<HTMLAnchorElement>('div#browse-grid-view div.grid div.group div a', Common.PatternLinkGenerator('/browse?page={page}'), 0, anchor => ({
+    id: anchor.pathname,
+    title: anchor.querySelector('h3').textContent.trim()
+}))
+@Common.ChaptersSinglePageCSS<HTMLAnchorElement>('div#tab-chapters a', undefined, anchor => ({
+    id: anchor.pathname,
+    title: anchor.querySelector('span').textContent.trim()
+}))
+@Common.PagesSinglePageCSS('div#reader-pages div img')
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('hwagoid', 'HwagoID', 'https://hwago01.xyz', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Indonesian, Tags.Source.Scanlator);
+        super('hwagoid', 'Hwago', 'https://01.hwago.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Indonesian, Tags.Source.Scanlator);
     }
 
     public override get Icon() {

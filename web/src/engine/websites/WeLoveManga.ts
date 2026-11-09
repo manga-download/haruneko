@@ -1,33 +1,39 @@
 import { Tags } from '../Tags';
 import icon from './WeLoveManga.webp';
-import { DecoratableMangaScraper, type Manga, type Chapter, type Page } from '../providers/MangaPlugin';
-import * as FlatManga from './templates/FlatManga';
+import { FetchWindowScript } from '../platform/FetchProvider';
 import * as Common from './decorators/Common';
+import { queryMangaTitle, ClipBoardExtractor, queryMangas, MangasLinkGenerator, CleanTitle, FlatManga } from './templates/FlatManga';
 
-@Common.MangaCSS(/^{origin}\/\d+\/$/, FlatManga.queryMangaTitle)
-@Common.MangasMultiPageCSS(FlatManga.pathMangasMultiPage, FlatManga.queryMangas)
-@Common.ImageAjax()
-export default class extends DecoratableMangaScraper {
+function MangaExtractor(element: HTMLElement, uri: URL) {
+    const { id, title } = ClipBoardExtractor(element, uri); //extract pathname and clean title
+    return {
+        id: CleanPathname(id), //remove manga- from pathname
+        title
+    };
+}
+
+function CleanPathname(path: string): string {
+    return path.replace(/^\/manga-/, '/');
+}
+
+@Common.MangaCSS(/^{origin}\/(manga-)?\d+\/$/, queryMangaTitle, MangaExtractor)
+@Common.MangasMultiPageCSS<HTMLAnchorElement>(queryMangas, MangasLinkGenerator, 0, anchor => ({
+    id: CleanPathname(anchor.pathname),
+    title: CleanTitle(anchor.title)
+}))
+export default class extends FlatManga {
 
     public constructor() {
-        super('welovemanga', 'WeloveManga', 'https://welovemanga.one', Tags.Language.Japanese, Tags.Media.Manga, Tags.Source.Aggregator);
+        super('welovemanga', 'WeloveManga', 'https://love4u.net', Tags.Language.Japanese, Tags.Media.Manga, Tags.Source.Aggregator);
+        this.WithChapterAjaxEndpoint('/app/manga/controllers/cont.Listchapter.php?mid={manga}')
+            .WithMangaSlugExtractor(mangaId => mangaId.match(/\d+/).at(0));
     }
 
     public override get Icon() {
         return icon;
     }
 
-    public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        return FlatManga.FetchChaptersAJAX.call(this, manga, '/app/manga/controllers/cont.Listchapter.php?mid={manga}', FlatManga.queryChapters, (manga: Manga) => manga.Identifier.match(/\d+/).at(0));
-    }
-
-    public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        return FlatManga.FetchPagesAJAX.call(
-            this,
-            chapter,
-            /load_image\s*\(\s*(\d+)\s*,\s*'list-imga'\s*\)/g,
-            '/app/manga/controllers/cont.listImg.php?cid={chapter}',
-            FlatManga.queryPages,
-            img => img.dataset.srcset);
+    public override Initialize(): Promise<void> {
+        return FetchWindowScript(new Request(this.URI), `window.cookieStore.set('unlock_chapter_guest', '1')`);
     }
 }

@@ -1,24 +1,22 @@
 ﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'imperiodabritania',
         title: 'Imperio Da Britannia'
     },
     container: {
-        url: 'https://imperiodabritannia.com/manga/profissao-sem-valor-domador-de-dragoes/',
-        id: JSON.stringify({ post: '3742', slug: '/manga/profissao-sem-valor-domador-de-dragoes/' }),
-        title: 'Profissão sem Valor: Domador de Dragões'
+        url: 'https://imperiodabritannia.net/manga/shinobigoto/',
+        id: 'shinobigoto',
+        title: 'Shinobigoto'
     },
     child: {
-        id: '/manga/profissao-sem-valor-domador-de-dragoes/capitulo-52/',
-        title: 'Capítulo 52'
+        id: '2254/71',
+        title: 'Capítulo 71'
     },
     entry: {
-        index: 0,
-        size: 900_462,
+        index: 1,
+        size: 304_722,
         type: 'image/jpeg'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

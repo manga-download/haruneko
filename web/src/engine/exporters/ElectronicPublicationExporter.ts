@@ -178,7 +178,7 @@ export class ElectronicPublicationExporter extends MangaExporter {
         */
     }
 
-    public async Export(sourceFileList: Map<number, string>, targetDirectory: FileSystemDirectoryHandle, targetBaseName: string): Promise<void> {
+    public override async Export(sourceFileList: Map<number, string>, targetDirectory: FileSystemDirectoryHandle, chapterTitle: string, _mangaTitle?: string): Promise<void> {
 
         const zip = new JSZip();
         // FIXME: Cannot be extracted on MacOS when name is missing an file extension
@@ -191,9 +191,9 @@ export class ElectronicPublicationExporter extends MangaExporter {
         const oebps = zip.folder('OEBPS');
         const xhtml = oebps.folder('xhtml');
         const assets = oebps.folder('assets');
-        const ncx = this.CreateNCX(uid, targetBaseName);
-        const toc = this.CreateTableOfContent(targetBaseName);
-        const opf = this.CreatePackageFile(uid, targetBaseName, 'UND');
+        const ncx = this.CreateNCX(uid, chapterTitle);
+        const toc = this.CreateTableOfContent(chapterTitle);
+        const opf = this.CreatePackageFile(uid, chapterTitle, 'UND');
 
         const promises = new Array(sourceFileList.size).fill(null).map(async (_, index) => {
             const page = index + 1;
@@ -214,7 +214,7 @@ export class ElectronicPublicationExporter extends MangaExporter {
         oebps.file('toc.xhtml', toc.serialize(), { compression: 'DEFLATE' });
         oebps.file('content.opf', opf.serialize(), { compression: 'DEFLATE' });
 
-        const file = await targetDirectory.getFileHandle(SanitizeFileName(targetBaseName + '.epub'), { create: true });
+        const file = await targetDirectory.getFileHandle(SanitizeFileName(chapterTitle + '.epub'), { create: true });
         const stream = await file.createWritable();
         await stream.write(await zip.generateAsync({ type: 'blob' }));
         await stream.close();

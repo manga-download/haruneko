@@ -1,5 +1,4 @@
-﻿/* NW.js crash on website initialize => CloudFlare
-import { TestFixture } from '../../../test/WebsitesFixture';
+﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
 new TestFixture({
     plugin: {
@@ -7,8 +6,8 @@ new TestFixture({
         title: 'GenzToon'
     },
     container: {
-        url: 'https://genzupdates.com/series/7e80e1ac248/',
-        id: '/series/7e80e1ac248/',
+        url: 'https://genztoons.org/series/a-bad-person/',
+        id: '/series/a-bad-person/',
         title: 'A Bad Person'
     },
     child: {
@@ -17,9 +16,8 @@ new TestFixture({
         timeout: 10000
     },
     entry: {
-        index: 2,
-        size: 953_970,
+        index: 0,
+        size: 1_119_635,
         type: 'image/jpeg'
     }
 }).AssertWebsite();
-*/

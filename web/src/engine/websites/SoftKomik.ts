@@ -1,110 +1,89 @@
 import { Tags } from '../Tags';
 import icon from './SoftKomik.webp';
 import * as Common from './decorators/Common';
-import { Chapter, DecoratableMangaScraper, Manga, type MangaPlugin, Page } from '../providers/MangaPlugin';
-import { FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
-import type { Priority } from '../taskpool/DeferredTask';
-
-type APIMangaDetails = {
-    pageProps: {
-        data: {
-            DataKomik: APIManga,
-            DataChapter : APIChapter[]
-        }
-    }
-}
-
-type APIManga = {
-    title: string,
-    title_slug: string
-}
-
-type APIChapter = {
-    chapter: string
-}
-
-type APIPages = {
-    pageProps: {
-        data: {
-            imgSrc: string[]
-        }
-    }
-}
+import { DecoratableMangaScraper, Manga, type MangaPlugin } from '../providers/MangaPlugin';
+import { FetchJSON, FetchWindowPreloadScript } from '../platform/FetchProvider';
+import { RandomText } from '../Random';
+import { Delay } from '../BackgroundTimers';
 
 type APIMangas = {
-    pageProps: {
-        data: {
-            data: APIManga[]
-        }
+    data: {
+        title: string;
+        title_slug: string;
+    }[];
+};
+
+type TokenData = {
+    token: string;
+    sign: string;
+    ex: number;
+};
+
+class DRMProvider {
+
+    #auth: TokenData = undefined;
+
+    constructor(private readonly uri: URL, private readonly api: URL) { }
+
+    private async RefreshToken(): Promise<void> {
+
+        if (this.#auth?.ex > Date.now()) return;
+
+        const eventName = RandomText(Math.random() * 8 + 8);
+        this.#auth = await FetchWindowPreloadScript<TokenData>(new Request(new URL('/komik/list', this.uri)), `
+            JSON.parse = new Proxy(JSON.parse, {
+                apply: function(funcNative, funcThis, funcArgs) {
+                    const result = Reflect.apply(funcNative, funcThis, funcArgs);
+                    if (result?.token && result?.sign && result?.ex) {
+                        setInterval(() => window.dispatchEvent(new CustomEvent('${eventName}', { detail: result })), 250);
+                    }
+                    return result;
+                }
+            });
+        `, `
+            new Promise(resolve => {
+                window.addEventListener('${eventName}', event => resolve(event.detail), { once: true });
+            });
+        `);
+    }
+
+    public async FetchSigned<T extends JSONElement>(endpoint: string): Promise<T> {
+        await this.RefreshToken();
+        return FetchJSON<T>(new Request(new URL(endpoint, this.api), {
+            headers: {
+                'Referer': this.uri.href,
+                'X-Token': this.#auth.token,
+                'X-Sign': this.#auth.sign,
+            }
+        }));
     }
 }
 
+@Common.MangaCSS(/^{origin}\/[^/]+$/, 'div.bg-content.title h1', (element, uri) => ({ id: uri.pathname.split('/').at(-1), title: element.textContent.trim() }))
+@Common.ChaptersSinglePageJS(`[...document.querySelectorAll('div.chapter-list a')].map(el => ({ id: el.pathname, title:el.textContent.trim() }))`, 1500)
+@Common.PagesSinglePageJS(`[...document.querySelectorAll('div.container-img img')].map(img => img.src)`, 2500)
+@Common.ImageAjax(true)
 export default class extends DecoratableMangaScraper {
 
-    private nextBuild = '';
-    private readonly CDN = ['https://soft1.softdevices.my.id', 'https://soft2.b-cdn.net'];
+    #drm: DRMProvider = new DRMProvider(this.URI, new URL('https://v2.softdevices.my.id/'));
 
     public constructor() {
-        super('softkomik', `Softkomik`, 'https://softkomik.com', Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Language.Indonesian, Tags.Source.Aggregator, Tags.Accessibility.RegionLocked);
+        super('softkomik', 'Softkomik', 'https://softkomik.app', Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Language.Indonesian, Tags.Source.Aggregator, Tags.Accessibility.RegionLocked);
     }
 
     public override get Icon() {
         return icon;
     }
 
-    public override async Initialize(): Promise<void> {
-        const request = new Request(this.URI.href);
-        this.nextBuild = await FetchWindowScript<string>(request, `__NEXT_DATA__.buildId`, 5000);
-    }
-
-    public override ValidateMangaURL(url: string): boolean {
-        return new RegExpSafe(`^${this.URI.origin}/[^/]+$`).test(url);
-    }
-
-    public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
-        const slug = url.split('/').at(-1);
-        const uri = new URL(`/_next/data/${this.nextBuild}/${slug}.json`, this.URI).href;
-        const request = new Request(uri);
-        const { pageProps: { data: { DataKomik } } } = await FetchJSON<APIMangaDetails>(request);
-        return new Manga(this, provider, DataKomik.title_slug, DataKomik.title.trim());
-    }
-
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        const mangaList: Manga[] = [];
-        for (let page = 1, run = true; run; page++) {
-            const mangas = await this.GetMangasFromPage(page, provider);
-            mangas.length > 0 ? mangaList.push(...mangas) : run = false;
-        }
-        return mangaList.distinct();
-    }
-
-    private async GetMangasFromPage(page: number, provider: MangaPlugin): Promise<Manga[]> {
-        const url = new URL(`/_next/data/${this.nextBuild}/komik/list.json?page=${page}`, this.URI).href;
-        const request = new Request(url);
-        const { pageProps: { data: { data } } } = await FetchJSON<APIMangas>(request);
-        return data.map(manga => new Manga(this, provider, manga.title_slug, manga.title.trim()));
-    }
-
-    public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const url = new URL(`/_next/data/${this.nextBuild}/${manga.Identifier}.json`, this.URI).href;
-        const request = new Request(url);
-        const { pageProps: { data: { DataChapter } } } = await FetchJSON<APIMangaDetails>(request);
-        return DataChapter.map(chapter => new Chapter(this, manga, chapter.chapter, chapter.chapter));
-    }
-
-    public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const url = new URL(`/_next/data/${this.nextBuild}/${chapter.Parent.Identifier}/chapter/${chapter.Identifier}.json`, this.URI).href;
-        const request = new Request(url);
-        const { pageProps: { data: { imgSrc } } } = await FetchJSON<APIPages>(request);
-        return imgSrc.map(page => new Page(this, chapter, new URL(page, this.CDN[0]), { alternativeUrl: new URL(page, this.CDN[1]).href}));
-    }
-
-    public override async FetchImage(page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
-        const blob = await Common.FetchImageAjax.call(this, page, priority, signal, true);
-        if (!blob.type.startsWith('image')) {
-            const fakepage = new Page(this, page.Parent as Chapter, new URL(page.Parameters.alternativeUrl as string));
-            return Common.FetchImageAjax.call(this, fakepage, priority, signal, true);
-        }
-        return blob;
+        type This = typeof this;
+        return Array.fromAsync(async function* (this: This) {
+            for (let page = 1, run = true; run && page; page++) {
+                const { data } = await this.#drm.FetchSigned<APIMangas>(`./komik?sortBy=newKomik&limit=50&page=${page}`);
+                const mangas = data.map(({ title, title_slug: slug }) => new Manga(this, provider, slug, title.trim()));
+                mangas.length > 0 ? yield* mangas : run = false;
+                await Delay(1000);
+            }
+        }.call(this));
     }
 }

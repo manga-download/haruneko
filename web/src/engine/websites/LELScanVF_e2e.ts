@@ -1,12 +1,12 @@
-import { TestFixture, type Config } from '../../../test/WebsitesFixture';
+import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config: Config = {
+new TestFixture({
     plugin: {
         id: 'lelscanvf',
         title: 'LELSCAN-VF'
     },
     container: {
-        url: 'https://lelscanfr.com/manga/four-knights-of-the-apocalypse',
+        url: 'https://www.lelscanfr.com/manga/four-knights-of-the-apocalypse',
         id: '/manga/four-knights-of-the-apocalypse',
         title: 'Four Knights Of The Apocalypse',
         timeout: 15000
@@ -20,6 +20,4 @@ const config: Config = {
         size: 126_472,
         type: 'image/webp'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

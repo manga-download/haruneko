@@ -1,24 +1,23 @@
 ﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'mikoroku',
         title: 'Mikoroku'
     },
     container: {
-        url: 'https://www.mikoroku.com/2024/12/harem-ou-no-isekai-press-manyuuki.html',
-        id: '/2024/12/harem-ou-no-isekai-press-manyuuki.html',
-        title: 'Harem Ou no Isekai Press Manyuuki'
+        url: 'https://mikoroku.com/detail?slug=the-hero-wants-a-milf-as-a-reward',
+        id: 'the-hero-wants-a-milf-as-a-reward',
+        title: 'The Hero Wants a Milf As a Reward',
+        timeout: 10_000
     },
     child: {
-        id: '/2024/07/harem-ou-no-isekai-press-manyuuki_22.html',
-        title: 'Chapter 01'
+        id: JSON.stringify({ url: 'https://www.mikodrive.my.id/2026/03/the-hero-wants-milf-as-reward-chapter-30.html', slug: 'the-hero-wants-milf-as-reward-chapter-30'}),
+        title: 'The Hero Wants a Milf As a Reward Chapter 30'
     },
     entry: {
-        index: 0,
-        size: 215_888,
-        type: 'image/webp'
+        index: 1,
+        size: 41_770,
+        type: 'image/jpeg'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

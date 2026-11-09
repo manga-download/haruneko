@@ -2,23 +2,27 @@ import { Tags } from '../Tags';
 import icon from './MangaUpJapan.webp';
 import { Chapter, DecoratableMangaScraper, type Manga, Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { FetchCSS } from '../platform/FetchProvider';
+import { FetchNextJS } from '../platform/FetchProvider';
 
-type JSONChapters = {
-    id: number,
-    name: string,
-    subName: string
-}[];
+type HydratedChapters = {
+    chapters: {
+        id: number;
+        name: string;
+        subName: string;
+    }[];
+};
 
-type JSONPages = {
-    content: {
-        value: {
-            imageUrl: string,
-        }
-    }
-}[];
+type HydratedPages = {
+    pages: {
+        content: {
+            value: {
+                imageUrl?: string;
+            };
+        };
+    }[];
+};
 
-const mangasEndpoints = [
+const endpoints = [
     'mon',
     'tue',
     'wed',
@@ -30,15 +34,11 @@ const mangasEndpoints = [
     'yomikiri'
 ].map(slug => `/series/${slug}`);
 
-function MangasExtractor(element: HTMLAnchorElement) {
-    return {
-        id: element.pathname,
-        title: element.querySelector<HTMLElement>('div[class*="text-title-md"]').innerText
-    };
-}
-
 @Common.MangaCSS(/^{origin}\/titles\/\d+$/, 'h2[class*="text-title-lg"]')
-@Common.MangasSinglePagesCSS(mangasEndpoints, 'a:has(div[class*="text-title-md"])', MangasExtractor)
+@Common.MangasMultiPageCSS<HTMLAnchorElement>('a:has(div[class*="text-title-md"])', Common.StaticLinkGenerator(...endpoints), 0, anchor => ({
+    id: anchor.pathname,
+    title: anchor.querySelector<HTMLDivElement>('div[class*="text-title-md"]').innerText
+}))
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
@@ -50,30 +50,15 @@ export default class extends DecoratableMangaScraper {
         return icon;
     }
 
-    private ExtractNextJsPayloadData(element: HTMLScriptElement): string {
-        const data = element.innerHTML.match(/^self\.__next_f\.push\(\[\d+,"(.*)"\]\)$/)?.at(1);
-        return data?.replace(/\\{1,2}"/g, '"').replace(/\\{2,3}n/g, '\\n');
-    }
-
-    private async FetchNextJsData<T>(pathname: string, pattern: RegExp): Promise<T> {
-        const request = new Request(new URL(pathname, this.URI));
-        const elements = await FetchCSS<HTMLScriptElement>(request, 'script:not([src])');
-        for (const element of elements) {
-            const match = this.ExtractNextJsPayloadData(element)?.match(pattern);
-            if (match) return JSON.parse(match.at(-1));
-        }
-    }
-
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const chapters = await this.FetchNextJsData<JSONChapters>(manga.Identifier, /"chapters":(\[{.*?}\]),/);
-        return chapters.map(({ id, name, subName }) => new Chapter(this, manga, `${manga.Identifier}/chapters/${id}`, `${subName} ${name}`.replace(/\s+/g, ' ').trim()));
+        const { chapters } = await FetchNextJS<HydratedChapters>(new Request(new URL(manga.Identifier, this.URI)), data => 'chapters' in data);
+        return chapters.map(({ id, name, subName }) => new Chapter(this, manga, `${manga.Identifier}/chapters/${id}`, `${subName} ${name}`.replace(/\s+/g, ' ').trim())).reverse();
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const pages = await this.FetchNextJsData<JSONPages>(chapter.Identifier, /(\[{"content":.*?}}}\]),/);
+        const { pages } = await FetchNextJS<HydratedPages>(new Request(new URL(chapter.Identifier, this.URI)), data => 'pages' in data);
         return pages
-            .map(page => page.content.value.imageUrl)
-            .filter(imageUrl => imageUrl)
-            .map(imageUrl => new Page(this, chapter, new URL(imageUrl)));
+            .filter(page => page.content.value.imageUrl)
+            .map(page => new Page(this, chapter, new URL(page.content.value.imageUrl, this.URI)));
     }
 }

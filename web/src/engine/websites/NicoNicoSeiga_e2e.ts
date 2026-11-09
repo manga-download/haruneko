@@ -1,6 +1,6 @@
 ﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'niconicoseiga',
         title: 'ニコニコ静画 (niconico seiga)'
@@ -19,6 +19,4 @@ const config = {
         size: 199_413,
         type: 'image/jpeg'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

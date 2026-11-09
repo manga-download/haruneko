@@ -1,6 +1,6 @@
-﻿import { TestFixture, type Config } from '../../../test/WebsitesFixture';
+﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config: Config = {
+new TestFixture( {
     plugin: {
         id: 'mangatube',
         title: 'MangaTube',
@@ -12,14 +12,11 @@ const config: Config = {
     },
     child: {
         id: '17006',
-        title: 'Kapitel 154.5 — Banketteinladung (2)',
-
+        title: 'Kapitel 154.5 — Banketteinladung (2)'
     },
     entry: {
         index: 0,
         size: 735_517,
         type: 'image/png'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

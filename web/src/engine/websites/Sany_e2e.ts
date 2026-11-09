@@ -1,12 +1,12 @@
-import { TestFixture, type Config } from '../../../test/WebsitesFixture';
+import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config: Config = {
+new TestFixture( {
     plugin: {
         id: 'sany',
         title: 'Sany'
     },
     container: {
-        url: 'https://sanyteam.com/manga/khong-khoang-cach/',
+        url: 'https://teamsany.com/manga/khong-khoang-cach/',
         id: '/manga/khong-khoang-cach/',
         title: 'Không Khoảng Cách',
     },
@@ -19,6 +19,4 @@ const config: Config = {
         size: 746_834,
         type: 'image/jpeg'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

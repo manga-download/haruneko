@@ -8,14 +8,14 @@ import * as Common from './decorators/Common';
 @MangaStream.MangasSinglePageCSS()
 @MangaStream.ChaptersSinglePageCSS()
 @MangaStream.PagesSinglePageJS()
-@Common.ImageAjax()
+@Common.ImageAjax(true)
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('ravenscans', 'Raven Scans', 'https://ravenscans.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.English, Tags.Source.Scanlator);
+        super('ravenscans', 'Raven Scans', 'https://ravenscans.org', Tags.Source.Aggregator, Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Language.English);
     }
 
-    public override get Icon() {
+    public override get Icon(): string {
         return icon;
     }
 }

@@ -1,17 +1,17 @@
 ﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'rawlazy',
         title: 'RawLazy'
     },
     container: {
-        url: 'https://rawlazy.to/manga-lazy/彼女-お借りします-raw-free/',
+        url: 'https://rawlazy.io/manga-lazy/彼女-お借りします-raw-free/',
         id: encodeURI('/manga-lazy/彼女-お借りします-raw-free/'),
         title: '彼女、お借りします'
     },
     child: {
-        id: encodeURI('/manga-chapter/彼女、お借りします-raw-【第340話】/').toLowerCase(),
+        id: encodeURI('/彼女、お借りします-raw-【第340話】/').toLowerCase(),
         title: '第340話'
     },
     entry: {
@@ -19,6 +19,4 @@ const config = {
         size: 276_488,
         type: 'image/webp'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

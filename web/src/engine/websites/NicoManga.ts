@@ -1,30 +1,34 @@
 import { Tags } from '../Tags';
 import icon from './NicoManga.webp';
-import { FetchJSON } from '../platform/FetchProvider';
-import { DecoratableMangaScraper, type MangaPlugin, Manga, Chapter, type Page } from '../providers/MangaPlugin';
-import * as FlatManga from './templates/FlatManga';
+import { FetchRegex, FetchWindowScript } from '../platform/FetchProvider';
+import { Chapter, DecoratableMangaScraper, type Manga, Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
+import { queryMangas, CleanTitle } from './templates/FlatManga';
+import { GetBytesFromUTF8, GetUTF8FromBytes } from '../BufferEncoder';
 
-type APIMangas = {
-    manga_list: {
-        name: string,
-        slug: string
-    }[],
-    lang: {
-        manga_slug: string
-    }
+function ClipBoardExtractor(element: HTMLElement, uri: URL) {
+    return {
+        id: uri.pathname,
+        title: CleanTitle(element.textContent.split('-').slice(0, -1).join('-').trim())
+    };
 }
 
-type APIChapters = {
-    chapter: string,
-    name: string,
-}[];
+type JSONManga = {
+    chapters_list: {
+        chapter: string;
+        ur: string;
+    }[];
+};
 
-@Common.MangaCSS(FlatManga.pathManga, FlatManga.queryMangaTitle, element => element.innerText.replace(/\(MANGA\)$/i, '').trim())
+type JSONPages = {
+    images: string[];
+};
+
+@Common.MangaCSS(/^{origin}\/manga\d+\/[^/]+\.html$/, 'title', ClipBoardExtractor)
+@Common.MangasMultiPageCSS<HTMLAnchorElement>(queryMangas, Common.PatternLinkGenerator('/manga-list.html?p={page}'), 0, anchor => ({ id: anchor.pathname, title: CleanTitle(anchor.text) }))
+
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
-
-    private readonly pathChapters = '/app/manga/controllers/cont.Listchapter.php?slug={manga}';
 
     public constructor() {
         super('nicomanga', 'NicoManga', 'https://nicomanga.com', Tags.Language.Japanese, Tags.Media.Manga, Tags.Source.Aggregator);
@@ -34,39 +38,41 @@ export default class extends DecoratableMangaScraper {
         return icon;
     }
 
-    public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        const mangaList: Manga[] = [];
-        for (let page = 1, run = true; run; page++) {
-            const mangas = await this.GetMangasFromPageAJAX(provider, page);
-            mangaList.isMissingLastItemFrom(mangas) ? mangaList.push(...mangas) : run = false;
-        }
-        return mangaList.distinct();
-    }
-
-    private async GetMangasFromPageAJAX(provider: MangaPlugin, page: number): Promise<Manga[]> {
-        const request = new Request(new URL(`/app/manga/controllers/cont.display.homeTopday.php?page=${page}`, this.URI), {
-            headers: {
-                Referer: new URL('/manga-list.html', this.URI.origin).href,
-            }
-        });
-        const { manga_list, lang: { manga_slug } } = await FetchJSON<APIMangas>(request);
-        return manga_list.map(manga => new Manga(this, provider, `/${manga_slug}-${manga.slug}.html`, manga.name.trim()));
+    public override Initialize(): Promise<void> {
+        return FetchWindowScript(new Request(this.URI), `window.cookieStore.set('unlock_chapter_guest', '1')`);
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const slug = FlatManga.ExtractSlug(manga);
-        const uri = new URL(this.pathChapters.replace('{manga}', slug), this.URI);
-        const chapters = await FetchJSON<APIChapters>(new Request(uri, { headers: { Referer: new URL(manga.Identifier, this.URI).href } }));
-        return chapters.map(chapter => new Chapter(this, manga, `/read-${slug}-chapter-${chapter.chapter}.html`, chapter.name));
+        const result = await this.FetchChaotic<JSONManga>(manga.Identifier, data => typeof data === 'object' && data !== null && 'chapters_list' in data);
+        if (!result) return [];
+        return result.chapters_list.map(({ chapter, ur }) => new Chapter(this, manga, new URL(ur, this.URI).pathname, `Chapter ${chapter}`));
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        return FlatManga.FetchPagesAJAX.call(
-            this,
-            chapter,
-            /loadImagesChapter\s*\(\s*(\d+)\s*,\s*'listImgs'\s*\)/g,
-            '/app/manga/controllers/cont.imgsList.php?cid={chapter}',
-            FlatManga.queryPages,
-            img => img.dataset.srcset);
+        const result = await this.FetchChaotic<JSONPages>(chapter.Identifier, data => typeof data === 'object' && data !== null && 'images' in data);
+        if (!result) return [];
+        return result.images.map(image => new Page(this, chapter, new URL(image, this.URI)));
+    }
+
+    private async FetchChaotic<T extends JSONElement>(endpoint: string, predicate: (data: JSONElement) => unknown, key: string = 'NicoMangaX2'): Promise<T | null> {
+        const candidates = await FetchRegex(new Request(new URL(endpoint, this.URI)), /([\u4E00-\u9FFF]{10,})/g);
+        for (const candidate of candidates) {
+            const result = this.DecryptPayload<T>(candidate, key);
+            if (result && predicate(result)) return result;
+        }
+        return null;
+    }
+
+    private DecryptPayload<T extends JSONElement>(message: string, key: string): T {
+        let result = null;
+        try {
+            const keybytes = GetBytesFromUTF8(key);
+            const decrypted = message.split('').map((char, index) => {
+                return (char.codePointAt(0) || 0 - 19968) ^ keybytes[index % keybytes.length];
+            });
+
+            result = JSON.parse(GetUTF8FromBytes(new Uint8Array(decrypted)));
+        } catch { }
+        return result;
     }
 }

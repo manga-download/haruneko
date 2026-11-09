@@ -3,121 +3,95 @@ import icon from './CoolMic.webp';
 import type { MangaPlugin } from '../providers/MangaPlugin';
 import { Chapter, DecoratableMangaScraper, Page, Manga } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { Fetch, FetchCSS, FetchJSON } from '../platform/FetchProvider';
-import type { Priority } from '../taskpool/DeferredTask';
+import { FetchCSS, FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
 import { Exception } from '../Error';
 import { WebsiteResourceKey as R } from '../../i18n/ILocale';
 
 type APIMangas = {
-    hits: {
-        hit: {
-            id: number,
-            fields: {
-                title_name : string
-            }
-        }[]
-    }
-}
+    results: {
+        title_id: number;
+        title_name: string;
+    }[];
+};
 
-type JsonChapters = {
+type JSONChapters = {
     episodes: {
-        id: number,
-        number : string
-    }[]
-}
+        id: number;
+        number: string;
+    }[];
+};
 
 type APIPages = {
     image_data?: {
-        path: string
-    }[],
-    signed_cookie?: CookieSigner
-}
-
-type CookieSigner = {
-    'CloudFront-Policy': string,
-    'CloudFront-Signature': string,
-    'CloudFront-Key-Pair-Id': string
-}
+        path: string;
+    }[];
+};
 
 @Common.MangaCSS(/^{origin}\/titles\/\d+$/, 'meta[property="og:title"]')
+@Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
-    private readonly apiUrl = `${this.URI.origin}/api/v1/`;
-    private readonly languageCode : string = 'en';
+    protected readonly apiURL = `${this.URI.origin}/api/v1/`;
+    private token: string = undefined;
 
-    public constructor(id = 'coolmic', label = 'CoolMic', url = 'https://coolmic.me', tags = [Tags.Media.Manhwa, Tags.Media.Manga, Tags.Language.English, Tags.Source.Official]) {
-        super(id, label, url, ...tags);
-        this.languageCode = this.URI.href.match(/https:\/\/([a-z]+)\.coolmic/)?.at(-1) ?? this.languageCode;
+    public constructor() {
+        super('coolmic', 'CoolMic', 'https://coolmic.me', Tags.Media.Manhwa, Tags.Media.Manga, Tags.Language.English, Tags.Source.Official, Tags.Accessibility.RegionLocked);
     }
 
     public override get Icon() {
         return icon;
     }
 
-    public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        const token = (await FetchCSS<HTMLMetaElement>(new Request(this.URI), 'meta[name="csrf-token"]')).at(0).content;
-        const promises = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').map(character => {
-            const url = new URL(`https://${this.languageCode}-search.coolmic.me/search`);
-            const params = new URLSearchParams({
-                q: `(${character}|*${character})`,
-                size: '10000',
-                start: '0',
-                'q.parser': 'simple',
-                return: '_all_fields',
-                sort: '_score desc, like_vote_count desc',
-                fq: ''
-            });
-
-            url.search = params.toString();
-            const request = new Request(url, {
-                headers: {
-                    'x-csrf-token': token,
-                    'x-requested-with': 'XMLHttpRequest'
+    public override async Initialize(): Promise<void> {
+        this.token = await FetchWindowScript<string>(new Request(this.URI), `
+            new Promise(async (resolve, reject) => {
+                try {
+                    await window.cookieStore.set('is_mature', 'true');
+                    resolve(document.querySelector('meta[name="csrf-token"]').content);
+                } catch(error) {
+                    reject(error);
                 }
             });
+        `);
+    }
 
-            return FetchJSON<APIMangas>(request);
-        });
-
-        const results = (await Promise.all(promises)).reduce((accumulator: Manga[], element) => {
-            const mangas = element.hits.hit.map(manga => new Manga(this, provider, `/titles/${manga.id}`, manga.fields.title_name.trim()));
-            accumulator.push(...mangas);
-            return accumulator;
-        }, []);
-
-        return results.distinct();
+    public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
+        type This = typeof this;
+        return Array.fromAsync(async function* (this: This) {
+            for (let page = 1, run = true; run; page++) {
+                const { results } = await FetchJSON<APIMangas>(new Request(new URL(`./search_titles?page=${page}&per=100`, this.apiURL)));
+                const mangas = results.map(({ title_id: id, title_name: name }) => new Manga(this, provider, `/titles/${id}`, name));
+                mangas.length > 0 ? yield* mangas : run = false;
+            }
+        }.call(this));
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const [jsonNode] = await FetchCSS(new Request(new URL(manga.Identifier, this.URI)), '[\\:page-objects]');
-        const { episodes } = JSON.parse(jsonNode.getAttribute(':page-objects')) as JsonChapters;
-        return episodes.map(episode => new Chapter(this, manga, episode.id.toString(), episode.number.trim()));
+        const { episodes } = <JSONChapters>JSON.parse(jsonNode.getAttribute(':page-objects'));
+        return episodes.map(({ id, number }) => new Chapter(this, manga, `${id}`, number.trim())).reverse();
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const request = new Request(new URL(`/api/v1/viewer/episodes/${chapter.Identifier}`, this.apiUrl));
-        const { image_data, signed_cookie } = await FetchJSON<APIPages>(request);
-        if (!signed_cookie) {
+        const { image_data } = await this.FetchAPI<APIPages>(`./viewer/comic/episodes/${chapter.Identifier}`);
+        if (!image_data) {
             throw new Exception(R.Plugin_Common_Chapter_UnavailableError);
         }
-        return image_data.map(page => new Page<CookieSigner>(this, chapter, new URL(page.path), { ...signed_cookie }));
+        return image_data.map(({ path }) => new Page(this, chapter, new URL(path)));
     }
 
-    public override async FetchImage(page: Page<CookieSigner>, priority: Priority, signal: AbortSignal): Promise<Blob> {
-        return this.imageTaskPool.Add(async () => {
+    private async FetchAPI<T extends JSONElement>(endpoint: string, body: JSONElement = undefined, referer: string = undefined): Promise<T> {
+        const request = new Request(new URL(endpoint, this.apiURL), {
+            method: body ? 'POST' : 'GET',
+            headers: {
+                Origin: this.URI.origin,
+                'Content-type': 'application/json',
+                'X-CSRF-TOKEN': this.token,
+                'X-Requested-With': 'XMLHttpRequest',
+            },
+            body: body ? JSON.stringify(body) : undefined
 
-            const cookiesData = page.Parameters;
-            const cookies = Object.keys(cookiesData).map(name => `${name}=${cookiesData[name]}`).join(';');
-
-            const request = new Request(page.Link, {
-                signal: signal,
-                headers: {
-                    Cookie: cookies,
-                    Referer: page.Link.origin,
-                }
-            });
-
-            const response = await Fetch(request);
-            return response.blob();
-        }, priority, signal);
+        });
+        if (referer) request.headers.set('Referer', referer);
+        return FetchJSON<T>(request);
     }
 }

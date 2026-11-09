@@ -1,0 +1,9 @@
+import '../AesirScans_e2e';
+import '../DatgarScan_e2e';
+import '../GuruKomik_e2e';
+import '../KazeScans_e2e';
+import '../MangaOrigin_e2e';
+import '../Mikoroku_e2e';
+import '../Reyume_e2e';
+import '../SafireScan_e2e';
+import '../UlasComic_e2e';

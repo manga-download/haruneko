@@ -60,21 +60,23 @@
                 ? 100
                 : job.Progress.Value * 100}
         >
-            <div slot="labelText" class="label">
-                {job.Media.Title}
-                {#if job.Errors.length > 0}
-                    <Button
-                        kind="danger-ghost"
-                        size="small"
-                        icon={WarningHexFilled}
-                        iconDescription={job.Errors[0].message}
-                        on:click={(e) => {
-                            taskerror = job;
-                            e.stopPropagation();
-                        }}
-                    />
-                {/if}
-            </div>
+            {#snippet labelChildren()}
+                <div class="label">
+                    {job.Media.Title}
+                    {#if job.Errors.Value.length > 0}
+                        <Button
+                            kind="danger-ghost"
+                            size="small"
+                            icon={WarningHexFilled}
+                            iconDescription={job.Errors.Value[0]?.message || 'error message missing'}
+                            on:click={(e) => {
+                                taskerror = job;
+                                e.stopPropagation();
+                            }}
+                        />
+                    {/if}
+                </div>
+            {/snippet}
         </ProgressBar>
     </div>
     <div class="action">
@@ -83,7 +85,10 @@
             size="small"
             icon={TrashCan}
             iconDescription="Delete"
-            on:click={() => window.HakuNeko.DownloadManager.Dequeue(job)}
+            on:click={(e) => {
+                window.HakuNeko.DownloadManager.Dequeue(job);
+                e.stopPropagation();
+            }}
         />
     </div>
 </div>

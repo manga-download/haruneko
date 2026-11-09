@@ -1,25 +1,23 @@
 ﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
 const mangaID = encodeURI('/manga/俺だけレベルアップな件-raw-free/');
-const config = {
+new TestFixture({
     plugin: {
         id: 'rawxz',
-        title: 'RawXZ'
+        title: 'MiuRaw'
     },
     container: {
-        url: 'https://rawxz.io/manga/俺だけレベルアップな件-raw-free/',
-        id: JSON.stringify({ post: '32858', slug: mangaID }),
+        url: 'https://miuraw.net/manga/俺だけレベルアップな件-raw-free/',
+        id: mangaID,
         title: '俺だけレベルアップな件',
     },
     child: {
-        id: mangaID.toLowerCase() + encodeURI('第184話/').toLowerCase(),
-        title: '第184話'
+        id: `${mangaID.toLowerCase()}chapter-184/`,
+        title: '第 184'
     },
     entry: {
         index: 0,
         size: 242_580,
         type: 'image/jpeg'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

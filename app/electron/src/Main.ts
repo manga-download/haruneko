@@ -2,6 +2,7 @@ import path from 'path';
 import fs from 'fs/promises';
 import { app } from 'electron';
 import { Command } from 'commander';
+import { Logger } from './Logger';
 import { IPC } from './ipc/InterProcessCommunication';
 import { ApplicationWindow } from './ipc/ApplicationWindow';
 import { FetchProvider } from './ipc/FetchProvider';
@@ -16,6 +17,10 @@ process.env['ELECTRON_DISABLE_SECURITY_WARNINGS'] = 'true';
 type CLIOptions = {
     origin?: string;
 }
+
+app.commandLine.appendSwitch('allow-running-insecure-content');
+app.commandLine.appendSwitch('disable-background-timer-throttling');
+app.commandLine.appendSwitch('disable-backgrounding-occluded-windows');
 
 function ParseCLI(): CLIOptions {
     try {
@@ -33,7 +38,7 @@ function ParseCLI(): CLIOptions {
 type Manifest = {
     url: string;
     'user-agent': undefined | string;
-    'chromium-args': undefined | string;
+    'user-data-dir': undefined | string;
 };
 
 async function LoadManifest(): Promise<Manifest> {
@@ -43,9 +48,10 @@ async function LoadManifest(): Promise<Manifest> {
 }
 
 async function SetupUserDataDirectory(manifest: Manifest): Promise<void> {
-    // TODO: This detection is more like a hack and does not use the provided path
-    if(manifest['chromium-args']?.includes('--user-data-dir=userdata')) {
-        app.setPath('userData', path.resolve(path.dirname(app.getPath('exe')), 'userdata'));
+    const userDataDir = manifest['user-data-dir'];
+    // TODO: Do not replace when already set via commandline
+    if(/* !argv['user-data-dir'] && */ userDataDir) {
+        app.setPath('userData', path.isAbsolute(userDataDir) ? userDataDir : path.resolve(path.dirname(app.getPath('exe')), userDataDir));
     }
 }
 
@@ -59,6 +65,7 @@ async function CreateApplicationWindow(): Promise<ApplicationWindow> {
         transparent: true,
         //icon: path.join(process.env.VITE_PUBLIC, 'electron-vite.svg'),
         webPreferences: {
+            sandbox: false,
             webSecurity: false, // Bypass CORS checks
             contextIsolation: true,
             nodeIntegration: false,
@@ -91,23 +98,30 @@ function UpdatePermissions(session: Electron.Session, appURI: URL) {
 }
 
 async function OpenWindow(): Promise<void> {
-    InitializeMenu();
-    const argv = ParseCLI();
-    const manifest = await LoadManifest();
-    await SetupUserDataDirectory(manifest);
-    app.userAgentFallback = manifest['user-agent'] ?? app.userAgentFallback.split(/\s+/).filter(segment => !/(hakuneko|electron)/i.test(segment)).join(' ');
-    await app.whenReady();
-    const win = await CreateApplicationWindow();
-    const ipc = new IPC(win.webContents);
-    const rpc = new RPCServer('/hakuneko', new RemoteProcedureCallContract(ipc, win.webContents));
-    const uri = new URL(argv.origin ?? manifest.url ?? 'about:blank');
-    UpdatePermissions(win.webContents.session, uri);
-    new RemoteProcedureCallManager(rpc, ipc);
-    new FetchProvider(ipc, win.webContents);
-    new RemoteBrowserWindowController(ipc);
-    new BloatGuard(ipc, win.webContents);
-    win.RegisterChannels(ipc);
-    return win.loadURL(uri.href);
+    try {
+        InitializeMenu();
+        const argv = ParseCLI();
+        const manifest = await LoadManifest();
+        await SetupUserDataDirectory(manifest);
+        app.userAgentFallback = manifest['user-agent'] ?? app.userAgentFallback.split(/\s+/).filter(segment => !/(hakuneko|electron)/i.test(segment)).join(' ');
+        await app.whenReady();
+        const win = await CreateApplicationWindow();
+        const uri = new URL(argv.origin ?? manifest.url ?? 'about:blank');
+        UpdatePermissions(win.webContents.session, uri);
+
+        new Logger(win.webContents);
+        const ipc = new IPC(win.webContents);
+        const rpc = new RPCServer('/hakuneko', new RemoteProcedureCallContract(ipc, win.webContents));
+        new RemoteProcedureCallManager(rpc, ipc);
+        new FetchProvider(ipc, win.webContents);
+        new RemoteBrowserWindowController(ipc);
+        new BloatGuard(ipc, win.webContents);
+        win.RegisterChannels(ipc);
+        await win.loadURL(uri.href).catch(error => console.warn(error));
+    } catch(error) {
+        console.error(error);
+        app.quit();
+    }
 }
 
 OpenWindow();

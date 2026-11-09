@@ -6,17 +6,17 @@ new TestFixture({
         title: 'ManHastro'
     },
     container: {
-        url: 'https://manhastro.com/lermanga/yohan-loves-tite/',
-        id: JSON.stringify({ post: '47401', slug: '/lermanga/yohan-loves-tite/'}),
+        url: 'https://manhastro.net/manga/47401',
+        id: '47401',
         title: 'Yohan Loves Tite'
     },
     child: {
-        id: '/lermanga/yohan-loves-tite/capitulo-27/',
-        title: 'Capitulo 27'
+        id: '461708',
+        title: 'Capitulo 1'
     },
     entry: {
-        index: 3,
-        size: 67_839,
+        index: 2,
+        size: 5_026,
         type: 'image/avif'
     }
 }).AssertWebsite();

@@ -13,9 +13,9 @@ const scriptPages = `
     });
 `;
 
-@Common.MangaCSS(/^{origin}\//, 'h3.block-title a', Common.ElementLabelExtractor('small'))
-@Common.MangasMultiPageCSS('/hentai-list/all/any/all/name-az/{page}', 'div.book-grid div.overlay div.overlay-title a')
-@Common.ChaptersSinglePageCSS('ul.nav-chapters li div.media > a', Common.AnchorInfoExtractor(false, 'div'))
+@Common.MangaCSS(/^{origin}\//, 'h3.block-title a', Common.WebsiteInfoExtractor({ queryBloat: 'small' }))
+@Common.MangasMultiPageCSS('div.book-grid div.overlay div.overlay-title a', Common.PatternLinkGenerator('/hentai-list/all/any/all/name-az/{page}'))
+@Common.ChaptersSinglePageCSS('ul.nav-chapters li div.media > a', undefined, Common.AnchorInfoExtractor(false, 'div'))
 @Common.PagesSinglePageJS(scriptPages)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {

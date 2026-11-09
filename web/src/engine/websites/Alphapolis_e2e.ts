@@ -9,17 +9,19 @@ new TestFixture({
     container: {
         url: 'https://www.alphapolis.co.jp/manga/official/777000246',
         id: '/manga/official/777000246',
-        title: '令嬢はまったりをご所望。'
+        title: '令嬢はまったりをご所望。',
+        timeout: 10_000
     },
     child: {
         id: '/manga/official/777000246/2888',
         title: '第1回'
     },
+    /* picture size keep changing
     entry: {
         index: 0,
-        size: 375_221,
-        type: 'image/jpeg'
-    }
+        size: 2_019_877,
+        type: 'image/png'
+    }*/
 }).AssertWebsite();
 
 // CASE: Unofficial

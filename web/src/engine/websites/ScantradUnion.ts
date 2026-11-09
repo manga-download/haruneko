@@ -21,8 +21,8 @@ const pageScript = `
 `;
 
 @Common.MangaCSS(/^{origin}\/manga\/[^/]+\/$/, 'div.projet-description > h2')
-@Common.MangasMultiPageCSS('/manga/page/{page}/', 'main article div.entry-post > h2 > a')
-@Common.ChaptersSinglePageCSS('div.name-chapter', ChapterInfoExtractor)
+@Common.MangasMultiPageCSS('main article div.entry-post > h2 > a', Common.PatternLinkGenerator('/manga/page/{page}/'))
+@Common.ChaptersSinglePageCSS('div.name-chapter', undefined, ChapterInfoExtractor)
 @Common.PagesSinglePageJS(pageScript, 500)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {

@@ -1,24 +1,22 @@
-import { TestFixture, type Config } from '../../../test/WebsitesFixture';
+import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config: Config = {
+new TestFixture({
     plugin: {
         id: 'asurascans',
         title: 'Asura Scans',
     },
     container: {
-        url: 'https://asuracomic.net/series/nano-machine-b755c1b9',
-        id: '/series/nano-machine-',
+        url: 'https://asurascans.com/comics/nano-machine-7f873ca6',
+        id: '/comics/nano-machine',
         title: 'Nano Machine',
     },
     child: {
-        id: '/series/nano-machine-/chapter/222',
-        title: 'Chapter 222 76. Level (1)',
+        id: '/comics/nano-machine/chapter/270',
+        title: 'Chapter 270 90. Lightning Qi <2>',
     },
     entry: {
         index: 1,
-        size: 781_272,
+        size: 1_540_252,
         type: 'image/webp'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

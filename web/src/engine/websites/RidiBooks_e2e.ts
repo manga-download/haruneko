@@ -1,6 +1,6 @@
 ﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'ridibooks',
         title: 'RidiBooks'
@@ -9,7 +9,6 @@ const config = {
         url: 'https://ridibooks.com/books/5207000001',
         id: '5207000001',
         title: '품격을 배반한다',
-        timeout: 10000
     },
     child: {
         id: '5207000001',
@@ -20,6 +19,4 @@ const config = {
         size: 164_679,
         type: 'image/jpeg'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

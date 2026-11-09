@@ -6,17 +6,17 @@ new TestFixture({
         title: 'NicoManga',
     },
     container: {
-        url: 'https://nicomanga.com/manga-kage-no-jitsuryokusha-ni-naritakute-raw.html',
-        id: '/manga-kage-no-jitsuryokusha-ni-naritakute-raw.html',
-        title: 'TO BE A POWER IN THE SHADOWS!',
+        url: 'https://nicomanga.com/manga140/073b43f5.html',
+        id: '/manga140/073b43f5.html',
+        title: 'To Be a Power in the Shadows!',
     },
     child: {
-        id: '/read-kage-no-jitsuryokusha-ni-naritakute-raw-chapter-60.2.html',
-        title: 'Chapter 60.2',
+        id: '/manga140/073b43f5/chapter-c10.2i6837.html',
+        title: 'Chapter 10.2',
     },
     entry: {
         index: 0,
-        size: 708_342,
+        size: 265_875,
         type: 'image/jpeg',
     }
 }).AssertWebsite();

@@ -5,14 +5,14 @@ import * as Madara from './decorators/WordPressMadara';
 import * as Common from './decorators/Common';
 
 @Madara.MangaCSS(/^{origin}\/manga\/[^/]+\/$/)
-@Madara.MangasMultiPageAJAX()
+@Madara.MangasMultiPageAJAX('div.post-title h2 a')
 @Madara.ChaptersSinglePageAJAXv2()
 @Madara.PagesSinglePageCSS()
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('covenscan', 'CovenScan', 'https://cvnscan.com', Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Language.Portuguese, Tags.Source.Scanlator);
+        super('covenscan', 'CovenScan', 'https://covendasbruxonas.com', Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Language.Portuguese, Tags.Source.Scanlator);
     }
 
     public override get Icon() {

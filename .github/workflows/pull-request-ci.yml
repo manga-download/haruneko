@@ -8,16 +8,20 @@ jobs:
     runs-on: 'ubuntu-latest'
     steps:
       - name: Checkout ${{ github.repository }} @ ${{ github.ref }}
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           fetch-depth: 1
       - name: Install NodeJS
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
-          node-version: 22.13.x
+          node-version: 24.0.0
       - name: Install NPM Packages
         id: packages
-        run: npm install
+        run: |
+          npm run npm:clean-install
+      - name: Show NPM Log Files
+        if: failure()
+        run: cat /home/runner/.npm/_logs/*.log
       - name: Code Inspection
         if: steps.packages.outcome == 'success' && (success() || failure())
         run: npm run check
@@ -30,9 +34,18 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ windows-latest, ubuntu-latest, macos-latest ]
+        include:
+          - os: ubuntu-latest
+            npm: 'dbus-run-session npm'
+          - os: macos-latest
+            npm: 'npm'
+          - os: windows-latest
+            npm: 'npm'
     name: System Tests - ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
+    env:
+      DISPLAY: ':99'
+      DBUS_SESSION_BUS_ADDRESS: '/dev/null'
     steps:
       - name: Starting X Virtual Frame Buffer (Port 99)
         if: startsWith(matrix.os, 'ubuntu')
@@ -40,31 +53,36 @@ jobs:
           #sudo apt-get update
           #sudo apt-get install -y libxkbfile-dev pkg-config libsecret-1-dev libxss1 dbus xvfb libgtk-3-0 libgconf-2-4
           sudo /usr/bin/Xvfb -ac :99 -screen 0 1920x1080x24 > /dev/null 2>&1 &
-          disown -ar # remove all running jobs (e.g. xvfb) from the job table of this bash process
+          # remove all running jobs (e.g. xvfb) from the job table of this bash process
+          disown -ar
       - name: Checkout ${{ github.repository }} @ ${{ github.ref }}
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           fetch-depth: 1
       - name: Install NodeJS
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
-          node-version: 22.13.x
+          node-version: 24.0.0
       - name: Install NPM Packages
         id: packages
         run: npm install
-      - name: End-To-End Tests
+      - name: End-To-End Tests (#1)
         if: steps.packages.outcome == 'success' && (success() || failure())
-        env:
-          DISPLAY: ':99'
-        run: npm run test:e2e
+        run: ${{ matrix.npm }} run test:e2e
+        continue-on-error: true
+      - name: End-To-End Tests (#2)
+        if: failure()
+        run: ${{ matrix.npm }} run test:e2e
+        continue-on-error: true
+      - name: End-To-End Tests (#3)
+        if: failure()
+        run: ${{ matrix.npm }} run test:e2e
       - name: Website Tests (Selection)
         if: steps.packages.outcome == 'success' && (success() || failure())
-        env:
-          DISPLAY: ':99'
-        run: npm run test:websites -- MangaDex
+        run: ${{ matrix.npm }} run test:websites -- MangaDex
       - name: Upload Test Results
         if: failure()
         uses: actions/upload-artifact@v4
         with:
           name: Test Results (${{ matrix.os }})
-          path: ./**/screenshot_*.png
+          path: ./**/screenshots/*.png

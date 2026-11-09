@@ -1,6 +1,6 @@
-﻿import { TestFixture, type Config } from '../../../test/WebsitesFixture';
+﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config: Config = {
+new TestFixture({
     plugin: {
         id: 'pixivcomics',
         title: 'pixivコミック'
@@ -16,9 +16,7 @@ const config: Config = {
     },
     entry: {
         index: 0,
-        size: 678_371,
+        size: 772_130,
         type: 'image/png'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

@@ -1,13 +1,13 @@
 ﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'niverafansub',
         title: 'Nivera Fansub'
-    },
+    }, /* Need Login
     container: {
-        url: 'https://niverafansub.org/manga/xian-chan-nu/',
-        id: JSON.stringify({ post: '183', slug: '/manga/xian-chan-nu/' }),
+        url: 'https://niverafansub.dev/manga/xian-chan-nu/',
+        id: JSON.stringify({ slug: '/manga/xian-chan-nu/' }),
         title: 'Xian Chan Nu'
     },
     child: {
@@ -18,7 +18,5 @@ const config = {
         index: 1,
         size: 1_536_881,
         type: 'image/jpeg'
-    }
-};
-
-new TestFixture(config).AssertWebsite();
+    }*/
+}).AssertWebsite();

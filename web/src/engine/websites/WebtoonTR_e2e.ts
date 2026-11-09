@@ -1,6 +1,6 @@
 ﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'webtoontr',
         title: 'WebtoonTR',
@@ -8,7 +8,7 @@ const config = {
     container: {
         url: 'https://webtoontr.com/_/dragons-son-changsik',
         id: '/_/dragons-son-changsik',
-        title: 'Dragon\'s Son Changsik'
+        title: `Dragon's Son Changsik`
     },
     child: {
         id: '/_/dragons-son-changsik/6',
@@ -19,6 +19,4 @@ const config = {
         size: 144_497,
         type: 'image/jpeg'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

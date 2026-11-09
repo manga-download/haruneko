@@ -1,7 +1,7 @@
 import os from 'node:os';
 import path from 'node:path';
 import fs from 'node:fs/promises';
-import extract from 'extract-zip';
+import AdmZip from 'adm-zip';
 import { download } from '../../tools.mjs';
 
 const pkgFile = 'package.json';
@@ -38,7 +38,7 @@ async function redist(nwVersion, nwBuildType, nwPlatform, nwArchitecture) {
     console.log('Extracting:', '$TMP/' + path.basename(tmpFile), '=>', '$TMP/' + path.basename(nwDir));
     await fs.rm(tmpDir, { force: true, recursive: true });
     await fs.rm(nwDir, { force: true, recursive: true });
-    await extract(tmpFile, { dir: os.tmpdir() });
+    new AdmZip(tmpFile).extractAllTo(os.tmpdir(), true, true);
     await fs.rename(tmpDir, nwDir);
     return nwDir;
 }

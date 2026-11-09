@@ -1,56 +1,127 @@
 import { Tags } from '../Tags';
 import icon from './Mikoroku.webp';
-import { DecoratableMangaScraper, type MangaPlugin, Manga } from '../providers/MangaPlugin';
-import * as Common from './decorators/Common';
-import { FetchJSON } from '../platform/FetchProvider';
+import { type MangaPlugin, Chapter, Manga, Page } from '../providers/MangaPlugin';
+import { FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
+import { PageLinkExtractor, ZeistManga, type FeedResults } from './templates/ZeistManga';
 
-const pagesScript = `[...document.querySelectorAll('article#reader img')].map(img => img.src);`;
+type APIManga = {
+    title: string;
+    slug: string;
+};
 
-type RSS = {
-    feed: {
-        entry: {
-            link: {
-                rel: string
-                title: string,
-                href: string
-            }[]
-        }[]
-    }
+type ChapterData = {
+    url: string;
+    slug: string;
 }
-
-const chapterScript = `
-    new Promise ( resolve =>
-        resolve (clwd.arr.filter(chapter => chapter.link != window.location.href)
-            .map(chapter => {
-                return {
-                    id: new URL(chapter.link).pathname,
-                    title : chapter.title.trim()
-                };
-            })
-        )
-    );
-`;
-
-@Common.MangaCSS(/^{origin}\/\d+\/\d+\/[^/]+\.html$/, 'header h1[itemprop="name"]')
-@Common.ChaptersSinglePageJS(chapterScript, 1500)
-@Common.PagesSinglePageJS(pagesScript, 1500)
-@Common.ImageAjax()
-export default class extends DecoratableMangaScraper {
+export default class extends ZeistManga {
 
     public constructor() {
-        super('mikoroku', 'Mikoroku', 'https://www.mikoroku.com', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Indonesian, Tags.Source.Scanlator);
+        super('mikoroku', 'Mikoroku', 'https://mikoroku.com', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Indonesian, Tags.Source.Scanlator);
     }
 
     public override get Icon() {
         return icon;
     }
 
-    public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        const { feed: { entry } } = await FetchJSON<RSS>(new Request(new URL('/feeds/posts/default/-/Series?orderby=published&alt=json&max-results=999', this.URI)));
-        return entry.map(manga => {
-            const goodLink = manga.link.find(link => link.rel === 'alternate');
-            return new Manga(this, provider, new URL(goodLink.href).pathname, goodLink.title.trim());
-        });
+    public override ValidateMangaURL(url: string): boolean {
+        return new RegExpSafe(`^${this.URI.origin}/detail\\?slug=`).test(url);
     }
 
+    public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
+        const mangas = await FetchJSON<APIManga[]>(new Request(new URL('https://raw.githubusercontent.com/moemaomao/mymangadata/main/all-manga.json')));
+        return mangas.map(({ title, slug }) => new Manga(this, provider, slug, title));
+    }
+
+    public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
+        const { id, title } = await FetchWindowScript<{ id: string, title: string }>(new Request(new URL(url)), `
+            new Promise((resolve, reject) => {
+                let interval;
+                try {
+                    const checkElement = () => {
+                        const element = document.querySelector('h1#detailTitle');
+                        if (element && !element.textContent.startsWith('Loading')) {
+                            return ({
+                                id: new URL(location).searchParams.get('slug'),
+                                title : document.querySelector('h1#detailTitle').textContent.trim()
+                            });
+                        } else return null;
+                    };
+
+                    const endTime = Date.now() + 15000;
+
+                    interval = setInterval(() => {
+                        if (Date.now() > endTime) {
+                            clearInterval(interval);
+                            reject(new Error("Element #detailTitle not found after 15 seconds."));
+                            return;
+                        }
+
+                        const result = checkElement();
+                        if (result) {
+                            clearInterval(interval);
+                            resolve(result);
+                        }
+                    }, 150);
+
+                } catch (error) {
+                    if (interval) clearInterval(interval);
+                    reject(error);
+                }
+            });
+        `, 0);
+        return new Manga(this, provider, id, title);
+    }
+
+    public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
+        return (await this.FetchChapterEntries(manga.Identifier))
+            .map(entry => {
+                const url = new URL(entry.link.find(l => l.rel === "alternate").href);
+                const title = entry.title.$t.replace(manga.Title, '').trim();
+                const data = {
+                    url: url.href,
+                    slug: url.pathname.split('/').at(-1).replace('.html', '')
+                };
+                return new Chapter(this, manga, JSON.stringify(data), title);
+            });
+    }
+
+    public override async FetchPages(chapter: Chapter): Promise<Page[]> {
+        const { slug, url }: ChapterData = JSON.parse(chapter.Identifier);
+        const allChapters = await this.FetchChapterEntries(chapter.Parent.Identifier);
+
+        let currentIndex = allChapters.findIndex(entry => {
+            const slugEntry = entry.title.$t
+                .toLowerCase()
+                .replace(/[^a-z0-9\s-]/g, "")
+                .replace(/\s+/g, "-");
+            return slugEntry === slug;
+        });
+
+        if (currentIndex === -1 && url) {
+            currentIndex = allChapters.findIndex(entry =>
+                entry.link.some(l => l.href === url)
+            );
+        }
+
+        const chapterContent = new DOMParser().parseFromString(allChapters[currentIndex].content.$t, 'text/html');
+        return [...chapterContent.querySelectorAll('img')].map(image => new Page(this, chapter, new URL(PageLinkExtractor(image))));
+    }
+
+    private async FetchChapterEntries(mangaSlug: string): Promise<FeedResults['feed']['entry']> {
+        for (const domain of ['https://www.mikodrive.my.id', 'https://www.yomidays.my.id']) {
+            const data = await FetchJSON<FeedResults>(new Request(new URL(`/feeds/posts/default?alt=json&max-results=9999&q=${mangaSlug}`, domain)));
+            if (data.feed?.entry.length > 0) {
+                return data.feed.entry
+                    .filter(entry => {
+                        const title = entry.title.$t.toLowerCase();
+                        return (
+                            title.includes("chapter") ||
+                            title.match(/chapter\s*\d+/) ||
+                            title.match(/\d+/)
+                        );
+                    });
+            }
+        };
+        return [];
+    }
 }

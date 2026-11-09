@@ -35,12 +35,10 @@ const conceal = `
     }
 `;
 
-/*
-function EvadeWebDriverDetection(page: Page) {
+export async function EvadeWebDriverDetection(page: Page) {
     //await page.evaluateOnNewDocument(`delete navigator.__proto__.webdriver`);
     await page.evaluateOnNewDocument(`navigator.__proto__.webdriver = false`);
 }
-*/
 
 /**
  * When dumping an object with the console functions, the properties of the object will be evaluated.
@@ -50,10 +48,12 @@ function EvadeWebDriverDetection(page: Page) {
 export async function EvadeChromeDevToolProtocolDetection(page: Page) {
     await page.evaluateOnNewDocument(`
         ${conceal}
+        //conceal(console, 'clear', () => {});
         conceal(console, 'log', () => {});
         conceal(console, 'warn', () => {});
         conceal(console, 'error', () => {});
         conceal(console, 'debug', () => {});
+        conceal(console, 'table', () => {});
     `);
 }
 
@@ -67,7 +67,11 @@ export function SetupBlinkEvasions(browser: Browser, ...evasions: Evasion[]) {
     browser.on('targetcreated', async (target: Target) => {
         if(target.type() === TargetType.PAGE) {
             const page = await target.page();
-            await Promise.all(evasions.map(setupEvasion => setupEvasion(page)));
+            try {
+                await Promise.all(evasions.map(setupEvasion => setupEvasion(page!)));
+            } catch(error) {
+                //console.warn(error);
+            }
         }
     });
 }

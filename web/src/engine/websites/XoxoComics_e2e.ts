@@ -1,24 +1,22 @@
 ﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture( {
     plugin: {
         id: 'xoxocomics',
         title: 'XoxoComics'
     },
     container: {
-        url: 'https://xoxocomic.com/comic/largo-winch',
-        id: '/comic/largo-winch',
-        title: 'Largo Winch'
+        url: 'https://xoxocomic.com/comic/the-amazing-spider-man-2015',
+        id: '/comic/the-amazing-spider-man-2015',
+        title: 'The Amazing Spider-Man (2015)'
     },
     child: {
-        id: '/comic/largo-winch/issue-20/all',
-        title: 'Issue #20'
+        id: '/comic/the-amazing-spider-man-2015/issue-1/all',
+        title: 'Issue #1'
     },
     entry: {
-        index: 0,
-        size: 189_375,
+        index: 2,
+        size: 1_755_681,
         type: 'image/jpeg'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

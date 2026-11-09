@@ -11,8 +11,9 @@
         onmouseup: (MouseEvent) => void;
         onmousedown: (MouseEvent) => void;
         onmouseenter: (MouseEvent) => void;
+        oncontextmenu: (MouseEvent) => void;
     };
-    let { item, selected, hover , multilang = false, onView, onmouseup, onmousedown, onmouseenter }: Props  = $props();
+    let { item, selected, hover , multilang = false, onView, onmouseup, onmousedown, onmouseenter, oncontextmenu }: Props  = $props();
 
     import { Button, ClickableTile } from 'carbon-components-svelte';
     import BookmarkFilled from 'carbon-icons-svelte/lib/BookmarkFilled.svelte';
@@ -25,22 +26,6 @@
     import View from 'carbon-icons-svelte/lib/View.svelte';
     import ViewFilled from 'carbon-icons-svelte/lib/ViewFilled.svelte';
     import VolumeFileStorage from 'carbon-icons-svelte/lib/VolumeFileStorage.svelte';
-
-    import { Tags, type Tag } from '../../../engine/Tags';
-    const availableLanguageTags = Tags.Language.toArray();
-
-    // NOTE: This relies on all language tags having a unicode flag prefix in their corresponding `Title`
-    function extractUnicodeFlagFromTags(tags: ReadonlyArray<Tag>): string {
-        const languageTagTitleResourceKey = tags.find((tag) =>
-            availableLanguageTags.includes(tag),
-        )?.Title;
-        return (
-            $Locale[languageTagTitleResourceKey]
-                ?.call(undefined)
-                ?.slice(0, 4) ?? '🏴'
-        );
-    }
-
     import type {
         MediaItem,
         MediaContainer,
@@ -50,9 +35,26 @@
         FlagType,
         type EntryFlagEventData,
     } from '../../../engine/ItemflagManager';
-    import { selectedItem } from '../stores/Stores';
-    import { Locale } from '../stores/Settings';
+    import { Store as UI } from '../stores/Stores.svelte';
     import { DownloadTask, Status } from '../../../engine/DownloadTask';
+    import { Key as GlobalKey } from '../../../engine/SettingsGlobal';
+    import type { Directory } from '../../../engine/SettingsManager';
+    import { GlobalSettings } from '../stores/Settings.svelte';
+    
+    import { Tags, type Tag } from '../../../engine/Tags';
+    const availableLanguageTags = Tags.Language.toArray();
+
+    // NOTE: This relies on all language tags having a unicode flag prefix in their corresponding `Title`
+    function extractUnicodeFlagFromTags(tags: ReadonlyArray<Tag>): string {
+        const languageTagTitleResourceKey = tags.find((tag) =>
+            availableLanguageTags.includes(tag),
+        )?.Title;
+        return (
+            GlobalSettings.Locale[languageTagTitleResourceKey]
+                ?.call(undefined)
+                ?.slice(0, 4) ?? '🏴'
+        );
+    }
 
     let flag: FlagType = $state();
     const flagiconmap = new Map<FlagType, any>([
@@ -95,6 +97,22 @@
     async function refreshDownloadStatus(newstatus: Status, _task: DownloadTask) {
         downloadTaskStatus = newstatus;
     }
+
+    async function addDownload(item: StoreableMediaContainer<MediaItem>) {
+        try {
+            await HakuNeko.SettingsManager.OpenScope().Get<Directory>(GlobalKey.MediaDirectory).EnsureAccess();
+        } catch(error) {
+            // TODO: Use appropriate error visualization ...
+            alert(error?.message ?? error);
+            return;
+        }
+        await window.HakuNeko.DownloadManager.Enqueue(item);
+    }
+
+    async function removeDownload(task: DownloadTask) {
+        await window.HakuNeko.DownloadManager.Dequeue(task)
+    }
+
     // TODO: download complete button should open file explorer
 </script>
 
@@ -105,20 +123,22 @@
     in:fade
     class:selected
     class:hover
-    class:active={$selectedItem?.Identifier === item?.Identifier}
+    class:active={UI.selectedItem?.Identifier === item?.Identifier}
     {onmouseup}
     {onmousedown}
     {onmouseenter}
+    {oncontextmenu}
 >
-    {#if !downloadTaskStatus} 
+    {#if !downloadTaskStatus}
         <Button
+            role="download"
             size="small"
             kind="ghost"
             tooltipPosition="right"
             tooltipAlignment="end"
             icon={CloudDownload}
             iconDescription="Download"
-            onclick={() => window.HakuNeko.DownloadManager.Enqueue(item as StoreableMediaContainer<MediaItem>)}
+            onclick={() => addDownload(item as StoreableMediaContainer<MediaItem>)}
         />
     {:else if downloadTaskStatus === Status.Queued}
         <Button
@@ -127,7 +147,7 @@
             tooltipPosition="right"
             tooltipAlignment="end"
             iconDescription="Cancel"
-            onclick={() => window.HakuNeko.DownloadManager.Enqueue(item as StoreableMediaContainer<MediaItem>)}
+            onclick={() => addDownload(item as StoreableMediaContainer<MediaItem>)}
         >
             <PauseFuture fill="var(--cds-icon-secondary)" />
         </Button>
@@ -138,7 +158,7 @@
             tooltipPosition="right"
             tooltipAlignment="end"
             iconDescription="Cancel (paused)"
-            onclick={() => window.HakuNeko.DownloadManager.Dequeue(downloadTask)}
+            onclick={() => removeDownload(downloadTask)}
         >
             <Pause fill="var(--cds-toggle-off)" />
         </Button>
@@ -149,17 +169,17 @@
             tooltipPosition="right"
             tooltipAlignment="end"
             iconDescription="Cancel (downloading...)"
-            onclick={() => window.HakuNeko.DownloadManager.Dequeue(downloadTask)}
+            onclick={() => removeDownload(downloadTask)}
         >
             <Download fill="var(--cds-support-info)" />
         </Button>
-        
+
     {:else if downloadTaskStatus === Status.Processing}
         <Button
             size="small"
             kind="ghost"
             iconDescription="Cancel (processing...)"
-            onclick={() => window.HakuNeko.DownloadManager.Dequeue(downloadTask)}
+            onclick={() => removeDownload(downloadTask)}
         >
             <VolumeFileStorage fill="var(--cds-support-info)" />
         </Button>
@@ -191,12 +211,13 @@
             tooltipPosition="right"
             tooltipAlignment="end"
             iconDescription="Download"
-            onclick={() => window.HakuNeko.DownloadManager.Enqueue(item as StoreableMediaContainer<MediaItem>)}
+            onclick={() => addDownload(item as StoreableMediaContainer<MediaItem>)}
         >
             <CloudDownload fill="var(--cds-icon-01)" />
         </Button>
     {/if}
     <Button
+        role="preview"
         size="small"
         kind="ghost"
         icon={flagicon}

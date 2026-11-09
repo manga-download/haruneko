@@ -3,21 +3,11 @@ import icon from './MyHentaiGallery.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 
-function PageLinkExtractor(image: HTMLImageElement): string {
-    return image.src.replace(/\/thumbnail\//, '/original/');
-}
-
-function MangaInfoExtractor(anchor: HTMLAnchorElement) {
-    return {
-        id: anchor.pathname,
-        title: anchor.querySelector('.comic-name').textContent.trim()
-    };
-}
-
 @Common.MangaCSS(/^{origin}\/g\/\d+$/, 'div.comic-description h1')
-@Common.MangasMultiPageCSS('/gpage/{page}', 'ul.comics-grid li.item div.comic-inner a', 1, 1, 0, MangaInfoExtractor)
+@Common.MangasMultiPageCSS<HTMLAnchorElement>('ul.comics-grid li.item div.comic-inner a', Common.PatternLinkGenerator('/gpage/{page}'), 0,
+    anchor => ({ id: anchor.pathname, title: anchor.querySelector('.comic-name').textContent.trim() }))
 @Common.ChaptersUniqueFromManga()
-@Common.PagesSinglePageCSS('ul.comics-grid li.item div.comic-inner div.comic-thumb img', PageLinkExtractor)
+@Common.PagesSinglePageCSS<HTMLImageElement>('ul.comics-grid li.item div.comic-inner div.comic-thumb img', image => image.src.replace(/\/thumbnail\//, '/original/'))
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 

@@ -5,22 +5,15 @@ import * as Common from './decorators/Common';
 import { FetchJSON } from '../platform/FetchProvider';
 
 type APIChapter = {
-    code: number,
+    code: number;
     data: {
-        id: string,
-        title: string
+        id: string;
+        title: string;
     }[]
-}
+};
 
-function ChapterExtractor(element: HTMLLIElement) {
-    return {
-        id: element.querySelector<HTMLAnchorElement>('a').pathname,
-        title: element.querySelector('h3').textContent.trim(),
-    };
-}
-
-@Common.MangaCSS(/^{origin}\/comic-[\d]+\.html$/, 'div.cartoon li.title', Common.ElementLabelExtractor('span'))
-@Common.MangasMultiPageCSS('/comic/category_{page}.html', 'div.classification li.title a')
+@Common.MangaCSS(/^{origin}\/comic-[\d]+\.html$/, 'div.cartoon li.title', Common.WebsiteInfoExtractor({ queryBloat: 'span' }))
+@Common.MangasMultiPageCSS('div.classification li.title a', Common.PatternLinkGenerator('/comic/category_{page}.html'))
 @Common.PagesSinglePageCSS('img.man_img')
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
@@ -34,25 +27,24 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        // The Ajax call doesnt work with page 1, so we have to fetch page 1 manually
-        const chapterslist = await Common.FetchChaptersSinglePageCSS.call(this, manga, 'ul.comic_list li', ChapterExtractor);
-        for (let page = 2, run = true; run; page++) {
-            const chapters = await this.GetChaptersFromPage(page, manga);
-            chapters.length > 0 ? chapterslist.push(...chapters) : run = false;
-        }
-        return chapterslist;
-    }
-
-    private async GetChaptersFromPage(page: number, manga: Manga): Promise<Chapter[]> {
-        const mangaId = manga.Identifier.match(/(\d+).html/)[1];
-        const request = new Request(new URL('/works/comic-list-ajax.html', this.URI).href, {
-            method: 'POST',
-            body: new URLSearchParams({ id: mangaId, sort: '0', page: String(page) }).toString(),
-            headers: {
-                'X-Requested-With': 'XMLHttpRequest',
+        const mangaId = manga.Identifier.match(/(\d+).html/).at(1);
+        // Website api is crappy. It returns only a few page of chapters before stopping.
+        // To get most chapters we must loop FORWARD and BACKWARD :/
+        type This = typeof this;
+        return (await Array.fromAsync(async function* (this: This) {
+            for (const sort of ['0', '1']) {
+                for (let page = 1, run = true; run; page++) {
+                    const { code, data } = await FetchJSON<APIChapter>(new Request(new URL('/works/comic-list-ajax.html', this.URI), {
+                        method: 'POST',
+                        body: new URLSearchParams({ id: mangaId, sort, page: `${page}` }).toString(),
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest',
+                        }
+                    }));
+                    const chapters = code == 1 ? data.map(({ id, title }) => new Chapter(this, manga, `/comic/detail-${id}.html`, title.trim())) : [];
+                    chapters.length > 0 ? yield* chapters : run = false;
+                }
             }
-        });
-        const data = await FetchJSON<APIChapter>(request);
-        return data.code == 1 ? data.data.map(element => new Chapter(this, manga, `/comic/detail-${element.id}.html`, element.title.trim())) : [];
+        }.call(this))).sort((self, other) => other.Identifier.localeCompare(self.Identifier)).distinct();
     }
 }

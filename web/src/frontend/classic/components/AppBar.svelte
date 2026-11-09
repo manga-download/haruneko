@@ -14,13 +14,8 @@
     import Subtract from 'carbon-icons-svelte/lib/Subtract.svelte';
     import Sidenav from './Sidenav.svelte';
 
-    import {
-        selectedPlugin,
-        selectedMedia,
-        selectedItem,
-        WindowController,
-    } from '../stores/Stores';
-    import { Locale, SidenavIconsOnTop } from '../stores/Settings';
+    import  {Store as UI } from '../stores/Stores.svelte';
+    import { GlobalSettings, Settings } from '../stores/Settings.svelte';
 
     interface Props {
         onHome?: () => void;
@@ -42,35 +37,25 @@
 
     window.addEventListener('resize', updateWindowState);
 
-    let showWindowControls = $state(false);
-    let minimize: () => void = $state();
-    let maximize: () => void = $state();
-    let restore: () => void = $state();
-    let close: () => void = $state();
+    let minimize = $derived(UI.WindowController?.Minimize.bind(UI.WindowController));
+    let maximize = $derived(UI.WindowController?.Maximize.bind(UI.WindowController));
+    let restore = $derived(UI.WindowController?.Restore.bind(UI.WindowController));
+    let close = $derived(UI.WindowController?.Close.bind(UI.WindowController));
 
-    WindowController.subscribe((controller) => {
-        if (controller) {
-            showWindowControls = controller.HasControls;
-            minimize = controller.Minimize.bind(controller);
-            maximize = controller.Maximize.bind(controller);
-            restore = controller.Restore.bind(controller);
-            close = controller.Close.bind(controller);
-        }
-    });
 </script>
 
 <Header
     id="Header"
     expandedByDefault={false}
-    persistentHamburgerMenu={true}
+    persistentHamburgerMenu
     bind:isSideNavOpen
 >
     <div slot="platform">
-        {#if $SidenavIconsOnTop}
+        {#if Settings.SidenavIconsOnTop.Value}
             <Button
                 class="clickable"
                 icon={Home}
-                iconDescription={$Locale.Frontend_Classic_Sidenav_Home()}
+                iconDescription={GlobalSettings.Locale.Frontend_Classic_Sidenav_Home()}
                 kind="ghost"
                 tooltipPosition="bottom"
                 tooltipAlignment="center"
@@ -84,16 +69,16 @@
                 tooltipPosition="bottom"
                 tooltipAlignment="center"
                 on:click={() => {
-                    $selectedPlugin = window.HakuNeko.BookmarkPlugin;
-                    $selectedMedia = undefined;
-                    $selectedItem = undefined;
+                    UI.selectedPlugin = window.HakuNeko.BookmarkPlugin;
+                    UI.selectedMedia = undefined;
+                    UI.selectedItem = undefined;
                 }}
             />
         {/if}
-        <div id="AppTitle" class:padding-left={$SidenavIconsOnTop}>
-            {$Locale.Frontend_Product_Title()}
-            <span class="appdesc">{$Locale.Frontend_Product_Description()}</span
-            >
+        <div id="AppTitle" class:padding-left={Settings.SidenavIconsOnTop.Value}>
+            {GlobalSettings.Locale.Frontend_Product_Title()}
+            <span class="appdesc">{GlobalSettings.Locale.Frontend_Product_Description()}</span>
+            <span class="beta">(v10.0 beta "HaruNeko")</span>
         </div>
     </div>
 
@@ -101,7 +86,7 @@
         <SkipToContent />
     </div>
     <HeaderUtilities>
-        {#if showWindowControls}
+        {#if UI.WindowController?.HasControls}
             <HeaderGlobalAction
                 on:click={minimize}
                 iconDescription="Minimize"
@@ -125,9 +110,6 @@
 <Sidenav bind:isOpen={isSideNavOpen} {onHome} />
 
 <style>
-    :global(#Header) {
-        padding-left: 0;
-    }
     div[slot='platform'] :global(.clickable) {
         -webkit-app-region: no-drag;
     }
@@ -135,11 +117,22 @@
         padding-right: 0.2em;
         padding-left: 0.2em;
     }
+    #AppTitle {
+        -webkit-app-region: drag;
+    }
     #AppTitle:global(.padding-left) {
         padding-left: 1em;
     }
     #AppTitle .appdesc {
         font-weight: var(--cds-body-short-01-font-weight, 400);
+        padding-left: 1em;
+    }
+    #AppTitle .beta {
+        font-size: var(--cds-caption-01-font-size, .75rem);
+        font-weight: var(--cds-caption-01-font-weight, 400);
+        line-height: var(--cds-caption-01-line-height, 1.33333);
+        letter-spacing: var(--cds-caption-01-letter-spacing, .32px);
+        color: var(--cds-text-helper);
         padding-left: 1em;
     }
     div[slot='platform'] {

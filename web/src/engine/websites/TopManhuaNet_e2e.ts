@@ -1,24 +1,22 @@
 import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'topmanhuanet',
         title: 'Top ManhuaNET'
     },
     container: {
         url: 'https://topmanhua.net/manga/murim-login/',
-        id: JSON.stringify({ post: '2198', slug: '/manga/murim-login/' }),
+        id: JSON.stringify({ post: '3818', slug: '/manga/murim-login/' }),
         title: 'Murim Login'
     },
     child: {
-        id: '/manga/murim-login/chapter-01/',
-        title: 'Chapter 01'
+        id: '/manga/murim-login/chapter-1/',
+        title: 'Chapter 1'
     },
     entry: {
         index: 1,
-        size: 1_257_966,
-        type: 'image/png'
+        size: 295_538,
+        type: 'image/webp'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

@@ -1,104 +1,103 @@
 import { Tags } from '../Tags';
 import icon from './MangaDex.webp';
 import { FetchJSON } from '../platform/FetchProvider';
-import { MangaScraper, type MangaPlugin, Manga, Chapter, Page } from '../providers/MangaPlugin';
+import { type MangaPlugin, Manga, Chapter, Page, DecoratableMangaScraper } from '../providers/MangaPlugin';
 import { TaskPool, Priority } from '../taskpool/TaskPool';
 import { RateLimit } from '../taskpool/RateLimit';
-import * as Common from './decorators/Common';
-
-type CachedManga = {
-    id: string,
-    title: string,
-    created: string,
-}
+import * as Grouple from './decorators/Grouple';
 
 type APIContainer<T> = {
-    data: T
-}
+    data: T;
+};
 
-type APIManga = {
-    id: string
+type APIManga = APIContainer<{
+    id: string;
     attributes: {
-        title: Record<string, string>
-        createdAt: string
-    }
-    relationships: {
-        id: string
-        type: string
-    }[]
-}
+        title: Record<string, string>;
+    };
+}>;
 
-type APIChapter = {
-    id: string
+type CachedMangas = {
+    id: string;
+    title: string;
+}[];
+
+type APIChapters = APIContainer<{
+    id: string;
     attributes: {
-        volume?: string
-        chapter?: string
-        pages: number
-        title: string
-        translatedLanguage: string
-    }
+        isUnavailable?: boolean;
+        volume?: string;
+        chapter?: string;
+        pages: number;
+        title: string;
+        translatedLanguage: string;
+    };
     relationships: {
-        id: string
-        type: string
-        attributes: {
-            name: string
-        }
-    }[]
-}
+        type: string;
+        attributes?: {
+            name: string;
+        };
+    }[];
+}[]>;
 
 type APIMedia = {
-    baseUrl: string
+    baseUrl: string;
     chapter: {
-        hash: string
-        data: string[]
-    }
-}
+        hash: string;
+        data: string[];
+    };
+};
+
+type PageParameters = {
+    mirrors: string[];
+};
 
 const chapterLanguageMap = new Map([
-    [ 'ar', Tags.Language.Arabic ],
-    // [ 'bn', Tags.Language.Bengali ],
-    // [ 'bg', Tags.Language.Bulgarian ],
-    // [ 'my', Tags.Language.Burmese ],
-    // [ 'ca', Tags.Language.Catalan ],
-    [ 'zh', Tags.Language.Chinese ],
-    // [ 'cs', Tags.Language.Czech ],
-    // [ 'da', Tags.Language.Danish ],
-    // [ 'nl', Tags.Language.Dutch ],
-    [ 'en', Tags.Language.English ],
-    // [ 'fi', Tags.Language.Finnish ],
-    [ 'fr', Tags.Language.French ],
-    [ 'de', Tags.Language.German ],
-    // [ 'el', Tags.Language.Greek ],
-    // [ 'he', Tags.Language.Hebrew ],
-    // [ 'hi', Tags.Language.Hindi ],
-    // [ 'hu', Tags.Language.Hungarian ],
-    [ 'id', Tags.Language.Indonesian ],
-    [ 'it', Tags.Language.Italian ],
-    [ 'ja', Tags.Language.Japanese ],
-    [ 'ko', Tags.Language.Korean ],
-    // [ 'lt', Tags.Language.Lithuanian ],
-    // [ 'ms', Tags.Language.Malay ],
-    // [ 'mn', Tags.Language.Mongolian ],
-    // [ 'ne', Tags.Language.Nepali ],
-    // [ 'no', Tags.Language.Norwegian ],
-    // [ 'fa', Tags.Language.Persian ],
-    [ 'pl', Tags.Language.Polish ],
-    [ 'pt', Tags.Language.Portuguese ],
-    // [ 'ro', Tags.Language.Romanian ],
-    [ 'ru', Tags.Language.Russian ],
-    // [ 'sh', Tags.Language.Serbo-Croatian ],
-    [ 'es', Tags.Language.Spanish ],
-    // [ 'sv', Tags.Language.Swedish ],
-    // [ 'tl', Tags.Language.Tagalog ],
-    [ 'th', Tags.Language.Thai ],
-    [ 'tr', Tags.Language.Turkish ],
-    // [ 'uk', Tags.Language.Ukrainian ],
-    [ 'vi', Tags.Language.Vietnamese ],
+    ['ar', [Tags.Language.Arabic]],
+    ['bg', []],
+    ['bn', []],
+    ['ca', []],
+    ['cs', []],
+    ['da', []],
+    ['de', [Tags.Language.German]],
+    ['el', []],
+    ['en', [Tags.Language.English]],
+    ['es', [Tags.Language.Spanish]],
+    ['fa', []],
+    ['fi', []],
+    ['fr', [Tags.Language.French]],
+    ['he', []],
+    ['hi', []],
+    ['hu', []],
+    ['id', [Tags.Language.Indonesian]],
+    ['it', [Tags.Language.Italian]],
+    ['ja', [Tags.Language.Japanese]],
+    ['ko', [Tags.Language.Korean]],
+    ['lt', []],
+    ['mn', []],
+    ['ms', []],
+    ['my', []],
+    ['ne', []],
+    ['nl', []],
+    ['no', []],
+    ['pl', [Tags.Language.Polish]],
+    ['pt', [Tags.Language.Portuguese]],
+    ['ro', []],
+    ['ru', [Tags.Language.Russian]],
+    ['sh', []],
+    ['sv', []],
+    ['th', [Tags.Language.Thai]],
+    ['tl', []],
+    ['tr', [Tags.Language.Turkish]],
+    ['uk', []],
+    ['vi', [Tags.Language.Vietnamese]],
+    ['zh', [Tags.Language.Chinese]],
 ]);
 
-export default class extends MangaScraper {
+@Grouple.ImageWithMirrors()
+export default class extends DecoratableMangaScraper {
 
-    private readonly api = 'https://api.mangadex.org';
+    private readonly apiURL = 'https://api.mangadex.org/';
     private readonly chaptersTaskPool = new TaskPool(1, new RateLimit(4, 1));
 
     public constructor() {
@@ -117,24 +116,24 @@ export default class extends MangaScraper {
         const uri = new URL(url);
         const regexGUID = /[a-fA-F0-9]{8}-([a-fA-F0-9]{4}-){3}[a-fA-F0-9]{12}/;
         const id = (uri.pathname.match(regexGUID) || uri.hash.match(regexGUID))[0].toLowerCase();
-        const request = new Request(`${this.api}/manga/${id}`, { headers: { Referer: this.URI.href }});
-        const { data: { attributes: { title: titles } } } = await FetchJSON<APIContainer<APIManga>>(request);
+        const { data: { attributes: { title: titles } } } = await this.FetchAPI<APIManga>(`./manga/${ id }`);
         const title = titles.en || Object.values(titles).at(0);
         return new Manga(this, provider, id, title);
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        const mangaCache = await FetchJSON<CachedManga[]>(new Request('https://websites.hakuneko.download/mangadex.json'));
-        return mangaCache.map(manga => new Manga(this, provider, manga.id, manga.title));
+        const mangaCache = await FetchJSON<CachedMangas>(new Request(`https://websites.hakuneko.download/${this.Identifier}.json`));
+        return mangaCache.map(({ id, title }) => new Manga(this, provider, id, title));
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const chapterList = [];
-        for(let page = 0, run = true; run; page++) {
-            const chapters = await this.chaptersTaskPool.Add(() => this.FetchChaptersFromPage(manga, page), Priority.Normal);
-            chapters.length > 0 ? chapterList.push(...chapters) : run = false;
-        }
-        return chapterList;
+        type This = typeof this;
+        return (await Array.fromAsync(async function* (this: This) {
+            for (let page = 0, run = true; run; page++) {
+                const chapters = await this.chaptersTaskPool.Add(() => this.FetchChaptersFromPage(manga, page), Priority.Normal);
+                chapters.length > 0 ? yield* chapters : run = false;
+            }
+        }.call(this))).reverse();
     }
 
     private async FetchChaptersFromPage(manga: Manga, page: number) {
@@ -148,61 +147,44 @@ export default class extends MangaScraper {
             }).join('-');
         }
 
-        const uri = new URL('/chapter', this.api);
-        uri.searchParams.set('limit', '100');
-        uri.searchParams.set('offset', `${100 * page}`);
-        uri.searchParams.set('manga', manga.Identifier);
-        uri.searchParams.append('includes[]', 'scanlation_group');
+        const uri = new URL(`./chapter?limit=100&offset=${100 * page}&manga=${manga.Identifier}&includes[]=scanlation_group`, this.apiURL);
         uri.searchParams.append('contentRating[]', 'safe');
         uri.searchParams.append('contentRating[]', 'suggestive');
         uri.searchParams.append('contentRating[]', 'erotica');
         uri.searchParams.append('contentRating[]', 'pornographic');
 
-        const request = new Request(uri.href, { headers: { Referer: this.URI.href }});
-        const { data } = await FetchJSON<APIContainer<APIChapter[]>>(request);
+        const { data } = await this.FetchAPI<APIChapters>(uri.href);
 
         return !data ? [] : data
-            .filter(entry => entry.attributes.pages)
-            .map(entry => {
-                const groups = entry.relationships.filter(relation => relation.type === 'scanlation_group');
+            .filter(({ attributes: { pages, isUnavailable } }) => pages && !isUnavailable)
+            .map(({ id, attributes, relationships }) => {
+                const groups = relationships.filter(relation => relation.type === 'scanlation_group' && relation.attributes?.name);
                 const title = [
-                    entry.attributes.volume ? 'Vol.' + pad(entry.attributes.volume, 2) : null,
-                    entry.attributes.chapter ? 'Ch.' + pad(entry.attributes.chapter, 4) : null,
-                    entry.attributes.title ? '-' : null,
-                    entry.attributes.title ? entry.attributes.title : null,
-                    entry.attributes.translatedLanguage ? '(' + entry.attributes.translatedLanguage + ')' : null,
-                    groups.length > 0 ? '[' + groups.map(group => group.attributes.name).join(', ') + ']' : null,
-                ].filter(segment => segment).join(' ').trim();
-                const languageCode = entry.attributes.translatedLanguage?.split('-')?.shift();
-                return new Chapter(this, manga, entry.id, title.trim(),
-                    ...chapterLanguageMap.has(languageCode) ? [ chapterLanguageMap.get(languageCode) ] : []
-                );
+                    attributes.volume && `Vol.${pad(attributes.volume, 2)}`,
+                    attributes.chapter && `Ch.${pad(attributes.chapter, 4)}`,
+                    attributes.title && `- ${attributes.title}`,
+                    attributes.translatedLanguage && `(${attributes.translatedLanguage})`,
+                    groups.length > 0 ? `[${groups.map(group => group.attributes.name).join(', ')}]` : null,
+                ].joinTitleSegments();
+                const languageCode = attributes.translatedLanguage?.split('-')?.shift();
+                return new Chapter(this, manga, id, title.trim(), ...chapterLanguageMap.get(languageCode) ?? []);
             });
     }
 
-    public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const request = new Request(`${this.api}/at-home/server/${chapter.Identifier}`, { headers: { Referer: this.URI.href }});
-        const { baseUrl, chapter: { hash, data: files } } = await FetchJSON<APIMedia>(request);
+    public override async FetchPages(chapter: Chapter): Promise<Page<PageParameters>[]> {
+        const { baseUrl, chapter: { hash, data: files } } = await this.FetchAPI<APIMedia>(`./at-home/server/${chapter.Identifier}`);
         return files.map(file => {
-            const slug = [ '/data', hash, file ].join('/');
-            const parameters = { Referer: this.URI.href, Base: baseUrl, Slug: slug };
-            return new Page(this, chapter, new URL(baseUrl + slug), parameters);
+            const slug = ['/data', hash, file].join('/');
+            return new Page(this, chapter, new URL(`https://uploads.mangadex.org${slug}`), { Referer: this.URI.href, mirrors: [baseUrl + slug] });
         });
     }
 
-    public override async FetchImage(page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
-
-        async function download(this: MangaScraper, page: Page, server: string): Promise<Blob> {
-            const source = new Page(this, page.Parent as Chapter, new URL(server + page.Parameters.Slug), page.Parameters);
-            const blob: Blob = await Common.FetchImageAjax.call(this, source, priority, signal, false);
-            (await createImageBitmap(blob)).close();
-            return blob;
-        }
-
-        try {
-            return await download.call(this, page, 'https://uploads.mangadex.org');
-        } catch {
-            return download.call(this, page, page.Parameters.Base as string);
-        }
+    public async FetchAPI<T extends JSONElement>(endpoint: string): Promise<T> {
+        return FetchJSON<T>(new Request(new URL(endpoint, this.apiURL), {
+            headers: {
+                'User-Agent': 'Hakuneko 10.0',
+                Referer: this.URI.href
+            }
+        }));
     }
 }

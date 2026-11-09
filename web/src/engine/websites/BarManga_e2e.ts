@@ -1,17 +1,17 @@
 import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'barmanga',
         title: 'BarManga'
     },
     container: {
-        url: 'https://barmanga.com/home/manga/aprendiz-por-favor-perdoname/',
-        id: JSON.stringify({ post: '834', slug: '/home/manga/aprendiz-por-favor-perdoname/' }),
+        url: 'https://archiviumbar.com/manga/aprendiz-por-favor-perdoname/',
+        id: JSON.stringify({ post: '834', slug: '/manga/aprendiz-por-favor-perdoname/' }),
         title: '¡Aprendiz! ¡Por favor perdóname!'
     },
     child: {
-        id: '/home/manga/aprendiz-por-favor-perdoname/capitulo-212/',
+        id: '/manga/aprendiz-por-favor-perdoname/capitulo-212/',
         title: 'Capítulo 212'
     },
     entry: {
@@ -19,6 +19,4 @@ const config = {
         size: 709_358,
         type: 'image/jpeg'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

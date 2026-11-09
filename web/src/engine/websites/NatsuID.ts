@@ -1,18 +1,11 @@
 import { Tags } from '../Tags';
 import icon from './NatsuID.webp';
-import { DecoratableMangaScraper } from '../providers/MangaPlugin';
-import * as MangaStream from './decorators/WordPressMangaStream';
-import * as Common from './decorators/Common';
+import { KiruBase } from './templates/KiruBase';
 
-@MangaStream.MangaCSS(/^{origin}\/manga\/[^/]+\/$/)
-@MangaStream.MangasSinglePageCSS()
-@MangaStream.ChaptersSinglePageCSS()
-@Common.PagesSinglePageJS('ts_reader.params.sources.shift().images;')
-@Common.ImageAjax()
-export default class extends DecoratableMangaScraper {
+export default class extends KiruBase {
 
     public constructor() {
-        super('natsuid', 'NatsuID', 'https://natsu.id', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Media.Manga, Tags.Language.Indonesian, Tags.Source.Scanlator);
+        super('natsuid', 'NatsuID', 'https://natsu.one', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Media.Manga, Tags.Language.Japanese);
     }
 
     public override get Icon() {

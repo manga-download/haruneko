@@ -5,7 +5,7 @@ import * as Common from './decorators/Common';
 import { FetchRegex } from '../platform/FetchProvider';
 
 @Common.MangaCSS(/^{origin}\/mangas-hentai\/[^/]+\/$/, 'main header.entry-header h1')
-@Common.MangasMultiPageCSS('/page/{page}/', 'main article div.chapter-thumb > a', 1, 1, 0, Common.AnchorInfoExtractor(true))
+@Common.MangasMultiPageCSS('main article div.chapter-thumb > a', Common.PatternLinkGenerator('/page/{page}/'), 0, Common.AnchorInfoExtractor(true))
 @Common.ChaptersUniqueFromManga()
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
@@ -19,11 +19,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const regex = /['"]page_image['"]\s*:\s*['"]([^'"]+)['"]/g;
-        const url = new URL(chapter.Identifier, this.URI);
-        const request = new Request(url.href);
-        const pages = await FetchRegex(request, regex);
+        const pages = await FetchRegex(new Request(new URL(chapter.Identifier, this.URI)), /['"]page_image['"]\s*:\s*['"]([^'"]+)['"]/g);
         return pages.map(image => new Page(this, chapter, new URL(image)));
-
     }
 }

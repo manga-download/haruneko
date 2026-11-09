@@ -1,10 +1,10 @@
 ﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'pinkseaunicorn',
         title: 'Pink Sea Unicorn'
-    },
+    }, /* Website's password protected, remove it ?
     container: {
         url: 'https://psunicorn.com/manga/omega-complex/',
         id: JSON.stringify({ post: '1858', slug: '/manga/omega-complex/' }),
@@ -18,7 +18,5 @@ const config = {
         index: 2,
         size: 1_030_059,
         type: 'image/jpeg'
-    }
-};
-
-new TestFixture(config).AssertWebsite();
+    }*/
+}).AssertWebsite();

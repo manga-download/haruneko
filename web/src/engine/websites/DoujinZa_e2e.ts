@@ -1,6 +1,6 @@
 ﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'doujinza',
         title: 'DoujinZa'
@@ -11,7 +11,7 @@ const config = {
         title: 'Happy Campus'
     },
     child: {
-        id: '/doujin/happy-campus/%e0%b8%95%e0%b8%ad%e0%b8%99%e0%b8%97%e0%b8%b5%e0%b9%88-31/',
+        id: encodeURI('/doujin/happy-campus/ตอนที่-31/').toLowerCase(),
         title: 'ตอนที่ 31'
     },
     entry: {
@@ -19,6 +19,4 @@ const config = {
         size: 1_093_282,
         type: 'image/jpeg'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

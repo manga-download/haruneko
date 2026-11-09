@@ -95,6 +95,33 @@ describe('BufferEncoder', () => {
         });
     });
 
+    describe('GetUTF8FromBytes()', () => {
+
+        it.each([
+            [ [], '' ],
+            [ [ 0x2D ], '-' ],
+            [ [
+                0x53, 0x74, 0x61, 0x79, 0x20, 0xF0, 0x9F, 0x98,
+                0x8E, 0x20, 0x69, 0x6E, 0x20, 0x74, 0x68, 0x65,
+                0x20, 0xE2, 0x98, 0x80, 0xEF, 0xB8, 0x8F,
+            ], 'Stay 😎 in the ☀️' ],
+        ])('Should get text from valid input', (input: number[], expected: string) => {
+            const actual = testee.GetUTF8FromBytes(new Uint8Array(input));
+            expect(actual).toBe(expected);
+        });
+
+        it.each([
+            undefined,
+            null,
+            true,
+            {},
+            '-',
+            3,
+        ])('Should throw on invalid input', (input: unknown) => {
+            expect(() => testee.GetUTF8FromBytes(input as BufferSource)).toThrow();
+        });
+    });
+
     describe('GetBytesFromBase64()', () => {
 
         it.each([
@@ -112,12 +139,40 @@ describe('BufferEncoder', () => {
             null,
             true,
             'X==',
+            'PDw_Pz8-Pg',
             'PDw_Pz8-Pg==',
             {},
             ['-'],
             3,
         ])('Should throw on invalid input', (input: unknown) => {
             expect(() => testee.GetBytesFromBase64(input as string)).toThrow();
+        });
+    });
+
+    describe('GetBytesFromURLBase64()', () => {
+
+        it.each([
+            [ '', [] ],
+            [ 'LQ', [ 0x2D ] ],
+            [ 'PDw_Pz8-Pg', [ 0x3C, 0x3C, 0x3F, 0x3F, 0x3F, 0x3E, 0x3E ] ],
+            [ 'PD\rw_Pz8-\nPg ', [ 0x3C, 0x3C, 0x3F, 0x3F, 0x3F, 0x3E, 0x3E ] ],
+        ])('Should get bytes from valid input', (input: string, expected: number[]) => {
+            const actual = testee.GetBytesFromURLBase64(input);
+            expect(actual).toStrictEqual(new Uint8Array(expected));
+        });
+
+        it.each([
+            undefined,
+            null,
+            true,
+            'X==',
+            'PDw/Pz8+Pg',
+            'PDw/Pz8+Pg==',
+            {},
+            ['-'],
+            3,
+        ])('Should throw on invalid input', (input: unknown) => {
+            expect(() => testee.GetBytesFromURLBase64(input as string)).toThrow();
         });
     });
 
@@ -142,6 +197,30 @@ describe('BufferEncoder', () => {
             3,
         ])('Should throw on invalid input', (input: unknown) => {
             expect(() => testee.GetBase64FromBytes(input as Uint8Array)).toThrow();
+        });
+    });
+
+    describe('GetURLBase64FromBytes', () => {
+
+        it.each([
+            [ [], '' ],
+            [ [ 0x2D ], 'LQ' ],
+            [ [ 0x3C, 0x3C, 0x3F, 0x3F, 0x3F, 0x3E, 0x3E ], 'PDw_Pz8-Pg' ],
+        ])('Should get base64 from valid input', (input: number[], expected: string) => {
+            const actual = testee.GetURLBase64FromBytes(new Uint8Array(input));
+            expect(actual).toStrictEqual(expected);
+        });
+
+        it.each([
+            undefined,
+            null,
+            true,
+            '-',
+            {},
+            ['-'],
+            3,
+        ])('Should throw on invalid input', (input: unknown) => {
+            expect(() => testee.GetURLBase64FromBytes(input as Uint8Array)).toThrow();
         });
     });
 });

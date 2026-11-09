@@ -8,7 +8,7 @@ import { DecoratableMangaScraper } from '../../providers/MangaPlugin';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('comicmeteor', `COMICメテオ (COMIC Meteor)`, 'https://comic-meteor.jp' /*, Tags.Language.English, Tags ... */);
+        super('comicmeteor', `COMICメテオ (COMIC Meteor)`, 'https://kirapo.jp/meteor' /*, Tags.Language.English, Tags ... */);
     }
 
     public override get Icon() {

@@ -1,12 +1,12 @@
 ﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+new TestFixture({
     plugin: {
         id: 'comikey-archive',
         title: 'Comikey (Archive)'
     },
     container: {
-        url: 'https://comikey.ovh/read/kengan-ashura-manga/',
+        url: 'https://cdn.comikey-cloud.workers.dev/read/kengan-ashura-manga/',
         id: 'kengan-ashura-manga',
         title: 'Kengan Ashura'
     },
@@ -19,6 +19,4 @@ const config = {
         size: 1_219_237,
         type: 'image/jpeg'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

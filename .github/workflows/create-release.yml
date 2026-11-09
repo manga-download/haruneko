@@ -6,22 +6,32 @@ jobs:
   build:
     strategy:
       matrix:
-        os: [windows-latest, macos-latest]
+        os: [windows-latest, macos-latest, ubuntu-latest]
     name: Build (${{ matrix.os }})
     runs-on: ${{ matrix.os }}
+    env:
+      SNAPCRAFT_STORE_CREDENTIALS: ${{ secrets.SNAPCRAFT_STORE_CREDENTIALS }}
     steps:
       - name: Checkout ${{ github.repository }} @ ${{ github.ref }}
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           repository: ${{ github.repository }}
           ref: ${{ github.ref }}
           fetch-depth: 1
+      - name: Setup Snapcraft
+        if: startsWith(matrix.os, 'ubuntu')
+        run: |
+          sudo apt update
+          sudo apt install -y snapd
+          sudo systemctl start snapd
+          sudo snap install snapcraft --classic
       - name: Install NodeJS
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
-          node-version: 22.13.x
+          node-version: 24.0.0
       - name: Install NPM Packages
-        run: npm install
+        run: |
+          npm run npm:clean-install
       - name: Build Application
         run: npm run bundle --workspace app/nw --workspace app/electron
       - name: Upload NW Builds
@@ -42,7 +52,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout ${{ github.repository }} @ ${{ github.ref }}
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           repository: ${{ github.repository }}
           ref: ${{ github.ref }}
@@ -69,10 +79,10 @@ jobs:
       - name: Create Release Description
         run: |
           DESCRIPTION=$(cat ./release-templates/pre-release.md | jq -sR | sed s/{TAG}/$RELEASE_TAG/g)
-          DESCRIPTION=$(echo $DESCRIPTION | sed s/{WIN_64_ZIP}/$(ls ./bundle-nw-* | grep 'x64.zip')/g)
-          DESCRIPTION=$(echo $DESCRIPTION | sed s/{WIN_32_ZIP}/$(ls ./bundle-nw-* | grep 'ia32.zip')/g)
-          DESCRIPTION=$(echo $DESCRIPTION | sed s/{MACOS_X64_DMG}/$(ls ./bundle-nw-* | grep 'x64.dmg')/g)
-          DESCRIPTION=$(echo $DESCRIPTION | sed s/{MACOS_ARM64_DMG}/$(ls ./bundle-nw-* | grep 'arm64.dmg')/g)
+          DESCRIPTION=$(echo $DESCRIPTION | sed s/{WIN_X64_ZIP}/$(ls ./bundle-electron-* | grep 'x64.zip')/g)
+          DESCRIPTION=$(echo $DESCRIPTION | sed s/{MACOS_X64_DMG}/$(ls ./bundle-electron-* | grep 'x64.dmg')/g)
+          DESCRIPTION=$(echo $DESCRIPTION | sed s/{MACOS_ARM64_DMG}/$(ls ./bundle-electron-* | grep 'arm64.dmg')/g)
+          DESCRIPTION=$(echo $DESCRIPTION | sed s/{LINUX_X64_SNAP}/$(ls ./bundle-electron-* | grep 'x64.snap')/g)
           echo -n $DESCRIPTION > ./release-templates/description.md
       - name: Create Release Tag
         run: |

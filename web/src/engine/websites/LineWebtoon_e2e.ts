@@ -13,11 +13,11 @@ new TestFixture({
     },
     child: {
         id: '/id/horror/guidao/prolog/viewer?title_no=874&episode_no=1',
-        title: '#1 - Prolog',
+        title: 'Prolog',
     },
     entry: {
         index: 2,
-        size: 282_499,
+        size: 311_848,
         type: 'image/png',
     }
 }).AssertWebsite();
@@ -35,11 +35,33 @@ new TestFixture({
     },
     child: {
         id: '/en/mystery/dr-frost/ep-0-prologue/viewer?title_no=371&episode_no=1',
-        title: '#1 - Ep. 0 - Prologue',
+        title: 'Ep. 0 - Prologue',
     },
     entry: {
         index: 0,
         size: 104_680,
+        type: 'image/jpeg',
+    }
+}).AssertWebsite();
+
+// CASE: Canvas category
+new TestFixture({
+    plugin: {
+        id: 'linewebtoon',
+        title: 'Line Webtoon',
+    },
+    container: {
+        url: 'https://www.webtoons.com/en/canvas/meme-girls/list?title_no=304446',
+        id: '/en/canvas/meme-girls/list?title_no=304446',
+        title: 'Meme Girls',
+    },
+    child: {
+        id: '/en/canvas/meme-girls/duolingo-chan/viewer?title_no=304446&episode_no=1',
+        title: 'Duolingo-Chan',
+    },
+    entry: {
+        index: 1,
+        size: 25_898,
         type: 'image/jpeg',
     }
 }).AssertWebsite();
