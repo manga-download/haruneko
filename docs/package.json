@@ -1,8 +1,12 @@
 {
   "name": "hakuneko-docs",
   "type": "module",
+  "engines": {
+      "node": ">=24.0.0",
+      "npm": ">=11.3.0"
+  },
   "devDependencies": {
-    "vitepress": "1.6.4"
+    "vitepress": "next"
   },
   "scripts": {
     "check": "",

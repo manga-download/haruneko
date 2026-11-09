@@ -1,0 +1,10 @@
+import '../MangaToonAR_e2e';
+import '../MangaToonDE_e2e';
+import '../MangaToonEN_e2e';
+import '../MangaToonES_e2e';
+import '../MangaToonFR_e2e';
+import '../MangaToonID_e2e';
+import '../MangaToonIT_e2e';
+import '../MangaToonPT_e2e';
+import '../MangaToonTH_e2e';
+import '../MangaToonVI_e2e';

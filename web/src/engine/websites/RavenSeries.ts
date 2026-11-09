@@ -25,7 +25,7 @@ type APIPages = {
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('ravenseries', 'RavenSeries', 'https://ravensword.lat', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Language.Spanish, Tags.Source.Aggregator);
+        super('ravenseries', 'RavenSeries', 'https://raventard.xyz', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Language.Spanish, Tags.Source.Aggregator);
     }
 
     public override get Icon() {

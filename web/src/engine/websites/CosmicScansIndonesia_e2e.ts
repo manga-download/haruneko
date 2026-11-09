@@ -6,13 +6,14 @@ new TestFixture({
         title: 'Cosmic Scans Indonesia'
     },
     container: {
-        url: 'https://lc4.cosmicscans.asia/manga/eleceed/',
-        id: '/manga/eleceed/',
+        url: 'https://04.cosmicscans.to/series/eleceed/',
+        id: 'eleceed',
         title: 'Eleceed'
     },
     child: {
-        id: '/eleceed-chapter-272/',
-        title: 'Chapter 272'
+        id: 'eleceed-chapter-272',
+        title: 'Chapter 272',
+        timeout: 15_000,
     },
     entry: {
         index: 1,

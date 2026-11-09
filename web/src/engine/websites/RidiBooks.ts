@@ -1,51 +1,73 @@
 ﻿import { Tags } from '../Tags';
 import icon from './RidiBooks.webp';
-import { Chapter, DecoratableMangaScraper, Manga, type MangaPlugin, Page } from '../providers/MangaPlugin';
+import { FetchGraphQL, FetchJSON } from '../platform/FetchProvider';
+import { Chapter, DecoratableMangaScraper, type MangaPlugin, Manga, Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
+import { Exception } from '../Error';
+import { WebsiteResourceKey as R } from '../../i18n/ILocale';
 
-type APIMangas = {
-    data: {
-        items: APIManga[]
-        pagination: {
-            nextPage: string,
-        }
-    }
-}
-
-type APIManga = {
-    book: {
-        bookId: string,
-        title: string
-        serial: {
-            title: string
-        }
-    }
-}
-
-type APIPages = {
-    data: {
-        pages: {
-            src: string
-        }[]
-    }
-    success: boolean,
-
-}
-
-type ChapterID = {
-    id: string,
-    title: string
-}
-
-type BookDetail = {
-    series_id: string,
-    series_title: string
+type APIResult<T> = {
+    success: boolean;
+    data?: T;
+    error?: {
+        code: string;
+    };
+    message: string;
 };
 
-@Common.ImageAjax()
+type APIMangas = APIResult<{
+    items: {
+        book: {
+            bookId: string;
+            title: string;
+            serial: {
+                title: string;
+            };
+        };
+    }[];
+    pagination: {
+        nextPage: string;
+    };
+}>;
+
+type APIChapters = {
+    riGrid: {
+        cells: {
+            bookDetailHome: {
+                episodeBookListCell: {
+                    cell: null | {
+                        books: {
+                            bookId: string;
+                            title: string;
+                            metadata: {
+                                file: {
+                                    type: string;
+                                };
+                            };
+                        }[];
+                    };
+                };
+            };
+        };
+    };
+};
+
+type APIPages = APIResult<{
+    type: string;
+    pages: {
+        src: string;
+    }[];
+}>;
+
+@Common.MangaCSS(/^{origin}\/books\/\d+$/, 'title', (element, uri) => ({
+    id: uri.pathname.split('/').at(-1),
+    title: element.textContent.split(' - ').at(0).trim()
+}))
+@Common.ImageAjax(true)
 export default class extends DecoratableMangaScraper {
-    private apiUrl = 'https://api.ridibooks.com';
+
+    private readonly apiURL = 'https://api.ridibooks.com/';
+    private readonly graphqlURL = `${this.URI.origin}/graphql`;
 
     public constructor() {
         super('ridibooks', 'RidiBooks', 'https://ridibooks.com', Tags.Media.Manhwa, Tags.Language.Korean, Tags.Source.Official);
@@ -55,60 +77,104 @@ export default class extends DecoratableMangaScraper {
         return icon;
     }
 
-    public override ValidateMangaURL(url: string): boolean {
-        return new RegExpSafe(`^${this.URI.origin}/books/\\d+`).test(url);
-    }
-
-    public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
-        const data = await FetchWindowScript<BookDetail>(new Request(url), 'bookDetail');
-        return new Manga(this, provider, data.series_id, data.series_title.trim());
-    }
-
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        const mangaList : Manga[] = [];
-        let uri : URL | null = new URL('/v2/category/books', this.apiUrl);
-
-        uri.search = new URLSearchParams({
-            category_id: '1600',
-            tab: 'books',
-            platform: 'web',
-            order_by: 'popular',
-            limit: '60',
-            offset: '0'
-        }).toString();
-
-        while (uri) {
-            const { data } = await FetchJSON<APIMangas>(new Request(uri.href));
-            const mangas = data.items.map(({ book }) => {
-                const title = book.serial?.title ? book.serial.title.trim() : book.title.trim();
-                return new Manga(this, provider, book.bookId, title);
-            });
-            mangaList.push(...mangas);
-            uri = data.pagination.nextPage && new URL(data.pagination.nextPage, this.apiUrl);
-        }
-        return mangaList.distinct();
+        type This = typeof this;
+        return (await Array.fromAsync(async function* (this: This) {
+            for (const category of [
+                '1500', //comic book
+                '6100', //comic series
+                '1600', //Webtoon
+                //'3000', //Light Novel
+                //'1700', //Romance e-book,
+                //'1650', //Romance Web Fiction
+                //'6000', //Rofan e-book
+                //'6050', //Rofan
+                //'1710', //Fantasy eBook
+                //'1750', //Fantasy Web Fiction
+                //'4100', //BL Novel eBook
+                //'4150', //BL Web Fiction
+                '4200', //BL Cartoon eBook
+                '4250', //BL Webtoon
+            ]) {
+                const uri = new URL(`./v2/category/books?platform=web&tab=books&category_id=${category}&order_by=popular&limit=200`, this.apiURL);
+                for (let offset = 0, run = true; run; offset += 200) {
+                    uri.searchParams.set('offset', `${offset}`);
+                    const { data: { items, pagination: { nextPage } } } = await FetchJSON<APIMangas>(new Request(uri));
+                    yield* items.map(({ book: { bookId, serial, title } }) => new Manga(this, provider, `${bookId}`, (serial?.title ?? title).trim()));
+                    run = !!nextPage;
+                }
+            }
+        }.call(this))).distinct();
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const uri = new URL(`/books/${manga.Identifier}`, this.URI);
-        const data = await FetchWindowScript<ChapterID[]>(new Request(uri.href), 'seriesBookListJson');
-        return data.map(chapter => {
-            const title = chapter.title.replace(manga.Title, '').trim();
-            return new Chapter(this, manga, chapter.id, title != '' ? title : chapter.title.trim());
-        });
+        //handle old book id (/books/1234) flawlessly
+        const mangaId = manga.Identifier.split('/').filter(Boolean).at(-1);
+        const deviceId = crypto.randomUUID();
+        type This = typeof this;
+        return Array.fromAsync(async function* (this: This) {
+            for (let offset = 0, run = true; run;) {
+                const { riGrid: { cells: { bookDetailHome: { episodeBookListCell: { cell } } } } } = await FetchGraphQL<APIChapters>(new Request(this.graphqlURL), 'BooksDetailEpisodeBooks', `
+                    query BooksDetailEpisodeBooks(
+                      $id: UUID!
+                      $context: BookDetailHomeEpisodeBookListCellContext!
+                    ) {
+                      riGrid {
+                        cells {
+                          bookDetailHome {
+                            episodeBookListCell(id: $id, context: $context) {
+                              cell {
+                                ...BooksDetailEpisodeBookList
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                    fragment BooksDetailEpisodeBookList on BookDetailHomeEpisodeBookList {
+                      books {
+                        bookId
+                        title
+                        metadata {
+                            file {
+                                type
+                            }
+                        }
+                      }
+                    }
+                `, {
+                    context: {
+                        bookId: mangaId,
+                        deviceType: 'DESKTOP',
+                        order: 'LATEST',
+                        tabType: 'RENT',
+                        pagination: {
+                            limit: 200,
+                            offset
+                        }
+                    },
+                    id: deviceId
+                });
+                const chapters = (cell?.books || [])
+                    .filter(({ metadata: { file: { type } } }) => type !== 'CHARACTER_COUNT') //filter Novels (epubs)
+                    .map(({ bookId, title }) => new Chapter(this, manga, bookId, title.replace(manga.Title, '').trim() || title.trim()));
+                chapters.length > 0 ? yield* chapters : run = false;
+                offset += chapters.length;
+            }
+        }.call(this));
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const uri = new URL('/api/web-viewer/generate', this.URI);
-        const data = await FetchJSON<APIPages>(new Request(uri.href, {
+        const { data, success, message, error } = await FetchJSON<APIPages>(new Request(new URL('/api/web-viewer/generate', this.URI), {
             method: 'POST',
-            body: JSON.stringify({
-                book_id: chapter.Identifier
-            }),
-            headers: {
-                'Content-Type': 'application/json',
-            },
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ book_id: chapter.Identifier }),
         }));
-        return data.success ? data.data.pages.map(page => new Page(this, chapter, new URL(page.src))) : [];
+
+        if (!success) {
+            if (error?.code === 'NOT_AUTHORIZED') throw new Exception(R.Plugin_Common_Chapter_UnavailableError);
+            throw new Error(`${message} (${error?.code})`);
+        }
+        return data.pages.map(({ src }) => new Page(this, chapter, new URL(src, this.URI)));
     }
 }

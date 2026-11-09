@@ -1,88 +1,98 @@
 import { Tags } from '../Tags';
 import icon from './MangaCrab.webp';
-import { Chapter, DecoratableMangaScraper, type Manga, Page } from '../providers/MangaPlugin';
+import { Chapter, DecoratableMangaScraper, Manga, type MangaPlugin, Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { Fetch, FetchCSS, FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
+import { Fetch, FetchJSON } from '../platform/FetchProvider';
 import type { Priority } from '../taskpool/DeferredTask';
 
-type APIChapters = {
-    data: {
-        list: string;
-        total_pages: number;
-    }
+type APIManga = {
+    id: number;
+    title: string;
 };
 
-type PageKey = {
-    imgKey: string;
-}
+type APIMangas = {
+    items: APIManga[];
+};
 
-@Common.MangaCSS(/^{origin}\/series\/[^/]+\/$/, 'title')
-@Common.MangasMultiPageCSS('article.catalog-card > a', Common.PatternLinkGenerator('/series/page/{page}/'))
+type APIChapter = {
+    index: number;
+    title: string;
+    security?: {
+        enabled: 1 | 0;
+        header: string;
+    };
+    content: {
+        pages: string[];
+    };
+}
+type APIChapters = {
+    items: APIChapter[];
+};
+
+type PageParameter = {
+    header: string;
+};
+
 export default class extends DecoratableMangaScraper {
 
+    private readonly apiURL = `${this.URI.origin}/api/mv/`;
+
     public constructor() {
-        super('mangacrab', 'Manga Crab', 'https://mangacrab.org', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Language.Spanish, Tags.Source.Aggregator);
+        super('mangacrab', 'Manga Crab', 'https://es.mangacrab.org', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Language.Spanish, Tags.Source.Aggregator);
     }
 
     public override get Icon() {
         return icon;
     }
 
-    public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const { manga_id, nonce } = await FetchWindowScript<{ manga_id: string, nonce: string }>(new Request(new URL(manga.Identifier, this.URI)), `
-            new Promise( resolve => {
-                resolve ({
-                    manga_id : document.getElementById('mv-chapter-list').dataset.mangaId,
-                    nonce : mvTheme.nonce
-                });
-            });
-        `, 1500);
+    public override ValidateMangaURL(url: string): boolean {
+        return new RegExpSafe(`^${this.URI.origin}/series/[^/]+/?$`).test(url);
+    }
 
+    public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
+        const { id, title } = await FetchJSON<APIManga>(new Request(new URL(`./mangas/by-slug/${url.split('/').filter(Boolean).at(-1)}`, this.apiURL)));
+        return new Manga(this, provider, `${id}`, title);
+    }
+
+    public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
         type This = typeof this;
         return Array.fromAsync(async function* (this: This) {
             for (let page = 1, run = true; run; page++) {
-                const { data: { list, total_pages } } = await FetchJSON<APIChapters>(new Request(new URL('./wp-admin/admin-ajax.php', this.URI), {
-                    method: 'POST',
-                    body: new URLSearchParams({
-                        action: 'mv_get_chapters',
-                        nonce,
-                        manga_id,
-                        page: `${page}`,
-                        search: '',
-                        _ts: `${Date.now()}`
-                    }).toString(),
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                        Referer: this.URI.href
-                    }
-                }));
-                const chapters = [...new DOMParser().parseFromString(list, 'text/html').querySelectorAll('article.chapter-item div a')].map((chapter: HTMLAnchorElement) => {
-                    return new Chapter(this, manga, chapter.pathname + chapter.search, chapter.text.trim());
-                });
-                yield* chapters;
-                run = total_pages > page;
+                const { items } = await FetchJSON<APIMangas>(new Request(new URL(`./mangas?page=${page}&per_page=100nsfw=true&nsfw_only=false`, this.apiURL)));
+                const mangas = items.map(({ id, title }) => new Manga(this, provider, `${id}`, title));
+                mangas.length > 0 ? yield* mangas : run = false;
             }
         }.call(this));
     }
 
-    public override async FetchPages(chapter: Chapter): Promise<Page<PageKey>[]> {
-        //NOT using script because of ad wall intermediate page interfering
-        const [body] = await FetchCSS(new Request(new URL(chapter.Identifier, this.URI)), 'body');
-        const images = [...body.querySelectorAll('div.reader-body img.mv-secure-img')]
-            .map(img => [...img.attributes].find(attribute => attribute.value.startsWith('/encript.php'))?.value)
-            .filter(img => img);
-        const imgKey = body.innerHTML.match(/['"]imgHeader['"]\s*:\s*['"]([^'"]+)['"]/).at(1);
-        return images.map(page => new Page<PageKey>(this, chapter, new URL(page, this.URI), { imgKey }));
+    public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
+        const { items } = await FetchJSON<APIChapters>(new Request(new URL(`./mangas/${manga.Identifier}/chapters?per_page=5000`, this.apiURL)));
+        return items.map(({ index, title }) => new Chapter(this, manga, `${index}`, title));
     }
 
-    public override async FetchImage(page: Page<PageKey>, priority: Priority, signal: AbortSignal): Promise<Blob> {
+    public override async FetchPages(chapter: Chapter): Promise<Page<PageParameter>[]> {
+        const { security, content: { pages } } = await FetchJSON<APIChapter>(new Request(new URL(`./mangas/${chapter.Parent.Identifier}/chapter?cap_index=${chapter.Identifier}`, this.apiURL)));
+        const header = security?.enabled && security.header || '';
+
+        return pages.map(page => {
+            const mustAddHeader = !!header && page.includes(`/encript.php?`);
+            return new Page<PageParameter>(this, chapter, new URL(page), { header: mustAddHeader ? header : undefined });
+        });
+    }
+
+    public override async FetchImage(page: Page<PageParameter>, priority: Priority, signal: AbortSignal): Promise<Blob> {
+        if (!page.Parameters.header) return Common.FetchImageAjax.call(this, page, priority, signal);
         return this.imageTaskPool.Add(async () => {
-            return (await Fetch(new Request(page.Link, {
+            const response = await Fetch(new Request(page.Link.href, {
+                credentials: 'omit',
+                signal: signal,
                 headers: {
-                    Referer: new URL(page.Parent.Identifier, this.URI).href,
-                    'Node': page.Parameters.imgKey
-                },
-            }))).blob();
+                    Origin: this.URI.origin,
+                    Fansy: page.Parameters.header,
+                    'Sec-Fetch-Site': 'same-site'
+                }
+            }));
+            return response.blob();
         }, priority, signal);
     }
 }

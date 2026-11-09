@@ -6,12 +6,12 @@ new TestFixture({
         title: 'Mangas Top',
     },
     container: {
-        url: 'https://mangastop.net/manga/a-batalha-atraves-dos-ceus/',
-        id: '/manga/a-batalha-atraves-dos-ceus/',
+        url: 'https://mangastop.net/obra/493084',
+        id: '493084',
         title: 'A Batalha Através Dos Céus'
     },
     child: {
-        id: '/batalha-atraves-dos-ceus-capitulo-01/',
+        id: '755083',
         title: 'Capítulo 01'
     },
     entry: {

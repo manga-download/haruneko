@@ -4,7 +4,7 @@ import { type MangaScraper, type MangaPlugin, type Chapter, Page } from '../../p
 import { type Priority } from '../../taskpool/DeferredTask';
 import * as Common from './Common';
 
-type MirroredPage = Page<{
+export type MirroredPage = Page<{
     mirrors: string[];
 }>;
 
@@ -73,7 +73,7 @@ export function PagesSinglePageJS(script = pageScript, delay = 0) {
  ******** Image Data Extraction Methods ********
  ***********************************************/
 
-async function FetchImageWithMirrors(this: MangaScraper, page: MirroredPage, priority: Priority, signal: AbortSignal): Promise<Blob> {
+export async function FetchImageWithMirrors(this: MangaScraper, page: MirroredPage, priority: Priority, signal: AbortSignal): Promise<Blob> {
     return this.imageTaskPool.Add(async () => {
         const errors: Error[] = [];
         for (const uri of [ page.Link, ...page.Parameters.mirrors ]) {

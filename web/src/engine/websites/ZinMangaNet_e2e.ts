@@ -11,12 +11,12 @@ new TestFixture({
         title: 'Meet in The Middle'
     },
     child: {
-        id: '/manga/meet-in-the-middle/chapter-50',
-        title: 'Chapter 50'
+        id: '/manga/meet-in-the-middle/chapter-127',
+        title: 'Chapter 127'
     },
     entry: {
         index: 0,
-        size: 458_424,
+        size: 37_056,
         type: 'image/webp'
     }
 }).AssertWebsite();

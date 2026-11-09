@@ -6,7 +6,7 @@ new TestFixture({
         title: 'APKomik'
     },
     container: {
-        url: 'https://apkomik.cc/manga/a-bad-person/',
+        url: 'https://01.apkomik.com/manga/a-bad-person/',
         id: '/manga/a-bad-person/',
         title: 'A Bad Person (Bad Guy)'
     },

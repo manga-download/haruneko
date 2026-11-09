@@ -56,46 +56,38 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
-        const { id, title } = await this.FetchAPI<APIManga>('./comics/' + url.split('/').at(-1));
+        const { id, title } = await this.FetchAPI<APIManga>(`./comics/${url.split('/').at(-1)}`);
         return new Manga(this, provider, id, title.replace('@COMIC', '').trim());
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        const mangaList: Manga[] = [];
-        const search = {
-            sort: 'title_yomigana',
-            order: 'asc',
-        };
-
-        for (let run = true; run;) {
-            const { resources, next_cursor } = await this.FetchAPI<APIMangas>('./comics', search);
-            const mangas = resources.map(({ id, title }) => new Manga(this, provider, id, title.replace('@COMIC', '').trim()));
-            search[ 'after_than' ] = next_cursor;
-            mangaList.push(...mangas);
-            run = !!next_cursor;
-        }
-
-        return mangaList;
+        type This = typeof this;
+        return Array.fromAsync(async function* (this: This) {
+            let cursor: string;
+            for (let run = true; run;) {
+                const endpoint = [`./comics?sort=title_yomigana&order=asc`, cursor ? `&after_than=${cursor}` : ''].join('');
+                const { resources, next_cursor } = await this.FetchAPI<APIMangas>(endpoint);
+                const mangas = resources.map(({ id, title }) => new Manga(this, provider, id, title.replace('@COMIC', '').trim()));
+                yield* mangas;
+                cursor = next_cursor;
+                run = !!next_cursor;
+            }
+        }.call(this));
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const chapterList: Chapter[] = [];
-        const search = {
-            comic_id: manga.Identifier,
-            episode_status: 'free_viewing%2Conly_for_subscription',
-            sort: 'episode_order',
-            order: 'asc',
-        };
-
-        for (let run = true; run;) {
-            const { resources, next_cursor } = await this.FetchAPI<APIChapters>('./episodes', search);
-            const chapters = resources.map(chapter => new Chapter(this, manga, chapter.id, chapter.title.trim()));
-            search[ 'after_than' ] = next_cursor;
-            chapterList.push(...chapters);
-            run = !!next_cursor;
-        }
-
-        return chapterList;
+        type This = typeof this;
+        return Array.fromAsync(async function* (this: This) {
+            let cursor: string;
+            for (let run = true; run;) {
+                const endpoint = [`./episodes?comic_id=${manga.Identifier}&episode_status=free_viewing%2Conly_for_subscription&sort=episode_order&order=desc`, cursor ? `&after_than=${cursor}` : ''].join('');
+                const { resources, next_cursor } = await this.FetchAPI<APIChapters>(endpoint);
+                const chapters = resources.map(({ id, title }) => new Chapter(this, manga, id, title));
+                yield* chapters;
+                cursor = next_cursor;
+                run = !!next_cursor;
+            }
+        }.call(this));
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page<PageParameters>[]> {
@@ -108,8 +100,7 @@ export default class extends DecoratableMangaScraper {
         const data = await Common.FetchImageAjax.call(this, page, priority, signal);
         return !drmHash ? data : DeScramble(data, async (image, ctx) => {
             const scrambleData = GetBytesFromBase64(drmHash);
-            const columns = scrambleData.at(0);
-            const rows = scrambleData.at(1);
+            const [columns, rows] = scrambleData;
             const blockIndexMap = scrambleData.slice(2);
             const blockWidth = Math.floor((image.width - image.width % 8) / columns);
             const blockHeight = Math.floor((image.height - image.height % 8) / rows);
@@ -117,7 +108,7 @@ export default class extends DecoratableMangaScraper {
             ctx.drawImage(image, 0, 0);
 
             for (let targetBlockIndex = 0; targetBlockIndex < columns * rows; targetBlockIndex++) {
-                const sourceBlockIndex = blockIndexMap[ targetBlockIndex ];
+                const sourceBlockIndex = blockIndexMap[targetBlockIndex];
                 const sourceOffsetX = sourceBlockIndex % columns * blockWidth;
                 const sourceOffsetY = Math.floor(sourceBlockIndex / columns) * blockHeight;
                 const targetOffsetX = targetBlockIndex % columns * blockWidth;
@@ -127,9 +118,7 @@ export default class extends DecoratableMangaScraper {
         });
     }
 
-    private async FetchAPI<T extends JSONElement>(path: string, searchParamInit: Record<string, string> = {}): Promise<T> {
-        const uri = new URL(path, this.api.url);
-        uri.search = new URLSearchParams(searchParamInit).toString();
-        return FetchJSON<T>(new Request(uri, { headers: this.api.headers }));
+    private async FetchAPI<T extends JSONElement>(path: string): Promise<T> {
+        return FetchJSON<T>(new Request(new URL(path, this.api.url), { headers: this.api.headers }));
     }
 }

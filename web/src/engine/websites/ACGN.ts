@@ -3,13 +3,9 @@ import icon from './ACGN.webp';
 import { DecoratableMangaScraper, type Manga, type MangaPlugin } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 
-function PageExtractor(element: HTMLDivElement) {
-    return element.getAttribute('_src');
-}
-
 @Common.MangaCSS(/^{origin}\/manhua-[^/]+\.htm$/, 'div#breadcrumb h1')
 @Common.ChaptersSinglePageCSS('div#comic_chapter ul li a')
-@Common.PagesSinglePageCSS('div#pic_list div.pic', PageExtractor)
+@Common.PagesSinglePageCSS('div#pic_list div.pic', image => image.getAttribute('_src'))
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 

@@ -8,7 +8,7 @@ new TestFixture({
     container: {
         url: 'https://manga-no.com/works/10431553195bd166922',
         id: '/works/10431553195bd166922',
-        title: 'うちらのはなし'
+        title: 'うさぎ予報'
     },
     child: {
         id: '/episodes/10538553195bd166922',

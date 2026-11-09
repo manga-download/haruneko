@@ -1,5 +1,4 @@
-import { mock } from 'vitest-mock-extended';
-import { describe, it, expect } from 'vitest';
+import { vi, describe, it, expect } from 'vitest';
 import type { ISettings, SettingsManager } from './SettingsManager';
 import type { StorageController } from './StorageController';
 import { PluginController } from './PluginController';
@@ -8,15 +7,11 @@ import { legacyWebsiteIdentifierMap } from './transformers/BookmarkConverter';
 
 class TestFixture {
 
-    public readonly MockStorageController = mock<StorageController>();
-    public readonly MockSettingsManager = mock<SettingsManager>();
-
-    constructor() {
-        this.MockSettingsManager.OpenScope.mockReturnValue(mock<ISettings>());
-    }
+    private readonly MockStorageController = { LoadPersistent: vi.fn() };
+    public readonly MockSettingsManager = { OpenScope: vi.fn(() => ({ Initialize: vi.fn() } as unknown as ISettings))};
 
     public CreateTestee() {
-        return new PluginController(this.MockStorageController, this.MockSettingsManager);
+        return new PluginController(this.MockStorageController as unknown as StorageController, this.MockSettingsManager as unknown as SettingsManager);
     }
 }
 

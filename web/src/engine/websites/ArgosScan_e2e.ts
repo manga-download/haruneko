@@ -4,12 +4,12 @@ new TestFixture({
     plugin: {
         id: 'argosscan',
         title: 'Argos Scan'
-    }, /* Need login
+    },
     container: {
         url: 'https://aniargos.com/6b217fc9-6ef8-4708-8e96-2d06e0a78349/o-apocalipse-chegou',
         id: '/6b217fc9-6ef8-4708-8e96-2d06e0a78349/o-apocalipse-chegou',
         title: 'O Apocalipse Chegou',
-    },
+    }, /* Need login
     child: {
         id: '/6b217fc9-6ef8-4708-8e96-2d06e0a78349/o-apocalipse-chegou/capitulo/9',
         title: 'Capítulo 9',

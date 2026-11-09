@@ -1,6 +1,8 @@
 ﻿import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config = {
+// CASE: Classic html , unique chapter
+
+new TestFixture({
     plugin: {
         id: 'wnacg',
         title: 'Wnacg'
@@ -16,9 +18,30 @@ const config = {
     },
     entry: {
         index: 0,
-        size: 291_243,
+        size: 288_799,
         type: 'image/jpeg'
     }
-};
+}).AssertWebsite();
 
-new TestFixture(config).AssertWebsite();
+//CASE: javascript reader , multiple chapters
+
+new TestFixture({
+    plugin: {
+        id: 'wnacg',
+        title: 'Wnacg'
+    },
+    container: {
+        url: 'https://www.wnacg.com/photos-index-aid-389356.html',
+        id: '/photos-index-aid-389356.html',
+        title: '[Vchan]千娇百媚'
+    },
+    child: {
+        id: '/photos-slide-aid-273027-sid-389356.html',
+        title: '第1話 [Vchan] 千娇百媚 1（无水印、无码）'
+    },
+    entry: {
+        index: 0,
+        size: 183_390,
+        type: 'image/webp'
+    }
+}).AssertWebsite();

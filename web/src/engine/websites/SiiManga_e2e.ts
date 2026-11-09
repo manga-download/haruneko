@@ -6,7 +6,7 @@ new TestFixture({
         title: 'SiiManga'
     },
     container: {
-        url: 'https://siikomik.net/komik/tears-on-a-withered-flower/',
+        url: 'https://siikomik.id/komik/tears-on-a-withered-flower/',
         id: JSON.stringify({ post: '218', slug: '/komik/tears-on-a-withered-flower/' }),
         title: 'Tears on a Withered Flower'
     },

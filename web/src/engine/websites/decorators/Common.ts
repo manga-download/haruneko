@@ -9,7 +9,7 @@ import { Delay } from '../../BackgroundTimers';
 
 export function ThrowOnUnsupportedDecoratorContext(context: ClassDecoratorContext) {
     if (context && context.kind !== 'class') {
-        throw new InternalError(`Inalid decorator context: ${context.name}`);
+        throw new InternalError(`Invalid decorator context: ${context.name}`);
     }
 }
 
@@ -302,7 +302,7 @@ export async function FetchMangasMultiPageCSS<E extends HTMLElement>(this: Manga
         await reducer;
         reducer = throttle > 0 ? Delay(throttle) : Promise.resolve();
         const mangas = await FetchMangasSinglePageCSS.call(this, provider, uri.href, query, extract);
-        if (generate.isExhaustive || mangaList.isMissingLastItemFrom(mangas)) {
+        if (generate.isExhaustive || mangaList.isLastItemDifferentFromNonEmpty(mangas)) {
             mangaList.push(...mangas); // TODO: Broadcast event that mangalist for provider has been updated?
         } else {
             break;
@@ -344,8 +344,9 @@ export function MangasMultiPageCSS<E extends HTMLElement>(query: string, generat
 * - A relative path for the website's base URL or an absolute URL from which the chapters shall be extracted
 * - A function to create the URL or endpoint based on the provided media container (manga) from which the chapters shall be extracted
 * @param extract - A function to extract the chapter identifier and title from a single element (found with {@link query})
- */
-export async function FetchChaptersSinglePageCSS<E extends HTMLElement>(this: MangaScraper, manga: Manga, query: string, resource: string | LinkResolver<Manga> = DefaultMediaLinkResolver, extract = DefaultElementInfoExtractor as InfoExtractor<E>): Promise<Chapter[]> {
+* @param reverseOrder - Set to true if website chapter list use ascending order, as engine must produce descending order.
+*/
+export async function FetchChaptersSinglePageCSS<E extends HTMLElement>(this: MangaScraper, manga: Manga, query: string, resource: string | LinkResolver<Manga> = DefaultMediaLinkResolver, extract = DefaultElementInfoExtractor as InfoExtractor<E>, reverseOrder: boolean = false): Promise<Chapter[]> {
     const uri = typeof resource === 'string' ? new URL(resource, this.URI) : new URL(resource.call(this, manga), this.URI);
     const request = new Request(uri, {
         headers: {
@@ -353,6 +354,7 @@ export async function FetchChaptersSinglePageCSS<E extends HTMLElement>(this: Ma
         }
     });
     const data = await FetchCSS<E>(request, query);
+    if (reverseOrder) data.reverse();
     return data.map(element => {
         const { id, title } = extract.call(this, element, uri);
         return new Chapter(this, manga, id, title.replace(manga.Title, '').trim() || manga.Title);
@@ -367,13 +369,14 @@ export async function FetchChaptersSinglePageCSS<E extends HTMLElement>(this: Ma
  * - A relative path for the website's base URL or an absolute URL from which the chapters shall be extracted
  * - A function to create the URL or endpoint based on the provided media container (manga) from which the chapters shall be extracted
  * @param extract - A function to extract the chapter identifier and title from a single element (found with {@link query})
+ * @param reverseOrder - Set to true if website chapter list use ascending order, as engine must produce descending order.
  */
-export function ChaptersSinglePageCSS<E extends HTMLElement>(query: string, resource: string | LinkResolver<Manga> = DefaultMediaLinkResolver, extract = DefaultElementInfoExtractor as InfoExtractor<E>): ClassDecorator {
+export function ChaptersSinglePageCSS<E extends HTMLElement>(query: string, resource: string | LinkResolver<Manga> = DefaultMediaLinkResolver, extract = DefaultElementInfoExtractor as InfoExtractor<E>, reverseOrder: boolean = false): ClassDecorator {
     return function DecorateClass<T extends Constructor>(ctor: T, context?: ClassDecoratorContext): T {
         ThrowOnUnsupportedDecoratorContext(context);
         return class extends ctor {
             public async FetchChapters(this: MangaScraper, manga: Manga): Promise<Chapter[]> {
-                return FetchChaptersSinglePageCSS.call(this, manga, query, resource, extract as InfoExtractor<HTMLElement>);
+                return FetchChaptersSinglePageCSS.call(this, manga, query, resource, extract as InfoExtractor<HTMLElement>, reverseOrder);
             }
         };
     };
@@ -389,20 +392,22 @@ export function ChaptersSinglePageCSS<E extends HTMLElement>(query: string, reso
  * @param generate - A link generator that will provide the URLs from which the chapters shall be extracted
  * @param throttle - A delay [ms] for each request (only required for rate-limited websites)
  * @param extract - A function to extract the chapter identifier and title from a single element (found with {@link query})
+ * @param reverseOrder - Set to true if website chapter list use ascending order, as engine must produce descending order.
  */
-export async function FetchChaptersMultiPageCSS<E extends HTMLElement>(this: MangaScraper, manga: Manga, query: string, generate: LinkGenerator<Manga>, throttle = 0, extract = DefaultElementInfoExtractor as InfoExtractor<E>): Promise<Chapter[]> {
+export async function FetchChaptersMultiPageCSS<E extends HTMLElement>(this: MangaScraper, manga: Manga, query: string, generate: LinkGenerator<Manga>, throttle = 0, extract = DefaultElementInfoExtractor as InfoExtractor<E>, reverseOrder: boolean = false): Promise<Chapter[]> {
     const chapterList: Chapter[] = [];
     let reducer = Promise.resolve();
     for (const uri of generate.call(this, manga)) {
         await reducer;
         reducer = throttle > 0 ? Delay(throttle) : Promise.resolve();
         const chapters = await FetchChaptersSinglePageCSS.call(this, manga, query, () => uri, extract as InfoExtractor<HTMLElement>);
-        if (generate.isExhaustive || chapterList.isMissingLastItemFrom(chapters)) {
+        if (generate.isExhaustive || chapterList.isLastItemDifferentFromNonEmpty(chapters)) {
             chapterList.push(...chapters); // TODO: Broadcast event that chapterlist for manga has been updated?
         } else {
             break;
         }
     }
+    if (reverseOrder) chapterList.reverse();
     return chapterList.distinct();
 }
 
@@ -414,13 +419,14 @@ export async function FetchChaptersMultiPageCSS<E extends HTMLElement>(this: Man
  * @param generate - A link generator that will provide the URLs from which the chapters shall be extracted
  * @param throttle - A delay [ms] for each request (only required for rate-limited websites)
  * @param extract - A function to extract the chapter identifier and title from a single element (found with {@link query})
+ * @param reverseOrder - Set to true if website chapter list use ascending order, as engine must produce descending order.
  */
-export function ChaptersMultiPageCSS<E extends HTMLElement>(query: string, generate: LinkGenerator<Manga>, throttle = 0, extract = DefaultElementInfoExtractor as InfoExtractor<E>): ClassDecorator {
+export function ChaptersMultiPageCSS<E extends HTMLElement>(query: string, generate: LinkGenerator<Manga>, throttle = 0, extract = DefaultElementInfoExtractor as InfoExtractor<E>, reverseOrder: boolean = false): ClassDecorator {
     return function DecorateClass<T extends Constructor>(ctor: T, context?: ClassDecoratorContext): T {
         ThrowOnUnsupportedDecoratorContext(context);
         return class extends ctor {
             public async FetchChapters(this: MangaScraper, manga: Manga): Promise<Chapter[]> {
-                return FetchChaptersMultiPageCSS.call(this, manga, query, generate, throttle, extract as InfoExtractor<E>);
+                return FetchChaptersMultiPageCSS.call(this, manga, query, generate, throttle, extract as InfoExtractor<E>, reverseOrder);
             }
         };
     };

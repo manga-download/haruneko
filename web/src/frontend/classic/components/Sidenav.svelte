@@ -26,17 +26,12 @@
     import SettingsAdjust from 'carbon-icons-svelte/lib/SettingsAdjust.svelte';
     import SettingsView from 'carbon-icons-svelte/lib/SettingsView.svelte';
     import TaskSettings from 'carbon-icons-svelte/lib/TaskSettings.svelte';
-    import { Locale } from '../stores/Settings';
     import SettingsMenu from './settings/SettingsModal.svelte';
     import PluginSelect from './PluginSelect.svelte';
     import BookmarksImport from './BookmarksImport.svelte';
 
-    import {
-        selectedPlugin,
-        selectedMedia,
-        selectedItem,
-    } from '../stores/Stores';
-    import { SidenavTrail, SidenavIconsOnTop } from '../stores/Settings';
+    import { Store as UI } from '../stores/Stores.svelte';
+    import { GlobalSettings, Settings as UISettings } from '../stores/Settings.svelte';
 
     interface Props {
         isOpen: boolean;
@@ -51,23 +46,18 @@
     let isBookmarksImportModalOpen =  $state(false);
 </script>
 
-{#if isPluginModalOpen}
-    <PluginSelect
-        bind:isPluginModalOpen
-        on:close={() => (isPluginModalOpen = false)}
-    />
-{/if}$
+<PluginSelect bind:isPluginModalOpen on:close={() => (isPluginModalOpen = false)} />
 {#if isSettingsModalOpen}
     <SettingsMenu bind:isSettingsModalOpen selectedTab={settingsSelectedTabs} />
 {/if}
 {#if isBookmarksImportModalOpen}
     <BookmarksImport bind:isModalOpen={isBookmarksImportModalOpen} />
 {/if}
-<SideNav bind:isOpen rail={$SidenavTrail}>
+<SideNav bind:isOpen rail={UISettings.SidenavTrail.Value} expansionBreakpoint={100000}>
     <SideNavItems>
-        {#if !$SidenavIconsOnTop}
+        {#if !UISettings.SidenavIconsOnTop.Value}
             <SideNavLink
-                text={$Locale.Frontend_Classic_Sidenav_Home()}
+                text={GlobalSettings.Locale.Frontend_Classic_Sidenav_Home()}
                 icon={Home}
                 onclick={onHome}
             />
@@ -75,9 +65,9 @@
                 text={'Bookmarks'}
                 icon={Bookmark}
                 onclick={() => {
-                    $selectedPlugin = window.HakuNeko.BookmarkPlugin;
-                    $selectedMedia = undefined;
-                    $selectedItem = undefined;
+                    UI.selectedPlugin = window.HakuNeko.BookmarkPlugin;
+                    UI.selectedMedia = undefined;
+                    UI.selectedItem = undefined;
                 }}
             />
         {/if}
@@ -88,7 +78,7 @@
                 document.dispatchEvent(new Event('media-paste-url'))}
         />
         <SideNavLink
-            text={$Locale.Frontend_Plugins()}
+            text={GlobalSettings.Locale.Frontend_Plugins()}
             icon={PlugFilled}
             onclick={() => (isPluginModalOpen = true)}
         />
@@ -97,9 +87,9 @@
             icon={ImportExport}
             onclick={() => (isBookmarksImportModalOpen = true)}
         />
-        <SideNavMenu text={$Locale.Frontend_Settings()} icon={Settings}>
+        <SideNavMenu text={GlobalSettings.Locale.Frontend_Settings()} icon={Settings}>
             <SideNavLink
-                text={$Locale.Frontend_Classic_Sidenav_Settings_General()}
+                text={GlobalSettings.Locale.Frontend_Classic_Sidenav_Settings_General()}
                 icon={SettingsAdjust}
                 onclick={() => {
                     settingsSelectedTabs = 0;
@@ -107,7 +97,7 @@
                 }}
             />
             <SideNavLink
-                text={$Locale.Frontend_Classic_Sidenav_Settings_Interface()}
+                text={GlobalSettings.Locale.Frontend_Classic_Sidenav_Settings_Interface()}
                 icon={ScreenMap}
                 onclick={() => {
                     settingsSelectedTabs = 1;
@@ -123,7 +113,7 @@
                 }}
             />
             <SideNavLink
-                text={$Locale.Frontend_Classic_Sidenav_Settings_Trackers()}
+                text={GlobalSettings.Locale.Frontend_Classic_Sidenav_Settings_Trackers()}
                 icon={TaskSettings}
                 onclick={() => {
                     settingsSelectedTabs = 3;
@@ -131,7 +121,7 @@
                 }}
             />
         </SideNavMenu>
-        <SideNavMenu text={$Locale.Frontend_Help()} icon={Document}>
+        <SideNavMenu text={GlobalSettings.Locale.Frontend_Help()} icon={Document}>
             <SideNavLink
                 text="Documentation"
                 icon={Doc}
@@ -170,7 +160,7 @@
                 onclick={() => window.open('https://ipinfo.io/json')}
             />
         </SideNavMenu>
-        <SideNavMenu text={$Locale.Frontend_About()} icon={Information}>
+        <SideNavMenu  text={GlobalSettings.Locale.Frontend_About()} icon={Information}>
             <SideNavLink
                 text="Code source"
                 icon={LogoGithub}

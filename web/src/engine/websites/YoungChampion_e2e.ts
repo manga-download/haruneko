@@ -11,7 +11,7 @@ new TestFixture({
         title: '惨家'
     },
     child: {
-        id: '/episodes/71edbfc76e327/',
+        id: '/episodes/71edbfc76e327',
         title: '第1話'
     },
     entry: {

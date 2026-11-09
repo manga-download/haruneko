@@ -19,11 +19,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const regex = /['"]page_image['"]\s*:\s*['"]([^'"]+)['"]/g;
-        const url = new URL(chapter.Identifier, this.URI);
-        const request = new Request(url.href);
-        const pages = await FetchRegex(request, regex);
+        const pages = await FetchRegex(new Request(new URL(chapter.Identifier, this.URI)), /['"]page_image['"]\s*:\s*['"]([^'"]+)['"]/g);
         return pages.map(image => new Page(this, chapter, new URL(image)));
-
     }
 }

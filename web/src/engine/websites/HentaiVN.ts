@@ -6,8 +6,8 @@ import * as Common from './decorators/Common';
 
 @Madara.MangaCSS(/^{origin}\/truyen-hentai\/[^/]+\/$/, 'ol.breadcrumb li:last-of-type a')
 @Madara.MangasMultiPageAJAX()
-@Madara.ChaptersSinglePageAJAXv2()
-@Madara.PagesSinglePageCSS('div.page-break img.wp-manga-chapter-img')
+@Madara.ChaptersSinglePageCSS()
+@Madara.PagesSinglePageCSS('img.wp-manga-chapter-img')
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 

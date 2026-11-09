@@ -7,17 +7,18 @@ new TestFixture({
         title: 'MangaFire'
     },
     container: {
-        url: 'https://mangafire.to/manga/vagabondd.4mx',
-        id: '/manga/vagabondd.4mx',
-        title: 'Vagabond'
+        url: 'https://mangafire.to/title/qnlvj-vagabond22',
+        id: 'qnlvj',
+        title: 'Vagabond',
+        timeout: 10_000
     },
     child: {
-        id: '/read/vagabondd.4mx/en/chapter-25',
-        title: 'Chapter 25: Chaos at the Yoshioka School (en)'
+        id: 'chapters/7180211',
+        title: 'Ch. 25 (Colored Council) (official) (en)'
     },
     entry: {
-        index: 0,
-        size: 273_603,
+        index: 2,
+        size: 603_549,
         type: 'image/jpeg'
     }
 }).AssertWebsite();
@@ -29,17 +30,18 @@ new TestFixture({
         title: 'MangaFire'
     },
     container: {
-        url: 'https://mangafire.to/manga/vagabondd.4mx',
-        id: '/manga/vagabondd.4mx',
-        title: 'Vagabond'
+        url: 'https://mangafire.to/title/qnlvj-vagabond22',
+        id: 'qnlvj',
+        title: 'Vagabond',
+        timeout: 10_000
     },
     child: {
-        id: '/read/vagabondd.4mx/ja/chapter-25',
-        title: 'Chapter 25: 吉岡騒然 (ja)'
+        id: 'chapters/5872243',
+        title: 'Ch. 25 吉岡騒然 (unofficial) (ja)'
     },
     entry: {
-        index: 0,
-        size: 289_836,
+        index: 2,
+        size: 676_379,
         type: 'image/jpeg'
     }
 }).AssertWebsite();
@@ -51,17 +53,18 @@ new TestFixture({
         title: 'MangaFire'
     },
     container: {
-        url: 'https://mangafire.to/manga/vagabondd.4mx',
-        id: '/manga/vagabondd.4mx',
-        title: 'Vagabond'
+        url: 'https://mangafire.to/title/qnlvj-vagabond22',
+        id: 'qnlvj',
+        title: 'Vagabond',
+        timeout: 10_000
     },
     child: {
-        id: '/read/vagabondd.4mx/en/volume-10',
-        title: 'Vol 10 (en)'
+        id: 'volumes/233258',
+        title: 'Vol. 10 (en)'
     },
     entry: {
-        index: 0,
-        size: 150_104,
+        index: 2,
+        size: 566_057,
         type: 'image/jpeg'
     }
 }).AssertWebsite();
@@ -73,17 +76,18 @@ new TestFixture({
         title: 'MangaFire'
     },
     container: {
-        url: 'https://mangafire.to/manga/vagabondd.4mx',
-        id: '/manga/vagabondd.4mx',
-        title: 'Vagabond'
+        url: 'https://mangafire.to/title/qnlvj-vagabond22',
+        id: 'qnlvj',
+        title: 'Vagabond',
+        timeout: 10_000
     },
     child: {
-        id: '/read/vagabondd.4mx/ja/volume-10',
-        title: 'Vol 10 (ja)'
+        id: 'volumes/152231',
+        title: 'Vol. 10 (ja)'
     },
     entry: {
-        index: 0,
-        size: 242_294,
+        index: 2,
+        size: 797_915,
         type: 'image/jpeg'
     }
 }).AssertWebsite();

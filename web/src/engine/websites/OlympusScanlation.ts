@@ -6,47 +6,40 @@ import { FetchJSON } from '../platform/FetchProvider';
 
 type APIManga = {
     slug: string;
-    type: string;
     name: string;
 };
 
 type APIMangas = {
-    data: {
-        series: {
-            data: APIManga[];
-        }
-    }
+    data: APIManga[];
 };
 
 type APIChapter = {
     name: string;
-    id: number;
     pages: string[];
 };
 
 type APIChapters = {
     data: APIChapter[];
+    meta: {
+        current_page: number;
+        last_page: number;
+    };
 };
 
 type APIPages = {
     chapter: APIChapter;
 };
 
-function MangaExtractor(img: HTMLImageElement, uri: URL) {
-    const [, type, slug] = uri.pathname.match(/\/series\/([^/-]+)-([^/]+)/);
-    return {
-        id: JSON.stringify({ slug, type }),
-        title: img.alt.trim()
-    };
-}
-
-@Common.MangaCSS<HTMLImageElement>(/^{origin}\/series\/[^/]+$/, 'img.object-cover', MangaExtractor)
+@Common.MangaCSS(/^{origin}\/series\/[^/]+$/, 'nav.crumbs span.text-marble', (element, uri) => ({
+    id: uri.pathname.split('/').at(-1).split('-').slice(1).join('-'),
+    title: element.textContent.trim()
+}))
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
-    private readonly apiUrl = 'https://dashboard.olympusbiblioteca.com/api/';
+    private readonly apiURL = `${this.URI.origin}/api/`;
 
     public constructor() {
-        super('olympusscanlation', 'Olympus Scanlation', 'https://olympusbiblioteca.com', Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Language.Spanish, Tags.Source.Scanlator);
+        super('olympusscanlation', 'Olympus Scanlation', 'https://olympusxyz.com', Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Language.Spanish, Tags.Source.Scanlator);
     }
 
     public override get Icon() {
@@ -54,31 +47,24 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        type This = typeof this;
-        return Array.fromAsync(async function* (this: This) {
-            for (let page = 1, run = true; run; page++) {
-                const { data: { series: { data } } } = await FetchJSON<APIMangas>(new Request(new URL(`./series?page=${page}&direction=asc&type=comic`, this.apiUrl)));
-                const mangas = data.map(({ name, slug, type }) => new Manga(this, provider, JSON.stringify({ slug, type }), name));
-                mangas.length > 0 ? yield* mangas : run = false;
-            }
-        }.call(this));
+        const { data } = await FetchJSON<APIMangas>(new Request(new URL(`./series/list`, this.apiURL)));
+        return data.map(({ name, slug }) => new Manga(this, provider, slug, name));
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         type This = typeof this;
-        const { slug, type } = JSON.parse(manga.Identifier) as APIManga;
         return Array.fromAsync(async function* (this: This) {
-            for (let page = 1, run = true; run ; page++) {
-                const { data } = await FetchJSON<APIChapters>(new Request(new URL(`./series/${slug}/chapters?page=${page}&direction=desc&type=${type}`, this.apiUrl)));
-                const chapters = data.map(({ id, name }) => new Chapter(this, manga, `${id}`, name));
-                chapters.length > 0 ? yield* chapters : run = false;
+            for (let page = 1, run = true; run; page++) {
+                const { data, meta: { current_page, last_page } } = await FetchJSON<APIChapters>(new Request(new URL(`./series/${manga.Identifier}/chapters?page=${page}&direction=desc`, this.apiURL)));
+                const chapters = data.map(({ name }) => new Chapter(this, manga, name, name));
+                chapters.length > 0 ? yield* chapters : null;
+                run = last_page > current_page;
             }
         }.call(this));
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const { slug, type } = JSON.parse(chapter.Parent.Identifier) as APIManga;
-        const { chapter: { pages } } = await FetchJSON<APIPages>(new Request(new URL(`./series/${slug}/chapters/${chapter.Identifier}?type=${type}`, this.apiUrl)));
+        const { chapter: { pages } } = await FetchJSON<APIPages>(new Request(new URL(`./capitulo/${chapter.Parent.Identifier}/${chapter.Identifier}`, this.apiURL)));
         return pages.map(page => new Page(this, chapter, new URL(page)));
     }
 }

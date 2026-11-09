@@ -6,17 +6,17 @@ new TestFixture({
         title: 'Limon Manga'
     },
     container: {
-        url: 'https://limonmanga.com/manga/20/ilahi-yetenegimle-hizli-seviye-atliyorum',
-        id: '/manga/20/ilahi-yetenegimle-hizli-seviye-atliyorum',
+        url: 'https://limonmanga.com/manga/ilahi-yetenegimle-hizli-seviye-atliyorum',
+        id: 'ilahi-yetenegimle-hizli-seviye-atliyorum',
         title: 'İlahi Yeteneğimle Hızlı Seviye Atlıyorum!'
     },
     child: {
-        id: '/manga/20/ilahi-yetenegimle-hizli-seviye-atliyorum/661/33-bolum',
+        id: '/manga/ilahi-yetenegimle-hizli-seviye-atliyorum/33-bolum-oku',
         title: 'Bölüm 33'
     },
     entry: {
         index: 1,
-        size: 646_156,
-        type: 'image/jpeg'
+        size: 69_289,
+        type: 'image/avif'
     }
 }).AssertWebsite();

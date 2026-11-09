@@ -1,7 +1,7 @@
 import { Tags } from '../Tags';
 import icon from './VizShonenJump.webp';
 import { type Chapter, DecoratableMangaScraper, type Manga, Page, type MangaPlugin } from '../providers/MangaPlugin';
-import { Fetch, FetchWindowScript } from '../platform/FetchProvider';
+import { Fetch, FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
 import type { Priority } from '../taskpool/DeferredTask';
 import * as Common from './decorators/Common';
 import exifr from 'exifr';
@@ -10,27 +10,20 @@ import { RateLimit } from '../taskpool/RateLimit';
 import { Exception } from '../Error';
 import { WebsiteResourceKey as R } from '../../i18n/ILocale';
 
-// TODO: Check for possible revision
-
 type PagesInfos = {
-    pagesCount: number,
+    pagesCount: number;
     mangaID: string;
 };
 
-type ExifData = {
-    ImageUniqueID: string,
-    ImageWidth: number,
-    ImageHeight: number;
+type APIPages = {
+    data: Record<number, string> | string;
 };
 
-const PagesScript = `
-    new Promise(resolve => {
-        resolve({
-            pagesCount: pages,
-            mangaID: mangaCommonId ?? currentMCid
-        });
-    });
-`;
+type ExifData = {
+    ImageUniqueID: string;
+    ImageWidth: number;
+    ImageHeight: number;
+};
 
 const MangasExtractor = Common.AnchorInfoExtractor(false, '.display-label');
 
@@ -83,45 +76,54 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        return /^\/(shonenjump|vizmanga)\/chapters/.test(manga.Identifier)
-            ? Common.FetchChaptersSinglePageCSS.call(this, manga, 'div > a.o_chapter-container[data-target-url], tr.o_chapter td.ch-num-list-spacing a.o_chapter-container[data-target-url]', undefined, ChapterExtractor)
-            : Common.FetchChaptersSinglePageCSS.call(this, manga, 'table.product-table tr', undefined, VolumeExtractor);
+        const collator = new Intl.Collator(undefined, {
+            numeric: true,
+            sensitivity: 'base'
+        });
+
+        return (/^\/(shonenjump|vizmanga)\/chapters/.test(manga.Identifier)
+            ? await Common.FetchChaptersSinglePageCSS.call(this, manga, 'div > a.o_chapter-container[data-target-url], tr.o_chapter td.ch-num-list-spacing a.o_chapter-container[data-target-url]', undefined, ChapterExtractor)
+            : await Common.FetchChaptersSinglePageCSS.call(this, manga, 'table.product-table tr', undefined, VolumeExtractor))
+            //website default sorting is unreliable. Sometimes its asc, sometimes its desc
+            .sort((self, other) => collator.compare(other.Title, self.Title));
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
         const chapterurl = new URL(chapter.Identifier, this.URI);
-        const { pagesCount, mangaID } = await FetchWindowScript<PagesInfos>(new Request(chapterurl), PagesScript, 1500);
-        const pages = Array(pagesCount + 1).fill(0).map((_, index) => {
-            const url = new URL('/manga/get_manga_url', this.URI);
-            url.searchParams.set('device_id', '3');
-            url.searchParams.set('manga_id', mangaID);
-            url.searchParams.set('page', index.toString());
-            return new Page(this, chapter, url, { Referer: chapterurl.href });
-        });
-        return this.TestAccessAndDummyPage(pages);
-    }
+        const { pagesCount, mangaID } = await FetchWindowScript<PagesInfos>(new Request(chapterurl), `
+            new Promise(resolve => {
+                resolve({
+                    pagesCount: pages,
+                    mangaID: mangaCommonId ?? currentMCid
+                });
+            });
+        `, 1500);
 
-    private async TestAccessAndDummyPage(pages: Page[]): Promise<Page[]> {
-        // If chapter is not accessible : 'url' wont be an url at all => throw Plugin_Common_Chapter_UnavailableError.
-        const lastPage = pages.at(-1);
-        const url = await (await Fetch(new Request(lastPage.Link, { headers: { Referer: lastPage.Parameters.Referer, } }))).text();
-        if (!url.startsWith('http')) throw new Exception(R.Plugin_Common_Chapter_UnavailableError);
+        const indices = Array.from({ length: pagesCount + 1 }, (_, index) => index);
+        const { data } = await FetchJSON<APIPages>(new Request(new URL(`./manga/get_manga_url?device_id=3&manga_id=${mangaID}&pages=${indices.join(',')}`, this.URI), {
+            headers: {
+                Referer: chapterurl.href,
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        }));
 
+        if (typeof data === 'string') throw new Exception(R.Plugin_Common_Chapter_UnavailableError);
+
+        const pages = Object.values(data).map(page => new Page(this, chapter, new URL(page)));
         // last page may be a dummy (unavailable) page. In that case strip it from page array.
-        const response = await fetch(new Request(url, { method: 'HEAD', headers: { Referer: lastPage.Parameters.Referer } }));
-        return response.status != 403 ? pages: pages.slice(0, -1);
+        const response = await fetch(new Request(pages.at(-1).Link, { method: 'HEAD', headers: { Referer: this.URI.href, Origin: this.URI.origin } }));
+        return response.status != 403 ? pages : pages.slice(0, -1);
     }
 
     public override async FetchImage(page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
         const blob = await this.imageTaskPool.Add(async () => {
-            const init = {
+            const response = await Fetch(new Request(page.Link, {
                 signal,
                 headers: {
-                    Referer: page.Parameters.Referer,
+                    Referer: this.URI.href,
+                    Origin: this.URI.origin
                 }
-            };
-            const url = await (await Fetch(new Request(page.Link, init))).text();
-            const response = await Fetch(new Request(url, init));
+            }));
             return response.blob();
 
         }, priority, signal);

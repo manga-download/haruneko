@@ -8,13 +8,15 @@ import * as Common from './decorators/Common';
 
 @MangaStream.MangaCSS(/^{origin}\/manga\/[^/]+\/$/)
 @MangaStream.MangasSinglePageCSS()
-@MangaStream.ChaptersSinglePageCSS()
-@MangaStream.PagesSinglePageJS()
+@Common.ChaptersSinglePageCSS<HTMLAnchorElement>('a.lm4-chapter-link', undefined, anchor => ({
+    id: anchor.pathname, title: anchor.dataset.chapterTitle.trim()
+}))
+@Common.PagesSinglePageJS('_lmShieldOriginalSources.at(0).images;', 1500)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('miauscan', 'Miau Scan', 'https://leemiau.com', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Media.Novel, Tags.Language.Spanish, Tags.Language.Portuguese, Tags.Source.Scanlator);
+        super('miauscan', 'Miau Scan', 'https://leer.lectovela.com', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Media.Novel, Tags.Language.Spanish, Tags.Language.Portuguese, Tags.Source.Scanlator);
     }
 
     public override get Icon() {

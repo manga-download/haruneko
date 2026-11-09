@@ -6,17 +6,17 @@ new TestFixture({
         title: 'Uzay Manga'
     },
     container: {
-        url: 'https://uzaymanga.com/manga/51/olumsuzun-geri-donusu',
-        id: '/manga/51/olumsuzun-geri-donusu',
+        url: 'https://uzaymanga.com/manga/olumsuzun-geri-donusu',
+        id: 'olumsuzun-geri-donusu',
         title: 'Ölümsüzün Geri Dönüşü'
     },
     child: {
-        id: '/manga/51/olumsuzun-geri-donusu/2964/127-bolum',
+        id: '/manga/olumsuzun-geri-donusu/127-bolum-oku',
         title: 'Bölüm 127'
     },
     entry: {
         index: 1,
-        size: 788_007,
-        type: 'image/jpeg'
+        size: 60_628,
+        type: 'image/avif'
     }
 }).AssertWebsite();

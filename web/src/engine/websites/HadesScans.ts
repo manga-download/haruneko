@@ -4,9 +4,9 @@ import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as MangaStream from './decorators/WordPressMangaStream';
 import * as Common from './decorators/Common';
 
-@MangaStream.MangaCSS(/^{origin}\/manga\/[^/]+\/$/)
+@MangaStream.MangaCSS(/^{origin}\/manga\/[^/]+\/$/, 'h1#cx-series-title')
 @MangaStream.MangasSinglePageCSS()
-@Common.ChaptersSinglePageCSS<HTMLAnchorElement>('div#chapterlist ul li div.chbox a', undefined, anchor => ({ id: anchor.pathname, title: anchor.querySelector('.chapternum').textContent.trim() }))
+@Common.ChaptersSinglePageCSS<HTMLAnchorElement>('a.cx-chapter-item', undefined, anchor => ({ id: anchor.pathname, title: anchor.querySelector('.cx-chapter-item__title').textContent.trim() }))
 @MangaStream.PagesSinglePageJS()
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
