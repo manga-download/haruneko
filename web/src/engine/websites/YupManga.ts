@@ -5,6 +5,11 @@ import { RateLimit } from '../taskpool/RateLimit';
 import icon from './YupManga.webp';
 import * as Common from './decorators/Common';
 import { DRMProvider } from './YupManga.DRM';
+import { AddAntiScrapingDetection, FetchRedirection } from '../platform/AntiScrapingDetection';
+
+AddAntiScrapingDetection(async (_invoke) => {
+    return FetchRedirection.Interactive;
+}, /^https:\/\/www\.yupmanga\.com\/box-modal\.php/);
 
 @Common.MangaCSS(/^{origin}\/series\.php\?id=/, 'div.container div.flex h1', Common.WebsiteInfoExtractor({ includeSearch: true }))
 @Common.MangasMultiPageCSS<HTMLAnchorElement>('div.comic-card a', Common.PatternLinkGenerator('/?page={page}'), 0, anchor => ({ id: anchor.pathname + anchor.search, title: anchor.querySelector('img').alt.trim() }))
