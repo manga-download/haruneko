@@ -6,13 +6,15 @@ new TestFixture({
         title: 'Onisaga'
     },
     container: {
-        url: 'https://onisaga.com/manga/the-boy-of-death',
-        id: '/manga/the-boy-of-death',
-        title: 'The Boy of Death'
+        url: 'https://onisaga.com/title/the-boy-of-death',
+        id: '/title/the-boy-of-death',
+        title: 'The Boy of Death',
+        timeout: 15_000
     },
     child: {
-        id: '/read/the-boy-of-death/570007',
-        title: 'Chapter 1 [en]'
+        id: '/read/the-boy-of-death/100560002',
+        title: 'Chapter 1 [en]',
+        timeout: 15_000
     },
     entry: {
         index: 1,
