@@ -656,6 +656,7 @@ export { default as SleptManga } from './SleptManga';
 export { default as SoftKomik } from './SoftKomik';
 export { default as SoraRaw } from './SoraRaw';
 export { default as SoulScans } from './SoulScans';
+export { default as SpeedManga } from './SpeedManga';
 export { default as SpoilerPlus } from './SpoilerPlus';
 export { default as StellarSaber } from './StellarSaber';
 export { default as StoneScape } from './StoneScape';
