@@ -2,19 +2,36 @@ import icon from './CatharsisWorld.webp';
 import { Tags } from '../Tags';
 import { type Chapter, Manga, Page, type MangaPlugin } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { Fetch } from '../platform/FetchProvider';
+import { Fetch, FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
 import { Exception } from '../Error';
 import { WebsiteResourceKey as R } from '../../i18n/ILocale';
 import type { Priority } from '../taskpool/DeferredTask';
 import { XOR } from '../Crypto';
 import { RateLimit } from '../taskpool/RateLimit';
-import { AddAntiScrapingDetection } from '../platform/AntiScrapingDetection';
-import { CatharsisDeScramble, CaptchaScript, CatharsisBase, type APIManga } from './templates/CatharsisBase';
+import { AddAntiScrapingDetection, FetchRedirection } from '../platform/AntiScrapingDetection';
+import { CatharsisDeScramble, CatharsisBase, type APIManga } from './templates/CatharsisBase';
+import * as devalue from 'devalue';
 
 const readerPassName = 'catharsis_reader_pass';
 
-AddAntiScrapingDetection(async invoke => invoke(CaptchaScript(readerPassName))
-    , /^https:\/\/newcatharsis\.dig-it\.info\/manga\/[^/]+\/chapter\//);
+AddAntiScrapingDetection(async (invoke) => invoke(`
+        new Promise((resolve) => {
+
+            document.addEventListener('solve', async (event) => {
+                setTimeout(() => window.location.reload(), 500);
+                resolve(${FetchRedirection.Automatic});
+                return;
+            });
+
+            if (document.querySelector('ion-icon')) {
+                resolve(${FetchRedirection.Interactive});
+                return;
+            };
+
+
+            resolve(${FetchRedirection.None});
+        });
+`), /^https:\/\/newcatharsis\.dig-it\.info\/manga\/[^/]+\/chapter\//);
 
 type APIChapter = {
     id: number;
@@ -77,11 +94,34 @@ export default class extends CatharsisBase {
         const [mangaID, mangaSlug] = chapter.Parent.Identifier.split('/');
         const [chapterId, chapterNumber] = chapter.Identifier.split('/');
 
-        await this.RenewReaderToken(new URL(`/manga/${mangaSlug}/chapter/${chapterNumber}`, this.URI).href);
+        const chapterURL = new URL(`/manga/${mangaSlug}/chapter/${chapterNumber}`, this.URI);
 
+        //pass captcha + get validation cookie
+        await FetchWindowScript(new Request(chapterURL), ``, 2500);
+
+        /*
+        //now that we have the cookie, we can fetch the chapter data
+        const data = await FetchJSON(new Request(new URL(`${chapterURL.href}.data`), {
+            headers: {
+                Referer: chapterURL.href,
+                'Sec-Fetch-Dest': 'empty',
+                'Sec-Fetch-Mode': 'cors',
+                'Sec-Fetch-Site': 'same-origin',
+            }
+        }));
+        console.log(devalue.parse(JSON.stringify(data)));
+        */
+
+//        hook JSON.parse to get { p, n, r)}
+
+
+
+        //https://newcatharsis.dig-it.info/api/mangas/chapters/105493/sync-session
+
+        /*
         const { paginas, chapterSessionToken } = await this.FetchAPI<APIChapter>(`./mangas/${mangaID}/${chapterId}`, undefined, {
             'X-Catharsis-Reader-Pass': this.readerToken.pass
-        });
+        });*/
         if (!paginas) {
             throw new Exception(R.Plugin_Common_Chapter_UnavailableError);
         }
