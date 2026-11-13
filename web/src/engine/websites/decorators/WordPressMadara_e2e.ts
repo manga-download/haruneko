@@ -99,8 +99,6 @@ import '../RuyaManga_e2e';
 import '../S2Manga_e2e';
 import '../Sacguzellik_e2e';
 import '../ShinobiScans_e2e';
-import '../SiiManga_e2e';
-import '../Summertoon_e2e';
 import '../TarotScans_e2e';
 import '../TaurusManga_e2e';
 import '../TheBlank_e2e';
