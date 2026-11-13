@@ -165,6 +165,7 @@ export { default as GodaComic } from './GodaComic';
 export { default as GodaManhua } from './GodaManhua';
 export { default as GodDoujin } from './GodDoujin';
 export { default as GolgeBahcesi } from './GolgeBahcesi';
+export { default as GoodToon } from './GoodToon';
 export { default as GorakuWeb } from './GorakuWeb';
 export { default as GourmetScans } from './GourmetScans';
 export { default as GrabberZone } from './GrabberZone';
