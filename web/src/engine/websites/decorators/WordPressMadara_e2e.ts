@@ -79,7 +79,6 @@ import '../ManhwaDashRaw_e2e';
 import '../ManhwaLatino_e2e';
 import '../ManhwaNex_e2e';
 import '../ManhwaTop_e2e';
-import '../MHScans_e2e';
 import '../MilaSub_e2e';
 import '../MilfToon_e2e';
 import '../MindaFanSub_e2e';
