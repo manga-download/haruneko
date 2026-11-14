@@ -63,11 +63,7 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
         const { content_urls } = await this.FetchAPI<{ content_urls: string[] }>(`./chapters/${chapter.Identifier}`);
-        return content_urls.map(url => {
-            const uri = new URL(DecodeEntities(url), this.URI);
-            if (!uri.pathname.includes('/storage/upload')) uri.pathname = uri.pathname.replace('/upload', '/storage/upload');
-            return new Page(this, chapter, uri, { Referer: this.URI.href });
-        });
+        return content_urls.map(url =>new Page(this, chapter, new URL(DecodeEntities(url), this.URI), { Referer: this.URI.href }));
     }
 
     private GenerateAPIDecryptionKeys(): string[] {
