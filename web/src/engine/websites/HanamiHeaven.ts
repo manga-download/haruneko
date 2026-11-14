@@ -1,11 +1,11 @@
 import { Tags } from '../Tags';
-import icon from './NoIndexScan.webp';
+import icon from './HanamiHeaven.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Madara from './decorators/WordPressMadara';
 import * as Common from './decorators/Common';
 
-@Madara.MangaCSS(/^{origin}\/manga\/[^/]+\/$/, 'ol.breadcrumb li:last-of-type a')
-@Madara.MangasMultiPageAJAX()
+@Madara.MangaCSS(/^{origin}\/manga\/[^/]+\/$/, 'ol.breadcrumb li:last-of-type')
+@Madara.MangasMultiPageCSS('h2.mch-catalogue-card__title a', 0, '/todas-as-obras/?pagina={page}')
 @Madara.ChaptersSinglePageAJAXv2()
 @Madara.PagesSinglePageCSS()
 @Common.ImageAjax()

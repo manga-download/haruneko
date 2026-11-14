@@ -1,39 +1,32 @@
 import { Tags } from '../Tags';
 import icon from './Voratoon.webp';
-import { Chapter, DecoratableMangaScraper, Manga, type MangaPlugin, Page } from '../providers/MangaPlugin';
-import { FetchJSON } from '../platform/FetchProvider';
+import { type Chapter, DecoratableMangaScraper, Manga, type MangaPlugin, Page } from '../providers/MangaPlugin';
+import { FetchNextJS } from '../platform/FetchProvider';
 import * as Common from './decorators/Common';
 
-type APIResult<T> = {
-    data: T;
-};
-
-type APIManga = {
-    data: {
-        title: string;
-        slug: string;
+type HydratedData = {
+    initialData: {
+        series: {
+            id: number;
+            data: {
+                title: string;
+                slug: string;
+            };
+        }[];
+        chapter: {
+            data: {
+                images: string[];
+            };
+        };
     };
 };
 
-type APIChapter = {
-    data: {
-        index: number;
-        title: string | null;
-    };
-};
-
-type APIPages = {
-    data: {
-        images: string[];
-    };
-};
-
+@Common.ChaptersSinglePageJS(`[...document.querySelectorAll('ul.chapter-list li a.chapter-item')].map(link => ({id: link.pathname, title: link.querySelector('.chapter-title').textContent.trim()}));`, 1500)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
-    private readonly apiURL = `${this.URI.origin}/api/proxy/`;
 
     public constructor() {
-        super('komikcast', 'Voratoon', 'https://v10.voratoon.com', Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Language.Indonesian, Tags.Source.Aggregator, Tags.Accessibility.DomainRotation);
+        super('komikcast', 'Voratoon', 'https://13.voratoon.com', Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Language.Indonesian, Tags.Source.Aggregator, Tags.Accessibility.DomainRotation);
     }
 
     public override get Icon() {
@@ -45,39 +38,23 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
-        const { data: { title, slug } } = await this.FetchAPI<APIManga>(`./series/${url.split('/').at(-1)}`);
-        return new Manga(this, provider, slug, title);
+        const { initialData: { series } } = await FetchNextJS<HydratedData>(new Request(new URL(url)), data => 'initialData' in data);
+        return new Manga(this, provider, new URL(url).pathname, series[0].data.title.trim());
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
         type This = typeof this;
         return Array.fromAsync(async function* (this: This) {
             for (let page = 1, run = true; run; page++) {
-                const mangasData = await this.FetchAPI<APIManga[]>(`./series?take=500&page=${page}`);
-                const mangas = mangasData.map(({ data: { title, slug } }) => new Manga(this, provider, slug, title));
+                const { initialData: { series } } = await FetchNextJS<HydratedData>(new Request(new URL(`/browse?page=${page}`, this.URI)), data => 'initialData' in data);
+                const mangas = series.map(({ data: { title, slug } }) => new Manga(this, provider, `/series/${slug}`, title));
                 mangas.length > 0 ? yield* mangas : run = false;
             }
         }.call(this));
     }
 
-    public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const chapters = await this.FetchAPI<APIChapter[]>(`./series/${manga.Identifier}/chapters`);
-        return chapters.map(({ data: { index, title }, }) => new Chapter(this, manga, `${index}`, [`Chapter ${index}`, title].joinTitleSegments()));
-    }
-
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const { data: { images } } = await this.FetchAPI<APIPages>(`./series/${chapter.Parent.Identifier}/chapters/${chapter.Identifier}`);
+        const { initialData: { chapter: { data: { images } } } } = await FetchNextJS<HydratedData>(new Request(new URL(chapter.Identifier, this.URI)), data => 'initialData' in data);
         return images.map(image => new Page(this, chapter, new URL(image), { Referer: this.URI.href }));
-    }
-
-    private async FetchAPI<T extends JSONElement>(endpoint: string): Promise<T> {
-        return (await FetchJSON<APIResult<T>>(new Request(new URL(endpoint, this.apiURL), {
-            headers: {
-                Referer: this.URI.href,
-                'Sec-Fetch-Dest': 'empty',
-                'Sec-Fetch-Mode': 'cors',
-                'Sec-Fetch-Site': 'same-origin'
-            }
-        }))).data;
     }
 }
