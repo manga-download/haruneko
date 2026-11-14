@@ -5,12 +5,17 @@ describe('Front-End (Classic)', { concurrent: false, timeout: 60_000 }, () => {
 
     const fixture = new TestFixture();
 
-    beforeEach(() => fixture.Reset('classic'));
+    beforeEach(async context => {
+        context.onTestFailed(ctx => fixture.Screenshot(`⛔️ ${ctx.task.name}`));
+        await fixture.Reset('classic', 'div#app > main#hakunekoapp', 10_000);
+        await fixture.EnsureNoStartupGuide();
+        //await fixture.Screenshot(context.task.name);
+    }, 20_000);
 
     describe('SmokeTests', async () => {
 
-        it('Should render basic layout', async () => {
-            await fixture.WaitForSelectors(5000,
+        it('Should show basic layout', async () => {
+            const elements = await fixture.WaitForSelectors(5000,
                 'div#app > header > a.bx--header__name',
                 'div#app > nav.bx--side-nav__navigation',
                 'div#app > main#hakunekoapp > div#Media > div#MediaList',
@@ -18,17 +23,18 @@ describe('Front-End (Classic)', { concurrent: false, timeout: 60_000 }, () => {
                 'div#app > main#hakunekoapp > div#Content > main > div#Home',
                 'div#app > main#hakunekoapp > div#Bottom div.downloads',
             );
-            await fixture.CloseStartupGuide();
+            for (const element of elements) {
+                expect(await element.isVisible()).toBe(true);
+            }
         });
     });
 
     describe('Bookmarks', async () => {
 
         it('Should bookmark a manga that is not yet bookmarked', async () => {
-            await fixture.CloseStartupGuide();
             await fixture.SetWebsiteFilter('Dex');
             await fixture.SelectWebsite('mangadex');
-            await fixture.UpdateWebsiteMangaList(7500);
+            await fixture.UpdateWebsiteMangaList();
             await fixture.SetMangaFilter('Apple');
             await fixture.BookmarkManga('Apple Collection');
             await fixture.SetWebsiteFilter('Bookmarks');
@@ -38,7 +44,6 @@ describe('Front-End (Classic)', { concurrent: false, timeout: 60_000 }, () => {
         });
 
         it('Should load preview images of a chapter', async () => {
-            await fixture.CloseStartupGuide();
             await fixture.PasteMangaFromClipboard('https://mangadex.org/title/a037e450-6537-4725-aa7b-189fb2586e09/');
             await fixture.ClickChapterPreview('Vol.01 Ch.0004 - Thirsty (en) [The Company]');
             for (const link of await fixture.GetPreviewImageLinks(14)) {

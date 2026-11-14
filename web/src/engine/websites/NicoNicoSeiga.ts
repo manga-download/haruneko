@@ -5,7 +5,7 @@ import * as Common from './decorators/Common';
 import { FetchJSON } from '../platform/FetchProvider';
 import type { Priority } from '../taskpool/DeferredTask';
 import { GetBytesFromHex } from '../BufferEncoder';
-import { DecryptXOR } from '../Crypto';
+import { XOR } from '../Crypto';
 import { GetTypedData } from './decorators/Common';
 
 type APIMedia = {
@@ -72,6 +72,6 @@ export default class extends DecoratableMangaScraper {
     }
 
     private async DecryptImage(blob: Blob, keyData: string): Promise<Blob> {
-        return GetTypedData(DecryptXOR(new Uint8Array(await blob.arrayBuffer()), GetBytesFromHex(keyData.slice(0, 16))).buffer);
+        return GetTypedData(XOR(new Uint8Array(await blob.arrayBuffer()), GetBytesFromHex(keyData.slice(0, 16))).buffer);
     }
 }

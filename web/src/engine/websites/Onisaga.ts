@@ -1,56 +1,48 @@
 import { Tags } from '../Tags';
 import icon from './Onisaga.webp';
-import { Chapter, DecoratableMangaScraper, Page, type Manga } from '../providers/MangaPlugin';
-import * as Common from './decorators/Common';
-import { Fetch, FetchHTML, FetchJSON } from '../platform/FetchProvider';
-import type { Priority } from '../taskpool/DeferredTask';
-import { RateLimit } from '../taskpool/RateLimit';
+import { Chapter, DecoratableMangaScraper, Manga, type MangaPlugin, Page } from '../providers/MangaPlugin';
+import * as Grouple from './decorators/Grouple';
+import { FetchHTML, FetchJSON, FetchNextJS, FetchWindowScript } from '../platform/FetchProvider';
 
-type LiveWireState = {
-    token: string;
-    snapshot: string;
+type APIResult<T> = {
+    json: T;
 };
 
-type LiveWireSnapshot = {
-    memo: {
-        name: string;
+type APIMangas = {
+    items: APIManga[];
+    nextCursor: string;
+};
+
+type APIManga = {
+    id: string;
+    slug: string;
+    title: string;
+    units: {
+        title: string;
+        releaseId: string;
+    }[];
+};
+
+type HydratedLanguages = {
+    alternatives: {
+        href: string;
+    }[];
+};
+
+type ChapterManifest = {
+    bootstrap: {
+        manifest: {
+            pages: {
+                url: string;
+            }[];
+        };
     };
 };
 
-type LiveWireRequest = {
-    _token: string;
-    components: [{
-        snapshot: string;
-        updates: {},
-        calls: [{
-            method: string;
-            path: string;
-            params: any[];
-        }];
-    }];
-};
-
-type LiveWireResult = {
-    components: [{
-        snapshot: string;
-        effects: {
-            html: string;
-        };
-    }];
-};
-
-type ChapterInfos = {
-    token: string;
-    totalPages: number;
-};
-
-type PageToken = {
-    token: string;
-};
-
 const chapterLanguageMap = new Map([
-    ['en', Tags.Language.English], //keep it FIRST !
+    ['en', Tags.Language.English],
     ['es', Tags.Language.Spanish],
+    ['es-419', Tags.Language.Spanish],
     ['es-la', Tags.Language.Spanish],
     ['fr', Tags.Language.French],
     ['ja', Tags.Language.Japanese],
@@ -58,194 +50,131 @@ const chapterLanguageMap = new Map([
     ['pt', Tags.Language.Portuguese],
 ]);
 
-@Common.MangaCSS<HTMLImageElement>(/^{origin}\/manga\/[^/]+$/, 'img.h-full.object-cover[loading="eager"]:not([alt=""])', (img, uri) => ({
-    id: uri.pathname,
-    title: img.alt.trim()
-}))
-@Common.MangasMultiPageCSS('div[wire\\:target] a[title]:has(h3)', Common.PatternLinkGenerator('/browse?page={page}'), 0, Common.AnchorInfoExtractor(true))
+@Grouple.ImageWithMirrors()
 export default class extends DecoratableMangaScraper {
 
-    private apiURL = `${this.URI.origin}/api/`;
-    private latestToken: string = undefined;
+    private apiURL = `${this.URI.origin}/api/rpc/`;
 
     public constructor() {
         super('onisaga', 'Onisaga', 'https://onisaga.com', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Multilingual, Tags.Source.Aggregator);
-        this.imageTaskPool.RateLimit = new RateLimit(1, 2);
     }
 
     public override get Icon() {
         return icon;
     }
 
-    private async ExtractWireState(endpoint: string, name: string): Promise<LiveWireState> {
-        const doc = await FetchHTML(new Request(new URL(endpoint, this.URI)));
-        const token = doc.querySelector<HTMLMetaElement>('meta[name=csrf-token]')?.content.trim() ?? doc.querySelector<HTMLInputElement>('input[name=_token]')?.value.trim();
-        const candidates = [...doc.querySelectorAll<HTMLElement>('[wire\\:snapshot]')];
+    public override async Initialize(): Promise<void> {
+        return await FetchWindowScript(new Request(this.URI), `
+            new Promise((resolve, reject) => {
+	            const formData = new URLSearchParams();
+	            formData.append("action", "confirm");
+	            formData.append("next", "/");
 
-        let snapshot: string | null = null;
+	            fetch('/api/age-confirmation', {
+			            method: "POST",
+			            body: formData
+		            })
+		            .then(response => resolve())
+		            .catch(error => resolve());
+            });
+        `, 500);
+    }
 
-        for (const candidate of candidates) {
-            const currentRaw = candidate.getAttribute('wire:snapshot');
-            try {
-                const data = <LiveWireSnapshot>JSON.parse(currentRaw);
-                if (data?.memo?.name === name) {
-                    snapshot = currentRaw;
-                    break;
-                }
-            } catch { }
-        }
+    public override ValidateMangaURL(url: string): boolean {
+        return new RegExpSafe(`^${this.URI.origin}/title/[^/]+$`).test(url);
+    }
 
-        return {
-            token,
-            snapshot
-        };
-    };
+    public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
+        const { slug, title } = await this.FetchTRPC<APIManga>('./account/titleView', { slug: url.split('/').at(-1) });
+        return new Manga(this, provider, `/title/${slug}`, title);
+    }
+
+    public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
+        type This = typeof this;
+        return Array.fromAsync(async function* (this: This) {
+            for (let cursor: string = undefined, run = true; run;) {
+                const payload = {
+                    limit: 100,
+                    ...cursor && { cursor }
+                };
+                const { items, nextCursor } = await this.FetchTRPC<APIMangas>('./catalog/browse', payload);
+                const mangas = items.map(({ slug, title }) => new Manga(this, provider, `/title/${slug}`, title));
+                yield* mangas;
+                run = !!nextCursor; cursor = nextCursor;
+            }
+        }.call(this));
+    }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const { token, snapshot } = await this.ExtractWireState(manga.Identifier, 'manga.chapter-list');
-        const chapters: Chapter[] = [];
+        const languageData = await FetchNextJS<HydratedLanguages>(new Request(new URL(`${manga.Identifier}?chapters=all`, this.URI)), data => 'alternatives' in data);
 
-        for (let language of chapterLanguageMap.keys()) {
-            const chaptersLang: Chapter[] = [];
-            let previousChaptercount = 0;
+        // mature manga needs rpc to get chapters
+        if (!languageData) {
+            const slug = manga.Identifier.split('/').at(-1);
+            const { units } = await this.FetchTRPC<APIManga>('./account/titleView', { slug });
+            return units.reverse().map(({ title, releaseId }) => new Chapter(this, manga, `/read/${slug}/${releaseId}`, title));
+        };
 
-            //change language
-            const response = await this.FetchLiveWire({
-                _token: token,
-                components: [{
-                    calls: [{
-                        method: 'setLanguage',
-                        params: [language],
-                        path: ''
-                    }],
-                    snapshot,
-                    updates: {}
-                }]
-            });
+        const languages = languageData.alternatives.map(({ href }) => new URL(href, this.URI).searchParams.get('lang'));
 
-            let currentSnapshot = response.components[0].snapshot;
+        type This = typeof this;
+        const chaptersData = await Array.fromAsync(async function* (this: This) {
+            for (const lang of languages) {
+                for (let cursor: string = undefined, run = true; run;) {
+                    const doc = await FetchHTML(new Request(new URL(`${manga.Identifier}?chapters=all&order=desc&lang=${lang}${cursor ? `&cc=${cursor}` : ''}`, this.URI)));
+                    const cursorElement = doc.querySelector<HTMLAnchorElement>('nav[aria-label="Chapter pages"] a:last-of-type');
+                    cursor = cursorElement ? new URL(cursorElement.href, this.URI).searchParams.get('cc') : undefined;
 
-            //loop for chapters
-            for (let run = true; run && currentSnapshot;) {
-                const response = await this.FetchLiveWire({
-                    _token: token,
-                    components: [{
-                        snapshot: currentSnapshot,
-                        updates: {},
-                        calls: [{ method: 'loadMoreChapters', params: [], path: '' }],
-                    }]
-                });
+                    const elements = [...doc.querySelectorAll<HTMLElement>('a[data-unit], details[data-unit]')];
+                    const chapters = elements.map(element => {
+                        const row = element.querySelector(':scope > summary') ?? element;
+                        const number = parseInt(row.querySelector('span[class*="_num"]').textContent.match(/\d+/)[0]);
 
-                const doc = new DOMParser().parseFromString(response.components[0].effects.html, 'text/html');
-                const currentChapters = this.ExtractChaptersFromDoc(doc, manga, language);
+                        const versions = element.tagName === 'DETAILS' ? [...element.querySelectorAll('li')] : [element];
+                        return versions.map(version => {
+                            const link: HTMLAnchorElement = version instanceof HTMLAnchorElement ? version : version.querySelector('a[href^="/read/"]');
+                            const group = version.querySelector('a[href^="/group/"]')?.textContent.trim();
+                            const chapter = new Chapter(this, manga, link.pathname, [`Chapter ${number}`, `[${lang}]`, group ? `[${group}]` : undefined].joinTitleSegments(), ...[chapterLanguageMap.get(lang)].filter(Boolean));
+                            return { number, chapter };
+                        });
+                    });
+                    yield* chapters.flat();
 
-                //each loop iteration should fetch MORE chapters, but still fetching the previouses ones
-                if (currentChapters.length <= previousChaptercount) run = false;
-                previousChaptercount = currentChapters.length;
-                chaptersLang.push(...currentChapters);
-                currentSnapshot = response.components?.at(0)?.snapshot ?? undefined;
-            };
-
-            // api returns ENGLISH chapters when you ask for a language with NO chapters :/
-            // So we have to make sure english are fetched first.
-            if (!chapters.find(chapter => chapter.Identifier === chaptersLang[0].Identifier)) {
-                chapters.push(...chaptersLang);
+                    run = !!cursor;
+                }
             }
-        }
-        return chapters.distinct().reverse();
+        }.call(this));
+        // return  globally sorted chapters across multiple languages
+        return chaptersData.sort((self, other) => other.number - self.number).map(({ chapter }) => chapter);
     }
 
-    private async FetchLiveWire(body: LiveWireRequest): Promise<LiveWireResult> {
-        return FetchJSON<LiveWireResult>(new Request(new URL('/livewire/update', this.URI), {
-            method: 'POST',
-            credentials: 'include',
-            headers: {
-                'X-LiveWire': '',
-                'Accept': '*/*',
-                'Content-type': 'application/json',
-                'Referer': this.URI.href,
-                'Origin': this.URI.origin,
-            },
-            body: JSON.stringify(body)
-        }));
-    }
+    public override async FetchPages(chapter: Chapter): Promise<Page[]> {
+        const pagesData = await FetchNextJS<{ pages: { url: string }[]; }>(new Request(new URL(chapter.Identifier, this.URI)), data => 'pages' in data && Array.isArray(data['pages']));
+        if (pagesData) {
+            return pagesData.pages.map(({ url }) => new Page(this, chapter, new URL(url, this.URI)));
+        };
 
-    private ExtractChaptersFromDoc(doc: Document, manga: Manga, languageCode: string,): Chapter[] {
-        const chapters: Chapter[] = [];
-
-        const elements = doc.querySelectorAll('a.gap-4:has(div[data-flux-heading]), ui-dropdown:has(button div[data-flux-heading]');
-        elements.forEach(el => {
-            let title = [el.querySelector('div[data-flux-heading]').textContent.trim(), `[${languageCode}]`].joinTitleSegments();
-            if (el instanceof HTMLAnchorElement) {
-                chapters.push(new Chapter(this, manga, el.pathname, title, ...[chapterLanguageMap.get(languageCode)].filter(Boolean)));
-            } else {
-                const links = [...el.querySelectorAll<HTMLAnchorElement>('ui-menu a[data-flux-menu-item]')];
-                links.forEach((link, index) => {
-                    let group = link.querySelector('span.truncate.italic')?.textContent.trim();
-                    if (!group || /^unknown/i.test(group)) group = `Unknown ${index + 1}`;
-                    chapters.push(new Chapter(this, manga, link.pathname, [title, `[${group}]`].joinTitleSegments(), ...[chapterLanguageMap.get(languageCode)].filter(Boolean)));
-                });
-            }
+        // Adult content is bugged because 'age confirmation' cookie is required to download pictures but is inaccessible
+        // Removing subdomain 'media' in pictures url seems to fix it, but thats odd (no 404 ?)
+        // => use fixed url as mirror
+        const [, , slug, releaseId] = chapter.Identifier.split('/');
+        const { bootstrap: { manifest: { pages } } } = await this.FetchTRPC<ChapterManifest>(`./account/readerView`, { releaseId, slug });
+        return pages.map(({ url }) => {
+            const link = new URL(url, this.URI);
+            return new Page(this, chapter, link, { mirrors: [link.href.replace('https://media.', 'https://')] });
         });
-        return chapters;
-    }
-
-    public override async FetchPages(chapter: Chapter): Promise<Page<PageToken>[]> {
-        const { token, totalPages } = await this.FetchChapterInfos(chapter.Identifier);
-        return new Array(totalPages).fill(0).map((_, index) => index).map(page => new Page<PageToken>(this, chapter, new URL(`./chapter/${chapter.Identifier.split('/').at(-1)}/page/${page}`, this.apiURL), { token, Referer: this.URI.href }));
     };
 
-    private async FetchChapterInfos(chapterId: string): Promise<ChapterInfos> {
-        const doc = await FetchHTML(new Request(new URL(chapterId, this.URI)));
-        return {
-            token: doc.documentElement.innerHTML.match(/readerToken:\s*['"]([^"']+)['"]/).at(1),
-            totalPages: parseInt(doc.documentElement.innerHTML.match(/totalPages\s*:\s*(\d+)/).at(1))
-        };
-    }
-
-    public override async FetchImage(page: Page<PageToken>, priority: Priority, signal: AbortSignal): Promise<Blob> {
-        return this.imageTaskPool.Add(async () => {
-
-            const executeFetch = async (token: string): Promise<Blob> => {
-                const { url } = await FetchJSON<{ url: string }>(new Request(new URL(page.Link), {
-                    signal,
-                    headers: {
-                        Referer: page.Parameters.Referer,
-                        'X-Reader-Token': token
-                    }
-                }));
-
-                const response = await Fetch(new Request(new URL(url), {
-                    signal,
-                    headers: {
-                        Referer: new URL(page.Parent.Identifier, this.URI).href,
-                    }
-                }));
-
-                if (!response.ok) {
-                    throw new Error();
-                }
-
-                return response.blob();
-            };
-
-            // 1. Try with the initial token
-            try {
-                return await executeFetch(page.Parameters.token);
-            } catch { }
-
-            // 2. If it fails and latestToken is available/different, try that first
-            if (this.latestToken && this.latestToken !== page.Parameters.token) {
-                try {
-                    return await executeFetch(this.latestToken);
-                } catch { }
-            }
-
-            // 3. Fallback: fetch a brand new token and try one last time
-            const chapterInfo = await this.FetchChapterInfos(page.Parent.Identifier);
-            this.latestToken = chapterInfo.token;
-
-            return await executeFetch(this.latestToken);
-        }, priority, signal);
-    }
+    private async FetchTRPC<T extends JSONElement>(endpoint: string, payload: JSONElement): Promise<T> {
+        const { json } = await FetchJSON<APIResult<T>>(new Request(new URL(new URL(endpoint, this.apiURL)), {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                Origin: this.URI.origin,
+                Referer: this.URI.href,
+                'Sec-Fetch-Site': 'same-site'
+            }, body: JSON.stringify({ json: payload })
+        }));
+        return json;
+    };
 }

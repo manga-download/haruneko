@@ -17,7 +17,7 @@ new TestFixture({
     }, // They are using cloudflare to block page downloading, pray that you are not flagged
     entry: {
         index: 2,
-        size: 1_062_301,
+        size: 1_004_858,
         type: 'image/png'
     }
 }).AssertWebsite();

@@ -6,7 +6,7 @@ new TestFixture({
         title: 'MangaKakalot'
     },
     container: {
-        url: 'https://www.mangakakalot.gg/manga/my-crazy-journalist-wife',
+        url: 'https://www.kakamanga.com/manga/my-crazy-journalist-wife',
         id: '/manga/my-crazy-journalist-wife',
         title: 'My Crazy Journalist Wife'
     },

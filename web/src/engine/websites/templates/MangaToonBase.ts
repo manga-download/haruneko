@@ -3,11 +3,11 @@ import { DecoratableMangaScraper, Manga, Page, type MangaPlugin, Chapter } from 
 import type { Priority } from '../../taskpool/DeferredTask';
 import { GetTypedData } from '../decorators/Common';
 import { FetchJSON, FetchWindowScript } from '../../platform/FetchProvider';
-import { GetBytesFromUTF8, GetHexFromBytes, GetUTF8FromBytes } from '../../BufferEncoder';
+import { GetHexFromBytes, GetUTF8FromBytes } from '../../BufferEncoder';
 import { Exception } from '../../Error';
 import { WebsiteResourceKey as R } from '../../../i18n/ILocale';
 import { Delay } from '../../BackgroundTimers';
-import { MD5 } from '../../Crypto';
+import { HashUTF8 } from '../../Crypto';
 
 type APIResult<T> = {
     data: T;
@@ -81,7 +81,7 @@ export class MangaToonBase extends DecoratableMangaScraper {
     }
 
     private async FetchAPI<T extends JSONElement>(endpoint: string): Promise<T> {
-        return (await FetchJSON<APIResult<T>>(new Request(this.GetSignedURL(endpoint), {
+        return (await FetchJSON<APIResult<T>>(new Request(await this.#GetSignedURL(endpoint), {
             headers: {
                 Referer: this.mobileURI.href,
                 Origin: this.mobileURI.origin
@@ -89,7 +89,7 @@ export class MangaToonBase extends DecoratableMangaScraper {
         }))).data;
     }
 
-    private GetSignedURL(endpoint: string): URL {
+    async #GetSignedURL(endpoint: string): Promise<URL> {
         const url = new URL(endpoint, this.apiURL);
         url.searchParams.set('_', `${Math.floor(Date.now())}`);
         url.searchParams.set('_webp', `true`);
@@ -103,7 +103,7 @@ export class MangaToonBase extends DecoratableMangaScraper {
             .map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(value)}`)
             .join('&');
 
-        const sign = GetHexFromBytes(MD5(GetBytesFromUTF8(url.pathname + queryParams + '66c10a61bd916c23f3b33810d3785d17')));
+        const sign = GetHexFromBytes(await HashUTF8('MD5', url.pathname + queryParams + '66c10a61bd916c23f3b33810d3785d17'));
         url.searchParams.set('sign', sign);
         return url;
     }

@@ -6,7 +6,7 @@ new TestFixture({
         title: 'Hwago'
     },
     container: {
-        url: 'https://02.hwago.xyz/comic/dreaming-freedom',
+        url: 'https://01.hwago.com/comic/dreaming-freedom',
         id: '/comic/dreaming-freedom',
         title: 'Dreaming Freedom'
     },
@@ -16,7 +16,7 @@ new TestFixture({
     },
     entry: {
         index: 1,
-        size: 399_468,
+        size: 104_080,
         type: 'image/webp'
     }
 }).AssertWebsite();

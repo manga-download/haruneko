@@ -6,17 +6,17 @@ new TestFixture({
         title: 'DragonTranslation'
     },
     container: {
-        url: 'https://dragontranslation.org/manga/tissue-thief/',
-        id: JSON.stringify({ post: '2146', slug: '/manga/tissue-thief/' }),
-        title: 'Tissue Thief'
+        url: 'https://dragontranslation.org/manga/sakamto-d4ys/',
+        id: '/manga/sakamto-d4ys/',
+        title: 'Sakamoto Days'
     },
     child: {
-        id: '/manga/tissue-thief/capitulo-1/',
-        title: 'Capitulo 1'
+        id: '/manga/sakamto-d4ys/capitulo-1-el-legendario-sicario/',
+        title: 'Capitulo 1: El legendario sicario'
     },
     entry: {
         index: 1,
-        size: 67_683,
+        size: 289_730,
         type: 'image/jpeg'
     }
 }).AssertWebsite();
