@@ -48,7 +48,7 @@ type CryptoParams = {
 export class MangaHubBase extends DecoratableMangaScraper {
 
     private readonly localeAPI = `${this.URI.origin}/api/`;
-    private readonly apiURL = 'https://api.mghcdn.com/graphql';
+    private readonly apiURL = `${this.URI.origin}/graphql`;
     private readonly cdnURL = 'https://imgx.mghcdn.com';
     private token = '';
     private scope = '';
