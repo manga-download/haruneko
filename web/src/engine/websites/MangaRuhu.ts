@@ -7,7 +7,7 @@ import * as Common from './decorators/Common';
 export default class extends InitManga {
 
     public constructor() {
-        super('mangaruhu', 'MangaRuhu', 'https://mangaruhu.com', Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Source.Scanlator, Tags.Language.English);
+        super('mangaruhu', 'MangaRuhu', 'https://mangaruhu.net', Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Source.Scanlator, Tags.Language.Turkish);
     }
 
     public override get Icon() {

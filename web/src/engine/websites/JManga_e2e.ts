@@ -6,7 +6,7 @@ new TestFixture({
         title: 'JManga',
     },
     container: {
-        url: 'https://jmanga.cloud/read/からかい上手-？-の西片さん-raw/',
+        url: 'https://www1.jmanga.cloud/read/からかい上手-？-の西片さん-raw/',
         id: encodeURI('/read/からかい上手-？-の西片さん-raw/'),
         title: 'からかい上手(？)の西片さん',
     },

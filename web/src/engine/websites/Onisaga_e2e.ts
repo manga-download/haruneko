@@ -1,5 +1,6 @@
 import { TestFixture } from '../../../test/WebsitesFixture';
 
+// CASE: Normal content
 new TestFixture({
     plugin: {
         id: 'onisaga',
@@ -20,5 +21,27 @@ new TestFixture({
         index: 1,
         size: 502_924,
         type: 'image/jpeg'
+    }
+}).AssertWebsite();
+
+// CASE: Mature content
+new TestFixture({
+    plugin: {
+        id: 'onisaga',
+        title: 'Onisaga'
+    },
+    container: {
+        url: 'https://onisaga.com/title/one-room-ta',
+        id: '/title/one-room-ta',
+        title: 'One Room TA',
+    },
+    child: {
+        id: '/read/one-room-ta/103561771',
+        title: 'Chapter 1',
+    },
+    entry: {
+        index: 0,
+        size: 270_304,
+        type: 'image/webp'
     }
 }).AssertWebsite();

@@ -7,15 +7,66 @@ import type { Priority } from '../taskpool/DeferredTask';
 import DeScramble from '../transformers/ImageDescrambler';
 import * as Common from './decorators/Common';
 import { RandomText } from '../Random';
+import { HashUTF8 } from '../Crypto';
+import { GetHexFromBytes } from '../BufferEncoder';
 
-type EncodedPagesData = {
-    order?: string; //stringified array of number
-    parts: string; //stringified array of string
+type Signature = {
+    ts: number;
+    sig: string;
+}
+
+type PageParameters = {
+    parts?: string[];
+    seed: number;
+    grid: number;
 };
 
-type PageOrder = {
-    order: number[];
+type PiecesMap = {
+    [key: number]: {
+        scramIdx: number;
+        flip: number;
+    };
 };
+
+class PRNG {
+    private state: number;
+    constructor(seed: number = 123456789) {
+        const sanitizedSeed = (seed & -1) >>> 0;
+        this.state = sanitizedSeed === 0 ? 123456789 : sanitizedSeed;
+    }
+
+    #Next(): number {
+        let x = this.state >>> 0;
+        x = (x ^ x << 13) >>> 0;
+        x = (x ^ x >>> 17) >>> 0;
+        x = (x ^ x << 5) >>> 0;
+        this.state = x >>> 0;
+        return this.state;
+    }
+
+    public Sequence(length: number): { order: number[]; flips: number[] } {
+        // Create an array of indices from 0 up to length - 1
+        const order: number[] = Array.from({ length }, (_, i) => i);
+
+        // Shuffle the array using the Fisher-Yates algorithm powered by xorshift32
+        for (let i = length - 1; i > 0; i--) {
+            const randomValue = this.#Next();
+            const j = randomValue % (i + 1);
+
+            // Swap elements
+            const temp = order[i];
+            order[i] = order[j];
+            order[j] = temp;
+        }
+
+        // Generate an array of pseudo-random integers (0 to 3) for each element
+        const flips: number[] = [];
+        for (let i = 0; i < length; i++) {
+            flips.push(this.#Next() % 4);
+        }
+        return { order, flips };
+    }
+}
 
 AddAntiScrapingDetection(async (invoke) => {
     const result = await invoke<boolean>(`document.title === 'Bot Koruması' && document.querySelector('canvas#sliderCanvas') != undefined`);
@@ -54,21 +105,66 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const initialKey = await FetchWindowScript<string>(new Request(new URL(manga.Identifier, this.URI)), `window.mtrChapterKeys.listKey`, 500);
+        const mangaURL = new URL(manga.Identifier, this.URI);
+
+        const eventName = RandomText(Math.random() * 8 + 8);
+        const preload = `
+
+            crypto.subtle.digest = new Proxy( crypto.subtle.digest, {
+                apply(func, fthis, fargs) {
+                    try {
+                        // Make sure fargs[1] exists before trying to decode
+                        if (fargs && fargs[1]) {
+                            const raw = new TextDecoder().decode(new Uint8Array(fargs[1]));
+                            const resultEL = document.querySelector('#results');
+                            const slug = resultEL?.dataset?.manga;
+                            const tur = resultEL?.dataset?.tur;
+                            const myobj = { tur, raw };
+
+                            if (slug && raw.startsWith(slug)) {
+                                setInterval(() => window.dispatchEvent(new CustomEvent('${eventName}', { detail: myobj })), 250);
+                            }
+                        }
+                    } catch (e) {
+                        // Gracefully catch any decoding or DOM query errors
+                    }
+
+                    // Ensure 'this' points to crypto.subtle if it was lost or detached
+                    const targetThis = (fthis === crypto.subtle) ? fthis : crypto.subtle;
+                    return Reflect.apply(func, targetThis, fargs);
+                }
+            });
+        `;
+        const script = `
+            new Promise(resolve => {
+                window.addEventListener('${eventName}', event => resolve (event.detail), { once: true });
+            });
+        `;
+
+        const { raw, tur } = await FetchWindowPreloadScript<{ tur: string, raw: string }>(new Request(mangaURL), preload, script, 0);
+        const [mangaSlug, seed] = raw.split('_');
+
         type This = typeof this;
         return Array.fromAsync(async function* (this: This) {
-            for (let page = 1, chapter_list_key = initialKey; chapter_list_key; page++) {
+            for (let page = 1, run = true; run; page++) {
+                const { ts, sig } = await this.Sign(mangaSlug, seed);
                 const doc = await FetchHTML(new Request(new URL('/cek/fetch_pages_manga.php', this.URI), {
                     headers: {
-                        'X-Requested-With': 'XMLHttpRequest',
                         Origin: this.URI.origin,
-                        Referer: this.URI.href,
-                        'Sec-Fetch-Site': 'same-origin'
+                        Referer: mangaURL.href,
+                        'X-Requested-With': 'XMLHttpRequest',
+                        "Sec-Fetch-Dest": "empty",
+                        "Sec-Fetch-Mode": "cors",
+                        "Sec-Fetch-Site": "same-origin",
                     },
                     credentials: 'include',
                     method: 'POST',
                     body: new URLSearchParams({
-                        chapter_list_key
+                        manga: mangaSlug,
+                        page: `${page}`,
+                        tur,
+                        _t: `${ts}`,
+                        _sig: sig
                     })
                 }));
 
@@ -76,28 +172,37 @@ export default class extends DecoratableMangaScraper {
                     return new Chapter(this, manga, anchor.pathname, anchor.text.replace(manga.Title, '').trim() || anchor.text.trim());
                 });
                 yield* chapters;
-                chapter_list_key = doc.querySelector<HTMLElement>(`a.pagination-link[data-page="${page + 1}"]`)?.dataset.key;
+
+                doc.querySelector<HTMLInputElement>('input#has-more-chapters')?.value === '1' ? run = true : run = false;
             }
         }.call(this));
     }
 
-    public override async FetchPages(chapter: Chapter): Promise<Page<PageOrder>[]> {
+    private async Sign(mangaSlug: string, seed: string): Promise<Signature> {
+        const ts = Math.floor(Date.now() / 1000);
+        return { ts, sig: GetHexFromBytes(await HashUTF8('SHA-256', `${mangaSlug}_${seed}_${ts}`)) };
+    }
+
+    public override async FetchPages(chapter: Chapter): Promise<Page<PageParameters>[]> {
         const eventName = RandomText(Math.random() * 8 + 8);
         const preload = `
-            JSON.parse = new Proxy(JSON.parse, {
-              apply(target, thisArg, argumentsList) {
-                const result = Reflect.apply(target, thisArg, argumentsList);
-                if (result.cls && result.data && result.key){
-					try{
-						const pagekey = [...document.querySelector('script[type="application/json"][id^="rdm-"]').attributes].find(att => /[0-9a-f]{32}/.test(att.value)).value;
-						const myobject = Object.assign({}, result, {});
-						myobject.pagekey =  pagekey;
-						setInterval(() => window.dispatchEvent(new CustomEvent('${eventName}', { detail: myobject })), 250);
-					} catch {}
-				}
-                return result;
-              }
-            });
+            (() => {
+                const originalParse = JSON.parse;
+                JSON.parse = new Proxy(JSON.parse, {
+                    apply(target, thisArg, argumentsList) {
+                        const result = Reflect.apply(target, thisArg, argumentsList);
+                        if (result.cls && result.data && result.key) {
+                            try {
+                                JSON.parse = originalParse;
+                                setInterval(() => window.dispatchEvent(new CustomEvent('${eventName}', {
+                                    detail: result
+                                })), 250);
+                            } catch {}
+                        }
+                        return result;
+                    }
+                });
+            })();
         `;
 
         const pageScript = `
@@ -116,70 +221,93 @@ export default class extends DecoratableMangaScraper {
 		            for (let i = 0; i < bytes.length; i++) {
 			            bytes[i] = bytes[i] ^ key.charCodeAt(i % key.length);
 		            }
-		            return new TextDecoder().decode(bytes);
+                    return JSON.parse(new TextDecoder().decode(bytes));
 	            }
 
 	            window.addEventListener('${eventName}', event => {
-		            const {cls, data, key, pagekey} = event.detail;
+		            const {cls, data, key, grid, seeds} = event.detail;
 		            const pages = [...document.querySelectorAll('.'+ cls.page)];
 		 
 		            resolve (pages.map(el=> {
-			            const parts = decrypt(el.getAttribute(data.parts), "attr|"+ pagekey +"|reader");
-			            const order = decrypt(el.getAttribute(data.order), "order|"+ pagekey +"|reader");
-			            return ({ order, parts });
+			            const parts = decrypt(el.getAttribute(data.parts), "attr|"+ key +"|reader");
+                        const pageIndex = el.getAttribute(data.pageIndex);
+                        const seed = seeds?.[pageIndex] ?? seeds?.[0] ?? 0;
+			            return ({ parts, seed, grid });
 		            }));
 	            } , { once: true });
             });
         `;
 
-        const elements = await FetchWindowPreloadScript<EncodedPagesData[]>(new Request(new URL(chapter.Identifier, this.URI)), preload, pageScript, 0);
-        return elements.map(({ order, parts }) => {
-            const imageUrl = (<string[]>JSON.parse(parts)).at(0);
-            return new Page<PageOrder>(this, chapter, new URL(imageUrl), { Referer: this.URI.href, order: order ? JSON.parse(order): undefined });
+        const elements = await FetchWindowPreloadScript<PageParameters[]>(new Request(new URL(chapter.Identifier, this.URI)), preload, pageScript, 0);
+        return elements.map(({ parts, seed, grid }) => {
+            const imageUrl = parts.at(0);
+            return new Page<PageParameters>(this, chapter, new URL(imageUrl), { Referer: this.URI.href, seed, grid });
         });
     }
 
-    public override async FetchImage(page: Page<PageOrder>, priority: Priority, signal: AbortSignal): Promise<Blob> {
-        const { order } = page.Parameters;
+    public override async FetchImage(page: Page<PageParameters>, priority: Priority, signal: AbortSignal): Promise<Blob> {
+        const { seed, grid } = page.Parameters;
         const blob = await Common.FetchImageAjax.call(this, page, priority, signal);
-        if (!order) return blob;
+        if (!seed || !grid) return blob;
 
         return DeScramble(blob, async (sourceImage, ctx) => {
-            const stripHeight = Math.floor(sourceImage.height / order.length);
-            const totalHeight = stripHeight * order.length;
+            const imageWidth = sourceImage.width;
+            const imageHeight = sourceImage.height;
+            const gridSize = grid ?? 2;
+            const { order, flips } = new PRNG(seed).Sequence(gridSize);
+            const piecesMap: PiecesMap = {};
 
-            ctx.canvas.height = totalHeight;
+            for (let index = 0; index < gridSize; index++) {
+                piecesMap[order[index]] = {
+                    scramIdx: index,
+                    flip: flips[index]
+                };
+            };
 
-            order.forEach((code, sourceIndex) => {
-                const flip = Math.floor(code / 100);
-                const destination = code % 100;
+            const sliceHeight = imageHeight / gridSize;
+            const sliceWidth = imageWidth;
 
-                const srcY = sourceIndex * stripHeight;
-                const top = destination * stripHeight;
+            for (let index = 0; index < gridSize; index++) {
+                const currentPiece = piecesMap[index];
+                const scrambleIndex = currentPiece.scramIdx;
+                const transformation = currentPiece.flip;
 
+                // Source rectangle (where the slice comes from in the scrambled source image)
+                const sx = 0;
+                const sy = scrambleIndex * sliceHeight;
+                const sWidth = sliceWidth;
+                const sHeight = sliceHeight;
+
+                // Destination rectangle (where the slice goes in the reconstructed image)
+                const dx = 0;
+                const dy = index * sliceHeight;
+                const dWidth = sliceWidth;
+                const dHeight = sliceHeight;
                 ctx.save();
 
-                // Calculate scale factors (equivalent to Android's bitwise checks & scales)
-                const scaleX = (flip & 1) !== 0 ? -1 : 1;
-                const scaleY = (flip & 2) !== 0 ? -1 : 1;
+                // Replicate CSS transform-origin: 50% 50% (center of the slice)
+                const cx = dx + dWidth / 2;
+                const cy = dy + dHeight / 2;
+                ctx.translate(cx, cy);
 
-                const centerX = sourceImage.width / 2;
-                const centerY = top + stripHeight / 2;
-
-                // Apply transformations around the center of the strip
-                ctx.translate(centerX, centerY);
+                // Apply scale transformations matching your CSS flips
+                let scaleX = 1;
+                let scaleY = 1;
+                if (transformation === 1) {
+                    scaleX = -1; // scaleX(-1)
+                } else if (transformation === 2) {
+                    scaleY = -1; // scaleY(-1)
+                } else if (transformation === 3) {
+                    scaleX = -1;
+                    scaleY = -1; // scale(-1, -1)
+                }
                 ctx.scale(scaleX, scaleY);
-                ctx.translate(-centerX, -centerY);
 
-                // Draw the sliced portion of the image onto the destination strip
-                ctx.drawImage(
-                    sourceImage,
-                    0, srcY, sourceImage.width, stripHeight, // Source rectangle
-                    0, top, sourceImage.width, stripHeight // Destination rectangle
-                );
+                // Draw the image slice centered at the origin
+                ctx.drawImage(sourceImage, sx, sy, sWidth, sHeight, -dWidth / 2, -dHeight / 2, dWidth, dHeight);
 
                 ctx.restore();
-            });
+            }
         });
     }
 }

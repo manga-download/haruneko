@@ -1,7 +1,7 @@
 import { Tags } from '../Tags';
 import icon from './Onisaga.webp';
 import { Chapter, DecoratableMangaScraper, Manga, type MangaPlugin, Page } from '../providers/MangaPlugin';
-import * as Common from './decorators/Common';
+import * as Grouple from './decorators/Grouple';
 import { FetchHTML, FetchJSON, FetchNextJS, FetchWindowScript } from '../platform/FetchProvider';
 
 type APIResult<T> = {
@@ -29,7 +29,6 @@ type HydratedLanguages = {
     }[];
 };
 
-/*
 type ChapterManifest = {
     bootstrap: {
         manifest: {
@@ -38,7 +37,7 @@ type ChapterManifest = {
             }[];
         };
     };
-};*/
+};
 
 const chapterLanguageMap = new Map([
     ['en', Tags.Language.English],
@@ -51,7 +50,7 @@ const chapterLanguageMap = new Map([
     ['pt', Tags.Language.Portuguese],
 ]);
 
-@Common.ImageAjax()
+@Grouple.ImageWithMirrors()
 export default class extends DecoratableMangaScraper {
 
     private apiURL = `${this.URI.origin}/api/rpc/`;
@@ -155,16 +154,18 @@ export default class extends DecoratableMangaScraper {
             return pagesData.pages.map(({ url }) => new Page(this, chapter, new URL(url, this.URI)));
         };
 
-        // website is bugged itself because 'age confirmation' cookie is required to download pictures but is inaccessible
-        /*const [, , slug, id] = chapter.Identifier.split('/');
-        const { bootstrap: { manifest: { pages } } } = await this.FetchTRPC<ChapterManifest>(`./account/readerView`, { releaseId: id, slug });
-        return pages.map(({ url }) => new Page(this, chapter, new URL(url, this.URI)));
-        */
-
-        throw new Error(`Adult content is bugged on website, so its disabled for now`);
+        // Adult content is bugged because 'age confirmation' cookie is required to download pictures but is inaccessible
+        // Removing subdomain 'media' in pictures url seems to fix it, but thats odd (no 404 ?)
+        // => use fixed url as mirror
+        const [, , slug, releaseId] = chapter.Identifier.split('/');
+        const { bootstrap: { manifest: { pages } } } = await this.FetchTRPC<ChapterManifest>(`./account/readerView`, { releaseId, slug });
+        return pages.map(({ url }) => {
+            const link = new URL(url, this.URI);
+            return new Page(this, chapter, link, { mirrors: [link.href.replace('https://media.', 'https://')] });
+        });
     };
 
-    private async FetchTRPC<T extends JSONElement>(endpoint: string, payload: JSONElement/*, meta: JSONElement = undefined*/): Promise<T> {
+    private async FetchTRPC<T extends JSONElement>(endpoint: string, payload: JSONElement): Promise<T> {
         const { json } = await FetchJSON<APIResult<T>>(new Request(new URL(new URL(endpoint, this.apiURL)), {
             method: 'POST',
             headers: {
