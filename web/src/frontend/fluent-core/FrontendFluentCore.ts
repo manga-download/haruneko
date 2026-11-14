@@ -1,3 +1,4 @@
+import { DOM } from '@microsoft/fast-element';
 import { DI, Registration } from '@microsoft/fast-element/di.js';
 import { App } from './components/_index'; // Import also registers the web-components
 import type { IFrontendModule } from '../IFrontend';
@@ -18,6 +19,8 @@ class FluentCore implements IFrontendModule {
     }
 
     async Render(root: HTMLElement, windowController: IAppWindow): Promise<void> {
+        // This will allow to bypass FAST check for assigning non-sanitized strings directly to `:innerHTML` instead of a TrustedHTML wrapper
+        DOM.setPolicy({ createHTML: (value: string) => value, protect: (_1, _2, _3, sink) => sink });
         this.RegisterDependencies(windowController);
         root.appendChild(new App());
     }
