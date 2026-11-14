@@ -61,7 +61,7 @@ export class IPC {
             const timeout = SetTimeout(() => reject(new Error(`No response recevied for IPC request '${channel}' within the given timeout`)), 5_000);
             window.addEventListener(replyChannel, (evt: CustomEvent<TReturn | Void | Error>) => {
                 timeout.then(ClearTimeout);
-                if (evt.detail instanceof Error) {
+                if (evt.detail instanceof Error || Object.prototype.toString.call(evt.detail) === '[object Error]') {
                     reject(evt.detail);
                 } else {
                     resolve(evt.detail);

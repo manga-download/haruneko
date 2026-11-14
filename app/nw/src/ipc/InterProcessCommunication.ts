@@ -82,6 +82,7 @@ export class IPC {
         const listener = <EventListener>(({ detail: { replyChannel, parameters } }: RequestEvent<TParameters>) => {
             Promise.resolve(callback(...parameters))
                 .then(result => {
+                    throw new Error('Meow!');
                     this.window.dispatchEvent(new CustomEvent<TReturn>(replyChannel, { detail: result }));
                 }).catch((error: unknown) => {
                     if (error instanceof Error) delete error.cause;
