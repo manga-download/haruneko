@@ -1,12 +1,13 @@
 ﻿import { Tags } from '../Tags';
 import icon from './RinkoComics.webp';
-import { DecoratableMangaScraper, type Manga, Chapter} from '../providers/MangaPlugin';
+import { DecoratableMangaScraper, type Manga, Chapter, Page} from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import { FetchCSS, FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
+import { GetBytesFromBase64, GetUTF8FromBytes } from '../BufferEncoder';
+import { XOR } from '../Crypto';
 
 @Common.MangaCSS(/^{origin}\/comic\/[^/]+\/$/, 'div.comic-info-upper h1')
 @Common.MangasMultiPageCSS('div.ac-grid article.ac-card h2.ac-title a', Common.PatternLinkGenerator('/comic/page/{page}/'))
-@Common.PagesSinglePageCSS('div.chapter-images-outer div.images-flow img.chapter-image')
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
     private nonce = '';
@@ -48,5 +49,12 @@ export default class extends DecoratableMangaScraper {
                 offset += chapters.length;
             }
         }.call(this));
+    }
+
+    public override async FetchPages(chapter: Chapter): Promise<Page[]> {
+        const [el] = await FetchCSS(new Request(new URL(chapter.Identifier, this.URI)), '#cwPages');
+        const data = GetBytesFromBase64(el.textContent.trim());
+        const pages = <string[]>JSON.parse(GetUTF8FromBytes(XOR(data.slice(16), data.slice(0, 16))));
+        return pages.map(page => new Page(this, chapter, new URL(page, this.URI)));
     }
 }

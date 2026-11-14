@@ -10,7 +10,7 @@ import * as Common from './decorators/Common';
 export default class extends InitManga {
 
     public constructor() {
-        super('merlinscans', 'MerlinToon', 'https://merlintoon.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Turkish, Tags.Source.Scanlator);
+        super('merlinscans', 'MerlinToon', 'https://merlintoon.net', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Turkish, Tags.Source.Scanlator);
     }
 
     public override get Icon() {
