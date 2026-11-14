@@ -1,10 +1,13 @@
 import { Tags } from '../Tags';
 import icon from './SoraRaw.webp';
 import { FetchJSON, FetchNextProps } from '../platform/FetchProvider';
+import * as Grouple from './decorators/Grouple';
 import { type MangaPlugin, Manga, Chapter, Page, DecoratableMangaScraper } from '../providers/MangaPlugin';
 import { GetBytesFromBase64, GetBytesFromHex, GetBytesFromUTF8, GetUTF8FromBytes } from '../BufferEncoder';
-import { DecryptAES, DecryptXOR } from '../Crypto';
-import * as Grouple from './decorators/Grouple';
+import { DecryptAES, XOR } from '../Crypto';
+import type { Priority } from '../taskpool/DeferredTask';
+import DeScramble from '../transformers/ImageDescrambler';
+import { CanvaDescrambler, Canva2Descrambler } from './SoraRaw.DRM';
 
 type JSONWrapper<T> = {
     data: T;
@@ -34,6 +37,8 @@ type APIChapter = {
     title?: string;
     path: string;
     manga_id: number;
+    token: string;
+    mode: 'canva' | 'canva2';
     _b?: string;
     _d?: string;
     _p?: string;
@@ -45,18 +50,23 @@ type APIChapterDetails = JSONWrapper<{
     chapter: APIChapter;
 }>;
 
-type CryptedPagesData = {
+type CryptedPagesInfos = {
     d: string;
 };
 
-type PagesData = {
+type PagesInfos = {
     b?: string;
     d?: string;
     p?: string;
     t?: string;
 }[];
 
-@Grouple.ImageWithMirrors()
+type PageParameters = {
+    mirrors: string[];
+    mode: 'canva' | 'canva2';
+    token: string;
+    chapterId: number;
+};
 export default class extends DecoratableMangaScraper {
 
     private apiURL = 'https://api.mangarawgo.site';
@@ -70,7 +80,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async Initialize(): Promise<void> {
-        await super.Initialize(); // Trigger CloudFlare
+        await super.Initialize();
         this.apiURL = (await FetchJSON<SiteSettings>(new Request(new URL('config.json', this.URI)))).apiImage;
     }
 
@@ -103,10 +113,10 @@ export default class extends DecoratableMangaScraper {
         return chapters.map(({ name, title, path }) => new Chapter(this, manga, `/manga/${path.replace('-ch-', '/ch-')}`, `${name ?? title}`));
     }
 
-    public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const { data: { chapter: { id, manga_id, uuid, _b, _d, _t, _p } } } = await FetchNextProps<APIChapterDetails>(new Request(new URL(chapter.Identifier, this.URI)));
-        const { d } = await FetchJSON<CryptedPagesData>(new Request(new URL(`/${manga_id}/${id}.json`, this.apiURL)));
-        const pagesData = <PagesData>JSON.parse(GetUTF8FromBytes(DecryptXOR(this.B64Decode(d), GetBytesFromUTF8('/fuCkYou!!!'))));
+    public override async FetchPages(chapter: Chapter): Promise<Page<PageParameters>[]> {
+        const { data: { chapter: { id: chapterId, manga_id, uuid, _b, _d, _t, _p, token, mode } } } = await FetchNextProps<APIChapterDetails>(new Request(new URL(chapter.Identifier, this.URI)));
+        const { d } = await FetchJSON<CryptedPagesInfos>(new Request(new URL(`/${manga_id}/${chapterId}.json`, this.apiURL)));
+        const pagesData = <PagesInfos>JSON.parse(GetUTF8FromBytes(XOR(this.B64Decode(d), GetBytesFromUTF8('/fuCkYou!!!'))));
 
         return Promise.all(
             pagesData.map(async ({ b, d, p, t }) => {
@@ -118,18 +128,33 @@ export default class extends DecoratableMangaScraper {
                 ].filter(Boolean) as { host: string; file: string }[];
 
                 const urls = await Promise.all(sources.map(({ host, file }) => this.GenerateFileName(host, file, GetBytesFromHex(uuid))));
-                return new Page(this, chapter, new URL(urls[0]), { Referer: this.URI.href, mirrors: urls.slice(1) });
+                return new Page<PageParameters>(this, chapter, new URL(urls[0]), { Referer: this.URI.href, mirrors: urls.slice(1), mode, token, chapterId });
             })
         );
     }
 
     private async GenerateFileName(host: string, encryptedFileName: string, aesKey: Uint8Array<ArrayBuffer>): Promise<string> {
-        const ciphertext = DecryptXOR(this.B64Decode(encryptedFileName), GetBytesFromUTF8('202508055d0db38bae2e86cc41649f90'));
+        const ciphertext = XOR(this.B64Decode(encryptedFileName), GetBytesFromUTF8('202508055d0db38bae2e86cc41649f90'));
         const filename = GetUTF8FromBytes(await DecryptAES(ciphertext.subarray(16), aesKey, { name: 'AES-CTR', counter: ciphertext.subarray(0, 16), length: 128 }));
         return `${host}/${filename}`;
     }
 
     private B64Decode(data: string): Uint8Array<ArrayBuffer> {
         return GetBytesFromBase64(data.replace(/-/g, '+').replace(/_/g, '/').trim().padEnd(data.length + (4 - data.length % 4) % 4, '='));
+    }
+
+    public override async FetchImage(page: Page<PageParameters>, priority: Priority, signal: AbortSignal): Promise<Blob> {
+        const blob = await Grouple.FetchImageWithMirrors.call(this, page, priority, signal);
+        const { mode, chapterId, token } = page.Parameters;
+
+        return !['canva', 'canva2'].includes(mode) ? blob :
+            DeScramble(blob, async (image, ctx) => {
+                ctx.drawImage(image, 0, 0);
+                const pixels = ctx.getImageData(0, 0, image.width, image.height).data;
+                const descrambledData = mode === 'canva'
+                    ? await CanvaDescrambler.Decramble(pixels, image.width, image.height, `${chapterId}`, token)
+                    : await Canva2Descrambler.Decramble(pixels, image.width, image.height, `${chapterId}`);
+                ctx.putImageData(new ImageData(descrambledData, image.width, image.height), 0, 0);
+            });
     }
 }

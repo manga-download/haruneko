@@ -6,10 +6,10 @@ export default class extends YomuVerseBase {
     public constructor() {
         super('argosscan', 'Argos Scan', 'https://aniargos.com', Tags.Language.Portuguese, Tags.Source.Scanlator, Tags.Media.Manhwa, Tags.Media.Manga);
         this.WithNextActions({
-            PaginatedMangas: '4035af7067d267c3ca563034975b4b3a3d8671f534',
-            MangaInfos: '60e21b1872a4ad76c9a416982cc7a90114cce9a8f7',
-            Chapters: '608f3b6ab87910841f18a42e1aabea1f699ee9ac17',
-            Pages: '607c009c888b38bb98359a6971528b1ede7891f01b'
+            PaginatedMangas: '40aee2def6fc69aa3edd831aada51ae82c1ef92111',
+            MangaInfos: '6049f7ef4cc65e69a30bca6b521456bde5c66ba6b3',
+            Chapters: '6035b8dcaff3a77f48df5dccb3aef5bb48ab88294a',
+            Pages: '70b8adde8f206f1a334946aa392d8bc2d141484a70'
         });
     }
 

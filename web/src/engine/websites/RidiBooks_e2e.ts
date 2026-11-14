@@ -7,7 +7,7 @@ new TestFixture({
     },
     container: {
         url: 'https://ridibooks.com/books/5207000001',
-        id: '/books/5207000001',
+        id: '5207000001',
         title: '품격을 배반한다',
     },
     child: {

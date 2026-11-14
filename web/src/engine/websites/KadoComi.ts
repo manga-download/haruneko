@@ -5,7 +5,7 @@ import * as Common from './decorators/Common';
 import { FetchJSON } from '../platform/FetchProvider';
 import type { Priority } from '../taskpool/DeferredTask';
 import { GetBytesFromHex } from '../BufferEncoder';
-import { DecryptXOR } from '../Crypto';
+import { XOR } from '../Crypto';
 
 type APIResult<T> = {
     result: T[];
@@ -103,7 +103,7 @@ export default class extends DecoratableMangaScraper {
             case 'raw':
                 return data;
             case 'xor':
-                return Common.GetTypedData(DecryptXOR(new Uint8Array(await data.arrayBuffer()), GetBytesFromHex(drmHash.slice(0, 16))).buffer);
+                return Common.GetTypedData(XOR(new Uint8Array(await data.arrayBuffer()), GetBytesFromHex(drmHash.slice(0, 16))).buffer);
             default:
                 throw Error('Encryption not supported');
         }

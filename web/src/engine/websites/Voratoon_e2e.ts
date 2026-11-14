@@ -6,12 +6,12 @@ new TestFixture({
         title: 'Voratoon'
     },
     container: {
-        url: 'https://v4.voratoon.com/series/swordmasters-youngest-son',
-        id: 'swordmasters-youngest-son',
+        url: 'https://13.voratoon.com/series/swordmasters-youngest-son',
+        id: '/series/swordmasters-youngest-son',
         title: 'Swordmaster’s Youngest Son'
     },
     child: {
-        id: '197',
+        id: '/series/swordmasters-youngest-son/chapter/197',
         title: 'Chapter 197'
     },
     entry: {

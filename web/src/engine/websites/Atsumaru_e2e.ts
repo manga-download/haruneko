@@ -6,17 +6,17 @@ new TestFixture({
         title: 'Atsumaru'
     },
     container: {
-        url: 'https://atsu.moe/manga/XLD5S',
-        id: 'XLD5S',
-        title: '+Anima'
+        url: 'https://atsu.moe/manga/2VgNt',
+        id: '2VgNt',
+        title: 'Witch Hat Atelier'
     },
     child: {
-        id: 'CKjlYQaj',
-        title: 'Chapter 44'
+        id: 'BPtAZy',
+        title: 'Chapter 99 [Gamma]'
     },
     entry: {
-        index: 0,
-        size: 179_770,
-        type: 'image/webp'
+        index: 2,
+        size: 293_743,
+        type: 'image/avif'
     }
 }).AssertWebsite();
