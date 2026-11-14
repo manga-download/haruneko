@@ -20,7 +20,7 @@ class FluentCore implements IFrontendModule {
 
     async Render(root: HTMLElement, windowController: IAppWindow): Promise<void> {
         // This will allow to bypass FAST check for assigning non-sanitized strings directly to `:innerHTML` instead of a TrustedHTML wrapper
-        DOM.setPolicy({ createHTML: (value: string) => value, protect: (_1, _2, _3, sink) => sink });
+        DOM.setPolicy({ createHTML: value => value, protect: (_1, _2, _3, sink) => sink });
         this.RegisterDependencies(windowController);
         root.appendChild(new App());
     }
