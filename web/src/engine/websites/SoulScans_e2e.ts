@@ -6,7 +6,7 @@ new TestFixture({
         title: 'Soul Scans'
     },
     container: {
-        url: 'https://v1.soulscans.org/comic/i-have-90-billion-licking-gold',
+        url: 'https://v1.soulscans.asia/comic/i-have-90-billion-licking-gold',
         id: 'i-have-90-billion-licking-gold',
         title: 'I Have 90 Billion Licking Gold'
     },
@@ -16,7 +16,7 @@ new TestFixture({
     },
     entry: {
         index: 0,
-        size: 110_071,
+        size: 110_110,
         type: 'image/jpeg'
     }
 }).AssertWebsite();

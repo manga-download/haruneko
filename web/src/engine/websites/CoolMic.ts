@@ -4,21 +4,14 @@ import type { MangaPlugin } from '../providers/MangaPlugin';
 import { Chapter, DecoratableMangaScraper, Page, Manga } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import { FetchCSS, FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
-import type { Priority } from '../taskpool/DeferredTask';
-import { GetBytesFromBase64, GetBytesFromUTF8 } from '../BufferEncoder';
-import { GetTypedData } from './decorators/Common';
 import { Exception } from '../Error';
 import { WebsiteResourceKey as R } from '../../i18n/ILocale';
 
 type APIMangas = {
-    hits: {
-        hit: {
-            id: number;
-            fields: {
-                title_name: string;
-            };
-        }[];
-    };
+    results: {
+        title_id: number;
+        title_name: string;
+    }[];
 };
 
 type JSONChapters = {
@@ -34,20 +27,8 @@ type APIPages = {
     }[];
 };
 
-type PageData = {
-    encrypted_image: string;
-    iv: string;
-    salt: string;
-    iterations: number;
-    kms_encrypted_data_key: string;
-    file_name: string;
-};
-
-type DecryptedKey = {
-    decrypted_key: string;
-};
-
 @Common.MangaCSS(/^{origin}\/titles\/\d+$/, 'meta[property="og:title"]')
+@Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
     protected readonly apiURL = `${this.URI.origin}/api/v1/`;
     private token: string = undefined;
@@ -74,29 +55,14 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        const promises = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').map(character => {
-            const url = new URL(`https://en-search.coolmic.me/search`);
-            const params = new URLSearchParams({
-                q: `(${character}|*${character})`,
-                size: '10000',
-                start: '0',
-                'q.parser': 'simple',
-                return: '_all_fields',
-                sort: '_score desc, like_vote_count desc',
-                fq: ''
-            });
-
-            url.search = params.toString();
-            return this.FetchAPI<APIMangas>(url.href);
-        });
-
-        const results = (await Promise.all(promises)).reduce((accumulator: Manga[], element) => {
-            const mangas = element.hits.hit.map(({ id, fields: { title_name: title } }) => new Manga(this, provider, `/titles/${id}`, title.trim()));
-            accumulator.push(...mangas);
-            return accumulator;
-        }, []);
-
-        return results.distinct();
+        type This = typeof this;
+        return Array.fromAsync(async function* (this: This) {
+            for (let page = 1, run = true; run; page++) {
+                const { results } = await FetchJSON<APIMangas>(new Request(new URL(`./search_titles?page=${page}&per=100`, this.apiURL)));
+                const mangas = results.map(({ title_id: id, title_name: name }) => new Manga(this, provider, `/titles/${id}`, name));
+                mangas.length > 0 ? yield* mangas : run = false;
+            }
+        }.call(this));
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
@@ -106,47 +72,11 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const { image_data } = await this.FetchAPI<APIPages>(`./viewer/comic/secure_episodes/${chapter.Identifier}`);
+        const { image_data } = await this.FetchAPI<APIPages>(`./viewer/comic/episodes/${chapter.Identifier}`);
         if (!image_data) {
             throw new Exception(R.Plugin_Common_Chapter_UnavailableError);
         }
         return image_data.map(({ path }) => new Page(this, chapter, new URL(path)));
-    }
-
-    public override async FetchImage(page: Page, priority: Priority, signal: AbortSignal): Promise<Blob> {
-        return this.imageTaskPool.Add(async () => {
-            //fetch page JSON data
-            const pageData = await FetchJSON<PageData>(new Request(page.Link, {
-                headers: {
-                    Referer: this.URI.href
-                }
-            }));
-
-            //get decrypted key
-            const chapterUrl = new URL(page.Parent.Identifier, this.URI).href;
-            const { decrypted_key } = await this.FetchAPI<DecryptedKey>(`./decryption_keys`, { encrypted_key: pageData.kms_encrypted_data_key, file_name: pageData.file_name }, chapterUrl);
-            return GetTypedData(await this.Decrypt(pageData, decrypted_key));
-
-        }, priority, signal);
-    }
-
-    private async Decrypt(pageData: PageData, decryptedKey: string): Promise<ArrayBuffer> {
-
-        const { encrypted_image, iterations, iv, salt } = pageData;
-        //create decryptionKey
-        const derivableKey = await crypto.subtle.importKey('raw', GetBytesFromUTF8(decryptedKey), {
-            name: 'PBKDF2'
-        }, false, ['deriveKey']);
-
-        const decryptionKey = await crypto.subtle.deriveKey({
-            name: 'PBKDF2',
-            salt: GetBytesFromBase64(salt),
-            iterations,
-            hash: 'SHA-256'
-        }, derivableKey, { name: 'AES-CBC', length: 256 }, false, ['decrypt']);
-
-        //decrypt picture
-        return crypto.subtle.decrypt({ name: 'AES-CBC', iv: GetBytesFromBase64(iv) }, decryptionKey, GetBytesFromBase64(encrypted_image));
     }
 
     private async FetchAPI<T extends JSONElement>(endpoint: string, body: JSONElement = undefined, referer: string = undefined): Promise<T> {

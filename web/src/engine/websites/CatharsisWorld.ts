@@ -8,6 +8,36 @@ import { WebsiteResourceKey as R } from '../../i18n/ILocale';
 import type { Priority } from '../taskpool/DeferredTask';
 import { XOR } from '../Crypto';
 import DeScramble from '../transformers/ImageDescrambler';
+import { RateLimit } from '../taskpool/RateLimit';
+import { AddAntiScrapingDetection, FetchRedirection } from '../platform/AntiScrapingDetection';
+
+AddAntiScrapingDetection(async invoke => invoke(`
+    new Promise((resolve) => {
+        function isValidPassInStorage() {
+            try {
+                const element = sessionStorage.getItem('catharsis_reader_pass');
+                const readerPass = JSON.parse(element);
+                return readerPass.expiresAt > Date.now();
+            } catch {
+                return false;
+            }
+        };
+
+        if (isValidPassInStorage()) {
+            resolve(${FetchRedirection.None});
+            return;
+        }
+
+        document.addEventListener('solve', async (event) => {
+            setTimeout(() => window.location.reload(), 1500);
+            resolve(${FetchRedirection.Automatic});
+            return;
+        });
+
+        resolve(${FetchRedirection.Interactive});
+    });
+
+`), /^https:\/\/newcatharsis\.dig-it\.info\/manga\/[^/]+\/chapter\//);
 
 type APIMangas = {
     data: APIManga[];
@@ -205,6 +235,7 @@ export default class extends DecoratableMangaScraper {
 
     public constructor() {
         super('catharsisworld', 'Catharsis World', 'https://newcatharsis.dig-it.info', Tags.Media.Manhwa, Tags.Media.Manga, Tags.Language.Spanish, Tags.Source.Aggregator, Tags.Accessibility.DomainRotation);
+        this.imageTaskPool.RateLimit = new RateLimit(1, 2);
     }
 
     public override get Icon() {
@@ -251,47 +282,8 @@ export default class extends DecoratableMangaScraper {
         const [, mangaSlug] = chapter.Parent.Identifier.split('/');
         const [, chapterNumber] = chapter.Identifier.split('/');
 
-        if (!this.#readerToken || this.#readerToken.expiresAt > Date.now()) {
-            this.#readerToken = await FetchWindowScript<ReaderToken>(new Request(new URL(`/manga/${mangaSlug}/chapter/${chapterNumber}`, this.URI)), `
-            new Promise((resolve, reject) => {
-                let interval;
-                let captchaCreated = false;
-                let captcha = undefined;
-                try {
-                    const checkSessionStorage = () => {
-                        const element = sessionStorage.getItem('catharsis_reader_pass');
-                        if (element) {
-                            return (JSON.parse(element));
-                        } else {
-                            return null;
-                        }
-                    };
-
-                    const endTime = Date.now() + 15000;
-
-                    interval = setInterval(() => {
-                        if (Date.now() > endTime) {
-                            clearInterval(interval);
-                            reject(new Error("Unable to get reader token after 15 seconds."));
-                            return;
-                        }
-
-                        const result = checkSessionStorage();
-                        if (result) {
-                            clearInterval(interval);
-                            resolve(result);
-                        } else if (!captchaCreated && document.querySelector('cap-widget')) {
-                            captchaCreated = true;
-                            document.querySelector('cap-widget').solve();
-                        }
-                    }, 150);
-
-                } catch (error) {
-                    if (interval) clearInterval(interval);
-                    reject(error);
-                }
-            });
-        `, 2500);
+        if (!this.#readerToken || this.#readerToken.expiresAt < Date.now()) {
+            this.#readerToken = await FetchWindowScript<ReaderToken>(new Request(new URL(`/manga/${mangaSlug}/chapter/${chapterNumber}`, this.URI)), `JSON.parse(sessionStorage.getItem('catharsis_reader_pass'));`, 2500);
         }
     }
 
@@ -312,21 +304,26 @@ export default class extends DecoratableMangaScraper {
     public override async FetchImage(page: Page<PageData>, priority: Priority, signal: AbortSignal): Promise<Blob> {
         const [chapterId] = page.Parent.Identifier.split('/');
 
-        //get page ticket https://newcatharsis.dig-it.info/api/mangas/chapters/chapterID/page-ticket
-        const { scrambleKey, signedToken, xorByte } = await this.FetchAPI<TicketResponse>(`./mangas/chapters/${chapterId}/page-ticket`, {
-            pageIndex: page.Parameters.index,
-            sessionToken: page.Parameters.chapterSessionToken
-        });
+        const {buffer, scrambleKey, xorByte} = await this.imageTaskPool.Add(async () => {
 
-        //fetch actual page
-        const buffer = await this.imageTaskPool.Add(async () => {
-            return (await Fetch(new Request(new URL(`./mangas/pages/${signedToken}`, this.apiURL), {
+            //get page ticket https://newcatharsis.dig-it.info/api/mangas/chapters/chapterID/page-ticket
+            const { scrambleKey, signedToken, xorByte } = await this.FetchAPI<TicketResponse>(`./mangas/chapters/${chapterId}/page-ticket`, {
+                pageIndex: page.Parameters.index,
+                sessionToken: page.Parameters.chapterSessionToken,
+                q: 'hq',
+                g: true
+            });
+
+            const buffer = (await Fetch(new Request(new URL(`./mangas/pages/${signedToken}`, this.apiURL), {
                 headers: {
                     Referer: page.Parameters.Referer,
+                    'Sec-Fetch-Dest': 'empty',
+                    'Sec-Fetch-Mode': 'cors',
                     'Sec-Fetch-Site': 'same-origin',
                     'X-Catharsis-Reader': '1',
                 },
             }))).arrayBuffer();
+            return { buffer: await buffer, scrambleKey, xorByte };
         }, priority, signal);
 
         const blob = await Common.GetTypedData(XOR(new Uint8Array(buffer), new Uint8Array([xorByte])).buffer);
@@ -359,7 +356,10 @@ export default class extends DecoratableMangaScraper {
                 Origin: this.URI.origin,
                 'Content-Type': 'application/json',
                 'System': 'catharsis',
-                'X-Fk-Sistema': '3'
+                'X-Fk-Sistema': '3',
+                'Sec-Fetch-Dest': 'empty',
+                'Sec-Fetch-Mode': 'cors',
+                'Sec-Fetch-Site': 'same-origin',
             }, body: JSON.stringify(body),
         });
         if (headers) Object.entries(headers).forEach(([name, value]) => request.headers.set(name, value));

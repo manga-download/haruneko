@@ -9,7 +9,7 @@ new TestFixture({
         title: 'SpoilerPlus'
     },
     container: {
-        url: 'https://spoilerplus.tv/キングダム-raw-free/',
+        url: 'https://spoilerplus.sc/キングダム-raw-free/',
         id: mangaID,
         title: 'キングダム'
     },
@@ -34,7 +34,7 @@ new TestFixture({
         title: 'SpoilerPlus'
     },
     container: {
-        url: 'https://spoilerplus.tv/転生したらスライムだった件-raw-free/',
+        url: 'https://spoilerplus.sc/転生したらスライムだった件-raw-free/',
         id: mangaID,
         title: '転生したらスライムだった件'
     },
