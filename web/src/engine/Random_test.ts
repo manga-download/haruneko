@@ -89,6 +89,19 @@ describe('Random', { repeats: 50 }, () => {
         });
     });
 
+    describe('LCG', () => {
+        it.each([
+            [0, undefined, undefined, undefined, 3, [1013904223, 1196435762, 3519870697]],
+            [3, undefined, undefined, 2**16, 5, [9606, 16173, 5800, 2535, 32282]],
+            [3, undefined, undefined, undefined, 5, [1018897798, 2365144877, 3752335016, 3345418727, 1647017498]],
+            [3, 25214903917, 11, undefined, 5, [2630267730, 2974679040, 2453012480, 3304980480, 338034688]],
+        ])('Should generate expected numbers', (seed, multiplier, increment, modulo, repetitions, expected) => {
+            const prng = testee.LCG(seed, multiplier, increment, modulo);
+            const actual = Array.from({ length: repetitions }, () => prng.next().value);
+            expect(actual).toStrictEqual(expected);
+        });
+    });
+
     describe('FisherYates::Shuffle', () => {
         it.each([
             [0, ['B', 'C', 'D', 'E', 'F', 'A']],

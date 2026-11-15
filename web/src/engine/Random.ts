@@ -1,4 +1,4 @@
-type PseudoRNG = Generator<number, never, never>;
+export type PseudoRNG = Generator<number, never, never>;
 
 export function RandomFloat(max: number, min: number = 0) {
     return Math.random() * (max - min) + min;
@@ -27,7 +27,7 @@ export function RandomText(length: number) {
 }
 
 /**
- * Creates a XorShift32 PRNG (pseudo random number generator) with the given {@link seed} as initial state.
+ * Creates a PRNG (pseudo random number generator) based on the **XorShift32** algorithm with the given {@link seed} as initial state.
  * When the seed is `0` all consequitive values will also be `0`.
  */
 export function* XorShift32(seed: number): PseudoRNG {
@@ -35,6 +35,17 @@ export function* XorShift32(seed: number): PseudoRNG {
         state ^= state << 13;
         state ^= state >>> 17;
         state ^= state << 5;
+        yield state >>> 0;
+    }
+}
+
+/**
+ * Creates a PRNG (pseudo random number generator) based on the **Linear Congruential** algorithm with the given {@link seed} as initial state.
+ * The {@link modulo} parameter should not exceed the 32-bit limit.
+ */
+export function* LCG(seed: number, multiplier = 1664525, increment = 1013904223, modulo = 2**32): PseudoRNG {
+    for (let state = seed >>> 0; ;) {
+        state = (state * multiplier + increment) % modulo;
         yield state >>> 0;
     }
 }
