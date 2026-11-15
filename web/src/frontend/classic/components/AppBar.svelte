@@ -124,14 +124,14 @@
         padding-left: 1em;
     }
     #AppTitle .appdesc {
-        font-weight: var(--cds-body-short-01-font-weight, 400);
+        font-weight: var(--cds-body-compact-01-font-weight, 400);
         padding-left: 1em;
     }
     #AppTitle .beta {
-        font-size: var(--cds-caption-01-font-size, .75rem);
-        font-weight: var(--cds-caption-01-font-weight, 400);
-        line-height: var(--cds-caption-01-line-height, 1.33333);
-        letter-spacing: var(--cds-caption-01-letter-spacing, .32px);
+        font-size: var(--cds-label-01-font-size, .75rem);
+        font-weight: var(--cds-label-01-font-weight, 400);
+        line-height: var(--cds-label-01-line-height, 1.33333);
+        letter-spacing: var(--cds-label-01-letter-spacing, .32px);
         color: var(--cds-text-helper);
         padding-left: 1em;
     }

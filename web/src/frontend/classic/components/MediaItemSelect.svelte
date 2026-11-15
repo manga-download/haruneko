@@ -546,14 +546,14 @@
         cursor: col-resize;
     }
     .resize:hover {
-            background-color:var(--cds-ui-02); 
+            background-color:var(--cds-layer-02); 
     }
     .error-source {
         display: block;
         margin: 0.25em 0 0 auto;
         font-size: 0.7em;
         font-style: italic;
-        color: var(--cds-text-03);
+        color: var(--cds-text-placeholder);
         text-align: right;
     }
 </style>
