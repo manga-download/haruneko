@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Tile, ClickableTile, Tag } from 'carbon-components-svelte';
+    import { Tile, ClickableTile, Tag, Layer } from 'carbon-components-svelte';
     import CaretRight from 'carbon-icons-svelte/lib/CaretRight.svelte';
     import { fade } from 'svelte/transition';
     import {Store as UI } from '../../stores/Stores.svelte';
@@ -16,33 +16,34 @@
 <div id="bookmarkspage" in:fade>
     <Tile id="bookmarks" class="border">
         {#each window.HakuNeko.BookmarkPlugin.Entries.Value as bookmark (bookmark)}
-            <ClickableTile
-                class="suggesttile"
-                light
-                on:click={() => selectBookmark(bookmark)}
-            >
-                <div
-                    class="mediaitem"
-                    style="background-image: url({bookmark.Icon ?? MediaIcon});"
+            <Layer>
+                <ClickableTile
+                    class="suggesttile"
+                    on:click={() => selectBookmark(bookmark)}
                 >
-                    <Tag class="suggesttitle" type="outline" interactive>
-                        <span title={bookmark.Title}>{bookmark.Title}</span>
-                    </Tag>
+                    <div
+                        class="mediaitem"
+                        style="background-image: url({bookmark.Icon ?? MediaIcon});"
+                    >
+                        <Tag class="suggesttitle" type="outline" interactive>
+                            <span title={bookmark.Title}>{bookmark.Title}</span>
+                        </Tag>
 
-                    {#await bookmark.GetUnflaggedContent() then value}
-                        {#if value.length > 0}
-                            <Tag
-                                class="suggestcount"
-                                type="outline"
-                                icon={CaretRight}
-                                interactive
-                            >
-                                {value.length}
-                            </Tag>
-                        {/if}
-                    {/await}
-                </div>
-            </ClickableTile>
+                        {#await bookmark.GetUnflaggedContent() then value}
+                            {#if value.length > 0}
+                                <Tag
+                                    class="suggestcount"
+                                    type="outline"
+                                    icon={CaretRight}
+                                    interactive
+                                >
+                                    {value.length}
+                                </Tag>
+                            {/if}
+                        {/await}
+                    </div>
+                </ClickableTile>
+            </Layer>
         {/each}
     </Tile>
 </div>
