@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { ClickableTile, Tile, Tag } from 'carbon-components-svelte';
+    import { ClickableTile, Tile, Tag, Layer } from 'carbon-components-svelte';
     import CaretRight from 'carbon-icons-svelte/lib/CaretRight.svelte';
     import BookmarkAdd from 'carbon-icons-svelte/lib/BookmarkAdd.svelte';
 
@@ -60,31 +60,32 @@
             </h4>
         </ClickableTile>
         {#each suggestions as bookmark (bookmark)}
-            <ClickableTile
-                class="suggesttile"
-                light
-                on:click={() => selectBookmark(bookmark)}
-            >
-                <div
-                    class="mediaitem"
-                    style="background-image: url({bookmark.Icon ?? MediaIcon});"
+            <Layer>
+                <ClickableTile
+                    class="suggesttile"
+                    on:click={() => selectBookmark(bookmark)}
                 >
-                    <Tag class="suggesttitle" type="outline" interactive>
-                        <span title={bookmark.Title}>{bookmark.Title}</span>
-                    </Tag>
-
-                    {#await bookmark.GetUnflaggedContent() then value}
-                        <Tag
-                            class="suggestcount"
-                            type="outline"
-                            icon={CaretRight}
-                            interactive
-                        >
-                            {value.length}
+                    <div
+                        class="mediaitem"
+                        style="background-image: url({bookmark.Icon ?? MediaIcon});"
+                    >
+                        <Tag class="suggesttitle" type="outline" interactive>
+                            <span title={bookmark.Title}>{bookmark.Title}</span>
                         </Tag>
-                    {/await}
-                </div>
-            </ClickableTile>
+
+                        {#await bookmark.GetUnflaggedContent() then value}
+                            <Tag
+                                class="suggestcount"
+                                type="outline"
+                                icon={CaretRight}
+                                interactive
+                            >
+                                {value.length}
+                            </Tag>
+                        {/await}
+                    </div>
+                </ClickableTile>
+            </Layer>
         {/each}
     </Tile>
 {/if}
