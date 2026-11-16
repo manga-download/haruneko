@@ -103,13 +103,10 @@ describe('Random', { repeats: 50 }, () => {
     });
 
     describe('FisherYates::Shuffle', () => {
-        it.each([
-            [testee.XorShift32, 0, ['B', 'C', 'D', 'E', 'F', 'A']],
-            [testee.XorShift32, 3, ['C', 'E', 'A', 'F', 'B', 'D']],
-            [testee.XorShift32, 7, ['C', 'B', 'E', 'F', 'A', 'D']],
-        ])('Should create expected sequence', (prng, seed, expected) => {
-            const actual = new FisherYates(prng(seed)).Shuffle('A', 'B', 'C', 'D', 'E', 'F');
-            expect(actual).toStrictEqual(expected);
+        it('Should create expected sequence', () => {
+            const mockDeriveIndex = (index: number) => index > 2 ? 5 - index : index;
+            const actual = new FisherYates(mockDeriveIndex).Shuffle('A', 'B', 'C', 'D', 'E', 'F');
+            expect(actual).toStrictEqual(['F', 'E', 'D', 'C', 'B', 'A']);
         });
     });
 });
