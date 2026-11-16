@@ -57,6 +57,11 @@ type PageData = {
     Grid: number;
 };
 
+type SegmentInfo = {
+    offset: number;
+    length: number;
+};
+
 export default class extends DecoratableMangaScraper {
 
     private readonly apiURL = `${this.URI.origin}/api/v1/web/ `;
@@ -120,7 +125,7 @@ export default class extends DecoratableMangaScraper {
 
     #RenderTilesV1(image: ImageBitmap, ctx: OffscreenCanvasRenderingContext2D, init: number, grid: number) {
 
-        function SplitDimensionIntoRegions(totalSize: number, regionCount: number) {
+        function SplitDimensionIntoRegions(totalSize: number, regionCount: number): SegmentInfo[] {
             const size = Math.max(1, Math.floor(totalSize));
             const count = Math.max(1, Math.min(Math.floor(regionCount) || 1, size));
             return Array.from({ length: count }, (_, regionIndex) => {
@@ -133,24 +138,44 @@ export default class extends DecoratableMangaScraper {
             });
         };
 
+        function FixSegments(regions: SegmentInfo[], keys: number[]): SegmentInfo[] {
+            let currentOffset = 0;
+            return keys.map((key) => {
+                const length = Math.max(1, Number(regions[key]?.length || 1));
+                const segment: SegmentInfo = {
+                    offset: currentOffset,
+                    length,
+                };
+                currentOffset += length;
+                return segment;
+            });
+        }
+
         const canvasWidth = Math.max(1, Math.floor(image.width));
         const canvasHeight = Math.max(1, Math.floor(image.height));
         const gridSize = Math.max(1, Math.min(Math.floor(grid) || 1, canvasWidth, canvasHeight));
+
         const columnRegions = SplitDimensionIntoRegions(canvasWidth, gridSize);
         const rowRegions = SplitDimensionIntoRegions(canvasHeight, gridSize);
+
         const shuffledColumns = new FisherYates(XorShift32(init ^ 0x85EBCA6B || 0x9E3779B9))
             .Shuffle(...new Array(gridSize).keys());
         const shuffledRows = new FisherYates(XorShift32(init ^ 0x9E3779B9 || 0x9E3779B9))
             .Shuffle(...new Array(gridSize).keys());
+
         ctx.clearRect(0, 0, canvasWidth, canvasHeight);
 
-        for (let row = 0; row < gridSize; row++) {
-            const srcTileY = rowRegions[row];
-            const dstTileY = rowRegions[shuffledRows[row]];
-            for (let column = 0; column < gridSize; column++) {
-                const srcTileX = columnRegions[column];
-                const dstTileX = columnRegions[shuffledColumns[column]];
-                ctx.drawImage(image, srcTileX.offset, srcTileY.offset, srcTileX.length, srcTileY.length, dstTileX.offset, dstTileY.offset, dstTileX.length, dstTileY.length);
+        const fixedColumns = FixSegments(columnRegions, shuffledColumns);
+        const fixedRows = FixSegments(rowRegions, shuffledRows);
+
+        for (let y = 0; y < gridSize; y += 1) {
+            let currentYSource = rowRegions[shuffledRows[y]];
+            let currentYPos = fixedRows[y];
+
+            for (let x = 0; x < gridSize; x += 1) {
+                let currentXSource = columnRegions[shuffledColumns[x]];
+                let currentXPos = fixedColumns[x];
+                ctx.drawImage(image, currentXPos.offset, currentYPos.offset, currentXPos.length, currentYPos.length, currentXSource.offset, currentYSource.offset, currentXSource.length, currentYSource.length);
             }
         }
     }
