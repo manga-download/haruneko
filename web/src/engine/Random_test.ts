@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { FisherYates } from './Random';
+import { FisherYates, type PseudoRNG } from './Random';
 import * as testee from './Random';
 
 /* eslint-disable-next-line no-restricted-properties */ //=> This test is supposed to run in NodeJS environment where Buffer is available
@@ -79,6 +79,7 @@ describe('Random', { repeats: 50 }, () => {
     });
 
     describe('XorShift32', () => {
+
         it.each([
             [0, 3, [0, 0, 0]],
             [3, 5, [811107, 201886211, 3025432647, 1909268553, 1833517003]],
@@ -90,6 +91,7 @@ describe('Random', { repeats: 50 }, () => {
     });
 
     describe('LCG', () => {
+
         it.each([
             [0, undefined, undefined, undefined, 3, [1013904223, 1196435762, 3519870697]],
             [3, undefined, undefined, 2**16, 5, [9606, 16173, 5800, 2535, 32282]],
@@ -103,10 +105,21 @@ describe('Random', { repeats: 50 }, () => {
     });
 
     describe('FisherYates::Shuffle', () => {
+
         it('Should create expected sequence', () => {
             const mockDeriveIndex = (index: number) => index > 2 ? 5 - index : index;
             const actual = new FisherYates(mockDeriveIndex).Shuffle('A', 'B', 'C', 'D', 'E', 'F');
             expect(actual).toStrictEqual(['F', 'E', 'D', 'C', 'B', 'A']);
+        });
+
+        it.each([
+            FisherYates.WithScaledDerivation,
+            FisherYates.WithModuloDerivation,
+        ])('Should ba able to continue consumption from the provided PRNG', (activator) => {
+            const mockPRNG = (function* () { yield* [0, 0, 3, 7, 11]; })();
+            activator(mockPRNG as PseudoRNG).Shuffle('😇', '😈');
+            const actual = Array.from({ length: 3 }, () => mockPRNG.next().value);
+            expect(actual).toStrictEqual([3, 7, 11]);
         });
     });
 });
