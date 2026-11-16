@@ -1,11 +1,12 @@
 import { Tags } from '../Tags';
 import icon from './MangaDenizi.webp';
-import { Chapter, DecoratableMangaScraper, Manga, type MangaPlugin, Page } from '../providers/MangaPlugin';
-import { Fetch, FetchJSON } from '../platform/FetchProvider';
-import type { Priority } from '../taskpool/DeferredTask';
-import { GetTypedData } from './decorators/Common';
-import DeScramble from '../transformers/ImageDescrambler';
 import { XOR } from '../Crypto';
+import { FisherYates, XorShift32 } from '../Random';
+import type { Priority } from '../taskpool/DeferredTask';
+import { Fetch, FetchJSON } from '../platform/FetchProvider';
+import DeScramble from '../transformers/ImageDescrambler';
+import { Chapter, DecoratableMangaScraper, Manga, type MangaPlugin, Page } from '../providers/MangaPlugin';
+import { GetTypedData } from './decorators/Common';
 
 type APIManga = {
     data: {
@@ -55,47 +56,6 @@ type PageData = {
     Init: number;
     Grid: number;
 };
-
-class PRNG {
-
-    #state: number;
-    readonly #seed: number;
-
-    constructor(init: number, salt: number) {
-        const UInt32 = this.#ToUInt32;
-        this.#seed = UInt32(UInt32(init) ^ UInt32(salt)) || 0x9E3779B9;
-        this.#state = this.#seed;
-    }
-
-    #ToUInt32(value: number) {
-        return value >>> 0;
-    }
-
-    /**
-     * Get the next pseudo random number with `XorShift32`.
-     */
-    #Next() {
-        const UInt32 = this.#ToUInt32;
-        this.#state = UInt32(this.#state ^ UInt32(this.#state << 13));
-        this.#state = UInt32(this.#state ^ this.#state >>> 17);
-        this.#state = UInt32(this.#state ^ UInt32(this.#state << 5));
-        return this.#state;
-    };
-
-    /**
-     * Create a sequence of numbers shuffled by `Fisher-Yates` algorithm.
-     * Uses `XorShift32` algorithm as the underlying random number generator.
-     */
-    public Sequence(count: number) {
-        this.#state = this.#seed;
-        const indices = [...new Array(Math.max(1, count)).keys()];
-        for (let current = indices.length - 1; current > 0; current--) {
-            const randomIndex = this.#Next() % (current + 1);
-            [indices[current], indices[randomIndex]] = [indices[randomIndex], indices[current]];
-        }
-        return indices;
-    }
-}
 
 export default class extends DecoratableMangaScraper {
 
@@ -178,16 +138,16 @@ export default class extends DecoratableMangaScraper {
         const gridSize = Math.max(1, Math.min(Math.floor(grid) || 1, canvasWidth, canvasHeight));
         const columnRegions = SplitDimensionIntoRegions(canvasWidth, gridSize);
         const rowRegions = SplitDimensionIntoRegions(canvasHeight, gridSize);
-        const shuffledColumns = new PRNG(init, 0x85EBCA6B).Sequence(gridSize);
-        const shuffledRows = new PRNG(init, 0X9E3779B9).Sequence(gridSize);
-
+        const shuffledColumns = new FisherYates(XorShift32(init ^ 0x85EBCA6B || 0x9E3779B9))
+            .Shuffle(...new Array(gridSize).keys());
+        const shuffledRows = new FisherYates(XorShift32(init ^ 0x9E3779B9 || 0x9E3779B9))
+            .Shuffle(...new Array(gridSize).keys());
         ctx.clearRect(0, 0, canvasWidth, canvasHeight);
 
-        for (let row = 0; row < gridSize; row += 1) {
+        for (let row = 0; row < gridSize; row++) {
             const srcTileY = rowRegions[row];
             const dstTileY = rowRegions[shuffledRows[row]];
-
-            for (let column = 0; column < gridSize; column += 1) {
+            for (let column = 0; column < gridSize; column++) {
                 const srcTileX = columnRegions[column];
                 const dstTileX = columnRegions[shuffledColumns[column]];
                 ctx.drawImage(image, srcTileX.offset, srcTileY.offset, srcTileX.length, srcTileY.length, dstTileX.offset, dstTileY.offset, dstTileX.length, dstTileY.length);
