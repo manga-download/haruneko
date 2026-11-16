@@ -1,9 +1,9 @@
 import { Tags } from '../Tags';
 import icon from './NexusScans.webp';
-import { FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
+import { Fetch, FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
 import { type MangaPlugin, Manga, Chapter, Page, DecoratableMangaScraper } from '../providers/MangaPlugin';
 import type { Priority } from '../taskpool/DeferredTask';
-import { FetchImageAjax, GetTypedData } from './decorators/Common';
+import { GetTypedData } from './decorators/Common';
 import DeScramble from '../transformers/ImageDescrambler';
 import { GetBytesFromURLBase64, GetBytesFromUTF8, GetURLBase64FromBytes, GetUTF8FromBytes } from '../BufferEncoder';
 
@@ -324,12 +324,21 @@ export default class extends DecoratableMangaScraper {
         return paginas.map(({ url, sc, e, orden }) => {
             const uri = new URL(url);
             if (uri.hostname.endsWith('r2.cloudflarestorage.com')) uri.hostname = 'cdn.nexusscanlation.com';
-            return new Page<PageParameters>(this, chapter, uri, { Seed: sc?.s, Columns: sc?.c, Rows: sc?.r, Version: sc?.v, Encrypted: !!e, PageIndex: orden });
+            return new Page<PageParameters>(this, chapter, uri, { Seed: sc?.s, Columns: sc?.c, Rows: sc?.r, Version: sc?.v, Encrypted: !!e, PageIndex: orden, Referer: this.URI.origin });
         });
     }
 
     public override async FetchImage(page: Page<PageParameters>, priority: Priority, signal: AbortSignal): Promise<Blob> {
-        let blob = await FetchImageAjax.call(this, page, priority, signal);
+        //let blob = await FetchImageAjax.call(this, page, priority, signal);
+        let blob = await this.imageTaskPool.Add(async () => {
+            const headers = {
+                'Referer': page.Parameters.Referer,
+                'Sec-Fetch-Site': 'same-site',
+            };
+            const response = await Fetch(new Request(page.Link, { signal, headers }));
+            return response.blob();
+        }, priority, signal);
+
         const { Seed, Columns, Rows, Version, Encrypted, PageIndex } = page.Parameters;
 
         if (Encrypted) {
