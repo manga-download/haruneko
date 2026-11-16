@@ -1,5 +1,6 @@
 import { GetBytesFromUTF8, GetHexFromBytes } from '../BufferEncoder';
 import { HashUTF8 } from '../Crypto';
+import { FisherYates, Mulberry32, ToUnitInterval, type PseudoRNG } from '../Random';
 
 class SeedRandom {
     private readonly state = Array.from({ length: 256 }, (_, i) => i);
@@ -52,24 +53,11 @@ class SeedRandom {
         }
         return (n + x) / d;
     }
-}
 
-class Mulberry32 {
-    private state: number;
-
-    constructor(state: number) {
-        this.state = state | 0;
-    }
-
-    NextDouble(): number {
-        this.state = this.state + 0x6D2B79F5 | 0;
-        let t = Math.imul(this.state ^ this.state >>> 15, this.state | 1);
-        t = t + Math.imul(t ^ t >>> 7, t | 61) ^ t;
-        return ((t ^ t >>> 14) >>> 0) / 4294967296.0;
-    }
-
-    NextInt(bound: number): number {
-        return Math.floor(this.NextDouble() * bound);
+    *Values(): PseudoRNG {
+        for (;;) {
+            yield this.NextDouble();
+        }
     }
 }
 
@@ -118,17 +106,14 @@ export class CanvaDescrambler {
             const b = `${h}x${w}`;
             const partner = b === a ? undefined : classes.get(b);
             if (!partner) {
-                const order = [...members];
-                this.Shuffle(order, new SeedRandom(`${key}|perm|${a}`));
+                const order = new FisherYates(new SeedRandom(`${key}|perm|${a}`).Values(), 'fraction').Shuffle(...members);
                 members.forEach((slot, i) => moves.set(slot, { src: order[i], transform: this.Transform(new SeedRandom(`${key}|tf|self|${a}|${i}`), false, square) }));
                 continue;
             }
             done.add(b);
-            const pairRng = new SeedRandom(`${key}|pair|${a}|${b}`);
-            const sa = [...members];
-            const sb = [...partner];
-            this.Shuffle(sa, pairRng);
-            this.Shuffle(sb, pairRng);
+            const pairRng = new FisherYates(new SeedRandom(`${key}|pair|${a}|${b}`).Values(), 'fraction');
+            const sa = pairRng.Shuffle(...members);
+            const sb = pairRng.Shuffle(...partner);
             const count = Math.min(sa.length, sb.length);
             for (let i = 0; i < count; i++) {
                 moves.set(sa[i], { src: sb[i], transform: this.Transform(new SeedRandom(`${key}|tf|AtoB|${a}|${i}`), true, false) });
@@ -152,15 +137,7 @@ export class CanvaDescrambler {
         const base = Math.floor(total / count);
         const remainder = total - base * count;
         const sizes = Array.from({ length: count }, (_, i) => base + (i < remainder ? 1 : 0));
-        this.Shuffle(sizes, rng);
-        return sizes;
-    }
-
-    private static Shuffle(list: number[], rng: SeedRandom): void {
-        for (let i = list.length - 1; i > 0; i--) {
-            const j = Math.floor(rng.NextDouble() * (i + 1));
-            [list[i], list[j]] = [list[j], list[i]];
-        }
+        return new FisherYates(rng.Values(), 'fraction').Shuffle(...sizes);
     }
 
     private static Transform(rng: SeedRandom, swap: boolean, square: boolean): Transform {
@@ -171,8 +148,7 @@ export class CanvaDescrambler {
 
     private static RestMoves(rest: number[], permSeed: string, tfSeed: string, square: boolean, moves: Map<number, Move>): void {
         if (rest.length === 0) return;
-        const order = [...rest];
-        this.Shuffle(order, new SeedRandom(permSeed));
+        const order = new FisherYates(new SeedRandom(permSeed).Values(), 'fraction').Shuffle(...rest);
         rest.forEach((slot, i) => moves.set(slot, { src: order[i], transform: this.Transform(new SeedRandom(`${tfSeed}|${i}`), false, square) }));
     }
 
@@ -215,7 +191,8 @@ export class Canva2Descrambler {
         const h2 = await HashUTF8('SHA-256', `${h1}:nxn:${GRID}:${width}x${height}`);
 
         const seed = new DataView(h2.buffer, h2.byteOffset, h2.byteLength).getInt32(0, false);
-        const rng = new Mulberry32(seed);
+        const rng = ToUnitInterval(Mulberry32(seed));
+        const shuffle = new FisherYates(rng, 'fraction');
 
         const tileW = Math.floor(width / GRID);
         const tileH = Math.floor(height / GRID);
@@ -252,20 +229,14 @@ export class Canva2Descrambler {
             const tw = parseInt(wStr, 10);
             const th = parseInt(hStr, 10);
 
-            const order = [...members];
-            for (let count = order.length; count >= 2; count--) {
-                const j = rng.NextInt(count);
-                const temp = order[count - 1];
-                order[count - 1] = order[j];
-                order[j] = temp;
-            }
+            const order = shuffle.Shuffle(...members);
             sources.set(key, order);
 
             const rotList: number[] = [];
             for (let i = 0; i < order.length; i++) {
                 if (tw === th) {
-                    rotList.push(rng.NextInt(4));
-                } else if (rng.NextDouble() < 0.5) {
+                    rotList.push(Math.floor(rng.next().value * 4));
+                } else if (rng.next().value < 0.5) {
                     rotList.push(0);
                 } else {
                     rotList.push(2);

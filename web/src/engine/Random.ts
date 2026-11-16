@@ -28,7 +28,7 @@ export function RandomText(length: number) {
 
 /**
  * Creates a PRNG (pseudo random number generator) based on the **XorShift32** algorithm with the given {@link seed} as initial state.
- * When the seed is `0` all consequitive values will also be `0`.
+ * When the seed is `0` all consecutive values will also be `0`.
  */
 export function* XorShift32(seed: number): PseudoRNG {
     for (let state = seed >>> 0; ;) {
@@ -36,6 +36,23 @@ export function* XorShift32(seed: number): PseudoRNG {
         state ^= state >>> 17;
         state ^= state << 5;
         yield state >>> 0;
+    }
+}
+
+/** Creates a Mulberry32 PRNG yielding unsigned 32-bit integers. */
+export function* Mulberry32(seed: number): PseudoRNG {
+    for (let state = seed >>> 0; ;) {
+        state = state + 0x6D2B79F5 | 0;
+        let result = Math.imul(state ^ state >>> 15, state | 1);
+        result = result + Math.imul(result ^ result >>> 7, result | 61) ^ result;
+        yield (result ^ result >>> 14) >>> 0;
+    }
+}
+
+/** Converts a PRNG yielding unsigned 32-bit integers to values in [0, 1). */
+export function* ToUnitInterval(pseudoRNG: PseudoRNG): PseudoRNG {
+    for (;;) {
+        yield pseudoRNG.next().value / 2**32;
     }
 }
 
@@ -52,14 +69,16 @@ export function* LCG(seed: number, multiplier = 1664525, increment = 1013904223,
 
 export class FisherYates {
 
-    constructor(private readonly pseudoRNG: PseudoRNG) { }
+    /** Use `fraction` for generators producing values in [0, 1), or `modulo` for integer generators. */
+    constructor(private readonly pseudoRNG: PseudoRNG, private readonly indexMode: 'modulo' | 'fraction' = 'modulo') { }
 
-    /**
-     * Shuffle the given {@link values} with the Fisher-Yates algorithm using the provided {@link prng} generator.
-     */
+    /** Shuffle the given {@link values} using the supplied generator. */
     public Shuffle<T>(...values: T[]) {
-        for (const srcIndex of [...values.keys()].reverse()) {
-            const dstIndex = this.pseudoRNG.next().value % (srcIndex + 1);
+        for (let srcIndex = values.length - 1; srcIndex > 0; srcIndex--) {
+            const random = this.pseudoRNG.next().value;
+            const dstIndex = this.indexMode === 'fraction'
+                ? Math.floor(random * (srcIndex + 1))
+                : random % (srcIndex + 1);
             [values[srcIndex], values[dstIndex]] = [values[dstIndex], values[srcIndex]];
         }
         return values;

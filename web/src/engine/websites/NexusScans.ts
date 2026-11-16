@@ -6,6 +6,7 @@ import type { Priority } from '../taskpool/DeferredTask';
 import { GetTypedData } from './decorators/Common';
 import DeScramble from '../transformers/ImageDescrambler';
 import { GetBytesFromURLBase64, GetBytesFromUTF8, GetURLBase64FromBytes, GetUTF8FromBytes } from '../BufferEncoder';
+import { FisherYates, Mulberry32, ToUnitInterval } from '../Random';
 
 type APIManga = {
     serie: {
@@ -214,52 +215,6 @@ class DRMProvider {
     }
 }
 
-class PRNG {
-
-    #state: number;
-    readonly #seed: number;
-
-    constructor(init: number) {
-        this.#seed = init >>> 0;
-        this.#state = this.#seed;
-    }
-
-    /**
-     * Get the next pseudo random number with `Mulberry32`.
-     */
-    #Next() {
-        this.#state |= 0;
-        let result = Math.imul((this.#state = this.#state + 1831565813 | 0) ^ this.#state >>> 15, 1 | this.#state);
-        result = result + Math.imul(result ^ result >>> 7, 61 | result) ^ result;
-        return ((result ^ result >>> 14) >>> 0) / 4294967296;
-    };
-
-    /**
-     * Create a sequence of numbers shuffled by `Fisher-Yates (variation)` algorithm.
-     * Uses `Mulberry32` algorithm as the underlying random number generator.
-     */
-    public Sequence(count: number) {
-        this.#state = this.#seed;
-        const indices = [...new Array(Math.max(1, count)).keys()];
-        for (let current = indices.length - 1; current > 0; current--) {
-            const randomIndex = Math.floor(this.#Next() * (current + 1));
-            [indices[current], indices[randomIndex]] = [indices[randomIndex], indices[current]];
-        }
-        return indices;
-    }
-
-    /**
-    * Generate an Int32Array of random flip values (0 to 3) for tile descrambling.
-    */
-    public Flips(count: number): Int32Array {
-        const flips = new Int32Array(count);
-        for (let i = 0; i < count; i++) {
-            flips[i] = Math.floor(this.#Next() * 4);
-        }
-        return flips;
-    }
-}
-
 export default class extends DecoratableMangaScraper {
 
     private readonly apiURL = 'https://api.nexusscanlation.com/api/v1/';
@@ -355,9 +310,9 @@ export default class extends DecoratableMangaScraper {
             ctx.canvas.width = tileWidth * Columns;
             ctx.canvas.height = tileHeight * Rows;
 
-            const rng = new PRNG(Seed);
-            const shuffledPositions = rng.Sequence(totalTiles);
-            const flips: Int32Array | null = Version >= 2 ? rng.Flips(totalTiles) : null;
+            const rng = ToUnitInterval(Mulberry32(Seed));
+            const shuffledPositions = new FisherYates(rng, 'fraction').Shuffle(...new Array(Math.max(1, totalTiles)).keys());
+            const flips = Version >= 2 ? Int32Array.from({ length: totalTiles }, () => Math.floor(rng.next().value * 4)) : null;
 
             for (let srcIndex = 0; srcIndex < totalTiles; srcIndex++) {
                 const srcX = srcIndex % Columns * tileWidth;

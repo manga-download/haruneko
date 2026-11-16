@@ -89,6 +89,17 @@ describe('Random', { repeats: 50 }, () => {
         });
     });
 
+    describe('Mulberry32', () => {
+        it.each([
+            [0, [1144304738, 1416247, 958946056, 627933444, 2007157716]],
+            [3, [3093350482, 166052715, 1959330548, 321813351, 3277083196]],
+            [-1, [3850105811, 813802916, 3073704848, 4054706436, 3630262831]],
+        ])('Should generate expected numbers for seed %i', (seed, expected) => {
+            const prng = testee.Mulberry32(seed);
+            expect(expected.map(() => prng.next().value)).toStrictEqual(expected);
+        });
+    });
+
     describe('LCG', () => {
         it.each([
             [0, undefined, undefined, undefined, 3, [1013904223, 1196435762, 3519870697]],
@@ -110,6 +121,30 @@ describe('Random', { repeats: 50 }, () => {
         ])('Should create expected sequence', (prng, seed, expected) => {
             const actual = new FisherYates(prng(seed)).Shuffle('A', 'B', 'C', 'D', 'E', 'F');
             expect(actual).toStrictEqual(expected);
+        });
+
+        it('preserves the fractional shuffle and subsequent flips used by NexusScans', () => {
+            const rng = testee.ToUnitInterval(testee.Mulberry32(123456789));
+            const actual = new FisherYates(rng, 'fraction').Shuffle(...new Array(12).keys());
+            const flips = Array.from({ length: 12 }, () => Math.floor(rng.next().value * 4));
+            expect(actual).toStrictEqual([6, 9, 11, 0, 8, 4, 5, 2, 1, 7, 10, 3]);
+            expect(flips).toStrictEqual([1, 2, 0, 1, 3, 2, 1, 3, 3, 0, 1, 2]);
+        });
+
+        it('does not consume random values for empty or singleton shuffles', () => {
+            const rng = testee.Mulberry32(0);
+            const shuffle = new FisherYates(rng);
+            expect(shuffle.Shuffle()).toStrictEqual([]);
+            expect(shuffle.Shuffle('A')).toStrictEqual(['A']);
+            expect(rng.next().value).toBe(1144304738);
+        });
+
+        it('consumes exactly one value per swap across successive shuffles', () => {
+            const rng = testee.ToUnitInterval(testee.Mulberry32(0));
+            const shuffle = new FisherYates(rng, 'fraction');
+            shuffle.Shuffle(0, 1, 2);
+            shuffle.Shuffle(0, 1);
+            expect(rng.next().value).toBe(627933444 / 2**32);
         });
     });
 });
