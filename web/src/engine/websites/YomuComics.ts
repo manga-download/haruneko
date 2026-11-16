@@ -53,8 +53,8 @@ export default class extends DecoratableMangaScraper {
 
         const chapters = await FetchWindowPreloadScript<JSONChapters>(new Request(new URL(`./obra/${manga.Identifier}`, this.URI)), `
             JSON.parse = new Proxy(JSON.parse, {
-                apply(target, thisArg, args) {
-                    const result = Reflect.apply(target, thisArg, args);
+                apply(target, thisArg, argArray) {
+                    const result = Reflect.apply(target, thisArg, argArray);
                     if (Array.isArray(result) && result.length > 0 && result[0].number && result[0].title) {
                         setInterval(() => window.dispatchEvent(new CustomEvent('${eventName}', { detail: result })), 250);
                     }

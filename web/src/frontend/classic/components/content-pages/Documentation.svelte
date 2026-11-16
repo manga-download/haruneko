@@ -4,6 +4,7 @@
         ClickableTile,
         Breadcrumb,
         BreadcrumbItem,
+        Layer,
     } from 'carbon-components-svelte';
     import {
         documentation,
@@ -36,15 +37,16 @@
                 {@html docCategory.description.outerHTML}
                 <div class="section">
                     {#each docCategory.sections as docSection}
-                        <ClickableTile
-                            light
-                            on:click={() => {
-                                selectedDocCategory = docCategory;
-                                selectedDocSection = docSection;
-                            }}
-                        >
-                            {docSection.name}
-                        </ClickableTile>
+                        <Layer>
+                            <ClickableTile
+                                on:click={() => {
+                                    selectedDocCategory = docCategory;
+                                    selectedDocSection = docSection;
+                                }}
+                            >
+                                {docSection.name}
+                            </ClickableTile>
+                        </Layer>
                     {/each}
                 </div>
             </div>
