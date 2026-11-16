@@ -55,6 +55,7 @@ type PageParameters = {
     Rows?: number;
     Version?: number;
     Encrypted: boolean;
+    ChapterId: string;
     PageIndex: number;
 }
 
@@ -324,7 +325,7 @@ export default class extends DecoratableMangaScraper {
         return paginas.map(({ url, sc, e, orden }) => {
             const uri = new URL(url);
             if (uri.hostname.endsWith('r2.cloudflarestorage.com')) uri.hostname = 'cdn.nexusscanlation.com';
-            return new Page<PageParameters>(this, chapter, uri, { Seed: sc?.s, Columns: sc?.c, Rows: sc?.r, Version: sc?.v, Encrypted: !!e, PageIndex: orden, Referer: this.URI.origin });
+            return new Page<PageParameters>(this, chapter, uri, { Seed: sc?.s, Columns: sc?.c, Rows: sc?.r, Version: sc?.v, Encrypted: !!e, PageIndex: orden, ChapterId: id, Referer: this.URI.origin });
         });
     }
 
@@ -339,10 +340,10 @@ export default class extends DecoratableMangaScraper {
             return response.blob();
         }, priority, signal);
 
-        const { Seed, Columns, Rows, Version, Encrypted, PageIndex } = page.Parameters;
+        const { Seed, Columns, Rows, Version, Encrypted, PageIndex, ChapterId } = page.Parameters;
 
         if (Encrypted) {
-            blob = await this.drmProvider.DecryptPage(blob, page.Parent.Identifier, PageIndex);
+            blob = await this.drmProvider.DecryptPage(blob, ChapterId, PageIndex);
         }
 
         return Columns && Rows && Seed ? DeScramble(blob, async (image, ctx) => {
