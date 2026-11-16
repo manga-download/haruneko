@@ -64,7 +64,7 @@ const chapterLanguageMap = new Map([
     ['🇭🇰', { locale: 'zh_HK', tags: [Tags.Language.Chinese] }],
 ]);
 
-@Common.MangaCSS(/^https:\/\/xcomic\.(me|net)\/title\/[^/]+$/, 'h1 a.link[href^="/title/"]', (element, uri) => ({
+@Common.MangaCSS(/^https:\/\/(comik\.to|xcomic\.me)\/title\/[^/]+$/, 'h1 a.link[href^="/title/"]', (element, uri) => ({
     id: uri.pathname.split('/').at(-1),
     title: element.textContent.trim()
 }))
@@ -74,7 +74,7 @@ export default class extends DecoratableMangaScraper {
     readonly #apiURL = `${this.URI.origin}/query/`;
 
     public constructor() {
-        super('xcomic', 'XComic', 'https://xcomic.net', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Multilingual, Tags.Source.Aggregator);
+        super('xcomic', 'XComic', 'https://xcomic.me', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Multilingual, Tags.Source.Aggregator);
     }
 
     public override get Icon() {

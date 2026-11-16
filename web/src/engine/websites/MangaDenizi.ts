@@ -158,10 +158,12 @@ export default class extends DecoratableMangaScraper {
         const columnRegions = SplitDimensionIntoRegions(canvasWidth, gridSize);
         const rowRegions = SplitDimensionIntoRegions(canvasHeight, gridSize);
 
-        const shuffledColumns = new FisherYates(XorShift32(init ^ 0x85EBCA6B || 0x9E3779B9))
-            .Shuffle(...new Array(gridSize).keys());
-        const shuffledRows = new FisherYates(XorShift32(init ^ 0x9E3779B9 || 0x9E3779B9))
-            .Shuffle(...new Array(gridSize).keys());
+        const Shuffle = (seed: number, count: number) => FisherYates
+            .WithModuloDerivation(XorShift32(seed || 0x9E3779B9))
+            .Shuffle(...new Array(count).keys());
+
+        const shuffledColumns = Shuffle(init ^ 0x85EBCA6B, gridSize);
+        const shuffledRows = Shuffle(init ^ 0x9E3779B9, gridSize);
 
         ctx.clearRect(0, 0, canvasWidth, canvasHeight);
 
