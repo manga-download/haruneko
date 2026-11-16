@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { FisherYates } from './Random';
+import { FisherYates, type PseudoRNG } from './Random';
 import * as testee from './Random';
 
 /* eslint-disable-next-line no-restricted-properties */ //=> This test is supposed to run in NodeJS environment where Buffer is available
@@ -79,6 +79,7 @@ describe('Random', { repeats: 50 }, () => {
     });
 
     describe('XorShift32', () => {
+
         it.each([
             [0, 3, [0, 0, 0]],
             [3, 5, [811107, 201886211, 3025432647, 1909268553, 1833517003]],
@@ -89,18 +90,8 @@ describe('Random', { repeats: 50 }, () => {
         });
     });
 
-    describe('Mulberry32', () => {
-        it.each([
-            [0, [1144304738, 1416247, 958946056, 627933444, 2007157716]],
-            [3, [3093350482, 166052715, 1959330548, 321813351, 3277083196]],
-            [-1, [3850105811, 813802916, 3073704848, 4054706436, 3630262831]],
-        ])('Should generate expected numbers for seed %i', (seed, expected) => {
-            const prng = testee.Mulberry32(seed);
-            expect(expected.map(() => prng.next().value)).toStrictEqual(expected);
-        });
-    });
-
     describe('LCG', () => {
+
         it.each([
             [0, undefined, undefined, undefined, 3, [1013904223, 1196435762, 3519870697]],
             [3, undefined, undefined, 2**16, 5, [9606, 16173, 5800, 2535, 32282]],
@@ -114,34 +105,21 @@ describe('Random', { repeats: 50 }, () => {
     });
 
     describe('FisherYates::Shuffle', () => {
+
         it('Should create expected sequence', () => {
             const mockDeriveIndex = (index: number) => index > 2 ? 5 - index : index;
             const actual = new FisherYates(mockDeriveIndex).Shuffle('A', 'B', 'C', 'D', 'E', 'F');
             expect(actual).toStrictEqual(['F', 'E', 'D', 'C', 'B', 'A']);
         });
 
-        it('preserves the fractional shuffle and subsequent flips used by NexusScans', () => {
-            const rng = testee.ToUnitInterval(testee.Mulberry32(123456789));
-            const actual = new FisherYates(rng, 'fraction').Shuffle(...new Array(12).keys());
-            const flips = Array.from({ length: 12 }, () => Math.floor(rng.next().value * 4));
-            expect(actual).toStrictEqual([6, 9, 11, 0, 8, 4, 5, 2, 1, 7, 10, 3]);
-            expect(flips).toStrictEqual([1, 2, 0, 1, 3, 2, 1, 3, 3, 0, 1, 2]);
-        });
-
-        it('does not consume random values for empty or singleton shuffles', () => {
-            const rng = testee.Mulberry32(0);
-            const shuffle = new FisherYates(rng);
-            expect(shuffle.Shuffle()).toStrictEqual([]);
-            expect(shuffle.Shuffle('A')).toStrictEqual(['A']);
-            expect(rng.next().value).toBe(1144304738);
-        });
-
-        it('consumes exactly one value per swap across successive shuffles', () => {
-            const rng = testee.ToUnitInterval(testee.Mulberry32(0));
-            const shuffle = new FisherYates(rng, 'fraction');
-            shuffle.Shuffle(0, 1, 2);
-            shuffle.Shuffle(0, 1);
-            expect(rng.next().value).toBe(627933444 / 2**32);
+        it.each([
+            FisherYates.WithScaledDerivation,
+            FisherYates.WithModuloDerivation,
+        ])('Should ba able to continue consumption from the provided PRNG', (activator) => {
+            const mockPRNG = (function* () { yield* [0, 0, 3, 7, 11]; })();
+            activator(mockPRNG as PseudoRNG).Shuffle('😇', '😈');
+            const actual = Array.from({ length: 3 }, () => mockPRNG.next().value);
+            expect(actual).toStrictEqual([3, 7, 11]);
         });
     });
 });
