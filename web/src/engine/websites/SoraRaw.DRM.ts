@@ -1,67 +1,65 @@
 import { GetBytesFromUTF8, GetHexFromBytes } from '../BufferEncoder';
 import { HashUTF8 } from '../Crypto';
-import { FisherYates, Mulberry32, ToUnitInterval, type PseudoRNG } from '../Random';
+import { FisherYates, Mulberry32, type PseudoRNG } from '../Random';
 
-class SeedRandom {
-    private readonly state = Array.from({ length: 256 }, (_, i) => i);
-    private i = 0;
-    private j = 0;
+export function* CustomARC4(seed: string): PseudoRNG {
+    const state = Array.from({ length: 256 }, (_, i) => i);
+    let i = 0;
+    let j = 0;
 
-    constructor(seed: string) {
-        this.CustomRC4KSA(seed);
+    // Key-Scheduling Algorithm (KSA)
+    const key = new Uint8Array(Math.min(seed.length, 256) || 1);
+    let smear = 0;
+    for (let k = 0; k < seed.length; k++) {
+        const index = k & 255;
+        smear ^= key[index] * 19;
+        key[index] = smear + seed.charCodeAt(k) & 255;
     }
 
-    private CustomRC4KSA(seed: string) {
-        const key = new Uint8Array(Math.min(seed.length, 256) || 1);
-        let smear = 0;
-        for (let i = 0; i < seed.length; i++) {
-            const index = i & 255;
-            smear ^= key[index] * 19;
-            key[index] = smear + seed.charCodeAt(i) & 255;
-        }
-        let j = 0;
-        for (let i = 0; i < 256; i++) {
-            j = j + this.state[i] + key[i % key.length] & 255;
-            [this.state[i], this.state[j]] = [this.state[j], this.state[i]];
-        }
-        this.RandomRC4(256);
+    let currentJ = 0;
+    for (let k = 0; k < 256; k++) {
+        currentJ = currentJ + state[k] + key[k % key.length] & 255;
+        [state[k], state[currentJ]] = [state[currentJ], state[k]];
     }
 
-    private RandomRC4(count: number): number {
+    // Helper to run the PRNG step for 'count' bytes
+    function randomRC4(count: number): number {
         let value = 0;
         for (let n = 0; n < count; n++) {
-            this.i = this.i + 1 & 255;
-            const t = this.state[this.i];
-            this.j = this.j + t & 255;
-            const s = this.state[this.j];
-            this.state[this.i] = s;
-            this.state[this.j] = t;
-            value = value * 256 + this.state[s + t & 255];
+            i = i + 1 & 255;
+            const t = state[i];
+            j = j + t & 255;
+            const s = state[j];
+            state[i] = s;
+            state[j] = t;
+            value = value * 256 + state[s + t & 255];
         }
         return value;
     }
 
-    NextDouble(): number {
-        let n = this.RandomRC4(6);
+    // Warm-up step
+    randomRC4(256);
+
+    for (; ;) {
+        let n = randomRC4(6);
         let d = 256 ** 6;
         let x = 0;
         while (n < 2 ** 52) {
             n = (n + x) * 256;
             d *= 256;
-            x = this.RandomRC4(1);
+            x = randomRC4(1);
         }
         while (n >= 2 ** 53) {
             n /= 2;
             d /= 2;
             x = x >>> 1;
         }
-        return (n + x) / d;
-    }
 
-    *Values(): PseudoRNG {
-        for (;;) {
-            yield this.NextDouble();
-        }
+        const rawValue = n + x;
+        yield {
+            float: rawValue / d,
+            int: Math.floor(rawValue) >>> 0
+        };
     }
 }
 
@@ -79,7 +77,7 @@ export class CanvaDescrambler {
     public static async Decramble(pixels: Uint8ClampedArray, width: number, height: number, chapterId: string, token: string): Promise<Uint8ClampedArray<ArrayBuffer>> {
         const hmacKey = await crypto.subtle.importKey('raw', GetBytesFromUTF8(token), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']);
         const key = GetHexFromBytes(new Uint8Array(await crypto.subtle.sign('HMAC', hmacKey, GetBytesFromUTF8(chapterId))));
-        const splitRng = new SeedRandom(key);
+        const splitRng = CustomARC4(key);
         const cols = this.Split(width, splitRng);
         const rows = this.Split(height, splitRng);
         const tiles: Tile[] = [];
@@ -110,18 +108,18 @@ export class CanvaDescrambler {
             const b = `${h}x${w}`;
             const partner = b === a ? undefined : classes.get(b);
             if (!partner) {
-                const order = FisherYates.WithScaledDerivation(new SeedRandom(`${key}|perm|${a}`).Values()).Shuffle(...members);
-                members.forEach((slot, i) => moves.set(slot, { src: order[i], transform: this.Transform(new SeedRandom(`${key}|tf|self|${a}|${i}`), false, square) }));
+                const order = FisherYates.WithScaledDerivation(CustomARC4(`${key}|perm|${a}`)).Shuffle(...members);
+                members.forEach((slot, i) => moves.set(slot, { src: order[i], transform: this.Transform(CustomARC4(`${key}|tf|self|${a}|${i}`), false, square) }));
                 continue;
             }
             done.add(b);
-            const pairRng = FisherYates.WithScaledDerivation(new SeedRandom(`${key}|pair|${a}|${b}`).Values());
+            const pairRng = FisherYates.WithScaledDerivation(CustomARC4(`${key}|pair|${a}|${b}`));
             const sa = pairRng.Shuffle(...members);
             const sb = pairRng.Shuffle(...partner);
             const count = Math.min(sa.length, sb.length);
             for (let i = 0; i < count; i++) {
-                moves.set(sa[i], { src: sb[i], transform: this.Transform(new SeedRandom(`${key}|tf|AtoB|${a}|${i}`), true, false) });
-                moves.set(sb[i], { src: sa[i], transform: this.Transform(new SeedRandom(`${key}|tf|BtoA|${b}|${i}`), true, false) });
+                moves.set(sa[i], { src: sb[i], transform: this.Transform(CustomARC4(`${key}|tf|AtoB|${a}|${i}`), true, false) });
+                moves.set(sb[i], { src: sa[i], transform: this.Transform(CustomARC4(`${key}|tf|BtoA|${b}|${i}`), true, false) });
             }
             this.RestMoves(sa.slice(count), `${key}|perm|A|${a}`, `${key}|tf|A|${a}|rest`, square, moves);
             this.RestMoves(sb.slice(count), `${key}|perm|B|${b}`, `${key}|tf|B|${b}|rest`, square, moves);
@@ -134,26 +132,26 @@ export class CanvaDescrambler {
         return out;
     }
 
-    private static Split(total: number, rng: SeedRandom): number[] {
+    private static Split(total: number, rng: PseudoRNG): number[] {
         let count = Math.max(1, Math.round(total / 222));
         while (Math.floor(total / count) > 259) count++;
         while (Math.floor(total / count) < 185 && count > 1) count--;
         const base = Math.floor(total / count);
         const remainder = total - base * count;
         const sizes = Array.from({ length: count }, (_, i) => base + (i < remainder ? 1 : 0));
-        return FisherYates.WithScaledDerivation(rng.Values()).Shuffle(...sizes);
+        return FisherYates.WithScaledDerivation(rng).Shuffle(...sizes);
     }
 
-    private static Transform(rng: SeedRandom, swap: boolean, square: boolean): Transform {
-        const r = rng.NextDouble();
+    private static Transform(rng: PseudoRNG, swap: boolean, square: boolean): Transform {
+        const r = rng.next().value.float;
         const rot = swap ? r < 0.5 ? 1 : 3 : square ? Math.floor(r * 4) : r < 0.5 ? 0 : 2;
-        return { rot, flipH: rng.NextDouble() < 0.5, flipV: rng.NextDouble() < 0.5 };
+        return { rot, flipH: rng.next().value.float < 0.5, flipV: rng.next().value.float < 0.5 };
     }
 
     private static RestMoves(rest: number[], permSeed: string, tfSeed: string, square: boolean, moves: Map<number, Move>): void {
         if (rest.length === 0) return;
-        const order = FisherYates.WithScaledDerivation(new SeedRandom(permSeed).Values()).Shuffle(...rest);
-        rest.forEach((slot, i) => moves.set(slot, { src: order[i], transform: this.Transform(new SeedRandom(`${tfSeed}|${i}`), false, square) }));
+        const order = FisherYates.WithScaledDerivation(CustomARC4(permSeed)).Shuffle(...rest);
+        rest.forEach((slot, i) => moves.set(slot, { src: order[i], transform: this.Transform(CustomARC4(`${tfSeed}|${i}`), false, square) }));
     }
 
     private static Draw(pixels: Uint8ClampedArray, width: number, src: Tile, out: Uint8ClampedArray, dst: Tile, tf: Transform): void {
@@ -195,8 +193,8 @@ export class Canva2Descrambler {
         const h2 = await HashUTF8('SHA-256', `${h1}:nxn:${GRID}:${width}x${height}`);
 
         const seed = new DataView(h2.buffer, h2.byteOffset, h2.byteLength).getInt32(0, false);
-        const rng = ToUnitInterval(Mulberry32(seed));
-        //const shuffle = FisherYates.WithScaledDerivation(rng);
+        const rng = Mulberry32(seed);
+        const shuffle = FisherYates.WithScaledDerivation(rng);
 
         const tileW = Math.floor(width / GRID);
         const tileH = Math.floor(height / GRID);
@@ -233,20 +231,14 @@ export class Canva2Descrambler {
             const tw = parseInt(wStr, 10);
             const th = parseInt(hStr, 10);
 
-            const order = [...members];
-            for (let count = order.length; count >= 2; count--) {
-                const j = Math.floor(rng.next().value * count);
-                const temp = order[count - 1];
-                order[count - 1] = order[j];
-                order[j] = temp;
-            }
+            const order = shuffle.Shuffle(...members);
             sources.set(key, order);
 
             const rotList: number[] = [];
             for (let i = 0; i < order.length; i++) {
                 if (tw === th) {
-                    rotList.push(Math.floor(rng.next().value * 4));
-                } else if (rng.next().value < 0.5) {
+                    rotList.push(Math.floor(rng.next().value.float * 4));
+                } else if (rng.next().value.float < 0.5) {
                     rotList.push(0);
                 } else {
                     rotList.push(2);

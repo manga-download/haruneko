@@ -6,7 +6,7 @@ import type { Priority } from '../taskpool/DeferredTask';
 import { GetTypedData } from './decorators/Common';
 import DeScramble from '../transformers/ImageDescrambler';
 import { GetBytesFromURLBase64, GetBytesFromUTF8, GetURLBase64FromBytes, GetUTF8FromBytes } from '../BufferEncoder';
-import { FisherYates, Mulberry32, ToUnitInterval } from '../Random';
+import { FisherYates, Mulberry32 } from '../Random';
 
 type APIManga = {
     serie: {
@@ -285,7 +285,6 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchImage(page: Page<PageParameters>, priority: Priority, signal: AbortSignal): Promise<Blob> {
-        //let blob = await FetchImageAjax.call(this, page, priority, signal);
         let blob = await this.imageTaskPool.Add(async () => {
             const headers = {
                 'Referer': page.Parameters.Referer,
@@ -310,10 +309,10 @@ export default class extends DecoratableMangaScraper {
             ctx.canvas.width = tileWidth * Columns;
             ctx.canvas.height = tileHeight * Rows;
 
-            const rng = ToUnitInterval(Mulberry32(Seed));
+            const rng = Mulberry32(Seed);
             const shuffledPositions = FisherYates.WithScaledDerivation(rng).Shuffle(...new Array(Math.max(1, totalTiles)).keys());
 
-            const flips = Version >= 2 ? Int32Array.from({ length: totalTiles }, () => Math.floor(rng.next().value * 4)) : null;
+            const flips = Version >= 2 ? Int32Array.from({ length: totalTiles }, () => Math.floor(rng.next().value.int * 4)) : null;
 
             for (let srcIndex = 0; srcIndex < totalTiles; srcIndex++) {
                 const srcX = srcIndex % Columns * tileWidth;
