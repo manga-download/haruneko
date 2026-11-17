@@ -106,9 +106,21 @@ describe('Random', { repeats: 50 }, () => {
 
     describe('FisherYates::Shuffle', () => {
 
-        it('Should create expected sequence', () => {
-            const mockDeriveIndex = (index: number) => index > 2 ? 5 - index : index;
+        it('Should create expected sequence with index derivation', () => {
+            const mockDeriveIndex = (index: number) => [0, 1, 2, 2, 1, 0][index];
             const actual = new FisherYates(mockDeriveIndex).Shuffle('A', 'B', 'C', 'D', 'E', 'F');
+            expect(actual).toStrictEqual(['F', 'E', 'D', 'C', 'B', 'A']);
+        });
+
+        it('Should create expected sequence with scaled PRNG', () => {
+            const mockPRNG = (function* () { yield* [0.1, 0.3, 0.5, 0.9, 0.6, 0.3]; })();
+            const actual = FisherYates.WithScaledDerivation(mockPRNG as PseudoRNG).Shuffle('A', 'B', 'C', 'D', 'E', 'F');
+            expect(actual).toStrictEqual(['F', 'E', 'D', 'C', 'B', 'A']);
+        });
+
+        it('Should create expected sequence with modulo PRNG', () => {
+            const mockPRNG = (function* () { yield* [0, 1, 2, 2, 1, 0]; })();
+            const actual = FisherYates.WithModuloDerivation(mockPRNG as PseudoRNG).Shuffle('A', 'B', 'C', 'D', 'E', 'F');
             expect(actual).toStrictEqual(['F', 'E', 'D', 'C', 'B', 'A']);
         });
 
