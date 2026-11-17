@@ -44,7 +44,7 @@ export function* Mulberry32(seed: number): PseudoRNG {
     for (let state = seed >>> 0; ;) {
         state = state + 0x6D2B79F5 | 0;
         let result = Math.imul(state ^ state >>> 15, state | 1);
-        result = result + Math.imul(result ^ result >>> 7, result | 61) ^ result;
+        result ^= Math.imul(result ^ result >>> 7, result | 61) + result;
         yield (result ^ result >>> 14) >>> 0;
     }
 }
