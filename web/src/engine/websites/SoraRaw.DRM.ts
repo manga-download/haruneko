@@ -8,6 +8,10 @@ class SeedRandom {
     private j = 0;
 
     constructor(seed: string) {
+        this.CustomRC4KSA(seed);
+    }
+
+    private CustomRC4KSA(seed: string) {
         const key = new Uint8Array(Math.min(seed.length, 256) || 1);
         let smear = 0;
         for (let i = 0; i < seed.length; i++) {
@@ -20,10 +24,10 @@ class SeedRandom {
             j = j + this.state[i] + key[i % key.length] & 255;
             [this.state[i], this.state[j]] = [this.state[j], this.state[i]];
         }
-        this.Generate(256);
+        this.RandomRC4(256);
     }
 
-    private Generate(count: number): number {
+    private RandomRC4(count: number): number {
         let value = 0;
         for (let n = 0; n < count; n++) {
             this.i = this.i + 1 & 255;
@@ -38,13 +42,13 @@ class SeedRandom {
     }
 
     NextDouble(): number {
-        let n = this.Generate(6);
+        let n = this.RandomRC4(6);
         let d = 256 ** 6;
         let x = 0;
         while (n < 2 ** 52) {
             n = (n + x) * 256;
             d *= 256;
-            x = this.Generate(1);
+            x = this.RandomRC4(1);
         }
         while (n >= 2 ** 53) {
             n /= 2;
