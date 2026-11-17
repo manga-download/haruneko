@@ -118,7 +118,7 @@ describe('Random', { repeats: 50 }, () => {
             expect(actual).toStrictEqual(['F', 'E', 'D', 'C', 'B', 'A']);
         });
 
-        it('Should create expected sequence with scaled PRNG', () => {
+        it('Should create expected sequence with modulo PRNG', () => {
             const mockPRNG = (function* () { yield* [0, 1, 2, 2, 1, 0]; })();
             const actual = FisherYates.WithModuloDerivation(mockPRNG as PseudoRNG).Shuffle('A', 'B', 'C', 'D', 'E', 'F');
             expect(actual).toStrictEqual(['F', 'E', 'D', 'C', 'B', 'A']);
