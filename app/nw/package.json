@@ -15,8 +15,8 @@
     },
     "devDependencies": {
         "adm-zip": "0.6.1",
-        "nw": "0.119.2-sdk",
-        "plist": "5.0.1"
+        "nw": "0.120.0-sdk",
+        "plist": "5.1.1"
     },
     "scripts": {
         "check:ts": "tsc --noEmit --pretty",

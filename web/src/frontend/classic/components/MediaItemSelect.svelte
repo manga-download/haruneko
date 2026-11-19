@@ -19,6 +19,7 @@
     import { fade } from 'svelte/transition';
 
     import MediaComponent from './MediaItem.svelte';
+    import VirtualList from '../lib/VirtualList.svelte';
     import { Store as UI } from '../stores/Stores.svelte';
     import { Tags, type Tag } from '../../../engine/Tags';
     const availableLanguageTags = Tags.Language.toArray();
@@ -104,6 +105,7 @@
     let showItems = $derived(reverseSortOrder ? filteredItems.toReversed() : filteredItems);
 
     let itemsdiv: HTMLElement = $state();
+    let itemsdivHeight = $state(0);
 
     let MediaLanguages: Tag[] = $derived(
         items.reduce((detectedLangaugeTags: Tag[], item) => {
@@ -403,6 +405,7 @@
         id="ItemList" 
         class="list" 
         bind:this={itemsdiv} 
+        bind:clientHeight={itemsdivHeight}
         onmouseup={(event) => { if (event.target === event.currentTarget && event.button === 0) resetSelection(); }}
     >
         {#await loadItem}
@@ -411,19 +414,21 @@
                 <div>... items</div>
             </div>
         {:then}
-            {#each showItems as item (item)}
-                <MediaComponent
-                    {item}
-                    multilang={!langFilter && MediaLanguages.length > 1}
-                    selected={selectedItems.includes(item)}
-                    hover={item === contextItem}
-                    onView={(event) => onItemView(item)(event)}
-                    onmousedown={mouseHandler(item)}
-                    onmouseup={mouseHandler(item)}
-                    onmouseenter={mouseHandler(item)}
-                    oncontextmenu={() => { contextItem = item }}
-                />
-            {/each}
+            <VirtualList items={showItems} itemHeight={24} container={itemsdiv} containerHeight={itemsdivHeight}>
+                {#snippet children(item)}
+                    <MediaComponent
+                        {item}
+                        multilang={!langFilter && MediaLanguages.length > 1}
+                        selected={selectedItems.includes(item)}
+                        hover={item === contextItem}
+                        onView={(event) => onItemView(item)(event)}
+                        onmousedown={mouseHandler(item)}
+                        onmouseup={mouseHandler(item)}
+                        onmouseenter={mouseHandler(item)}
+                        oncontextmenu={() => { contextItem = item }}
+                    />
+                {/snippet}
+            </VirtualList>
         {:catch error}
             <div class="error">
                 <InlineNotification
