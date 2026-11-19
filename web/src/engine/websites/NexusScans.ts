@@ -312,7 +312,7 @@ export default class extends DecoratableMangaScraper {
             const rng = Mulberry32(Seed);
             const shuffledPositions = FisherYates.WithScaledDerivation(rng).Shuffle(...new Array(Math.max(1, totalTiles)).keys());
 
-            const flips = Version >= 2 ? Int32Array.from({ length: totalTiles }, () => Math.floor(rng.next().value.int * 4)) : null;
+            const flips = Version >= 2 ? Int32Array.from({ length: totalTiles }, () => Math.floor(rng.next().value * 4)) : null;
 
             for (let srcIndex = 0; srcIndex < totalTiles; srcIndex++) {
                 const srcX = srcIndex % Columns * tileWidth;

@@ -1,4 +1,5 @@
-export type PseudoRNG = Generator<{ float: number; int: number }, never, never>;
+/** A pseudo-random generator yielding normalized values in the range [0, 1). */
+export type PseudoRNG = Generator<number, never, never>;
 
 export function RandomFloat(max: number, min: number = 0) {
     return Math.random() * (max - min) + min;
@@ -35,10 +36,7 @@ export function* XorShift32(seed: number): PseudoRNG {
         state ^= state << 13;
         state ^= state >>> 17;
         state ^= state << 5;
-        yield {
-            float: state / 2 ** 32,
-            int: state >>> 0
-        };
+        yield (state >>> 0) / 2 ** 32;
     }
 }
 
@@ -48,11 +46,7 @@ export function* Mulberry32(seed: number): PseudoRNG {
         state = state + 0x6D2B79F5 | 0;
         let result = Math.imul(state ^ state >>> 15, state | 1);
         result ^= Math.imul(result ^ result >>> 7, result | 61) + result;
-        const int32 = (result ^ result >>> 14) >>> 0;
-        yield {
-            float: int32 / 2 ** 32,
-            int: int32
-        };
+        yield ((result ^ result >>> 14) >>> 0) / 2 ** 32;
     }
 }
 
@@ -63,10 +57,7 @@ export function* Mulberry32(seed: number): PseudoRNG {
 export function* LCG(seed: number, multiplier = 1664525, increment = 1013904223, modulo = 2**32): PseudoRNG {
     for (let state = seed >>> 0; ;) {
         state = (state * multiplier + increment) % modulo;
-        yield {
-            float: state / 2 ** 32,
-            int: state >>> 0
-        };
+        yield state / 2 ** 32;
     }
 }
 
@@ -79,15 +70,15 @@ export class FisherYates {
      * The provided pseudo random number generator must provide normalized floating point values in the range `[0, 1)` - 0 inclusive, 1 exclusive.
      */
     public static WithScaledDerivation(prng: PseudoRNG) {
-        return new FisherYates(index => Math.floor(prng.next().value.float * (index + 1)));
+        return new FisherYates(index => Math.floor(prng.next().value * (index + 1)));
     }
 
     /**
      * Create a new {@link FisherYates} instance which derives each destination index from a source index via modulo operation.
-     * The provided pseudo random number generator must provide 32-bit integer values.
+     * The provided generator must yield 32-bit integers normalized by dividing by 2**32.
      */
     public static WithModuloDerivation(prng: PseudoRNG) {
-        return new FisherYates(index => prng.next().value.int % (index + 1));
+        return new FisherYates(index => prng.next().value * 2 ** 32 % (index + 1));
     }
 
     /**

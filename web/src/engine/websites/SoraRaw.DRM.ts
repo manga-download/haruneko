@@ -55,11 +55,7 @@ export function* CustomARC4(seed: string): PseudoRNG {
             x = x >>> 1;
         }
 
-        const rawValue = n + x;
-        yield {
-            float: rawValue / d,
-            int: Math.floor(rawValue) >>> 0
-        };
+        yield (n + x) / d;
     }
 }
 
@@ -143,9 +139,9 @@ export class CanvaDescrambler {
     }
 
     private static Transform(rng: PseudoRNG, swap: boolean, square: boolean): Transform {
-        const r = rng.next().value.float;
+        const r = rng.next().value;
         const rot = swap ? r < 0.5 ? 1 : 3 : square ? Math.floor(r * 4) : r < 0.5 ? 0 : 2;
-        return { rot, flipH: rng.next().value.float < 0.5, flipV: rng.next().value.float < 0.5 };
+        return { rot, flipH: rng.next().value < 0.5, flipV: rng.next().value < 0.5 };
     }
 
     private static RestMoves(rest: number[], permSeed: string, tfSeed: string, square: boolean, moves: Map<number, Move>): void {
@@ -237,8 +233,8 @@ export class Canva2Descrambler {
             const rotList: number[] = [];
             for (let i = 0; i < order.length; i++) {
                 if (tw === th) {
-                    rotList.push(Math.floor(rng.next().value.float * 4));
-                } else if (rng.next().value.float < 0.5) {
+                    rotList.push(Math.floor(rng.next().value * 4));
+                } else if (rng.next().value < 0.5) {
                     rotList.push(0);
                 } else {
                     rotList.push(2);
