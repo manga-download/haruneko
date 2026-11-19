@@ -19,16 +19,20 @@ type HydratedManga = {
 
 AddAntiScrapingDetection(async invoke => invoke(`
     new Promise((resolve, reject) => {
-
+        
         if (window.location.hash) {
             return resolve(${FetchRedirection.None});
         }
 
-        //if the cookie is set, cloudflare wont be loaded
-        setTimeout( () => {
-            return resolve(${FetchRedirection.None});
-        }, 3000);
-
+        const interval = setInterval(() => {
+            //if pictures are detected, no need to wait for turnstile, just return
+            const images = [...document.querySelectorAll('img[data-chapter-page]')];
+            if (images.length > 2) {
+                clearInterval(interval);
+                return resolve(${FetchRedirection.None});
+            }
+        }, 150);
+        
         const observer = new MutationObserver((mutations, obs) => {
             for (const mutation of mutations) {
                 // Check added nodes
@@ -38,6 +42,7 @@ AddAntiScrapingDetection(async invoke => invoke(`
 
                         // Check if the script belongs to Cloudflare
                         if (src.includes('cloudflare.com') || src.includes('challenges.cloudflare.com')) {
+                            clearInterval(interval);
                             node.addEventListener('load', onCloudflareLoaded);
                             node.onerror = reject;
                             obs.disconnect();
@@ -129,10 +134,10 @@ export default class extends DecoratableMangaScraper {
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
         const chapterUrl = new URL(chapter.Identifier, this.URI);
 
-        //let the user fill captcha if needed. Catcha role is just to set a cookie.
+        //let the user fill captcha if needed. Captcha role is just to set a cookie.
         await FetchWindowScript(new Request(chapterUrl), ``);
 
-        const images = await FetchWindowScript<string[]>(new Request(chapterUrl), `[...document.querySelectorAll('img[data-chapter-page]')].map(img => img.src)`, 3000);
+        const images = await FetchWindowScript<string[]>(new Request(chapterUrl), `[...document.querySelectorAll('img[data-chapter-page]')].map(img => img.src)`, 5000);
         return images.map(image => new Page(this, chapter, new URL(image, this.URI), { Referer: this.URI.href }));
 
     }
