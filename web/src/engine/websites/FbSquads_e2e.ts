@@ -6,7 +6,7 @@ new TestFixture( {
         title: 'Fleur Blanche Squads'
     },
     container: {
-        url: 'https://fbsscan.com/manga/polar-attraction/',
+        url: 'https://squadxfbs.com/manga/polar-attraction/',
         id: JSON.stringify({ slug: '/manga/polar-attraction/' }),
         title: 'Polar Attraction',
     },
