@@ -6,18 +6,18 @@ new TestFixture({
         title: 'MangaBall'
     },
     container: {
-        url: 'https://mangaball.com/title-detail/one-piece-68515540702284f8341784c8',
-        id: 'one-piece-68515540702284f8341784c8',
-        title: 'One Piece',
-        timeout: 20_000
+        url: 'https://mangaball.com/title-detail/68515398702284f83417819d-sss-class-revival-hunter',
+        id: '68515398702284f83417819d',
+        title: 'SSS-Class Revival Hunter',
+        timeout: 10_000
     },
     child: {
-        id: '69ee2ccbc01e2cf095f74905',
-        title: 'Chapter 1181.5 [Rayquaza] [vi]'
+        id: '6ae70b26077bfd62f23f3c17',
+        title: 'Chapter 157 [Pitagora] [it]'
     },
     entry: {
-        index: 1,
-        size: 310_289,
+        index: 0,
+        size: 200_784,
         type: 'image/jpeg'
     }
 }).AssertWebsite();
