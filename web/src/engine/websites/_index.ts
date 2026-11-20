@@ -556,6 +556,7 @@ export { default as Opiatoon } from './Opiatoon';
 export { default as OrckuMangas } from './OrckuMangas';
 export { default as Oremanga } from './Oremanga';
 export { default as Orimanga } from './Orimanga';
+export { default as OtakuAngel } from './OtakuAngel';
 export { default as OurFeel } from './OurFeel';
 export { default as ParadoxScans } from './ParadoxScans';
 export { default as PatiManga } from './PatiManga';
