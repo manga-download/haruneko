@@ -4,6 +4,7 @@ import { type MangaPlugin, Manga, Chapter, Page, DecoratableMangaScraper } from 
 import * as Common from './decorators/Common';
 import { DRMProvider } from './LunarAnimes.DRM';
 import { AddAntiScrapingDetection, FetchRedirection } from '../platform/AntiScrapingDetection';
+import { FetchJSON } from '../platform/FetchProvider';
 
 type APIMangas = {
     manga: APIManga[];
@@ -45,7 +46,9 @@ AddAntiScrapingDetection(async (invoke) => {
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
-    readonly #drm = new DRMProvider(this.URI, new URL('https://api.lunaranime.ru/api/manga/'));
+    private readonly apiURL = `https://api.${this.URI.host}/api/manga/`;
+
+    readonly #drm = new DRMProvider();
 
     public constructor() {
         super('lunaranimes', 'Lunar Animes', 'https://lunarx.to', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Multilingual, Tags.Source.Aggregator);
@@ -55,15 +58,11 @@ export default class extends DecoratableMangaScraper {
         return icon;
     }
 
-    public override async Initialize(): Promise<void> {
-        await this.#drm.Initialize();
-    }
-
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
         type This = typeof this;
         return Array.fromAsync(async function* (this: This) {
             for (let page = 1, run = true; run; page++) {
-                const { manga } = await this.#drm.FetchSigned<APIMangas>(`./search?page=${page}&limit=100&sort=relevance`);
+                const { manga } = await FetchJSON<APIMangas>(new Request(new URL(`./search?page=${page}&limit=100&sort=relevance`, this.apiURL)));
                 const mangas = manga.map(({ slug, title }) => new Manga(this, provider, slug, title));
                 mangas.length > 0 ? yield* mangas : run = false;
             }
@@ -71,11 +70,13 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const { data } = await this.#drm.FetchSigned<APIChapters>(`./${manga.Identifier}`);
-        return data.map(({ chapter_number: chapterNumber, language }) => {
-            return new Chapter(this, manga, `/manga/${manga.Identifier}/${chapterNumber}?lang=${language}`, `Chapter ${chapterNumber} (${language})`,
-                ...[chapterLanguageMap.get(language)].filter(Boolean));
-        });
+        const { data } = await FetchJSON<APIChapters>(new Request(new URL(`./${manga.Identifier}`, this.apiURL)));
+        return data
+            .sort((self, other) => other.chapter_number - self.chapter_number)
+            .map(({ chapter_number: chapterNumber, language }) => {
+                return new Chapter(this, manga, `/manga/${manga.Identifier}/${chapterNumber}?lang=${language}`, `Chapter ${chapterNumber} (${language})`,
+                    ...[chapterLanguageMap.get(language)].filter(Boolean));
+            });
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
