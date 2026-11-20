@@ -5,6 +5,7 @@ import { type Chapter, DecoratableMangaScraper, Page } from '../providers/MangaP
 import * as Common from './decorators/Common';
 import { GetBytesFromBase64, GetBytesFromURLBase64, GetBytesFromUTF8, GetHexFromBytes, GetUTF8FromBytes } from '../BufferEncoder';
 import { XOR } from '../Crypto';
+import { LCG } from '../Random';
 
 @Common.MangaCSS(/^{origin}\/truyen-tranh\/[^/]+$/, 'ol.breadcrumb li:last-of-type')
 @Common.MangasMultiPageCSS<HTMLAnchorElement>('div.li_truyen > a:has(img)', Common.PatternLinkGenerator('/truyen-hoan-thanh?page={page}'), 0, anchor => ({
@@ -16,7 +17,7 @@ import { XOR } from '../Crypto';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('dualeotruyen', 'DuaLeoTruyen', 'https://dualeotruyenjv.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Media.Manga, Tags.Language.Vietnamese, Tags.Source.Aggregator, Tags.Accessibility.DomainRotation, Tags.Rating.Pornographic);
+        super('dualeotruyen', 'DuaLeoTruyen', 'https://dualeotruyengf.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Media.Manga, Tags.Language.Vietnamese, Tags.Source.Aggregator, Tags.Accessibility.DomainRotation, Tags.Rating.Pornographic);
     }
 
     public override get Icon() {
@@ -31,13 +32,14 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
         const chapterURL = new URL(chapter.Identifier, this.URI);
+        const targets = 'img:is([data-x-a], [data-img]),canvas.chapter-v53-canvas[data-x-a],svg.chapter-svg-random:is([data-x-a], [data-svg-img])';
         const imgs = await FetchCSS<HTMLImageElement>(new Request(chapterURL, {
             headers: {
                 'Sec-Fetch-Dest': 'document',
                 'Sec-Fetch-Mode': 'navigate',
                 'Sec-Fetch-Site': 'same-origin'
             }
-        }), 'div.content_view_chap > :is(img, svg)');
+        }), targets);
         return Promise.all(
             imgs.map(async (element) => {
                 const link = new URL(await this.PageExtractor(element), chapterURL);
@@ -47,14 +49,27 @@ export default class extends DecoratableMangaScraper {
     }
 
     private async PageExtractor(img: HTMLImageElement | HTMLCanvasElement): Promise<string> {
+
+        if (!(img.hasAttribute('data-x-a') || img.hasAttribute('data-img') || img.hasAttribute('data-svg-img'))) return;
+
+        const legacy = img.dataset.img ?? img.dataset.svgImg;
+        if (legacy) return legacy;
+
+        const buffer = GetBytesFromURLBase64(`${img.dataset.xB}${img.dataset.xA}`);
+        /*
+        buffer.forEach((byte, index) => {
+            state = state * 33 + 17 & 255;
+            buffer[index] = byte ^ state;
+        });*/
+
+        const rng = LCG(parseInt(img.dataset.xK), 33, 17, 256);
+        buffer.forEach((byte, index) => {
+            buffer[index] = byte ^ rng.next().value & 0xFF;
+        });
+
         const secret = 'dualeo_url_v5_M4nP_2026_Z7cL';
 
-        if (img instanceof HTMLImageElement && !img.dataset.img) return img.src;
-
-        const subImage = img.querySelector('image');
-        if (subImage) return subImage.href.toString();
-
-        const uri = new URL(img.dataset.svgImg ?? img.dataset.img);
+        const uri = new URL(GetUTF8FromBytes(buffer));
         let [, basename, extension] = uri.pathname.match(/\/([^./]+)\.(.*)$/);
         if (!basename.startsWith('q5_')) return uri.href;
 

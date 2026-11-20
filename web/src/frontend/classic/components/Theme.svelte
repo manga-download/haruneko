@@ -8,7 +8,12 @@
         theme:"g100",
         tokens: createTheme({
             theme: "g100",
-            brand: "#da1e28",
+            brand: "#0f62fe",
+            tokens: {
+                "button-primary": "#da1e28",
+                "button-primary-hover": "#b81922",
+                "button-primary-active": "#750e13",
+            }
         })
     });
     customThemes.set("sheepyneko", {

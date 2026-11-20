@@ -52,14 +52,31 @@ export function* LCG(seed: number, multiplier = 1664525, increment = 1013904223,
 
 export class FisherYates {
 
-    constructor(private readonly pseudoRNG: PseudoRNG) { }
+    constructor(private readonly deriveSwapIndex: (index: number) => number) { }
 
     /**
-     * Shuffle the given {@link values} with the Fisher-Yates algorithm using the provided {@link prng} generator.
+     * Create a new {@link FisherYates} instance which derives each destination index from a source index via scaling operation.
+     * The provided pseudo random number generator must provide normalized floating point values in the range `[0, 1)` - 0 inclusive, 1 exclusive.
+     */
+    public static WithScaledDerivation(prng: PseudoRNG) {
+        return new FisherYates(index => Math.floor(prng.next().value * (index + 1)));
+    }
+
+    /**
+     * Create a new {@link FisherYates} instance which derives each destination index from a source index via modulo operation.
+     * The provided pseudo random number generator must provide 32-bit integer values.
+     */
+    public static WithModuloDerivation(prng: PseudoRNG) {
+        return new FisherYates(index => prng.next().value % (index + 1));
+    }
+
+    /**
+     * Shuffle the given {@link values} with the Fisher-Yates algorithm
+     * using the provided {@link deriveSwapIndex} function to derive the destination index for each source index.
      */
     public Shuffle<T>(...values: T[]) {
         for (const srcIndex of [...values.keys()].reverse()) {
-            const dstIndex = this.pseudoRNG.next().value % (srcIndex + 1);
+            const dstIndex = this.deriveSwapIndex(srcIndex);
             [values[srcIndex], values[dstIndex]] = [values[dstIndex], values[srcIndex]];
         }
         return values;
