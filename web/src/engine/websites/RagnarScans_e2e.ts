@@ -6,7 +6,7 @@ new TestFixture({
         title: 'Ragnar Scans',
     },
     container: {
-        url: 'https://ragnarscans.net/manga/deli-iblisin-donusu/',
+        url: 'https://ragnarscans2.com/manga/deli-iblisin-donusu/',
         id: '/manga/deli-iblisin-donusu/',
         title: 'Deli İblisin Dönüşü'
     },
