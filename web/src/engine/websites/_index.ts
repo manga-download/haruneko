@@ -242,6 +242,7 @@ export { default as KadoComi } from './KadoComi';
 export { default as Kagane } from './Kagane';
 export { default as Kairatoon } from './Kairatoon';
 export { default as Kakaopage } from './Kakaopage';
+export { default as KaktusToon } from './KaktusToon';
 export { default as KanMan } from './KanMan';
 export { default as Kanzenin } from './Kanzenin';
 export { default as KaynScan } from './KaynScan';
