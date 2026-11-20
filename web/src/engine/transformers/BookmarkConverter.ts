@@ -10,7 +10,6 @@ export const legacyWebsiteIdentifierMap = new Map([
     [ 'allanimesite', 'allmanga' ],
     [ 'azoramanga', 'azoraworld' ],
     [ 'apolltoons', 'mundomanhwa' ],
-    [ 'bananascan', 'harmonyscan' ],
     [ 'comicbushi', 'comicgrowl' ],
     [ 'comicwalker', 'kadocomi' ],
     [ 'flamescans-org', 'flamecomics' ],
