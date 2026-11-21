@@ -72,7 +72,8 @@ AddAntiScrapingDetection(async invoke => invoke(`
                     origCallback = options.callback;
 
                     options["before-interactive-callback"] = () => handleTurnstileEvent('interactive');
-                    options['callback'] = (token) => handleTurnstileEvent('success', token);
+                    options.callback = (token) => handleTurnstileEvent('success', token);
+                    argumentsList[1]= options;
 
                     return Reflect.apply(target, thisArg, argumentsList);
                 }
