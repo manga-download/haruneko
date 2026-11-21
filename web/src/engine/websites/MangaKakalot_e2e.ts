@@ -3,10 +3,10 @@ import { TestFixture } from '../../../test/WebsitesFixture';
 new TestFixture({
     plugin: {
         id: 'mangakakalot',
-        title: 'MangaGoku'
+        title: 'MangaKakalot'
     },
     container: {
-        url: 'https://www.mangagoku.com/manga/my-crazy-journalist-wife',
+        url: 'https://www.katamanga.com/manga/my-crazy-journalist-wife',
         id: '/manga/my-crazy-journalist-wife',
         title: 'My Crazy Journalist Wife'
     },

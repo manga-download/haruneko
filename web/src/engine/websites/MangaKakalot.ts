@@ -1,6 +1,6 @@
 import { Tags } from '../Tags';
 import { Page, type Chapter } from '../providers/MangaPlugin';
-import icon from './MangaGoku.webp';
+import icon from './MangaKakalot.webp';
 import * as Common from './decorators/Common';
 import { MangaNel } from './templates/MangaNel';
 
@@ -10,7 +10,7 @@ import { MangaNel } from './templates/MangaNel';
 export default class extends MangaNel {
 
     public constructor() {
-        super('mangakakalot', 'MangaGoku', 'https://www.mangagoku.com', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.English, Tags.Source.Aggregator);
+        super('mangakakalot', 'MangaKakalot', 'https://www.katamanga.com', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.English, Tags.Source.Aggregator);
     }
 
     public override get Icon() {
