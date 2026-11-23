@@ -7,9 +7,20 @@ import * as Common from './decorators/Common';
 import { DRMProvider } from './YupManga.DRM';
 import { AddAntiScrapingDetection, FetchRedirection } from '../platform/AntiScrapingDetection';
 
-AddAntiScrapingDetection(async (_invoke) => {
-    return FetchRedirection.Interactive;
-}, /^https:\/\/www\.yupmanga\.com\/box-modal\.php/);
+AddAntiScrapingDetection(async invoke => {
+    const result = await invoke<FetchRedirection>(`
+        new Promise(resolve => {
+            //wait for redirection to be triggered,
+            setTimeout(() => {
+                if (location.pathname === '/box-modal.php') {
+                    resolve(${FetchRedirection.Interactive});
+                } else {
+                    resolve(${FetchRedirection.None});
+                }
+            }, 2000);
+        })`);
+    return result;
+}, /^https:\/\/www\.yupmanga\.com\/reader/);
 
 @Common.MangaCSS(/^{origin}\/series\.php\?id=/, 'div.container div.flex h1', Common.WebsiteInfoExtractor({ includeSearch: true }))
 @Common.MangasMultiPageCSS<HTMLAnchorElement>('div.comic-card a', Common.PatternLinkGenerator('/?page={page}'), 0, anchor => ({ id: anchor.pathname + anchor.search, title: anchor.querySelector('img').alt.trim() }))
@@ -29,9 +40,9 @@ export default class extends DecoratableMangaScraper {
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const mangaId = new URL(manga.Identifier, this.URI).searchParams.get('id');
         type This = typeof this;
-        return (await Array.fromAsync(async function* (this: This) {
+        return Array.fromAsync(async function* (this: This) {
             for (let page = 1, run = true; run; page++) {
-                const { html } = await FetchJSON<{ html: string }>(new Request(new URL(`./ajax/load_chapters.php?series_id=${mangaId}&page=${page}&order=oldest_first&_=${Date.now()}`, this.URI)));
+                const { html } = await FetchJSON<{ html: string }>(new Request(new URL(`./ajax/load_chapters.php?series_id=${mangaId}&page=${page}&order=newest_first&_=${Date.now()}`, this.URI)));
                 const doc = new DOMParser().parseFromString(html, 'text/html');
                 const chapters = [...doc.querySelectorAll<HTMLAnchorElement>('div.comic-card a')].map(anchor => {
                     const data = Object.fromEntries([...anchor.attributes].map(attr => [attr.name, attr.value]));
@@ -39,7 +50,7 @@ export default class extends DecoratableMangaScraper {
                 });
                 chapters.length > 0 ? yield* chapters : run = false;
             }
-        }.call(this))).reverse();
+        }.call(this));
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
