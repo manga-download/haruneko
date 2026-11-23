@@ -85,13 +85,17 @@
         HakuNeko.DownloadManager.Queue.Unsubscribe(taskQueueChanged);
     });
 
-    let downloadTask: DownloadTask = $state();
-    let downloadTaskStatus: Status=$state();
+    let downloadTask: DownloadTask = $derived(HakuNeko.DownloadManager.Queue.Value.find((task) => task.Media.IsSameAs(item)));
+    let downloadTaskStatus: Status = $derived(downloadTask?.Status.Value);
+    $effect(() => {
+        downloadTask?.Status.Subscribe(refreshDownloadStatus);
+    });
 
     async function taskQueueChanged(tasks: DownloadTask[]) {
         downloadTask?.Status.Unsubscribe(refreshDownloadStatus);
         downloadTask = tasks.find((task) => task.Media.IsSameAs(item));
         downloadTask?.Status.Subscribe(refreshDownloadStatus);
+        refreshDownloadStatus(downloadTask?.Status.Value, downloadTask);
     }
     HakuNeko.DownloadManager.Queue.Subscribe(taskQueueChanged);
     async function refreshDownloadStatus(newstatus: Status, _task: DownloadTask) {
