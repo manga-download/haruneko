@@ -19,8 +19,8 @@ function CleanTitle(title: string): string {
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
-    public constructor () {
-        super('rawxz', 'RawNaver', 'https://rawnaver.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Media.Manga, Tags.Language.Japanese, Tags.Source.Aggregator);
+    public constructor() {
+        super('rawxz', 'RawKis', 'https://rawkis.net', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Media.Manga, Tags.Language.Japanese, Tags.Source.Aggregator);
     }
 
     public override get Icon() {
