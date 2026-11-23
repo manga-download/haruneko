@@ -365,6 +365,7 @@ export enum WebsiteResourceKey {
     Plugin_Common_Chapter_UnavailableError = 'Plugin_Common_Chapter_UnavailableError',
     Plugin_Common_Preferred_Language = 'Plugin_Common_Preferred_Language',
     Plugin_Common_Preferred_LanguageInfo = 'Plugin_Common_Preferred_LanguageInfo',
+    Plugin_Common_RateLimitError = 'Plugin_Common_RateLimitError',
     Plugin_MissingWebsite_UpdateError = 'Plugin_MissingWebsite_UpdateError',
     Plugin_MissingWebsiteEntry_UpdateError = 'Plugin_MissingWebsiteEntry_UpdateError',
 }
