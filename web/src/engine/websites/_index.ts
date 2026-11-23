@@ -348,6 +348,7 @@ export { default as MangaFreak } from './MangaFreak';
 export { default as MangaGeko } from './MangaGeko';
 export { default as MangaGG } from './MangaGG';
 export { default as MangaGo } from './MangaGo';
+export { default as MangaGoku } from './MangaGoku';
 export { default as MangaHere } from './MangaHere';
 export { default as MangaHereFun } from './MangaHereFun';
 export { default as MangaHot } from './MangaHot';
