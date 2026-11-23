@@ -50,7 +50,7 @@ const translations: VariantResource = { // NOTE: Use defaults for missing transl
   Frontend_Classic_Description: "L'interface standard principalement basée sur la version précédente",
   Frontend_Classic_Product_Description_Short: "est un outil de téléchargement de manga et d'anime multiplateforme supportant de nombreux sites.",
   Frontend_Classic_Product_Description_Long1: "Il est pensé pour aider les utilisateur(trice)s qui désirent consulter des médias hors-ligne.",
-  Frontend_Classic_Product_Description_Long2: "Sa philosophie, c'est la consommation de média ad-hoc. Téléchargez au moment où vous voulez lire/regarder. Le but n'est pas de stocker des centaines de chapitres qui ne serons surement jamais lus.",
+  Frontend_Classic_Product_Description_Long2: "Sa philosophie, c'est la consommation de média ad-hoc. Téléchargez au moment où vous voulez lire/regarder. Le but n'est pas de stocker des centaines de chapitres qui ne seront surement jamais lus.",
   Frontend_Classic_Settings_FuzzySearch: "Recherche approximative",
   Frontend_Classic_Settings_FuzzySearchInfo: "Activer la recherche approximative sur les filtres",
   Frontend_Classic_Settings_Theme: "Thème",
