@@ -189,7 +189,7 @@ export class LibGroup extends DecoratableMangaScraper {
     public override async FetchPages(chapter: Chapter): Promise<MirroredPage[]> {
         const { data: { pages } } = await this.FetchAPI<APIPages>(chapter.Identifier);
         return pages.map(({ url }) =>
-            new Page(this, chapter, new URL(`${this.Servers.main}${url}`), { Referer: this.URI.href, mirrors: [`${this.Servers.secondary}${url}`, `${this.Servers.compress}${url}`] }));
+            new Page(this, chapter, new URL(`${this.Servers.main}${url}`), { Referer: this.URI.href, Mirrors: [`${this.Servers.secondary}${url}`, `${this.Servers.compress}${url}`] }));
     }
 
     private async FetchAPI<T extends JSONElement>(endpoint: string) {
