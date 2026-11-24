@@ -9,27 +9,13 @@ import DeScramble from '../transformers/ImageDescrambler';
 import { RateLimit } from '../taskpool/RateLimit';
 import { RandomInt } from '../Random';
 import { XOR, HashUTF8 } from '../Crypto';
-import { AddAntiScrapingDetection, FetchRedirection } from '../platform/AntiScrapingDetection';
 
-// TODO : fix hydraded chapter coming empty for some series
-// TODO : fix Anubis detection (anti bot)
-
-AddAntiScrapingDetection(async (invoke) => {
-    const result = await invoke<boolean>(`document.querySelector('script[type="ignore"]') && true || false;`);
-    console.log(result);
-    return result ? FetchRedirection.Interactive : undefined;
-}, /https:\/\/saficizgi\.com/);
-
-type APICollection<T> = {
-    items: T[];
-};
-
-type APIMangas = APICollection<{
+type HydratedManga = {
     id: string;
-    slug: string;
-    title_english: string;
     title_turkish: string;
-}>;
+    title_english: string;
+    slug: string;
+};
 
 type HydratedChapters = {
     chapters: {
@@ -165,20 +151,19 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
-        const uri = new URL(`./pb/api/collections/manga/records`, this.apiURL);
-        uri.searchParams.set('filter', `slug="${url.split('/').at(-1)}"`);
-        const { items: [{ id, slug, title_turkish: titleTurkish, title_english: titleEnglish }] } = await FetchJSON<APIMangas>(new Request(uri));
+        const mangaUrl = new URL(url);
+        const { id, slug, title_turkish: titleTurkish, title_english: titleEnglish } = await FetchNextJS<HydratedManga>(new Request(new URL(url)), data => 'title_turkish' in data && data['slug'] === mangaUrl.pathname.split('/').at(-1));
         return new Manga(this, provider, JSON.stringify({ slug, id }), titleTurkish || titleEnglish);
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        const { items } = await FetchJSON<APIMangas>(new Request(new URL(`./pb/api/collections/manga/records?page=1&perPage=1000`, this.apiURL)));
-        return items.map(({ id, slug, title_turkish: titleTurkish, title_english: titleEnglish }) => new Manga(this, provider, JSON.stringify({ slug, id }), titleTurkish || titleEnglish));
+        //const { items } = await FetchJSON<APIMangas>(new Request(new URL(`./pb/api/collections/manga/records?page=1&perPage=1000`, this.apiURL)));
+        //return items.map(({ id, slug, title_turkish: titleTurkish, title_english: titleEnglish }) => new Manga(this, provider, JSON.stringify({ slug, id }), titleTurkish || titleEnglish));
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const { slug: mangaSlug } = <MediaID>JSON.parse(manga.Identifier);
-        const { chapters } = await FetchNextJS<HydratedChapters>(new Request(new URL(`./seri/${mangaSlug}`, this.URI)), data => 'chapters' in data && !!data['chapters']);
+        const { chapters } = await FetchNextJS<HydratedChapters>(new Request(new URL(`./seri/${mangaSlug}`, this.URI)), data => 'chapters' in data && Array.isArray(data['chapters']));
         return chapters.map(({ id, number, title }) => new Chapter(this, manga, JSON.stringify({ slug: `${number}`, id }), ['Bölüm', number, title].joinTitleSegments()));
     }
 
@@ -190,14 +175,23 @@ export default class extends DecoratableMangaScraper {
         const { images, heartbeatIntervalMs } = await FetchWindowScript<APIPages>(new Request(new URL(`/oku/${mangaSlug}/${chapterSlug}`, this.URI)), `
             new Promise(async (resolve, reject) => {
                 try {
-                    const response = await fetch('/api/reader/manifest/${chapterID}?from=0&count=9999&machine=0');
+                    await fetch('/api/reader/session?chapterId=${chapterID}',{
+                        credentials: "same-origin",
+                        cache: "no-store"
+                    });
+
+                    const response = await fetch('/api/reader/manifest/${chapterID}?from=0&count=9999&machine=0', {
+                        credentials: "same-origin",
+                        cache: "no-store"
+                    });
+
                     const data = await response.json();
                     resolve(data);
                 } catch(error) {
                     reject(error);
                 }
             });
-        `, 2500);
+        `);
 
         this.heartbeats.set(chapterID, { interval: heartbeatIntervalMs, lastTime: Date.now() });
         return images.map(({ url, index }) => new Page(this, chapter, new URL(url, this.URI), { index }));
@@ -256,19 +250,42 @@ export default class extends DecoratableMangaScraper {
     }
 
     private async SendHeartBeat(chapterId: string, pageIndex: number): Promise<void> {
+        const safePageIndex = Math.max(0, pageIndex);
+
+        // Realistic viewport height (e.g., typical desktop/tablet height)
+        const viewportHeight = RandomInt(800, 1080);
+
+        // Each page contributes ~0.8x–1.15x of the viewport height, plus ~120–240px header/footer buffer
+        const pagesToShow = safePageIndex + 1;
+        const avgPageSpan = viewportHeight * (RandomInt(80, 115) / 100);
+        const documentHeight = Math.max(
+            viewportHeight + RandomInt(100, 250),
+            Math.round(pagesToShow * avgPageSpan + RandomInt(120, 240))
+        );
+
+        // Progress scrollY smoothly across the document as pageIndex increases, with small human-like jitter
+        const maxScrollY = Math.max(0, documentHeight - viewportHeight);
+        const totalSteps = Math.max(1, safePageIndex + 1);
+        const progressRatio = Math.min(1, safePageIndex / totalSteps + RandomInt(15, 75) / 100);
+        const jitter = RandomInt(-30, 30);
+        const scrollY = Math.min(
+            maxScrollY,
+            Math.max(0, Math.round(maxScrollY * progressRatio + jitter))
+        );
+
         await FetchJSON(new Request(new URL('./reader/heartbeat', this.apiURL), {
             method: 'POST',
             credentials: 'same-origin',
             cache: 'no-store',
             body: JSON.stringify({
                 chapterId,
-                pageIndex,
-                visibleFrom: 0, // FIX
-                visibleTo: 0, // FIX
-                scrollY: pageIndex + 1 * RandomInt(10000, 60000),
-                viewportHeight: (pageIndex + 1) * RandomInt(10000, 60000) + RandomInt(100, 200),
-                documentHeight: (pageIndex + 1) * RandomInt(10000, 60000) + RandomInt(100, 200),
-                focused: true
+                documentHeight,
+                focused: true,
+                pageIndex: safePageIndex,
+                scrollY,
+                viewportHeight,
+                visibleFrom: safePageIndex,
+                visibleTo: safePageIndex
             }),
             headers: {
                 'Content-Type': 'application/json',
@@ -277,7 +294,11 @@ export default class extends DecoratableMangaScraper {
                 'Sec-Fetch-Site': 'same-origin'
             }
         }));
-        this.heartbeats.get(chapterId).lastTime = Date.now();
+
+        const heartbeat = this.heartbeats.get(chapterId);
+        if (heartbeat) {
+            heartbeat.lastTime = Date.now();
+        }
     }
 
     private XOR(data: Uint8Array, key: Uint8Array | string): Uint8Array<ArrayBuffer> {
