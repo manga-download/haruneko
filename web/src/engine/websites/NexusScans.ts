@@ -87,7 +87,7 @@ class DRMProvider {
         const { k, s } = <DecryptedChapterData>JSON.parse(GetUTF8FromBytes(await this.Decrypt(privateKey, data)));
         const pageKeys = new Map<number, CryptoKey>();
 
-        for (let [key, value] of Object.entries(k ?? {})) {
+        for (const [key, value] of Object.entries(k ?? {})) {
             pageKeys.set(Number(key), await this.ImportHKDF(GetBytesFromURLBase64(value)));
         }
 
@@ -146,7 +146,7 @@ class DRMProvider {
         }
 
         // Helper to generate HKDF parameters
-        const getHkdfParams = (info) => ({
+        const getHkdfParams = (info: unknown) => ({
             name: 'HKDF',
             hash: 'SHA-256',
             salt: salt,
@@ -265,7 +265,7 @@ export default class extends DecoratableMangaScraper {
     public override async FetchPages(chapter: Chapter): Promise<Page<PageParameters>[]> {
         const { data: { paginas, id, r } } = await FetchJSON<APIPages>(new Request(new URL(`./series/${chapter.Parent.Identifier}/capitulos/${chapter.Identifier}`, this.apiURL), {
             headers: {
-                'x-Rs': await this.drmProvider.GetPublicKeyB64() //public ecc key
+                'x-Rs': await this.drmProvider.GetPublicKeyB64()
             }
         }));
 
@@ -309,7 +309,7 @@ export default class extends DecoratableMangaScraper {
             ctx.canvas.width = tileWidth * Columns;
             ctx.canvas.height = tileHeight * Rows;
 
-            const rng = Mulberry32(Seed);
+            const rng = Mulberry32(Seed).map(value => value / 2 ** 32);
             const shuffledPositions = FisherYates.WithScaledDerivation(rng).Shuffle(...new Array(Math.max(1, totalTiles)).keys());
 
             const flips = Version >= 2 ? Int32Array.from({ length: totalTiles }, () => Math.floor(rng.next().value * 4)) : null;
