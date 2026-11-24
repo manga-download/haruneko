@@ -32,12 +32,18 @@ type ChapterToken = {
 };
 
 type EncryptedResult = {
-    v: number; // encryption version
-    e: number; // extra parameter
-    epk: string; // ephemeral public key from server
-    iv: string; // initialization vecvtor
-    ct: string; // ciphertext
-    tag: string; // tag (for AES-GCM)
+    /** Encryption Version */
+    v: number;
+    /** Extra Parameter */
+    e: number;
+    /** Ephemeral PublicKey (from server) */
+    epk: string;
+    /** Initialization Vector */
+    iv: string;
+    /** Cipher Text */
+    ct: string;
+    /** Tag (for AES-GCM) */
+    tag: string;
 };
 
 type APIPages = {
@@ -45,167 +51,24 @@ type APIPages = {
     webp_pages: APIPage[];
     storage_key: string;
     media_token: string;
-    //scheme: TScheme;
 };
-
-/*
-type TScheme = {
-    id: number; // fixed to 2for now
-    params: {
-        algo: number // fixed to 1 for now
-        seed: string; //64 bytes hex string
-        dir: string; //string matching   /^hq_s2\/[0-9a-f]{8,64}$/;
-        fallbackDir: string; //^[a-z0-9_]{1,16}$/
-        storageKey: string;
-        //skipGrant: boolean;
-    };
-};
-*/
 
 type APIPage = {
     url: string;
-    //dir?: string; //fallback for 'hq'
     s2?: ScrambleParameters
 };
 
 type ScrambleParameters = {
-    c: number; // columns
-    r: number; // rows
-    tw: number; // width
-    th: number; // height
+    /** Columns */
+    c: number;
+    /** Rows */
+    r: number;
+    /** Tile Width */
+    tw: number;
+    /** Tile Height */
+    th: number;
 };
 
-/*
-type BufferPointer = {
-    value: number;
-    cursor: number;
-};
-
-class PRNG {
-    private seedHex: string;
-    private keyPromise: Promise<CryptoKey> | null = null;
-    private orders: Map<string, Promise<number[] | null>> = new Map();
-
-    constructor(seed: string) {
-        this.seedHex = seed;
-    }
-
-    public ToJSON(): string {
-        return '[scheme2-key]';
-    }
-
-    public ToString(): string {
-        return '[scheme2-key]';
-    }
-
-    public ImportKey(): Promise<CryptoKey> {
-        if (!this.keyPromise) {
-            this.keyPromise = crypto.subtle.importKey('raw', GetBytesFromHex(this.seedHex), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']);
-        }
-        return this.keyPromise;
-    }
-
-    public Sequence(filename: string, params: ScrambleParameters): Promise<number[] | null> {
-        const cacheKey = `${filename}|${params.c}x${params.r}`;
-        const cachedPromise = this.orders.get(cacheKey);
-
-        if (cachedPromise) return cachedPromise;
-
-        const orderPromise = this.DeriveOrder(filename, params).catch(() => {
-            this.orders.delete(cacheKey);
-            return null;
-        });
-
-        this.orders.set(cacheKey, orderPromise);
-        return orderPromise;
-    }
-
-    async #GenerateHMACBlocks(key: CryptoKey, baseString: string, startIndex: number, count: number): Promise<number[] | null> {
-        const signPromises = Array.from({ length: count }, (_, index) =>
-            crypto.subtle.sign(
-                'HMAC',
-                key,
-                GetBytesFromUTF8(`${baseString}|${startIndex + index}`)
-            )
-        );
-
-        const signatures = await Promise.all(signPromises);
-        const uint32List: number[] = [];
-
-        for (const sig of signatures) {
-            const dataView = new DataView(sig);
-            for (let offset = 0; offset + 4 <= sig.byteLength; offset += 4) {
-                uint32List.push(dataView.getUint32(offset, false));
-            }
-        }
-
-        return uint32List;
-    }
-
-    private async DeriveOrder(filename: string, params: ScrambleParameters): Promise<number[] | null> {
-        const { c: cols, r: rows } = params;
-        const totalTiles = cols * rows;
-        const cryptoKey = await this.ImportKey();
-
-        const baseString = `dilar/s2/perm/v1|${filename}|${cols}x${rows}`;
-        let blocksNeeded = Math.ceil((totalTiles + 8) / 8);
-        let hmacValues = await this.#GenerateHMACBlocks(cryptoKey, baseString, 0, blocksNeeded);
-
-        if (!hmacValues) return null;
-
-        const permutation = Array.from({ length: totalTiles }, (_, index) => index);
-        let cursor = 0;
-
-        // Fisher-Yates shuffle using unbiased values
-        for (let i = totalTiles - 1; i > 0; i--) {
-            let sample = this.#GetUnbiasedValue(hmacValues, cursor, i + 1);
-
-            if (sample.value < 0) {
-                const extraBlocks = await this.#GenerateHMACBlocks(cryptoKey, baseString, blocksNeeded, 4);
-                if (!extraBlocks) return null;
-
-                hmacValues = hmacValues.concat(extraBlocks);
-                blocksNeeded += 4;
-
-                sample = this.#GetUnbiasedValue(hmacValues, cursor, i + 1);
-                if (sample.value < 0) return null;
-            }
-
-            cursor = sample.cursor;
-            const targetIndex = sample.value;
-
-            // Swap elements
-            const temp = permutation[i];
-            permutation[i] = permutation[targetIndex];
-            permutation[targetIndex] = temp;
-        }
-
-        return permutation;
-    }
-
-    #GetUnbiasedValue(buffer: number[] | Uint32Array, cursor: number, limit: number): BufferPointer {
-        if (limit <= 1) return { value: 0, cursor };
-
-        const maxValid = Math.floor(4294967296 / limit) * limit;
-        let currentCursor = cursor;
-        let attempts = 0;
-
-        while (currentCursor < buffer.length && buffer[currentCursor] >= maxValid && attempts < 64) {
-            currentCursor += 1;
-            attempts += 1;
-        }
-
-        if (currentCursor >= buffer.length) {
-            return { value: -1, cursor: currentCursor };
-        }
-
-        return {
-            value: buffer[currentCursor] % limit,
-            cursor: currentCursor + 1
-        };
-    }
-}
-*/
 class DRMProvider {
 
     private CURVE_NAME = 'P-256';

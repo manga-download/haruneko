@@ -96,12 +96,24 @@
 <style>
     .task {
         display: grid;
-        grid-template-columns: 1fr 3em;
+        grid-template-columns: minmax(0, 1fr) 3em;
         gap: 1em;
         width: 100%;
         padding-left: 4em;
     }
-
+    .progress {
+        min-width: 0;
+    }
+    .progress :global(.bx--progress-bar__label-text) {
+        min-width: 0;
+        display: block;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+    .label {
+        display: inline;
+    }
     .label :global(button) {
         min-height: unset;
     }

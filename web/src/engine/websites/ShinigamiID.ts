@@ -6,6 +6,10 @@ import * as Common from './decorators/Common';
 
 type APIResult<T> = {
     data: T;
+    meta: {
+        has_next: boolean;
+        next_cursor: string;
+    };
 };
 
 type APIManga = {
@@ -29,10 +33,10 @@ type APIPages = {
 
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
-    private readonly apiURL = 'https://api.shngm.io/v1/';
+    private readonly apiURL = 'https://api.shinigami.io/v1/';
 
     public constructor() {
-        super('shinigamiid', 'Shinigami ID', 'https://11.shinigami.asia', Tags.Language.Indonesian, Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Source.Scanlator, Tags.Accessibility.DomainRotation);
+        super('shinigamiid', 'Shinigami ID', 'https://s1.shinigami.mx', Tags.Language.Indonesian, Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Source.Scanlator, Tags.Accessibility.DomainRotation);
     }
 
     public override get Icon() {
@@ -45,30 +49,42 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override ValidateMangaURL(url: string): boolean {
-        return new RegExpSafe(`^https?://[^/.]+.shinigami.asia/series/[^/]+$`).test(url);
+        return new RegExpSafe(`^https?://[^/.]+.shinigami.mx/series/[^/]+$`).test(url);
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
-        const { title, manga_id } = await this.FetchAPI<APIManga>(`./manga/detail/${url.split('/').at(-1)}`);
+        const { data: { title, manga_id } } = await FetchJSON<APIResult<APIManga>>(new Request(new URL(`./manga/detail/${url.split('/').at(-1)}`, this.apiURL)));
         return new Manga(this, provider, manga_id, title);
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
-        const mangas = await this.FetchAPI<APIManga[]>('./manga/list?page=1&page_size=9999');
-        return mangas.map(({ manga_id: mangaId, title }) => new Manga(this, provider, mangaId, title));
+        type This = typeof this;
+        return Array.fromAsync(async function* (this: This) {
+            for (let offset = 0, run = true; run && offset < 1000;) {
+                const { data, meta: { has_next } } = await FetchJSON<APIResult<APIManga[]>>(new Request(new URL(`./manga/list?page=1&limit=100&offset=${offset}`, this.apiURL)));
+                const mangas = data.map(({ manga_id: mangaId, title }) => new Manga(this, provider, mangaId, title));
+                yield* mangas;
+                offset += mangas.length;
+                run = has_next;
+            }
+        }.call(this));
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const chapters = await this.FetchAPI<APIChapter[]>(`./chapter/${manga.Identifier}/list?page=1&page_size=9999`);
-        return chapters.map(({ chapter_id: chapId, chapter_number: chapNum, chapter_title: chapTitle }) => new Chapter(this, manga, `${chapId}`, ['Chapter', chapNum, chapTitle].join(' ').trim()));
+        type This = typeof this;
+        return Array.fromAsync(async function* (this: This) {
+            for (let cursor = undefined, run = true; run;) {
+                const { data, meta: { next_cursor, has_next } } = await FetchJSON<APIResult<APIChapter[]>>(new Request(new URL(`./chapter/${manga.Identifier}/list?sort_order=desc&limit=2000&cursor=${cursor}`, this.apiURL)));
+                const chapters = data.map(({ chapter_id: chapId, chapter_number: chapNum, chapter_title: chapTitle }) => new Chapter(this, manga, `${chapId}`, ['Chapter', chapNum, chapTitle].join(' ').trim()));
+                yield* chapters;
+                cursor = next_cursor;
+                run = has_next;
+            }
+        }.call(this));
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const { base_url, chapter: { data, path } } = await this.FetchAPI<APIPages>(`./chapter/detail/${chapter.Identifier}`);
+        const { data: {base_url, chapter: { data, path } } } = await FetchJSON<APIResult<APIPages>>(new Request(new URL(`./chapter/detail/${chapter.Identifier}`, this.apiURL)));
         return data.map(image => new Page(this, chapter, new URL(`${path}${image}`, base_url)));
-    }
-
-    public async FetchAPI<T extends JSONElement>(endpoint: string): Promise<T> {
-        return (await FetchJSON<APIResult<T>>(new Request(new URL(endpoint, this.apiURL)))).data;
     }
 }
