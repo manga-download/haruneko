@@ -239,7 +239,7 @@
         right: 0;
         opacity: 5%;
         padding: 0 1.5em 0 1.5em;
-        background-color: var(--cds-background-active);
+        background-color: var(--cds-layer-active-01);
         transition: opacity 0.5s ease;
     }
     #vieweractions:hover,#vieweractions.open  {

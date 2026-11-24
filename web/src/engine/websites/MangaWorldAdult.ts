@@ -3,25 +3,18 @@ import icon from './MangaWorldAdult.webp';
 import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 
-function ChapterInfoExtractor(anchor: HTMLAnchorElement) {
-    const bloat = anchor.querySelector('i');
-    if (bloat) {
-        anchor.removeChild(bloat);
-    }
-    const id = anchor.pathname + '?style=list';
-    const title = anchor.text.trim();
-    return { id, title };
-}
-
-@Common.MangaCSS(/^{origin}\/manga\/\d+\/[^/]+$/, 'div.info h1.name.bigger')
-@Common.MangasMultiPageCSS('div.comics-grid div.content a.manga-title', Common.PatternLinkGenerator('/archive?page={page}'))
-@Common.ChaptersSinglePageCSS('div.chapters-wrapper div.chapter a.chap', undefined, ChapterInfoExtractor)
-@Common.PagesSinglePageCSS('div#reader div#page img.page-image')
+@Common.MangaCSS(/^{origin}\/manga\/\d+\/[^/]+$/, 'nav.breadcrumb li:last-of-type a')
+@Common.MangasMultiPageCSS('article.card h3.card-title a', Common.PatternLinkGenerator('/archive?page={page}'))
+@Common.ChaptersSinglePageCSS<HTMLAnchorElement>('ul.ch-list li.ch-row a.ch', undefined, anchor => ({
+    id: anchor.pathname + anchor.search,
+    title: anchor.querySelector('span.ch-name').textContent.trim()
+}))
+@Common.PagesSinglePageCSS('div.reader-stage img.reader-page')
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('mangaworldadult', `Manga World Adult`, 'https://www.mangaworldadult.net', Tags.Language.Italian, Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Rating.Pornographic, Tags.Source.Aggregator);
+        super('mangaworldadult', `Manga World Adult`, 'https://www.mangaworldadult.org', Tags.Language.Italian, Tags.Media.Manga, Tags.Media.Manhua, Tags.Media.Manhwa, Tags.Rating.Pornographic, Tags.Source.Aggregator);
     }
 
     public override get Icon() {

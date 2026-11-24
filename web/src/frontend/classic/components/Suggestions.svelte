@@ -1,5 +1,15 @@
 <script lang="ts">
-    import { ClickableTile, Tile, Tag } from 'carbon-components-svelte';
+    import { ClickableTile, Tile, Tag, Layer,    Card,
+    CardActions,
+    CardBody,
+    CardHeader,
+    CardMedia,
+    CardTitle,
+    CardAction,
+    Button,
+    Truncate,
+    Stack,
+    ScrollGradient, } from 'carbon-components-svelte';
     import CaretRight from 'carbon-icons-svelte/lib/CaretRight.svelte';
     import BookmarkAdd from 'carbon-icons-svelte/lib/BookmarkAdd.svelte';
 
@@ -49,81 +59,51 @@
 </script>
 
 {#if checkNewContent}
-    <Tile id="Suggestions" class="border">
-        <ClickableTile
-            id="Continue"
-            on:click={() => (UI.contentscreen = '/bookmarks')}
-        >
-            <h4 style="text-align:center;">
-                Continue
-                <BookmarkAdd size={24} />
-            </h4>
-        </ClickableTile>
-        {#each suggestions as bookmark (bookmark)}
+    <Tile id="Suggestions" class="border" >
+    <ScrollGradient >
+        <Stack orientation="horizontal" gap={3}>
             <ClickableTile
-                class="suggesttile"
-                light
-                on:click={() => selectBookmark(bookmark)}
+                id="Continue"
+                on:click={() => (UI.contentscreen = '/bookmarks')}
+                style="width: 6em"
             >
-                <div
-                    class="mediaitem"
-                    style="background-image: url({bookmark.Icon ?? MediaIcon});"
-                >
-                    <Tag class="suggesttitle" type="outline" interactive>
-                        <span title={bookmark.Title}>{bookmark.Title}</span>
-                    </Tag>
-
-                    {#await bookmark.GetUnflaggedContent() then value}
-                        <Tag
-                            class="suggestcount"
-                            type="outline"
-                            icon={CaretRight}
-                            interactive
-                        >
-                            {value.length}
-                        </Tag>
-                    {/await}
-                </div>
+                <h4 style="text-align:center;">
+                    Continue
+                    <BookmarkAdd size={24} />
+                </h4>
             </ClickableTile>
-        {/each}
+            {#each suggestions as bookmark (bookmark)}
+                <Card horizontal clickable style="height:12em; width: 16em;" on:click={() => selectBookmark(bookmark)}>
+                    <CardMedia slot="media" ratio="1x2">
+                        <img src={bookmark.Icon ?? MediaIcon} alt="" />
+                    </CardMedia>
+                    <CardHeader>
+                        <CardTitle headingLevel={1} maxWidth="6em">
+                            <Truncate reveal="tooltip" lines={3}>{bookmark.Title}</Truncate>
+                            <svelte:fragment slot="description">
+                                {#await bookmark.GetUnflaggedContent() then value}
+                                {#if value.length > 0} 
+                                <Tag
+                                class="suggestcount"
+                                type="outline"
+                                icon={CaretRight}
+                                interactive
+                                >
+                                    {value.length}
+                                </Tag>
+                                {/if}
+                                {/await}
+                            </svelte:fragment>
+                        </CardTitle>
+
+                    </CardHeader>
+                </Card>
+            {/each}
+        </Stack>
+    </ScrollGradient>
     </Tile>
 {/if}
 
 <style>
-    :global(#Suggestions) {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, 10em);
-        grid-gap: 0.5em;
-        overflow-y: hidden;
-        max-height: 18em;
-    }
 
-    :global(#Suggestions .suggesttile) {
-        height: 8em;
-        padding: 0;
-    }
-    :global(#Suggestions .suggesttile .bx--tag span) {
-        width: 100%;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-    :global(#Suggestions .suggesttitle) {
-        width: 95%;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-
-    :global(#Suggestions .suggestcount) {
-        position: absolute;
-        bottom: 0;
-        right: 0.2em;
-    }
-    .mediaitem {
-        height: 100%;
-        position: relative;
-        background-position: center;
-        background-size: contain;
-        background-repeat: no-repeat;
-    }
 </style>

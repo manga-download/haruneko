@@ -6,7 +6,7 @@ new TestFixture({
         title: 'Okutoon',
     },
     container: {
-        url: 'https://okutoon.com/the-crown-i-ll-claim',
+        url: 'https://okutoon.net/the-crown-i-ll-claim',
         id: '/the-crown-i-ll-claim',
         title: `The Crown I'll Claim`
     },
