@@ -56,15 +56,9 @@ export default class extends DecoratableMangaScraper {
         if (legacy) return legacy;
 
         const buffer = GetBytesFromURLBase64(`${img.dataset.xB}${img.dataset.xA}`);
-        /*
-        buffer.forEach((byte, index) => {
-            state = state * 33 + 17 & 255;
-            buffer[index] = byte ^ state;
-        });*/
-
         const rng = LCG(parseInt(img.dataset.xK), 33, 17, 256);
         buffer.forEach((byte, index) => {
-            buffer[index] = byte ^ rng.next().value & 0xFF;
+            buffer[index] = byte ^ rng.next().value * 2 ** 32;
         });
 
         const secret = 'dualeo_url_v5_M4nP_2026_Z7cL';
