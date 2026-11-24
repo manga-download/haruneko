@@ -6,7 +6,7 @@ new TestFixture({
         title: 'Astrea Scans'
     },
     container: {
-        url: 'https://astreascans.com/manga/tutsak-esim-bosanmak-istiyor/',
+        url: 'https://astreascans.xyz/manga/tutsak-esim-bosanmak-istiyor/',
         id: '/manga/tutsak-esim-bosanmak-istiyor/',
         title: 'Tutsak Eşim Boşanmak İstiyor'
     },

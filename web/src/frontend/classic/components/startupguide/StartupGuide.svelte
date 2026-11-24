@@ -115,7 +115,7 @@
 
     #startupguide :global(.subtitle) {
         margin-bottom:0.5em;
-        color:var(--cds-text-02);
+        color:var(--cds-text-secondary);
         font-weight:lighter;
     }
 </style>

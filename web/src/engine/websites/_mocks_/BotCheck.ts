@@ -1,7 +1,28 @@
 import { Tags } from '../../Tags';
+import { AddAntiScrapingDetection, FetchRedirection } from '../../platform/AntiScrapingDetection';
 import { FetchWindowScript } from '../../platform/FetchProvider';
 import { DecoratableMangaScraper, type MangaPlugin, Manga, Chapter } from '../../providers/MangaPlugin';
 import * as Common from '../decorators/Common';
+
+const genericTurnstileWidgetScript = `
+    new Promise((resolve, reject) => {
+        turnstile.remove();
+        if(window.location.hash) {
+            // Invoke the original callback from the website with the previously acquired token
+            window.verify(window.location.hash.slice(1))
+                .then(() => resolve(${FetchRedirection.None}))
+                .catch(reject);
+        }
+        turnstile.render('div.cf-turnstile', {
+    		'callback': token => {
+                window.location.hash = token;
+                resolve(${FetchRedirection.Automatic});
+                setTimeout(() => window.location.reload(), 500);
+            },
+    		'before-interactive-callback': () => resolve(${FetchRedirection.Interactive}),
+    	});
+    });
+`;
 
 const botchecks = [
     {
@@ -17,53 +38,53 @@ const botchecks = [
     {
         url: 'https://cloudflare.bot-check.ovh/automatic',
         title: 'Cloudflare: JavaScript Challenge',
-        script: `
-            document.querySelector('#hash')?.innerText === '801BE7B2C3621A7DE738CF77BD4EF264';
-        `,
+        script: `document.querySelector('#hash')?.innerText === '801BE7B2C3621A7DE738CF77BD4EF264';`,
     },
     {
         url: 'https://cloudflare.bot-check.ovh/interactive',
         title: 'Cloudflare: Legacy Captcha',
-        script: `
-            document.querySelector('#hash')?.innerText === '47BBDCA5E4BDC94EFCDB730C05ACABE9';
-        `,
+        script: `document.querySelector('#hash')?.innerText === '47BBDCA5E4BDC94EFCDB730C05ACABE9';`,
     },
     {
         url: 'https://cloudflare.bot-check.ovh/managed',
         title: 'Cloudflare: Managed Challenge',
-        script: `
-            document.querySelector('#hash')?.innerText === 'FA4167CE91A8FD8416BD9B2659363CB4';
-        `,
+        script: `document.querySelector('#hash')?.innerText === 'FA4167CE91A8FD8416BD9B2659363CB4';`,
     },
     {
         url: 'https://cloudflare.bot-check.ovh/turnstile-managed',
         title: 'Cloudflare: Turnstile API (Managed)',
-        script: `
-            new Promise(resolve => {
-                setTimeout(() => resolve(false), 2500);
-                setInterval(() => document.querySelector('#hash')?.innerText === 'A9B6FA3DD8842CD8E2D6070784D92434' ? resolve(true) : console.log('-'), 250);
-            });
-        `,
+        antibot: {
+            pattern: /bot-check\.ovh\/turnstile-managed/,
+            script: genericTurnstileWidgetScript,
+        },
+        script: `document.querySelector('#hash')?.innerText === 'A9B6FA3DD8842CD8E2D6070784D92434';`,
+    },
+    {
+        url: 'https://cloudflare.bot-check.ovh/turnstile-interactive',
+        title: 'Cloudflare: Turnstile API (Interactive)',
+        antibot: {
+            pattern: /bot-check\.ovh\/turnstile-interactive/,
+            script: genericTurnstileWidgetScript,
+        },
+        script: `document.querySelector('#hash')?.innerText === 'A9B6FA3DD8842CD8E2D6070784D92434';`,
     },
     {
         url: 'https://cloudflare.bot-check.ovh/turnstile-automatic',
         title: 'Cloudflare: Turnstile API (Non-Interactive)',
-        script: `
-            new Promise(resolve => {
-                setTimeout(() => resolve(false), 2500);
-                setInterval(() => document.querySelector('#hash')?.innerText === 'A9B6FA3DD8842CD8E2D6070784D92434' ? resolve(true) : console.log('-'), 250);
-            });
-        `,
+        antibot: {
+            pattern: /bot-check\.ovh\/turnstile-automatic/,
+            script: genericTurnstileWidgetScript,
+        },
+        script: `document.querySelector('#hash')?.innerText === 'A9B6FA3DD8842CD8E2D6070784D92434';`,
     },
     {
         url: 'https://cloudflare.bot-check.ovh/turnstile-invisible',
         title: 'Cloudflare: Turnstile API (Invisible)',
-        script: `
-            new Promise(resolve => {
-                setTimeout(() => resolve(false), 2500);
-                setInterval(() => document.querySelector('#hash')?.innerText === 'A9B6FA3DD8842CD8E2D6070784D92434' ? resolve(true) : console.log('-'), 250);
-            });
-        `,
+        antibot: {
+            pattern: /bot-check\.ovh\/turnstile-invisible/,
+            script: genericTurnstileWidgetScript,
+        },
+        script: `document.querySelector('#hash')?.innerText === 'A9B6FA3DD8842CD8E2D6070784D92434';`,
     },
     {
         url: 'https://vercel.bot-check.ovh',
@@ -86,6 +107,9 @@ export default class extends DecoratableMangaScraper {
 
     public constructor() {
         super('bot-check', '🔷 Bot-Check 🔷', 'https://cloudflare.bot-check.ovh', Tags.Media.Manga, Tags.Source.Official, Tags.Language.Multilingual);
+        botchecks
+            .filter(({ antibot }) => antibot)
+            .forEach(({ antibot: { script, pattern } }) => AddAntiScrapingDetection(async invoke => invoke(script), pattern));
     }
 
     public override ValidateMangaURL(url: string): boolean {

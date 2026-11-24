@@ -1,5 +1,8 @@
 import { Tags } from '../Tags';
 import icon from './CosmicScansIndonesia.webp';
+import { XOR } from '../Crypto';
+import { GetBytesFromHex, GetBytesFromUTF8, GetURLBase64FromBytes } from '../BufferEncoder';
+import { AddAntiScrapingDetection, FetchRedirection } from '../platform/AntiScrapingDetection';
 import { FetchJSON, FetchWindowScript } from '../platform/FetchProvider';
 import { Chapter, DecoratableMangaScraper, Manga, type MangaPlugin, Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
@@ -27,8 +30,38 @@ type APIChapters = APIResult<{
 }>;
 
 type APIPages = APIResult<{
-    chapters: string[];
+    pageCount: number;
 }>;
+
+type APISession = APIResult<{
+    sessionId: string;
+    axisKeys: string[];
+}>;
+
+AddAntiScrapingDetection(async invoke => invoke(`
+    new Promise((resolve, reject) => {
+        document.head.replaceChildren();
+        if(window.location.hash) {
+            document.body.innerHTML = window.location.hash;
+            return resolve(${FetchRedirection.None});
+        }
+        document.body.innerHTML = '<div id="cf-turnstile" style="display: grid; height: 100vh; place-items: center;"></div>';
+        const script = document.createElement('script');
+        script.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
+        script.onerror = reject;
+        script.onload = () => window.turnstile.render('#cf-turnstile', {
+            'sitekey': '0x4AAAAAAFrnsF7VWVgNrK9k',
+            'callback': token => {
+                window.location.hash = token;
+                resolve(${FetchRedirection.Automatic});
+                setTimeout(() => window.location.reload(), 500);
+            },
+            'before-interactive-callback': () => resolve(${FetchRedirection.Interactive}),
+        });
+        document.head.appendChild(script);
+    });
+
+`), /^https:\/\/\d+\.cosmicscans\.to\/chapter\//);
 
 @Common.ImageAjax(true)
 export default class extends DecoratableMangaScraper {
@@ -76,7 +109,32 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const { data: { chapters } } = await FetchJSON<APIPages>(new Request(new URL(`./manga/readingPage/${chapter.Identifier}`, this.apiURL)));
-        return [...new DOMParser().parseFromString(chapters.join(''), 'text/html').querySelectorAll('img')].map(img => new Page(this, chapter, new URL(img.src, this.URI)));
+        const chapterUrl = new URL(`/chapter/${chapter.Identifier}`, this.URI);
+        const token = await FetchWindowScript(new Request(chapterUrl), 'window.location.hash.slice(1)');
+
+        const { data: { sessionId, axisKeys } } = await FetchJSON<APISession>(new Request(new URL(`./manga/img/session`, this.apiURL), {
+            method: 'POST',
+            headers: {
+                'Referer': this.URI.href,
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ turnstile_token: token, chapter_slug: chapter.Identifier }),
+        }));
+
+        const [signatureKeyData, contentKey] = axisKeys.map(GetBytesFromHex);
+        const { data: { pageCount } } = await FetchJSON<APIPages>(new Request(new URL(`./manga/readingPage/${chapter.Identifier}`, this.apiURL)));
+
+        return await Promise.all(Array.from({ length: pageCount }, async (_, pageIndex) => {
+            const pageID = `${chapter.Identifier}:${pageIndex}:${Date.now()}`;
+            const securePageID = await this.#EncryptAndSign(pageID, contentKey, signatureKeyData);
+            return new Page(this, chapter, new URL(`./manga/img/r/${sessionId}.${securePageID}`, this.apiURL), { Referer: this.URI.href });
+        }));
+    }
+
+    async #EncryptAndSign(content: string, contentKey: Uint8Array, signatureKeyData: BufferSource): Promise<string> {
+        const data = XOR(GetBytesFromUTF8(content), contentKey);
+        const key = await crypto.subtle.importKey('raw', signatureKeyData, { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']);
+        const signature = new Uint8Array(await crypto.subtle.sign('HMAC', key, data));
+        return `${GetURLBase64FromBytes(signature)}.${GetURLBase64FromBytes(data)}`;
     }
 }

@@ -6,7 +6,7 @@ new TestFixture({
         title: 'Miau Scan'
     },
     container: {
-        url: 'https://leemiau.com/manga/685-dias/',
+        url: 'https://leer.lectovela.com/manga/685-dias/',
         id: '/manga/685-dias/',
         title: '685 días'
     },

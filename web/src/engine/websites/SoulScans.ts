@@ -29,10 +29,10 @@ type APIPages = {
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
-    private readonly apiURL = 'https://img.soulscans.org/api/';
+    private readonly apiURL = 'https://img.soulscans.asia/api/';
 
     public constructor() {
-        super('soulscans', 'Soul Scans', 'https://v1.soulscans.org', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Media.Manga, Tags.Language.Indonesian, Tags.Source.Scanlator, Tags.Source.Aggregator);
+        super('soulscans', 'Soul Scans', 'https://v1.soulscans.asia', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Media.Manga, Tags.Language.Indonesian, Tags.Source.Scanlator, Tags.Source.Aggregator);
     }
 
     public override get Icon() {

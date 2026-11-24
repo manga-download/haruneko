@@ -13,7 +13,7 @@ import { DecryptAES } from '../Crypto';
 type WebRensaiListResponse = {
     dayOfWeekTitleLists: {
         titles?: APITitle[];
-        titlesV2?: WebDayOfWeekTitle[] ;
+        titlesV2?: WebDayOfWeekTitle[];
     }[];
 };
 
@@ -38,7 +38,7 @@ type WebChapterListUsedByPaging = {
 };
 
 type WebVolumeListUsedByPaging = {
-    volumeList: Volume[];
+    volumeList?: Volume[];
 };
 
 type ChapterProto = {
@@ -119,14 +119,11 @@ export default class extends DecoratableMangaScraper {
         switch (mediaType) {
             case 'chapter': {
                 const { chapterList: { chapterList } } = await FetchProto<WebChapterListForViewerResponse>(new Request(url), protoTypes, 'MangaOneJp.WebChapterListForViewerResponse');
-                return chapterList.map(({ chapterId, chapterName, description }) => {
-                    const title = [chapterName, description].join(' ').trim();
-                    return new Chapter(this, manga, JSON.stringify({ id: chapterId, type: 'chapter' }), title);
-                });
+                return chapterList.map(({ chapterId, chapterName, description }) => new Chapter(this, manga, JSON.stringify({ id: chapterId, type: 'chapter' }), [chapterName, description].joinTitleSegments()));
             }
             case 'volume': {
                 const { volumeList: { volumeList } } = await FetchProto<WebChapterListForViewerResponse>(new Request(url), protoTypes, 'MangaOneJp.WebChapterListForViewerResponse');
-                return volumeList.map(({ volume: { id, name } }) => new Chapter(this, manga, JSON.stringify({ id, type: 'volume' }), name));
+                return (volumeList ?? []).map(({ volume: { id, name } }) => new Chapter(this, manga, JSON.stringify({ id, type: 'volume' }), name));
             }
             default: return [];
         }

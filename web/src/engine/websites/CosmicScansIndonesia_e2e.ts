@@ -12,7 +12,8 @@ new TestFixture({
     },
     child: {
         id: 'eleceed-chapter-272',
-        title: 'Chapter 272'
+        title: 'Chapter 272',
+        timeout: 15_000,
     },
     entry: {
         index: 1,

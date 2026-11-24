@@ -84,7 +84,7 @@ export class TestFixture extends FrontendFixture {
     }
 
     async #GetMangaElement(title: string, timeout = 1000) {
-        const selector = '#MediaList div.media > div.media';
+        const selector = '#MediaList > div.spacer > div.media';
         const selectorBookmarkText = 'a.title';
         const page = await super.GetPage();
         await page.waitForSelector(selector, { visible: true, timeout });
@@ -184,7 +184,7 @@ export class TestFixture extends FrontendFixture {
      * Get the preview image links.
      */
     public async GetPreviewImageLinks(count: number, timeout = 5000) {
-        const selector = '#ImageViewer img.imgpreview';
+        const selector = '#ImageViewer > button > img.imgpreview';
         const page = await super.GetPage();
         await page.waitForSelector(selector, { visible: true, timeout });
         return new Promise<string[]>((resolve, reject) => {
