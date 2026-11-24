@@ -1,17 +1,17 @@
-import { TestFixture, type Config } from '../../../test/WebsitesFixture';
+import { TestFixture } from '../../../test/WebsitesFixture';
 
-const config: Config = {
+new TestFixture({
     plugin: {
         id: 'mangaworldadult',
         title: 'Manga World Adult'
     },
     container: {
-        url: 'https://www.mangaworldadult.net/manga/1089/15y',
+        url: 'https://www.mangaworldadult.org/manga/1089/15y',
         id: '/manga/1089/15y',
         title: '15Y+'
     },
     child: {
-        id: '/manga/1089/15y/read/5f7e3f9e6c6c3610d5922b81?style=list',
+        id: '/manga/1089/15y/read/5f7e3f9e6c6c3610d5922b81',
         title: 'Capitolo 20'
     },
     entry: {
@@ -19,6 +19,4 @@ const config: Config = {
         size: 79_800,
         type: 'image/jpeg'
     }
-};
-
-new TestFixture(config).AssertWebsite();
+}).AssertWebsite();

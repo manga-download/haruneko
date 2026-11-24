@@ -6,7 +6,7 @@ new TestFixture({
         title: 'GoodToon'
     },
     container: {
-        url: 'https://www.goodtoon011.com/manga/gt-13985/',
+        url: 'https://www.goodtoon012.com/manga/gt-13985/',
         id: JSON.stringify({ post: '13985', slug: '/manga/gt-13985/' }),
         title: '선무제존'
     },

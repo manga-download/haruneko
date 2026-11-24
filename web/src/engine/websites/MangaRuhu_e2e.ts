@@ -6,7 +6,7 @@ new TestFixture({
         title: 'MangaRuhu'
     },
     container: {
-        url: 'https://mangaruhu.net/manga/the-dignity-of-a-chaebol/',
+        url: 'https://ruhmanga.com/manga/the-dignity-of-a-chaebol/',
         id: '/manga/the-dignity-of-a-chaebol/',
         title: 'Bir Chaebol’ün Onuru'
     },
