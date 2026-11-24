@@ -314,6 +314,7 @@ const translations: VariantResource = { // NOTE: Use defaults for missing transl
   Plugin_Common_Chapter_InvalidError: "从章节内容中提取页面失败！",
   Plugin_Common_Preferred_Language: "网站首选语言",
   Plugin_Common_Preferred_LanguageInfo: "网站内容首选语言。",
+  Plugin_Common_RateLimitError: 'Rate limit exceeded. Please try again later.',
   Plugin_MissingWebsite_UpdateError: "无法为不存在的网站更新内容索引！",
   Plugin_MissingWebsiteEntry_UpdateError: "无法为不存在的网站更新媒体索引！",
   // [SECTION]: Plugins (specific)
