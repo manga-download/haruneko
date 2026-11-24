@@ -337,6 +337,7 @@ export enum EngineResourceKey {
     FetchProvider_FetchWindow_AlertCaptcha = 'FetchProvider_FetchWindow_AlertCaptcha',
     FetchProvider_Fetch_CloudFlareChallenge = 'FetchProvider_Fetch_CloudFlareChallenge',
     FetchProvider_Fetch_VercelChallenge = 'FetchProvider_Fetch_VercelChallenge',
+    FetchProvider_Fetch_TooManyRequests = 'FetchProvider_Fetch_TooManyRequests',
     FetchProvider_Fetch_Forbidden = 'FetchProvider_Fetch_Forbidden',
 
     BookmarkPlugin_ConvertToSerializedBookmark_UnsupportedFormatError = 'BookmarkPlugin_ConvertToSerializedBookmark_UnsupportedFormatError',
@@ -365,7 +366,6 @@ export enum WebsiteResourceKey {
     Plugin_Common_Chapter_UnavailableError = 'Plugin_Common_Chapter_UnavailableError',
     Plugin_Common_Preferred_Language = 'Plugin_Common_Preferred_Language',
     Plugin_Common_Preferred_LanguageInfo = 'Plugin_Common_Preferred_LanguageInfo',
-    Plugin_Common_RateLimitError = 'Plugin_Common_RateLimitError',
     Plugin_MissingWebsite_UpdateError = 'Plugin_MissingWebsite_UpdateError',
     Plugin_MissingWebsiteEntry_UpdateError = 'Plugin_MissingWebsiteEntry_UpdateError',
 }

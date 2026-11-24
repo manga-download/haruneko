@@ -242,6 +242,7 @@ const translations: VariantResource = {
   FetchProvider_FetchWindow_AlertCaptcha: 'Please solve the Captcha and then wait for the application to continue (do not close the website after solving the Captcha)!',
   FetchProvider_Fetch_CloudFlareChallenge: 'The request to "{0}" was rejected by CloudFlare Anti-Bot detection.\nMake sure to bypass CloudFlare before accessing the content of this website (e.g., with the HakuNeko Assistant browser extension).',
   FetchProvider_Fetch_VercelChallenge: 'The request to "{0}" was rejected by Vercel Attack Challenge Mode.\nMake sure to bypass Vercel before accessing the content of this website.',
+  FetchProvider_Fetch_TooManyRequests: 'The request to the website was rejected due to exceeding the rate limit (too many requests). Try again later or throttle your website requests',
   FetchProvider_Fetch_Forbidden: 'The access to "{0}" was denied.\nMake sure the website is available and accessible (e.g., VPN to bypass region lock, manual login via website link).',
   //
   BookmarkPlugin_ConvertToSerializedBookmark_UnsupportedFormatError: 'The provided data seems to be invalid/corrupted and could not be successfully de-serialized to a bookmark!',
@@ -335,8 +336,6 @@ const translations: VariantResource = {
   Plugin_Common_Chapter_InvalidError: 'Failed to extract the pages from the chapter content!',
   Plugin_Common_Preferred_Language: 'Preferred Language for the website',
   Plugin_Common_Preferred_LanguageInfo: 'Preferred language for website content.',
-
-  Plugin_Common_RateLimitError: 'Rate limit exceeded. Please try again later.',
 
   Plugin_MissingWebsite_UpdateError: 'Failed to update the content index for a non-existing website!',
   Plugin_MissingWebsiteEntry_UpdateError: 'Failed to update the media index for a non-existing website!',

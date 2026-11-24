@@ -314,7 +314,6 @@ const translations: VariantResource = { // NOTE: Use defaults for missing transl
   Plugin_Common_Chapter_InvalidError: "فشل في استخراج الصفحات من محتوى الفصل!",
   Plugin_Common_Preferred_Language: "اللغة المفضلة للموقع",
   Plugin_Common_Preferred_LanguageInfo: "اللغة المفضلة لمحتوى الموقع.",
-  Plugin_Common_RateLimitError: 'Rate limit exceeded. Please try again later.',
   Plugin_MissingWebsite_UpdateError: "فشل تحديث فهرس المحتوى لموقع غير موجود!",
   Plugin_MissingWebsiteEntry_UpdateError: "فشل تحديث فهرس الوسائط لموقع غير موجود!",
   // [SECTION]: Plugins (specific)

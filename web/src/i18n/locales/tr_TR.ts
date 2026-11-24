@@ -314,7 +314,6 @@ const translations: VariantResource = { // NOTE: Use defaults for missing transl
   Plugin_Common_Chapter_InvalidError: "Sayfalar bölüm içeriğinden ayıklanamadı!",
   Plugin_Common_Preferred_Language: "Web Sitesi için Tercih Edilen Dil",
   Plugin_Common_Preferred_LanguageInfo: "Web site içeriği için tercih edilen dil.",
-  Plugin_Common_RateLimitError: 'Rate limit exceeded. Please try again later.',
   Plugin_MissingWebsite_UpdateError: "Var olmayan bir web sitesi için içerik dizini güncellenemedi!",
   Plugin_MissingWebsiteEntry_UpdateError: "Var olmayan bir web sitesi için medya dizini güncellenemedi!",
   // [SECTION]: Plugins (specific)

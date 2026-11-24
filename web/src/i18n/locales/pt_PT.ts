@@ -314,7 +314,6 @@ const translations: VariantResource = { // NOTE: Use defaults for missing transl
   Plugin_Common_Chapter_InvalidError: "Falha ao extrair as páginas do conteúdo do capítulo!",
   Plugin_Common_Preferred_Language: "Idioma preferencial para o site",
   Plugin_Common_Preferred_LanguageInfo: "Idioma preferido para o conteúdo do site.",
-  Plugin_Common_RateLimitError: 'Rate limit exceeded. Please try again later.',
   Plugin_MissingWebsite_UpdateError: "Falha ao atualizar o índice de conteúdo para um site inexistente!",
   Plugin_MissingWebsiteEntry_UpdateError: "Falha ao atualizar o índice de mídia para um site não existente!",
   // [SECTION]: Plugins (specific)
