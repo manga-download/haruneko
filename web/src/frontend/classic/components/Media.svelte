@@ -1,5 +1,6 @@
 <script lang="ts">
     import {
+        Box,
         Button,
         ClickableTile,
         ContextMenu,
@@ -42,7 +43,7 @@
         isBookmarked = await window.HakuNeko.BookmarkPlugin.Toggle(media as MediaContainer2);
     }
     //Context menu
-    let mediadiv: HTMLElement = $state();
+    let mediadiv: HTMLDivElement = $state();
 
     //Unviewed content
     let unFlaggedItems: MediaContainer<MediaChild>[] = $state([]);
@@ -86,7 +87,7 @@
     }
 </script>
 
-<div bind:this={mediadiv} class="media" {style} class:selected>
+<Box ref={mediadiv} class="media" {style} fill={selected ? 'layer-accent' : undefined}>
     <ContextMenu target={[mediadiv]} bind:open={menuOpen} on:open={menuOpens}>
         <ContextMenuOption indented labelText="Browse Chapters" shortcutText="⌘B" 
             onclick={() => {UI.selectedMedia = media;}}
@@ -175,23 +176,18 @@
             }}
         />
     {/if}
-</div>
+</Box>
 
 <style>
-    .media {
+    :global(.media) {
         display: flex;
         user-select: none;
         height:1.6em;
     }
-    .media:hover {
-        background-color: var(--cds-hover-row);
-        --cds-ui-01: var(--cds-hover-row);
+    :global(.media:hover) {
+        background-color: var(--cds-field-hover-01);
     }
-    .media.selected {
-        background-color: var(--cds-selected-ui);
-        --cds-ui-01: var(--cds-selected-ui);
-    }
-    .media :global(.title) {
+    :global(.media .title) {
         flex: auto;
         overflow: hidden;
         white-space: nowrap;
@@ -200,8 +196,9 @@
         display: flex;
         align-items: center;
         padding: 0;
+        background-color: unset;
     }
-    .media button.website {
+    :global(.media button.website) {
         position:relative;
         top:0.2em;
         padding:0;
@@ -211,22 +208,22 @@
         margin-right: 0.4em;
         cursor: pointer;
     }
-    .media .pluginIcon {
+    :global(.media .pluginIcon) {
         width: 1.4em;
         height: 1.4em;
         border-radius:20%;
     }
-    .media :global(button) {
+    :global(.media button) {
         min-height: unset;
     }
 
-    .media :global(button.bookmarked) {
-        --cds-icon-01: var(--cds-support-03);
+    :global(.media button.bookmarked) {
+        --cds-icon-primary : var(--cds-support-warning);
     }
-    .media :global(button.orphaned) {
-        --cds-icon-01: var(--cds-button-danger-secondary);
+    :global(.media button.orphaned) {
+        --cds-icon-primary : var(--cds-button-danger-secondary);
     }
-    .media :global(button:hover) {
-        --cds-icon-01: var(--cds-hover-secondary);
+    :global(.media button:hover) {
+        --cds-icon-primary : var(--cds-button-secondary-hover);
     }
 </style>

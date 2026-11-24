@@ -1,6 +1,6 @@
 <script lang="ts">
     import { onMount } from "svelte";
-    import { Tile } from "carbon-components-svelte";
+    import { Layer, Tile } from "carbon-components-svelte";
     import { Settings, GlobalSettings } from "../../stores/Settings.svelte";
     import SettingsViewer from "../settings/SettingsViewer.svelte";
 
@@ -16,12 +16,14 @@
 <div>
     <h4>{GlobalSettings.Locale.Frontend_Classic_StartupGuide_UI_Title()}</h4>
     <p class="subtitle">{GlobalSettings.Locale.Frontend_Classic_StartupGuide_UI_Description()}</p>
-    <Tile light >
+    <Layer>
+        <Tile >
         <SettingsViewer
             settings={[
                 Settings.Theme.Setting
             ]}
         />
-    </Tile>
+        </Tile>
+    </Layer>
 </div>
 

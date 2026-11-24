@@ -91,8 +91,8 @@ export default class extends DecoratableMangaScraper {
         const { pageItem, chapterId, projectId } = await FetchWindowScript<APIChapter>(new Request(new URL(chapter.Identifier, this.URI)), `
             new Promise( resolve => {
                 window.decodeURIComponent = new Proxy(window.decodeURIComponent, {
-                  apply(target, thisArg, args) {
-                    const result = Reflect.apply(target, thisArg, args);
+                  apply(target, thisArg, argArray) {
+                    const result = Reflect.apply(target, thisArg, argArray);
                     try{
                         const jsonData = JSON.parse(result);
                         if (jsonData.pageItem) resolve(jsonData);
