@@ -13,7 +13,7 @@ import { FetchWindowScript } from '../platform/FetchProvider';
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('goodtoon', 'GoodToon', 'https://www.goodtoon011.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Source.Aggregator, Tags.Language.Korean);
+        super('goodtoon', 'GoodToon', 'https://www.goodtoon012.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Source.Aggregator, Tags.Language.Korean);
     }
 
     public override get Icon() {

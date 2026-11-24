@@ -18,18 +18,11 @@ type APIManga = {
     slug: string;
 };
 
-type APIChapters = {
-    grouped_data: APIChapter[];
-};
-
 type APIChapter = {
+    id: string;
     chapter_number: number;
-    releases: {
-        id: string;
-        lang: string;
-        name: string;
-        group_name: string;
-    }[];
+    lang: string;
+    group_name: string;
     pages: string[];
 };
 
@@ -53,7 +46,7 @@ const chapterLanguageMap = new Map([
 ]);
 
 @Common.MangaCSS(/^{origin}\/title-detail\/[^/]+$/, 'p.text-main strong.text-main', (element, uri) => ({
-    id: uri.pathname.split('/').at(-1),
+    id: uri.pathname.split('/').at(-1).match(/[0-9a-fA-F]{24}/).at(0), //manga slug and id can be switcher in pathname, website accept both
     title: element.textContent.trim()
 }))
 @Common.ImageAjax()
@@ -74,7 +67,7 @@ export default class extends DecoratableMangaScraper {
         const mangaList: Manga[] = [];
         for (let page = 1, run = true; run; page += 1) {
             const { data } = await this.interactionTaskPool.Add(async () => FetchJSON<APIMangas>(new Request(new URL(`./title/search-advanced?adult_mode=all&page=${page}&limit=200`, this.apiURL))), Priority.Low);
-            const mangas = data.map(({ _id, name, slug }) => new Manga(this, provider, `${slug}-${_id}`, name));
+            const mangas = data.map(({ _id, name }) => new Manga(this, provider, _id, name));
             mangas.length > 0 ? mangaList.push(...mangas) : run = false;
         }
         return mangaList;
@@ -84,12 +77,8 @@ export default class extends DecoratableMangaScraper {
         type This = typeof this;
         return Array.fromAsync(async function* (this: This) {
             for (let page = 1, run = true; run; page++) {
-                const { grouped_data } = await FetchJSON<APIChapters>(new Request(new URL(`./title/chapter-listing?title_id=${manga.Identifier}&page=${page}&sort_order=desc&group_by=chapter_number&limit=200`, this.apiURL)));
-                const chapters = grouped_data.reduce((accumulator: Chapter[], entry) => {
-                    const currentChapters = entry.releases.map(({ id, lang, group_name: group }) => new Chapter(this, manga, id, [`Chapter ${entry.chapter_number} [${group}]`, `[${lang}]`].joinTitleSegments(), ...[chapterLanguageMap.get(lang)].filter(Boolean)));
-                    accumulator.push(...currentChapters);
-                    return accumulator;
-                }, []);
+                const { data } = await FetchJSON<APIResult<APIChapter[]>>(new Request(new URL(`./title/chapter-listing?title_id=${manga.Identifier}&page=${page}&sort_order=desc&&limit=500`, this.apiURL)));
+                const chapters = data.map(({ id, chapter_number: number, lang, group_name: group }) => new Chapter(this, manga, id, [`Chapter ${number} [${group}]`, `[${lang}]`].joinTitleSegments(), ...[chapterLanguageMap.get(lang)].filter(Boolean)));
                 chapters.length > 0 ? yield* chapters : run = false;
             }
         }.call(this));

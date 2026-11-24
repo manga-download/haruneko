@@ -275,11 +275,7 @@
         {/await}
         <VirtualList items={filteredmedias as MediaContainer2[]} itemHeight={24} container={medialistref} containerHeight={medialistrefHeight}>
             {#snippet children(item)}
-                <div class="media">
-                        <Media
-                        media={item}
-                        />
-                </div>
+                <Media media={item} />
             {/snippet}
         </VirtualList>
     </div>
@@ -382,6 +378,6 @@
         cursor: col-resize;
     }
     .resize:hover {
-            background-color:var(--cds-ui-02);
+            background-color:var(--cds-layer-02);
     }
 </style>

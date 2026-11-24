@@ -1,7 +1,6 @@
 import { Tags } from '../Tags';
 import icon from './AnimeSama.webp';
 import { Chapter, DecoratableMangaScraper, type Manga, Page } from '../providers/MangaPlugin';
-import * as MangaStream from './decorators/WordPressMangaStream';
 import * as Common from './decorators/Common';
 import { FetchWindowScript } from '../platform/FetchProvider';
 
@@ -15,7 +14,6 @@ function pageScript(chapterIndex: number) {
         id: anchor.pathname.endsWith('/') ? anchor.pathname : anchor.pathname + '/', //website search result sometimes misses trailing '/'
         title: anchor.querySelector<HTMLHeadingElement>('h2.card-title').textContent.trim()
     }))
-@MangaStream.MangasSinglePageCSS()
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
