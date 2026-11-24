@@ -1,11 +1,23 @@
 import { Tags } from '../Tags';
 import icon from './DuaLeoTruyen.webp';
-import { FetchCSS, FetchWindowScript } from '../platform/FetchProvider';
+import { FetchHTML, FetchWindowScript } from '../platform/FetchProvider';
 import { type Chapter, DecoratableMangaScraper, Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import { GetBytesFromBase64, GetBytesFromURLBase64, GetBytesFromUTF8, GetHexFromBytes, GetUTF8FromBytes } from '../BufferEncoder';
 import { XOR } from '../Crypto';
 import { LCG } from '../Random';
+
+type PagesConfig = {
+    a: string; // img & canvas attribute
+    b: string; //secondary attribute
+    c: number; // LCG increment
+    cc: string; //canvas class
+    ci: string; //image class
+    k: string; //secret key for HMAC (hex string)
+    m: number; //LCG multiplier
+    p: string; // version prefix
+    s: string; // encrypted message attribute
+};
 
 @Common.MangaCSS(/^{origin}\/truyen-tranh\/[^/]+$/, 'ol.breadcrumb li:last-of-type')
 @Common.MangasMultiPageCSS<HTMLAnchorElement>('div.li_truyen > a:has(img)', Common.PatternLinkGenerator('/truyen-hoan-thanh?page={page}'), 0, anchor => ({
@@ -32,69 +44,93 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
         const chapterURL = new URL(chapter.Identifier, this.URI);
-        const targets = 'img:is([data-x-a], [data-img]),canvas.chapter-v53-canvas[data-x-a],svg.chapter-svg-random:is([data-x-a], [data-svg-img])';
-        const imgs = await FetchCSS<HTMLImageElement>(new Request(chapterURL, {
+
+        //1) get elements and config from chapter page
+        const doc = await FetchHTML(new Request(chapterURL, {
             headers: {
                 'Sec-Fetch-Dest': 'document',
                 'Sec-Fetch-Mode': 'navigate',
                 'Sec-Fetch-Site': 'same-origin'
             }
-        }), targets);
-        return Promise.all(
-            imgs.map(async (element) => {
-                const link = new URL(await this.PageExtractor(element), chapterURL);
-                return new Page(this, chapter, link, { Referer: this.URI.href });
-            })
-        );
-    }
+        }));
 
-    private async PageExtractor(img: HTMLImageElement | HTMLCanvasElement): Promise<string> {
+        const configData = doc.querySelector<HTMLScriptElement>('script[data-v]')?.dataset.v;
+        const tmp = GetBytesFromURLBase64(configData.split('').reverse().join(''));
+        const buffer = tmp.slice(1);
 
-        if (!(img.hasAttribute('data-x-a') || img.hasAttribute('data-img') || img.hasAttribute('data-svg-img'))) return;
-
-        const legacy = img.dataset.img ?? img.dataset.svgImg;
-        if (legacy) return legacy;
-
-        const buffer = GetBytesFromURLBase64(`${img.dataset.xB}${img.dataset.xA}`);
-        const rng = LCG(parseInt(img.dataset.xK), 33, 17, 256);
+        const rng = LCG(tmp[0], 29, 71, 256);
         buffer.forEach((byte, index) => {
             buffer[index] = byte ^ rng.next().value * 2 ** 32;
         });
 
-        const secret = 'dualeo_url_v5_M4nP_2026_Z7cL';
+        const cfg = <PagesConfig>JSON.parse(GetUTF8FromBytes(buffer));
+        const { a, ci, cc } = cfg;
+
+        //2) fetch images element and decrypt urls
+        const targets = `img.${ci}[${a}], canvas.${cc}[${a}]`;
+        const imgs = [...doc.querySelectorAll<HTMLImageElement | HTMLCanvasElement>(targets)];
+
+        //filter decoys pages :D
+        const pages = await Promise.all(
+            imgs.map(async (element) => {
+                const link = await this.PageExtractor(element, cfg);
+                return link ? new Page(this, chapter, new URL(link, chapterURL), { Referer: this.URI.href }) : null;
+            })
+        );
+        return pages.filter(page => page);
+    }
+
+    private async PageExtractor(img: HTMLImageElement | HTMLCanvasElement, cfg: PagesConfig): Promise<string|null> {
+        let result = null;
+        const { a, b, s, m, c, p, k } = cfg;
+
+        //1) Decode URL: 1st pass ("unpack")
+        const buffer = GetBytesFromURLBase64(`${img.getAttribute(b)}${img.getAttribute(a)}`);
+        const rng = LCG(parseInt(img.getAttribute(s)), m, c, 256);
+        buffer.forEach((byte, index) => {
+            buffer[index] = byte ^ rng.next().value * 2 ** 32;
+        });
 
         const uri = new URL(GetUTF8FromBytes(buffer));
         let [, basename, extension] = uri.pathname.match(/\/([^./]+)\.(.*)$/);
-        if (!basename.startsWith('q5_')) return uri.href;
+        if (!basename.startsWith(p)) return uri.href;
 
+        //2) Decode the filename from the full url: 2nd pass (play with crypto)
         try {
-            basename = basename.slice(3);
+            basename = basename.slice(p.length);
             const payload = GetUTF8FromBytes(GetBytesFromURLBase64(basename));
 
-            // V5|nonce|salt|mac|base64(cipher)
+            // V6|nonce|salt|mac|base64(cipher)
             const [version, nonce, salt, mac, rawB64] = payload.split('|');
 
-            if (version !== 'V5' || !mac || !nonce || !salt || !rawB64) return uri.href;
+            if (version !== 'V6' || !mac || !nonce || !salt || !rawB64) return uri.href;
 
             const cipher = GetBytesFromBase64(rawB64);
 
             let stream: number[] = [];
             for (let counter = 0; stream.length < cipher.length; counter++) {
-                const block = new Uint8Array(await crypto.subtle.digest('SHA-256', GetBytesFromUTF8(`${secret}|STREAM|${nonce}|${salt}|${counter}`)));
+                const block = new Uint8Array(await crypto.subtle.digest('SHA-256', GetBytesFromUTF8(`${k}|STREAM|${nonce}|${salt}|${counter}`)));
                 stream = [...stream, ...block];
             }
 
             const name = GetUTF8FromBytes(XOR(cipher, new Uint8Array(stream)));
 
-            //HMAC
-            const key = await crypto.subtle.importKey('raw', GetBytesFromUTF8(secret), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']);
-            const signature = GetHexFromBytes(new Uint8Array( await crypto.subtle.sign('HMAC', key, GetBytesFromUTF8(`V5|${nonce}|${salt}|${name}`))));
+            //HMAC is used to filter decoys (fake pages)
+            const key = await crypto.subtle.importKey('raw', GetBytesFromUTF8(k), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']);
+            const signature = GetHexFromBytes(new Uint8Array(await crypto.subtle.sign('HMAC', key, GetBytesFromUTF8(`V6|${nonce}|${salt}|${name}`))));
 
-            if (mac == signature)
+            if (mac == signature) {
                 uri.pathname = uri.pathname.split('/').toSpliced(-1, 1, `${name}.${extension}`).join('/');
+                result = uri.href;
+                //console.log(`real page : ${result}`);
+
+            } else {
+                //console.log(`Decoy : ${name}`);
+                result = null;
+            }
 
         } catch { }
 
-        return uri.href;
+        return result;
     }
 }
