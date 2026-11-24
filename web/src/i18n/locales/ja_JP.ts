@@ -314,6 +314,7 @@ const translations: VariantResource = { // NOTE: Use defaults for missing transl
   Plugin_Common_Chapter_InvalidError: "チャプターのコンテンツからページを抽出できませんでした！",
   Plugin_Common_Preferred_Language: "ウェブサイトの優先言語",
   Plugin_Common_Preferred_LanguageInfo: "ウェブサイトコンテンツの優先言語を指定します。",
+  Plugin_Common_RateLimitError: 'Rate limit exceeded. Please try again later.',
   Plugin_MissingWebsite_UpdateError: "存在しないウェブサイトのコンテンツインデックスの更新に失敗しました！",
   Plugin_MissingWebsiteEntry_UpdateError: "存在しないウェブサイトのメディアインデックスの更新に失敗しました！",
   // [SECTION]: Plugins (specific)

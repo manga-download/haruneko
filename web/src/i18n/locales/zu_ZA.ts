@@ -314,6 +314,7 @@ const translations: VariantResource = { // NOTE: Use defaults for missing transl
   Plugin_Common_Chapter_InvalidError: "crwdns1610:0crwdne1610:0",
   Plugin_Common_Preferred_Language: "crwdns2102:0crwdne2102:0",
   Plugin_Common_Preferred_LanguageInfo: "crwdns2104:0crwdne2104:0",
+  Plugin_Common_RateLimitError: "crwdns2265:0crwdne2265:0",
   Plugin_MissingWebsite_UpdateError: "crwdns1612:0crwdne1612:0",
   Plugin_MissingWebsiteEntry_UpdateError: "crwdns1614:0crwdne1614:0",
   // [SECTION]: Plugins (specific)
