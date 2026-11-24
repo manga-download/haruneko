@@ -86,9 +86,9 @@ export default class extends DecoratableMangaScraper {
 
         //1) Decode URL: 1st pass ("unpack")
         const buffer = GetBytesFromURLBase64(`${img.getAttribute(b)}${img.getAttribute(a)}`);
-        const rng = LCG(parseInt(img.getAttribute(s)), m, c, 256);
+        const rng = LCG(parseInt(img.getAttribute(s), 10), m, c, 256);
         buffer.forEach((byte, index) => {
-            buffer[index] = byte ^ rng.next().value * 2 ** 32;
+            buffer[index] = byte ^ rng.next().value & 0xFF;
         });
 
         const uri = new URL(GetUTF8FromBytes(buffer));
