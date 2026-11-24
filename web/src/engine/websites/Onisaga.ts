@@ -148,7 +148,7 @@ export default class extends DecoratableMangaScraper {
         return chaptersData.sort((self, other) => other.number - self.number).map(({ chapter }) => chapter);
     }
 
-    public override async FetchPages(chapter: Chapter): Promise<Page[]> {
+    public override async FetchPages(chapter: Chapter): Promise<Grouple.MirroredPage[]> {
         const pagesData = await FetchNextJS<{ pages: { url: string }[]; }>(new Request(new URL(chapter.Identifier, this.URI)), data => 'pages' in data && Array.isArray(data['pages']));
         if (pagesData) {
             return pagesData.pages.map(({ url }) => new Page(this, chapter, new URL(url, this.URI)));
@@ -161,7 +161,7 @@ export default class extends DecoratableMangaScraper {
         const { bootstrap: { manifest: { pages } } } = await this.FetchTRPC<ChapterManifest>(`./account/readerView`, { releaseId, slug });
         return pages.map(({ url }) => {
             const link = new URL(url, this.URI);
-            return new Page(this, chapter, link, { mirrors: [link.href.replace('https://media.', 'https://')] });
+            return new Page(this, chapter, link, { Mirrors: [link.href.replace('https://media.', 'https://')] });
         });
     };
 

@@ -22,9 +22,9 @@ export default class extends DecoratableMangaScraper {
         return icon;
     }
 
-    public override async FetchPages(chapter: Chapter): Promise<Page[]> {
+    public override async FetchPages(chapter: Chapter): Promise<Grouple.MirroredPage[]> {
         const CDNS = ['https://angel.cdnotakuangel.com/', 'https://otaku.cdnotakuangel.com/'];
         const [images] = await FetchRegex(new Request(new URL(chapter.Identifier, this.URI)), /imageUrls\s*:\s*(\[[^\]]+\])/g);
-        return (<string[]>JSON.parse(images)).map(image => new Page(this, chapter, new URL(`${CDNS[0]}${image}`), { mirrors: [`${CDNS[1]}${image}`] }));
+        return (<string[]>JSON.parse(images)).map(image => new Page(this, chapter, new URL(`${CDNS[0]}${image}`), { Mirrors: [`${CDNS[1]}${image}`] }));
     }
 }

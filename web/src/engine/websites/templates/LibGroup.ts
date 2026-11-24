@@ -1,8 +1,7 @@
+import { Delay } from '../../BackgroundTimers';
+import { FetchJSON, FetchWindowScript } from '../../platform/FetchProvider';
 import { Chapter, DecoratableMangaScraper, Manga, type MangaPlugin, Page } from '../../providers/MangaPlugin';
 import * as Grouple from '../decorators/Grouple';
-import { FetchJSON, FetchWindowScript } from '../../platform/FetchProvider';
-import { Delay } from '../../BackgroundTimers';
-import type { MirroredPage } from '../decorators/Grouple';
 
 type APIResult<T> = {
     data: T;
@@ -186,7 +185,7 @@ export class LibGroup extends DecoratableMangaScraper {
         }, []).reverse();
     }
 
-    public override async FetchPages(chapter: Chapter): Promise<MirroredPage[]> {
+    public override async FetchPages(chapter: Chapter): Promise<Grouple.MirroredPage[]> {
         const { data: { pages } } = await this.FetchAPI<APIPages>(chapter.Identifier);
         return pages.map(({ url }) =>
             new Page(this, chapter, new URL(`${this.Servers.main}${url}`), { Referer: this.URI.href, Mirrors: [`${this.Servers.secondary}${url}`, `${this.Servers.compress}${url}`] }));
