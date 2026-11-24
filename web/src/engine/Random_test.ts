@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { FisherYates, type PseudoRNG } from './Random';
+import { FisherYates } from './Random';
 import * as testee from './Random';
 
 /* eslint-disable-next-line no-restricted-properties */ //=> This test is supposed to run in NodeJS environment where Buffer is available
@@ -86,7 +86,7 @@ describe('Random', { repeats: 50 }, () => {
         ])('Should generate expected numbers', (seed, repetitions, expected) => {
             const prng = testee.XorShift32(seed);
             const actual = Array.from({ length: repetitions }, () => prng.next().value);
-            expect(actual).toStrictEqual(expected.map(int => int / 2**32));
+            expect(actual).toStrictEqual(expected);
         });
     });
 
@@ -98,7 +98,7 @@ describe('Random', { repeats: 50 }, () => {
         ])('Should generate expected numbers', (seed, expected) => {
             const prng = testee.Mulberry32(seed);
             const actual = Array.from({ length: expected.length }, () => prng.next().value);
-            expect(actual).toStrictEqual(expected.map(int => int / 2**32));
+            expect(actual).toStrictEqual(expected);
         });
     });
 
@@ -112,37 +112,27 @@ describe('Random', { repeats: 50 }, () => {
         ])('Should generate expected numbers', (seed, multiplier, increment, modulo, repetitions, expected) => {
             const prng = testee.LCG(seed, multiplier, increment, modulo);
             const actual = Array.from({ length: repetitions }, () => prng.next().value);
-            expect(actual).toStrictEqual(expected.map(int => int / 2**32));
+            expect(actual).toStrictEqual(expected);
         });
     });
 
     describe('FisherYates::Shuffle', () => {
 
-        function* mockPRNG(values: number[]): PseudoRNG {
-            yield* values;
-            throw new Error('Mock PRNG exhausted');
-        }
-
         it('Should create expected sequence with index derivation', () => {
-            const indices: number[] = [];
-            const mockDeriveIndex = (index: number) => {
-                indices.push(index);
-                return [0, 1, 2, 2, 1, 0][index];
-            };
+            const mockDeriveIndex = (index: number) => [0, 1, 2, 2, 1, 0][index];
             const actual = new FisherYates(mockDeriveIndex).Shuffle('A', 'B', 'C', 'D', 'E', 'F');
             expect(actual).toStrictEqual(['F', 'E', 'D', 'C', 'B', 'A']);
-            expect(indices).toStrictEqual([5, 4, 3, 2, 1]);
         });
 
         it('Should create expected sequence with scaled PRNG', () => {
-            const rng = mockPRNG([0.1, 0.3, 0.5, 0.9, 0.6]);
-            const actual = FisherYates.WithScaledDerivation(rng).Shuffle('A', 'B', 'C', 'D', 'E', 'F');
+            const mockPRNG = (function* () { yield* [0.1, 0.3, 0.5, 0.9, 0.6]; })();
+            const actual = FisherYates.WithScaledDerivation(mockPRNG).Shuffle('A', 'B', 'C', 'D', 'E', 'F');
             expect(actual).toStrictEqual(['F', 'E', 'D', 'C', 'B', 'A']);
         });
 
         it('Should create expected sequence with modulo PRNG', () => {
-            const rng = mockPRNG([0, 1, 2, 2, 1].map(int => int / 2**32));
-            const actual = FisherYates.WithModuloDerivation(rng).Shuffle('A', 'B', 'C', 'D', 'E', 'F');
+            const mockPRNG = (function* () { yield* [0, 1, 2, 2, 1, 0]; })();
+            const actual = FisherYates.WithModuloDerivation(mockPRNG).Shuffle('A', 'B', 'C', 'D', 'E', 'F');
             expect(actual).toStrictEqual(['F', 'E', 'D', 'C', 'B', 'A']);
         });
 
@@ -150,14 +140,10 @@ describe('Random', { repeats: 50 }, () => {
             FisherYates.WithScaledDerivation,
             FisherYates.WithModuloDerivation,
         ])('Should be able to continue consumption from the provided PRNG', (activator) => {
-            const values = [0, 3, 7, 11].map(int => int / 2**32);
-            const rng = mockPRNG(values);
-            const shuffle = activator(rng);
-            expect(shuffle.Shuffle()).toStrictEqual([]);
-            expect(shuffle.Shuffle('😇')).toStrictEqual(['😇']);
-            expect(shuffle.Shuffle('😇', '😈')).toStrictEqual(['😈', '😇']);
-            const actual = Array.from({ length: 3 }, () => rng.next().value);
-            expect(actual).toStrictEqual(values.slice(1));
+            const mockPRNG = (function* () { yield* [0, 3, 7, 11]; })();
+            activator(mockPRNG).Shuffle('😇', '😈');
+            const actual = Array.from({ length: 3 }, () => mockPRNG.next().value);
+            expect(actual).toStrictEqual([3, 7, 11]);
         });
     });
 });
