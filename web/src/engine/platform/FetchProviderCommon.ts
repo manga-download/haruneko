@@ -29,6 +29,9 @@ export abstract class FetchProvider {
         if (response.status === 403) {
             throw new Exception(R.FetchProvider_Fetch_Forbidden, response.url);
         }
+        if (response.status === 429) {
+            throw new Exception(R.FetchProvider_Fetch_TooManyRequests/*, response.url*/);
+        }
     }
 
     /**
