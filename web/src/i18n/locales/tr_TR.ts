@@ -232,6 +232,7 @@ const translations: VariantResource = { // NOTE: Use defaults for missing transl
   FetchProvider_FetchWindow_AlertCaptcha: "Lütfen Captcha'yı çözün ve ardından uygulamanın ilerlemesini bekleyin (Captcha'yı çözdükten sonra web sitesini kapatmayın)!",
   FetchProvider_Fetch_CloudFlareChallenge: "\"{0}\" isteği, CloudFlare Anti-Bot tespiti tarafından reddedildi.\nBu web sitesinin içeriğine erişmeden önce CloudFlare engelini aştığınızdan emin olun (örneğin, HakuNeko Assistant tarayıcı uzantısını kullanarak).",
   FetchProvider_Fetch_VercelChallenge: "\"{0}\" isteği, Vercel Saldırı Koruma Modu tarafından reddedildi.\nBu web sitesinin içeriğine erişmeden önce Vercel engelini aştığınızdan emin olun.",
+  FetchProvider_Fetch_TooManyRequests: 'The request to the website was rejected due to exceeding the rate limit (too many requests). Try again later or throttle your website requests',
   FetchProvider_Fetch_Forbidden: "\"{0}\" adresine erişim reddedildi.\nWeb sitesinin erişilebilir ve kullanılabilir olduğundan emin olun (örneğin, bölgesel kısıtlamayı aşmak için VPN kullanarak veya site bağlantısı üzerinden manuel giriş yaparak).",
   //
   BookmarkPlugin_ConvertToSerializedBookmark_UnsupportedFormatError: "Sağlanan veriler geçersiz/bozuk görünüyor ve bir yer imine başarılı bir şekilde ayrıştırılamadı!",
