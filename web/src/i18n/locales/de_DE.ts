@@ -232,6 +232,7 @@ const translations: VariantResource = { // NOTE: Use defaults for missing transl
   FetchProvider_FetchWindow_AlertCaptcha: "Bitte lösen Sie das Captcha und warten Sie dann auf die Anwendung (schließen Sie die Website nicht nach dem Lösen des Captcha)!",
   FetchProvider_Fetch_CloudFlareChallenge: "Die Anfrage an \"{0}\" wurde von der CloudFlare Anti-Bot Erkennung zurückgewiesen.\nStelle sicher, dass CloudFlare freigeschaltet wird bevor auf den Inhalt dieser Website zugegriffen wird (z.B. mit der HakuNeko Assistant Browser Erweiterung).",
   FetchProvider_Fetch_VercelChallenge: "Die Anfrage an \"{0}\" wurde vom Vercel Attack Challenge Mode blockiert.\nBevor auf den Inhalt der Webseite zugegriffen werden kann, muss der Vercel Schutz umgangen werden.",
+  FetchProvider_Fetch_TooManyRequests: 'The request to the website was rejected due to exceeding the rate limit (too many requests). Try again later or throttle your website requests',
   FetchProvider_Fetch_Forbidden: "Der Zugriff auf \"{0}\" wurde verweigert.\nStelle sicher, dass die Website erreichbar und der Zugriff berechtigt ist (z.B. VPN um Regionalsperre zu umgehen, manuelle Anmeldung per Webseitenlink).",
   //
   BookmarkPlugin_ConvertToSerializedBookmark_UnsupportedFormatError: "Die Daten scheinen fehlerhaft zu sein, es konnte kein Lesezeichen extrahiert werden!",
