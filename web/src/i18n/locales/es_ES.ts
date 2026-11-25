@@ -232,6 +232,7 @@ const translations: VariantResource = { // NOTE: Use defaults for missing transl
   FetchProvider_FetchWindow_AlertCaptcha: "Por favor resuelva el Captcha y luego espere a que la aplicación continúe (no cierre el sitio web después de resolver el Captcha)!",
   FetchProvider_Fetch_CloudFlareChallenge: "CloudFlare Anti-Bot ha rechazado la solicitud de \"{0}\".\nAsegúrese de evitar CloudFlare antes de acceder al contenido de este sitio web (por ejemplo, con la extensión del navegador HakuNeko Assistant).",
   FetchProvider_Fetch_VercelChallenge: "La solicitud de \"{0}\" fue rechazada por el Modo de Desafío al Ataque de Vercel. Asegúrese de saltarse a Vercel antes de acceder al contenido de este sitio web.",
+  FetchProvider_Fetch_TooManyRequests: 'The request to the website was rejected due to exceeding the rate limit (too many requests). Try again later or throttle your website requests',
   FetchProvider_Fetch_Forbidden: "El acceso a \"{0}\" fue denegado.\nAsegúrese de que el sitio web está disponible y accesible (por ejemplo con una VPN para evitar el bloqueo de región, o inicio de sesión manual a través del enlace del sitio web).",
   //
   BookmarkPlugin_ConvertToSerializedBookmark_UnsupportedFormatError: "Los datos proporcionados parecen no ser válidos/corruptos y no pudieron ser des-serializados con éxito en un marcador!",
