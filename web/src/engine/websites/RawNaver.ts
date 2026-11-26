@@ -1,5 +1,5 @@
 import { Tags } from '../Tags';
-import icon from './RawXZ.webp';
+import icon from './RawNaver.webp';
 import { type Chapter, DecoratableMangaScraper, type Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 
@@ -19,8 +19,8 @@ function CleanTitle(title: string): string {
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
-    public constructor () {
-        super('rawxz', 'MiuRaw', 'https://miuraw.net', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Media.Manga, Tags.Language.Japanese, Tags.Source.Aggregator);
+    public constructor() {
+        super('rawxz', 'RawKis', 'https://rawkis.net', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Media.Manga, Tags.Language.Japanese, Tags.Source.Aggregator);
     }
 
     public override get Icon() {

@@ -31,7 +31,7 @@
     #FullScreen {
         width: 100%;
         height: 100%;
-        background-color: var(--cds-ui-01);
+        background-color: var(--cds-layer-01);
     }
     /*
     #Video {

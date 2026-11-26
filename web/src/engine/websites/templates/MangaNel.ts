@@ -33,7 +33,7 @@ export class MangaNel extends DecoratableMangaScraper {
         return chapters.map(({ chapter_slug: slug, chapter_name: name }) => new Chapter(this, manga, `${manga.Identifier}/${slug}`, name));
     }
 
-    public override async FetchPages(chapter: Chapter): Promise<Page[]> {
+    public override async FetchPages(chapter: Chapter): Promise<Grouple.MirroredPage[]> {
         const data = await FetchWindowScript<{ url: string, mirrors: string[] }[]>(new Request(new URL(chapter.Identifier, this.URI)), `
             new Promise(resolve => {
                 const mainserver = cdns.at(0);
@@ -44,6 +44,6 @@ export class MangaNel extends DecoratableMangaScraper {
                 }));
             });
         `, 1000);
-        return data.map(({ url, mirrors }) => new Page(this, chapter, new URL(url), { Referer: this.URI.href, mirrors }));
+        return data.map(({ url, mirrors }) => new Page(this, chapter, new URL(url), { Referer: this.URI.href, Mirrors: mirrors }));
     }
 }

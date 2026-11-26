@@ -3,6 +3,7 @@ import icon from './ManhwaWeb.webp';
 import { Chapter, DecoratableMangaScraper, Manga, type MangaPlugin, Page } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
 import { FetchJSON } from '../platform/FetchProvider';
+import { Delay } from '../BackgroundTimers';
 
 type APIMangas = {
     data: APIManga[];
@@ -16,9 +17,15 @@ type APIManga = {
 };
 
 type APIChapter = {
-    link: string;
+    link?: string;
     chapter: number;
     img: string[];
+    versions?: {
+        link: string;
+        joint: {
+            name: string;
+        }[];
+    }[];
 };
 
 type APIPages = {
@@ -28,10 +35,10 @@ type APIPages = {
 @Common.ImageAjax(undefined, true)
 export default class extends DecoratableMangaScraper {
 
-    private readonly apiURL = 'https://manhwawebbackend-production.up.railway.app';
+    private readonly apiURL = 'https://api.manhwaweb.com/';
 
-    public constructor () {
-        super('manhwaweb', 'ManhwaWeb', 'https://manhwaweb.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Media.Manga, Tags.Media.Novel, Tags.Language.Spanish, Tags.Source.Aggregator, Tags.Rating.Pornographic);
+    public constructor() {
+        super('manhwaweb', 'ManhwaWeb', 'https://manhwaweb.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Media.Manga, Tags.Media.Novel, Tags.Language.Spanish, Tags.Source.Aggregator, Tags.Rating.Pornographic, Tags.Accessibility.RegionLocked);
     }
 
     public override get Icon() {
@@ -52,6 +59,7 @@ export default class extends DecoratableMangaScraper {
         type This = typeof this;
         return Array.fromAsync(async function* (this: This) {
             for (let page = 0, run = true; run; page++) {
+                await Delay(750);
                 const { data } = await FetchJSON<APIMangas>(new Request(new URL(`./manhwa/library?estado=&tipo=&erotico=&demografia=&page=${page}`, this.apiURL)));
                 const mangas = data.map(({ _id, the_real_name: name }) => new Manga(this, provider, _id, name));
                 mangas.length > 0 ? yield* mangas : run = false;
@@ -61,7 +69,17 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const { chapters } = await FetchJSON<APIManga>(new Request(new URL(`./manhwa/see/${manga.Identifier}`, this.apiURL)));
-        return chapters.map(chapter => new Chapter(this, manga, chapter.link.split('/').pop(), `${chapter.chapter}`)).reverse();
+        return chapters
+            .sort((self, other) => other.chapter - self.chapter)
+            .reduce((aggregator: Chapter[], { chapter, versions, link }) => {
+                let title = `${chapter}`;
+                const chapters = !versions ? [new Chapter(this, manga, link.split('/').at(-1), title)] :
+                    versions.map(({ link, joint }) => {
+                        if (joint.length > 1) title += `[${joint.map(({name }) => name).join(', ')}]`;
+                        return new Chapter(this, manga, link.split('/').at(-1), title);
+                    });
+                return [...aggregator, ...chapters];
+            }, []);
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {

@@ -48,7 +48,6 @@ type APIPages = {
     title: element.content.trim()
 }))
 @Grouple.ImageWithMirrors()
-
 export default class extends DecoratableMangaScraper {
 
     private readonly apiURL = 'https://atsu.moe/api/';
@@ -83,8 +82,8 @@ export default class extends DecoratableMangaScraper {
             .map(({ id, title, scanlationMangaId }) => new Chapter(this, manga, id, [title, scanlators.length > 1 ? `[${scanlators.find(({ id }) => id === scanlationMangaId).name}]` : undefined].joinTitleSegments()));
     }
 
-    public override async FetchPages(chapter: Chapter): Promise<Page[]> {
+    public override async FetchPages(chapter: Chapter): Promise<Grouple.MirroredPage[]> {
         const { readChapter: { pages } } = await FetchJSON<APIPages>(new Request(new URL(`./read/chapter?mangaId=${chapter.Parent.Identifier}&chapterId=${chapter.Identifier}`, this.apiURL)));
-        return pages.map(({ image }) => new Page(this, chapter, new URL(image, this.URI), { mirrors: [new URL(image, this.CDN).href] }));
+        return pages.map(({ image }) => new Page(this, chapter, new URL(image, this.URI), { Mirrors: [new URL(image, this.CDN).href] }));
     }
 }

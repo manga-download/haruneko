@@ -1,7 +1,6 @@
 <script lang="ts">
     // UI : Carbon
     import 'carbon-components-svelte/css/all.css';
-    import './theme/hakuneko.css';
     import './theme/global.css';
     import { Content } from 'carbon-components-svelte';
     // Svelte
@@ -9,7 +8,6 @@
     import { onMount } from 'svelte';
 
     // UI: Components
-    import Theme from './components/Theme.svelte';
     import MediaSelect from './components/MediaSelect.svelte';
     import MediaItemSelect from './components/MediaItemSelect.svelte';
     import DownloadsStatus from './components/DownloadManagerStatus.svelte';
@@ -21,6 +19,7 @@
     import { Settings } from './stores/Settings.svelte';
     import { Store as UI} from './stores/Stores.svelte';
     import StartupGuide from './components/startupguide/StartupGuide.svelte';
+    import Theme from './components/Theme.svelte';
 
     let resolveFinishLoading: () => void;
     export const FinishLoading = Promise.race([
@@ -38,48 +37,48 @@
 </script>
 
 <UserMessage />
+<Theme />
 {#if Settings.StartupGuideEnabled.Value}
     <StartupGuide/>
 {/if}
 
-<Theme theme={Settings.Theme.Value}>
-    <AppBar
-        onHome={() => {
-            UI.selectedItem = null;
-            UI.contentscreen = '/';
-        }}
-    />
+<AppBar
+    onHome={() => {
+        UI.selectedItem = null;
+        UI.contentscreen = '/';
+    }}
+/>
 
-    <Content
-        id="hakunekoapp"
-        class={Settings.ContentPanel.Value ? 'ui-mode-content' : 'ui-mode-download'}
-    >
-        <MediaSelect />
-        <MediaItemSelect />
-        {#if Settings.ContentPanel.Value}
-            <div id="Content" transition:fade>
-                {#if UI.selectedItem}
-                    <Viewer item={UI.selectedItem} />
-                {:else if showHome}
-                    <ContentPage />
-                {/if}
-            </div>
-        {/if}
-        <div id="Bottom">
-            <DownloadsStatus />
+<Content
+    id="hakunekoapp"
+    class={Settings.ContentPanel.Value ? 'ui-mode-content' : 'ui-mode-download'}
+>
+    <MediaSelect />
+    <MediaItemSelect />
+    {#if Settings.ContentPanel.Value}
+        <div id="Content" transition:fade>
+            {#if UI.selectedItem}
+                <Viewer item={UI.selectedItem} />
+            {:else if showHome}
+                <ContentPage />
+            {/if}
         </div>
-    </Content>
-</Theme>
+    {/if}
+    <div id="Bottom">
+        <DownloadsStatus />
+    </div>
+</Content>
+
 
 <style>
     :global(::-webkit-scrollbar) {
         width: 1em; /* Necessary so scrollbar changes from default*/
     }
     :global(::-webkit-scrollbar-track) {
-        background: var(--cds-ui-background); /* Background of scrollbar */
+        background: var(--cds-background); /* Background of scrollbar */
     }
     :global(::-webkit-scrollbar-thumb) {
-        background: var(--cds-active-ui); /* Scroll marker */
+        background: var(--cds-background-active); /* Scroll marker */
         border-radius: 2em; /* So marker has rounded edges */
     }
     :global(#hakunekoapp) {

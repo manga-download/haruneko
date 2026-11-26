@@ -48,10 +48,6 @@ type APIMedia = {
     };
 };
 
-type PageParameters = {
-    mirrors: string[];
-};
-
 const chapterLanguageMap = new Map([
     ['ar', [Tags.Language.Arabic]],
     ['bg', []],
@@ -171,11 +167,11 @@ export default class extends DecoratableMangaScraper {
             });
     }
 
-    public override async FetchPages(chapter: Chapter): Promise<Page<PageParameters>[]> {
+    public override async FetchPages(chapter: Chapter): Promise<Grouple.MirroredPage[]> {
         const { baseUrl, chapter: { hash, data: files } } = await this.FetchAPI<APIMedia>(`./at-home/server/${chapter.Identifier}`);
         return files.map(file => {
             const slug = ['/data', hash, file].join('/');
-            return new Page(this, chapter, new URL(`https://uploads.mangadex.org${slug}`), { Referer: this.URI.href, mirrors: [baseUrl + slug] });
+            return new Page(this, chapter, new URL(`https://uploads.mangadex.org${slug}`), { Referer: this.URI.href, Mirrors: [baseUrl + slug] });
         });
     }
 

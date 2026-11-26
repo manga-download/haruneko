@@ -5,6 +5,7 @@ new TestFixture({
         id: 'manhwaweb',
         title: 'ManhwaWeb'
     },
+    /* Geoblocking : Spain ?
     container: {
         url: 'https://manhwaweb.com/manhwa/pequea-acosadora_1761090368216',
         id: 'pequea-acosadora_1761090368216',
@@ -18,5 +19,5 @@ new TestFixture({
         index: 2,
         size: 450_536,
         type: 'image/webp'
-    }
+    }*/
 }).AssertWebsite();
