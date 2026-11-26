@@ -8,6 +8,8 @@ import { TaskPool, Priority } from '../taskpool/TaskPool';
 import { RateLimit } from '../taskpool/RateLimit';
 import { Exception } from '../Error';
 import { WebsiteResourceKey as R } from '../../i18n/ILocale';
+import { GetBytesFromUTF8, GetUTF8FromBytes } from '../BufferEncoder';
+import type { NormalizedPRNG } from '../Random';
 
 type APIMangas = {
     data: {
@@ -19,24 +21,99 @@ type APIMangas = {
     };
 };
 
-type ImageLinks = {
-    link: string;
-    tiles?: Record<string, TileGroup>;
-}[];
-
-type TileGroup = {
-    tileWidth: number;
-    tileHeight: number;
-    tiles: {
-        x: number;
-        y: number;
-    }[];
-    indexmap: number[];
+type PagesData = {
+    links: string[];
+    scrambled: boolean;
 };
 
 type PageData = {
-    scrambled?: string;
+    scrambled: boolean;
 };
+
+type Point = { x: number; y: number; };
+
+// Implement https://github.com/davidbau/seedrandom
+export class SeedRandom {
+
+    constructor(private readonly deriveIndex: (index: number) => number) { }
+
+    /**
+     * Create a selection shuffle using normalized floating point numbers in the range `[0, 1)`.
+     */
+    public static WithScaledDerivation(normalizedNumbers: Iterator<number>) {
+        return new SeedRandom(index => Math.floor(normalizedNumbers.next().value * (index + 1)));
+    }
+
+    /**
+     * Returns a new array by repeatedly selecting an element from the remaining values.
+     */
+    public Shuffle<T>(...values: T[]): T[] {
+        const result: T[] = [];
+        while (values.length > 0) {
+            result.push(values.splice(this.deriveIndex(values.length - 1), 1)[0]);
+        }
+        return result;
+    }
+}
+
+/**
+ * Creates the normalized ARC4-based generator used by seedrandom for a string seed.
+ * This is not standard ARC4: it mixes the seed and discards the first 256 bytes.
+ */
+export function* ARC4Custom(seed: string): NormalizedPRNG {
+    const width = 256;
+    const mask = width - 1;
+    const key = new Array(width).fill(0);
+    let smear = 0;
+    for (let k = 0; k < seed.length; k++) {
+        smear = smear ^ key[mask & k] * 19;
+        key[mask & k] = mask & smear + seed.charCodeAt(k);
+    }
+    const effectiveKey = seed.length === 0 ? [0] : key.slice(0, Math.min(seed.length, width));
+    const state = Array.from({ length: width }, (_, index) => index);
+    let i = 0;
+    let j = 0;
+
+    for (let k = 0, currentJ = 0; k < width; k++) {
+        currentJ = mask & currentJ + effectiveKey[k % effectiveKey.length] + state[k];
+        [state[k], state[currentJ]] = [state[currentJ], state[k]];
+    }
+
+    function generate(count: number): number {
+        let result = 0;
+        for (let n = 0; n < count; n++) {
+            i = mask & i + 1;
+            const t = state[i];
+            j = mask & j + t;
+            const sj = state[j];
+            state[i] = sj;
+            state[j] = t;
+            result = result * width + state[mask & sj + t];
+        }
+        return result;
+    }
+
+    generate(width);
+    const startDenominator = width ** 6;
+    const significance = 2 ** 52;
+    const overflow = significance * 2;
+    for (; ;) {
+        let n = generate(6);
+        let d = startDenominator;
+        let x = 0;
+        while (n < significance) {
+            n = (n + x) * width;
+            d *= width;
+            x = generate(1);
+        }
+        while (n >= overflow) {
+            n /= 2;
+            d /= 2;
+            x = x >>> 1;
+        }
+        yield (n + x) / d;
+    }
+}
 
 @Common.MangaCSS(/^https:\/\/(jp\.)?piccoma\.com\/web\/product\/\d+/, '.PCM-productTitle, .PCM-headTitle_name', (element, uri) => ({
     id: uri.pathname.match(/\/web\/product\/(\d+)/).at(1),
@@ -109,9 +186,21 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page<PageData>[]> {
-        const data = await FetchWindowScript<ImageLinks>(new Request(new URL(`./web/viewer/${chapter.Parent.Identifier}/${chapter.Identifier}`, this.URI)), pageScript, 2500, 60_000);
-        if (data.length === 0) throw new Exception(R.Plugin_Common_Chapter_UnavailableError);
-        return data.map(({ link, tiles }) => new Page<PageData>(this, chapter, new URL(link), { scrambled: JSON.stringify(tiles) }));
+        const { links, scrambled } = await FetchWindowScript<PagesData>(new Request(new URL(`./web/viewer/${chapter.Parent.Identifier}/${chapter.Identifier}`, this.URI)), `
+            new Promise (resolve => {
+                if (!window._pdata_) {
+                    resolve({ links: [], scrambled: false });
+                } else 
+                resolve({
+                    links : (window._pdata_.img ?? window._pdata_.content).filter(img => img.path).map(img => 'https:'+img.path),
+                    scrambled : window._pdata_.isScrambled
+	            });
+            });
+        `, 2500);
+
+        if (links.length === 0) throw new Exception(R.Plugin_Common_Chapter_UnavailableError);
+
+        return links.map(link => new Page<PageData>(this, chapter, new URL(link), { scrambled }));
     }
 
     public override async FetchImage(page: Page<PageData>, priority: Priority, signal: AbortSignal): Promise<Blob> {
@@ -119,169 +208,66 @@ export default class extends DecoratableMangaScraper {
         if (!page.Parameters?.scrambled) {
             return blob;
         }
+
+        const seed = this.ExtractSeed(page.Link);
         return DeScramble(blob, async (bitmap, ctx) => {
-            const scrambled: Record<string, TileGroup> = JSON.parse(page.Parameters.scrambled as string);
-            for (const key in scrambled) {
-                const group = scrambled[key];
-                for (let index = 0; index < group.tiles.length; index++) {
-                    const d = group.tiles[index];
-                    const s = group.tiles[group.indexmap[index]];
-                    ctx.drawImage(bitmap, s.x, s.y, group.tileWidth, group.tileHeight, d.x, d.y, group.tileWidth, group.tileHeight);
+            const width = bitmap.width;
+            const height = bitmap.height;
+
+            const TILE_SIZE = 50;
+
+            const columns = Math.ceil(width / TILE_SIZE);
+            const rows = Math.ceil(height / TILE_SIZE);
+
+            const tileGroups = new Map<string, { tiles: Point[], w: number, h: number }>();
+
+            for (let index = 0; index < columns * rows; index++) {
+                const x = index % columns * TILE_SIZE;
+                const y = Math.floor(index / columns) * TILE_SIZE;
+                const w = x + TILE_SIZE > width ? width - x : TILE_SIZE;
+                const h = y + TILE_SIZE > height ? height - y : TILE_SIZE;
+
+                const key = `${w},${h}`;
+                if (!tileGroups.has(key)) {
+                    tileGroups.set(key, { tiles: [], w, h });
+                }
+                tileGroups.get(key)!.tiles.push({ x, y });
+            }
+
+            for (const group of tileGroups.values()) {
+                const { tiles, w, h } = group;
+                const shuffled = SeedRandom.WithScaledDerivation(ARC4Custom(seed)).Shuffle(...tiles);
+
+                for (let i = 0; i < tiles.length; i++) {
+                    const dest = tiles[i];
+                    const src = shuffled[i];
+                    ctx.drawImage(
+                        bitmap,
+                        src.x, src.y, w, h,
+                        dest.x, dest.y, w, h
+                    );
                 }
             }
         });
     }
-}
-/*
-type PData = {
-    isScrambled: boolean;
-    img?: PDataImage[];
-    contents?: PDataImage[];
-};
-*/
-/*
-type PDataImage = {
-    path: string;
-    width: number;
-    height: number;
-};*/
 
-const pageScript = `
-    new Promise(async (resolve, reject) => {
-        try {
-            function extractSeed(path) {
-                const imgUrl = new URL(path, window.location.href);
-                const checksum = imgUrl.pathname.split('/').at(-2);
-                const expiration = imgUrl.searchParams.get('expires');
-                const sum = expiration.split('').reduce((accumulator, character) => accumulator + parseInt(character), 0);
-                const residualIndex = sum % checksum.length;
-                const seed = checksum.slice(-residualIndex) + checksum.slice(0, -residualIndex);
-                return globalThis.dd ? globalThis.dd(seed, expiration) : seed;
+    private ExtractSeed(imgUrl: URL): string {
+        const checksum = imgUrl.pathname.split('/').at(-2);
+        const expiration = imgUrl.searchParams.get('expires');
+        const sum = expiration.split('').reduce((accumulator, character) => accumulator + parseInt(character), 0);
+        const residualIndex = sum % checksum.length;
+        const seed = checksum.slice(-residualIndex) + checksum.slice(0, -residualIndex);
+        return this.RotateSeed(seed);
+    }
+
+    private RotateSeed(seed: string): string {
+        const bytes = GetBytesFromUTF8(seed);
+        for (let i = 0; i < bytes.length; i++) {
+            // Check if the i-th bit of the bitmask is set to 1
+            if ((3236551 >> i & 1) === 1) {
+                bytes[i] ^= 1; // XOR the byte with 1
             }
-
-            function extractGroupedTileMaps(img, seed, tileSize) {
-                const columns = Math.ceil(img.width / tileSize);
-                const tileCount = columns * Math.ceil(img.height / tileSize);
-                const groupedTileMaps = {};
-                for (let index = 0; index < tileCount; index++) {
-                    const row = Math.floor(index / columns);
-                    const column = index - row * columns;
-                    const offsetX = column * tileSize;
-                    const offsetY = row * tileSize;
-                    const tileWidth = offsetX + tileSize > img.width ? img.width - offsetX : tileSize;
-                    const tileHeight = offsetY + tileSize > img.height ? img.height - offsetY : tileSize;
-                    const group = tileWidth.toString()+ '-'+tileHeight.toString();
-                    if (!groupedTileMaps[group]) {
-                        groupedTileMaps[group] = { tileWidth, tileHeight, tiles: [], indexmap: [] };
-                    }
-                    groupedTileMaps[group].tiles.push({ x: offsetX, y: offsetY });
-                }
-
-                for (const key in groupedTileMaps) {
-                    const group = groupedTileMaps[key];
-                    group.indexmap = globalThis.shuffleSeed.shuffle(group.tiles.map((_, index) => index), seed);
-                }
-
-                return groupedTileMaps;
-            }
-
-            async function LoadImage(src) {
-                return new Promise((resolve, reject) => {
-                    const img = new Image();
-                    img.onload = () => resolve(img);
-                    img.onerror = reject;
-                    img.src = src;
-                });
-            }
-
-            const pdata = (globalThis._pdata_ ?? globalThis.__NEXT_DATA__?.props?.pageProps?.initialState?.viewer?.pData);
-            const images = await Promise.all(
-                (pdata?.img ?? pdata?.contents ?? [])
-                    .filter((img) => img.path)
-                    .map(async (img) => {
-                        const uri = new URL(img.path, window.location.origin);
-                        const seed = extractSeed(img.path);
-                        const image = pdata.isScrambled ? await LoadImage(uri.href) : undefined; //we need REAL image dimensions to solve the puzzle, not the ones from pdata
-                        return {
-                            link: uri.href,
-                            tiles: pdata.isScrambled ? extractGroupedTileMaps(image, seed, 50) : undefined,
-                        };
-                    })
-            );
-            resolve(images);
-        } catch (error) {
-            reject(error);
         }
-    });
-`;
-
-/*
-export async function script(this: Window) {
-    return new Promise<ImageLinks>(async (resolve, reject) => {
-        try {
-            function extractSeed(path: string): string {
-                const imgUrl = new URL(path, window.location.href);
-                const checksum = imgUrl.pathname.split('/').at(-2);
-                const expiration = imgUrl.searchParams.get('expires');
-                const sum = expiration.split('').reduce((accumulator, character) => accumulator + parseInt(character), 0);
-                const residualIndex = sum % checksum.length;
-                const seed = checksum.slice(-residualIndex) + checksum.slice(0, -residualIndex);
-                return globalThis.dd ? globalThis.dd(seed, expiration) : seed;
-            }
-
-            function extractGroupedTileMaps(img: HTMLImageElement, seed: string, tileSize: number) {
-                const columns = Math.ceil(img.width / tileSize);
-                const tileCount = columns * Math.ceil(img.height / tileSize);
-                const groupedTileMaps: Record<string, TileGroup> = {};
-                for (let index = 0; index < tileCount; index++) {
-                    const row = Math.floor(index / columns);
-                    const column = index - row * columns;
-                    const offsetX = column * tileSize;
-                    const offsetY = row * tileSize;
-                    const tileWidth = offsetX + tileSize > img.width ? img.width - offsetX : tileSize;
-                    const tileHeight = offsetY + tileSize > img.height ? img.height - offsetY : tileSize;
-                    const group = `${tileWidth}-${tileHeight}`;
-                    if (!groupedTileMaps[group]) {
-                        groupedTileMaps[group] = { tileWidth, tileHeight, tiles: [], indexmap: [] };
-                    }
-                    groupedTileMaps[group].tiles.push({ x: offsetX, y: offsetY });
-                }
-
-                for (const key in groupedTileMaps) {
-                    const group = groupedTileMaps[key];
-                    group.indexmap = globalThis.shuffleSeed.shuffle(group.tiles.map((_, index) => index), seed);
-                }
-
-                return groupedTileMaps;
-            }
-
-            async function LoadImage(src: string): Promise<HTMLImageElement> {
-                return new Promise((resolve, reject) => {
-                    const img = new Image();
-                    img.onload = () => resolve(img);
-                    img.onerror = reject;
-                    img.src = src;
-                });
-            }
-
-            const pdata = (globalThis._pdata_ ?? globalThis.__NEXT_DATA__?.props?.pageProps?.initialState?.viewer?.pData) as PData;
-            const images: ImageLinks = await Promise.all(
-                (pdata?.img ?? pdata?.contents ?? [])
-                    .filter((img) => img.path)
-                    .map(async (img) => {
-                        const uri = new URL(img.path, window.location.origin);
-                        const seed = extractSeed(img.path);
-                        const image = await LoadImage(uri.href); //we need REAL image dimensions to solve the puzzle, not the ones from pdata
-                        return {
-                            link: uri.href,
-                            tiles: pdata.isScrambled ? extractGroupedTileMaps(image, seed, 50) : undefined,
-                        };
-                    })
-            );
-            resolve(images);
-        } catch (error) {
-            reject(error);
-        }
-    });
+        return GetUTF8FromBytes(bytes);
+    }
 }
-*/

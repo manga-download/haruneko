@@ -36,7 +36,6 @@ new TestFixture({
     child: {
         id: '367170',
         title: '1',
-        timeout: 60_000 // need to load all pictures, could take a while
     },
     entry: {
         index: 0,
