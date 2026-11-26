@@ -7,7 +7,7 @@ import * as Common from './decorators/Common';
 export default class extends InitManga {
 
     public constructor() {
-        super('ragnarscans', 'Ragnar Scans', 'https://ragnarscans.net', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Turkish, Tags.Source.Aggregator);
+        super('ragnarscans', 'Ragnar Scans', 'https://ragnarscans2.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Turkish, Tags.Source.Aggregator);
     }
 
     public override get Icon() {

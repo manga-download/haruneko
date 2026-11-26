@@ -6,7 +6,7 @@ new TestFixture({
         title: 'Manga Online Blog'
     },
     container: {
-        url: 'https://mangaonline.red/manga/eleceed/',
+        url: 'https://mangaonline.love/manga/eleceed/',
         id: '/manga/eleceed/',
         title: 'Eleceed',
     },
@@ -16,7 +16,7 @@ new TestFixture({
     },
     entry: {
         index: 1,
-        size: 582_502,
+        size: 250_838,
         type: 'image/webp'
     }
 }).AssertWebsite();

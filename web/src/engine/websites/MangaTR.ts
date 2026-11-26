@@ -1,21 +1,27 @@
 ﻿import { Tags } from '../Tags';
 import icon from './MangaTR.webp';
+import { HashUTF8 } from '../Crypto';
+import { GetHexFromBytes } from '../BufferEncoder';
+import { FisherYates, XorShift32 } from '../Random';
 import { FetchHTML, FetchWindowPreloadScript, FetchWindowScript } from '../platform/FetchProvider';
 import { Chapter, DecoratableMangaScraper, Manga, type MangaPlugin, Page } from '../providers/MangaPlugin';
 import { AddAntiScrapingDetection, FetchRedirection } from '../platform/AntiScrapingDetection';
 import type { Priority } from '../taskpool/DeferredTask';
 import DeScramble from '../transformers/ImageDescrambler';
 import * as Common from './decorators/Common';
-import { RandomText } from '../Random';
 
-type EncodedPagesData = {
-    order?: string; //stringified array of number
-    parts: string; //stringified array of string
+type PageParameters = {
+    parts?: string[];
+    seed: number;
+    grid: number;
 };
 
-type PageOrder = {
-    order: number[];
-};
+const transformations = new Map([
+    [0, { x: 1, y: 1 }],
+    [1, { x: -1, y: 1 }],
+    [2, { x: 1, y: -1 }],
+    [3, { x: -1, y: -1 }],
+]);
 
 AddAntiScrapingDetection(async (invoke) => {
     const result = await invoke<boolean>(`document.title === 'Bot Koruması' && document.querySelector('canvas#sliderCanvas') != undefined`);
@@ -33,7 +39,14 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async Initialize(): Promise<void> {
-        return FetchWindowScript(new Request(new URL('/manga-list.html', this.URI)), `window.cookieStore.set('read_type', '1')`);
+        return FetchWindowScript(new Request(new URL('/manga-list.html', this.URI)), `
+            // The 'read_only' cookie is HttpOnly => Cannot be replaced via cookieStore.set('read_type', '1'), only via HTTP response
+            fetch('/app/manga/controllers/cont.readType.php', {
+                method: 'POST',
+                body: new URLSearchParams({ action: 'type', type: '1' }),
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
+            });
+        `);
     }
 
     public override ValidateMangaURL(url: string): boolean {
@@ -41,9 +54,9 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
-        const mangaUrl = new URL(url);
-        const title = await FetchWindowScript<string>(new Request(mangaUrl), `document.querySelector('.bento-hero-title').textContent.trim()`, 1500);
-        return new Manga(this, provider, mangaUrl.pathname, title);
+        const uri = new URL(url);
+        const title = await FetchWindowScript<string>(new Request(uri), `document.querySelector('.bento-hero-title').textContent.trim()`, 1500);
+        return new Manga(this, provider, uri.pathname, title);
     }
 
     public override async FetchMangas(provider: MangaPlugin): Promise<Manga[]> {
@@ -54,132 +67,141 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const initialKey = await FetchWindowScript<string>(new Request(new URL(manga.Identifier, this.URI)), `window.mtrChapterKeys.listKey`, 500);
+        const uri = new URL(manga.Identifier, this.URI);
+
+        const eventName = crypto.randomUUID();
+        const preload = `
+            crypto.subtle.digest = new Proxy( crypto.subtle.digest, {
+                apply(target, thisArg, argArray) {
+                    try {
+                        const { tur, manga } = document.querySelector('#results')?.dataset;
+                        const result = { tur, raw: new TextDecoder().decode(new Uint8Array(argArray[1])) };
+                        if (manga && result.raw.startsWith(manga)) setInterval(() => window.dispatchEvent(new CustomEvent('${eventName}', { detail: result })), 250);
+                    } catch { }
+                    return Reflect.apply(target, crypto.subtle, argArray);
+                }
+            });
+        `;
+        const script = `new Promise(resolve => window.addEventListener('${eventName}', event => resolve(event.detail), { once: true }));`;
+
+        const { raw, tur } = await FetchWindowPreloadScript<{ tur: string, raw: string }>(new Request(uri), preload, script, 0);
+        const [mangaSlug, seed] = raw.split('_');
         type This = typeof this;
         return Array.fromAsync(async function* (this: This) {
-            for (let page = 1, chapter_list_key = initialKey; chapter_list_key; page++) {
-                const doc = await FetchHTML(new Request(new URL('/cek/fetch_pages_manga.php', this.URI), {
+            for (let page = 1, run = true; run; page++) {
+                const { ts, sig } = await this.Sign(mangaSlug, seed);
+                const dom = await FetchHTML(new Request(new URL('/cek/fetch_pages_manga.php', this.URI), {
                     headers: {
+                        'Referer': uri.href,
+                        'Origin': this.URI.origin, // TODO: really required?
                         'X-Requested-With': 'XMLHttpRequest',
-                        Origin: this.URI.origin,
-                        Referer: this.URI.href,
-                        'Sec-Fetch-Site': 'same-origin'
+                        "Sec-Fetch-Site": "same-origin",
+                        "Sec-Fetch-Dest": "empty",
+                        "Sec-Fetch-Mode": "cors",
                     },
                     credentials: 'include',
                     method: 'POST',
                     body: new URLSearchParams({
-                        chapter_list_key
-                    })
+                        manga: mangaSlug,
+                        page: `${page}`,
+                        tur,
+                        _t: `${ts}`,
+                        _sig: sig
+                    }),
                 }));
 
-                const chapters = [...doc.querySelectorAll<HTMLAnchorElement>('a.bento-ep-title-link')].map(anchor => {
+                const chapters = [...dom.querySelectorAll<HTMLAnchorElement>('a.bento-ep-title-link')].map(anchor => {
                     return new Chapter(this, manga, anchor.pathname, anchor.text.replace(manga.Title, '').trim() || anchor.text.trim());
                 });
                 yield* chapters;
-                chapter_list_key = doc.querySelector<HTMLElement>(`a.pagination-link[data-page="${page + 1}"]`)?.dataset.key;
+
+                run = dom.querySelector<HTMLInputElement>('input#has-more-chapters')?.value === '1';
             }
         }.call(this));
     }
 
-    public override async FetchPages(chapter: Chapter): Promise<Page<PageOrder>[]> {
-        const eventName = RandomText(Math.random() * 8 + 8);
+    private async Sign(mangaSlug: string, seed: string){
+        const ts = Math.floor(Date.now() / 1000);
+        return { ts, sig: GetHexFromBytes(await HashUTF8('SHA-256', `${mangaSlug}_${seed}_${ts}`)) };
+    }
+
+    public override async FetchPages(chapter: Chapter): Promise<Page<PageParameters>[]> {
+        const eventName = crypto.randomUUID();
         const preload = `
-            JSON.parse = new Proxy(JSON.parse, {
-              apply(target, thisArg, argumentsList) {
-                const result = Reflect.apply(target, thisArg, argumentsList);
-                if (result.cls && result.data && result.key){
-					try{
-						const pagekey = [...document.querySelector('script[type="application/json"][id^="rdm-"]').attributes].find(att => /[0-9a-f]{32}/.test(att.value)).value;
-						const myobject = Object.assign({}, result, {});
-						myobject.pagekey =  pagekey;
-						setInterval(() => window.dispatchEvent(new CustomEvent('${eventName}', { detail: myobject })), 250);
-					} catch {}
-				}
-                return result;
-              }
-            });
+            (() => {
+                const nativeJsonParse = JSON.parse;
+                JSON.parse = new Proxy(JSON.parse, {
+                    apply(target, thisArg, argArray) {
+                        const result = Reflect.apply(target, thisArg, argArray);
+                        if (result.cls && result.data && result.key) {
+                            try {
+                                JSON.parse = nativeJsonParse;
+                                setInterval(() => window.dispatchEvent(new CustomEvent('${eventName}', { detail: result })), 250);
+                            } catch { }
+                        }
+                        return result;
+                    }
+                });
+            })();
         `;
-
         const pageScript = `
-            new Promise(resolve => {
+            new Promise((resolve, reject) => {
 
-	            function decrypt(encryptedStr, key) {
-                    if (!encryptedStr) return undefined;
-		            const base64 = encryptedStr.replace(/-/g, '+').replace(/_/g, '/');
-		            const binaryString = atob(base64);
-
-		            const bytes = new Uint8Array(binaryString.length);
-		            for (let i = 0; i < binaryString.length; i++) {
-			            bytes[i] = binaryString.charCodeAt(i);
-		            }
-
-		            for (let i = 0; i < bytes.length; i++) {
-			            bytes[i] = bytes[i] ^ key.charCodeAt(i % key.length);
-		            }
-		            return new TextDecoder().decode(bytes);
+	            function decrypt(encoded, key) {
+                    if (!encoded) return undefined;
+		            const encrypted = atob(encoded.replace(/-/g, '+').replace(/_/g, '/'));
+		            const bytes = new Uint8Array(encrypted.length)
+                        .map((_, index) => encrypted.charCodeAt(index) ^ key.charCodeAt(index % key.length));
+                    return JSON.parse(new TextDecoder().decode(bytes));
 	            }
 
 	            window.addEventListener('${eventName}', event => {
-		            const {cls, data, key, pagekey} = event.detail;
-		            const pages = [...document.querySelectorAll('.'+ cls.page)];
-		 
-		            resolve (pages.map(el=> {
-			            const parts = decrypt(el.getAttribute(data.parts), "attr|"+ pagekey +"|reader");
-			            const order = decrypt(el.getAttribute(data.order), "order|"+ pagekey +"|reader");
-			            return ({ order, parts });
-		            }));
-	            } , { once: true });
+					try {
+    		            const { cls, data, key, grid, seeds } = event.detail;
+    		            const pages = [...document.querySelectorAll('.'+ cls.page)].map(element => {
+    			            const parts = decrypt(element.getAttribute(data.parts), 'attr|' + key +'|reader');
+                            const pageIndex = element.getAttribute(data.pageIndex);
+                            const seed = seeds?.[pageIndex] ?? seeds?.[0] ?? 0;
+    			            return ({ parts, seed, grid });
+    		            });
+    		            resolve(pages);
+					} catch(error) {
+					    reject(error);
+					}
+	            }, { once: true });
             });
         `;
 
-        const elements = await FetchWindowPreloadScript<EncodedPagesData[]>(new Request(new URL(chapter.Identifier, this.URI)), preload, pageScript, 0);
-        return elements.map(({ order, parts }) => {
-            const imageUrl = (<string[]>JSON.parse(parts)).at(0);
-            return new Page<PageOrder>(this, chapter, new URL(imageUrl), { Referer: this.URI.href, order: order ? JSON.parse(order): undefined });
+        const elements = await FetchWindowPreloadScript<PageParameters[]>(new Request(new URL(chapter.Identifier, this.URI)), preload, pageScript, 0);
+        return elements.map(({ parts, seed, grid }) => {
+            return new Page<PageParameters>(this, chapter, new URL(parts.at(0)), { Referer: this.URI.href, seed, grid });
         });
     }
 
-    public override async FetchImage(page: Page<PageOrder>, priority: Priority, signal: AbortSignal): Promise<Blob> {
-        const { order } = page.Parameters;
+    public override async FetchImage(page: Page<PageParameters>, priority: Priority, signal: AbortSignal): Promise<Blob> {
+        const { seed, grid } = page.Parameters;
         const blob = await Common.FetchImageAjax.call(this, page, priority, signal);
-        if (!order) return blob;
+        if (!seed || !grid) return blob;
 
         return DeScramble(blob, async (sourceImage, ctx) => {
-            const stripHeight = Math.floor(sourceImage.height / order.length);
-            const totalHeight = stripHeight * order.length;
+            const prng = XorShift32((seed & -1) >>> 0 || 123456789);
+            const pieces = FisherYates.WithModuloDerivation(prng)
+                .Shuffle(...new Array(grid ?? 2).keys())
+                .map((dstIndex, srcIndex) => ({ srcIndex, dstIndex, scale: transformations.get(prng.next().value % 4) }));
+            const blockWidth = sourceImage.width;
+            const blockHeight = sourceImage.height / pieces.length;
 
-            ctx.canvas.height = totalHeight;
-
-            order.forEach((code, sourceIndex) => {
-                const flip = Math.floor(code / 100);
-                const destination = code % 100;
-
-                const srcY = sourceIndex * stripHeight;
-                const top = destination * stripHeight;
-
+            for (const { srcIndex, dstIndex, scale } of pieces) {
+                const srcPosX = 0;
+                const srcPosY = srcIndex * blockHeight;
+                const dstPosX = 0;
+                const dstPosY = dstIndex * blockHeight;
                 ctx.save();
-
-                // Calculate scale factors (equivalent to Android's bitwise checks & scales)
-                const scaleX = (flip & 1) !== 0 ? -1 : 1;
-                const scaleY = (flip & 2) !== 0 ? -1 : 1;
-
-                const centerX = sourceImage.width / 2;
-                const centerY = top + stripHeight / 2;
-
-                // Apply transformations around the center of the strip
-                ctx.translate(centerX, centerY);
-                ctx.scale(scaleX, scaleY);
-                ctx.translate(-centerX, -centerY);
-
-                // Draw the sliced portion of the image onto the destination strip
-                ctx.drawImage(
-                    sourceImage,
-                    0, srcY, sourceImage.width, stripHeight, // Source rectangle
-                    0, top, sourceImage.width, stripHeight // Destination rectangle
-                );
-
+                ctx.translate(dstPosX + blockWidth / 2, dstPosY + blockWidth / 2);
+                ctx.scale(scale.x, scale.y);
+                ctx.drawImage(sourceImage, srcPosX, srcPosY, blockWidth, blockHeight, -0.5 * blockWidth, -0.5 * blockHeight, blockWidth, blockHeight);
                 ctx.restore();
-            });
+            }
         });
     }
 }
