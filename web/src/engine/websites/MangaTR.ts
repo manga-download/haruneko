@@ -1,27 +1,28 @@
 ﻿import { Tags } from '../Tags';
 import icon from './MangaTR.webp';
-import { HashUTF8 } from '../Crypto';
-import { GetHexFromBytes } from '../BufferEncoder';
-import { FisherYates, XorShift32 } from '../Random';
-import { FetchHTML, FetchWindowPreloadScript, FetchWindowScript } from '../platform/FetchProvider';
+import { HashUTF8, XOR } from '../Crypto';
+import { GetBytesFromUTF8, GetHexFromBytes, GetUTF8FromBytes } from '../BufferEncoder';
+import { Fetch, FetchHTML, FetchWindowPreloadScript, FetchWindowScript } from '../platform/FetchProvider';
 import { Chapter, DecoratableMangaScraper, Manga, type MangaPlugin, Page } from '../providers/MangaPlugin';
 import { AddAntiScrapingDetection, FetchRedirection } from '../platform/AntiScrapingDetection';
 import type { Priority } from '../taskpool/DeferredTask';
 import DeScramble from '../transformers/ImageDescrambler';
 import * as Common from './decorators/Common';
+import { Delay } from '../BackgroundTimers';
+import { DrmProvider } from './MangaTR.DRM';
 
-type PageParameters = {
-    parts?: string[];
-    seed: number;
-    grid: number;
+type ChapterData = {
+    tickets: string[];
+    readerSid: string;
+    pagesCount: number;
 };
 
-const transformations = new Map([
-    [0, { x: 1, y: 1 }],
-    [1, { x: -1, y: 1 }],
-    [2, { x: 1, y: -1 }],
-    [3, { x: -1, y: -1 }],
-]);
+type PageInfo = {
+    index: number;
+    url?: string;
+    tk: number;
+    ticket: string;
+};
 
 AddAntiScrapingDetection(async (invoke) => {
     const result = await invoke<boolean>(`document.title === 'Bot Koruması' && document.querySelector('canvas#sliderCanvas') != undefined`);
@@ -29,6 +30,7 @@ AddAntiScrapingDetection(async (invoke) => {
 }, /^https:\/\/manga-tr\.com/);
 
 export default class extends DecoratableMangaScraper {
+    #Drm = new DrmProvider();
 
     public constructor() {
         super('mangatr', 'Manga-TR', 'https://manga-tr.com', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Language.Turkish, Tags.Source.Aggregator);
@@ -68,7 +70,6 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
         const uri = new URL(manga.Identifier, this.URI);
-
         const eventName = crypto.randomUUID();
         const preload = `
             crypto.subtle.digest = new Proxy( crypto.subtle.digest, {
@@ -120,88 +121,108 @@ export default class extends DecoratableMangaScraper {
         }.call(this));
     }
 
-    private async Sign(mangaSlug: string, seed: string){
+    private async Sign(mangaSlug: string, seed: string) {
         const ts = Math.floor(Date.now() / 1000);
         return { ts, sig: GetHexFromBytes(await HashUTF8('SHA-256', `${mangaSlug}_${seed}_${ts}`)) };
     }
 
-    public override async FetchPages(chapter: Chapter): Promise<Page<PageParameters>[]> {
-        const eventName = crypto.randomUUID();
-        const preload = `
-            (() => {
-                const nativeJsonParse = JSON.parse;
-                JSON.parse = new Proxy(JSON.parse, {
-                    apply(target, thisArg, argArray) {
-                        const result = Reflect.apply(target, thisArg, argArray);
-                        if (result.cls && result.data && result.key) {
-                            try {
-                                JSON.parse = nativeJsonParse;
-                                setInterval(() => window.dispatchEvent(new CustomEvent('${eventName}', { detail: result })), 250);
-                            } catch { }
-                        }
-                        return result;
-                    }
-                });
-            })();
-        `;
-        const pageScript = `
-            new Promise((resolve, reject) => {
-
-	            function decrypt(encoded, key) {
-                    if (!encoded) return undefined;
-		            const encrypted = atob(encoded.replace(/-/g, '+').replace(/_/g, '/'));
-		            const bytes = new Uint8Array(encrypted.length)
-                        .map((_, index) => encrypted.charCodeAt(index) ^ key.charCodeAt(index % key.length));
-                    return JSON.parse(new TextDecoder().decode(bytes));
-	            }
-
-	            window.addEventListener('${eventName}', event => {
-					try {
-    		            const { cls, data, key, grid, seeds } = event.detail;
-    		            const pages = [...document.querySelectorAll('.'+ cls.page)].map(element => {
-    			            const parts = decrypt(element.getAttribute(data.parts), 'attr|' + key +'|reader');
-                            const pageIndex = element.getAttribute(data.pageIndex);
-                            const seed = seeds?.[pageIndex] ?? seeds?.[0] ?? 0;
-    			            return ({ parts, seed, grid });
-    		            });
-    		            resolve(pages);
-					} catch(error) {
-					    reject(error);
-					}
-	            }, { once: true });
+    public override async FetchPages(chapter: Chapter): Promise<Page[]> {
+        const { tickets, readerSid, pagesCount } = await FetchWindowScript<ChapterData>(new Request(new URL(chapter.Identifier, this.URI)), `
+            new Promise(resolve => {
+	            resolve({
+		            tickets: MTR_BATCH_TICKETS,
+		            readerSid: MTR_READER_SID ?? '',
+		            pagesCount: [...document.querySelectorAll(".reader-page-wrap, .reader-webtoon-wrap")].length
+	            });
             });
-        `;
+        `, 750);
 
-        const elements = await FetchWindowPreloadScript<PageParameters[]>(new Request(new URL(chapter.Identifier, this.URI)), preload, pageScript, 0);
-        return elements.map(({ parts, seed, grid }) => {
-            return new Page<PageParameters>(this, chapter, new URL(parts.at(0)), { Referer: this.URI.href, seed, grid });
-        });
+        const pagesMap = new Map<number, PageInfo>();
+        let pageIndex = 0;
+
+        while (pagesMap.size < pagesCount) {
+            if (!pagesMap.has(pageIndex)) {
+                const ticket = tickets[Math.floor(pageIndex / 3)];
+                const pagesInfos = await this.FetchImagesInfo(ticket, readerSid);
+                pagesInfos.forEach(page => pagesMap.set(page.index, page));
+                await Delay(500); // 500ms delay between requests to avoid triggering anti-scraping measures*/
+            }
+            pageIndex++;
+        }
+
+        return Array.from(pagesMap.values()).map(({ tk, url, ticket, index }) => new Page(this, chapter, new URL(url), { Referer: this.URI.href, tk, ticket, index }));
     }
 
-    public override async FetchImage(page: Page<PageParameters>, priority: Priority, signal: AbortSignal): Promise<Blob> {
-        const { seed, grid } = page.Parameters;
+    private async FetchImagesInfo(ticket: string, readerSid: string): Promise<PageInfo[]> {
+        const payload = this.#Drm.BuildSignedPayloadPure(ticket, readerSid);
+        const response = await Fetch(new Request(new URL('/reader/panel/', this.URI), {
+            method: 'POST',
+            body: payload.slice(),
+            credentials: 'same-origin',
+            headers: {
+                Referer: this.URI.href,
+                Origin: this.URI.origin,
+                "Content-Type": 'application/octet-stream',
+                "X-Requested-With": 'XMLHttpRequest',
+                "Sec-Fetch-Dest": 'empty',
+                "Sec-Fetch-Mode": 'cors',
+                "Sec-Fetch-Site": 'same-origin',
+            },
+            cache: 'no-store',
+        }));
+
+        let panelBuffer = new Uint8Array(await response.arrayBuffer());
+        //decode answer
+        panelBuffer = XOR(panelBuffer, GetBytesFromUTF8(ticket));
+
+        const view = new DataView(panelBuffer.buffer, panelBuffer.byteOffset, panelBuffer.byteLength);
+        const count = view.getUint8(0);
+        let offset = 1;
+        const pages: PageInfo[] = [];
+
+        for (let j = 0; j < count; j++) {
+            const index = view.getUint16(offset, true);
+            offset += 2;
+
+            const tk = view.getUint32(offset, true);
+            offset += 4;
+
+            const urlLen = view.getUint16(offset, true);
+            offset += 2;
+
+            const end = offset + urlLen;
+            const url = GetUTF8FromBytes(panelBuffer.subarray(offset, end));
+            offset = end;
+
+            pages.push({ index, url, tk, ticket });
+        }
+        return pages;
+    }
+
+    public override async FetchImage(page: Page<PageInfo>, priority: Priority, signal: AbortSignal): Promise<Blob> {
+        const { index, ticket, tk } = page.Parameters;
         const blob = await Common.FetchImageAjax.call(this, page, priority, signal);
-        if (!seed || !grid) return blob;
 
         return DeScramble(blob, async (sourceImage, ctx) => {
-            const prng = XorShift32((seed & -1) >>> 0 || 123456789);
-            const pieces = FisherYates.WithModuloDerivation(prng)
-                .Shuffle(...new Array(grid ?? 2).keys())
-                .map((dstIndex, srcIndex) => ({ srcIndex, dstIndex, scale: transformations.get(prng.next().value % 4) }));
-            const blockWidth = sourceImage.width;
-            const blockHeight = sourceImage.height / pieces.length;
+            const w = sourceImage.width;
+            const h = sourceImage.height;
 
-            for (const { srcIndex, dstIndex, scale } of pieces) {
-                const srcPosX = 0;
-                const srcPosY = srcIndex * blockHeight;
-                const dstPosX = 0;
-                const dstPosY = dstIndex * blockHeight;
+            function drawSlice(img: ImageBitmap, sx: number, sy: number, sw: number, sh: number, dx: number, dy: number, dw: number, dh: number, flip: number) {
+                if (sw <= 0 || sh <= 0) {
+                    return;
+                }
+                const flipX = (flip & 1) !== 0;
+                const flipY = (flip & 2) !== 0;
                 ctx.save();
-                ctx.translate(dstPosX + blockWidth / 2, dstPosY + blockWidth / 2);
-                ctx.scale(scale.x, scale.y);
-                ctx.drawImage(sourceImage, srcPosX, srcPosY, blockWidth, blockHeight, -0.5 * blockWidth, -0.5 * blockHeight, blockWidth, blockHeight);
+                ctx.translate(dx + (flipX ? dw : 0), dy + (flipY ? dh : 0));
+                ctx.scale(flipX ? -1 : 1, flipY ? -1 : 1);
+                ctx.drawImage(img, sx, sy, sw, sh, 0, 0, dw, dh);
                 ctx.restore();
             }
+
+            const { slice1SrcX, slice1Width, slice1Flip, slice2SrcX, slice2Width, slice2Flip } = this.#Drm.GetSlices(index, tk, GetBytesFromUTF8(ticket), w, h);
+            drawSlice(sourceImage, slice1SrcX, 0, slice1Width, h, 0, 0, slice1Width, h, slice1Flip);
+            drawSlice(sourceImage, slice2SrcX, 0, slice2Width, h, slice1Width, 0, slice2Width, h, slice2Flip);
         });
     }
 }
