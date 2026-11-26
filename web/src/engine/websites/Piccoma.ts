@@ -6,9 +6,10 @@ import { FetchCSS, FetchJSON, FetchWindowScript } from '../platform/FetchProvide
 import DeScramble from '../transformers/ImageDescrambler';
 import { TaskPool, Priority } from '../taskpool/TaskPool';
 import { RateLimit } from '../taskpool/RateLimit';
-//import { Exception } from '../Error';
-//import { WebsiteResourceKey as R } from '../../i18n/ILocale';
+import { Exception } from '../Error';
+import { WebsiteResourceKey as R } from '../../i18n/ILocale';
 import { GetBytesFromUTF8, GetUTF8FromBytes } from '../BufferEncoder';
+import type { NormalizedPRNG } from '../Random';
 
 type APIMangas = {
     data: {
@@ -31,102 +32,86 @@ type PageData = {
 
 type Point = { x: number; y: number; };
 
-const WIDTH = 256;
-const CHUNKS = 6;
-const DIGITS = 52;
-const MASK = WIDTH - 1;
+// Implement https://github.com/davidbau/seedrandom
+export class SeedRandom {
 
-//This is NOT standard ARC4, but the version used in SeedRandom implementation https://github.com/davidbau/seedrandom
-class ARC4Custom {
-    private indexI = 0;
-    private indexJ = 0;
-    private state: number[] = Array.from({ length: WIDTH }, (_, it) => it);
+    constructor(private readonly deriveIndex: (index: number) => number) { }
 
-    constructor(key: number[]) {
-        const effectiveKey = key.length === 0 ? [0] : key;
-
-        let jCounter = 0;
-        for (let k = 0; k < WIDTH; k++) {
-            const t = this.state[k];
-            jCounter = MASK & jCounter + effectiveKey[k % effectiveKey.length] + t;
-            this.state[k] = this.state[jCounter];
-            this.state[jCounter] = t;
-        }
-        this.Generate(WIDTH);
+    /**
+     * Create a selection shuffle using normalized floating point numbers in the range `[0, 1)`.
+     */
+    public static WithScaledDerivation(normalizedNumbers: Iterator<number>) {
+        return new SeedRandom(index => Math.floor(normalizedNumbers.next().value * (index + 1)));
     }
 
     /**
-     * Generates pseudo-random bytes/values from the state array.
+     * Returns a new array by repeatedly selecting an element from the remaining values.
      */
-    public Generate(count: number): number {
-        let r = 0;
-        let c = count;
-        while (c-- > 0) {
-            this.indexI = MASK & this.indexI + 1;
-            const t = this.state[this.indexI];
-            this.indexJ = MASK & this.indexJ + t;
-            const sj = this.state[this.indexJ];
-            this.state[this.indexI] = sj;
-            this.state[this.indexJ] = t;
-            r = r * WIDTH + this.state[MASK & sj + t];
+    public Shuffle<T>(...values: T[]): T[] {
+        const result: T[] = [];
+        while (values.length > 0) {
+            result.push(values.splice(this.deriveIndex(values.length - 1), 1)[0]);
         }
-        return r;
+        return result;
     }
 }
 
-export class SeedRandom {
-    private startDenominator = Math.pow(WIDTH, CHUNKS);
-    private significance = Math.pow(2, DIGITS);
-    private overflow = this.significance * 2;
-    private arc4: ARC4Custom;
+/**
+ * Creates the normalized ARC4-based generator used by seedrandom for a string seed.
+ * This is not standard ARC4: it mixes the seed and discards the first 256 bytes.
+ */
+export function* ARC4Custom(seed: string): NormalizedPRNG {
+    const width = 256;
+    const mask = width - 1;
+    const key = new Array(width).fill(0);
+    let smear = 0;
+    for (let k = 0; k < seed.length; k++) {
+        smear = smear ^ key[mask & k] * 19;
+        key[mask & k] = mask & smear + seed.charCodeAt(k);
+    }
+    const effectiveKey = seed.length === 0 ? [0] : key.slice(0, Math.min(seed.length, width));
+    const state = Array.from({ length: width }, (_, index) => index);
+    let i = 0;
+    let j = 0;
 
-    constructor(seed: string) {
-        this.arc4 = new ARC4Custom(this.MixKey(seed));
+    for (let k = 0, currentJ = 0; k < width; k++) {
+        currentJ = mask & currentJ + effectiveKey[k % effectiveKey.length] + state[k];
+        [state[k], state[currentJ]] = [state[currentJ], state[k]];
     }
 
-    /**
-     * Returns the next pseudo-random number in the range `[0, 1)`.
-     */
-    public NextDouble(): number {
-        let n = this.arc4.Generate(CHUNKS);
-        let d = this.startDenominator;
-        let x = 0;
-        while (n < this.significance) {
-            n = (n + x) * WIDTH;
-            d *= WIDTH;
-            x = this.arc4.Generate(1);
+    function generate(count: number): number {
+        let result = 0;
+        for (let n = 0; n < count; n++) {
+            i = mask & i + 1;
+            const t = state[i];
+            j = mask & j + t;
+            const sj = state[j];
+            state[i] = sj;
+            state[j] = t;
+            result = result * width + state[mask & sj + t];
         }
-        while (n >= this.overflow) {
+        return result;
+    }
+
+    generate(width);
+    const startDenominator = width ** 6;
+    const significance = 2 ** 52;
+    const overflow = significance * 2;
+    for (; ;) {
+        let n = generate(6);
+        let d = startDenominator;
+        let x = 0;
+        while (n < significance) {
+            n = (n + x) * width;
+            d *= width;
+            x = generate(1);
+        }
+        while (n >= overflow) {
             n /= 2;
             d /= 2;
-            x = x >>> 1; // Bitwise unsigned right shift
+            x = x >>> 1;
         }
-        return (n + x) / d;
-    }
-
-    /**
-     * Returns a new array holding the elements of the input list shuffled with this generator.
-     */
-    public Shuffle<T>(list: T[]): T[] {
-        const size = list.length;
-        const resp: T[] = [];
-        const keys: number[] = Array.from({ length: size }, (_, i) => i);
-
-        for (let i = 0; i < size; i++) {
-            const r = Math.floor(this.NextDouble() * keys.length);
-            resp.push(list[keys.splice(r, 1)[0]]);
-        }
-        return resp;
-    }
-
-    private MixKey(seed: string): number[] {
-        const key = new Array(WIDTH).fill(0);
-        let smear = 0;
-        for (let j = 0; j < seed.length; j++) {
-            smear = smear ^ key[MASK & j] * 19;
-            key[MASK & j] = MASK & smear + seed.charCodeAt(j);
-        }
-        return key.slice(0, Math.min(seed.length, WIDTH));
+        yield (n + x) / d;
     }
 }
 
@@ -203,14 +188,17 @@ export default class extends DecoratableMangaScraper {
     public override async FetchPages(chapter: Chapter): Promise<Page<PageData>[]> {
         const { links, scrambled } = await FetchWindowScript<PagesData>(new Request(new URL(`./web/viewer/${chapter.Parent.Identifier}/${chapter.Identifier}`, this.URI)), `
             new Promise (resolve => {
+                if (!window._pdata_) {
+                    resolve({ links: [], scrambled: false });
+                } else 
                 resolve({
-                    links : (_pdata_.img ?? _pdata_.content).filter(img => img.path).map(img => 'https:'+img.path),
-                    scrambled : _pdata_.isScrambled
+                    links : (window._pdata_.img ?? window._pdata_.content).filter(img => img.path).map(img => 'https:'+img.path),
+                    scrambled : window._pdata_.isScrambled
 	            });
             });
         `, 2500);
 
-        //if (data.length === 0) throw new Exception(R.Plugin_Common_Chapter_UnavailableError);
+        if (links.length === 0) throw new Exception(R.Plugin_Common_Chapter_UnavailableError);
 
         return links.map(link => new Page<PageData>(this, chapter, new URL(link), { scrambled }));
     }
@@ -248,7 +236,7 @@ export default class extends DecoratableMangaScraper {
 
             for (const group of tileGroups.values()) {
                 const { tiles, w, h } = group;
-                const shuffled = new SeedRandom(seed).Shuffle(tiles);
+                const shuffled = SeedRandom.WithScaledDerivation(ARC4Custom(seed)).Shuffle(...tiles);
 
                 for (let i = 0; i < tiles.length; i++) {
                     const dest = tiles[i];
