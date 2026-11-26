@@ -10,6 +10,7 @@ export { default as Akuma } from './Akuma';
 export { default as AllHentai } from './AllHentai';
 export { default as AllManga } from './AllManga';
 export { default as AllPornComic } from './AllPornComic';
+export { default as AlphaManga } from './AlphaManga';
 export { default as Alphapolis } from './Alphapolis';
 export { default as AmangaPlanet } from './AmangaPlanet';
 export { default as AmuyScan } from './AmuyScan';
