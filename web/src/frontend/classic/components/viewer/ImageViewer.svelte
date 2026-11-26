@@ -266,9 +266,9 @@
     }
 
     #ImageViewer:not(.wide) :global(.imgpreview) {
-        border: 2px solid var(--cds-ui-04);
-        background-color: var(--cds-ui-01);
-        box-shadow: 1em 1em 2em var(--cds-ui-01);
+        border: 2px solid var(--cds-border-strong-01);
+        background-color: var(--cds-layer-01);
+        box-shadow: 1em 1em 2em var(--cds-layer-01);
         border-radius: 1em;
         margin: 0.5em;
         width: 16em;
@@ -282,7 +282,7 @@
     }
     #ImageViewer.wide {
         overflow: auto;
-        background-color: var(--cds-ui-01);
+        background-color: var(--cds-layer-01);
         cursor: grab;
         align-items: center;
         transition: gap 0.2s ease-in-out;

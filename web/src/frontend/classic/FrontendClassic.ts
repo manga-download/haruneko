@@ -8,7 +8,7 @@ import { Store } from './stores/Stores.svelte';
 class Classic implements IFrontendModule {
     async Render(root: HTMLElement, windowController: IAppWindow): Promise<void> {
         await Initialize();
-        const app = mount(App, { target: root, props: {} });
+        const app = mount(App, { renderer: undefined, target: root, props: {} });
         await app.FinishLoading;
         Store.WindowController = windowController;
     }

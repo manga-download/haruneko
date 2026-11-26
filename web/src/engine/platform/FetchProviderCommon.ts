@@ -29,6 +29,9 @@ export abstract class FetchProvider {
         if (response.status === 403) {
             throw new Exception(R.FetchProvider_Fetch_Forbidden, response.url);
         }
+        if (response.status === 429) {
+            throw new Exception(R.FetchProvider_Fetch_TooManyRequests/*, response.url*/);
+        }
     }
 
     /**
@@ -554,7 +557,7 @@ export abstract class FetchProvider {
                 if (this.featureFlags.VerboseFetchWindow.Value) {
                     console.log('FetchWindow()::invocations', invocations);
                 } else {
-                    win.Close();
+                    await win.Close();
                 }
             } catch (error) {
                 console.warn(error);
@@ -576,8 +579,8 @@ export abstract class FetchProvider {
                         case FetchRedirection.Interactive: {
                             // NOTE: Allow the user to solve the captcha within 2.5 minutes before rejecting the request with an error
                             ClearTimeout(await cancellation);
-                            cancellation = SetTimeout(() => {
-                                destroy();
+                            cancellation = SetTimeout(async () => {
+                                await destroy();
                                 reject(new Exception(R.FetchProvider_FetchWindow_TimeoutError));
                             }, 150_000);
                             await win.Show();
@@ -595,8 +598,10 @@ export abstract class FetchProvider {
                             return;
                         }
                     }
-                } catch {
+                } catch (error) {
+                    ClearTimeout(await cancellation);
                     await destroy();
+                    reject(error);
                 }
             });
 

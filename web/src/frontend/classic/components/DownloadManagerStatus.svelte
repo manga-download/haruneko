@@ -200,7 +200,7 @@
 <style>
     #tasksstatus {
         display: grid;
-        grid-template-columns: fit-content(10em) 1fr;
+        grid-template-columns: fit-content(10em) minmax(0, 1fr);
     }
     #tasksstatus .label {
         text-align: center;

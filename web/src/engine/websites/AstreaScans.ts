@@ -5,7 +5,7 @@ import { HolyScanBase } from './templates/HolyScanBase';
 export default class extends HolyScanBase {
 
     public constructor() {
-        super('astreascans', 'Astrea Scans', 'https://astreascans.com', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Turkish, Tags.Source.Scanlator);
+        super('astreascans', 'Astrea Scans', 'https://astreascans.xyz', Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Turkish, Tags.Source.Scanlator);
         this.WithPrefix('astrea');
     }
 

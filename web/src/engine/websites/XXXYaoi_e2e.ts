@@ -7,7 +7,7 @@ new TestFixture({
     },
     container: {
         url: 'https://3xyaoi.com/bl/love-is-an-illusion/',
-        id: JSON.stringify({ slug: '/bl/love-is-an-illusion/' }),
+        id: '/bl/love-is-an-illusion/',
         title: 'Love is an Illusion'
     },
     child: {

@@ -6,7 +6,7 @@ new TestFixture({
         title: 'DuaLeoTruyen'
     },
     container: {
-        url: 'https://dualeotruyenqo.com/truyen-tranh/peppermint-candy',
+        url: 'https://dualeotruyengf.com/truyen-tranh/peppermint-candy',
         id: '/truyen-tranh/peppermint-candy',
         title: '(ABO) Peppermint Candy'
     },
@@ -16,7 +16,7 @@ new TestFixture({
     },
     entry: {
         index: 45,
-        size: 1_902_747,
+        size: 204_590,
         type: 'image/webp'
     }
 }).AssertWebsite();
