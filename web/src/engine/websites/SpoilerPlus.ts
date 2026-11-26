@@ -62,7 +62,7 @@ export default class extends DecoratableMangaScraper {
         if (args.length) {
             super(...args as ConstructorParameters<typeof DecoratableMangaScraper>);
         } else {
-            super('spoilerplus', 'SpoilerPlus', 'https://spoilerplus.tv', Tags.Media.Manga, Tags.Language.Japanese, Tags.Source.Aggregator, Tags.Accessibility.RegionLocked);
+            super('spoilerplus', 'SpoilerPlus', 'https://spoilerplus.sc', Tags.Media.Manga, Tags.Language.Japanese, Tags.Source.Aggregator, Tags.Accessibility.RegionLocked);
         }
     }
 

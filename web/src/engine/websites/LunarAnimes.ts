@@ -78,8 +78,8 @@ export default class extends DecoratableMangaScraper {
 
         const PagePreloadScript = `
             JSON.parse = new Proxy(JSON.parse, {
-                apply(target, thisArg, args) {
-                    const result = Reflect.apply(target, thisArg, args);
+                apply(target, thisArg, argArray) {
+                    const result = Reflect.apply(target, thisArg, argArray);
                     try{
                         if (result.data?.images){
                             setInterval(() => window.dispatchEvent(new CustomEvent('${eventName}', { detail: result.data.images })), 250);

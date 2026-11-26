@@ -1,4 +1,4 @@
 export declare class DRMProvider {
     private ResolveChapter;
-    CreatePageLinks(mangaURL: URL, chapterID: string): Promise<string[]>;
+    CreatePageLinks(mangaURL: URL, chapterKey: number, chapterPage: number): Promise<Response>;
 }

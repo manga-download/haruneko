@@ -7,7 +7,7 @@ import { GetBytesFromBase64, GetBytesFromHex, GetBytesFromUTF8, GetUTF8FromBytes
 import { DecryptAES, XOR } from '../Crypto';
 import type { Priority } from '../taskpool/DeferredTask';
 import DeScramble from '../transformers/ImageDescrambler';
-import { CanvaDescrambler, Canva2Descrambler } from './SoraRaw.DRM';
+import { TokenizedDescramble, Descramble /*CanvaDescrambler, Canva2Descrambler*/ } from './SoraRaw.DRM';
 
 type JSONWrapper<T> = {
     data: T;
@@ -62,11 +62,12 @@ type PagesInfos = {
 }[];
 
 type PageParameters = {
-    mirrors: string[];
-    mode: 'canva' | 'canva2';
-    token: string;
-    chapterId: number;
+    Mirrors: string[];
+    Mode: 'canva' | 'canva2';
+    Token: string;
+    ChapterID: string;
 };
+
 export default class extends DecoratableMangaScraper {
 
     private apiURL = 'https://api.mangarawgo.site';
@@ -128,7 +129,7 @@ export default class extends DecoratableMangaScraper {
                 ].filter(Boolean) as { host: string; file: string }[];
 
                 const urls = await Promise.all(sources.map(({ host, file }) => this.GenerateFileName(host, file, GetBytesFromHex(uuid))));
-                return new Page<PageParameters>(this, chapter, new URL(urls[0]), { Referer: this.URI.href, mirrors: urls.slice(1), mode, token, chapterId });
+                return new Page<PageParameters>(this, chapter, new URL(urls[0]), { Referer: this.URI.href, Mirrors: urls, Mode: mode, Token: token, ChapterID: `${chapterId}` });
             })
         );
     }
@@ -145,16 +146,15 @@ export default class extends DecoratableMangaScraper {
 
     public override async FetchImage(page: Page<PageParameters>, priority: Priority, signal: AbortSignal): Promise<Blob> {
         const blob = await Grouple.FetchImageWithMirrors.call(this, page, priority, signal);
-        const { mode, chapterId, token } = page.Parameters;
+        const { Mode, ChapterID, Token } = page.Parameters;
 
-        return !['canva', 'canva2'].includes(mode) ? blob :
+        return !['canva', 'canva2'].includes(Mode) ? blob :
             DeScramble(blob, async (image, ctx) => {
                 ctx.drawImage(image, 0, 0);
-                const pixels = ctx.getImageData(0, 0, image.width, image.height).data;
-                const descrambledData = mode === 'canva'
-                    ? await CanvaDescrambler.Decramble(pixels, image.width, image.height, `${chapterId}`, token)
-                    : await Canva2Descrambler.Decramble(pixels, image.width, image.height, `${chapterId}`);
-                ctx.putImageData(new ImageData(descrambledData, image.width, image.height), 0, 0);
+                const { width, height } = image;
+                const bytes = ctx.getImageData(0, 0, width, height).data;
+                const data = Mode === 'canva' ? await TokenizedDescramble(bytes, width, height, ChapterID, Token) : await Descramble(bytes, width, height, ChapterID);
+                ctx.putImageData(new ImageData(data, image.width, image.height), 0, 0);
             });
     }
 }

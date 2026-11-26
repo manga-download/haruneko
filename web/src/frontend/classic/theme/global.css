@@ -1,5 +1,5 @@
 .border {
-    border: 2px solid var(--cds-ui-04);
+    border: 2px solid var(--cds-border-strong-01);
     border-radius: 1em;
     padding: 1em;
 }

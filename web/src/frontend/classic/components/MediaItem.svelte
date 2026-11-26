@@ -85,13 +85,17 @@
         HakuNeko.DownloadManager.Queue.Unsubscribe(taskQueueChanged);
     });
 
-    let downloadTask: DownloadTask = $state();
-    let downloadTaskStatus: Status=$state();
+    let downloadTask: DownloadTask = $derived(HakuNeko.DownloadManager.Queue.Value.find((task) => task.Media.IsSameAs(item)));
+    let downloadTaskStatus: Status = $derived(downloadTask?.Status.Value);
+    $effect(() => {
+        downloadTask?.Status.Subscribe(refreshDownloadStatus);
+    });
 
     async function taskQueueChanged(tasks: DownloadTask[]) {
         downloadTask?.Status.Unsubscribe(refreshDownloadStatus);
         downloadTask = tasks.find((task) => task.Media.IsSameAs(item));
         downloadTask?.Status.Subscribe(refreshDownloadStatus);
+        refreshDownloadStatus(downloadTask?.Status.Value, downloadTask);
     }
     HakuNeko.DownloadManager.Queue.Subscribe(taskQueueChanged);
     async function refreshDownloadStatus(newstatus: Status, _task: DownloadTask) {
@@ -202,7 +206,7 @@
             iconDescription="Download complete"
             onclick={() => alert('Download complete. TODO: open folder using system explorer')}
         >
-            <FolderOpen fill="var(--cds-support-03)" />
+            <FolderOpen fill="var(--cds-support-warning)" />
         </Button>
     {:else}
         <Button
@@ -213,7 +217,7 @@
             iconDescription="Download"
             onclick={() => addDownload(item as StoreableMediaContainer<MediaItem>)}
         >
-            <CloudDownload fill="var(--cds-icon-01)" />
+            <CloudDownload fill="var(--cds-icon-primary )" />
         </Button>
     {/if}
     <Button
@@ -243,20 +247,16 @@
     }
     .listitem:hover,
     .listitem.hover {
-        background-color: var(--cds-hover-row);
-        --cds-ui-01: var(--cds-hover-row);
+        background-color: var(--cds-field-hover-01);
     }
     .listitem.hover {
-        background-color: var(--cds-active-secondary);
-        --cds-ui-01: var(--cds-active-secondary);
+        background-color: var(--cds-button-secondary-active);
     }
     .listitem.selected {
-        background-color: var(--cds-selected-ui);
-        --cds-ui-01: var(--cds-selected-ui);
+        background-color: var(--cds-layer-selected-01);
     }
     .listitem.active {
-        background-color: var(--cds-active-ui);
-        --cds-ui-01: var(--cds-active-ui);
+        background-color: var(--cds-background-active);
     }
     .listitem :global(.title) {
         flex: auto;
@@ -268,6 +268,7 @@
         align-items: center;
         padding: 0;
         padding-left: 0.5em;
+        background-color: unset;
     }
     .listitem :global(button) {
         min-height: unset;
@@ -277,7 +278,7 @@
         padding-right:0;
     }
     .listitem :global(button:hover) {
-        --cds-icon-01: var(--cds-hover-secondary);
+        --cds-icon-primary : var(--cds-button-secondary-hover);
     }
     .multilang {
         opacity: 0.7;

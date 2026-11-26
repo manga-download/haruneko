@@ -6,12 +6,12 @@ new TestFixture({
         title: 'Mist Scans'
     },
     container: {
-        url: 'https://mistscans.com/series/blue-night-guesthouse-2/',
-        id: '/series/blue-night-guesthouse-2/',
+        url: 'https://mistscans.org/blue-night-guesthouse-2',
+        id: '/blue-night-guesthouse-2/',
         title: 'Blue Night Guesthouse'
     },
     child: {
-        id: '/chapter/65bc6715db8-65bc79a3ba5/',
+        id: '/blue-night-guesthouse-2-chapter-1',
         title: 'Chapter 1'
     },
     entry: {

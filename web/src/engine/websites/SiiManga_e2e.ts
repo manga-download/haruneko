@@ -6,12 +6,12 @@ new TestFixture({
         title: 'SiiManga'
     },
     container: {
-        url: 'https://siikomik.id/komik/tears-on-a-withered-flower/',
-        id: JSON.stringify({ post: '218', slug: '/komik/tears-on-a-withered-flower/' }),
+        url: 'https://siikomik.com/komik/tears-on-a-withered-flower/',
+        id: 'tears-on-a-withered-flower',
         title: 'Tears on a Withered Flower'
     },
     child: {
-        id: '/komik/tears-on-a-withered-flower/chapter-86/',
+        id: 'chapter-86',
         title: 'Chapter 86'
     },
     entry: {
