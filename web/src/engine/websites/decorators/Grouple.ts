@@ -5,7 +5,7 @@ import { type Priority } from '../../taskpool/DeferredTask';
 import * as Common from './Common';
 
 export type MirroredPage = Page<{
-    mirrors: string[];
+    Mirrors: string[];
 }>;
 
 export const queryMangas = 'div.tile div.desc h3 a';
@@ -63,7 +63,7 @@ export function PagesSinglePageJS(script = pageScript, delay = 0) {
             public async FetchPages(this: MangaScraper, chapter: Chapter): Promise<MirroredPage[]> {
                 const request = new Request(new URL(chapter.Identifier, this.URI));
                 const images = await FetchWindowScript<{ url: string, mirrors: string[]; }[]>(request, script, delay);
-                return images.map(({ url, mirrors }) => new Page(this, chapter, new URL(url), { Referer: request.url, mirrors }));
+                return images.map(({ url, mirrors }) => new Page(this, chapter, new URL(url), { Referer: request.url, Mirrors: mirrors }));
             }
         };
     };
@@ -76,7 +76,7 @@ export function PagesSinglePageJS(script = pageScript, delay = 0) {
 export async function FetchImageWithMirrors(this: MangaScraper, page: MirroredPage, priority: Priority, signal: AbortSignal): Promise<Blob> {
     return this.imageTaskPool.Add(async () => {
         const errors: Error[] = [];
-        for (const uri of [ page.Link, ...page.Parameters.mirrors ]) {
+        for (const uri of [ page.Link, ...page.Parameters.Mirrors ]) {
             //if (signal.aborted) throw new DOMException(undefined, 'AbortError');
             try {
                 const response = await Fetch(new Request(uri, { signal: signal, headers: { Referer: page.Parameters.Referer } }));

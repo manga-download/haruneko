@@ -1,13 +1,7 @@
 import { Tags } from '../Tags';
 import icon from './ArabsHentai.webp';
-import { type Chapter, DecoratableMangaScraper, Page } from '../providers/MangaPlugin';
+import { DecoratableMangaScraper } from '../providers/MangaPlugin';
 import * as Common from './decorators/Common';
-import { FetchRegex } from '../platform/FetchProvider';
-import { GetBytesFromBase64, GetUTF8FromBytes } from '../BufferEncoder';
-
-type JSONPages = {
-    url: string;
-}[];
 
 @Common.MangaCSS(/^{origin}\/manga\/[^/]+\/$/, 'div.sheader div.data h1')
 @Common.MangasMultiPageCSS('article div.data h3 a', Common.PatternLinkGenerator('/manga/page/{page}/'))
@@ -15,6 +9,16 @@ type JSONPages = {
     id: anchor.pathname,
     title: anchor.querySelector<HTMLSpanElement>('span.chapternum').textContent.trim()
 }))
+@Common.PagesSinglePageJS(`
+    new Promise(resolve => {
+	    const images = document.documentElement.innerHTML.match(/const\\s+images\\s*=\\s*(\\[.*?\\]);/s)?.at(1);
+	    if (images) {
+		    const pages = JSON.parse(images).map(({	url	}) => atob(url));
+		    return resolve(pages);
+	    }
+	    resolve([...document.querySelectorAll('img.wp-manga-chapter-img')].map(img => img.src));
+    });
+`, 500)
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
 
@@ -24,10 +28,5 @@ export default class extends DecoratableMangaScraper {
 
     public override get Icon() {
         return icon;
-    }
-
-    public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const [json] = await FetchRegex(new Request(new URL(chapter.Identifier, this.URI)), /const\s*images\s*=\s*(\[.*\])/g);
-        return (<JSONPages>JSON.parse(json)).map(({ url }) => new Page(this, chapter, new URL(GetUTF8FromBytes(GetBytesFromBase64(url))), { Referer: this.URI.href }));
     }
 }

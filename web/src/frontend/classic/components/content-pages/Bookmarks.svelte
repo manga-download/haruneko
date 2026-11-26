@@ -1,94 +1,62 @@
 <script lang="ts">
-    import { Tile, ClickableTile, Tag } from 'carbon-components-svelte';
+    import { Tag, 
+    Card,
+    CardHeader,
+    CardMedia,
+    CardTitle,
+    Box,
+    Truncate,
+    Stack, } from 'carbon-components-svelte';
     import CaretRight from 'carbon-icons-svelte/lib/CaretRight.svelte';
     import { fade } from 'svelte/transition';
     import {Store as UI } from '../../stores/Stores.svelte';
     import MediaIcon from '../../../../img/media.webp';
     import type { Bookmark } from '../../../../engine/providers/Bookmark';
-
+    import type {
+        MediaContainer,
+        MediaItem,
+    } from '../../../../engine/providers/MediaPlugin';
     async function selectBookmark(bookmark: Bookmark) {
+        let unFlaggedContent = await bookmark.GetUnflaggedContent();
         UI.selectedPlugin = HakuNeko.BookmarkPlugin;
         UI.selectedMedia = bookmark;
-        UI.selectedItem = undefined;
+        UI.selectedItem = unFlaggedContent[
+            unFlaggedContent.length - 1
+        ] as MediaContainer<MediaItem>;
     }
 </script>
 
-<div id="bookmarkspage" in:fade>
-    <Tile id="bookmarks" class="border">
+<div in:fade>
+    <Box>
+    <Stack orientation="horizontal" wrap="wrap" gap={3}>
         {#each window.HakuNeko.BookmarkPlugin.Entries.Value as bookmark (bookmark)}
-            <ClickableTile
-                class="suggesttile"
-                light
-                on:click={() => selectBookmark(bookmark)}
-            >
-                <div
-                    class="mediaitem"
-                    style="background-image: url({bookmark.Icon ?? MediaIcon});"
-                >
-                    <Tag class="suggesttitle" type="outline" interactive>
-                        <span title={bookmark.Title}>{bookmark.Title}</span>
-                    </Tag>
-
-                    {#await bookmark.GetUnflaggedContent() then value}
-                        {#if value.length > 0}
+            <Card horizontal clickable style="width: 16em" on:click={() => selectBookmark(bookmark)}>
+                <CardMedia slot="media" ratio="2x1">
+                    <img src={bookmark.Icon ?? MediaIcon} alt="" />
+                </CardMedia>
+                <CardHeader>
+                    <CardTitle maxWidth="6em">
+                        <Truncate reveal="tooltip" lines={3}>{bookmark.Title}</Truncate>
+                        <svelte:fragment slot="description">
+                            {#await bookmark.GetUnflaggedContent() then value}
+                            {#if value.length > 0} 
                             <Tag
-                                class="suggestcount"
-                                type="outline"
-                                icon={CaretRight}
-                                interactive
+                            class="suggestcount"
+                            type="outline"
+                            icon={CaretRight}
+                            interactive
                             >
                                 {value.length}
                             </Tag>
-                        {/if}
-                    {/await}
-                </div>
-            </ClickableTile>
+                            {/if}
+                            {/await}
+                        </svelte:fragment>
+                    </CardTitle>
+
+                </CardHeader>
+            </Card>
+
         {/each}
-    </Tile>
+    </Stack>
+    </Box>
 </div>
-
-<style>
-    #bookmarkspage {
-        padding: 0.5em;
-        height: 100%;
-    }
-    #bookmarkspage :global(#bookmarks) {
-        margin-bottom: 1em;
-        height: 100%;
-    }
-
-    #bookmarkspage :global(#bookmarks) {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, 10em);
-        grid-auto-rows: 10em;
-        grid-gap: 0.5em;
-        overflow: auto;
-    }
-
-    #bookmarkspage :global(#bookmarks .suggesttile) {
-        padding: 0;
-    }
-    #bookmarkspage :global(#bookmarks .suggesttile .bx--tag span) {
-        width: 100%;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-    #bookmarkspage :global(#bookmarks .suggesttitle) {
-        width: 95%;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-
-    #bookmarkspage :global(#bookmarks .suggestcount) {
-        position: absolute;
-        bottom: 0;
-        right: 0.2em;
-    }
-    .mediaitem {
-        height: 100%;
-        position: relative;
-        background-size: cover;
-        background-repeat: no-repeat;
-    }
-</style>

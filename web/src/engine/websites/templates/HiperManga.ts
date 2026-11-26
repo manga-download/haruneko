@@ -45,16 +45,16 @@ export class HiperManga extends DecoratableMangaScraper {
         this.secretHeader = await FetchWindowScript(new Request(new URL('/search', this.URI)), `
             new Promise( resolve => {
                 window.fetch = new Proxy(window.fetch, {
-                    apply(target, thisArg, args) {
+                    apply(target, thisArg, argArray) {
                         try {
-                            const request = new Request(...args);
+                            const request = new Request(...argArray);
                             for (const [key,value]of request.headers) {
                                 if(key.toLowerCase().startsWith('x-')) {
                                     resolve( { key, value } );
                                 }
                             }
                         } catch {}
-                        return Reflect.apply(target, thisArg, args);
+                        return Reflect.apply(target, thisArg, argArray);
                     }
                 });
 

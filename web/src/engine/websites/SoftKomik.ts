@@ -32,8 +32,8 @@ class DRMProvider {
         const eventName = RandomText(Math.random() * 8 + 8);
         this.#auth = await FetchWindowPreloadScript<TokenData>(new Request(new URL('/komik/list', this.uri)), `
             JSON.parse = new Proxy(JSON.parse, {
-                apply: function(funcNative, funcThis, funcArgs) {
-                    const result = Reflect.apply(funcNative, funcThis, funcArgs);
+                apply: function(target, thisArg, argArray) {
+                    const result = Reflect.apply(target, thisArg, argArray);
                     if (result?.token && result?.sign && result?.ex) {
                         setInterval(() => window.dispatchEvent(new CustomEvent('${eventName}', { detail: result })), 250);
                     }
