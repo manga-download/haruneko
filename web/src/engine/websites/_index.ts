@@ -692,6 +692,7 @@ export { default as ToomTam } from './ToomTam';
 export { default as Toondex } from './Toondex';
 export { default as ToonFR } from './ToonFR';
 export { default as ToonGod } from './ToonGod';
+export { default as ToonGrab } from './ToonGrab';
 export { default as Toonhey } from './Toonhey';
 export { default as Toonily } from './Toonily';
 export { default as ToonJai } from './ToonJai';
