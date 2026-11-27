@@ -153,9 +153,16 @@
                         >
                             <Stack orientation="horizontal" gap={3}><CarouselHorizontal />{GlobalSettings.Locale[Settings.ViewerMode.Setting.Options[1].label]()}</Stack>
                         </Switch>
+                        <Switch
+                            selected={Settings.ViewerMode.Value === Settings.ViewerMode.Setting.Options[2].key}
+                            onclick={() =>
+                                (Settings.ViewerMode.Value = Settings.ViewerMode.Setting.Options[2].key)}
+                        >
+                            <Stack orientation="horizontal" gap={3}><CarouselHorizontal />{GlobalSettings.Locale[Settings.ViewerMode.Setting.Options[2].label]()}</Stack>
+                        </Switch>
                 </ContentSwitcher>
             </div>
-            {#if Settings.ViewerMode.Value === Key.ViewerMode_Paginated}
+            {#if Settings.ViewerMode.Value === Key.ViewerMode_Paginated || Settings.ViewerMode.Value === Key.ViewerMode_Paged}
                 <div class="setting block">
                     <Tooltip
                         triggerText={GlobalSettings.Locale[
