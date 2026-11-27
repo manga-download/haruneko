@@ -54,6 +54,7 @@ const patterns = [
     '*://*.topcreativeformat.com/*',
     '*://*.twitch.tv/*',
     '*://*.yandex.ru/*.js',
+    '*://*/**/madaradex-core/modules/shield/*',
     '*://*/**/devtools-detect*',
     '*://*/**/devtools-detector*',
     '*://*/**/disable-devtool*',
