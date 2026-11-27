@@ -38,7 +38,7 @@ type APIPages = APIResult<APIChapter>
 export default class extends DecoratableMangaScraper {
 
     public constructor() {
-        super('ikiru', 'Ikiru', 'https://11.ikiru.wtf', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Indonesian, Tags.Source.Aggregator);
+        super('ikiru', 'Ikiru', 'https://v1.ikiru.wtf', Tags.Media.Manga, Tags.Media.Manhwa, Tags.Media.Manhua, Tags.Language.Indonesian, Tags.Source.Aggregator);
     }
 
     public override get Icon() {

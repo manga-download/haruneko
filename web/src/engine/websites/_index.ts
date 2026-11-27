@@ -142,7 +142,6 @@ export { default as EvaScans } from './EvaScans';
 export { default as EZManga } from './EZManga';
 export { default as FalcoScan } from './FalcoScan';
 export { default as FastestManga } from './FastestManga';
-export { default as FavComic } from './FavComic';
 export { default as FbSquads } from './FbSquads';
 export { default as FeelWeb } from './FeelWeb';
 export { default as FlameComics } from './FlameComics';
