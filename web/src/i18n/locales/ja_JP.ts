@@ -232,6 +232,7 @@ const translations: VariantResource = { // NOTE: Use defaults for missing transl
   FetchProvider_FetchWindow_AlertCaptcha: "CAPTCHAを解いてから、アプリケーションが処理を続行するまでお待ちください（CAPTCHA 解答後にウェブサイトを閉じないでください）！",
   FetchProvider_Fetch_CloudFlareChallenge: "\"{0}\"へのリクエストは CloudFlare のボット対策により拒否されました。\\nこのウェブサイトのコンテンツにアクセスする前に CloudFlare を回避してください（例：HakuNeko Assistant ブラウザ拡張機能を使用）。",
   FetchProvider_Fetch_VercelChallenge: "\"{0}\"へのリクエストは Vercel の攻撃対策モードにより拒否されました。\\nこのウェブサイトのコンテンツにアクセスする前に Vercel を回避してください。",
+  FetchProvider_Fetch_TooManyRequests: 'The request to the website was rejected due to exceeding the rate limit (too many requests). Try again later or throttle your website requests',
   FetchProvider_Fetch_Forbidden: "\"{0}\"へのアクセスが拒否されました。\\nウェブサイトが利用可能でアクセス可能か確認してください（例：地域制限を回避するための VPN、ウェブサイトリンクからの手動ログインなど）。",
   //
   BookmarkPlugin_ConvertToSerializedBookmark_UnsupportedFormatError: "提供されたデータが壊れているか無効なため、ブックマークとして読み込めませんでした！",

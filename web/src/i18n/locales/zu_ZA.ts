@@ -232,6 +232,7 @@ const translations: VariantResource = { // NOTE: Use defaults for missing transl
   FetchProvider_FetchWindow_AlertCaptcha: "crwdns1429:0crwdne1429:0",
   FetchProvider_Fetch_CloudFlareChallenge: "crwdns2164:0{0}crwdne2164:0",
   FetchProvider_Fetch_VercelChallenge: "crwdns2184:0{0}crwdne2184:0",
+  FetchProvider_Fetch_TooManyRequests: "crwdns2267:0crwdne2267:0",
   FetchProvider_Fetch_Forbidden: "crwdns2166:0{0}crwdne2166:0",
   //
   BookmarkPlugin_ConvertToSerializedBookmark_UnsupportedFormatError: "crwdns1626:0crwdne1626:0",

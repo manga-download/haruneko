@@ -232,6 +232,7 @@ const translations: VariantResource = { // NOTE: Use defaults for missing transl
   FetchProvider_FetchWindow_AlertCaptcha: "请完成验证码，随后等待应用继续运行（完成验证码后请勿关闭网站）！",
   FetchProvider_Fetch_CloudFlareChallenge: "对 \"{0}\" 的请求被 CloudFlare 反机器人检测系统拒绝。\n访问本网站内容前，请确保已绕过 CloudFlare（如使用 HakuNeko Assistant 浏览器扩展）。",
   FetchProvider_Fetch_VercelChallenge: "对 \"{0}\" 的请求被 Vercel Attack Challenge Mode 拒绝。\n访问本网站内容前，请确保已绕过 Vercel。",
+  FetchProvider_Fetch_TooManyRequests: 'The request to the website was rejected due to exceeding the rate limit (too many requests). Try again later or throttle your website requests',
   FetchProvider_Fetch_Forbidden: "访问 \"{0}\" 被拒绝。\n请确保网站可用且可以访问（如：使用 VPN 绕过地区限制，或通过网站链接手动登录）。",
   //
   BookmarkPlugin_ConvertToSerializedBookmark_UnsupportedFormatError: "提供的数据似乎无效/损坏，无法成功反序列化为书签！",
