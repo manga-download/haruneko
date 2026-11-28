@@ -7,7 +7,7 @@ new TestFixture({
     },
     container: {
         url: 'https://lerhentais.com/manga/nama-hone-josou',
-        id: '24506/nama-hone-josou',
+        id: 'nama-hone-josou',
         title: 'Nama-Hone Josou'
     },
     child: {
