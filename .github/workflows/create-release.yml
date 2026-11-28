@@ -83,6 +83,7 @@ jobs:
           DESCRIPTION=$(echo $DESCRIPTION | sed s/{MACOS_X64_DMG}/$(ls ./bundle-electron-* | grep 'x64.dmg')/g)
           DESCRIPTION=$(echo $DESCRIPTION | sed s/{MACOS_ARM64_DMG}/$(ls ./bundle-electron-* | grep 'arm64.dmg')/g)
           DESCRIPTION=$(echo $DESCRIPTION | sed s/{LINUX_X64_SNAP}/$(ls ./bundle-electron-* | grep 'x64.snap')/g)
+          DESCRIPTION=$(echo $DESCRIPTION | sed s/{LINUX_X64_APPIMAGE}/$(ls ./bundle-electron-* | grep 'x64.AppImage')/g)
           echo -n $DESCRIPTION > ./release-templates/description.md
       - name: Create Release Tag
         run: |
