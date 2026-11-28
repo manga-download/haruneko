@@ -97,8 +97,11 @@ export class HiperManga extends DecoratableMangaScraper {
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
+        const [ id, slug ] = manga.Identifier.split('/');
+        // NOTE: An identifier without numeric ID (only the slug) requires to lookup the ID first
+        const seriesId = slug ? parseInt(id) : parseInt((await this.FetchTRPC<APIManga>('./series.bySlugWithGenres?batch=1', { slug: id })).id);
         const chapters = await this.FetchTRPC<APIChapter[]>('./series.chapters?batch=1', {
-            seriesId: parseInt(manga.Identifier.split('/').at(0)),
+            seriesId,
             chapterId: null,
             sort: 'best',
             page: 1,
@@ -109,7 +112,7 @@ export class HiperManga extends DecoratableMangaScraper {
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
         const pages = await this.FetchTRPC<APIPage[]>('./reader.chapterPages?batch=1', {
-            seriesSlug: chapter.Parent.Identifier.split('/').at(1),
+            seriesSlug: chapter.Parent.Identifier.split('/').at(-1),
             chapterNumber: parseInt(chapter.Identifier)
         });
         return pages.map(({ webpUrl }) => new Page(this, chapter, new URL(webpUrl), { Referer: this.URI.href }));
