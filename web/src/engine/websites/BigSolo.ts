@@ -24,8 +24,8 @@ type APIChapter = {
 };
 
 type APIPages = {
-    link: string;
-}[];
+    images: string[];
+};
 
 @Common.ImageAjax()
 export default class extends DecoratableMangaScraper {
@@ -39,7 +39,7 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override ValidateMangaURL(url: string): boolean {
-        return new RegExpSafe(`^${this.URI.origin}/[^/]+$`).test(url);
+        return new RegExpSafe(`^${this.URI.origin}/manga/[^/]+$`).test(url);
     }
 
     public override async FetchManga(provider: MangaPlugin, url: string): Promise<Manga> {
@@ -54,17 +54,17 @@ export default class extends DecoratableMangaScraper {
     }
 
     public override async FetchChapters(manga: Manga): Promise<Chapter[]> {
-        const [script] = await FetchCSS<HTMLScriptElement>(new Request(new URL(manga.Identifier, this.URI)), '#series-data-placeholder');
+        const [script] = await FetchCSS<HTMLScriptElement>(new Request(new URL(`/manga/${manga.Identifier}`, this.URI)), '#series-data-placeholder');
         const { chapters }: APIManga = JSON.parse(script.text);
         const validChapters = Object.entries(chapters).filter(([_, chapter]) => !chapter.licensed);
         return validChapters
             .map(([key, chapter]) =>
-                new Chapter(this, manga, chapter.source.id, [validChapters.length > 1 ? key : '', chapter.title].join(' ').trim()))
+                new Chapter(this, manga, key, [validChapters.length > 1 ? key : '', chapter.title].join(' ').trim()))
             .reverse();
     }
 
     public override async FetchPages(chapter: Chapter): Promise<Page[]> {
-        const images = await FetchJSON<APIPages>(new Request(new URL(`/api/imgchest-chapter-pages?id=${chapter.Identifier}`, this.URI)));
-        return images.map(({ link }) => new Page(this, chapter, new URL(link)));
+        const { images } = await FetchJSON<APIPages>(new Request(new URL(`/data/series/${chapter.Parent.Identifier}/${chapter.Identifier}`, this.URI)));
+        return images.map(link => new Page(this, chapter, new URL(link)));
     }
 }

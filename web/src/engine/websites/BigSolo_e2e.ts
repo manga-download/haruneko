@@ -6,12 +6,12 @@ new TestFixture({
         title: 'BigSolo'
     },
     container: {
-        url: 'https://bigsolo.org/futari-bus',
+        url: 'https://bigsolo.org/manga/futari-bus',
         id: 'futari-bus',
         title: 'Futari Bus'
     },
     child: {
-        id: 'n87w2zj3z7x',
+        id: '27',
         title: `27 Vacances d'été`
     },
     entry: {
